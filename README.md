@@ -4,9 +4,9 @@ A small 2.5D open-world fantasy RPG for phones, in the spirit of old-school Ragn
 painted 2D sprites standing in a 3D world. You camp in the valley of Aibachu, explore freely,
 fight small monsters, collect what they drop and craft better gear at the campfire.
 
-Built with Three.js + Vite, wrapped as an Android app with Capacitor. The player and the
-Green Slime are PixelLab pixel-art sprites; everything else is painted in code and all sound is
-synthesized, so the game ships as one offline HTML file.
+Built with Three.js + Vite, wrapped as an Android app with Capacitor. The player, monsters and
+villagers are PixelLab pixel-art sprites in a Ragnarok Online-like style; the world is painted in
+code and all sound is synthesized, so the game ships as one offline HTML file.
 
 ## Get the APK
 
@@ -121,14 +121,17 @@ Code map: `world.js` (terrain, zones, props), `player.js`, `mobs.js` (all monste
 
 ## PixelLab art
 
-Raw exports live in `art/pixellab/<name>/` (from `build-tools/pixellab.py`, run locally with
-`PIXELLAB_API_KEY` set, or through the "PixelLab sprites" workflow). Pack them into the sheets the
-game loads with:
+Every character is made with PixelLab's Pro mode from a style reference: the player from a
+Ragnarok Online sprite (kept out of the repo), everyone else from the player, so the cast shares
+one look. Raw exports live in `art/pixellab/<name>/`; older versions stay in `*_v1` / `*_v2`.
 
 ```bash
-python3 build-tools/pack-sprites.py   # writes src/art/<name>.png + .json
+# needs PIXELLAB_API_KEY (and PIXELLAB_STYLE_REF for the player)
+python3 build-tools/pixellab.py generate art/pixellab crab   # make one character
+python3 build-tools/pixellab.py finish art/pixellab crab     # fill in missing animations
+python3 build-tools/pack-sprites.py                          # write src/art/<name>.png + .json
 ```
 
-Each character needs `idle` (PixelLab rotations) in 4 directions; the player also uses `walk` and
-`attack`, monsters use `hop` or `walk` and `attack`. A monster switches to its PixelLab sheet when
-its entry in `createSprites()` is a `pixelSet(...)`.
+Each character has 4 standing directions; the player and monsters add `walk` or `hop` and
+`attack`. The packer crops frames to one box per character, erases stray specks and records where
+the feet are so sprites stand on their shadows.
