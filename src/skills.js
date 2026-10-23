@@ -6,7 +6,7 @@
 //
 // kind: active (goes on the hotbar) | passive
 // target: 'mob' for skills aimed at a monster; range = how close you must be (world units)
-// cast: seconds to cast (spells), before FNS shortens it; magic: damage from MATK
+// cast: seconds to cast (spells), before FNS shortens it; magic: the spell's element (damage from MATK)
 // free: { jobLv } learnt automatically; granted: learnt once its needs are met; else bought with points
 export const SKILLS = {
   // ---------- Novice ----------
@@ -88,24 +88,24 @@ export const SKILLS = {
     desc: (lv) => `+${2 * lv}% Max SP, and +${lv} SP each time SP recovers.`,
   },
   spark: {
-    name: 'Ember Bolt', job: 'mage', kind: 'active', max: 10, target: 'mob', range: 7, magic: true, icon: 'skill_spark',
+    name: 'Ember Bolt', job: 'mage', kind: 'active', max: 10, target: 'mob', range: 7, magic: 'fire', icon: 'skill_spark',
     sp: (lv) => 6 + lv, cast: (lv) => 0.5 + 0.1 * lv, cd: 0.6,
-    desc: (lv) => `Hurl a bolt of fire: ${100 + 20 * lv}% MATK.`,
+    desc: (lv) => `Hurl a bolt of fire: ${100 + 20 * lv}% MATK. Fire: strong against Earth, weak against Water.`,
   },
   frost: {
-    name: 'Frost Shard', job: 'mage', kind: 'active', max: 10, target: 'mob', range: 7, magic: true, icon: 'skill_frost',
+    name: 'Frost Shard', job: 'mage', kind: 'active', max: 10, target: 'mob', range: 7, magic: 'water', icon: 'skill_frost',
     sp: (lv) => 8 + lv, cast: (lv) => 0.6 + 0.08 * lv, cd: 0.6,
-    desc: (lv) => `A shard of ice: ${90 + 10 * lv}% MATK, ${4 * lv}% chance to freeze the monster for 2.5 s.`,
+    desc: (lv) => `A shard of ice: ${90 + 10 * lv}% MATK, ${4 * lv}% chance to freeze the monster for 2.5 s. Water: strong against Fire, weak against Wind.`,
   },
   arc: {
-    name: 'Arc Lightning', job: 'mage', kind: 'active', max: 10, needs: { spark: 4 }, target: 'mob', range: 7, magic: true, icon: 'skill_arc',
+    name: 'Arc Lightning', job: 'mage', kind: 'active', max: 10, needs: { spark: 4 }, target: 'mob', range: 7, magic: 'wind', icon: 'skill_arc',
     sp: (lv) => 12 + lv, cast: (lv) => 1 + 0.1 * lv, cd: 1,
-    desc: (lv) => `Lightning strikes your target for ${80 + 10 * lv}% MATK and leaps to 2 monsters nearby for half that.`,
+    desc: (lv) => `Lightning strikes your target for ${80 + 10 * lv}% MATK and leaps to 2 monsters nearby for half that. Wind: strong against Water, weak against Earth.`,
   },
   flamering: {
-    name: 'Flame Ring', job: 'mage', kind: 'active', max: 10, needs: { spark: 5 }, magic: true, icon: 'skill_flamering',
+    name: 'Flame Ring', job: 'mage', kind: 'active', max: 10, needs: { spark: 5 }, magic: 'fire', icon: 'skill_flamering',
     sp: (lv) => 20 + lv, cast: () => 1.5, cd: 3,
-    desc: (lv) => `A ring of fire bursts around you: ${100 + 12 * lv}% MATK to every monster close by.`,
+    desc: (lv) => `A ring of fire bursts around you: ${100 + 12 * lv}% MATK (Fire) to every monster close by.`,
   },
   ward: {
     name: 'Rune Ward', job: 'mage', kind: 'active', max: 10, needs: { manawell: 3 }, cd: 30, icon: 'skill_ward',

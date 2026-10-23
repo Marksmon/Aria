@@ -1,0 +1,36 @@
+{
+  "group_id": "1d82079b-f8d2-42a0-88b1-6c80728769d7",
+  "states": [
+    {
+      "character": {
+        "id": "cf2738d3-d648-4578-b5a0-afb14592491e",
+        "name": "Idle",
+        "prompt": "mysterious old seeress with long silver hair under a dark hooded cloak of midnight blue, necklace of glass beads and small bones, grey fur collar, holding a tall iron distaff staff with a glowing rune stone",
+        "size": {
+          "width": 96,
+          "height": 96
+        },
+        "template_id": "mannequin",
+        "directions": 8,
+        "view": "low top-down",
+        "created_at": "2026-10-23T19:11:45.765927+00:00"
+      },
+      "folder": "Idle",
+      "frames": {
+        "rotations": {
+          "south": "Idle/rotations/south.png",
+          "south-east": "Idle/rotations/south-east.png",
+          "east": "Idle/rotations/east.png",
+          "north-east": "Idle/rotations/north-east.png",
+          "north": "Idle/rotations/north.png",
+          "north-west": "Idle/rotations/north-west.png",
+          "west": "Idle/rotations/west.png",
+          "south-west": "Idle/rotations/south-west.png"
+        },
+        "animations": {}
+      }
+    }
+  ],
+  "export_version": "3.1",
+  "export_date": "2026-10-23T19:31:02.814536"
+}

@@ -172,7 +172,7 @@ player.on('strike', (m, res) => {
   const y = overHead(m, m.sprite.scale.y * 0.8);
   if (res.miss) fx.number(m.x, y, m.z, 'Miss', 'miss');
   else {
-    fx.number(m.x, y, m.z, res.dmg, res.crit ? 'crit' : 'dealt');
+    fx.number(m.x, y, m.z, res.dmg, res.crit || res.el > 1 ? 'crit' : res.el < 1 ? 'miss' : 'dealt');
     audio.play('hit');
     // Battle Rhythm: every fifth hit that lands gives back 1 SP
     if (skillLv(prog, 'rhythm') && ++rhythm % 5 === 0) player.healSp(1);
@@ -555,11 +555,12 @@ function useSkill(id) {
 
 // ---------- spells: stand still, chant (the cast bar), then the magic flies ----------
 const SPELL_COL = { spark: '#ff7a2a', frost: '#9fe0ff', arc: '#fff27a', flamering: '#ff6a1a' };
-function spellHit(m, mult) {
+function spellHit(m, mult, element) {
   if (!m.alive) return null;
-  const res = magicAttack(player.ps, m.effDef(), mult);
+  const res = magicAttack(player.ps, m.effDef(), mult, element);
   const dx = m.x - player.x, dz = m.z - player.z, d = Math.hypot(dx, dz) || 1;
-  fx.number(m.x, overHead(m, m.sprite.scale.y * 0.8), m.z, res.dmg, 'dealt');
+  // the right element hits hard (gold), the wrong one barely scratches (grey)
+  fx.number(m.x, overHead(m, m.sprite.scale.y * 0.8), m.z, res.dmg, res.el > 1 ? 'crit' : res.el < 1 ? 'miss' : 'dealt');
   audio.play('hit');
   m.hit(res.dmg, dx / d * 0.5, dz / d * 0.5);
   return res;
@@ -582,7 +583,7 @@ function castSpell(id, lv, pay, sp) {
         fx.sparkle(player.x + Math.cos(a) * 2.2, y() + 0.3, player.z + Math.sin(a) * 2.2, SPELL_COL.flamering, 2);
       }
       fx.puff(player.x, y() + 0.2, player.z, 1.6);
-      for (const m of [...mobs.list]) if (m.alive && Math.hypot(m.x - player.x, m.z - player.z) < 2.8 + m.def.r) spellHit(m, (100 + 12 * lv) / 100);
+      for (const m of [...mobs.list]) if (m.alive && Math.hypot(m.x - player.x, m.z - player.z) < 2.8 + m.def.r) spellHit(m, (100 + 12 * lv) / 100, sk.magic);
     }, null, sk.name);
     return;
   }
@@ -595,14 +596,14 @@ function castSpell(id, lv, pay, sp) {
     if (id === 'arc') { // strikes at once, then leaps to two more
       const at = (m) => ({ x: m.x, y: world.heightAt(m.x, m.z) + 0.5, z: m.z });
       fx.zap(from, at(t), SPELL_COL.arc);
-      spellHit(t, (80 + 10 * lv) / 100);
+      spellHit(t, (80 + 10 * lv) / 100, sk.magic);
       const near = mobs.list.filter((m) => m.alive && m !== t && Math.hypot(m.x - t.x, m.z - t.z) < 3.2)
         .sort((a, b) => Math.hypot(a.x - t.x, a.z - t.z) - Math.hypot(b.x - t.x, b.z - t.z)).slice(0, 2);
-      for (const m of near) { fx.zap(at(t), at(m), SPELL_COL.arc); spellHit(m, (80 + 10 * lv) / 200); }
+      for (const m of near) { fx.zap(at(t), at(m), SPELL_COL.arc); spellHit(m, (80 + 10 * lv) / 200, sk.magic); }
       return;
     }
     fx.bolt(from.x, from.y, from.z, t, SPELL_COL[id], () => {
-      const res = spellHit(t, id === 'spark' ? (100 + 20 * lv) / 100 : (90 + 10 * lv) / 100);
+      const res = spellHit(t, id === 'spark' ? (100 + 20 * lv) / 100 : (90 + 10 * lv) / 100, sk.magic);
       const ty = world.heightAt(t.x, t.z) + 0.5;
       fx.sparkle(t.x, ty, t.z, SPELL_COL[id], 8);
       if (res && id === 'frost' && t.alive && !t.def.mvp && Math.random() < 0.04 * lv) {

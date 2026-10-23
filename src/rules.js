@@ -2,6 +2,27 @@
 // docs/ragnarok-mechanics.md. Stat names are Aria's: POW = STR, QKN = AGI, END = VIT,
 // KNL = INT, FNS = DEX, FTN = LUK.
 const rnd = (n) => Math.floor(Math.random() * n); // 0 .. n-1
+
+// Elements, Ragnarok's table at element level 1 (attack element -> defending element -> damage %).
+// Monsters have an element (mobs.js el); spells and some weapons do too.
+export const ELEMENTS = {
+  neutral: { name: 'Neutral', color: '#c8c0b0' },
+  water: { name: 'Water', color: '#6cc4ef' },
+  earth: { name: 'Earth', color: '#b9874f' },
+  fire: { name: 'Fire', color: '#ff7a2a' },
+  wind: { name: 'Wind', color: '#fff27a' },
+  shadow: { name: 'Shadow', color: '#a383d6' },
+};
+const EL_TABLE = {
+  neutral: { neutral: 100, water: 100, earth: 100, fire: 100, wind: 100, shadow: 100 },
+  water:   { neutral: 100, water: 25,  earth: 100, fire: 150, wind: 50,  shadow: 100 },
+  earth:   { neutral: 100, water: 100, earth: 25,  fire: 50,  wind: 150, shadow: 100 },
+  fire:    { neutral: 100, water: 50,  earth: 150, fire: 25,  wind: 100, shadow: 100 },
+  wind:    { neutral: 100, water: 150, earth: 50,  fire: 100, wind: 25,  shadow: 100 },
+  shadow:  { neutral: 100, water: 100, earth: 100, fire: 100, wind: 100, shadow: 25 },
+};
+// how much of an attack of element `atk` lands on a monster of element `def` (1 = all of it)
+export const elementMod = (atk = 'neutral', def = 'neutral') => (EL_TABLE[atk]?.[def] ?? 100) / 100;
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 
 // per job: HP/SP growth, weapon delay (ms, before stats) and base carrying weight
@@ -29,6 +50,7 @@ export function derive(prog, gear) {
     maxSp: Math.floor((10 + Math.floor(lv * j.spIncrease / 100)) * (100 + knl) / 100) + (gear.msp || 0),
     batk: pow + Math.floor(pow / 10) ** 2 + Math.floor(fns / 5) + Math.floor(ftn / 5), // status ATK
     watk: gear.atk || 0,
+    el: gear.el || 'neutral',                     // the weapon's element
     wlv: gear.wlv || 0,
     fns,
     mastery: gear.mastery || 0,
@@ -69,8 +91,9 @@ export function playerAttack(ps, md, mult = 1, hitMult = 1, skill = false) {
   const wdmg = crit ? ps.watk : wmin + rnd(Math.max(1, ps.watk - wmin + 1));
   let dmg = (ps.batk + wdmg) * mult;
   if (!crit) dmg = dmg * (100 - md.def) / 100 - mobSoftDef(md.vit);
-  dmg = Math.max(1, Math.floor(dmg) + ps.mastery);
-  return { miss: false, crit, dmg };
+  const el = elementMod(ps.el, md.el);
+  dmg = Math.max(1, Math.floor((Math.floor(dmg) + ps.mastery) * el));
+  return { miss: false, crit, dmg, el };
 }
 
 // A monster hits the player: perfect dodge, then hit vs FLEE, then DEF.
@@ -84,11 +107,13 @@ export function mobAttack(md, ps, atkMult = 1) {
   return { miss: false, dodge: false, dmg: Math.max(1, Math.floor(dmg)) };
 }
 
-// A spell hits a monster: magic never misses; the monster's MDEF % and VIT soften it.
-// mult = the spell's damage % / 100. Returns { miss: false, crit: false, dmg }.
-export function magicAttack(ps, md, mult = 1) {
+// A spell hits a monster: magic never misses; the monster's MDEF % and VIT soften it, and the
+// spell's element against the monster's scales it. mult = the spell's damage % / 100.
+// Returns { miss: false, crit: false, dmg, el (the element multiplier) }.
+export function magicAttack(ps, md, mult = 1, element = 'neutral') {
   const [lo, hi] = ps.matk;
   let dmg = (lo + rnd(Math.max(1, hi - lo + 1))) * mult;
   dmg = dmg * (100 - (md.mdef || 0)) / 100 - Math.floor(md.vit / 2);
-  return { miss: false, crit: false, dmg: Math.max(1, Math.floor(dmg)) };
+  const el = elementMod(element, md.el);
+  return { miss: false, crit: false, dmg: Math.max(1, Math.floor(dmg * el)), el };
 }

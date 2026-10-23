@@ -157,7 +157,7 @@ export class Inventory {
       def += it.def || 0; hit += it.hit || 0; flee += it.flee || 0; mhp += it.mhp || 0; msp += it.msp || 0;
       for (const [k, v] of Object.entries(it.stats || {})) stats[k] = (stats[k] || 0) + v;
     }
-    return { atk: w?.atk || 0, wlv: w?.wlv || 0, matk: w?.matk || 0, def, hit, flee, mhp, msp, stats, mastery: 0, aspdRate: this.wearing('aspd') ? 0.9 : 1 };
+    return { atk: w?.atk || 0, wlv: w?.wlv || 0, matk: w?.matk || 0, el: w?.el, def, hit, flee, mhp, msp, stats, mastery: 0, aspdRate: this.wearing('aspd') ? 0.9 : 1 };
   }
 
   toJSON() { return { v: 2, zeny: this.zeny, bag: this.bag.toJSON(), chest: this.chest.toJSON(), gear: this.gear }; }
