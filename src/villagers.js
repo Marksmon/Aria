@@ -1,5 +1,5 @@
-// Villagers standing around camp: they turn to face you when you come close, breathe a little,
-// and show a '!' or '?' bubble over their head.
+// The people of the camp and of Steinborg: they turn to face you when you come close, breathe a
+// little, and show a '!' or '?' bubble over their head. Each stands on their own map.
 import * as THREE from 'three';
 import { NPCS } from './quests.js';
 import { dirFor, dirFor8 } from './noise.js';
@@ -11,14 +11,15 @@ export class Villagers {
   constructor(scene, world, lib) {
     this.lib = lib;
     this.list = [];
-    this.group = new THREE.Group(); // they live on the camp map only
-    scene.add(this.group);
+    this.groups = {}; // map id -> group of the people standing there
     const sg = new THREE.PlaneGeometry(0.9, 0.55);
     sg.rotateX(-Math.PI / 2);
     const shadowMat = new THREE.MeshBasicMaterial({
       map: lib.shadow, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2,
     });
     for (const [id, n] of Object.entries(NPCS)) {
+      const map = n.map || 'camp', where = world.maps[map];
+      if (!this.groups[map]) { this.groups[map] = new THREE.Group(); this.groups[map].visible = false; scene.add(this.groups[map]); }
       const art = lib.villagers[id];
       const mat = new THREE.SpriteMaterial({ map: art.anims.down.idle[0], alphaTest: 0.5 });
       world.tintMats.push(mat); // darkens with the night like the rest of the world
@@ -27,7 +28,7 @@ export class Villagers {
       const h = art.fh * upp;
       s.scale.set(art.fw * upp, h, 1);
       s.center.set(0.5, art.anchor);
-      const y = world.heightAt(n.x, n.z);
+      const y = where.heightAt(n.x, n.z);
       s.position.set(n.x, y, n.z);
       s.renderOrder = 2;
       const shadow = new THREE.Mesh(sg, shadowMat);
@@ -37,10 +38,16 @@ export class Villagers {
       mark.center.set(0.5, 0);
       mark.renderOrder = 3;
       mark.visible = false;
-      this.group.add(s, shadow, mark);
-      world.addSolid(n.x, n.z, 0.35);
-      this.list.push({ id, x: n.x, z: n.z, y, h, top: HEIGHT, art, mat, s, mark, face: { x: 0, z: 1 }, t: Math.random() * 6 });
+      this.groups[map].add(s, shadow, mark);
+      where.addSolid(n.x, n.z, 0.35);
+      this.list.push({ id, map, x: n.x, z: n.z, y, h, top: HEIGHT, art, mat, s, mark, face: { x: 0, z: 1 }, t: Math.random() * 6 });
     }
+  }
+
+  // show the people of one map
+  show(map) {
+    this.map = map;
+    for (const [k, g] of Object.entries(this.groups)) g.visible = k === map;
   }
 
   // kind per villager id: 'offer' | 'ready' | null
@@ -54,6 +61,7 @@ export class Villagers {
 
   update(dt, player, cam) {
     for (const v of this.list) {
+      if (v.map !== this.map) continue;
       v.t += dt;
       const dx = player.x - v.x, dz = player.z - v.z, d = Math.hypot(dx, dz);
       v.face = d < NOTICE && d > 0.01 ? { x: dx / d, z: dz / d } : { x: 0, z: 1 };

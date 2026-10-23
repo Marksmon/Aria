@@ -8,6 +8,7 @@ const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 export const JOB_RULES = {
   novice:   { hpFactor: 0,  hpIncrease: 500, spIncrease: 100, delay: { fist: 500, sword: 700 }, weight: 2000 },
   swordman: { hpFactor: 70, hpIncrease: 500, spIncrease: 200, delay: { fist: 400, sword: 550 }, weight: 2800 },
+  mage:     { hpFactor: 30, hpIncrease: 500, spIncrease: 600, delay: { fist: 500, sword: 650 }, weight: 2200 },
 };
 
 function baseHp(lv, j) {
@@ -18,7 +19,7 @@ function baseHp(lv, j) {
 
 // Everything the battle rules need about the player, from progress (levels, stats) and gear.
 // gear: { atk, wlv (weapon level, 0 = bare hands), def, mastery (flat ATK), aspdRate (1 = normal), hit, flee,
-//   stats (bonus stat points), mhp / msp (extra Max HP / SP) }
+//   stats (bonus stat points), mhp / msp (extra Max HP / SP), matk (% more MATK, from staves) }
 export function derive(prog, gear) {
   const s = (k) => prog.total(k) + (gear.stats?.[k] || 0), lv = prog.baseLv, j = JOB_RULES[prog.job];
   const pow = s('pow'), qkn = s('qkn'), end = s('end'), knl = s('knl'), fns = s('fns'), ftn = s('ftn');
@@ -38,6 +39,9 @@ export function derive(prog, gear) {
     def: clamp(gear.def || 0, 0, 100),            // hard DEF from equipment
     end,                                          // soft DEF comes from END each hit
     mdef: knl + Math.floor(end / 2),
+    // magic: KNL makes MATK, FNS shortens cast times (no cast at 150 FNS)
+    matk: [knl + Math.floor(knl / 7) ** 2, knl + Math.floor(knl / 5) ** 2].map((v) => Math.floor(v * (100 + (gear.matk || 0)) / 100)),
+    castRate: Math.max(0, 1 - fns / 150),
     aspd: Math.round(200 - delay / 10),
     interval: (2 * delay) / 1000,                 // seconds between attacks
     weight: j.weight + 30 * pow,
@@ -78,4 +82,13 @@ export function mobAttack(md, ps, atkMult = 1) {
   let dmg = (md.atk[0] + rnd(md.atk[1] - md.atk[0] + 1)) * atkMult;
   dmg = dmg * (100 - ps.def) / 100 - playerSoftDef(ps.end);
   return { miss: false, dodge: false, dmg: Math.max(1, Math.floor(dmg)) };
+}
+
+// A spell hits a monster: magic never misses; the monster's MDEF % and VIT soften it.
+// mult = the spell's damage % / 100. Returns { miss: false, crit: false, dmg }.
+export function magicAttack(ps, md, mult = 1) {
+  const [lo, hi] = ps.matk;
+  let dmg = (lo + rnd(Math.max(1, hi - lo + 1))) * mult;
+  dmg = dmg * (100 - (md.mdef || 0)) / 100 - Math.floor(md.vit / 2);
+  return { miss: false, crit: false, dmg: Math.max(1, Math.floor(dmg)) };
 }

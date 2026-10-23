@@ -13,15 +13,19 @@ export const STATS = {
   fns: { name: 'FNS', full: 'Finesse', desc: 'Hit, steadier damage, attack speed' },
   ftn: { name: 'FTN', full: 'Fortune', desc: 'Critical hits, perfect dodge' },
 };
+// Aria's own job names (the ids stay Ragnarok's): the Trainee becomes a Blader or a Sorcerer
 export const JOBS = {
-  novice: { name: 'Novice' },
-  swordman: { name: 'Swordsman' },
+  novice: { name: 'Trainee' },
+  swordman: { name: 'Blader' },
+  mage: { name: 'Sorcerer' },
 };
 // hidden stats a job adds at certain job levels: [job level, stat]
 const JOB_BONUS = {
   novice: [[2, 'ftn'], [3, 'fns'], [5, 'qkn'], [6, 'end'], [8, 'pow'], [9, 'knl']],
   swordman: [[2, 'pow'], [6, 'end'], [10, 'fns'], [14, 'pow'], [18, 'end'], [22, 'fns'], [26, 'ftn'], [30, 'qkn'],
     [33, 'pow'], [36, 'fns'], [38, 'end'], [40, 'pow'], [42, 'end'], [44, 'ftn'], [46, 'qkn'], [47, 'pow'], [49, 'pow'], [50, 'pow']],
+  mage: [[2, 'knl'], [6, 'qkn'], [10, 'fns'], [14, 'knl'], [18, 'qkn'], [22, 'knl'], [26, 'fns'], [30, 'knl'], [33, 'ftn'],
+    [36, 'knl'], [38, 'fns'], [40, 'knl'], [42, 'qkn'], [44, 'knl'], [46, 'fns'], [47, 'knl'], [49, 'knl'], [50, 'knl']],
 };
 
 export class Progress {

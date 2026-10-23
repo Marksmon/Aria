@@ -1,8 +1,8 @@
-// Ragnarok-style windows: Items, Equipment, Skills and Status, plus the campfire, the camp chest
-// and villager dialogue. Each is a small window you drag by its title bar; several can be open
+// Ragnarok-style windows: Items, Equipment, Skills and Status, plus crafting (Gunnar's forge and
+// Ragna's herbs), the chest (camp and Steinborg storage), shops and dialogue. Each is a small window you drag by its title bar; several can be open
 // at once and the game keeps running behind them. Positions are remembered per device.
 // Pickup toasts and messages live here too. Plain DOM over the canvas.
-import { ITEMS, RECIPES, SLOTS, equipLine, iconURL } from './items.js';
+import { ITEMS, RECIPES, SLOTS, SHOPS, PRICES, sellPrice, equipLine, iconURL } from './items.js';
 import { BAG_SLOTS, CHEST_SLOTS } from './inventory.js';
 import { STATS, STAT_KEYS, JOBS } from './progress.js';
 import { NPCS } from './quests.js';
@@ -17,8 +17,9 @@ const WINDOWS = {
   equip:  { title: 'Equipment',  at: [0.50, 0.16], w: 260 },
   skills: { title: 'Skills',     at: [0.80, 0.18], w: 290 },
   status: { title: 'Status',     at: [0.19, 0.30], w: 300 },
-  craft:  { title: 'Campfire',   at: [0.50, 0.14], w: 300 },
-  chest:  { title: 'Camp Chest', at: [0.50, 0.16], w: 320 },
+  craft:  { title: 'Crafting',   at: [0.50, 0.14], w: 300 },
+  chest:  { title: 'Storage',    at: [0.50, 0.16], w: 320 },
+  shop:   { title: 'Shop',       at: [0.50, 0.14], w: 300 },
   talk:   { title: '',           at: [0.50, 0.22], w: 320 },
 };
 const POS_KEY = 'aria.windows';
@@ -28,13 +29,17 @@ export class Menus {
     this.inv = inv;
     this.prog = prog;
     this.player = player;
-    this.hooks = hooks; // { useItem(id), learn(id), jobChange(), crafted(recipe), equipped(), raised(stat), accept(id), handIn(id), ui(), closed() }
+    this.hooks = hooks; // { useItem(id), learn(id), jobChange(job), crafted(recipe), traded(), equipped(), raised(stat), accept(id), handIn(id), ui(), closed() }
     this.quests = null;     // set by the game, for villager dialogue
     this.portrait = null;   // villager id (or 'player') -> image URL
     this.hotbar = null;     // set by the game: skills and usable items drag onto it
     this.npc = null;
     this.selected = null;   // item picked in the Items window
     this.tab = 'use';       // Items window tab: use, equip or misc
+    this.craftKind = 'gear'; // crafting window: Gunnar's gear or Ragna's usables
+    this.shopId = null;     // the shop open in the Shop window
+    this.shopTab = 'buy';
+    this.sellSel = null;
     this.wins = {};         // id -> element, while open
     this.layer = document.getElementById('windows');
     this.toasts = document.getElementById('toasts');
@@ -69,6 +74,21 @@ export class Menus {
   talkTo(npc) {
     this.npc = npc;
     this.show('talk');
+  }
+
+  openShop(id) {
+    this.shopId = id;
+    this.shopTab = 'buy';
+    this.sellSel = null;
+    this.show('shop');
+    this.wins.shop.querySelector('.rw-title').textContent = `${NPCS[id].name.split(' ')[0]}'s Shop`;
+  }
+
+  openCraft(kind) {
+    this.craftKind = kind;
+    this.show('craft');
+    this.wins.craft.querySelector('.rw-title').textContent = kind === 'gear' ? "Gunnar's Forge" : "Ragna's Herbs";
+    this.render('craft');
   }
 
   build(id) {
@@ -172,7 +192,7 @@ export class Menus {
       <div class="rdetail">${sel
         ? `<b class="${sel.rare ? 'rare' : ''}">${esc(sel.name)}${sel.rare ? ' ✦' : ''}</b>${line}<span>${esc(sel.desc)}${sel.from ? ' Dropped by ' + esc(sel.from) + '.' : ''}${sel.usable ? ' Drag it onto the hotbar to use it quickly.' : ''}</span>${act}`
         : '<span>Tap an item to see what it is.</span>'}</div>
-      <div class="rfoot"><span>${inv.bag.slots.length} / ${BAG_SLOTS} slots</span></div>`;
+      <div class="rfoot"><span>${inv.bag.slots.length} / ${BAG_SLOTS} slots</span><span class="zeny">${inv.zeny.toLocaleString()} z</span></div>`;
   }
 
   // Ragnarok's equipment window: worn pieces down both sides of the character, names facing in.
@@ -233,9 +253,10 @@ export class Menus {
   }
 
   craft() {
-    const inv = this.inv;
-    let h = '<div class="rnote">Uses items from your bag and the chest. What you craft goes in your bag.</div><div class="rlist recipes">';
+    const inv = this.inv, gear = this.craftKind === 'gear';
+    let h = `<div class="rnote">${gear ? 'Gunnar forges weapons, armor and charms.' : 'Ragna brews draughts, tonics and feathers.'} Uses items from your bag and storage; what is made goes in your bag.</div><div class="rlist recipes">`;
     for (const r of RECIPES) {
+      if ((ITEMS[r.item].type === 'equip') !== gear) continue;
       const st = inv.recipeState(r), it = ITEMS[r.item];
       const cost = Object.entries(r.cost).map(([id, n]) => {
         const have = inv.have(id);
@@ -258,25 +279,47 @@ export class Menus {
 
   reward(r) {
     const items = Object.entries(r.items || {}).map(([id, n]) => `<span class="cost ok">${icon(id, 'xs')}${n} ${esc(ITEMS[id].name)}</span>`).join('');
-    return `<div class="costs"><span class="cost ok">${r.xp} Base EXP · ${r.job ?? Math.round(r.xp * 0.7)} Job EXP</span>${items}</div>`;
+    return `<div class="costs"><span class="cost ok">${r.xp} Base EXP · ${r.job ?? Math.round(r.xp * 0.7)} Job EXP</span>${r.zeny ? `<span class="cost ok">${r.zeny.toLocaleString()} zeny</span>` : ''}${items}</div>`;
+  }
+
+  // a Steinborg shop: buy at the shop's price, sell anything for half
+  shop() {
+    const inv = this.inv, tabs = { buy: 'Buy', sell: 'Sell' };
+    let h = `<div class="rtabs">${Object.entries(tabs).map(([k, n]) => `<button class="rtab${this.shopTab === k ? ' on' : ''}" data-act="shoptab" data-id="${k}">${n}</button>`).join('')}</div>`;
+    if (this.shopTab === 'buy') {
+      h += '<div class="rlist">';
+      for (const id of SHOPS[this.shopId] || []) {
+        const it = ITEMS[id], p = PRICES[id], stack = it.type !== 'equip';
+        const what = it.type === 'equip' ? [SLOTS[it.slot], equipLine(it)].filter(Boolean).join(' · ') : it.desc;
+        h += `<div class="ritem">${icon(id, 'sm')}<div><b>${esc(it.name)}</b><small>${esc(what)}</small><span class="rtag price">${p.toLocaleString()} z</span></div>
+          <div class="btncol"><button class="rbtn" data-act="buy" data-id="${id}" data-n="1" ${inv.zeny >= p ? '' : 'disabled'}>Buy</button>${stack ? `<button class="rbtn soft" data-act="buy" data-id="${id}" data-n="10" ${inv.zeny >= p * 10 ? '' : 'disabled'}>×10</button>` : ''}</div></div>`;
+      }
+      h += '</div>';
+    } else {
+      const sel = this.sellSel && inv.bag.count(this.sellSel) ? this.sellSel : null, it = sel && ITEMS[sel];
+      h += this.grid(inv.bag.slots, 'sell', 18);
+      h += `<div class="rdetail">${it
+        ? `<b class="${it.rare ? 'rare' : ''}">${esc(it.name)}</b><span>${sellPrice(sel) ? `Sells for ${sellPrice(sel).toLocaleString()} z each · you have ${inv.bag.count(sel)}` : "The shop won't buy this."}</span>
+          ${sellPrice(sel) ? `<div class="btnrow"><button class="rbtn" data-act="sell" data-n="1">Sell 1</button>${inv.bag.count(sel) > 1 ? `<button class="rbtn soft" data-act="sell" data-n="all">Sell all</button>` : ''}</div>` : ''}`
+        : '<span>Tap an item in your bag to sell it. Worn gear is not for sale.</span>'}</div>`;
+    }
+    return h + `<div class="rfoot"><span>Bag ${inv.bag.slots.length}/${BAG_SLOTS}</span><span class="zeny">${inv.zeny.toLocaleString()} z</span></div>`;
   }
 
   talk() {
-    const n = NPCS[this.npc], st = this.quests.status(this.npc, this.prog.baseLv, this.inv), p = this.prog;
+    const n = NPCS[this.npc], st = this.quests.status(this.npc, this.prog, this.inv), p = this.prog;
     let text, box = '', btns = '<button class="rbtn soft" data-act="close">Bye</button>';
-    // the Elder makes Swordsmen: Novice Job Lv 10 with Sword Basics 9
-    if (this.npc === 'bram' && p.job === 'novice' && p.jobLv >= 10) {
-      const ready = skillLv(p, 'basics') >= 9;
-      text = ready ? 'You have learnt all a Novice can. The way of the sword is open to you: will you take it?'
-        : "You are nearly ready for the way of the sword. Master your Sword Basics (Lv 9) first, then come back to me.";
-      box = `<b>Job change: Swordsman</b><small>Sturdy fighters with more HP: Cleave, Heavy Strike, War Cry, Stand Firm and Ground Slash. Job Level starts again at 1.</small>`;
-      if (ready) btns = `<button class="rbtn soft" data-act="close">Not yet</button><button class="rbtn" data-act="jobchange">Become a Swordsman</button>`;
-      this.wins.talk.querySelector('.rw-title').textContent = n.name;
-      return `<div class="talkwrap"><img class="portrait" src="${this.portrait(this.npc)}" alt="">
-        <div class="say"><p>${esc(text)}</p><div class="qbox">${box}</div><div class="btnrow">${btns}</div></div></div>`;
-    }
-    if (st.state === 'offer') {
-      const first = st.id === n.quests[0];
+    // what else they do: trade and craft
+    const extra = (n.shop ? '<button class="rbtn" data-act="shop">Buy / Sell</button>' : '')
+      + (n.craft ? `<button class="rbtn" data-act="craftwin" data-id="${n.craft}">${n.craft === 'gear' ? 'Forge gear' : 'Brew usables'}</button>` : '');
+    if (st.state === 'job') { // the trial is done: the job change
+      text = `You passed. Will you walk the path of the ${JOBS[n.job].name}?`;
+      box = n.job === 'mage'
+        ? '<b>Job change: Sorcerer</b><small>Casters who strike from afar with KNL: Ember Bolt, Frost Shard, Arc Lightning, Flame Ring, Rune Ward and Blink. Low HP, lots of SP. Job Level starts again at 1.</small>'
+        : '<b>Job change: Blader</b><small>Sturdy sword fighters with more HP: Cleave, Heavy Strike, War Cry, Stand Firm and Ground Slash. Job Level starts again at 1.</small>';
+      btns = `<button class="rbtn soft" data-act="close">Not yet</button><button class="rbtn" data-act="jobchange" data-id="${n.job}">Become a ${JOBS[n.job].name}</button>`;
+    } else if (st.state === 'offer') {
+      const first = st.id === n.quests[0] || st.id === n.trial;
       text = (first ? n.hello + ' ' : '') + st.q.intro;
       box = `<b>${esc(st.q.title)}</b><small>${esc(this.quests.goal(st.q))}</small>${this.reward(st.q.reward)}`;
       btns = `<button class="rbtn soft" data-act="close">Not now</button><button class="rbtn" data-act="accept" data-id="${st.id}">Accept</button>`;
@@ -289,6 +332,10 @@ export class Menus {
       btns = `<button class="rbtn" data-act="handin" data-id="${st.id}">Hand in</button>`;
     } else if (st.state === 'locked') text = n.later(st.q.lv);
     else text = n.bye;
+    // a Trainee not yet ready for a trial hears what it takes; the Elder points ready Trainees to the city
+    if (p.job === 'novice' && n.trialHint && (st.state === 'finished' || st.state === 'locked')) text = n.trialHint;
+    if (p.job === 'novice' && n.ready && p.jobLv >= 10 && skillLv(p, 'basics') >= 9 && ['finished', 'locked', 'active'].includes(st.state)) text = n.ready;
+    if (extra && st.state !== 'job' && st.state !== 'offer' && st.state !== 'ready') btns = extra + btns;
     this.wins.talk.querySelector('.rw-title').textContent = n.name;
     return `<div class="talkwrap"><img class="portrait" src="${this.portrait(this.npc)}" alt="">
       <div class="say"><p>${esc(text)}</p>${box ? `<div class="qbox">${box}</div>` : ''}<div class="btnrow">${btns}</div></div></div>`;
@@ -309,7 +356,19 @@ export class Menus {
     if (act === 'close') this.close(id);
     if (act === 'raise' && this.prog.raise(t.dataset.stat)) { this.hooks.raised?.(t.dataset.stat); this.render(); }
     if (act === 'learn') this.hooks.learn?.(t.dataset.id);
-    if (act === 'jobchange') this.hooks.jobChange?.();
+    if (act === 'jobchange') { this.hooks.jobChange?.(t.dataset.id); this.close('talk'); }
+    if (act === 'shop') { this.close('talk'); this.openShop(this.npc); }
+    if (act === 'craftwin') { this.close('talk'); this.openCraft(t.dataset.id); }
+    if (act === 'shoptab') { this.shopTab = t.dataset.id; this.sellSel = null; this.render(id); }
+    if (act === 'buy') {
+      const n = +t.dataset.n;
+      if (inv.buy(t.dataset.id, n)) { this.hooks.traded?.(); this.message(`Bought ${n > 1 ? n + ' ' : ''}${ITEMS[t.dataset.id].name} for ${(PRICES[t.dataset.id] * n).toLocaleString()} z`); }
+      else this.message(inv.zeny < PRICES[t.dataset.id] * n ? 'Not enough zeny' : 'Bag is full');
+    }
+    if (act === 'sell' && this.sellSel) {
+      const n = t.dataset.n === 'all' ? inv.bag.count(this.sellSel) : 1, got = sellPrice(this.sellSel) * n;
+      if (inv.sell(this.sellSel, n)) { this.hooks.traded?.(); this.message(`Sold for ${got.toLocaleString()} z`); }
+    }
     if (act === 'accept') this.hooks.accept?.(t.dataset.id);
     if (act === 'handin') this.hooks.handIn?.(t.dataset.id);
     if (act === 'tab') { this.tab = t.dataset.id; this.selected = null; this.render(id); }
@@ -319,7 +378,7 @@ export class Menus {
       else this.message('Bag is full');
     }
     if (act === 'slot') {
-      if (id === 'chest') {
+      if (id === 'shop') { this.sellSel = t.dataset.id; this.render(id); } else if (id === 'chest') {
         const from = t.dataset.side === 'bag' ? inv.bag : inv.chest;
         const to = t.dataset.side === 'bag' ? inv.chest : inv.bag;
         if (!inv.moveStack(from, to, t.dataset.id)) this.message(to === inv.bag ? 'Bag is full' : 'Chest is full');

@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import './style.css';
 import { createSprites } from './sprites.js';
 import { buildWorld, ZONE_NAMES } from './world.js';
+import { CITY } from './city.js';
 import { Player } from './player.js';
 import { Input } from './input.js';
 import { UI } from './ui.js';
@@ -14,8 +15,8 @@ import { Quests, QUESTS, NPCS } from './quests.js';
 import { Villagers } from './villagers.js';
 import { Tiles } from './tiles.js';
 import { Hotbar } from './hotbar.js';
-import { derive, playerAttack, mobAttack } from './rules.js';
-import { SKILLS, skillLv, spCost, learn, skillList } from './skills.js';
+import { derive, playerAttack, mobAttack, magicAttack } from './rules.js';
+import { SKILLS, skillLv, spCost, castTime, learn, skillList } from './skills.js';
 import { Menus } from './menus.js';
 import { iconTexture, iconURL, ITEMS } from './items.js';
 import { DayNight } from './daynight.js';
@@ -50,6 +51,11 @@ const SPAWNS = {
   fen: [['blueSlime', 9], ['crab', 7], ['wisp', 5, true], ['blueSlime', 2, true], ['crab', 1, true]],
   hollow: [['mushling', 12], ['wisp', 5, true], ['mushling', 2, true]],
   ridge: [['beetle', 10], ['jarl', 1], ['wisp', 5, true], ['beetle', 2, true]],
+  city: [],
+  birch: [['russet', 10], ['sprout', 5], ['slime', 4], ['matron', 1], ['wisp', 4, true], ['russet', 2, true]],
+  coast: [['brine', 9], ['tidecrab', 8], ['crab', 3], ['tideKing', 1], ['wisp', 4, true], ['brine', 2, true]],
+  deep: [['gloomcap', 10], ['mushling', 4], ['shadeWisp', 6], ['gloomMother', 1], ['gloomcap', 2, true]],
+  heath: [['cinderBeetle', 9], ['emberWisp', 6], ['beetle', 3], ['cinderLord', 1], ['cinderBeetle', 2, true]],
 };
 
 const save = loadSave();
@@ -64,23 +70,25 @@ const villagers = new Villagers(scene, world, lib);
 player.tiles = new Tiles(world); // after the villagers: they block their tiles
 const inv = new Inventory();
 inv.level = () => prog.baseLv;
-// the player's look follows the job: Novice clothes, then the Swordsman's
-const jobArt = () => (prog.job === 'novice' && lib.novice) || lib.player;
+// the player's look follows the job: the Trainee's clothes, then the Blader's or the Sorcerer's
+const jobArt = () => ({ novice: lib.novice, swordman: lib.player, mage: lib.sorcerer || lib.novice }[prog.job] || lib.player);
 player.setArt(jobArt());
 inv.load(save?.inv);
 // stats + gear -> the player's battle numbers (Ragnarok rules); HP/SP stay put, capped by the new max
 // timed buffs, in seconds left: aspd (Quickening Draught), warcry (War Cry's ATK bonus)
-const buffs = { aspd: 0, warcry: 0 };
-let warcryLv = 0;
+const buffs = { aspd: 0, warcry: 0, ward: 0 };
+let warcryLv = 0, wardLv = 0, endureGuard = 0;
 function applyStats() {
   const gear = inv.gearStats();
   const hide = skillLv(prog, 'ironhide');
-  gear.mastery = skillLv(prog, 'basics') + 2 * skillLv(prog, 'discipline'); // every Aria weapon is a sword
+  const sword = ITEMS[inv.gear.weapon]?.kind !== 'staff';
+  gear.mastery = skillLv(prog, 'basics') + (sword ? 2 * skillLv(prog, 'discipline') : 0);
   gear.flee += skillLv(prog, 'footwork') ? 3 : 0;
   gear.def += hide;
   if (buffs.aspd > 0) gear.aspdRate *= 0.9;
   const ps = derive(prog, gear);
   ps.maxHp = Math.floor(ps.maxHp * (1 + hide / 100));
+  ps.maxSp = Math.floor(ps.maxSp * (1 + skillLv(prog, 'manawell') / 50));
   player.ps = ps;
   player.maxHp = ps.maxHp;
   player.maxSp = ps.maxSp;
@@ -109,7 +117,7 @@ function enterMap(id, from, at) {
   const arrive = world.go(id, from);
   const pos = at || arrive;
   mobs.setMap(SPAWNS[world.id], 11 + world.id.length);
-  villagers.group.visible = world.id === 'camp';
+  villagers.show(world.id);
   player.tiles.rebuild();
   fx.clearPickups();
   player.stop();
@@ -289,13 +297,14 @@ function gainExp(base, job) {
 }
 
 // ---------- quests ----------
-const questGiver = (id) => Object.keys(NPCS).find((n) => NPCS[n].quests.includes(id));
+const questGiver = (id) => Object.keys(NPCS).find((n) => NPCS[n].quests.includes(id) || NPCS[n].trial === id);
 function questComplete(id) {
   audio.play('heart');
   menus.message(`${QUESTS[id].title} complete! Return to ${NPCS[questGiver(id)].name}.`);
   refreshQuests();
 }
 function giveReward(r) {
+  if (r.zeny) { inv.addZeny(r.zeny); menus.message(`+${r.zeny.toLocaleString()} zeny`); }
   for (const [id, n] of Object.entries(r.items || {})) {
     const got = inv.add(id, n);
     if (got < n) inv.chest.add(id, n - got); // bag full: it goes to the chest
@@ -308,8 +317,8 @@ const tracker = document.getElementById('quests');
 let trackerHTML = '';
 function refreshQuests() {
   villagers.setMarks((npc) => {
-    const st = quests.status(npc, prog.baseLv, inv).state;
-    return st === 'offer' ? 'offer' : st === 'ready' ? 'ready' : null;
+    const st = quests.status(npc, prog, inv).state;
+    return st === 'offer' || st === 'job' ? 'offer' : st === 'ready' ? 'ready' : null;
   });
   let h = '';
   for (const id of Object.keys(quests.active)) {
@@ -343,11 +352,13 @@ const menus = new Menus(inv, prog, player, {
     menus.render();
     persist();
   },
-  jobChange() {
+  jobChange(job) {
     const known = knownSkills();
-    prog.job = 'swordman';
+    prog.job = job;
     prog.jobLv = 1;
     prog.jobExp = 0;
+    // a new Sorcerer is handed a staff
+    if (job === 'mage' && !inv.bag.count('oak_staff') && inv.gear.weapon !== 'oak_staff') { inv.add('oak_staff', 1); menus.toast('oak_staff', 1); }
     player.setArt(jobArt());
     applyStats();
     player.heal(player.maxHp);
@@ -355,13 +366,14 @@ const menus = new Menus(inv, prog, player, {
     audio.play('levelup');
     const y = world.heightAt(player.x, player.z);
     fx.sparkle(player.x, y + 0.6, player.z, '#ffe37a', 24);
-    fx.number(player.x, y + 1.9, player.z, 'Swordsman!', 'level');
-    menus.message('You are now a Swordsman! Earn Job Levels for skill points.');
+    fx.number(player.x, y + 1.9, player.z, `${JOBS[job].name}!`, 'level');
+    menus.message(`You are now a ${JOBS[job].name}! Earn Job Levels for skill points.`);
     announceSkills(known);
     menus.render();
     persist();
   },
   crafted() { audio.play('craft'); persist(); },
+  traded() { audio.play('pickup'); persist(); },
   equipped() { audio.play('ui'); persist(); },
   raised() { applyStats(); audio.play('craft'); persist(); },
   accept(id) {
@@ -390,12 +402,13 @@ menus.quests = quests;
 const portraits = {};
 menus.portrait = (id) => (id === 'player' ? (portraits[jobArt() === lib.player ? 'sword' : 'novice'] ||= jobArt().anims.down.idle[0].image.toDataURL())
   : (portraits[id] ||= lib.villagers[id].anims.down.idle[0].image.toDataURL()));
-// things at camp you tap to use: the player walks over, then it opens. h = height on screen
+// things in camp and town you tap to use: the player walks over, then it opens. h = height on screen
 const SPOTS = [
-  { ...world.camp.fire, h: 0.9, run: () => menus.show('craft') },
-  { ...world.camp.chest, h: 0.8, run: () => menus.show('chest') },
-  { ...world.camp.tent, h: 2.2, run: () => rest() },
-  ...villagers.list.map((v) => ({ x: v.x, z: v.z, h: v.top, run: () => menus.talkTo(v.id) })),
+  { map: 'camp', ...world.camp.fire, h: 0.9, run: () => menus.message('A warm fire. Crafting is done in Steinborg now: Gunnar forges gear, Ragna brews usables.') },
+  { map: 'camp', ...world.camp.chest, h: 0.8, run: () => menus.show('chest') },
+  { map: 'camp', ...world.camp.tent, h: 2.2, run: () => rest() },
+  { map: 'city', ...CITY.chest, h: 0.8, run: () => menus.show('chest') }, // Steinborg's storehouse: the same chest
+  ...villagers.list.map((v) => ({ map: v.map, x: v.x, z: v.z, h: v.top, run: () => menus.talkTo(v.id) })),
 ];
 
 // ---------- hotbar: skills and items ----------
@@ -450,7 +463,28 @@ function useSkill(id) {
   if (id === 'dodge') { wantDodge = true; return; }
   if (id === 'rest') { if (player.state === 'sit') player.standUp(); else player.sit('sit'); return; }
   if (id === 'guard') {
-    if (player.state === 'normal' && pay()) { player.endureT = 4; player.guard = 0.15; say('Guard'); audio.play('block'); }
+    if (player.state === 'normal' && pay()) { player.endureT = 4; endureGuard = 0.15; say('Guard'); audio.play('block'); }
+    return;
+  }
+  if (sk.magic) { castSpell(id, lv, pay, sp); return; }
+  if (id === 'ward') {
+    if (pay()) { buffs.ward = 30; wardLv = lv; say('Rune Ward'); audio.play('craft'); fx.sparkle(player.x, y + 0.8, player.z, '#8fd8ff', 18); }
+    return;
+  }
+  if (id === 'blink') {
+    if (player.state !== 'normal' || player.cast || !pay()) return;
+    // as far as 4 paces ahead, stopping short of anything in the way
+    let bx = player.x, bz = player.z;
+    for (let k = 0.5; k <= 4; k += 0.5) {
+      const x = player.x + player.face.x * k, z = player.z + player.face.z * k, t = player.tiles.tileAt(x, z);
+      if (!player.tiles.free(t[0], t[1])) break;
+      bx = x; bz = z;
+    }
+    fx.sparkle(player.x, y + 0.7, player.z, '#b8a6f4', 12);
+    player.stop();
+    player.setPos(bx, bz);
+    fx.sparkle(bx, world.heightAt(bx, bz) + 0.7, bz, '#b8a6f4', 12);
+    audio.play('dodge');
     return;
   }
   if (id === 'mend') {
@@ -460,7 +494,7 @@ function useSkill(id) {
   }
   if (player.state !== 'normal') return;
   if (id === 'standfirm') {
-    if (pay()) { player.endureT = 6 + Math.floor(lv / 2); player.guard = lv / 100; say('Stand Firm'); audio.play('block'); }
+    if (pay()) { player.endureT = 6 + Math.floor(lv / 2); endureGuard = lv / 100; say('Stand Firm'); audio.play('block'); }
     return;
   }
   if (id === 'warcry') {
@@ -519,6 +553,80 @@ function useSkill(id) {
   if (id === 'heavy') strike((130 + 15 * lv) / 100, 1 + (3 * lv) / 100, () => say('Heavy Strike'));
 }
 
+// ---------- spells: stand still, chant (the cast bar), then the magic flies ----------
+const SPELL_COL = { spark: '#ff7a2a', frost: '#9fe0ff', arc: '#fff27a', flamering: '#ff6a1a' };
+function spellHit(m, mult) {
+  if (!m.alive) return null;
+  const res = magicAttack(player.ps, m.effDef(), mult);
+  const dx = m.x - player.x, dz = m.z - player.z, d = Math.hypot(dx, dz) || 1;
+  fx.number(m.x, overHead(m, m.sprite.scale.y * 0.8), m.z, res.dmg, 'dealt');
+  audio.play('hit');
+  m.hit(res.dmg, dx / d * 0.5, dz / d * 0.5);
+  return res;
+}
+function castSpell(id, lv, pay, sp) {
+  const sk = SKILLS[id];
+  if (player.state !== 'normal') return;
+  if (player.sp < sp) { menus.message('Not enough SP'); return; }
+  const time = castTime(id, lv) * player.ps.castRate * (skillLv(prog, 'swiftchant') ? 0.85 : 1);
+  const y = () => world.heightAt(player.x, player.z);
+  const say = () => fx.number(player.x, overHead(player, 1.6), player.z, sk.name, 'skill');
+  if (id === 'flamering') { // around you: no target needed
+    player.startCast(time, () => {
+      if (!pay()) return;
+      say();
+      cam.shake = 0.25;
+      const n = 28;
+      for (let i = 0; i < n; i++) {
+        const a = (i / n) * Math.PI * 2;
+        fx.sparkle(player.x + Math.cos(a) * 2.2, y() + 0.3, player.z + Math.sin(a) * 2.2, SPELL_COL.flamering, 2);
+      }
+      fx.puff(player.x, y() + 0.2, player.z, 1.6);
+      for (const m of [...mobs.list]) if (m.alive && Math.hypot(m.x - player.x, m.z - player.z) < 2.8 + m.def.r) spellHit(m, (100 + 12 * lv) / 100);
+    }, null, sk.name);
+    return;
+  }
+  const target = (player.goal?.mob?.alive && player.goal.mob) || (player.cast?.target?.alive && player.cast.target) || mobs.nearest(player.x, player.z, 9);
+  if (!target) { menus.message('No monster nearby'); return; }
+  const run = (t) => {
+    if (!t.alive || !pay()) return;
+    say();
+    const from = { x: player.x + player.face.x * 0.4, y: y() + 1.0, z: player.z + player.face.z * 0.4 };
+    if (id === 'arc') { // strikes at once, then leaps to two more
+      const at = (m) => ({ x: m.x, y: world.heightAt(m.x, m.z) + 0.5, z: m.z });
+      fx.zap(from, at(t), SPELL_COL.arc);
+      spellHit(t, (80 + 10 * lv) / 100);
+      const near = mobs.list.filter((m) => m.alive && m !== t && Math.hypot(m.x - t.x, m.z - t.z) < 3.2)
+        .sort((a, b) => Math.hypot(a.x - t.x, a.z - t.z) - Math.hypot(b.x - t.x, b.z - t.z)).slice(0, 2);
+      for (const m of near) { fx.zap(at(t), at(m), SPELL_COL.arc); spellHit(m, (80 + 10 * lv) / 200); }
+      return;
+    }
+    fx.bolt(from.x, from.y, from.z, t, SPELL_COL[id], () => {
+      const res = spellHit(t, id === 'spark' ? (100 + 20 * lv) / 100 : (90 + 10 * lv) / 100);
+      const ty = world.heightAt(t.x, t.z) + 0.5;
+      fx.sparkle(t.x, ty, t.z, SPELL_COL[id], 8);
+      if (res && id === 'frost' && t.alive && !t.def.mvp && Math.random() < 0.04 * lv) {
+        t.stunT = 2.5;
+        fx.number(t.x, overHead(t, t.sprite.scale.y * 0.8 + 0.3), t.z, 'Frozen', 'miss');
+      }
+    });
+  };
+  player.command({ mob: target, spell: { range: sk.range, time, run, name: sk.name } });
+}
+const castBar = document.createElement('div');
+castBar.id = 'castbar';
+castBar.innerHTML = '<span></span><i><b></b></i>';
+document.getElementById('hud').appendChild(castBar);
+const castName = castBar.querySelector('span'), castFill = castBar.querySelector('b');
+function updateCastBar() {
+  const c = player.cast;
+  castBar.classList.toggle('show', !!c);
+  if (!c) return;
+  if (castName.textContent !== c.name) castName.textContent = c.name;
+  castFill.style.width = `${Math.min(100, (c.t / c.total) * 100)}%`;
+}
+player.on('interrupt', () => menus.message('Your spell was interrupted!'));
+
 // skill cooldowns, buffs and the damage bonuses that depend on HP, every frame
 let rhythm = 0;
 function tickSkills(dt) {
@@ -528,7 +636,9 @@ function tickSkills(dt) {
     buffs[k] -= dt;
     if (buffs[k] <= 0 && k === 'aspd') { applyStats(); menus.message('The Quickening Draught wears off'); }
   }
-  if (player.endureT <= 0) player.guard = 0;
+  if (player.endureT <= 0) endureGuard = 0;
+  player.guard = Math.max(endureGuard, buffs.ward > 0 ? wardLv * 0.02 : 0);
+  player.steady = buffs.ward > 0;
   const low = player.hp < player.maxHp * 0.25 && skillLv(prog, 'laststand');
   player.atkMul = (buffs.warcry > 0 ? 1 + warcryLv / 100 : 1) * (low ? 1.15 : 1);
 }
@@ -552,7 +662,7 @@ function pick(cx, cy) {
   };
   for (const m of mobs.list) if (m.alive) consider({ mob: m }, m.x, m.sprite.position.y, m.sprite.scale.y * 0.8, m.z, 0.8);
   for (const p of fx.pickups) consider({ item: p }, p.x, p.s.position.y, 0.5, p.z);
-  if (world.id === 'camp') for (const sp of SPOTS) consider({ spot: sp }, sp.x, world.heightAt(sp.x, sp.z), sp.h, sp.z);
+  for (const sp of SPOTS) if (sp.map === world.id) consider({ spot: sp }, sp.x, world.heightAt(sp.x, sp.z), sp.h, sp.z);
   return best;
 }
 function tap(cx, cy) {
@@ -614,7 +724,7 @@ function naturalRegen(dt) {
   if (!walking) hpT += dt * fast * low * (inv.wearing('regen') ? 2 : 1);
   spT += dt * fast;
   if (hpT >= 6) { hpT -= 6; player.heal(player.ps.hpRegen); }
-  if (spT >= 8) { spT -= 8; player.healSp(player.ps.spRegen); }
+  if (spT >= 8) { spT -= 8; player.healSp(player.ps.spRegen + skillLv(prog, 'manawell')); }
 }
 
 function resize() {
@@ -678,6 +788,7 @@ function frame() {
   villagers.update(dt, player, b);
   if (live) fx.update(dt);
   if (live) { naturalRegen(dt); tickSkills(dt); checkPortals(); }
+  updateCastBar();
   hotbar.update();
   world.updateOcclusion(player.x, player.z, b);
 
@@ -751,4 +862,4 @@ tContinue.addEventListener('click', () => {
   }, 450);
 });
 
-window.__aria = { lib, warp, enterMap, player, world, cam, camera, mobs, fx, inv, prog, quests, villagers, menus, hotbar, dayNight, audio, stats: world.stats };
+window.__aria = { lib, warp, enterMap, useSkill, useItem, player, world, cam, camera, mobs, fx, inv, prog, quests, villagers, menus, hotbar, dayNight, audio, stats: world.stats };

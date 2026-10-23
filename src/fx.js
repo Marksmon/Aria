@@ -57,6 +57,28 @@ export class FX {
     }
   }
 
+  // a spell flying at a monster: a glowing ball with a trail; onHit() when it lands
+  bolt(x, y, z, target, color, onHit, size = 0.55) {
+    const s = this.sprite(this.lib.fx.puff, { depthTest: false, renderOrder: 5 });
+    s.material.color.set(color);
+    s.scale.set(size, size, 1);
+    s.position.set(x, y, z);
+    this.live.push({ s, t: 0, life: 3, kind: 'bolt', target, onHit, color: true, tint: color, trail: 0, sc: size });
+  }
+
+  // lightning: sparks strung along a line from a to b
+  zap(a, b, color) {
+    const n = Math.max(4, Math.round(Math.hypot(b.x - a.x, b.z - a.z) * 3));
+    for (let i = 0; i <= n; i++) {
+      const k = i / n, j = i && i < n ? 0.25 : 0;
+      const s = this.sprite(this.lib.fx.puff, { depthTest: false, renderOrder: 5 });
+      s.material.color.set(color);
+      s.position.set(a.x + (b.x - a.x) * k + (Math.random() - 0.5) * j, a.y + (b.y - a.y) * k + (Math.random() - 0.5) * j, a.z + (b.z - a.z) * k + (Math.random() - 0.5) * j);
+      this.live.push({ s, t: 0, life: 0.25, kind: 'puff', v: [0, 0, 0], sc: 0.18, color: true });
+      s.scale.set(0.18, 0.18, 1);
+    }
+  }
+
   // green spore cloud (Mushling)
   cloud(x, y, z) {
     for (let i = 0; i < 9; i++) {
@@ -186,6 +208,20 @@ export class FX {
         if (e.follow) { e.s.position.x = e.follow.x; e.s.position.z = e.follow.z; }
         e.s.material.opacity = k < 0.6 ? 1 : 1 - (k - 0.6) / 0.4;
         if (e.pop && k < 0.15) e.s.scale.multiplyScalar(1 + (0.15 - k) * 0.6);
+      } else if (e.kind === 'bolt') {
+        const m = e.target, p = e.s.position;
+        const ty = this.world.heightAt(m.x, m.z) + 0.5;
+        const dx = m.x - p.x, dy = ty - p.y, dz = m.z - p.z, d = Math.hypot(dx, dy, dz), step = 13 * dt;
+        if (!m.alive || d <= step) { e.t = e.life; if (m.alive) e.onHit(); }
+        else { p.x += (dx / d) * step; p.y += (dy / d) * step; p.z += (dz / d) * step; }
+        if ((e.trail -= dt) <= 0) { // a fading trail behind it
+          e.trail = 0.03;
+          const s = this.sprite(this.lib.fx.puff, { depthTest: false, renderOrder: 4 });
+          s.material.color.set(e.tint);
+          s.position.copy(p);
+          this.live.push({ s, t: 0, life: 0.3, kind: 'puff', v: [0, 0.3, 0], sc: e.sc * 0.6, color: true });
+          s.scale.set(e.sc * 0.6, e.sc * 0.6, 1);
+        }
       } else if (e.kind === 'puff') {
         e.s.position.x += e.v[0] * dt;
         e.s.position.y += e.v[1] * dt;

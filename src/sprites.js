@@ -93,6 +93,7 @@ const PAL = {
   willow: ['#556f37', '#759546', '#9dba5f', '#d1e08e'],
   dry: ['#86391f', '#b5562a', '#dd873a', '#f6c46a'],
   bush: ['#3c7034', '#579739', '#7eba4a', '#b9dc75'],
+  birch: ['#5f8f2e', '#86b440', '#b2d65a', '#e6f29a'],
 };
 
 function treeRound(rng, pal, opts = {}) {
@@ -269,6 +270,49 @@ function chest() {
   rrect(g, 10, 16, 76, 24, 9, '#b0743d');
   for (const x of [24, 66]) rrect(g, x, 16, 7, 60, 2, '#6d6f7a', OUT, 2);
   rrect(g, 42, 32, 12, 14, 3, '#e3b341', OUT, 2);
+  return c;
+}
+
+// a birch: slim white trunk with dark marks, light airy crown
+function treeBirch(rng) {
+  const { c, g } = mk(140, 220);
+  rrect(g, 61, 96, 18, 122, 6, '#ece6d8');
+  for (let i = 0; i < 7; i++) { g.fillStyle = '#3e3a36'; g.fillRect(62 + rng() * 8, 104 + i * 15 + rng() * 6, 6 + rng() * 6, 3); }
+  canopy(g, rng, 70, 72, 52, 64, PAL.birch, 16);
+  return c;
+}
+
+// Steinborg's street things
+function lamp() {
+  const { c, g } = mk(48, 140);
+  rrect(g, 20, 40, 8, 98, 3, '#3a3a42');
+  rrect(g, 12, 132, 24, 7, 3, '#3a3a42');
+  rrect(g, 10, 14, 28, 30, 6, '#3a3a42');
+  rrect(g, 14, 18, 20, 22, 4, '#ffe37a', OUT, 2);
+  circleFill(g, 24, 29, 5, '#fff8d0');
+  poly(g, [[8, 16], [24, 3], [40, 16]], '#4a4a54', OUT, 3);
+  return c;
+}
+function barrel() {
+  const { c, g } = mk(64, 76);
+  rrect(g, 8, 8, 48, 64, 14, '#8a5a33');
+  for (const y of [20, 52]) rrect(g, 7, y, 50, 6, 2, '#5a5e68', OUT, 2);
+  ell(g, 32, 10, 22, 6, '#a87444', OUT, 2.5);
+  return c;
+}
+function crate() {
+  const { c, g } = mk(68, 64);
+  rrect(g, 6, 8, 56, 52, 3, '#b0743d');
+  g.beginPath(); g.moveTo(8, 10); g.lineTo(60, 58); g.moveTo(60, 10); g.lineTo(8, 58); g.strokeStyle = '#7a4a26'; g.lineWidth = 5; g.stroke();
+  rrect(g, 6, 8, 56, 52, 3, null, OUT, 3);
+  return c;
+}
+function anvil() {
+  const { c, g } = mk(72, 60);
+  rrect(g, 26, 26, 20, 30, 3, '#5a3a22');
+  poly(g, [[4, 12], [68, 12], [60, 26], [16, 26]], '#4a4e58', OUT, 3);
+  poly(g, [[4, 12], [-4, 8], [4, 18]], '#4a4e58', OUT, 2);
+  g.fillStyle = 'rgba(255,255,255,.25)'; g.fillRect(10, 13, 50, 3);
   return c;
 }
 
@@ -453,6 +497,11 @@ const PROP_DEFS = {
   tent: { w: 3.2, coll: 1.2, shadow: 1.8, space: 0, variants: 1, make: () => tent() },
   chest: { w: 1.0, coll: 0.45, shadow: 0.6, space: 0, variants: 1, make: () => chest() },
   log: { w: 1.4, coll: 0.4, shadow: 0.6, space: 0, variants: 1, make: () => logSeat() },
+  tree_birch: { w: 2.6, coll: 0.35, shadow: 1.2, space: 1.6, variants: 3, make: (r) => treeBirch(r) },
+  lamp: { w: 0.45, coll: 0.15, shadow: 0.3, space: 0, variants: 1, make: () => lamp() },
+  barrel: { w: 0.75, coll: 0.35, shadow: 0.5, space: 0, variants: 1, make: () => barrel() },
+  crate: { w: 0.85, coll: 0.4, shadow: 0.5, space: 0, variants: 1, make: () => crate() },
+  anvil: { w: 0.9, coll: 0.35, shadow: 0.5, space: 0, variants: 1, make: () => anvil() },
 };
 
 export function createSprites() {
@@ -482,7 +531,10 @@ export function createSprites() {
     wisp: sheet('wisp'),
     jarl: SHEETS['./art/jarl.png'] ? sheet('jarl') : sheet('beetle'), // the MVP (PixelLab art, packed like the rest)
   };
-  const villagers = { bram: sheet('bram'), tilly: sheet('tilly'), wren: sheet('wren') };
+  // the camp's and Steinborg's people (one still being drawn borrows the Elder's look)
+  const villagers = {};
+  for (const id of ['bram', 'tilly', 'wren', 'hild', 'gunnar', 'ragna', 'ulfr', 'saeunn']) villagers[id] = SHEETS[`./art/${id}.png`] ? sheet(id) : null;
+  for (const id in villagers) villagers[id] ||= villagers.bram;
 
   return {
     mobs,
@@ -493,6 +545,7 @@ export function createSprites() {
     fire: { frames: fireFrames, aspect: fireAspect, w: 1.2 },
     player: sheet('player'), // the Swordsman
     novice: SHEETS['./art/novice.png'] ? sheet('novice') : null,
+    sorcerer: SHEETS['./art/sorcerer.png'] ? sheet('sorcerer') : null,
     ground: tex(groundDetail(), { repeat: 28 }),
     shadow: tex(blobShadow()),
     water: tex(waterTex(), { repeat: 4 }),

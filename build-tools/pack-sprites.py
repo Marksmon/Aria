@@ -34,9 +34,10 @@ CHARS = {name: {} for name in ['slime', 'blueslime', 'sprout', 'crab', 'mushling
 # where the template's legs barely moved
 CHARS['player'] = {'eight': True, 'use': {'walk': 'walking'}, 'prefer': {'walking-e8b5c561'}, 'skip': {'stepv3'},
                    'eyes': {'down': [-4.5, 20, 5.5, 20], 'right': [4.5, 19.5]}}
-CHARS.update({name: {'eight': True} for name in ['bram', 'tilly', 'wren']})
+CHARS.update({name: {'eight': True} for name in ['bram', 'tilly', 'wren', 'hild', 'gunnar', 'ragna', 'ulfr', 'saeunn']})
 CHARS['novice'] = {'eight': True, 'use': {'walk': 'walking'},  # skeleton walk in all eight directions
                    'eyes': {'down': [-5, 19, 6, 19], 'right': [6, 18]}}
+CHARS['sorcerer'] = {'eight': True, 'use': {'walk': 'walking'}}  # the Sorcerer, made like the Trainee
 
 
 def islands(f):

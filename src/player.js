@@ -38,6 +38,8 @@ export class Player {
     this.endureT = 0;      // Stand Firm: no flinching
     this.guard = 0;        // share of damage shrugged off (Stand Firm, Last Stand)
     this.atkMul = 1;       // damage bonus from buffs (Magnum Break's fire, Auto Berserk), set by the game
+    this.cast = null;      // a spell being cast: { t, total, target, run(target) }
+    this.steady = false;   // hits don't break the casting (Rune Ward), set by the game
     this.atkTimer = 0;
     this.atkAnim = 0;
     this.atkDur = 1;
@@ -47,7 +49,7 @@ export class Player {
     this.iframes = 0;
     this.slowT = 0;
     this.knock = { x: 0, z: 0 };
-    this.events = { swing: [], hurt: [], faint: [], strike: [], block: [] };
+    this.events = { swing: [], hurt: [], faint: [], strike: [], block: [], interrupt: [] };
 
     // Ragnarok-style orders: walk tile to tile along a path towards a goal
     // goal: { x, z, reach, arrive() } for a spot, or { mob } to fight it until it falls
@@ -154,6 +156,7 @@ export class Player {
     this.knock.x = (dx / d) * k;
     this.knock.z = (dz / d) * k;
     if (this.state === 'sit') this.state = 'normal'; // a hit gets you up
+    if (this.cast && !this.steady && this.endureT <= 0) { this.cast = null; this.emit('interrupt'); } // a hit breaks the spell
     this.emit('hurt', amount);
     if (this.hp <= 0) {
       this.state = 'down';
@@ -177,6 +180,7 @@ export class Player {
 
   command(goal) {
     this.standUp();
+    this.cast = null; // a new order breaks off a spell
     this.goal = goal;
     this.repath();
   }
@@ -194,6 +198,22 @@ export class Player {
     this.path = this.tiles.path(this.x, this.z, tx, tz) || [];
     this.repathT = 0.35;
     this.stuckT = 0;
+  }
+
+  // stand and cast a spell: run(target) when the cast time is up. target may be null (around you)
+  startCast(total, run, target = null, name = '') {
+    this.stop();
+    if (total <= 0) { this.release(run, target); return; }
+    this.cast = { t: 0, total, target, run, name };
+  }
+
+  release(run, target) {
+    this.atkAnim = this.atkDur = 0.4;
+    if (target) {
+      const dx = target.x - this.x, dz = target.z - this.z, d = Math.hypot(dx, dz) || 1;
+      this.face = { x: dx / d, z: dz / d };
+    }
+    run(target);
   }
 
   // Sit and Play Dead: stay put until told to move
@@ -244,7 +264,16 @@ export class Player {
       this.knock.z *= k;
     }
 
-    if (ctl.dodge) this.standUp();
+    if (ctl.dodge) { this.standUp(); this.cast = null; }
+    if (this.cast) { // standing still, chanting
+      const c = this.cast;
+      c.t += dt;
+      if (c.target && !c.target.alive) this.cast = null;
+      else {
+        if (c.target) { const dx = c.target.x - this.x, dz = c.target.z - this.z, d = Math.hypot(dx, dz) || 1; this.face = { x: dx / d, z: dz / d }; }
+        if (c.t >= c.total) { this.cast = null; this.release(c.run, c.target); }
+      }
+    }
     if (ctl.dodge && this.state === 'normal' && this.rollCd <= 0) {
       this.state = 'roll';
       this.rollT = ROLL_TIME;
@@ -261,7 +290,8 @@ export class Player {
       this.tryMove(this.rollDir.x * sp * dt, this.rollDir.z * sp * dt);
       this.moving = true;
       if (this.rollT <= 0) { this.state = 'normal'; this.repath(); }
-    } else if (this.state === 'normal') this.follow(dt, cam, mobs);
+    } else if (this.state === 'normal' && !this.cast) this.follow(dt, cam, mobs);
+    else if (this.cast) { this.moving = false; this.animT = 0; }
     else { this.moving = false; this.animT = 0; }
 
     // sprite direction follows facing relative to the camera; 8 ways when the art has diagonals,
@@ -277,6 +307,8 @@ export class Player {
     } else if (this.atkAnim > 0) {
       const k = 1 - this.atkAnim / this.atkDur;
       tex = A.attack[Math.min(A.attack.length - 1, Math.floor(k * A.attack.length))];
+    } else if (this.cast) {
+      tex = A.attack[Math.min(1, A.attack.length - 1)]; // staff raised while chanting
     } else if (this.state === 'sit') {
       tex = A.dodge[1]; // crouched down
     } else if (this.moving && this.state === 'normal') {
@@ -309,7 +341,12 @@ export class Player {
   // carry out the current order: walk the path, swing at a target in reach, or arrive somewhere
   follow(dt, cam, mobs) {
     const g = this.goal;
-    if (g?.mob) {
+    if (g?.mob && g.spell) { // walk into range, then cast
+      const m = g.mob, gap = Math.hypot(m.x - this.x, m.z - this.z) - m.def.r;
+      if (!m.alive) this.stop();
+      else if (gap <= g.spell.range) { this.moving = false; this.startCast(g.spell.time, g.spell.run, m, g.spell.name); return; }
+      else if ((this.repathT -= dt) <= 0 || !this.path.length) this.repath();
+    } else if (g?.mob) {
       const m = g.mob;
       const gap = Math.hypot(m.x - this.x, m.z - this.z) - m.def.r;
       // once in reach, stay put until the monster is clearly out of it: no stop-start at the edge

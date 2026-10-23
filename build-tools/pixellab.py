@@ -79,6 +79,14 @@ CHARACTERS = [
          ("attack", "quick forward sword slash attack"),
          ("dodge", "quick dodge roll forward, tucking into a somersault and landing on his feet")],
         size=(64, 96), ref=None, dirs=DIRS8),
+    # the Sorcerer: the Trainee's other path, a caster with a staff
+    pro("sorcerer", "young sorcerer apprentice with shaggy dark blue hair, deep blue hooded mantle with silver "
+        "rune trim over a grey tunic, brown belt with a small spellbook, brown boots, holding a gnarled wooden staff "
+        "topped with a glowing pale blue crystal",
+        [("walk", {"template": "walking-8-frames", "mode": "skeleton-v3"}),
+         ("attack", "casting a spell: raising the staff and thrusting it forward as magic bursts from the crystal"),
+         ("dodge", "quick dodge roll forward, tucking into a somersault and landing on his feet")],
+        size=(64, 96), ref=None, dirs=DIRS8),
     pro("slime", "round moss-green jelly slime blob with a tiny two-leaf sprout on top, no arms, no legs, "
         "big shiny eyes, rosy cheeks", HOP),
     pro("blueslime", "round translucent blue jelly slime blob shaped like a water drop, no arms, no legs, "
@@ -104,6 +112,18 @@ CHARACTERS = [
         "apron, holding a wooden ladle", size=(64, 96)),
     pro("wren", "young scout girl with short dark hair under a green hood with a red feather, green tunic, "
         "leather satchel strap, bow on her back", size=(64, 96)),
+    # the people of Steinborg, the walled market city
+    pro("hild", "friendly middle-aged merchant woman with braided blonde hair, teal shawl over a mustard "
+        "yellow dress, leather coin pouch at the belt, holding a small wooden crate of potion bottles", size=(64, 96)),
+    pro("gunnar", "burly blacksmith man with a short red beard and shaved head, sooty leather apron over a "
+        "grey shirt with rolled sleeves, thick gloves, holding a smithing hammer", size=(64, 96)),
+    pro("ulfr", "stern city guard captain with a grey braided beard, round iron helmet with a nose guard, "
+        "blue tabard with a white tower emblem over chainmail, red cloak, spear in hand", size=(64, 96)),
+    pro("ragna", "calm young herbalist woman with long black hair, round spectacles, mossy green robe with "
+        "many small pouches, a basket of herbs on her arm", size=(64, 96)),
+    pro("saeunn", "mysterious old seeress with long silver hair under a dark hooded cloak of midnight blue, "
+        "necklace of glass beads and small bones, grey fur collar, holding a tall iron distaff staff with a glowing "
+        "rune stone", size=(64, 96)),
 ]
 
 

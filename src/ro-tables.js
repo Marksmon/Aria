@@ -8,7 +8,8 @@ export const JOB_EXP = {
   swordman: [30, 43, 58, 76, 116, 180, 220, 272, 336, 520, 604, 699, 802, 948, 1125, 1668, 1937, 2226, 3040, 3988, 5564, 6272, 7021, 9114, 11473, 15290, 16891, 18570, 23229, 28359, 36478, 39716, 43088, 52417, 62495, 78160, 84175, 90404, 107611, 125915, 153941, 191781, 204351, 248352, 286212, 386371, 409795, 482092, 509596],
 };
 export const MAX_BASE = BASE_EXP.length + 1; // 99
-export const MAX_JOB = { novice: JOB_EXP.novice.length + 1, swordman: JOB_EXP.swordman.length + 1 }; // 10, 50
+JOB_EXP.mage = JOB_EXP.swordman; // every first job levels on the same table
+export const MAX_JOB = { novice: JOB_EXP.novice.length + 1, swordman: JOB_EXP.swordman.length + 1, mage: JOB_EXP.swordman.length + 1 }; // 10, 50, 50
 
 // stat points: 48 at Base Lv 1, then floor(lv / 5) + 3 for each level up
 export const statPointsAt = (lv) => 48 + Array.from({ length: lv - 1 }, (_, i) => Math.floor((i + 1) / 5) + 3).reduce((a, b) => a + b, 0);

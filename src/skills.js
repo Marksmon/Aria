@@ -1,17 +1,18 @@
 // Aria's own skills, on Ragnarok-style rules: skill points from Job Levels, actives for the
-// hotbar, passives, prerequisites and SP costs. They are plain sword craft, kept modest: a Novice
-// is a swordsman's apprentice, spends points on Sword Basics (Lv 9 opens the Swordsman job) and
-// picks up the other basics free as the Job Level rises. A Swordsman buys from their own tree and
-// gets two free passives at Job 10.
+// hotbar, passives, prerequisites and SP costs. Kept modest. A Trainee spends points on Basic
+// Training (Lv 9 opens the two jobs) and picks up the other basics free as the Job Level rises.
+// A Blader is plain sword craft; a Sorcerer casts spells from range (cast times shorten with FNS,
+// magic never misses). Each buys from their own tree and gets two free passives at Job 10.
 //
 // kind: active (goes on the hotbar) | passive
 // target: 'mob' for skills aimed at a monster; range = how close you must be (world units)
+// cast: seconds to cast (spells), before FNS shortens it; magic: damage from MATK
 // free: { jobLv } learnt automatically; granted: learnt once its needs are met; else bought with points
 export const SKILLS = {
   // ---------- Novice ----------
   basics: {
-    name: 'Sword Basics', job: 'novice', kind: 'passive', max: 9, icon: 'skill_lore',
-    desc: (lv) => `+${lv} ATK. Lv 3: you can Rest. Lv 9: you may become a Swordsman.`,
+    name: 'Basic Training', job: 'novice', kind: 'passive', max: 9, icon: 'skill_lore',
+    desc: (lv) => `+${lv} ATK. Lv 3: you can Rest. Lv 9: you may become a Blader or a Sorcerer.`,
   },
   rest: {
     name: 'Rest', job: 'novice', kind: 'active', max: 1, needs: { basics: 3 }, granted: true, icon: 'skill_rest',
@@ -38,7 +39,7 @@ export const SKILLS = {
     desc: () => '+3 FLEE.',
   },
 
-  // ---------- Swordsman ----------
+  // ---------- Blader ----------
   discipline: {
     name: 'Blade Discipline', job: 'swordman', kind: 'passive', max: 10, icon: 'skill_discipline',
     desc: (lv) => `+${2 * lv} ATK with swords.`,
@@ -80,17 +81,57 @@ export const SKILLS = {
     name: 'Last Stand', job: 'swordman', kind: 'passive', max: 1, free: { jobLv: 10 }, icon: 'skill_laststand',
     desc: () => 'Below 25% HP: +15% ATK.',
   },
+
+  // ---------- Sorcerer ----------
+  manawell: {
+    name: 'Mana Well', job: 'mage', kind: 'passive', max: 10, icon: 'skill_manawell',
+    desc: (lv) => `+${2 * lv}% Max SP, and +${lv} SP each time SP recovers.`,
+  },
+  spark: {
+    name: 'Ember Bolt', job: 'mage', kind: 'active', max: 10, target: 'mob', range: 7, magic: true, icon: 'skill_spark',
+    sp: (lv) => 6 + lv, cast: (lv) => 0.5 + 0.1 * lv, cd: 0.6,
+    desc: (lv) => `Hurl a bolt of fire: ${100 + 20 * lv}% MATK.`,
+  },
+  frost: {
+    name: 'Frost Shard', job: 'mage', kind: 'active', max: 10, target: 'mob', range: 7, magic: true, icon: 'skill_frost',
+    sp: (lv) => 8 + lv, cast: (lv) => 0.6 + 0.08 * lv, cd: 0.6,
+    desc: (lv) => `A shard of ice: ${90 + 10 * lv}% MATK, ${4 * lv}% chance to freeze the monster for 2.5 s.`,
+  },
+  arc: {
+    name: 'Arc Lightning', job: 'mage', kind: 'active', max: 10, needs: { spark: 4 }, target: 'mob', range: 7, magic: true, icon: 'skill_arc',
+    sp: (lv) => 12 + lv, cast: (lv) => 1 + 0.1 * lv, cd: 1,
+    desc: (lv) => `Lightning strikes your target for ${80 + 10 * lv}% MATK and leaps to 2 monsters nearby for half that.`,
+  },
+  flamering: {
+    name: 'Flame Ring', job: 'mage', kind: 'active', max: 10, needs: { spark: 5 }, magic: true, icon: 'skill_flamering',
+    sp: (lv) => 20 + lv, cast: () => 1.5, cd: 3,
+    desc: (lv) => `A ring of fire bursts around you: ${100 + 12 * lv}% MATK to every monster close by.`,
+  },
+  ward: {
+    name: 'Rune Ward', job: 'mage', kind: 'active', max: 10, needs: { manawell: 3 }, cd: 30, icon: 'skill_ward',
+    sp: () => 15,
+    desc: (lv) => `Runes circle you for 30 s: ${2 * lv}% less damage taken, and hits no longer break your casting.`,
+  },
+  blink: {
+    name: 'Blink', job: 'mage', kind: 'active', max: 1, free: { jobLv: 10 }, cd: 6, icon: 'skill_blink',
+    sp: () => 10,
+    desc: () => 'Vanish and reappear 4 paces ahead.',
+  },
+  swiftchant: {
+    name: 'Swift Chant', job: 'mage', kind: 'passive', max: 1, free: { jobLv: 10 }, icon: 'skill_swiftchant',
+    desc: () => 'Spells cast 15% faster.',
+  },
 };
 
-const JOB_ORDER = ['novice', 'swordman'];
+// the job a job came from: both first jobs come from the Trainee
+const PARENT = { swordman: 'novice', mage: 'novice' };
 // a job knows its own skills and those of the jobs before it
-export const jobHas = (job, skillJob) => JOB_ORDER.indexOf(skillJob) <= JOB_ORDER.indexOf(job);
+export const jobHas = (job, skillJob) => skillJob === job || PARENT[job] === skillJob;
 
 // skills shown in the Skills window for a job, current job first
 export function skillList(job) {
-  const mine = JOB_ORDER.indexOf(job);
   return Object.keys(SKILLS).filter((id) => jobHas(job, SKILLS[id].job))
-    .sort((a, b) => (JOB_ORDER.indexOf(SKILLS[a].job) === mine ? -1 : 0) - (JOB_ORDER.indexOf(SKILLS[b].job) === mine ? -1 : 0));
+    .sort((a, b) => (SKILLS[a].job === job ? -1 : 0) - (SKILLS[b].job === job ? -1 : 0));
 }
 
 // level the player has in a skill (0 = not learnt). prog: Progress
@@ -121,3 +162,5 @@ export function learn(prog, id) {
 
 // what a skill costs to use at a level
 export const spCost = (id, lv) => SKILLS[id].sp?.(lv) || 0;
+// a spell's cast time at a level, before FNS and Swift Chant
+export const castTime = (id, lv) => SKILLS[id].cast?.(lv) || 0;

@@ -1,9 +1,17 @@
-// Aria's maps, Ragnarok style: the camp is a small town map, and each of the four zones is a
-// 64x64 field map of its own. Warp portals join them: camp's north, east, south and west portals
-// lead to Mosvangr, Myrkdal, Glodberg and Fenstrand, and neighbouring fields link up.
+// Aria's maps, Ragnarok style: the camp is a small town map, Steinborg a walled city, and every
+// field a 64x64 map of its own. Warp portals at the map edges join them. Only Mosvangr (north)
+// and Fenstrand (west) open from the camp; everything else is reached by travelling on:
+//
+//              Steinborg - Birkilund
+//                  |           |
+//   Saltvik    Mosvangr  -  Myrkdal  -  Svartskog
+//      |           |           |           |
+//  Fenstrand - Eldrun Camp   Glodberg  -  Askheid
+//
 // Every map is built once, at load, into its own group; only the current one is shown.
 import * as THREE from 'three';
 import { makeNoise, mulberry32, sstep, lerp, clamp } from './noise.js';
+import { buildCity, WALL } from './city.js';
 
 export const SIZE = 64;
 export const CENTER = 32;
@@ -15,19 +23,31 @@ export const ZONE_NAMES = {
   hollow: 'Myrkdal',    // "dark dale"
   ridge: 'Glodberg',    // "ember-hill"
   fen: 'Fenstrand',     // "fen-shore"
+  city: 'Steinborg',    // "stone-fort"
+  birch: 'Birkilund',   // "birch grove"
+  coast: 'Saltvik',     // "salt bay"
+  deep: 'Svartskog',    // "black wood"
+  heath: 'Askheid',     // "ash heath"
 };
 
 const CAMP_R = 17;   // the camp clearing's walkable radius
 const CAMP_SAFE = 8.5; // monsters never come this close to the fire
 // portals: where they stand and where they lead. Arriving through one puts you beside the
 // portal on the other side that leads back.
+const N = { x: 32, z: 6 }, S = { x: 32, z: 58 }, E = { x: 58, z: 32 }, W = { x: 6, z: 32 };
+// lift: [height added, extra roughness]
 export const MAPS = {
-  camp:   { portals: [{ to: 'grove', x: 32, z: 16.5 }, { to: 'hollow', x: 47.5, z: 32 }, { to: 'ridge', x: 32, z: 47.5 }, { to: 'fen', x: 16.5, z: 32 }] },
-  grove:  { portals: [{ to: 'camp', x: 32, z: 58 }, { to: 'hollow', x: 58, z: 32 }, { to: 'fen', x: 6, z: 32 }] },
-  hollow: { portals: [{ to: 'camp', x: 6, z: 32 }, { to: 'grove', x: 32, z: 6 }, { to: 'ridge', x: 32, z: 58 }] },
+  camp:   { portals: [{ to: 'grove', x: 32, z: 16.5 }, { to: 'fen', x: 16.5, z: 32 }] },
+  grove:  { portals: [{ to: 'camp', ...S }, { to: 'city', ...N }, { to: 'hollow', ...E }] },
+  fen:    { portals: [{ to: 'camp', ...E }, { to: 'coast', ...W }], lake: { x: 30, z: 37, rx: 8, rz: 6 } },
+  city:   { portals: [{ to: 'grove', x: 32, z: 59 }, { to: 'birch', x: 59, z: 32 }], city: true },
+  birch:  { portals: [{ to: 'city', ...W }, { to: 'hollow', ...S }], clear: { x: 40, z: 22, r: 5 } },
+  hollow: { portals: [{ to: 'grove', ...W }, { to: 'birch', ...N }, { to: 'deep', ...E }, { to: 'ridge', ...S }], lift: [-0.15, 0] },
   // the Ember Jarl's lair: an open bowl in the south of Glodberg (see mobs.js)
-  ridge:  { portals: [{ to: 'camp', x: 32, z: 6 }, { to: 'hollow', x: 58, z: 32 }, { to: 'fen', x: 6, z: 32 }], clear: { x: 32, z: 48, r: 6 } },
-  fen:    { portals: [{ to: 'camp', x: 58, z: 32 }, { to: 'grove', x: 32, z: 6 }, { to: 'ridge', x: 32, z: 58 }], lake: { x: 30, z: 37, rx: 8, rz: 6 } },
+  ridge:  { portals: [{ to: 'hollow', ...N }, { to: 'heath', ...E }], clear: { x: 32, z: 48, r: 6 }, lift: [1.3, 1.8] },
+  coast:  { portals: [{ to: 'fen', ...E }], lake: { x: 20, z: 31, rx: 11, rz: 17 }, clear: { x: 44, z: 46, r: 5 } },
+  deep:   { portals: [{ to: 'hollow', ...W }, { to: 'heath', ...S }], lift: [-0.1, 0.5], clear: { x: 40, z: 40, r: 5 } },
+  heath:  { portals: [{ to: 'ridge', ...W }, { to: 'deep', ...N }], lift: [0.8, 1.2], clear: { x: 40, z: 44, r: 5 } },
 };
 const SEG = 128; // terrain vertices per side - 1 (0.5 unit spacing)
 
@@ -37,6 +57,11 @@ const GROUND = {
   hollow: ['#3a5a3c', '#4f5c4c'],
   ridge: ['#b07a4c', '#caa064'],
   fen: ['#6f8048', '#8e9858'],
+  city: ['#8a8478', '#9a9488'],
+  birch: ['#7fae4e', '#9cc45e'],
+  coast: ['#c2b07e', '#d4c494'],
+  deep: ['#26382a', '#30402f'],
+  heath: ['#6e665e', '#857a6c'],
   dirt: '#b49a6c',
   sand: '#c6b483',
 };
@@ -46,13 +71,21 @@ const TABLE = {
   ridge: [['rock', 22], ['rock_small', 20], ['shrub_dry', 18], ['tree_dead', 12], ['grass_dry', 28]],
   fen: [['tree_willow', 14], ['reeds', 30], ['grass', 30], ['stump', 6], ['bush', 10]],
   camp: [['grass', 6], ['flowers', 3], ['bush', 1]],
+  city: [['grass', 6], ['flowers', 3]],
+  birch: [['tree_birch', 28], ['flowers', 24], ['grass', 30], ['bush', 10], ['stump', 3]],
+  coast: [['grass_dry', 30], ['rock_grey', 9], ['reeds', 14], ['shrub_dry', 14], ['rock_small', 10], ['tree_willow', 3]],
+  deep: [['tree_dark', 42], ['mushroom_big', 14], ['mushrooms', 24], ['grass_dark', 20], ['tree_dead', 4]],
+  heath: [['tree_dead', 16], ['rock', 14], ['rock_small', 22], ['shrub_dry', 22], ['grass_dry', 26]],
 };
-const BORDER = { grove: 'tree_grove', hollow: 'tree_dark', ridge: 'rock', fen: 'tree_willow', camp: 'tree_grove' };
+const BORDER = { grove: 'tree_grove', hollow: 'tree_dark', ridge: 'rock', fen: 'tree_willow', camp: 'tree_grove', city: 'tree_grove', birch: 'tree_birch', coast: 'rock_grey', deep: 'tree_dark', heath: 'tree_dead' };
+// inside the city walls (and a step beyond them)
+const inWalls = (x, z, m = 0) => x > WALL.x0 - m && x < WALL.x1 + m && z > WALL.z0 - m && z < WALL.z1 + m;
 
 // one map: terrain, props, water, collision and minimap, in a group of its own
 function buildMap(id, scene, lib, shared) {
   const def = MAPS[id];
-  const isCamp = id === 'camp';
+  const isCamp = id === 'camp', isCity = !!def.city;
+  const [lift, rough] = def.lift || [0, 0];
   const group = new THREE.Group();
   group.visible = false;
   scene.add(group);
@@ -82,8 +115,8 @@ function buildMap(id, scene, lib, shared) {
 
   function heightAt(x, z) {
     let h = (noise.fbm(x * 0.06, z * 0.06) - 0.5) * 1.4;
-    if (id === 'ridge') h += 1.3 + (noise.fbm(x * 0.15 + 9, z * 0.15) - 0.5) * 1.8;
-    if (id === 'hollow') h -= 0.15;
+    h += lift + (rough ? (noise.fbm(x * 0.15 + 9, z * 0.15) - 0.5) * rough : 0);
+    if (isCity) h = lerp(0.05, h * 0.6 + 0.05, sstep(1, 4, -Math.min(x - WALL.x0, WALL.x1 - x, z - WALL.z0, WALL.z1 - z))); // flat inside the walls
     if (isCamp) {
       const r = campR(x, z);
       h = lerp(0.05, h * 0.5, sstep(4, 12, r));
@@ -103,14 +136,14 @@ function buildMap(id, scene, lib, shared) {
     return h;
   }
   function heightNoPortal(x, z) {
-    let h = (noise.fbm(x * 0.06, z * 0.06) - 0.5) * 1.4;
-    if (id === 'ridge') h += 1.3;
+    let h = (noise.fbm(x * 0.06, z * 0.06) - 0.5) * 1.4 + lift;
     if (isCamp) h = lerp(0.05, h * 0.5, sstep(4, 12, campR(x, z)));
+    if (isCity) h = lerp(0.05, h * 0.6 + 0.05, sstep(1, 4, -Math.min(x - WALL.x0, WALL.x1 - x, z - WALL.z0, WALL.z1 - z)));
     return Math.max(h, WATER_Y + 0.25);
   }
 
   const walkable = (x, z) => edgeDist(x, z) > 2.4 && (!isCamp || campR(x, z) < CAMP_R) && heightAt(x, z) > WATER_Y + 0.08;
-  const isSafe = (x, z) => isCamp; // the whole camp map is safe ground
+  const isSafe = () => isCamp || isCity; // towns are safe ground
 
   function colorAt(x, z, h) {
     const out = new THREE.Color();
@@ -182,18 +215,31 @@ function buildMap(id, scene, lib, shared) {
     return t[0][0];
   };
 
-  // treeline framing the map (camp: a ring of forest around the clearing)
+  // ---------- Steinborg: walls, houses and the rest (city.js) ----------
+  const boxes = []; // solid rectangles: walls, houses, stalls
+  const solids = [];
+  let city = null;
+  if (isCity) {
+    city = buildCity({
+      group, lib, heightAt: (x, z) => heightAt(x, z), place, boxes,
+      addBox: (x0, z0, x1, z1, kind) => boxes.push({ x0, z0, x1, z1, kind }),
+      addSolid: (x, z, coll) => solids.push({ x, z, coll }),
+    });
+  }
+
+  // treeline framing the map (camp: a ring of forest around the clearing; city: outside the walls)
   for (let i = 0; i < (isCamp ? 1400 : 900); i++) {
     const x = 0.5 + rng() * 63, z = 0.5 + rng() * 63;
     const e = isCamp ? campR(x, z) - CAMP_R : 3.6 - edgeDist(x, z);
-    if (isCamp ? e < 0.3 || e > 9 : e < 0 || edgeDist(x, z) < 0.8) continue;
+    if (isCity && (inWalls(x, z, 1.6) || pathDist(x, z) < 4.5 || edgeDist(x, z) > 3.4)) continue; // keep the walls in view
+    if (isCity ? edgeDist(x, z) < 0.8 : isCamp ? e < 0.3 || e > 9 : e < 0 || edgeDist(x, z) < 0.8) continue;
     const type = id === 'ridge' && rng() < 0.3 ? 'tree_dead' : BORDER[id];
     place(type, x, z);
   }
 
   // interior scatter
   let interior = 0;
-  const want = isCamp ? 40 : 330;
+  const want = isCamp ? 40 : isCity ? 0 : 330;
   for (let i = 0; i < 6000 && interior < want; i++) {
     const x = 3 + rng() * 58, z = 3 + rng() * 58;
     if (isCamp && (campR(x, z) < 7.5 || campR(x, z) > CAMP_R - 1)) continue;
@@ -204,7 +250,7 @@ function buildMap(id, scene, lib, shared) {
     const pdist = pathDist(x, z);
     if (pdist < 1.6 && pd.coll > 0) continue;
     if (pdist < 0.9) continue;
-    if (id === 'fen' && lakeD(x, z) < 1.7 && rng() < 0.7) type = 'reeds'; // reeds hug the lake shore
+    if (LAKE && lakeD(x, z) < 1.7 && rng() < 0.7) type = 'reeds'; // reeds hug the lake shore
     if (place(type, x, z)) interior++;
   }
 
@@ -264,6 +310,7 @@ function buildMap(id, scene, lib, shared) {
     if (w >= 1.6) tall.push({ s, x: p.x, z: p.z, w, h: w * variant.aspect, variant });
   }
   function updateOcclusion(px, pz, cam) {
+    city?.occlude(px, pz, cam);
     for (const t of tall) {
       const dx = t.x - px, dz = t.z - pz;
       let fade = false;
@@ -334,7 +381,7 @@ function buildMap(id, scene, lib, shared) {
 
   // ---------- Collision ----------
   const sgrid = new Map();
-  for (const p of props.filter((q) => q.coll > 0)) {
+  for (const p of [...props.filter((q) => q.coll > 0), ...solids]) {
     const k = key(Math.floor(p.x / 2), Math.floor(p.z / 2));
     if (!sgrid.has(k)) sgrid.set(k, []);
     sgrid.get(k).push(p);
@@ -349,6 +396,14 @@ function buildMap(id, scene, lib, shared) {
           const dx = x - p.x, dz = z - p.z, d = Math.hypot(dx, dz), min = r + p.coll;
           if (d < min && d > 1e-4) { x = p.x + (dx / d) * min; z = p.z + (dz / d) * min; }
         }
+      }
+      for (const b of boxes) { // out of walls and houses: to the nearest outside point
+        if (x < b.x0 - r || x > b.x1 + r || z < b.z0 - r || z > b.z1 + r) continue;
+        const cx = clamp(x, b.x0, b.x1), cz = clamp(z, b.z0, b.z1), dx = x - cx, dz = z - cz, d = Math.hypot(dx, dz);
+        if (d > 1e-4) { if (d < r) { x = cx + (dx / d) * r; z = cz + (dz / d) * r; } continue; }
+        const out = [[b.x0 - r - x, 0], [b.x1 + r - x, 0], [0, b.z0 - r - z], [0, b.z1 + r - z]];
+        const [mx, mz] = out.reduce((a, o) => (Math.abs(o[0] + o[1]) < Math.abs(a[0] + a[1]) ? o : a));
+        x += mx; z += mz;
       }
     }
     return [x, z];
@@ -381,6 +436,7 @@ function buildMap(id, scene, lib, shared) {
     mg.fillStyle = 'rgba(30,40,25,.45)';
     mg.fillRect(p.x * 2 - 1, p.z * 2 - 1, 2, 2);
   }
+  city?.minimap(mg);
   if (isCamp) {
     mg.fillStyle = '#ffd36b';
     mg.strokeStyle = '#3b2a1e';

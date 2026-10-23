@@ -18,12 +18,26 @@ export const MOB_DEFS = {
   mushling:  { name: 'Mushling', ai: 'puffer', art: 'mushling', lv: 12, hp: 405, atk: [26, 35], def: 0,  vit: 24, agi: 12, dex: 36, exp: [45, 32], adelay: 1768, speed: 1.2, aggro: 4, chase: 6, reach: 0.8, w: 0.95, r: 0.36, drops: [['spore', 1, 2, 1], ['herb', 1, 1, 0.2], ['potion', 1, 1, 0.08], ['spore_cloak', 1, 1, 0.0025]] },
   beetle:    { name: 'Pebble Beetle', ai: 'tank', art: 'beetle', lv: 16, hp: 620, atk: [50, 62], def: 10, vit: 24, agi: 17, dex: 26, exp: [90, 60], adelay: 1500, speed: 1.15, aggro: 4, chase: 8, reach: 0.9, w: 1.15, r: 0.45, heavy: true, drops: [['stone', 1, 2, 1], ['potion2', 1, 1, 0.06], ['pebble_ring', 1, 1, 0.003], ['horn_blade', 1, 1, 0.0015]] },
   wisp:      { name: 'Firefly Wisp', ai: 'wisp', art: 'wisp', lv: 8,  hp: 169, atk: [22, 27], def: 5,  vit: 8,  agi: 20, dex: 17, exp: [19, 15], adelay: 1292, speed: 2.4, aggro: 6, reach: 0.75, w: 0.7, r: 0.3, fly: true, night: true, drops: [['glow', 1, 1, 1], ['wander', 1, 1, 0.15], ['wisp_lantern', 1, 1, 0.004]] },
+  // ---------- the new lands: palette swaps of the valley's monsters, Ragnarok style (tint) ----------
+  russet:    { name: 'Russet Sproutling', ai: 'tank', art: 'sprout', tint: '#ffb47a', lv: 9,  hp: 230, atk: [24, 30], def: 3, vit: 9,  agi: 9,  dex: 18, exp: [24, 16], adelay: 1500, speed: 1.4, aggro: 4.5, chase: 6, reach: 0.8, w: 1.0, r: 0.36, drops: [['thorn', 1, 1, 0.55], ['seed', 1, 1, 0.6], ['leaf', 1, 1, 0.4], ['berry', 1, 1, 0.2], ['bramble_ring', 1, 1, 0.003]] },
+  brine:     { name: 'Brine Slime', ai: 'hopper', art: 'slimeBlue', tint: '#a8ffd8', lv: 10, hp: 280, atk: [26, 32], def: 2, vit: 10, agi: 8,  dex: 18, exp: [30, 20], adelay: 1500, speed: 1.8, aggro: 5, chase: 5, reach: 0.8, w: 1.1, r: 0.4, drops: [['salt', 1, 1, 0.55], ['gel', 1, 1, 0.8], ['tonic', 1, 1, 0.05], ['shiny_gel', 1, 1, 0.01]] },
+  tidecrab:  { name: 'Tidecrab', ai: 'crab', art: 'crab', tint: '#a8c8ff', lv: 11, hp: 330, atk: [30, 38], def: 8, vit: 12, agi: 10, dex: 20, exp: [36, 24], adelay: 1300, speed: 1.7, aggro: 5.5, reach: 0.9, w: 1.25, r: 0.48, drops: [['shell', 1, 2, 1], ['crableg', 1, 1, 0.3], ['pearl', 1, 1, 0.06], ['coral_shield', 1, 1, 0.0025]] },
+  gloomcap:  { name: 'Gloomcap', ai: 'puffer', art: 'mushling', tint: '#a89cff', lv: 18, hp: 900, atk: [48, 60], def: 5, vit: 28, agi: 18, dex: 40, exp: [130, 90], adelay: 1700, speed: 1.25, aggro: 4.5, chase: 7, reach: 0.85, w: 1.15, r: 0.42, mdef: 10, drops: [['gloom', 1, 1, 0.5], ['spore', 1, 2, 0.8], ['potion2', 1, 1, 0.08], ['gloom_hood', 1, 1, 0.0025]] },
+  shadeWisp: { name: 'Shade Wisp', ai: 'wisp', art: 'wisp', tint: '#b8a0ff', glow: true, lv: 19, hp: 700, atk: [52, 64], def: 8, vit: 15, agi: 35, dex: 40, exp: [140, 100], adelay: 1250, speed: 2.5, aggro: 6, reach: 0.75, w: 0.85, r: 0.32, fly: true, mdef: 20, drops: [['shade', 1, 1, 0.45], ['glow', 1, 1, 0.8], ['wander', 1, 1, 0.1], ['wisp_lantern', 1, 1, 0.005]] },
+  cinderBeetle: { name: 'Cinder Beetle', ai: 'tank', art: 'beetle', tint: '#ff9a72', lv: 23, hp: 1500, atk: [70, 88], def: 18, vit: 30, agi: 20, dex: 38, exp: [260, 170], adelay: 1500, speed: 1.2, aggro: 4.5, chase: 9, reach: 1.0, w: 1.35, r: 0.52, heavy: true, drops: [['cinder', 1, 1, 0.5], ['stone', 1, 2, 1], ['potion2', 1, 1, 0.1], ['potion3', 1, 1, 0.03], ['cinder_mail', 1, 1, 0.002], ['horn_blade', 1, 1, 0.002]] },
+  emberWisp: { name: 'Ember Wisp', ai: 'wisp', art: 'wisp', tint: '#ff9a5a', glow: true, lv: 21, hp: 820, atk: [58, 72], def: 6, vit: 15, agi: 40, dex: 45, exp: [180, 120], adelay: 1200, speed: 2.5, aggro: 6, reach: 0.75, w: 0.85, r: 0.32, fly: true, drops: [['ember_dust', 1, 1, 0.5], ['glow', 1, 1, 0.6], ['cinder', 1, 1, 0.15], ['ember_charm', 1, 1, 0.003]] },
+  // mini-bosses: one on each new field, big and slow, they stomp like the Jarl and come back after
+  // `respawn` seconds. Their rare materials craft the best gear (Gunnar, in Steinborg).
+  matron:    { name: 'Bramble Matron', ai: 'boss', art: 'sprout', tint: '#ff9a6a', boss: true, lv: 14, hp: 1400, atk: [36, 46], def: 8, vit: 18, agi: 10, dex: 26, exp: [320, 220], adelay: 1800, speed: 1.2, aggro: 5.5, chase: 12, reach: 1.3, w: 2.0, r: 0.75, heavy: true, respawn: 300, drops: [['heartwood', 1, 1, 0.3], ['thorn', 3, 5, 1], ['potion2', 1, 2, 0.5], ['thorn_mantle', 1, 1, 0.03], ['bramble_ring', 1, 1, 0.05]] },
+  tideKing:  { name: 'Tide King', ai: 'boss', art: 'crab', tint: '#8ab8ff', boss: true, lv: 17, hp: 2000, atk: [44, 56], def: 16, vit: 22, agi: 12, dex: 30, exp: [450, 300], adelay: 1700, speed: 1.3, aggro: 5.5, chase: 12, reach: 1.4, w: 2.3, r: 0.85, heavy: true, respawn: 300, drops: [['king_pearl', 1, 1, 0.3], ['pearl', 1, 2, 0.6], ['crableg', 2, 3, 1], ['tidebreaker', 1, 1, 0.02], ['coral_shield', 1, 1, 0.05]] },
+  gloomMother: { name: 'Gloom Mother', ai: 'boss', art: 'mushling', tint: '#9a7cff', boss: true, lv: 22, hp: 3000, atk: [58, 72], def: 10, vit: 30, agi: 16, dex: 40, exp: [800, 540], adelay: 1800, speed: 1.15, aggro: 5.5, chase: 12, reach: 1.4, w: 2.2, r: 0.8, heavy: true, mdef: 15, respawn: 420, drops: [['gloom_heart', 1, 1, 0.3], ['gloom', 2, 4, 1], ['potion3', 1, 2, 0.4], ['gloom_staff', 1, 1, 0.02], ['gloom_hood', 1, 1, 0.05]] },
+  cinderLord: { name: 'Cinder Lord', ai: 'boss', art: 'beetle', tint: '#ff7a4a', boss: true, lv: 26, hp: 4200, atk: [80, 100], def: 25, vit: 35, agi: 18, dex: 45, exp: [1200, 800], adelay: 1800, speed: 1.15, aggro: 5.5, chase: 12, reach: 1.5, w: 2.4, r: 0.9, heavy: true, respawn: 480, drops: [['cinder_core', 1, 1, 0.3], ['cinder', 2, 4, 1], ['potion3', 1, 2, 0.5], ['cinder_greaves', 1, 1, 0.03], ['cinder_mail', 1, 1, 0.04]] },
   // MVP boss of Glodberg: one at a time, back 15 minutes after it falls. Its slayer gets the MVP
   // reward on top of the drops. Stomps the ground around it every few seconds.
   // (softened for now, for a Base ~25 Swordsman: it would need a party at Ragnarok strength)
   jarl:      { name: 'Ember Jarl', ai: 'boss', art: 'jarl', lv: 25, hp: 3200, atk: [45, 65], def: 15, vit: 25, agi: 15, dex: 35, exp: [2600, 1800], adelay: 2000, speed: 1.35, aggro: 7, chase: 25, reach: 1.9, w: 3.1, r: 1.15, heavy: true,
     mvp: true, respawn: 900, lair: { x: 32, z: 48 }, mvpExp: 1300, mvpDrops: [['potion3', 3], ['ember_heart', 1]],
-    drops: [['potion2', 2, 3, 0.8], ['potion3', 1, 2, 0.5], ['stone', 4, 6, 1], ['ember_crown', 1, 1, 0.05], ['emberbrand', 1, 1, 0.01]] },
+    drops: [['potion2', 2, 3, 0.8], ['potion3', 1, 2, 0.5], ['stone', 4, 6, 1], ['jarl_horn', 1, 1, 0.25], ['ember_crown', 1, 1, 0.05], ['jarl_mantle', 1, 1, 0.03], ['emberbrand', 1, 1, 0.01]] },
 };
 
 const RESPAWN = 60;
@@ -37,7 +51,10 @@ class Mob {
     this.def = MOB_DEFS[type];
     this.art = mgr.lib.mobs[this.def.art];
     this.mat = new THREE.SpriteMaterial({ map: this.art.anims.down.idle[0], alphaTest: 0.5 });
-    if (!this.def.night) this.mgr.tint.push(this.mat); // wisps keep their own glow
+    // palette swaps: the art times a colour. Wisps keep their own glow (no day/night tint)
+    if (this.def.tint) this.mat.userData.tint = new THREE.Color(this.def.tint);
+    if (!this.def.night && !this.def.glow) this.mgr.tint.push(this.mat);
+    else if (this.def.tint) this.mat.color.copy(this.mat.userData.tint);
     this.sprite = new THREE.Sprite(this.mat);
     this.sprite.center.set(0.5, this.art.anchor);
     this.sprite.renderOrder = 2;
@@ -115,6 +132,7 @@ class Mob {
     this.knock.x = fx * k;
     this.knock.z = fz * k;
     if (this.def.ai === 'skittish') this.angry = this.def.angry;
+    if (this.def.boss) this.knock.x = this.knock.z = 0; // bosses stand their ground
     if (this.def.ai === 'hopper' || this.def.ai === 'tank' || this.def.ai === 'puffer' || this.def.ai === 'boss') {
       this.state = 'chase';
       this.chaseT = Math.max(this.chaseT, this.def.chase || 4);
@@ -410,7 +428,7 @@ export class MobManager {
       this.remove(m);
       return;
     }
-    this.dead.push({ m, t: RESPAWN });
+    this.dead.push({ m, t: m.def.respawn || RESPAWN });
   }
 
   update(dt, player) {
