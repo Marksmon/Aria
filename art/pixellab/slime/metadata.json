@@ -1,0 +1,115 @@
+{
+  "group_id": "7add9b04-fccf-46c6-bd55-cf53c9977752",
+  "states": [
+    {
+      "character": {
+        "id": "4128bc25-aa79-4acd-a41b-4a6b79bba462",
+        "name": "Idle",
+        "prompt": "round moss-green jelly slime blob with a tiny two-leaf sprout on top, no arms, no legs, big shiny eyes, rosy cheeks",
+        "size": {
+          "width": 64,
+          "height": 64
+        },
+        "template_id": "mannequin",
+        "directions": 8,
+        "view": "low top-down",
+        "created_at": "2026-10-23T12:14:38.302554+00:00"
+      },
+      "folder": "Idle",
+      "frames": {
+        "rotations": {
+          "south": "Idle/rotations/south.png",
+          "south-east": "Idle/rotations/south-east.png",
+          "east": "Idle/rotations/east.png",
+          "north-east": "Idle/rotations/north-east.png",
+          "north": "Idle/rotations/north.png",
+          "north-west": "Idle/rotations/north-west.png",
+          "west": "Idle/rotations/west.png",
+          "south-west": "Idle/rotations/south-west.png"
+        },
+        "animations": {
+          "attack": {
+            "west": [
+              "Idle/animations/attack/west/frame_000.png",
+              "Idle/animations/attack/west/frame_001.png",
+              "Idle/animations/attack/west/frame_002.png",
+              "Idle/animations/attack/west/frame_003.png",
+              "Idle/animations/attack/west/frame_004.png",
+              "Idle/animations/attack/west/frame_005.png",
+              "Idle/animations/attack/west/frame_006.png"
+            ],
+            "east": [
+              "Idle/animations/attack/east/frame_000.png",
+              "Idle/animations/attack/east/frame_001.png",
+              "Idle/animations/attack/east/frame_002.png",
+              "Idle/animations/attack/east/frame_003.png",
+              "Idle/animations/attack/east/frame_004.png",
+              "Idle/animations/attack/east/frame_005.png",
+              "Idle/animations/attack/east/frame_006.png"
+            ],
+            "south": [
+              "Idle/animations/attack/south/frame_000.png",
+              "Idle/animations/attack/south/frame_001.png",
+              "Idle/animations/attack/south/frame_002.png",
+              "Idle/animations/attack/south/frame_003.png",
+              "Idle/animations/attack/south/frame_004.png",
+              "Idle/animations/attack/south/frame_005.png",
+              "Idle/animations/attack/south/frame_006.png"
+            ],
+            "north": [
+              "Idle/animations/attack/north/frame_000.png",
+              "Idle/animations/attack/north/frame_001.png",
+              "Idle/animations/attack/north/frame_002.png",
+              "Idle/animations/attack/north/frame_003.png",
+              "Idle/animations/attack/north/frame_004.png",
+              "Idle/animations/attack/north/frame_005.png",
+              "Idle/animations/attack/north/frame_006.png"
+            ]
+          },
+          "hop": {
+            "west": [
+              "Idle/animations/hop/west/frame_000.png",
+              "Idle/animations/hop/west/frame_001.png",
+              "Idle/animations/hop/west/frame_002.png",
+              "Idle/animations/hop/west/frame_003.png",
+              "Idle/animations/hop/west/frame_004.png",
+              "Idle/animations/hop/west/frame_005.png",
+              "Idle/animations/hop/west/frame_006.png"
+            ],
+            "north": [
+              "Idle/animations/hop/north/frame_000.png",
+              "Idle/animations/hop/north/frame_001.png",
+              "Idle/animations/hop/north/frame_002.png",
+              "Idle/animations/hop/north/frame_003.png",
+              "Idle/animations/hop/north/frame_004.png",
+              "Idle/animations/hop/north/frame_005.png",
+              "Idle/animations/hop/north/frame_006.png"
+            ],
+            "east": [
+              "Idle/animations/hop/east/frame_000.png",
+              "Idle/animations/hop/east/frame_001.png",
+              "Idle/animations/hop/east/frame_002.png",
+              "Idle/animations/hop/east/frame_003.png",
+              "Idle/animations/hop/east/frame_004.png",
+              "Idle/animations/hop/east/frame_005.png",
+              "Idle/animations/hop/east/frame_006.png"
+            ]
+          },
+          "hop-8cefb2ea": {
+            "south": [
+              "Idle/animations/hop-8cefb2ea/south/frame_000.png",
+              "Idle/animations/hop-8cefb2ea/south/frame_001.png",
+              "Idle/animations/hop-8cefb2ea/south/frame_002.png",
+              "Idle/animations/hop-8cefb2ea/south/frame_003.png",
+              "Idle/animations/hop-8cefb2ea/south/frame_004.png",
+              "Idle/animations/hop-8cefb2ea/south/frame_005.png",
+              "Idle/animations/hop-8cefb2ea/south/frame_006.png"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "export_version": "3.1",
+  "export_date": "2026-10-23T12:31:50.557005"
+}

@@ -1,1 +1,1 @@
-{"fw": 50, "fh": 70, "body": [42, 70], "anims": {"down": {"idle": [0, 1]}, "right": {"idle": [1, 1]}, "up": {"idle": [2, 1]}, "left": {"idle": [3, 1]}}}
+{"fw": 52, "fh": 85, "body": [51, 84], "foot": 0, "anims": {"down": {"idle": [0, 1]}, "right": {"idle": [1, 1]}, "up": {"idle": [2, 1]}, "left": {"idle": [3, 1]}}}
