@@ -11,6 +11,7 @@ const ROLL_TIME = 0.4, ROLL_SPEED = 8.4, ROLL_CD = 0.75; // 3.4 units, fast then
 const DODGE_SEQ = [1, 2, 3, 4, 5, 3, 1];
 const ATTACK_RANGE = 1.65, ATTACK_COS = 0.34; // ~70 degrees either side
 const AIM_RANGE = 2.8;
+const REACH_MOB = ATTACK_RANGE - 0.3; // how close a tapped monster must be before swinging
 
 export class Player {
   constructor(scene, world, art, shadowTex, fx) {
@@ -43,6 +44,14 @@ export class Player {
     this.slowT = 0;
     this.knock = { x: 0, z: 0 };
     this.events = { swing: [], hurt: [], faint: [], hit: [], block: [] };
+
+    // Ragnarok-style orders: walk tile to tile along a path towards a goal
+    // goal: { x, z, reach, arrive() } for a spot, or { mob } to fight it until it falls
+    this.tiles = null;
+    this.path = [];
+    this.goal = null;
+    this.repathT = 0;
+    this.stuckT = 0;
 
     this.mat = new THREE.SpriteMaterial({ map: art.anims.down.idle[0], alphaTest: 0.5 });
     this.sprite = new THREE.Sprite(this.mat);
@@ -110,7 +119,27 @@ export class Player {
     return this.hp - before;
   }
 
+  command(goal) {
+    this.goal = goal;
+    this.repath();
+  }
+
+  stop() {
+    this.goal = null;
+    this.path = [];
+  }
+
+  repath() {
+    const g = this.goal;
+    if (!g || !this.tiles) { this.path = []; return; }
+    const tx = g.mob ? g.mob.x : g.x, tz = g.mob ? g.mob.z : g.z;
+    this.path = this.tiles.path(this.x, this.z, tx, tz) || [];
+    this.repathT = 0.35;
+    this.stuckT = 0;
+  }
+
   revive(x, z) {
+    this.stop();
     this.state = 'normal';
     this.hp = this.maxHp;
     this.iframes = 1.5;
@@ -119,8 +148,8 @@ export class Player {
     this.setPos(x, z);
   }
 
-  // move: world-space direction (0..1). cam: camera basis. ctl: {attack, dodge}. mobs: MobManager
-  update(dt, move, cam, ctl, mobs) {
+  // cam: camera basis. ctl: { dodge }. mobs: MobManager
+  update(dt, cam, ctl, mobs) {
     this.atkTimer -= dt;
     this.atkAnim -= dt;
     this.rollCd -= dt;
@@ -140,14 +169,12 @@ export class Player {
       this.knock.z *= k;
     }
 
-    const mag = Math.hypot(move.x, move.z);
     if (ctl.dodge && this.state === 'normal' && this.rollCd <= 0) {
       this.state = 'roll';
       this.rollT = ROLL_TIME;
       this.rollCd = ROLL_CD;
       this.iframes = Math.max(this.iframes, ROLL_TIME + 0.08);
-      this.rollDir = mag > 0.1 ? { x: move.x / mag, z: move.z / mag } : { ...this.face };
-      this.face = { ...this.rollDir };
+      this.rollDir = { ...this.face };
       const y = this.world.heightAt(this.x, this.z);
       this.fx.puff(this.x - this.rollDir.x * 0.2, y + 0.1, this.z - this.rollDir.z * 0.2, 0.55);
     }
@@ -157,22 +184,8 @@ export class Player {
       const sp = ROLL_SPEED * (1.35 - 0.7 * (1 - this.rollT / ROLL_TIME));
       this.tryMove(this.rollDir.x * sp * dt, this.rollDir.z * sp * dt);
       this.moving = true;
-      if (this.rollT <= 0) this.state = 'normal';
-    } else {
-      this.moving = mag > 0.08;
-      const attacking = this.atkAnim > 0;
-      const winding = this.atkAnim > this.atkDur - 0.18; // only the start of a swing slows you
-      if (this.moving) {
-        const speed = BASE_SPEED * this.speedMul * (winding ? 0.55 : 1) * (this.slowT > 0 ? 0.5 : 1);
-        const moved = this.tryMove(move.x * speed * dt, move.z * speed * dt);
-        if (!attacking) this.face = { x: move.x / mag, z: move.z / mag };
-        this.animT += moved / STRIDE; // in walk cycles
-      } else {
-        this.animT = 0;
-      }
-
-      if (ctl.attack && this.atkTimer <= 0) this.swing(cam, mobs);
-    }
+      if (this.rollT <= 0) { this.state = 'normal'; this.repath(); }
+    } else this.follow(dt, cam, mobs);
 
     // sprite direction follows facing relative to the camera; 8 ways when the art has diagonals,
     // and a diagonal missing an animation borrows it from the nearest straight direction
@@ -199,6 +212,39 @@ export class Player {
     this.sprite.scale.y = this.size.h * breathe;
     this.sprite.visible = !(this.iframes > 0 && this.state === 'normal' && Math.floor(this.iframes * 14) % 2 === 0);
     this.sync();
+  }
+
+  // carry out the current order: walk the path, swing at a target in reach, or arrive somewhere
+  follow(dt, cam, mobs) {
+    const g = this.goal;
+    if (g?.mob) {
+      const m = g.mob;
+      if (!m.alive) this.stop();
+      else if (Math.hypot(m.x - this.x, m.z - this.z) - m.def.r <= REACH_MOB) {
+        this.path = [];
+        const dx = m.x - this.x, dz = m.z - this.z, d = Math.hypot(dx, dz) || 1;
+        if (this.atkAnim <= 0) this.face = { x: dx / d, z: dz / d };
+        if (this.atkTimer <= 0) this.swing(cam, mobs);
+      } else if ((this.repathT -= dt) <= 0 || !this.path.length) this.repath(); // it moves: keep chasing
+    } else if (g && Math.hypot(g.x - this.x, g.z - this.z) <= g.reach) {
+      this.stop();
+      g.arrive?.();
+    }
+
+    this.moving = false;
+    const next = this.path[0];
+    if (!next) { this.animT = 0; return; }
+    const winding = this.atkAnim > this.atkDur - 0.18; // only the start of a swing slows you
+    const speed = BASE_SPEED * this.speedMul * (winding ? 0.55 : 1) * (this.slowT > 0 ? 0.5 : 1);
+    const dx = next.x - this.x, dz = next.z - this.z, d = Math.hypot(dx, dz), step = speed * dt;
+    const moved = d <= step ? this.tryMove(dx, dz) : this.tryMove((dx / d) * step, (dz / d) * step);
+    if (d <= step || Math.hypot(next.x - this.x, next.z - this.z) < 0.02) this.path.shift();
+    if (d > 0.01 && this.atkAnim <= 0) this.face = { x: dx / d, z: dz / d };
+    this.moving = moved > 0.001;
+    this.animT += moved / STRIDE; // in walk cycles
+    // pushed off the path (knockback, a monster in the way): find a new one, or give up
+    this.stuckT = moved < step * 0.3 ? this.stuckT + dt : 0;
+    if (this.stuckT > 0.5) { if (g) this.repath(); else this.path = []; }
   }
 
   swing(cam, mobs) {

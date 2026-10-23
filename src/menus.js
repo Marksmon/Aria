@@ -4,6 +4,7 @@ import { ITEMS, WEAPONS, ARMORS, RECIPES, CHARMS, recipeName, recipeIcon, iconUR
 import { BAG_SLOTS, CHEST_SLOTS } from './inventory.js';
 import { STATS } from './progress.js';
 import { NPCS } from './quests.js';
+import { SKILLS } from './hotbar.js';
 
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const icon = (id, cls = '') => `<img class="ico ${cls}" src="${iconURL(id)}" alt="">`;
@@ -21,7 +22,15 @@ export class Menus {
     this.toasts = document.getElementById('toasts');
     this.mode = null;
     this.selected = null;
+    this.hotbar = null;     // set by the game: skills and usable items drag onto it
     this.root.addEventListener('click', (e) => this.click(e));
+    this.root.addEventListener('pointerdown', (e) => {
+      const d = e.target.closest('[data-drag]');
+      if (!d || !this.hotbar) return;
+      e.preventDefault(); // no native image drag: it would cancel the pointer
+      const [kind, id] = d.dataset.drag.split(':');
+      this.hotbar.drag({ kind, id }, e);
+    });
     inv.onChange(() => { if (this.mode) this.render(); });
   }
 
@@ -76,7 +85,7 @@ export class Menus {
     for (let i = 0; i < size; i++) {
       const s = store.slots[i];
       h += s
-        ? `<button class="slot${this.selected === s.id && side === 'bag' ? ' sel' : ''}" data-act="slot" data-side="${side}" data-id="${s.id}">${icon(s.id)}<b>${s.n}</b></button>`
+        ? `<button class="slot${this.selected === s.id && side === 'bag' ? ' sel' : ''}" data-act="slot" data-side="${side}" data-id="${s.id}"${side === 'bag' && ITEMS[s.id].usable ? ` data-drag="item:${s.id}"` : ''}>${icon(s.id)}<b>${s.n}</b></button>`
         : '<div class="slot empty"></div>';
     }
     return h + '</div>';
@@ -99,7 +108,12 @@ export class Menus {
       h += `<div class="stat"><b>${st.name}</b><span class="v">${p.stats[k]}</span><small>${esc(st.desc)}</small><button class="plus" data-act="raise" data-stat="${k}" ${p.points ? '' : 'disabled'} aria-label="Raise ${st.name}">+</button></div>`;
     }
     h += `<div class="sum">Damage ${+pl.damage.toFixed(2)} · ${+pl.attackSpeed.toFixed(2)} swings/s · ${pl.maxHp / 2} hearts · speed ${Math.round(pl.speedMul * 100)}%</div></div>`;
-    h += '<div class="charms"><h3>Charm</h3>';
+    h += '<div class="charms"><h3>Skills</h3>';
+    for (const [id, sk] of Object.entries(SKILLS)) {
+      const on = this.hotbar?.has('skill', id);
+      h += `<div class="charm skill" data-drag="skill:${id}">${icon(sk.icon)}<div class="rtext"><b>${esc(sk.name)}</b><small>${esc(sk.desc)}</small></div><span class="tag">${on ? 'On hotbar' : 'Drag to hotbar'}</span></div>`;
+    }
+    h += '<h3>Charm</h3>';
     for (const [id, c] of Object.entries(CHARMS)) {
       const own = g.charms.includes(id), on = g.charm === id;
       const r = RECIPES.find((x) => x.charm === id);
@@ -156,7 +170,7 @@ export class Menus {
           <div class="bagright">
             ${this.grid(inv.bag, BAG_SLOTS, 'bag')}
             <div class="detail">${sel
-              ? `<b>${esc(sel.name)}</b> <span>${esc(sel.desc)}${sel.from ? ' Dropped by ' + esc(sel.from) + '.' : ''}</span>${sel.usable ? '<button class="go" data-act="use">Use</button>' : ''}`
+              ? `<b>${esc(sel.name)}</b> <span>${esc(sel.desc)}${sel.from ? ' Dropped by ' + esc(sel.from) + '.' : ''}</span>${sel.usable ? ' Drag it onto the hotbar to use it quickly.<button class="go" data-act="use">Use</button>' : ''}`
               : '<span>Tap an item to see what it is. Craft at the campfire.</span>'}</div>
           </div>
         </div>`;

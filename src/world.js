@@ -370,7 +370,7 @@ export function buildWorld(scene, lib) {
 
   const api = {
     fireBoost: 1,
-    heightAt, zoneAt, walkable, resolve, addSolid, update, updateOcclusion, tintMats, fireMat, fireLight,
+    heightAt, zoneAt, walkable, resolve, addSolid, update, terrain, updateOcclusion, tintMats, fireMat, fireLight,
     spawn: { x: 32, z: 36.2 },
     camp: { fire: FIRE, chest: { x: 34.4, z: 30.6 }, tent: { x: 30.2, z: 29.6 } },
     minimap: mini,

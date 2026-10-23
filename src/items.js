@@ -169,6 +169,13 @@ const PAINT = {
     shape(g, () => { g.moveTo(22, 30); g.quadraticCurveTo(20, 16, 32, 4); g.quadraticCurveTo(44, 16, 42, 30); g.closePath(); }, '#f59a2b');
     g.beginPath(); g.moveTo(27, 28); g.quadraticCurveTo(27, 18, 32, 12); g.quadraticCurveTo(37, 18, 37, 28); g.fillStyle = '#ffe27a'; g.fill();
   },
+  // Dodge Roll: a curved dash arrow with speed lines
+  skill_dodge: (g) => {
+    shape(g, () => g.arc(32, 32, 26, 0, Math.PI * 2), '#4a78b5');
+    g.beginPath(); g.arc(30, 36, 14, Math.PI * 0.95, Math.PI * 2.1); g.strokeStyle = '#fff4dc'; g.lineWidth = 6; g.stroke();
+    shape(g, () => { g.moveTo(44, 28); g.lineTo(52, 42); g.lineTo(37, 41); g.closePath(); }, '#fff4dc', 2.5);
+    for (const [y, w] of [[22, 10], [30, 14], [38, 8]]) { g.beginPath(); g.moveTo(10, y); g.lineTo(10 + w, y); g.strokeStyle = 'rgba(255,244,220,.7)'; g.lineWidth = 3; g.stroke(); }
+  },
   talk: (g) => {
     shape(g, () => { g.roundRect(6, 8, 52, 36, 12); g.moveTo(18, 42); g.lineTo(14, 56); g.lineTo(30, 43); }, '#fff4dc');
     for (const x of [20, 32, 44]) { g.beginPath(); g.arc(x, 26, 3.5, 0, Math.PI * 2); g.fillStyle = OUT; g.fill(); }

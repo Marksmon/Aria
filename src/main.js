@@ -12,6 +12,8 @@ import { Inventory } from './inventory.js';
 import { Progress } from './progress.js';
 import { Quests, QUESTS, NPCS } from './quests.js';
 import { Villagers } from './villagers.js';
+import { Tiles } from './tiles.js';
+import { Hotbar } from './hotbar.js';
 import { Menus } from './menus.js';
 import { iconTexture, iconURL, ITEMS } from './items.js';
 import { DayNight } from './daynight.js';
@@ -64,6 +66,7 @@ prog.load(save?.prog);
 const quests = new Quests();
 quests.load(save?.quests);
 const villagers = new Villagers(scene, world, lib);
+player.tiles = new Tiles(world); // after the villagers: they block their tiles
 const inv = new Inventory();
 inv.level = () => prog.level;
 inv.load(save?.inv);
@@ -71,7 +74,7 @@ inv.applyTo(player, prog);
 if (save?.hp) player.hp = clamp(save.hp, 1, player.maxHp);
 inv.onChange(() => inv.applyTo(player, prog));
 
-const input = new Input(document.getElementById('joy'), document.getElementById('joy-knob'));
+const input = new Input();
 const ui = new UI(world);
 ui.mobs = mobs;
 ui.prog = prog;
@@ -213,31 +216,68 @@ const menus = new Menus(inv, prog, player, {
 menus.quests = quests;
 const portraits = {};
 menus.portrait = (id) => (portraits[id] ||= lib.villagers[id].anims.down.idle[0].image.toDataURL());
-const actionBtn = document.getElementById('btn-action');
-// things at camp you can use with the context button
+// things at camp you tap to use: the player walks over, then it opens. h = height on screen
 const SPOTS = [
-  { ...world.camp.fire, label: 'Craft', icon: 'torch', run: () => menus.show('craft') },
-  { ...world.camp.chest, label: 'Chest', icon: 'shell', run: () => menus.show('chest') },
-  { ...world.camp.tent, label: 'Rest', icon: 'potion', run: () => rest() },
-  ...villagers.list.map((v) => ({ x: v.x, z: v.z, label: 'Talk', icon: 'talk', run: () => menus.talkTo(v.id) })),
+  { ...world.camp.fire, h: 0.9, run: () => menus.show('craft') },
+  { ...world.camp.chest, h: 0.8, run: () => menus.show('chest') },
+  { ...world.camp.tent, h: 2.2, run: () => rest() },
+  ...villagers.list.map((v) => ({ x: v.x, z: v.z, h: v.top, run: () => menus.talkTo(v.id) })),
 ];
-actionBtn.querySelector('img').src = iconURL('torch');
-let nearAction = null;
-function updateAction() {
-  let best = null, bd = 2.1;
-  if (player.state === 'normal') {
-    for (const p of SPOTS) {
-      const d = Math.hypot(player.x - p.x, player.z - p.z);
-      if (d < bd) { bd = d; best = p; }
+
+// ---------- hotbar: skills and items ----------
+const hotbar = new Hotbar(document.getElementById('hotbar'), inv, {
+  use(s) {
+    if (s.kind === 'skill' && s.id === 'dodge') wantDodge = true;
+    if (s.kind === 'item' && s.id === 'potion') menus.hooks.usePotion();
+  },
+  cooldown: (s) => (s.kind === 'skill' && s.id === 'dodge' ? Math.max(0, player.rollCd / 0.75) : 0),
+  changed() { if (menus.open) menus.render(); persist(); },
+});
+hotbar.load(save?.hotbar);
+menus.hotbar = hotbar;
+let wantDodge = false;
+
+// ---------- tap to walk, attack, pick up, talk ----------
+const PICK_PX = 44; // how far from a thing (in CSS pixels) a tap still picks it
+const ray = new THREE.Raycaster(), ndc = new THREE.Vector2(), projV = new THREE.Vector3();
+function screenDist(cx, cy, x, y, z) {
+  projV.set(x, y, z).project(camera);
+  if (projV.z > 1) return Infinity;
+  return Math.hypot((projV.x + 1) / 2 * window.innerWidth - cx, (1 - projV.y) / 2 * window.innerHeight - cy);
+}
+// the thing drawn nearest the tap: checked at its feet and its middle, monsters favoured
+function pick(cx, cy) {
+  let best = null, bd = PICK_PX;
+  const consider = (hit, x, y, h, z, bias = 1) => {
+    for (const f of [0.15, 0.55]) {
+      const d = screenDist(cx, cy, x, y + h * f, z) * bias;
+      if (d < bd) { bd = d; best = hit; }
     }
-  }
-  if (best !== nearAction) {
-    nearAction = best;
-    actionBtn.hidden = !best;
-    if (best) {
-      actionBtn.querySelector('img').src = iconURL(best.icon);
-      actionBtn.querySelector('span').textContent = best.label;
-    }
+  };
+  for (const m of mobs.list) if (m.alive) consider({ mob: m }, m.x, m.sprite.position.y, m.sprite.scale.y * 0.8, m.z, 0.8);
+  for (const p of fx.pickups) consider({ item: p }, p.x, p.s.position.y, 0.5, p.z);
+  for (const sp of SPOTS) consider({ spot: sp }, sp.x, world.heightAt(sp.x, sp.z), sp.h, sp.z);
+  return best;
+}
+function tap(cx, cy) {
+  if (player.state === 'down') return;
+  const hit = pick(cx, cy);
+  if (hit?.mob) player.command({ mob: hit.mob });
+  else if (hit?.item) {
+    const p = hit.item;
+    player.command({ x: p.x, z: p.z, reach: 0.7, arrive: () => { if (fx.pickups.includes(p) && collect(p)) fx.take(p); } });
+  } else if (hit?.spot) {
+    const sp = hit.spot;
+    player.command({ x: sp.x, z: sp.z, reach: 1.7, arrive: sp.run });
+  } else {
+    ndc.set((cx / window.innerWidth) * 2 - 1, -(cy / window.innerHeight) * 2 + 1);
+    ray.setFromCamera(ndc, camera);
+    const at = ray.intersectObject(world.terrain)[0]?.point;
+    if (!at) return;
+    const [i, j] = player.tiles.nearestFree(...player.tiles.tileAt(at.x, at.z)) || [];
+    if (i === undefined) return;
+    fx.tileMark(i, j);
+    player.command({ x: i + 0.5, z: j + 0.5, reach: 0.05 });
   }
 }
 function rest() {
@@ -283,7 +323,6 @@ function resize() {
   camera.aspect = w / h;
   camera.fov = w < h ? 55 : 40;
   camera.updateProjectionMatrix();
-  input.resetJoy();
 }
 window.addEventListener('resize', resize);
 resize();
@@ -297,7 +336,7 @@ let questZone = null, questT = 0;
 let resetting = false;
 function persist() {
   if (!started || resetting) return;
-  writeSave({ x: player.x, z: player.z, yaw: cam.yaw, dist: cam.dist, hp: player.hp, inv: inv.toJSON(), prog: prog.toJSON(), quests: quests.toJSON(), time: dayNight.t });
+  writeSave({ x: player.x, z: player.z, yaw: cam.yaw, dist: cam.dist, hp: player.hp, inv: inv.toJSON(), prog: prog.toJSON(), quests: quests.toJSON(), hotbar: hotbar.toJSON(), time: dayNight.t });
 }
 
 const clock = new THREE.Clock();
@@ -313,18 +352,17 @@ function frame() {
   cam.dist = clamp(cam.dist + c.zoom, 7, 20);
 
   const b = camBasis();
-  const m = started ? input.getMove() : { x: 0, y: 0 };
-  const move = { x: b.rx * m.x - b.fx * m.y, z: b.rz * m.x - b.fz * m.y };
   const paused = menus.open;
   if (input.tapped('bag') && started) menus.toggle('bag');
-  if (input.tapped('action') && nearAction && !paused) nearAction.run();
   const live = started && !paused;
-  const ctl = live ? { attack: input.held('attack'), dodge: input.tapped('dodge') } : { attack: false, dodge: false };
-  input.tapped('attack');
+  const clicks = input.takeClicks();
+  if (live) for (const c of clicks) tap(c.x, c.y);
+  const ctl = { dodge: live && (input.tapped('dodge') || wantDodge) };
+  wantDodge = false;
   if (!live) input.tapped('dodge');
 
   const wasRoll = player.state === 'roll';
-  player.update(live ? dt : 0, live ? move : { x: 0, z: 0 }, b, ctl, mobs);
+  player.update(live ? dt : 0, b, ctl, mobs);
   if (!wasRoll && player.state === 'roll') audio.play('dodge');
   if (live && player.moving && player.state === 'normal') {
     stepT -= dt;
@@ -337,9 +375,9 @@ function frame() {
   if (live) dayNight.update(dt, t); else if (!started) dayNight.update(0, t);
   world.update(dt, t);
   villagers.update(dt, player, b);
-  if (live) fx.update(dt, player, collect);
+  if (live) fx.update(dt);
   if (live) campRegen(dt);
-  updateAction();
+  hotbar.update();
   world.updateOcclusion(player.x, player.z, b);
 
   const py = world.heightAt(player.x, player.z);
@@ -412,4 +450,4 @@ tContinue.addEventListener('click', () => {
   }, 450);
 });
 
-window.__aibachu = { player, world, cam, mobs, fx, inv, prog, quests, villagers, menus, dayNight, audio, stats: world.stats };
+window.__aibachu = { player, world, cam, camera, mobs, fx, inv, prog, quests, villagers, menus, hotbar, dayNight, audio, stats: world.stats };

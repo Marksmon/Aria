@@ -47,29 +47,6 @@ html, body {
   image-rendering: auto;
 }
 
-#joy {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, .1);
-  border: 2px solid rgba(255, 255, 255, .28);
-  opacity: .55;
-  transition: opacity .15s;
-}
-#joy.active { opacity: 1; }
-#joy-knob {
-  position: absolute;
-  left: 34px;
-  top: 34px;
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  background: rgba(255, 240, 210, .55);
-  border: 2px solid rgba(46, 33, 24, .5);
-}
 
 #hint {
   position: absolute;
@@ -148,13 +125,6 @@ html, body {
 }
 #hint { right: auto; left: 50%; transform: translateX(-50%); white-space: nowrap; }
 
-#btns {
-  position: absolute;
-  right: calc(22px + env(safe-area-inset-right));
-  bottom: calc(22px + env(safe-area-inset-bottom));
-  width: 170px;
-  height: 150px;
-}
 .btn {
   position: absolute;
   pointer-events: auto;
@@ -169,9 +139,6 @@ html, body {
 }
 .btn svg { width: 58%; height: 58%; fill: none; stroke: #fff4dc; stroke-width: 3.4; stroke-linecap: round; stroke-linejoin: round; }
 .btn.pressed { transform: scale(.9); background: radial-gradient(circle at 35% 30%, rgba(255, 245, 225, .5), rgba(90, 60, 36, .7)); }
-#btn-attack { right: 0; bottom: 0; width: 84px; height: 84px; }
-#btn-dodge { right: 96px; bottom: 10px; width: 58px; height: 58px; }
-#btn-action { right: 8px; bottom: 98px; width: 66px; height: 66px; }
 
 #hurt {
   position: absolute;
@@ -207,10 +174,6 @@ html, body {
   width: 46px;
   height: 46px;
 }
-#btn-action { display: flex; flex-direction: column; gap: 0; }
-#btn-action[hidden] { display: none !important; }
-#btn-action img { width: 34px; height: 34px; }
-#btn-action span { font-size: 10px; margin-top: -3px; color: #fff4dc; text-shadow: 0 1px 2px #000; font-family: system-ui, sans-serif; font-weight: 700; letter-spacing: .04em; }
 
 #toasts {
   position: absolute;
@@ -441,3 +404,51 @@ html, body {
 .btnrow { display: flex; justify-content: flex-end; gap: 8px; }
 .go.soft { background: #b5a888; }
 @media (max-width: 520px) { .portrait { width: 60px; } }
+
+/* ---------- Tap controls: hotbar ---------- */
+#hud { z-index: 25; } /* above menus, so skills and items can be dragged onto the hotbar */
+#hotbar {
+  position: absolute;
+  left: 50%;
+  bottom: calc(10px + env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+  padding: 5px;
+  border-radius: 12px;
+  background: rgba(30, 22, 16, .55);
+  box-shadow: 0 0 0 2px rgba(46, 33, 24, .7), 0 4px 10px rgba(0, 0, 0, .35);
+  pointer-events: auto;
+  touch-action: none;
+}
+#hotbar.dropping { box-shadow: 0 0 0 3px #ffe37a, 0 4px 10px rgba(0, 0, 0, .35); }
+.hb {
+  position: relative;
+  width: 50px;
+  height: 50px;
+  padding: 0;
+  border-radius: 9px;
+  border: 2px solid rgba(255, 230, 180, .35);
+  background: radial-gradient(circle at 35% 30%, rgba(255, 245, 225, .22), rgba(60, 42, 28, .6));
+  display: grid;
+  place-items: center;
+  touch-action: none;
+}
+.hb img { width: 38px; height: 38px; pointer-events: none; }
+.hb.empty { border-style: dashed; background: rgba(60, 42, 28, .35); }
+.hb.out img { opacity: .35; }
+.hb.over { border-color: #ffe37a; box-shadow: 0 0 0 2px rgba(255, 227, 122, .5); }
+.hb.pressed { transform: scale(.92); }
+.hb b { position: absolute; right: 3px; bottom: 1px; font: 700 11px system-ui, sans-serif; color: #fff; text-shadow: 0 1px 2px #000; pointer-events: none; }
+.hb small { position: absolute; left: 4px; top: 1px; font: 700 9px system-ui, sans-serif; color: rgba(255, 244, 220, .7); pointer-events: none; }
+.hb i { position: absolute; inset: 0; border-radius: 7px; display: none; pointer-events: none; }
+.hb-ghost { position: fixed; left: 0; top: 0; width: 48px; height: 48px; pointer-events: none; z-index: 40; filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .5)); }
+.charm.skill { cursor: grab; touch-action: none; }
+.slot[data-drag] { touch-action: none; }
+#hint { bottom: calc(76px + env(safe-area-inset-bottom)); }
+@media (max-width: 420px) { .hb { width: 44px; height: 44px; } .hb img { width: 32px; height: 32px; } }
+
+/* the APK is locked to landscape; in a browser held upright, suggest turning the phone */
+#title .rotate { display: none; font: 600 13px system-ui, sans-serif; color: #ffe6a8; padding: 6px 12px; border-radius: 999px; background: rgba(30, 22, 16, .6); }
+@media (orientation: portrait) and (max-width: 700px) { #title .rotate { display: block; } }
+img { -webkit-user-drag: none; user-select: none; }

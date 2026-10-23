@@ -1,53 +1,39 @@
-// Touch: left 45% of the screen = floating joystick, right side = drag to rotate camera,
-// two fingers = pinch zoom. Desktop: WASD/arrows, Q/E rotate, mouse wheel zoom.
+// Ragnarok-style controls: tap (or click) the world to walk, attack, pick up or talk.
+// Touch: drag one finger to rotate the camera, pinch to zoom. Desktop: click, drag or Q/E to
+// rotate, mouse wheel to zoom. Keys: K / Shift dodge roll, I / B bag.
 
-const JOY_R = 55;
+const TAP_MOVE = 12;   // px a press may wander and still count as a tap
+const TAP_TIME = 450;  // ms
 
 export class Input {
-  constructor(joyEl, knobEl) {
-    this.joyEl = joyEl;
-    this.knobEl = knobEl;
-    this.joy = { id: null, ox: 0, oy: 0, x: 0, y: 0 };
-    this.cam = new Map();
+  constructor() {
+    this.ptrs = new Map(); // pointerId -> { x, y, sx, sy, t, drag }
     this.yawDelta = 0;
     this.zoomDelta = 0;
     this.keys = new Set();
     this.lastPinch = 0;
     this.enabled = false;
-    this.buttons = new Map(); // name -> pointerId
-    this.taps = new Set();    // one-shot presses
-    this.resetJoy();
+    this.taps = new Set();   // one-shot presses: bag, dodge
+    this.clicks = [];        // world taps: { x, y } in CSS pixels
 
     const opts = { passive: false };
     window.addEventListener('pointerdown', (e) => this.down(e), opts);
     window.addEventListener('pointermove', (e) => this.moveEvt(e), opts);
     window.addEventListener('pointerup', (e) => this.up(e), opts);
-    window.addEventListener('pointercancel', (e) => this.up(e), opts);
+    window.addEventListener('pointercancel', (e) => this.ptrs.delete(e.pointerId), opts);
     window.addEventListener('keydown', (e) => {
       const k = e.key.toLowerCase();
       if (!e.repeat) {
         if (k === 'k' || k === 'shift') this.taps.add('dodge');
-        if (k === 'f') this.taps.add('action');
         if (k === 'i' || k === 'b') this.taps.add('bag');
       }
       this.keys.add(k);
     });
     window.addEventListener('keyup', (e) => this.keys.delete(e.key.toLowerCase()));
-    window.addEventListener('blur', () => { this.keys.clear(); this.releaseJoy(); this.cam.clear(); });
+    window.addEventListener('blur', () => { this.keys.clear(); this.ptrs.clear(); });
     window.addEventListener('wheel', (e) => { this.zoomDelta += e.deltaY * 0.01; }, { passive: true });
     window.addEventListener('contextmenu', (e) => e.preventDefault());
-  }
-
-  resetJoy() {
-    // resting position, bottom-left
-    const x = 96, y = window.innerHeight - 96;
-    this.placeJoy(x, y);
-    this.joyEl.classList.remove('active');
-  }
-
-  placeJoy(x, y) {
-    this.joyEl.style.transform = `translate(${x - 60}px, ${y - 60}px)`;
-    this.knobEl.style.transform = 'translate(0px, 0px)';
+    window.addEventListener('dragstart', (e) => e.preventDefault()); // icons are dragged by hand
   }
 
   down(e) {
@@ -55,43 +41,29 @@ export class Input {
     const btn = e.target.closest?.('[data-btn]');
     if (btn) {
       e.preventDefault();
-      const name = btn.dataset.btn;
-      this.buttons.set(name, e.pointerId);
-      this.taps.add(name);
+      this.taps.add(btn.dataset.btn);
       btn.classList.add('pressed');
+      setTimeout(() => btn.classList.remove('pressed'), 120);
       return;
     }
     if (e.target.closest?.('.panel, .ui-click')) return; // menus handle their own taps
     e.preventDefault();
-    const left = e.clientX < window.innerWidth * 0.45;
-    if (left && this.joy.id === null) {
-      this.joy = { id: e.pointerId, ox: e.clientX, oy: e.clientY, x: 0, y: 0 };
-      this.placeJoy(e.clientX, e.clientY);
-      this.joyEl.classList.add('active');
-    } else {
-      this.cam.set(e.pointerId, { x: e.clientX, y: e.clientY });
-      if (this.cam.size === 2) this.lastPinch = this.pinchDist();
+    this.ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY, sx: e.clientX, sy: e.clientY, t: performance.now(), drag: false });
+    if (this.ptrs.size === 2) {
+      this.lastPinch = this.pinchDist();
+      for (const p of this.ptrs.values()) p.drag = true; // a pinch is never a tap
     }
   }
 
   moveEvt(e) {
-    if (e.pointerId === this.joy.id) {
-      e.preventDefault();
-      let dx = e.clientX - this.joy.ox, dy = e.clientY - this.joy.oy;
-      const d = Math.hypot(dx, dy);
-      if (d > JOY_R) { dx = (dx / d) * JOY_R; dy = (dy / d) * JOY_R; }
-      this.joy.x = dx / JOY_R;
-      this.joy.y = dy / JOY_R;
-      this.knobEl.style.transform = `translate(${dx}px, ${dy}px)`;
-      return;
-    }
-    const p = this.cam.get(e.pointerId);
+    const p = this.ptrs.get(e.pointerId);
     if (!p) return;
     e.preventDefault();
-    if (this.cam.size === 1) this.yawDelta -= (e.clientX - p.x) * 0.008;
+    if (Math.hypot(e.clientX - p.sx, e.clientY - p.sy) > TAP_MOVE) p.drag = true;
+    if (this.ptrs.size === 1 && p.drag) this.yawDelta -= (e.clientX - p.x) * 0.008;
     p.x = e.clientX;
     p.y = e.clientY;
-    if (this.cam.size === 2) {
+    if (this.ptrs.size === 2) {
       const d = this.pinchDist();
       this.zoomDelta -= (d - this.lastPinch) * 0.04;
       this.lastPinch = d;
@@ -99,50 +71,29 @@ export class Input {
   }
 
   up(e) {
-    for (const [name, id] of this.buttons) {
-      if (id === e.pointerId) {
-        this.buttons.delete(name);
-        document.querySelector(`[data-btn="${name}"]`)?.classList.remove('pressed');
-      }
-    }
-    if (e.pointerId === this.joy.id) this.releaseJoy();
-    this.cam.delete(e.pointerId);
-  }
-
-  releaseJoy() {
-    this.joy = { id: null, ox: 0, oy: 0, x: 0, y: 0 };
-    this.resetJoy();
+    const p = this.ptrs.get(e.pointerId);
+    if (!p) return;
+    this.ptrs.delete(e.pointerId);
+    if (!p.drag && performance.now() - p.t < TAP_TIME && this.ptrs.size === 0) this.clicks.push({ x: e.clientX, y: e.clientY });
   }
 
   pinchDist() {
-    const [a, b] = [...this.cam.values()];
+    const [a, b] = [...this.ptrs.values()];
     return a && b ? Math.hypot(a.x - b.x, a.y - b.y) : 0;
   }
 
-  // Returns screen-relative movement: x = right, y = down (screen), magnitude 0..1
-  getMove() {
-    let x = this.joy.x, y = this.joy.y;
-    const k = this.keys;
-    if (k.has('a') || k.has('arrowleft')) x -= 1;
-    if (k.has('d') || k.has('arrowright')) x += 1;
-    if (k.has('w') || k.has('arrowup')) y -= 1;
-    if (k.has('s') || k.has('arrowdown')) y += 1;
-    const m = Math.hypot(x, y);
-    if (m > 1) { x /= m; y /= m; }
-    return { x, y };
-  }
-
-  held(name) {
-    const k = this.keys;
-    if (name === 'attack' && (k.has(' ') || k.has('j'))) return true;
-    return this.buttons.has(name);
-  }
-
-  // true once per press (touch button or key)
+  // true once per press (bag button or key)
   tapped(name) {
     const hit = this.taps.has(name);
     this.taps.delete(name);
     return hit;
+  }
+
+  // world taps since the last call
+  takeClicks() {
+    const c = this.clicks;
+    this.clicks = [];
+    return c;
   }
 
   consumeCamera(dt) {

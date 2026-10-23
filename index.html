@@ -19,21 +19,10 @@
       <svg viewBox="0 0 48 48"><path d="M14 18h20l3 22H11z" /><path d="M18 18c0-6 3-9 6-9s6 3 6 9" /><path d="M17 27h14" /></svg>
     </div>
     <div id="toasts"></div>
-    <div id="joy"><div id="joy-knob"></div></div>
-    <div id="btns">
-      <div id="btn-action" class="btn" data-btn="action" aria-label="Use" hidden>
-        <img alt=""><span></span>
-      </div>
-      <div id="btn-dodge" class="btn" data-btn="dodge" aria-label="Dodge">
-        <svg viewBox="0 0 48 48"><path d="M10 30c4 8 18 10 25 2" /><path d="M31 26l5 6-7 2" /><path d="M14 18c3-6 12-9 19-5" /></svg>
-      </div>
-      <div id="btn-attack" class="btn" data-btn="attack" aria-label="Attack">
-        <svg viewBox="0 0 48 48"><path d="M33 9l6 0 0 6-17 17-6-6z" /><path d="M14 26l8 8" /><path d="M16 32l-6 6" /><circle cx="9" cy="39" r="2.5" /></svg>
-      </div>
-    </div>
+    <div id="hotbar"></div>
     <div id="hurt"></div>
     <div id="faint"><div>You fainted…</div><small>Returning to camp</small></div>
-    <div id="hint">Hold ⚔ to attack · Tap ↻ to dodge · Drag right side to rotate</div>
+    <div id="hint">Tap the ground to walk · Tap a monster to attack · Drag to turn the camera</div>
     <div id="fps"></div>
   </div>
   <div id="panel" class="panel"></div>
@@ -47,6 +36,7 @@
       <button id="t-new" class="tbtn" hidden>New Game</button>
       <button id="t-sound" class="tbtn small">Sound: On</button>
     </div>
+    <small class="rotate">↻ Turn your phone sideways for the best view</small>
     <small class="ver">v1.0 · Explore, fight, craft, survive the night</small>
   </div>
   <script type="module" src="/src/main.js"></script>

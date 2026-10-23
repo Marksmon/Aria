@@ -81,7 +81,35 @@ export class FX {
     }
   }
 
-  // item: id, tex: texture, onCollect(pickup) -> bool (true = picked up)
+  // tapped tile: a square that fades on the ground, like Ragnarok's cell cursor
+  tileMark(i, j) {
+    if (!this.mark) {
+      const c = document.createElement('canvas');
+      c.width = c.height = 64;
+      const g = c.getContext('2d');
+      g.strokeStyle = '#fff4dc'; g.lineWidth = 5; g.strokeRect(5, 5, 54, 54);
+      g.fillStyle = 'rgba(255,244,220,.18)'; g.fillRect(5, 5, 54, 54);
+      const geo = new THREE.PlaneGeometry(0.94, 0.94);
+      geo.rotateX(-Math.PI / 2);
+      this.mark = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({
+        map: new THREE.CanvasTexture(c), transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -3,
+      }));
+      this.mark.renderOrder = 1;
+      this.scene.add(this.mark);
+    }
+    this.mark.position.set(i + 0.5, this.world.heightAt(i + 0.5, j + 0.5) + 0.05, j + 0.5);
+    this.markT = 0.9;
+  }
+
+  // a ground pickup the player reached: remove it
+  take(p) {
+    const i = this.pickups.indexOf(p);
+    if (i < 0) return;
+    this.release(p.s);
+    this.pickups.splice(i, 1);
+  }
+
+  // item: id, tex: texture. Pickups stay on the ground until tapped (see take)
   drop(x, z, item, count, tex) {
     const s = this.sprite(tex, { bottom: true, renderOrder: 2 });
     s.material.depthTest = true;
@@ -100,7 +128,12 @@ export class FX {
     return p;
   }
 
-  update(dt, player, collect) {
+  update(dt) {
+    if (this.mark) {
+      this.markT -= dt;
+      this.mark.visible = this.markT > 0;
+      this.mark.material.opacity = Math.min(1, this.markT * 2.5);
+    }
     for (let i = this.live.length - 1; i >= 0; i--) {
       const e = this.live[i];
       e.t += dt;
@@ -131,19 +164,7 @@ export class FX {
       const pop = Math.min(1, p.t / 0.35);
       p.x += (p.tx - p.x) * Math.min(1, dt * 10);
       p.z += (p.tz - p.z) * Math.min(1, dt * 10);
-      let hop = pop < 1 ? Math.sin(pop * Math.PI) * 0.6 : 0.12 + Math.sin(p.t * 3) * 0.06;
-      // magnet toward the player
-      const dx = player.x - p.x, dz = player.z - p.z, d = Math.hypot(dx, dz);
-      if (pop >= 1 && player.state !== 'down' && d < 1.6) {
-        const sp = Math.min(d, dt * 7);
-        p.x += (dx / d) * sp; p.z += (dz / d) * sp;
-        p.tx = p.x; p.tz = p.z;
-        if (d < 0.45 && collect(p)) {
-          this.release(p.s);
-          this.pickups.splice(i, 1);
-          continue;
-        }
-      }
+      const hop = pop < 1 ? Math.sin(pop * Math.PI) * 0.6 : 0.12 + Math.sin(p.t * 3) * 0.06;
       const y = this.world.heightAt(p.x, p.z);
       p.s.position.set(p.x, y + hop, p.z);
       const fade = p.life - p.t;
