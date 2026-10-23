@@ -1,0 +1,45 @@
+{
+ "object": {
+  "id": "2f3df6f2-1d63-49f9-93f4-f562f91922ce",
+  "name": "base",
+  "prompt": "an iron viking-style helmet with a brass rim and two curved ivory horns, item only, nobody wearing it",
+  "size": {
+   "width": 48,
+   "height": 48
+  },
+  "directions": 8,
+  "view": "low top-down"
+ },
+ "spritesheet": {
+  "path": "an_iron_viking-style_helmet_wi.png",
+  "cell_size": {
+   "width": 48,
+   "height": 48
+  },
+  "sheet_size": {
+   "width": 384,
+   "height": 48
+  },
+  "columns": 8,
+  "pivot": "cell-center",
+  "rows": [
+   {
+    "row": 0,
+    "type": "rotations",
+    "frame_count": 8,
+    "directions": [
+     "south",
+     "south-east",
+     "east",
+     "north-east",
+     "north",
+     "north-west",
+     "west",
+     "south-west"
+    ]
+   }
+  ]
+ },
+ "export_version": "1.0",
+ "export_date": "2026-10-23T16:20:45.812256+00:00"
+}

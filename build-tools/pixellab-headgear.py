@@ -80,13 +80,10 @@ def save(oid, dest):
         layout = json.loads(z.read(next(n for n in names if n.endswith(".json"))))
         sheet = Image.open(io.BytesIO(z.read(next(n for n in names if n.endswith(".png"))))).convert("RGBA")
     json.dump(layout, open(os.path.join(dest, "layout.json"), "w"), indent=1)
-    cw = layout.get("cell_width") or layout.get("cell", {}).get("width") or layout.get("cellSize", {}).get("width")
-    ch = layout.get("cell_height") or layout.get("cell", {}).get("height") or layout.get("cellSize", {}).get("height")
-    dirs = DIR_ORDER
-    for row in layout.get("rows", []):
-        if row.get("kind") == "rotations" or row.get("animation") in (None, "rotations"):
-            dirs = row.get("directions") or DIR_ORDER
-            break
+    ss = layout["spritesheet"]
+    cw, ch = ss["cell_size"]["width"], ss["cell_size"]["height"]
+    rot = next(r for r in ss["rows"] if r.get("type") == "rotations")
+    dirs = rot.get("directions") or DIR_ORDER
     for i, d in enumerate(dirs):
         sheet.crop((i * cw, 0, (i + 1) * cw, ch)).save(os.path.join(dest, f"{d}.png"))
         log("saved", dest, d)
