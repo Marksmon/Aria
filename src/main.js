@@ -14,6 +14,7 @@ import { Quests, QUESTS, NPCS } from './quests.js';
 import { Villagers } from './villagers.js';
 import { Tiles } from './tiles.js';
 import { Hotbar } from './hotbar.js';
+import { derive } from './rules.js';
 import { Menus } from './menus.js';
 import { iconTexture, iconURL, ITEMS } from './items.js';
 import { DayNight } from './daynight.js';
@@ -68,11 +69,23 @@ quests.load(save?.quests);
 const villagers = new Villagers(scene, world, lib);
 player.tiles = new Tiles(world); // after the villagers: they block their tiles
 const inv = new Inventory();
-inv.level = () => prog.level;
+inv.level = () => prog.baseLv;
 inv.load(save?.inv);
-inv.applyTo(player, prog);
-if (save?.hp) player.hp = clamp(save.hp, 1, player.maxHp);
-inv.onChange(() => inv.applyTo(player, prog));
+// stats + gear -> the player's battle numbers (Ragnarok rules); HP/SP stay put, capped by the new max
+function applyStats() {
+  const ps = derive(prog, inv.gearStats());
+  player.ps = ps;
+  player.maxHp = ps.maxHp;
+  player.maxSp = ps.maxSp;
+  player.hp = Math.min(player.hp, ps.maxHp);
+  player.sp = Math.min(player.sp, ps.maxSp);
+  player.speedMul = inv.wearing('speed') ? 1.2 : 1;
+  player.blockChance = inv.wearing('block') ? 0.2 : 0;
+}
+applyStats();
+player.hp = typeof save?.hp === 'number' && save.prog?.v === 2 ? clamp(save.hp, 1, player.maxHp) : player.maxHp;
+player.sp = typeof save?.sp === 'number' ? clamp(save.sp, 0, player.maxSp) : player.maxSp;
+inv.onChange(applyStats);
 
 const input = new Input();
 const ui = new UI(world);
@@ -85,16 +98,28 @@ cam.target.set(player.x, world.heightAt(player.x, player.z), player.z);
 const audio = new Audio();
 
 // ---------- combat wiring ----------
+// damage numbers float up from whoever was hit, Ragnarok style
+const overHead = (o, h) => world.heightAt(o.x, o.z) + h;
 player.on('swing', () => audio.play('swing'));
-player.on('hit', () => audio.play('hit'));
-player.on('hurt', () => { ui.hurt(); cam.shake = 0.25; audio.play('hurt'); });
+player.on('strike', (m, res) => {
+  const y = overHead(m, m.sprite.scale.y * 0.8);
+  if (res.miss) fx.number(m.x, y, m.z, 'Miss', 'miss');
+  else { fx.number(m.x, y, m.z, res.dmg, res.crit ? 'crit' : 'dealt'); audio.play('hit'); }
+});
+player.on('hurt', (n) => {
+  ui.hurt(); cam.shake = 0.2; audio.play('hurt');
+  fx.number(player.x, overHead(player, 1.3), player.z, n, 'taken');
+});
+mobs.on('miss', (m, res) => fx.number(player.x, overHead(player, 1.3), player.z, res.dodge ? 'Lucky!' : 'Miss', 'miss'));
 player.on('block', () => {
   audio.play('block');
   fx.sparkle(player.x, world.heightAt(player.x, player.z) + 0.8, player.z, '#e8eef5', 5);
+  fx.number(player.x, overHead(player, 1.3), player.z, 'Block', 'miss');
 });
 player.on('faint', () => {
   audio.play('faint');
-  ui.faint(true);
+  const lost = prog.deathPenalty();
+  ui.faint(true, lost.base || lost.job ? `Returning to camp · lost ${lost.base} Base EXP, ${lost.job} Job EXP` : 'Returning to camp');
   setTimeout(() => {
     player.revive(world.spawn.x, world.spawn.z);
     cam.target.set(player.x, world.heightAt(player.x, player.z), player.z);
@@ -103,12 +128,9 @@ player.on('faint', () => {
 });
 mobs.on('death', (m, drops) => {
   audio.play('kill');
-  gainXp(m.def.xp);
+  gainExp(...m.def.exp);
   for (const id of quests.onKill(m.type)) questComplete(id);
-  for (const [item, count] of drops) {
-    if (item === 'heart') fx.drop(m.x, m.z, 'heart', 1, lib.fx.heart);
-    else fx.drop(m.x, m.z, item, count, iconTexture(item));
-  }
+  for (const [item, count] of drops) fx.drop(m.x, m.z, item, count, iconTexture(item));
 });
 
 mobs.on('spore', (m) => {
@@ -121,15 +143,27 @@ mobs.on('spore', (m) => {
   }
 });
 
-// ---------- experience ----------
-function gainXp(n) {
-  const ups = prog.gain(n * (inv.gear.charm === 'glow' ? 1.25 : 1));
-  if (!ups) return;
-  inv.applyTo(player, prog);
-  player.heal(player.maxHp);
-  audio.play('levelup');
-  fx.sparkle(player.x, world.heightAt(player.x, player.z) + 0.6, player.z, '#ffe37a', 14);
-  menus.message(`Level ${prog.level}! Hearts restored. Spend your point in Bag → Hero.`);
+// ---------- experience: Base and Job EXP, like Ragnarok ----------
+function gainExp(base, job) {
+  const k = inv.wearing('exp') ? 1.25 : 1;
+  const ups = prog.gain(Math.round(base * k), Math.round(job * k));
+  if (!ups.base && !ups.job) return;
+  applyStats();
+  const y = world.heightAt(player.x, player.z);
+  if (ups.base) {
+    player.heal(player.maxHp); // a base level up restores HP and SP
+    player.healSp(player.maxSp);
+    audio.play('levelup');
+    fx.sparkle(player.x, y + 0.6, player.z, '#ffe37a', 14);
+    fx.number(player.x, y + 1.9, player.z, 'Level Up', 'level');
+    menus.message(`Base Level ${prog.baseLv}! ${prog.statPoints} stat point${prog.statPoints === 1 ? '' : 's'} to spend in the Status window.`);
+  }
+  if (ups.job) {
+    if (!ups.base) audio.play('levelup');
+    fx.sparkle(player.x, y + 0.6, player.z, '#9fd4ff', 10);
+    fx.number(player.x, y + (ups.base ? 2.3 : 1.9), player.z, 'Job Level Up', 'job');
+    menus.message(`Job Level ${prog.jobLv}!`);
+  }
   if (menus.open) menus.render();
   persist();
 }
@@ -147,14 +181,14 @@ function giveReward(r) {
     if (got < n) inv.chest.add(id, n - got); // bag full: it goes to the chest
     menus.toast(id, n);
   }
-  gainXp(r.xp);
+  gainExp(r.xp, r.job ?? Math.round(r.xp * 0.7));
 }
 // '!' / '?' bubbles over villagers and the quest list under the clock
 const tracker = document.getElementById('quests');
 let trackerHTML = '';
 function refreshQuests() {
   villagers.setMarks((npc) => {
-    const st = quests.status(npc, prog.level, inv).state;
+    const st = quests.status(npc, prog.baseLv, inv).state;
     return st === 'offer' ? 'offer' : st === 'ready' ? 'ready' : null;
   });
   let h = '';
@@ -167,12 +201,6 @@ function refreshQuests() {
 
 let bagFullNote = 0;
 function collect(p) {
-  if (p.item === 'heart') {
-    if (player.hp >= player.maxHp) return false; // leave it for later
-    player.heal(2);
-    audio.play('heart');
-    return true;
-  }
   const got = inv.add(p.item, p.count);
   if (got) { menus.toast(p.item, got); audio.play('pickup'); }
   if (got < p.count) {
@@ -186,17 +214,22 @@ function collect(p) {
 // ---------- menus + camp interactions ----------
 const menus = new Menus(inv, prog, player, {
   usePotion() {
-    if (player.hp >= player.maxHp) { menus.message('Your hearts are already full'); return; }
-    if (inv.bag.remove('potion', 1)) { player.heal(6); inv.changed(); menus.message('You feel better'); }
+    if (player.hp >= player.maxHp) { menus.message('Your HP is already full'); return; }
+    if (inv.bag.remove('potion', 1)) {
+      const n = player.heal(45 + Math.floor(Math.random() * 21)); // like a Red Potion: 45-65 HP
+      fx.number(player.x, overHead(player, 1.3), player.z, n, 'heal');
+      inv.changed();
+    }
   },
   crafted() { audio.play('craft'); persist(); },
-  raised() { inv.applyTo(player, prog); audio.play('craft'); persist(); },
+  equipped() { audio.play('ui'); persist(); },
+  raised() { applyStats(); audio.play('craft'); persist(); },
   accept(id) {
     quests.accept(id);
     for (const done of quests.onZone(world.zoneAt(player.x, player.z))) questComplete(done);
     audio.play('ui');
     menus.message(`New quest: ${QUESTS[id].title}`);
-    menus.close();
+    menus.close('talk');
     refreshQuests();
   },
   handIn(id) {
@@ -215,7 +248,7 @@ const menus = new Menus(inv, prog, player, {
 });
 menus.quests = quests;
 const portraits = {};
-menus.portrait = (id) => (portraits[id] ||= lib.villagers[id].anims.down.idle[0].image.toDataURL());
+menus.portrait = (id) => (portraits[id] ||= (id === 'player' ? lib.player : lib.villagers[id]).anims.down.idle[0].image.toDataURL());
 // things at camp you tap to use: the player walks over, then it opens. h = height on screen
 const SPOTS = [
   { ...world.camp.fire, h: 0.9, run: () => menus.show('craft') },
@@ -307,14 +340,17 @@ const dayNight = new DayNight({
 });
 if (typeof save?.time === 'number') dayNight.t = save.time;
 
-// resting at camp slowly restores hearts
-let regenT = 0;
-function campRegen(dt) {
+// natural recovery, Ragnarok style: HP every 6 s, SP every 8 s, twice as often resting at camp
+// (like sitting) or, for HP, with the Sprout Charm
+let hpT = 0, spT = 0;
+function naturalRegen(dt) {
+  if (player.state === 'down') return;
   const atCamp = Math.hypot(player.x - 32, player.z - 32) < 5.5;
-  const every = atCamp ? 2.5 : inv.gear.charm === 'sprout' ? 10 : 0; // Sprout Charm: slow regen anywhere
-  if (!every || player.state === 'down' || player.hp >= player.maxHp) { regenT = 0; return; }
-  regenT += dt;
-  if (regenT > every) { regenT = 0; player.heal(1); }
+  const fast = atCamp ? 2 : 1;
+  hpT += dt * fast * (inv.wearing('regen') ? 2 : 1);
+  spT += dt * fast;
+  if (hpT >= 6) { hpT -= 6; player.heal(player.ps.hpRegen); }
+  if (spT >= 8) { spT -= 8; player.healSp(player.ps.spRegen); }
 }
 
 function resize() {
@@ -336,7 +372,7 @@ let questZone = null, questT = 0;
 let resetting = false;
 function persist() {
   if (!started || resetting) return;
-  writeSave({ x: player.x, z: player.z, yaw: cam.yaw, dist: cam.dist, hp: player.hp, inv: inv.toJSON(), prog: prog.toJSON(), quests: quests.toJSON(), hotbar: hotbar.toJSON(), time: dayNight.t });
+  writeSave({ x: player.x, z: player.z, yaw: cam.yaw, dist: cam.dist, hp: player.hp, sp: player.sp, inv: inv.toJSON(), prog: prog.toJSON(), quests: quests.toJSON(), hotbar: hotbar.toJSON(), time: dayNight.t });
 }
 
 const clock = new THREE.Clock();
@@ -352,9 +388,10 @@ function frame() {
   cam.dist = clamp(cam.dist + c.zoom, 7, 20);
 
   const b = camBasis();
-  const paused = menus.open;
-  if (input.tapped('bag') && started) menus.toggle('bag');
-  const live = started && !paused;
+  // windows never pause the game, like Ragnarok
+  for (const w of ['items', 'equip', 'skills', 'status']) if (input.tapped(w) && started) menus.toggle(w);
+  if (input.tapped('close')) menus.close();
+  const live = started;
   const clicks = input.takeClicks();
   if (live) for (const c of clicks) tap(c.x, c.y);
   const ctl = { dodge: live && (input.tapped('dodge') || wantDodge) };
@@ -376,7 +413,7 @@ function frame() {
   world.update(dt, t);
   villagers.update(dt, player, b);
   if (live) fx.update(dt);
-  if (live) campRegen(dt);
+  if (live) naturalRegen(dt);
   hotbar.update();
   world.updateOcclusion(player.x, player.z, b);
 

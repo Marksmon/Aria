@@ -2,22 +2,25 @@
 // below 30% HP they wobble and slow down, at 0 they vanish in a puff.
 import * as THREE from 'three';
 import { mulberry32, dirFor } from './noise.js';
+import { mobAttack } from './rules.js';
 
 const CAMP_SAFE = 8.5; // monsters never enter the camp circle
 
-// xp = experience for beating it. drops: [itemId, min, max, chance]
+// Battle stats follow Ragnarok's rules (rules.js): lv, hp, atk [min, max], def (hard DEF %),
+// vit (soft DEF), agi (FLEE = lv + agi), dex (HIT = lv + dex), exp [base, job], adelay = ms
+// between attacks. Each is modelled on a classic monster of the same level.
+// drops: [itemId, min, max, chance]
 export const MOB_DEFS = {
-  slime:     { name: 'Green Slime', xp: 3, ai: 'hopper', art: 'slime', hp: 3, speed: 1.7, aggro: 4.5, chase: 4, dmg: 1, reach: 0.8, w: 0.9, r: 0.35, drops: [['gel', 1, 2, 1]] },
-  blueSlime: { name: 'Blue Slime', xp: 4, ai: 'hopper', art: 'slimeBlue', hp: 4, speed: 1.8, aggro: 4.5, chase: 4.5, dmg: 1, reach: 0.8, w: 1.0, r: 0.38, split: 'miniSlime', drops: [['gel', 1, 1, 1], ['dew', 1, 1, 0.6]] },
-  miniSlime: { name: 'Mini Slime', xp: 1, ai: 'hopper', art: 'slimeBlue', hp: 1, speed: 2.3, aggro: 6, chase: 5, dmg: 1, reach: 0.6, w: 0.55, r: 0.22, noRespawn: true, drops: [['dew', 1, 1, 0.5]] },
-  sprout:    { name: 'Sproutling', xp: 3, ai: 'skittish', art: 'sprout', hp: 3, speed: 1.5, flee: 2.9, fear: 3.5, angry: 6, dmg: 1, reach: 0.8, w: 0.95, r: 0.35, drops: [['seed', 1, 1, 1], ['leaf', 1, 1, 0.6]] },
-  crab:      { name: 'Mudcrab', xp: 5, ai: 'crab', art: 'crab', hp: 5, speed: 1.6, aggro: 5, dmg: 1, reach: 0.85, w: 1.1, r: 0.42, drops: [['shell', 1, 2, 1]] },
-  mushling:  { name: 'Mushling', xp: 5, ai: 'puffer', art: 'mushling', hp: 4, speed: 1.2, aggro: 4, chase: 6, dmg: 1, reach: 0.8, w: 0.95, r: 0.36, drops: [['spore', 1, 2, 1]] },
-  beetle:    { name: 'Pebble Beetle', xp: 8, ai: 'tank', art: 'beetle', hp: 6, speed: 1.15, aggro: 4, chase: 8, dmg: 2, reach: 0.9, w: 1.15, r: 0.45, heavy: true, drops: [['stone', 1, 2, 1]] },
-  wisp:      { name: 'Firefly Wisp', xp: 4, ai: 'wisp', art: 'wisp', hp: 2, speed: 2.4, aggro: 6, dmg: 1, reach: 0.75, w: 0.7, r: 0.3, fly: true, night: true, drops: [['glow', 1, 1, 1]] },
+  slime:     { name: 'Green Slime', ai: 'hopper', art: 'slime', lv: 1,  hp: 50,  atk: [7, 10],  def: 0,  vit: 1,  agi: 1,  dex: 6,  exp: [2, 1],   adelay: 1872, speed: 1.7, aggro: 4.5, chase: 4, reach: 0.8, w: 0.9, r: 0.35, drops: [['gel', 1, 2, 1]] },
+  blueSlime: { name: 'Blue Slime', ai: 'hopper', art: 'slimeBlue', lv: 5,  hp: 120, atk: [11, 14], def: 0,  vit: 5,  agi: 5,  dex: 10, exp: [6, 5],   adelay: 1600, speed: 1.8, aggro: 4.5, chase: 4.5, reach: 0.8, w: 1.0, r: 0.38, split: 'miniSlime', drops: [['gel', 1, 1, 1], ['dew', 1, 1, 0.6]] },
+  miniSlime: { name: 'Mini Slime', ai: 'hopper', art: 'slimeBlue', lv: 3,  hp: 40,  atk: [8, 11],  def: 0,  vit: 3,  agi: 3,  dex: 8,  exp: [2, 2],   adelay: 1400, speed: 2.3, aggro: 6, chase: 5, reach: 0.6, w: 0.55, r: 0.22, noRespawn: true, drops: [['dew', 1, 1, 0.5]] },
+  sprout:    { name: 'Sproutling', ai: 'skittish', art: 'sprout', lv: 3,  hp: 60,  atk: [9, 12],  def: 0,  vit: 3,  agi: 3,  dex: 8,  exp: [6, 2],   adelay: 1456, speed: 1.5, flee: 2.9, fear: 3.5, angry: 6, reach: 0.8, w: 0.95, r: 0.35, drops: [['seed', 1, 1, 1], ['leaf', 1, 1, 0.6]] },
+  crab:      { name: 'Mudcrab', ai: 'crab', art: 'crab', lv: 7,  hp: 150, atk: [18, 24], def: 5,  vit: 8,  agi: 6,  dex: 11, exp: [15, 9],  adelay: 1300, speed: 1.6, aggro: 5, reach: 0.85, w: 1.1, r: 0.42, drops: [['shell', 1, 2, 1]] },
+  mushling:  { name: 'Mushling', ai: 'puffer', art: 'mushling', lv: 12, hp: 405, atk: [26, 35], def: 0,  vit: 24, agi: 12, dex: 36, exp: [45, 32], adelay: 1768, speed: 1.2, aggro: 4, chase: 6, reach: 0.8, w: 0.95, r: 0.36, drops: [['spore', 1, 2, 1]] },
+  beetle:    { name: 'Pebble Beetle', ai: 'tank', art: 'beetle', lv: 16, hp: 620, atk: [50, 62], def: 10, vit: 24, agi: 17, dex: 26, exp: [90, 60], adelay: 1500, speed: 1.15, aggro: 4, chase: 8, reach: 0.9, w: 1.15, r: 0.45, heavy: true, drops: [['stone', 1, 2, 1]] },
+  wisp:      { name: 'Firefly Wisp', ai: 'wisp', art: 'wisp', lv: 8,  hp: 169, atk: [22, 27], def: 5,  vit: 8,  agi: 20, dex: 17, exp: [19, 15], adelay: 1292, speed: 2.4, aggro: 6, reach: 0.75, w: 0.7, r: 0.3, fly: true, night: true, drops: [['glow', 1, 1, 1]] },
 };
 
-const HEART_CHANCE = 0.15;
 const RESPAWN = 60;
 const ATTACK_ANIM = 0.5; // PixelLab monsters play their attack animation for this long
 const STRIDE = 1.5;      // walk cycle length in body widths: legs keep pace with the ground
@@ -90,7 +93,7 @@ class Mob {
     if (!this.alive) return;
     this.hp -= dmg;
     this.flash = 0.09;
-    const k = this.def.heavy ? 2.2 : 4;
+    const k = this.def.heavy ? 0.8 : 1.6; // a small nudge: Ragnarok monsters barely move when hit
     this.knock.x = fx * k;
     this.knock.z = fz * k;
     if (this.def.ai === 'skittish') this.angry = this.def.angry;
@@ -143,12 +146,15 @@ class Mob {
     };
     const contact = () => {
       if (available && dist < d.reach + 0.3 && this.atkCd <= 0) {
-        if (p.takeDamage(d.dmg, this.x, this.z)) {
+        if (p.canBeHit()) {
+          const res = mobAttack(d, p.ps);
+          if (res.miss) this.mgr.emit('miss', this, res);
+          else p.takeDamage(res.dmg, this.x, this.z);
           this.mgr.emit('attack', this);
           this.atkAnim = ATTACK_ANIM;
           if (dist > 0.01) this.heading = { x: dx / dist, z: dz / dist };
         }
-        this.atkCd = 1.2;
+        this.atkCd = d.adelay / 1000;
       }
     };
 
@@ -342,7 +348,6 @@ export class MobManager {
     for (const [item, min, max, chance] of m.def.drops) {
       if (Math.random() < chance) drops.push([item, min + Math.floor(Math.random() * (max - min + 1))]);
     }
-    if (Math.random() < HEART_CHANCE) drops.push(['heart', 1]);
     this.emit('death', m, drops);
     if (m.def.split) {
       for (const s of [-1, 1]) {

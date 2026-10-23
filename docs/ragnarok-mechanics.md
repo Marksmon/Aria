@@ -8,7 +8,19 @@ Aria uses these rules with its own monsters, items and places.
 
 ## Stats and stat points
 
-Six stats, each starting at 1 (max 99): STR, AGI, VIT, INT, DEX, LUK.
+Six stats, each starting at 1 (max 99): STR, AGI, VIT, INT, DEX, LUK. Aria uses the same rules
+under its own names:
+
+| Ragnarok | Aria |
+|---|---|
+| STR | POW (Power) |
+| AGI | QKN (Quickness) |
+| VIT | END (Endurance) |
+| INT | KNL (Knowledge) |
+| DEX | FNS (Finesse) |
+| LUK | FTN (Fortune) |
+
+The formulas below keep Ragnarok's names.
 
 | | Rule |
 |---|---|

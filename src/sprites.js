@@ -367,25 +367,6 @@ function puff() {
   return c;
 }
 
-export function heartPath(g, x, y, s) {
-  g.beginPath();
-  g.moveTo(x, y + s * 0.3);
-  g.bezierCurveTo(x, y, x - s * 0.5, y - s * 0.05, x - s * 0.5, y + s * 0.3);
-  g.bezierCurveTo(x - s * 0.5, y + s * 0.6, x - s * 0.15, y + s * 0.75, x, y + s * 0.95);
-  g.bezierCurveTo(x + s * 0.15, y + s * 0.75, x + s * 0.5, y + s * 0.6, x + s * 0.5, y + s * 0.3);
-  g.bezierCurveTo(x + s * 0.5, y - s * 0.05, x, y, x, y + s * 0.3);
-  g.closePath();
-}
-
-function heartPickup() {
-  const { c, g } = mk(56, 56);
-  heartPath(g, 28, 6, 46);
-  g.fillStyle = '#e04a4a'; g.fill();
-  g.strokeStyle = OUT; g.lineWidth = 3.5; g.stroke();
-  ell(g, 18, 18, 5, 4, 'rgba(255,255,255,.6)', null);
-  return c;
-}
-
 // ---------- Library ----------
 function tex(canvas, opts = {}) {
   const t = new THREE.CanvasTexture(canvas);
@@ -504,7 +485,7 @@ export function createSprites() {
     mobs,
     villagers,
     marks: { offer: tex(questMark('!', '#e3a13a')), ready: tex(questMark('?', '#5fae45')) },
-    fx: { slash: tex(slashArc()), puff: tex(puff()), heart: tex(heartPickup()) },
+    fx: { slash: tex(slashArc()), puff: tex(puff()) },
     props,
     fire: { frames: fireFrames, aspect: fireAspect, w: 1.2 },
     player: sheet('player'),

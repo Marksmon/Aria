@@ -13,11 +13,17 @@
     <canvas id="minimap" width="128" height="128"></canvas>
     <div id="clock"><i></i><span>06:00</span></div>
     <div id="quests"></div>
-    <canvas id="hearts" width="220" height="44"></canvas>
-    <div id="lvl"><b>Lv 1</b><i><s></s></i><em hidden>+</em></div>
-    <div id="btn-bag" class="btn" data-btn="bag" aria-label="Bag">
-      <svg viewBox="0 0 48 48"><path d="M14 18h20l3 22H11z" /><path d="M18 18c0-6 3-9 6-9s6 3 6 9" /><path d="M17 27h14" /></svg>
+    <div id="info">
+      <div class="who"><b class="jobname">Novice</b><span class="lv">Base Lv 1 · Job Lv 1</span><em hidden>+</em></div>
+      <div class="bar hp"><i></i><span>HP 40 / 40</span></div>
+      <div class="bar sp"><i></i><span>SP 11 / 11</span></div>
+      <div class="exp base"><small>Base</small><i><s></s></i><em>0.0%</em></div>
+      <div class="exp job"><small>Job</small><i><s></s></i><em>0.0%</em></div>
     </div>
+    <div id="winbtns">
+      <button data-btn="status">Status</button><button data-btn="equip">Equip</button><button data-btn="items">Items</button><button data-btn="skills">Skills</button>
+    </div>
+    <div id="windows"></div>
     <div id="toasts"></div>
     <div id="hotbar"></div>
     <div id="hurt"></div>
@@ -25,7 +31,6 @@
     <div id="hint">Tap the ground to walk · Tap a monster to attack · Drag to turn the camera</div>
     <div id="fps"></div>
   </div>
-  <div id="panel" class="panel"></div>
   <div id="title">
     <div class="logo">
       <h1>Aria</h1>

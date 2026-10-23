@@ -1,70 +1,64 @@
-// Items, gear and recipes, plus the painted icons used both on the ground and in menus.
+// Items (materials, usables and equipment) and recipes, plus the painted icons used both on the ground and in menus.
 import * as THREE from 'three';
 
+// type: use (Usables tab), equip (Equips tab, one per slot, never stacks) or misc (Miscs tab).
+// Equipment: slot (weapon, armor, shoes, light, acc), atk + wlv for weapons, def, and fx for a
+// special effect. icon names the painted icon when it isn't the item's own id.
 export const ITEMS = {
-  gel:    { name: 'Slime Gel',  desc: 'Wobbly and a little sticky.', from: 'Slimes' },
-  dew:    { name: 'Dew Drop',   desc: 'Cool water that never spills.', from: 'Blue Slimes' },
-  seed:   { name: 'Sprout Seed', desc: 'It wiggles when you hold it.', from: 'Sproutlings' },
-  leaf:   { name: 'Fresh Leaf', desc: 'Soft, green and tough.', from: 'Sproutlings' },
-  shell:  { name: 'Shell Bit',  desc: 'A hard pink fragment.', from: 'Mudcrabs' },
-  spore:  { name: 'Spore Cap',  desc: 'Smells like rain in the woods.', from: 'Mushlings' },
-  stone:  { name: 'Stone Chip', desc: 'Sharp ridge stone.', from: 'Pebble Beetles' },
-  glow:   { name: 'Glow Dust',  desc: 'Faintly warm, glows at night.', from: 'Firefly Wisps' },
-  potion: { name: 'Healing Draught', desc: 'Restores 3 hearts. Tap Use.', usable: true },
+  gel:    { type: 'misc', name: 'Slime Gel',  desc: 'Wobbly and a little sticky.', from: 'Slimes' },
+  dew:    { type: 'misc', name: 'Dew Drop',   desc: 'Cool water that never spills.', from: 'Blue Slimes' },
+  seed:   { type: 'misc', name: 'Sprout Seed', desc: 'It wiggles when you hold it.', from: 'Sproutlings' },
+  leaf:   { type: 'misc', name: 'Fresh Leaf', desc: 'Soft, green and tough.', from: 'Sproutlings' },
+  shell:  { type: 'misc', name: 'Shell Bit',  desc: 'A hard pink fragment.', from: 'Mudcrabs' },
+  spore:  { type: 'misc', name: 'Spore Cap',  desc: 'Smells like rain in the woods.', from: 'Mushlings' },
+  stone:  { type: 'misc', name: 'Stone Chip', desc: 'Sharp ridge stone.', from: 'Pebble Beetles' },
+  glow:   { type: 'misc', name: 'Glow Dust',  desc: 'Faintly warm, glows at night.', from: 'Firefly Wisps' },
+  potion: { type: 'use', name: 'Healing Draught', desc: 'Restores 45–65 HP.', usable: true },
+
+  // one-handed swords (Ragnarok rules, see rules.js)
+  twig_sword:   { type: 'equip', slot: 'weapon', name: 'Twig Sword',  atk: 15, wlv: 1, icon: 'weapon0', desc: 'A stick with ambitions.' },
+  stone_blade:  { type: 'equip', slot: 'weapon', name: 'Stone Blade', atk: 25, wlv: 1, icon: 'weapon1', desc: 'Ridge stone, knapped sharp.' },
+  ember_edge:   { type: 'equip', slot: 'weapon', name: 'Ember Edge',  atk: 44, wlv: 2, icon: 'weapon2', desc: 'Warm to the touch, glowing at the edge.' },
+  // body armor: hard DEF
+  clothes:      { type: 'equip', slot: 'armor', name: 'Traveler Clothes', def: 1, icon: 'armor0', desc: 'Patched and comfortable.' },
+  leaf_tunic:   { type: 'equip', slot: 'armor', name: 'Leaf Tunic',  def: 2, icon: 'armor1', desc: 'Woven leaves, surprisingly tough.' },
+  shell_mail:   { type: 'equip', slot: 'armor', name: 'Shell Mail',  def: 4, icon: 'armor2', desc: 'Overlapping shell plates.' },
+  beetle_plate: { type: 'equip', slot: 'armor', name: 'Beetle Plate', def: 6, icon: 'armor3', desc: 'Heavy, dark and very hard.' },
+  swift_boots:  { type: 'equip', slot: 'shoes', name: 'Swift Boots', def: 1, fx: 'speed', icon: 'boots', desc: '+20% move speed.' },
+  torch:        { type: 'equip', slot: 'light', name: 'Torch', fx: 'light', desc: 'Lights your way at night.' },
+  // accessories: one can be worn at a time
+  sprout_charm: { type: 'equip', slot: 'acc', name: 'Sprout Charm', fx: 'regen', icon: 'charm_sprout', desc: 'HP recovers twice as fast.' },
+  spore_charm:  { type: 'equip', slot: 'acc', name: 'Spore Charm',  fx: 'aspd',  icon: 'charm_spore', desc: '+10% attack speed.' },
+  shell_charm:  { type: 'equip', slot: 'acc', name: 'Shell Charm',  fx: 'block', icon: 'charm_shell', desc: '1 in 5 hits is blocked.' },
+  glow_charm:   { type: 'equip', slot: 'acc', name: 'Glow Charm',   fx: 'exp',   icon: 'charm_glow', desc: '+25% experience.' },
 };
 
-export const WEAPONS = [
-  { name: 'Twig Sword',  dmg: 1,   spd: 1.5 },
-  { name: 'Stone Blade', dmg: 1.5, spd: 1.8 },
-  { name: 'Ember Edge',  dmg: 2,   spd: 2.2 },
-];
-export const ARMORS = [
-  { name: 'Traveler Clothes', hearts: 0 },
-  { name: 'Leaf Tunic',  hearts: 1 },
-  { name: 'Shell Mail',  hearts: 2 },
-  { name: 'Beetle Plate', hearts: 3 },
-];
+// equipment slots, in the Equipment window's order
+export const SLOTS = { weapon: 'Weapon', armor: 'Armor', shoes: 'Shoes', light: 'Light', acc: 'Accessory' };
 
-// One charm can be worn at a time; swap them in the Hero tab of the bag.
-export const CHARMS = {
-  sprout: { name: 'Sprout Charm', desc: 'Slowly restores hearts anywhere' },
-  spore:  { name: 'Spore Charm',  desc: '+15% swing speed' },
-  shell:  { name: 'Shell Charm',  desc: '1 in 5 hits is blocked' },
-  glow:   { name: 'Glow Charm',   desc: '+25% experience' },
-};
+// one line on what a piece of equipment does
+export function equipLine(it) {
+  const p = [];
+  if (it.atk) p.push(`ATK ${it.atk}`, `Weapon Lv ${it.wlv}`);
+  if (it.def) p.push(`DEF ${it.def}`);
+  return p.join(' · ');
+}
 
-// kind: weapon|armor (tier = new tier, needs tier-1), tool (one-off), charm, item (stackable result)
-// lv = player level needed to craft it
+// Everything crafts into an item in the bag; lv = Base Level needed to craft it
 export const RECIPES = [
-  { id: 'stoneblade', kind: 'weapon', tier: 1, lv: 3, cost: { stone: 4, shell: 3 }, desc: 'Damage 1.5 · 1.8 swings/s' },
-  { id: 'emberedge',  kind: 'weapon', tier: 2, lv: 6, cost: { stone: 6, glow: 4, spore: 3 }, desc: 'Damage 2 · 2.2 swings/s' },
-  { id: 'leaftunic',  kind: 'armor',  tier: 1, lv: 2, cost: { leaf: 6, seed: 4 }, desc: '+1 heart' },
-  { id: 'shellmail',  kind: 'armor',  tier: 2, lv: 4, cost: { shell: 6, gel: 4 }, desc: '+2 hearts total' },
-  { id: 'beetleplate', kind: 'armor', tier: 3, lv: 7, cost: { stone: 8, dew: 4, spore: 2 }, desc: '+3 hearts total' },
-  { id: 'potion',     kind: 'item', item: 'potion', cost: { gel: 2, dew: 1, leaf: 1 }, desc: 'Restores 3 hearts' },
-  { id: 'torch',      kind: 'tool', tool: 'torch', cost: { glow: 3, leaf: 2 }, desc: 'Lights your way at night' },
-  { id: 'boots',      kind: 'tool', tool: 'boots', cost: { shell: 4, dew: 3, leaf: 3 }, desc: '+20% move speed' },
-  { id: 'c_sprout', kind: 'charm', charm: 'sprout', lv: 2, cost: { seed: 5, leaf: 3 }, desc: CHARMS.sprout.desc },
-  { id: 'c_spore',  kind: 'charm', charm: 'spore',  lv: 4, cost: { spore: 5, gel: 3 }, desc: CHARMS.spore.desc },
-  { id: 'c_shell',  kind: 'charm', charm: 'shell',  lv: 4, cost: { shell: 5, stone: 2 }, desc: CHARMS.shell.desc },
-  { id: 'c_glow',   kind: 'charm', charm: 'glow',   lv: 5, cost: { glow: 4, dew: 2 }, desc: CHARMS.glow.desc },
+  { item: 'stone_blade', lv: 3, cost: { stone: 4, shell: 3 } },
+  { item: 'ember_edge',  lv: 6, cost: { stone: 6, glow: 4, spore: 3 } },
+  { item: 'leaf_tunic',  lv: 2, cost: { leaf: 6, seed: 4 } },
+  { item: 'shell_mail',  lv: 4, cost: { shell: 6, gel: 4 } },
+  { item: 'beetle_plate', lv: 7, cost: { stone: 8, dew: 4, spore: 2 } },
+  { item: 'potion', cost: { gel: 2, dew: 1, leaf: 1 } },
+  { item: 'torch', cost: { glow: 3, leaf: 2 } },
+  { item: 'swift_boots', cost: { shell: 4, dew: 3, leaf: 3 } },
+  { item: 'sprout_charm', lv: 2, cost: { seed: 5, leaf: 3 } },
+  { item: 'spore_charm',  lv: 4, cost: { spore: 5, gel: 3 } },
+  { item: 'shell_charm',  lv: 4, cost: { shell: 5, stone: 2 } },
+  { item: 'glow_charm',   lv: 5, cost: { glow: 4, dew: 2 } },
 ];
-
-export function recipeName(r) {
-  if (r.kind === 'weapon') return WEAPONS[r.tier].name;
-  if (r.kind === 'armor') return ARMORS[r.tier].name;
-  if (r.kind === 'tool') return r.tool === 'torch' ? 'Torch' : 'Swift Boots';
-  if (r.kind === 'charm') return CHARMS[r.charm].name;
-  return ITEMS[r.item].name;
-}
-
-export function recipeIcon(r) {
-  if (r.kind === 'weapon') return 'weapon' + r.tier;
-  if (r.kind === 'armor') return 'armor' + r.tier;
-  if (r.kind === 'tool') return r.tool;
-  if (r.kind === 'charm') return 'charm_' + r.charm;
-  return r.item;
-}
 
 // ---------- icons ----------
 const OUT = '#2e2118';
@@ -195,7 +189,7 @@ const cache = {};
 export function iconCanvas(id) {
   if (!cache[id]) {
     const { c, g } = mk();
-    (PAINT[id] || PAINT.gel)(g);
+    (PAINT[ITEMS[id]?.icon || id] || PAINT.gel)(g);
     cache[id] = c;
   }
   return cache[id];

@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { dirFor, dirFor8 } from './noise.js';
+import { playerAttack } from './rules.js';
 
 const BASE_SPEED = 4.2;  // world units per second
 const RADIUS = 0.3;      // collision radius
@@ -9,9 +10,7 @@ const ROLL_TIME = 0.4, ROLL_SPEED = 8.4, ROLL_CD = 0.75; // 3.4 units, fast then
 // dodge frames played as dive-and-recover: some directions end lying down (frame 6), so the
 // roll goes into the dive and back out through the earlier frames instead
 const DODGE_SEQ = [1, 2, 3, 4, 5, 3, 1];
-const ATTACK_RANGE = 1.65, ATTACK_COS = 0.34; // ~70 degrees either side
-const AIM_RANGE = 2.8;
-const REACH_MOB = ATTACK_RANGE - 0.3; // how close a tapped monster must be before swinging
+const REACH_MOB = 1.35; // how close (beyond the monster's own radius) before swinging at it
 
 export class Player {
   constructor(scene, world, art, shadowTex, fx) {
@@ -25,11 +24,12 @@ export class Player {
     this.moving = false;
     this.animT = 0;
 
-    // stats (hp is in half-hearts)
-    this.maxHp = 10;
-    this.hp = 10;
-    this.damage = 1;
-    this.attackSpeed = 1.5; // swings per second
+    // battle numbers from the Ragnarok rules (rules.js derive), set by the game
+    this.ps = null;
+    this.maxHp = 40;
+    this.hp = 40;
+    this.maxSp = 11;
+    this.sp = 11;
     this.speedMul = 1;
     this.blockChance = 0;
 
@@ -43,7 +43,7 @@ export class Player {
     this.iframes = 0;
     this.slowT = 0;
     this.knock = { x: 0, z: 0 };
-    this.events = { swing: [], hurt: [], faint: [], hit: [], block: [] };
+    this.events = { swing: [], hurt: [], faint: [], strike: [], block: [] };
 
     // Ragnarok-style orders: walk tile to tile along a path towards a goal
     // goal: { x, z, reach, arrive() } for a spot, or { mob } to fight it until it falls
@@ -92,18 +92,20 @@ export class Player {
     return Math.hypot(this.x - ox, this.z - oz);
   }
 
+  // monsters may attack: not while down or mid-roll
+  canBeHit() { return this.state !== 'down' && this.iframes <= 0; }
+
   takeDamage(amount, fromX, fromZ) {
-    if (this.state === 'down' || this.iframes > 0) return false;
+    if (!this.canBeHit()) return false;
     if (Math.random() < this.blockChance) {
-      this.iframes = 0.5;
       this.emit('block');
       return true;
     }
     this.hp = Math.max(0, this.hp - amount);
-    this.iframes = 0.9;
+    // a small flinch, like Ragnarok's hit stun
     const dx = this.x - fromX, dz = this.z - fromZ, d = Math.hypot(dx, dz) || 1;
-    this.knock.x = (dx / d) * 7;
-    this.knock.z = (dz / d) * 7;
+    this.knock.x = (dx / d) * 2;
+    this.knock.z = (dz / d) * 2;
     this.emit('hurt', amount);
     if (this.hp <= 0) {
       this.state = 'down';
@@ -117,6 +119,12 @@ export class Player {
     const before = this.hp;
     this.hp = Math.min(this.maxHp, this.hp + n);
     return this.hp - before;
+  }
+
+  healSp(n) {
+    const before = this.sp;
+    this.sp = Math.min(this.maxSp, this.sp + n);
+    return this.sp - before;
   }
 
   command(goal) {
@@ -246,19 +254,20 @@ export class Player {
     if (this.stuckT > 0.5) { if (g) this.repath(); else this.path = []; }
   }
 
+  // one normal attack on the target, timed by ASPD; hit, crit and damage roll by the rules
   swing(cam, mobs) {
-    this.atkTimer = 1 / this.attackSpeed;
+    const target = this.goal?.mob;
+    if (!target?.alive) return;
+    this.atkTimer = this.ps.interval;
     this.atkAnim = this.atkDur = Math.min(0.42, this.atkTimer * 0.9);
-    const target = mobs.nearest(this.x, this.z, AIM_RANGE);
-    if (target) {
-      const dx = target.x - this.x, dz = target.z - this.z, d = Math.hypot(dx, dz) || 1;
-      this.face = { x: dx / d, z: dz / d };
-    }
+    const dx = target.x - this.x, dz = target.z - this.z, d = Math.hypot(dx, dz) || 1;
+    this.face = { x: dx / d, z: dz / d };
     const y = this.world.heightAt(this.x, this.z);
     this.fx.slash(this.x + this.face.x * 0.7, y + 0.55, this.z + this.face.z * 0.7, this.face, cam);
-    const hits = mobs.hitArc(this.x, this.z, this.face, ATTACK_RANGE, ATTACK_COS, this.damage);
-    this.emit('swing', hits);
-    if (hits > 0) this.emit('hit', hits);
+    const res = playerAttack(this.ps, target.def);
+    if (!res.miss) target.hit(res.dmg, dx / d, dz / d);
+    this.emit('swing');
+    this.emit('strike', target, res);
   }
 
   sync() {

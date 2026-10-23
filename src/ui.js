@@ -1,5 +1,4 @@
 import { ZONE_NAMES } from './world.js';
-import { heartPath } from './sprites.js';
 
 export class UI {
   constructor(world) {
@@ -17,15 +16,13 @@ export class UI {
     this.miniTimer = 0;
     this.frames = 0;
     this.fpsT = 0;
-    this.heartsEl = document.getElementById('hearts');
-    this.hg = this.heartsEl.getContext('2d');
+    this.infoEl = document.getElementById('info');
+    this.lastInfo = '';
     this.hurtEl = document.getElementById('hurt');
     this.faintEl = document.getElementById('faint');
-    this.lastHearts = '';
     this.mobs = null;
     this.prog = null;
-    this.lvlEl = document.getElementById('lvl');
-    this.lastLvl = '';
+    this.jobName = () => 'Novice';
   }
 
   hurt() {
@@ -34,34 +31,33 @@ export class UI {
     this.hurtEl.classList.add('show');
   }
 
-  faint(show) { this.faintEl.classList.toggle('show', show); }
+  faint(show, text) {
+    if (text) this.faintEl.querySelector('small').textContent = text;
+    this.faintEl.classList.toggle('show', show);
+  }
 
-  drawHearts(hp, maxHp) {
-    const key = hp + '/' + maxHp;
-    if (key === this.lastHearts) return;
-    this.lastHearts = key;
-    const g = this.hg, n = Math.ceil(maxHp / 2), size = 40, gap = 4;
-    // canvas is drawn at 2x; size it to the heart count so they are not squashed
-    this.heartsEl.width = n * (size + gap);
-    this.heartsEl.style.width = this.heartsEl.width / 2 + 'px';
-    g.clearRect(0, 0, this.heartsEl.width, 44);
-    for (let i = 0; i < n; i++) {
-      const x = i * (size + gap) + size / 2 + 2, fill = Math.max(0, Math.min(2, hp - i * 2));
-      heartPath(g, x, 3, size - 2);
-      g.fillStyle = 'rgba(40,20,20,.55)'; g.fill();
-      if (fill > 0) {
-        g.save();
-        heartPath(g, x, 3, size - 2);
-        g.clip();
-        g.fillStyle = '#e04a4a';
-        g.fillRect(x - size / 2, 0, fill === 2 ? size : size / 2, 44);
-        g.fillStyle = 'rgba(255,255,255,.5)';
-        g.beginPath(); g.ellipse(x - 9, 13, 5, 4, 0, 0, Math.PI * 2); g.fill();
-        g.restore();
-      }
-      heartPath(g, x, 3, size - 2);
-      g.strokeStyle = '#2e2118'; g.lineWidth = 3.5; g.stroke();
-    }
+  // Ragnarok's basic info window: job, levels, HP / SP bars and EXP to the next levels
+  drawInfo(p, prog, jobName) {
+    const pct = (a, b, maxed) => (maxed ? 100 : Math.min(100, (a / b) * 100));
+    const bp = pct(prog.baseExp, prog.baseNeed, prog.baseMaxed), jp = pct(prog.jobExp, prog.jobNeed, prog.jobMaxed);
+    const key = [p.hp, p.maxHp, p.sp, p.maxSp, prog.baseLv, prog.jobLv, bp.toFixed(1), jp.toFixed(1), jobName, prog.statPoints, prog.skillPoints].join('/');
+    if (key === this.lastInfo) return;
+    this.lastInfo = key;
+    const el = this.infoEl;
+    el.querySelector('.jobname').textContent = jobName;
+    el.querySelector('.lv').textContent = `Base Lv ${prog.baseLv} · Job Lv ${prog.jobLv}`;
+    el.querySelector('.who em').hidden = prog.statPoints <= 0 && prog.skillPoints <= 0;
+    const bar = (cls, v, max, label) => {
+      el.querySelector(`.${cls} i`).style.width = `${(v / max) * 100}%`;
+      el.querySelector(`.${cls} span`).textContent = `${label} ${v} / ${max}`;
+    };
+    bar('hp', p.hp, p.maxHp, 'HP');
+    bar('sp', p.sp, p.maxSp, 'SP');
+    el.querySelector('.hp').classList.toggle('low', p.hp / p.maxHp < 0.25);
+    el.querySelector('.base s').style.width = bp + '%';
+    el.querySelector('.base em').textContent = bp.toFixed(1) + '%';
+    el.querySelector('.job s').style.width = jp + '%';
+    el.querySelector('.job em').textContent = jp.toFixed(1) + '%';
   }
 
   showZone(zone) {
@@ -71,20 +67,8 @@ export class UI {
     this.toast.classList.add('show');
   }
 
-  // level badge and experience bar under the bag button; "+" while stat points are unspent
-  drawLevel(p) {
-    const pct = p.maxed ? 100 : Math.floor((p.xp / p.need) * 100);
-    const key = `${p.level}/${pct}/${p.points}`;
-    if (key === this.lastLvl) return;
-    this.lastLvl = key;
-    this.lvlEl.querySelector('b').textContent = `Lv ${p.level}`;
-    this.lvlEl.querySelector('s').style.width = pct + '%';
-    this.lvlEl.querySelector('em').hidden = !p.points;
-  }
-
   update(dt, player, yaw) {
-    this.drawHearts(player.hp, player.maxHp);
-    if (this.prog) this.drawLevel(this.prog);
+    if (this.prog) this.drawInfo(player, this.prog, this.jobName());
     this.zoneTimer -= dt;
     if (this.zoneTimer <= 0) {
       this.zoneTimer = 0.3;

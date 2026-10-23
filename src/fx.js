@@ -81,6 +81,36 @@ export class FX {
     }
   }
 
+  // Floating battle text, Ragnarok style: numbers rise and fade above whoever was hit.
+  // kind: dealt (white), crit (big yellow), taken (red), heal (green), miss, level, job
+  number(x, y, z, text, kind = 'dealt') {
+    const look = {
+      dealt: ['#ffffff', 30], crit: ['#ffe14a', 40], taken: ['#ff5a4a', 30], heal: ['#7cf08a', 30],
+      miss: ['#d8dde6', 24], level: ['#ffe37a', 30], job: ['#9fd4ff', 28],
+    }[kind] || ['#ffffff', 30];
+    const c = document.createElement('canvas');
+    const g = c.getContext('2d');
+    const font = `900 ${look[1]}px system-ui, sans-serif`;
+    g.font = font;
+    c.width = Math.ceil(g.measureText(String(text)).width) + 12;
+    c.height = look[1] + 12;
+    g.font = font;
+    g.textAlign = 'center';
+    g.textBaseline = 'middle';
+    g.lineWidth = 6;
+    g.strokeStyle = '#1a120c';
+    g.strokeText(String(text), c.width / 2, c.height / 2);
+    g.fillStyle = look[0];
+    g.fillText(String(text), c.width / 2, c.height / 2);
+    const tex = new THREE.CanvasTexture(c);
+    tex.colorSpace = THREE.SRGBColorSpace;
+    const s = this.sprite(tex, { depthTest: false, renderOrder: 6 });
+    const h = 0.36 * (look[1] / 30);
+    s.scale.set(h * c.width / c.height, h, 1);
+    s.position.set(x + (Math.random() - 0.5) * 0.3, y, z);
+    this.live.push({ s, t: 0, life: kind === 'level' || kind === 'job' ? 1.6 : 0.95, kind: 'number', tex, y0: y, pop: kind === 'crit' });
+  }
+
   // tapped tile: a square that fades on the ground, like Ragnarok's cell cursor
   tileMark(i, j) {
     if (!this.mark) {
@@ -116,7 +146,7 @@ export class FX {
     s.material.alphaTest = 0.5;
     s.material.transparent = false;
     s.material.needsUpdate = true;
-    const size = item === 'heart' ? 0.5 : 0.55;
+    const size = 0.55;
     s.scale.set(size, size, 1);
     const a = Math.random() * Math.PI * 2, r = 0.3 + Math.random() * 0.6;
     const p = {
@@ -142,6 +172,10 @@ export class FX {
         e.s.material.opacity = 1 - k * k;
         const sc = 1.3 + k * 0.5;
         e.s.scale.set(sc, sc, 1);
+      } else if (e.kind === 'number') {
+        e.s.position.y = e.y0 + 0.9 * (1 - (1 - k) * (1 - k));
+        e.s.material.opacity = k < 0.6 ? 1 : 1 - (k - 0.6) / 0.4;
+        if (e.pop && k < 0.15) e.s.scale.multiplyScalar(1 + (0.15 - k) * 0.6);
       } else if (e.kind === 'puff') {
         e.s.position.x += e.v[0] * dt;
         e.s.position.y += e.v[1] * dt;
@@ -152,6 +186,7 @@ export class FX {
       }
       if (k >= 1) {
         if (e.color) e.s.material.color.set('#ffffff');
+        if (e.tex) { e.tex.dispose(); e.s.material.map = null; }
         this.release(e.s);
         this.live.splice(i, 1);
       }

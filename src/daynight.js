@@ -61,9 +61,9 @@ export class DayNight {
 
     // torch glow around the player at night
     const p = this.player;
-    const want = this.inv.gear.torch ? this.night * 7 : this.night * 1.2;
+    const want = this.inv.wearing('light') ? this.night * 7 : this.night * 1.2;
     this.torch.intensity += (want - this.torch.intensity) * Math.min(1, dt * 3);
-    this.torch.distance = this.inv.gear.torch ? 10 : 5;
+    this.torch.distance = this.inv.wearing('light') ? 10 : 5;
     this.torch.position.set(p.x, this.world.heightAt(p.x, p.z) + 1.4 + Math.sin(time * 7) * 0.03, p.z);
 
     const nightNow = this.night > 0.6;

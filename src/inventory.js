@@ -1,45 +1,68 @@
-// Bag, camp chest and equipment. Each item type uses one slot and stacks to 99.
-import { ITEMS, WEAPONS, ARMORS, RECIPES, CHARMS } from './items.js';
+// Bag, camp chest and equipment. Materials and usables stack to 99 in one slot; each piece of
+// equipment is its own item and takes a slot of its own. Worn equipment leaves the bag.
+import { ITEMS, RECIPES, SLOTS } from './items.js';
 
-export const BAG_SLOTS = 16;
-export const CHEST_SLOTS = 32;
+export const BAG_SLOTS = 48;
+export const CHEST_SLOTS = 48;
 const STACK = 99;
+const stackOf = (id) => (ITEMS[id].type === 'equip' ? 1 : STACK);
 
 class Store {
   constructor(size) {
     this.size = size;
     this.slots = []; // [{id, n}]
   }
-  count(id) { return this.slots.find((s) => s.id === id)?.n || 0; }
+  count(id) { return this.slots.reduce((a, s) => a + (s.id === id ? s.n : 0), 0); }
+  // room for n more of id (fills stacks first, then empty slots)
+  room(id) {
+    const max = stackOf(id);
+    return this.slots.reduce((a, s) => a + (s.id === id ? max - s.n : 0), 0) + (this.size - this.slots.length) * max;
+  }
   add(id, n) {
-    let s = this.slots.find((x) => x.id === id);
-    if (!s) {
-      if (this.slots.length >= this.size) return 0;
-      s = { id, n: 0 };
-      this.slots.push(s);
+    const max = stackOf(id);
+    let left = n;
+    for (const s of this.slots) {
+      if (!left) break;
+      if (s.id !== id || s.n >= max) continue;
+      const k = Math.min(left, max - s.n);
+      s.n += k; left -= k;
     }
-    const add = Math.min(n, STACK - s.n);
-    s.n += add;
-    return add;
+    while (left && this.slots.length < this.size) {
+      const k = Math.min(left, max);
+      this.slots.push({ id, n: k }); left -= k;
+    }
+    return n - left;
   }
   remove(id, n) {
-    const s = this.slots.find((x) => x.id === id);
-    if (!s || s.n < n) return false;
-    s.n -= n;
-    if (s.n === 0) this.slots = this.slots.filter((x) => x !== s);
+    if (this.count(id) < n) return false;
+    for (let i = this.slots.length - 1; i >= 0 && n; i--) {
+      const s = this.slots[i];
+      if (s.id !== id) continue;
+      const k = Math.min(n, s.n);
+      s.n -= k; n -= k;
+    }
+    this.slots = this.slots.filter((s) => s.n > 0);
     return true;
   }
+  ofType(type) { return this.slots.filter((s) => ITEMS[s.id].type === type); }
   toJSON() { return this.slots.map((s) => [s.id, s.n]); }
-  load(arr) { this.slots = (arr || []).filter(([id]) => ITEMS[id]).map(([id, n]) => ({ id, n })); }
+  load(arr) {
+    this.slots = [];
+    for (const [id, n] of arr || []) if (ITEMS[id]) this.add(id, n | 0);
+  }
 }
+
+// gear from saves made before equipment were items: tiers and flags
+const OLD_WEAPONS = ['twig_sword', 'stone_blade', 'ember_edge'];
+const OLD_ARMORS = ['clothes', 'leaf_tunic', 'shell_mail', 'beetle_plate'];
 
 export class Inventory {
   constructor() {
     this.bag = new Store(BAG_SLOTS);
     this.chest = new Store(CHEST_SLOTS);
-    this.gear = { weapon: 0, armor: 0, torch: false, boots: false, charms: [], charm: null };
+    this.gear = { weapon: 'twig_sword', armor: 'clothes', shoes: null, light: null, acc: null }; // slot -> item id
     this.listeners = [];
-    this.level = () => 1; // set by the game: current player level, for recipe requirements
+    this.level = () => 1; // set by the game: current Base Level, for recipe requirements
   }
 
   onChange(fn) { this.listeners.push(fn); }
@@ -60,70 +83,78 @@ export class Inventory {
   }
 
   recipeState(r) {
-    if (r.kind === 'weapon' && this.gear.weapon >= r.tier) return 'owned';
-    if (r.kind === 'armor' && this.gear.armor >= r.tier) return 'owned';
-    if (r.kind === 'tool' && this.gear[r.tool]) return 'owned';
-    if (r.kind === 'charm' && this.gear.charms.includes(r.charm)) return 'owned';
-    if (r.kind === 'weapon' && this.gear.weapon < r.tier - 1) return 'locked';
-    if (r.kind === 'armor' && this.gear.armor < r.tier - 1) return 'locked';
     if (r.lv && this.level() < r.lv) return 'level';
     const ok = Object.entries(r.cost).every(([id, n]) => this.have(id) >= n);
     return ok ? 'ready' : 'missing';
   }
 
   craft(r) {
-    if (this.recipeState(r) !== 'ready') return false;
-    if (r.kind === 'item' && this.bag.slots.length >= BAG_SLOTS && !this.bag.count(r.item)) return false;
+    if (this.recipeState(r) !== 'ready' || !this.bag.room(r.item)) return false;
     for (const [id, n] of Object.entries(r.cost)) this.spend(id, n);
-    if (r.kind === 'weapon') this.gear.weapon = r.tier;
-    if (r.kind === 'armor') this.gear.armor = r.tier;
-    if (r.kind === 'tool') this.gear[r.tool] = true;
-    if (r.kind === 'charm') {
-      this.gear.charms.push(r.charm);
-      this.gear.charm ||= r.charm; // the first charm goes straight on
-    }
-    if (r.kind === 'item') this.bag.add(r.item, 1);
+    this.bag.add(r.item, 1);
     this.changed();
     return true;
   }
 
   moveStack(from, to, id) {
-    const n = from.count(id);
+    const n = Math.min(from.count(id), ITEMS[id].type === 'equip' ? 1 : STACK);
     const got = to.add(id, n);
     if (got) from.remove(id, got);
     this.changed();
     return got;
   }
 
-  wear(charm) {
-    if (charm !== null && !this.gear.charms.includes(charm)) return;
-    this.gear.charm = charm;
+  // put on a piece of equipment from the bag; whatever was in its slot goes back in the bag
+  equip(id) {
+    const it = ITEMS[id];
+    if (it?.type !== 'equip' || !this.bag.remove(id, 1)) return false;
+    const old = this.gear[it.slot];
+    this.gear[it.slot] = id;
+    if (old) this.bag.add(old, 1); // the slot just freed always has room
     this.changed();
+    return true;
   }
 
-  // gear plus stat points (Progress) -> player numbers
-  applyTo(player, prog) {
-    const w = WEAPONS[this.gear.weapon], a = ARMORS[this.gear.armor], st = prog.stats, charm = this.gear.charm;
-    player.damage = w.dmg * (1 + 0.08 * st.str);
-    player.attackSpeed = w.spd * (1 + 0.04 * st.agi) * (charm === 'spore' ? 1.15 : 1);
-    const newMax = 10 + a.hearts * 2 + Math.floor(st.vit / 3) * 2;
-    if (newMax > player.maxHp) player.hp += newMax - player.maxHp;
-    player.maxHp = newMax;
-    player.hp = Math.min(player.hp, player.maxHp);
-    player.speedMul = (this.gear.boots ? 1.2 : 1) * (1 + 0.015 * st.agi);
-    player.blockChance = charm === 'shell' ? 0.2 : 0;
+  unequip(slot) {
+    const id = this.gear[slot];
+    if (!id || !this.bag.add(id, 1)) return false;
+    this.gear[slot] = null;
+    this.changed();
+    return true;
   }
 
-  toJSON() { return { bag: this.bag.toJSON(), chest: this.chest.toJSON(), gear: this.gear }; }
+  // is a worn item giving this effect (speed, light, regen, aspd, block, exp)?
+  wearing(fx) { return Object.values(this.gear).some((id) => id && ITEMS[id].fx === fx); }
+
+  // equipment as the battle rules see it (rules.js derive)
+  gearStats() {
+    const w = ITEMS[this.gear.weapon];
+    let def = 0;
+    for (const id of Object.values(this.gear)) if (id) def += ITEMS[id].def || 0;
+    return { atk: w?.atk || 0, wlv: w?.wlv || 0, def, mastery: 0, aspdRate: this.wearing('aspd') ? 0.9 : 1 };
+  }
+
+  toJSON() { return { v: 2, bag: this.bag.toJSON(), chest: this.chest.toJSON(), gear: this.gear }; }
   load(data) {
     if (!data) return;
     this.bag.load(data.bag);
     this.chest.load(data.chest);
-    this.gear = { ...this.gear, ...(data.gear || {}) };
-    this.gear.weapon = Math.min(this.gear.weapon | 0, WEAPONS.length - 1);
-    this.gear.armor = Math.min(this.gear.armor | 0, ARMORS.length - 1);
-    this.gear.charms = (this.gear.charms || []).filter((c) => CHARMS[c]);
-    if (!this.gear.charms.includes(this.gear.charm)) this.gear.charm = null;
+    const g = data.gear || {};
+    if (data.v === 2) {
+      for (const slot of Object.keys(SLOTS)) {
+        const id = g[slot];
+        this.gear[slot] = ITEMS[id]?.slot === slot ? id : null;
+      }
+      return;
+    }
+    // older save: gear was tiers and flags; worn charm stays on, the others go in the bag
+    this.gear.weapon = OLD_WEAPONS[Math.min(g.weapon | 0, 2)];
+    this.gear.armor = OLD_ARMORS[Math.min(g.armor | 0, 3)];
+    this.gear.shoes = g.boots ? 'swift_boots' : null;
+    this.gear.light = g.torch ? 'torch' : null;
+    const charm = (c) => (ITEMS[c + '_charm'] ? c + '_charm' : null);
+    this.gear.acc = charm(g.charm);
+    for (const c of g.charms || []) if (c !== g.charm && charm(c)) this.bag.add(charm(c), 1);
   }
 }
 
