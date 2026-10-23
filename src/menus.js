@@ -2,7 +2,7 @@
 // Ragna's herbs), the chest (camp and Steinborg storage), shops and dialogue. Each is a small window you drag by its title bar; several can be open
 // at once and the game keeps running behind them. Positions are remembered per device.
 // Pickup toasts and messages live here too. Plain DOM over the canvas.
-import { ITEMS, RECIPES, SLOTS, SHOPS, PRICES, sellPrice, equipLine, iconURL } from './items.js';
+import { ITEMS, RECIPES, SLOTS, SHOPS, PRICES, sellPrice, equipLine, iconURL, canWear, jobLine } from './items.js';
 import { BAG_SLOTS, CHEST_SLOTS } from './inventory.js';
 import { STATS, STAT_KEYS, JOBS } from './progress.js';
 import { NPCS } from './quests.js';
@@ -185,14 +185,14 @@ export class Menus {
     const sel = this.selected && inv.bag.count(this.selected) ? ITEMS[this.selected] : null;
     let act = '';
     if (sel?.usable) act = '<button class="rbtn" data-act="use">Use</button>';
-    if (sel?.type === 'equip') act = '<button class="rbtn" data-act="equip">Equip</button>';
-    const line = sel?.type === 'equip' ? `<span class="rstat">${esc(SLOTS[sel.slot])}${equipLine(sel) ? ' · ' + equipLine(sel) : ''}</span>` : '';
+    if (sel?.type === 'equip') act = canWear(this.selected, this.prog.job) ? '<button class="rbtn" data-act="equip">Equip</button>' : `<span class="rtag">${esc(jobLine(sel))}</span>`;
+    const line = sel?.type === 'equip' ? `<span class="rstat">${esc(SLOTS[sel.slot])}${equipLine(sel) ? ' · ' + equipLine(sel) : ''} · ${esc(jobLine(sel))}</span>` : '';
     return `<div class="rtabs">${Object.entries(tabs).map(([k, n]) => `<button class="rtab${this.tab === k ? ' on' : ''}" data-act="tab" data-id="${k}">${n}</button>`).join('')}</div>
       ${this.grid(inv.bag.ofType(this.tab), 'bag')}
       <div class="rdetail">${sel
         ? `<b class="${sel.rare ? 'rare' : ''}">${esc(sel.name)}${sel.rare ? ' ✦' : ''}</b>${line}<span>${esc(sel.desc)}${sel.from ? ' Dropped by ' + esc(sel.from) + '.' : ''}${sel.usable ? ' Drag it onto the hotbar to use it quickly.' : ''}</span>${act}`
         : '<span>Tap an item to see what it is.</span>'}</div>
-      <div class="rfoot"><span>${inv.bag.slots.length} / ${BAG_SLOTS} slots</span><span class="zeny">${inv.zeny.toLocaleString()} z</span></div>`;
+      <div class="rfoot"><span>${inv.bag.slots.length} / ${BAG_SLOTS} slots</span><span class="perz">${inv.perz.toLocaleString()} perz</span></div>`;
   }
 
   // Ragnarok's equipment window: worn pieces down both sides of the character, names facing in.
@@ -264,7 +264,7 @@ export class Menus {
       }).join('');
       const btn = st === 'level' ? `<span class="rtag">Base Lv ${r.lv}</span>`
         : `<button class="rbtn" data-act="craft" data-id="${r.item}" ${st === 'ready' ? '' : 'disabled'}>Craft</button>`;
-      const what = it.type === 'equip' ? [SLOTS[it.slot], equipLine(it), it.fx ? it.desc : ''].filter(Boolean).join(' · ') : it.desc;
+      const what = it.type === 'equip' ? [SLOTS[it.slot], equipLine(it), it.fx ? it.desc : '', it.jobs ? jobLine(it) : ''].filter(Boolean).join(' · ') : it.desc;
       h += `<div class="ritem recipe ${st}">${icon(r.item, 'sm')}<div><b>${esc(it.name)}</b><small>${esc(what)}</small><div class="costs">${cost}</div></div>${btn}</div>`;
     }
     return h + '</div>';
@@ -279,7 +279,7 @@ export class Menus {
 
   reward(r) {
     const items = Object.entries(r.items || {}).map(([id, n]) => `<span class="cost ok">${icon(id, 'xs')}${n} ${esc(ITEMS[id].name)}</span>`).join('');
-    return `<div class="costs"><span class="cost ok">${r.xp} Base EXP · ${r.job ?? Math.round(r.xp * 0.7)} Job EXP</span>${r.zeny ? `<span class="cost ok">${r.zeny.toLocaleString()} zeny</span>` : ''}${items}</div>`;
+    return `<div class="costs"><span class="cost ok">${r.xp} Base EXP · ${r.job ?? Math.round(r.xp * 0.7)} Job EXP</span>${r.perz ? `<span class="cost ok">${r.perz.toLocaleString()} perz</span>` : ''}${items}</div>`;
   }
 
   // a Steinborg shop: buy at the shop's price, sell anything for half
@@ -290,20 +290,20 @@ export class Menus {
       h += '<div class="rlist">';
       for (const id of SHOPS[this.shopId] || []) {
         const it = ITEMS[id], p = PRICES[id], stack = it.type !== 'equip';
-        const what = it.type === 'equip' ? [SLOTS[it.slot], equipLine(it)].filter(Boolean).join(' · ') : it.desc;
-        h += `<div class="ritem">${icon(id, 'sm')}<div><b>${esc(it.name)}</b><small>${esc(what)}</small><span class="rtag price">${p.toLocaleString()} z</span></div>
-          <div class="btncol"><button class="rbtn" data-act="buy" data-id="${id}" data-n="1" ${inv.zeny >= p ? '' : 'disabled'}>Buy</button>${stack ? `<button class="rbtn soft" data-act="buy" data-id="${id}" data-n="10" ${inv.zeny >= p * 10 ? '' : 'disabled'}>×10</button>` : ''}</div></div>`;
+        const what = it.type === 'equip' ? [SLOTS[it.slot], equipLine(it), jobLine(it)].filter(Boolean).join(' · ') : it.desc;
+        h += `<div class="ritem">${icon(id, 'sm')}<div><b>${esc(it.name)}</b><small>${esc(what)}</small><span class="rtag price">${p.toLocaleString()} perz</span></div>
+          <div class="btncol"><button class="rbtn" data-act="buy" data-id="${id}" data-n="1" ${inv.perz >= p ? '' : 'disabled'}>Buy</button>${stack ? `<button class="rbtn soft" data-act="buy" data-id="${id}" data-n="10" ${inv.perz >= p * 10 ? '' : 'disabled'}>×10</button>` : ''}</div></div>`;
       }
       h += '</div>';
     } else {
       const sel = this.sellSel && inv.bag.count(this.sellSel) ? this.sellSel : null, it = sel && ITEMS[sel];
       h += this.grid(inv.bag.slots, 'sell', 18);
       h += `<div class="rdetail">${it
-        ? `<b class="${it.rare ? 'rare' : ''}">${esc(it.name)}</b><span>${sellPrice(sel) ? `Sells for ${sellPrice(sel).toLocaleString()} z each · you have ${inv.bag.count(sel)}` : "The shop won't buy this."}</span>
+        ? `<b class="${it.rare ? 'rare' : ''}">${esc(it.name)}</b><span>${sellPrice(sel) ? `Sells for ${sellPrice(sel).toLocaleString()} perz each · you have ${inv.bag.count(sel)}` : "The shop won't buy this."}</span>
           ${sellPrice(sel) ? `<div class="btnrow"><button class="rbtn" data-act="sell" data-n="1">Sell 1</button>${inv.bag.count(sel) > 1 ? `<button class="rbtn soft" data-act="sell" data-n="all">Sell all</button>` : ''}</div>` : ''}`
         : '<span>Tap an item in your bag to sell it. Worn gear is not for sale.</span>'}</div>`;
     }
-    return h + `<div class="rfoot"><span>Bag ${inv.bag.slots.length}/${BAG_SLOTS}</span><span class="zeny">${inv.zeny.toLocaleString()} z</span></div>`;
+    return h + `<div class="rfoot"><span>Bag ${inv.bag.slots.length}/${BAG_SLOTS}</span><span class="perz">${inv.perz.toLocaleString()} perz</span></div>`;
   }
 
   talk() {
@@ -362,12 +362,12 @@ export class Menus {
     if (act === 'shoptab') { this.shopTab = t.dataset.id; this.sellSel = null; this.render(id); }
     if (act === 'buy') {
       const n = +t.dataset.n;
-      if (inv.buy(t.dataset.id, n)) { this.hooks.traded?.(); this.message(`Bought ${n > 1 ? n + ' ' : ''}${ITEMS[t.dataset.id].name} for ${(PRICES[t.dataset.id] * n).toLocaleString()} z`); }
-      else this.message(inv.zeny < PRICES[t.dataset.id] * n ? 'Not enough zeny' : 'Bag is full');
+      if (inv.buy(t.dataset.id, n)) { this.hooks.traded?.(); this.message(`Bought ${n > 1 ? n + ' ' : ''}${ITEMS[t.dataset.id].name} for ${(PRICES[t.dataset.id] * n).toLocaleString()} perz`); }
+      else this.message(inv.perz < PRICES[t.dataset.id] * n ? 'Not enough perz' : 'Bag is full');
     }
     if (act === 'sell' && this.sellSel) {
       const n = t.dataset.n === 'all' ? inv.bag.count(this.sellSel) : 1, got = sellPrice(this.sellSel) * n;
-      if (inv.sell(this.sellSel, n)) { this.hooks.traded?.(); this.message(`Sold for ${got.toLocaleString()} z`); }
+      if (inv.sell(this.sellSel, n)) { this.hooks.traded?.(); this.message(`Sold for ${got.toLocaleString()} perz`); }
     }
     if (act === 'accept') this.hooks.accept?.(t.dataset.id);
     if (act === 'handin') this.hooks.handIn?.(t.dataset.id);

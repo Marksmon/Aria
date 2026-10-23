@@ -70,10 +70,12 @@ const villagers = new Villagers(scene, world, lib);
 player.tiles = new Tiles(world); // after the villagers: they block their tiles
 const inv = new Inventory();
 inv.level = () => prog.baseLv;
+inv.job = () => prog.job;
 // the player's look follows the job: the Trainee's clothes, then the Blader's or the Sorcerer's
 const jobArt = () => ({ novice: lib.novice, swordman: lib.player, mage: lib.sorcerer || lib.novice }[prog.job] || lib.player);
 player.setArt(jobArt());
 inv.load(save?.inv);
+inv.dropUnwearable(); // gear rules can change between versions
 // stats + gear -> the player's battle numbers (Ragnarok rules); HP/SP stay put, capped by the new max
 // timed buffs, in seconds left: aspd (Quickening Draught), warcry (War Cry's ATK bonus)
 const buffs = { aspd: 0, warcry: 0, ward: 0 };
@@ -304,7 +306,7 @@ function questComplete(id) {
   refreshQuests();
 }
 function giveReward(r) {
-  if (r.zeny) { inv.addZeny(r.zeny); menus.message(`+${r.zeny.toLocaleString()} zeny`); }
+  if (r.perz) { inv.addPerz(r.perz); menus.message(`+${r.perz.toLocaleString()} perz`); }
   for (const [id, n] of Object.entries(r.items || {})) {
     const got = inv.add(id, n);
     if (got < n) inv.chest.add(id, n - got); // bag full: it goes to the chest
@@ -359,6 +361,9 @@ const menus = new Menus(inv, prog, player, {
     prog.jobExp = 0;
     // a new Sorcerer is handed a staff
     if (job === 'mage' && !inv.bag.count('oak_staff') && inv.gear.weapon !== 'oak_staff') { inv.add('oak_staff', 1); menus.toast('oak_staff', 1); }
+    const off = inv.dropUnwearable();
+    if (job === 'mage' && !inv.gear.weapon) inv.equip('oak_staff'); // straight into the new Sorcerer's hand
+    if (off.length) menus.message(`Put away what a ${JOBS[job].name} can't use: ${off.map((i) => ITEMS[i].name).join(', ')}`);
     player.setArt(jobArt());
     applyStats();
     player.heal(player.maxHp);
@@ -557,6 +562,8 @@ function useSkill(id) {
 const SPELL_COL = { spark: '#ff7a2a', frost: '#9fe0ff', arc: '#fff27a', flamering: '#ff6a1a' };
 function spellHit(m, mult, element) {
   if (!m.alive) return null;
+  const staff = ITEMS[inv.gear.weapon];
+  if (staff?.kind === 'staff' && staff.el && staff.el === element) mult *= 1.15; // an elemental staff feeds its own spells
   const res = magicAttack(player.ps, m.effDef(), mult, element);
   const dx = m.x - player.x, dz = m.z - player.z, d = Math.hypot(dx, dz) || 1;
   // the right element hits hard (gold), the wrong one barely scratches (grey)

@@ -470,8 +470,8 @@ button.eq:active { background: var(--w-sel); }
 .rslot.rare { border-color: rgba(255, 210, 58, .75); box-shadow: inset 0 0 6px rgba(255, 210, 58, .35); }
 .rdetail b.rare, .toast .rare { color: #ffd23a; }
 
-/* shops and zeny */
-.zeny { color: var(--w-gold); font-weight: 700; }
+/* shops and perz */
+.perz { color: var(--w-gold); font-weight: 700; }
 .ritem .btncol { display: flex; flex-direction: column; gap: 3px; flex: none; }
 .ritem .rtag.price { font-weight: 700; }
 .rdetail .btnrow { display: flex; gap: 4px; margin-left: auto; }

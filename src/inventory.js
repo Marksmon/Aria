@@ -1,6 +1,6 @@
 // Bag, camp chest and equipment. Materials and usables stack to 99 in one slot; each piece of
 // equipment is its own item and takes a slot of its own. Worn equipment leaves the bag.
-import { ITEMS, RECIPES, SLOTS, PRICES, sellPrice } from './items.js';
+import { ITEMS, RECIPES, SLOTS, PRICES, sellPrice, canWear } from './items.js';
 
 export const BAG_SLOTS = 48;
 export const CHEST_SLOTS = 48;
@@ -61,9 +61,10 @@ export class Inventory {
     this.bag = new Store(BAG_SLOTS);
     this.chest = new Store(CHEST_SLOTS);
     this.gear = { head: null, face: null, shield: null, garment: null, weapon: 'twig_sword', armor: 'clothes', shoes: null, light: null, acc: null, acc2: null }; // slot -> item id (two accessories, like Ragnarok)
-    this.zeny = 0;
+    this.perz = 0;
     this.listeners = [];
     this.level = () => 1; // set by the game: current Base Level, for recipe requirements
+    this.job = () => 'novice'; // set by the game: who is wearing the gear
   }
 
   onChange(fn) { this.listeners.push(fn); }
@@ -108,24 +109,24 @@ export class Inventory {
   // shops: buy n at the shop's price, sell n for half. Returns false if it can't be done.
   buy(id, n = 1) {
     const cost = PRICES[id] * n;
-    if (this.zeny < cost || this.bag.room(id) < n) return false;
-    this.zeny -= cost;
+    if (this.perz < cost || this.bag.room(id) < n) return false;
+    this.perz -= cost;
     this.bag.add(id, n);
     this.changed();
     return true;
   }
   sell(id, n = 1) {
     if (!sellPrice(id) || !this.bag.remove(id, n)) return false;
-    this.zeny = Math.min(999999999, this.zeny + sellPrice(id) * n);
+    this.perz = Math.min(999999999, this.perz + sellPrice(id) * n);
     this.changed();
     return true;
   }
-  addZeny(n) { this.zeny = Math.min(999999999, this.zeny + n); this.changed(); }
+  addPerz(n) { this.perz = Math.min(999999999, this.perz + n); this.changed(); }
 
   // put on a piece of equipment from the bag; whatever was in its slot goes back in the bag
   equip(id) {
     const it = ITEMS[id];
-    if (it?.type !== 'equip' || !this.bag.remove(id, 1)) return false;
+    if (it?.type !== 'equip' || !canWear(id, this.job()) || !this.bag.remove(id, 1)) return false;
     // a second accessory goes in the free hand
     const slot = it.slot === 'acc' && this.gear.acc && !this.gear.acc2 ? 'acc2' : it.slot;
     const old = this.gear[slot];
@@ -141,6 +142,19 @@ export class Inventory {
     this.gear[slot] = null;
     this.changed();
     return true;
+  }
+
+  // after a job change: take off what the new job can't wear (it goes to the bag, or storage)
+  dropUnwearable() {
+    const off = [];
+    for (const [slot, id] of Object.entries(this.gear)) {
+      if (!id || canWear(id, this.job())) continue;
+      this.gear[slot] = null;
+      if (!this.bag.add(id, 1)) this.chest.add(id, 1);
+      off.push(id);
+    }
+    if (off.length) this.changed();
+    return off;
   }
 
   // is a worn item giving this effect (speed, light, regen, aspd, block, exp)?
@@ -160,10 +174,10 @@ export class Inventory {
     return { atk: w?.atk || 0, wlv: w?.wlv || 0, matk: w?.matk || 0, el: w?.el, def, hit, flee, mhp, msp, stats, mastery: 0, aspdRate: this.wearing('aspd') ? 0.9 : 1 };
   }
 
-  toJSON() { return { v: 2, zeny: this.zeny, bag: this.bag.toJSON(), chest: this.chest.toJSON(), gear: this.gear }; }
+  toJSON() { return { v: 2, perz: this.perz, bag: this.bag.toJSON(), chest: this.chest.toJSON(), gear: this.gear }; }
   load(data) {
     if (!data) return;
-    this.zeny = Math.max(0, data.zeny | 0);
+    this.perz = Math.max(0, (data.perz ?? data.zeny) | 0); // saves from before the rename kept it as zeny
     this.bag.load(data.bag);
     this.chest.load(data.chest);
     const g = data.gear || {};

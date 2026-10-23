@@ -2,7 +2,7 @@
 
 A small 2.5D open-world fantasy RPG for phones, in the spirit of old-school Ragnarok Online:
 painted 2D sprites standing in a 3D world. You camp in the valley of Aria, travel from map to map,
-fight monsters and bosses, sell their loot for zeny in the walled city of Steinborg and have
+fight monsters and bosses, sell their loot for perz in the walled city of Steinborg and have
 better gear made from what they drop.
 
 Built with Three.js + Vite, wrapped as an Android app with Capacitor. The player, monsters and
@@ -138,8 +138,10 @@ A new Sorcerer is handed an Apprentice Staff.
 **Elements.** Every monster has an element, as in Ragnarok, and so do spells and some weapons.
 Ember Bolt and Flame Ring are Fire, Frost Shard is Water, Arc Lightning is Wind; normal attacks
 are Neutral unless the weapon has one (Ember Edge, Emberbrand, Cinderfang and the Jarl Hornblade
-are Fire, Tidebreaker Water, Beetlehorn Blade Earth). A strong hit (150%) shows in gold, a weak
-one (25–50%) in grey.
+are Fire, Tidebreaker and Frostbite Water, Galeblade Wind, Stone Blade and Beetlehorn Blade
+Earth). An elemental staff also adds 15% to spells of its own element (Frostwood and Tidecaller
+Water, Emberheart and the Jarl's staff Fire, Heartwood Earth, Nightshade and Mothercap Shadow).
+A strong hit (150%) shows in gold, a weak one (25–50%) in grey.
 
 | Attack \ Monster | Water | Earth | Fire | Wind | Shadow |
 |---|---|---|---|---|---|
@@ -196,6 +198,12 @@ bursts gold on the ground and shows in gold in your bag.
 
 Two accessory slots, a shield and a garment slot join head, face, armor, weapon, shoes and light.
 
+**Who can wear what.** Swords up to the Iron Sword: Trainee and Blader; rare and elemental
+swords: Blader only. Staves: Sorcerer only (the Apprentice Staff also Trainees). Heavy armor
+(Beetle Plate, Chain Mail, Cinder Mail): Blader only; robes: Sorcerer only; Pearlscale Mail:
+Blader and Sorcerer. Bucklers and round shields: Trainee and Blader. Everything else: any job.
+A job change puts away what the new job can't use.
+
 **Headgear you can see.** Hats are drawn on your character, pinned to the head in every frame,
 for any job's sprite, and hide the hair they cover: Horned Helm, Woven Cap, Flower Wreath, Jarl's
 Ember Crown, and the animated **Flame Circlet** (crafted from the MVP's Ember Heart). Face pieces
@@ -204,10 +212,10 @@ are made but left out for now.
 **Looks by job.** Trainees wear plain linen with a wooden practice sword; the Blader and Sorcerer
 looks come with the job change.
 
-**Zeny and shops.** Monsters don't drop zeny, as in Ragnarok: sell your loot. In Steinborg,
+**Perz and shops.** Perz is Aria's coin (Ragnarok's zeny). Monsters don't drop perz, as in Ragnarok: sell your loot. In Steinborg,
 **Hild the Trader** sells draughts, tonics, herbs, feathers and torches, and **Gunnar** sells
 swords, staves, armor, shields, capes and boots. Any shop buys anything for half its price.
-Quests pay zeny too. Your zeny shows in the Items window.
+Quests pay perz too. Your perz shows in the Items window.
 
 **Crafting** is done in Steinborg (the campfire is just a fire now): **Gunnar the Gear Crafter**
 forges weapons, staves, armor, headgear and charms, and **Ragna the Herbalist** brews draughts,
@@ -252,7 +260,7 @@ to restore HP, save, and sleep until morning.
 - [x] **M8** Leveling and equipment
 - [x] **M9** Camp villagers and quest chains
 - [x] Ragnarok-style controls, rules, windows, maps and portals; Aria's own skills; MVP boss
-- [x] Steinborg, four new lands, mini-bosses, zeny and shops, the Sorcerer and job trials
+- [x] Steinborg, four new lands, mini-bosses, perz and shops, the Sorcerer and job trials
 - [ ] Cards, more jobs
 
 ## Dev

@@ -3,6 +3,8 @@ import * as THREE from 'three';
 import { headgearIcon, headgearReady } from './headgear.js';
 
 // type: use (Usables tab), equip (Equips tab, one per slot, never stacks) or misc (Miscs tab).
+// jobs: who may wear a piece (novice = Trainee, swordman = Blader, mage = Sorcerer); none = anyone.
+// el: a weapon's element: its normal attacks hit with it, and a staff's adds 15% to spells of it.
 // Equipment: slot (weapon, armor, shoes, light, acc), atk + wlv for weapons, def, and fx for a
 // special effect. icon names the painted icon when it isn't the item's own id.
 export const ITEMS = {
@@ -43,49 +45,51 @@ export const ITEMS = {
   homeward: { type: 'use', usable: true, name: 'Homeward Feather', use: { warp: 'camp' }, desc: 'Carries you back to camp.' },
 
   // one-handed swords (Ragnarok rules, see rules.js)
-  twig_sword:   { type: 'equip', slot: 'weapon', name: 'Twig Sword',  atk: 15, wlv: 1, icon: 'weapon0', desc: 'A stick with ambitions.' },
-  stone_blade:  { type: 'equip', slot: 'weapon', name: 'Stone Blade', atk: 25, wlv: 1, icon: 'weapon1', desc: 'Ridge stone, knapped sharp.' },
-  ember_edge:   { type: 'equip', slot: 'weapon', el: 'fire', name: 'Ember Edge',  atk: 44, wlv: 2, icon: 'weapon2', desc: 'Warm to the touch, glowing at the edge.' },
-  iron_sword:   { type: 'equip', slot: 'weapon', name: 'Iron Sword',  atk: 58, wlv: 2, icon: 'weapon_iron', desc: 'Plain Steinborg steel, well balanced.' },
+  twig_sword:   { type: 'equip', slot: 'weapon', jobs: ['novice', 'swordman'], name: 'Twig Sword',  atk: 15, wlv: 1, icon: 'weapon0', desc: 'A stick with ambitions.' },
+  stone_blade:  { type: 'equip', slot: 'weapon', el: 'earth', jobs: ['novice', 'swordman'], name: 'Stone Blade', atk: 25, wlv: 1, icon: 'weapon1', desc: 'Ridge stone, knapped sharp.' },
+  ember_edge:   { type: 'equip', slot: 'weapon', jobs: ['novice', 'swordman'], el: 'fire', name: 'Ember Edge',  atk: 44, wlv: 2, icon: 'weapon2', desc: 'Warm to the touch, glowing at the edge.' },
+  iron_sword:   { type: 'equip', slot: 'weapon', jobs: ['novice', 'swordman'], name: 'Iron Sword',  atk: 58, wlv: 2, icon: 'weapon_iron', desc: 'Plain Steinborg steel, well balanced.' },
   // staves: weak to hit with, but they raise MATK (the Sorcerer's weapon)
-  oak_staff:    { type: 'equip', slot: 'weapon', kind: 'staff', name: 'Apprentice Staff', atk: 15, wlv: 1, matk: 15, icon: 'staff0', desc: 'Gnarled oak with a chip of crystal. MATK +15%.' },
-  birch_staff:  { type: 'equip', slot: 'weapon', kind: 'staff', name: 'Birchwood Staff', atk: 22, wlv: 1, matk: 20, stats: { knl: 1 }, icon: 'staff_birch', desc: 'White birch with a pale crystal. MATK +20%, KNL +1.' },
-  frost_staff:  { type: 'equip', slot: 'weapon', kind: 'staff', name: 'Frostwood Staff', atk: 28, wlv: 2, matk: 28, stats: { fns: 2 }, icon: 'staff_frost', desc: 'Frost never melts on its tip. MATK +28%, FNS +2.' },
-  tide_staff:   { type: 'equip', slot: 'weapon', kind: 'staff', name: 'Tidecaller Staff', atk: 30, wlv: 3, matk: 32, stats: { knl: 2 }, msp: 40, icon: 'staff_tide', desc: "A King's Pearl in driftwood. MATK +32%, KNL +2, Max SP +40." },
-  ember_staff:  { type: 'equip', slot: 'weapon', kind: 'staff', name: 'Emberheart Staff', atk: 45, wlv: 3, matk: 38, stats: { knl: 2, ftn: 1 }, icon: 'staff_ember', desc: 'Its coal heart glows brighter as you chant. MATK +38%, KNL +2, FTN +1.' },
-  shade_staff:  { type: 'equip', slot: 'weapon', kind: 'staff', rare: true, name: 'Nightshade Staff', atk: 34, wlv: 3, matk: 34, stats: { knl: 2, fns: 1 }, icon: 'staff_shade', desc: 'A Shade Wisp is bound in its crystal. MATK +34%, KNL +2, FNS +1.', from: 'Shade Wisps (0.2%)' },
-  jarl_staff:   { type: 'equip', slot: 'weapon', kind: 'staff', rare: true, name: 'Staff of the Ember Jarl', atk: 60, wlv: 4, matk: 50, stats: { knl: 4, fns: 2 }, icon: 'staff_jarl', desc: 'Black stone shot through with fire. MATK +50%, KNL +4, FNS +2.', from: 'the Ember Jarl (2%)' },
-  runeking_staff: { type: 'equip', slot: 'weapon', kind: 'staff', name: "Runeking's Staff", atk: 55, wlv: 4, matk: 55, stats: { knl: 4, fns: 3 }, msp: 50, icon: 'staff_runeking', desc: 'Three boss hearts bound with runes: the greatest staff in Aria. MATK +55%, KNL +4, FNS +3, Max SP +50.' },
-  rune_staff:   { type: 'equip', slot: 'weapon', kind: 'staff', name: 'Rune Staff', atk: 30, wlv: 2, matk: 25, stats: { knl: 2 }, icon: 'staff1', desc: 'Carved all over with glowing runes. MATK +25%, KNL +2.' },
-  emberbrand:   { type: 'equip', slot: 'weapon', el: 'fire', rare: true, name: 'Emberbrand', atk: 110, wlv: 3, icon: 'weapon3', desc: "The Ember Jarl's own blade, still burning.", from: 'the Ember Jarl' },
+  oak_staff:    { type: 'equip', slot: 'weapon', jobs: ['novice', 'mage'], kind: 'staff', name: 'Apprentice Staff', atk: 15, wlv: 1, matk: 15, icon: 'staff0', desc: 'Gnarled oak with a chip of crystal. MATK +15%.' },
+  birch_staff:  { type: 'equip', slot: 'weapon', jobs: ['mage'], kind: 'staff', name: 'Birchwood Staff', atk: 22, wlv: 1, matk: 20, stats: { knl: 1 }, icon: 'staff_birch', desc: 'White birch with a pale crystal. MATK +20%, KNL +1.' },
+  frost_staff:  { type: 'equip', slot: 'weapon', el: 'water', jobs: ['mage'], kind: 'staff', name: 'Frostwood Staff', atk: 28, wlv: 2, matk: 28, stats: { fns: 2 }, icon: 'staff_frost', desc: 'Frost never melts on its tip. MATK +28%, FNS +2.' },
+  tide_staff:   { type: 'equip', slot: 'weapon', el: 'water', jobs: ['mage'], kind: 'staff', name: 'Tidecaller Staff', atk: 30, wlv: 3, matk: 32, stats: { knl: 2 }, msp: 40, icon: 'staff_tide', desc: "A King's Pearl in driftwood. MATK +32%, KNL +2, Max SP +40." },
+  ember_staff:  { type: 'equip', slot: 'weapon', el: 'fire', jobs: ['mage'], kind: 'staff', name: 'Emberheart Staff', atk: 45, wlv: 3, matk: 38, stats: { knl: 2, ftn: 1 }, icon: 'staff_ember', desc: 'Its coal heart glows brighter as you chant. MATK +38%, KNL +2, FTN +1.' },
+  shade_staff:  { type: 'equip', slot: 'weapon', el: 'shadow', jobs: ['mage'], kind: 'staff', rare: true, name: 'Nightshade Staff', atk: 34, wlv: 3, matk: 34, stats: { knl: 2, fns: 1 }, icon: 'staff_shade', desc: 'A Shade Wisp is bound in its crystal. MATK +34%, KNL +2, FNS +1.', from: 'Shade Wisps (0.2%)' },
+  jarl_staff:   { type: 'equip', slot: 'weapon', el: 'fire', jobs: ['mage'], kind: 'staff', rare: true, name: 'Staff of the Ember Jarl', atk: 60, wlv: 4, matk: 50, stats: { knl: 4, fns: 2 }, icon: 'staff_jarl', desc: 'Black stone shot through with fire. MATK +50%, KNL +4, FNS +2.', from: 'the Ember Jarl (2%)' },
+  runeking_staff: { type: 'equip', slot: 'weapon', jobs: ['mage'], kind: 'staff', name: "Runeking's Staff", atk: 55, wlv: 4, matk: 55, stats: { knl: 4, fns: 3 }, msp: 50, icon: 'staff_runeking', desc: 'Three boss hearts bound with runes: the greatest staff in Aria. MATK +55%, KNL +4, FNS +3, Max SP +50.' },
+  rune_staff:   { type: 'equip', slot: 'weapon', jobs: ['mage'], kind: 'staff', name: 'Rune Staff', atk: 30, wlv: 2, matk: 25, stats: { knl: 2 }, icon: 'staff1', desc: 'Carved all over with glowing runes. MATK +25%, KNL +2.' },
+  frostbite:    { type: 'equip', slot: 'weapon', jobs: ['swordman'], el: 'water', name: 'Frostbite', atk: 62, wlv: 2, icon: 'weapon_frost', desc: 'Rime creeps along the blade.' },
+  gale_blade:   { type: 'equip', slot: 'weapon', jobs: ['swordman'], el: 'wind', name: 'Galeblade', atk: 72, wlv: 3, stats: { qkn: 1 }, icon: 'weapon_gale', desc: 'It whistles as it cuts. QKN +1.' },
+  emberbrand:   { type: 'equip', slot: 'weapon', jobs: ['swordman'], el: 'fire', rare: true, name: 'Emberbrand', atk: 110, wlv: 3, icon: 'weapon3', desc: "The Ember Jarl's own blade, still burning.", from: 'the Ember Jarl' },
   // rare drops, Ragnarok style: each from one kind of monster at a fraction of a percent.
   // stats: bonus points to POW, QKN, END, KNL, FNS, FTN; mhp / msp: extra Max HP / SP
   gooey_ring:   { type: 'equip', slot: 'acc', rare: true, name: 'Gooey Ring', stats: { ftn: 2 }, mhp: 20, icon: 'r_gooey', desc: 'A ring of hardened slime that never quite dries. FTN +2, Max HP +20.', from: 'Green Slimes (0.5%)' },
   tide_pendant: { type: 'equip', slot: 'acc', rare: true, name: 'Tidewater Pendant', stats: { knl: 2 }, msp: 15, icon: 'r_tide', desc: 'Cool to the touch, like deep water. KNL +2, Max SP +15.', from: 'Blue Slimes (0.3%)' },
   seedling_band: { type: 'equip', slot: 'acc', rare: true, name: 'Seedling Band', stats: { end: 1, qkn: 1 }, fx: 'regen', icon: 'r_seed', desc: 'A living green bracelet. END +1, QKN +1, HP recovers twice as fast.', from: 'Sproutlings (0.4%)' },
-  mud_buckler:  { type: 'equip', slot: 'shield', rare: true, name: 'Mudshell Buckler', def: 3, mhp: 40, icon: 'r_buckler', desc: 'A small round shield from a giant crab shell. DEF 3, Max HP +40.', from: 'Mudcrabs (0.3%)' },
+  mud_buckler:  { type: 'equip', slot: 'shield', jobs: ['novice', 'swordman'], rare: true, name: 'Mudshell Buckler', def: 3, mhp: 40, icon: 'r_buckler', desc: 'A small round shield from a giant crab shell. DEF 3, Max HP +40.', from: 'Mudcrabs (0.3%)' },
   spore_cloak:  { type: 'equip', slot: 'garment', rare: true, name: 'Sporeweave Cloak', def: 1, flee: 4, icon: 'r_cloak', desc: 'Woven from mushroom threads, light as mist. DEF 1, FLEE +4.', from: 'Mushlings (0.25%)' },
-  horn_blade:   { type: 'equip', slot: 'weapon', el: 'earth', rare: true, name: 'Beetlehorn Blade', atk: 68, wlv: 3, stats: { pow: 1 }, icon: 'weapon_horn', desc: 'A sword ground from a beetle horn, harder than iron. POW +1.', from: 'Pebble Beetles (0.15%)' },
+  horn_blade:   { type: 'equip', slot: 'weapon', jobs: ['swordman'], el: 'earth', rare: true, name: 'Beetlehorn Blade', atk: 68, wlv: 3, stats: { pow: 1 }, icon: 'weapon_horn', desc: 'A sword ground from a beetle horn, harder than iron. POW +1.', from: 'Pebble Beetles (0.15%)' },
   pebble_ring:  { type: 'equip', slot: 'acc', rare: true, name: 'Pebble Ring', stats: { end: 2 }, def: 1, icon: 'r_pebble', desc: 'A plain stone band. END +2, DEF 1.', from: 'Pebble Beetles (0.3%)' },
   wisp_lantern: { type: 'equip', slot: 'light', rare: true, name: 'Wisp Lantern', fx: 'light', stats: { knl: 1, fns: 1 }, icon: 'r_lantern', desc: 'A Firefly Wisp sleeps inside. Lights the night. KNL +1, FNS +1.', from: 'Firefly Wisps (0.4%)' },
   // boss drops
   thorn_mantle: { type: 'equip', slot: 'garment', rare: true, name: 'Thornweave Mantle', def: 3, flee: 2, stats: { pow: 1 }, icon: 'r_thorncloak', desc: 'Briars woven tight as mail. DEF 3, FLEE +2, POW +1.', from: 'the Bramble Matron (3%)' },
-  tidebreaker:  { type: 'equip', slot: 'weapon', el: 'water', rare: true, name: 'Tidebreaker', atk: 85, wlv: 3, stats: { qkn: 2 }, icon: 'weapon_tide', desc: 'A blade like a breaking wave. QKN +2.', from: 'the Tide King (2%)' },
-  gloom_staff:  { type: 'equip', slot: 'weapon', kind: 'staff', rare: true, name: 'Mothercap Staff', atk: 40, wlv: 3, matk: 40, stats: { knl: 3 }, icon: 'staff2', desc: 'A staff grown, not carved. MATK +40%, KNL +3.', from: 'the Gloom Mother (2%)' },
+  tidebreaker:  { type: 'equip', slot: 'weapon', jobs: ['swordman'], el: 'water', rare: true, name: 'Tidebreaker', atk: 85, wlv: 3, stats: { qkn: 2 }, icon: 'weapon_tide', desc: 'A blade like a breaking wave. QKN +2.', from: 'the Tide King (2%)' },
+  gloom_staff:  { type: 'equip', slot: 'weapon', el: 'shadow', jobs: ['mage'], kind: 'staff', rare: true, name: 'Mothercap Staff', atk: 40, wlv: 3, matk: 40, stats: { knl: 3 }, icon: 'staff2', desc: 'A staff grown, not carved. MATK +40%, KNL +3.', from: 'the Gloom Mother (2%)' },
   cinder_greaves: { type: 'equip', slot: 'shoes', rare: true, name: 'Cinder Greaves', def: 3, mhp: 60, icon: 'boots_cinder', desc: 'Black shell boots that never cool. DEF 3, Max HP +60.', from: 'the Cinder Lord (3%)' },
   jarl_mantle:  { type: 'equip', slot: 'garment', rare: true, name: "Jarl's Mantle", def: 4, mhp: 100, stats: { end: 2 }, icon: 'r_jarlcloak', desc: 'Smouldering hide from the Ember Jarl. DEF 4, Max HP +100, END +2.', from: 'the Ember Jarl (3%)' },
   // forged from boss materials (Gunnar)
-  heartwood_staff: { type: 'equip', slot: 'weapon', kind: 'staff', name: 'Heartwood Staff', atk: 35, wlv: 3, matk: 30, stats: { knl: 2, fns: 2 }, icon: 'staff3', desc: 'Green wood that still grows. MATK +30%, KNL +2, FNS +2.' },
-  pearl_mail:   { type: 'equip', slot: 'armor', name: 'Pearlscale Mail', def: 7, mhp: 40, msp: 30, icon: 'armor_pearl', desc: 'Shell scales set with pearls. DEF 7, Max HP +40, Max SP +30.' },
-  gloom_robe:   { type: 'equip', slot: 'armor', name: 'Gloomweave Robe', def: 4, msp: 60, stats: { knl: 2 }, icon: 'armor_gloom', desc: 'Spore silk that drinks the light. DEF 4, Max SP +60, KNL +2.' },
-  cinderfang:   { type: 'equip', slot: 'weapon', el: 'fire', name: 'Cinderfang', atk: 95, wlv: 3, stats: { pow: 2 }, icon: 'weapon_cinder', desc: 'A blade quenched in a Cinder Core. POW +2.' },
-  hornblade:    { type: 'equip', slot: 'weapon', el: 'fire', name: 'Jarl Hornblade', atk: 120, wlv: 4, stats: { pow: 3, end: 1 }, icon: 'weapon_jarl', desc: "Ground from the Jarl's own horn. POW +3, END +1." },
+  heartwood_staff: { type: 'equip', slot: 'weapon', el: 'earth', jobs: ['mage'], kind: 'staff', name: 'Heartwood Staff', atk: 35, wlv: 3, matk: 30, stats: { knl: 2, fns: 2 }, icon: 'staff3', desc: 'Green wood that still grows. MATK +30%, KNL +2, FNS +2.' },
+  pearl_mail:   { type: 'equip', slot: 'armor', jobs: ['swordman', 'mage'], name: 'Pearlscale Mail', def: 7, mhp: 40, msp: 30, icon: 'armor_pearl', desc: 'Shell scales set with pearls. DEF 7, Max HP +40, Max SP +30.' },
+  gloom_robe:   { type: 'equip', slot: 'armor', jobs: ['mage'], name: 'Gloomweave Robe', def: 4, msp: 60, stats: { knl: 2 }, icon: 'armor_gloom', desc: 'Spore silk that drinks the light. DEF 4, Max SP +60, KNL +2.' },
+  cinderfang:   { type: 'equip', slot: 'weapon', jobs: ['swordman'], el: 'fire', name: 'Cinderfang', atk: 95, wlv: 3, stats: { pow: 2 }, icon: 'weapon_cinder', desc: 'A blade quenched in a Cinder Core. POW +2.' },
+  hornblade:    { type: 'equip', slot: 'weapon', jobs: ['swordman'], el: 'fire', name: 'Jarl Hornblade', atk: 120, wlv: 4, stats: { pow: 3, end: 1 }, icon: 'weapon_jarl', desc: "Ground from the Jarl's own horn. POW +3, END +1." },
   prism_ring:   { type: 'equip', slot: 'acc', name: 'Prism Ring', stats: { pow: 1, qkn: 1, end: 1, knl: 1, fns: 1, ftn: 1 }, icon: 'r_prism', desc: 'Shimmering gel set in pearl. Every stat +1.' },
   slime_band:   { type: 'equip', slot: 'acc', name: 'Twin Slime Band', stats: { ftn: 2, knl: 2 }, mhp: 30, msp: 20, icon: 'r_twin', desc: 'A green ring and a blue pendant, melted into one. FTN +2, KNL +2, Max HP +30, Max SP +20.' },
   bramble_ring: { type: 'equip', slot: 'acc', rare: true, name: 'Bramble Ring', stats: { pow: 1 }, hit: 3, icon: 'r_bramble', desc: 'Thorny, and it bites back. POW +1, HIT +3.', from: 'Russet Sproutlings (0.3%)' },
   coral_shield: { type: 'equip', slot: 'shield', rare: true, name: 'Coral Shield', def: 4, msp: 20, icon: 'r_coral', desc: 'Light, hard, and humming with the sea. DEF 4, Max SP +20.', from: 'Tidecrabs (0.25%)' },
   gloom_hood:   { type: 'equip', slot: 'garment', rare: true, name: 'Gloom Hood', def: 2, flee: 3, stats: { knl: 1 }, icon: 'r_hood', desc: 'Woven from violet spore threads. DEF 2, FLEE +3, KNL +1.', from: 'Gloomcaps (0.25%)' },
-  cinder_mail:  { type: 'equip', slot: 'armor', rare: true, name: 'Cinder Mail', def: 8, mhp: 80, icon: 'armor_cinder', desc: 'Black beetle plates with a warm glow. DEF 8, Max HP +80.', from: 'Cinder Beetles (0.2%)' },
+  cinder_mail:  { type: 'equip', slot: 'armor', jobs: ['swordman'], rare: true, name: 'Cinder Mail', def: 8, mhp: 80, icon: 'armor_cinder', desc: 'Black beetle plates with a warm glow. DEF 8, Max HP +80.', from: 'Cinder Beetles (0.2%)' },
   ember_charm:  { type: 'equip', slot: 'acc', rare: true, name: 'Ember Charm', stats: { pow: 1, knl: 1 }, mhp: 30, icon: 'r_ember', desc: 'An Ember Wisp curled up asleep. POW +1, KNL +1, Max HP +30.', from: 'Ember Wisps (0.3%)' },
   shiny_gel:    { type: 'misc', rare: true, name: 'Shimmering Gel', desc: 'Slime gel that glows with every colour. Prized by collectors.', from: 'any slime (1%)' },
 
@@ -100,10 +104,10 @@ export const ITEMS = {
   clothes:      { type: 'equip', slot: 'armor', name: 'Traveler Clothes', def: 1, icon: 'armor0', desc: 'Patched and comfortable.' },
   leaf_tunic:   { type: 'equip', slot: 'armor', name: 'Leaf Tunic',  def: 2, icon: 'armor1', desc: 'Woven leaves, surprisingly tough.' },
   shell_mail:   { type: 'equip', slot: 'armor', name: 'Shell Mail',  def: 4, icon: 'armor2', desc: 'Overlapping shell plates.' },
-  beetle_plate: { type: 'equip', slot: 'armor', name: 'Beetle Plate', def: 6, icon: 'armor3', desc: 'Heavy, dark and very hard.' },
-  chain_mail:   { type: 'equip', slot: 'armor', name: 'Chain Mail', def: 5, icon: 'armor_chain', desc: 'Iron rings, oiled and tight.' },
-  mage_robe:    { type: 'equip', slot: 'armor', name: 'Rune Robe', def: 2, msp: 30, icon: 'armor_robe', desc: 'Blue wool stitched with silver runes. DEF 2, Max SP +30.' },
-  round_shield: { type: 'equip', slot: 'shield', name: 'Round Shield', def: 2, icon: 'shield_round', desc: 'Linden boards with an iron boss.' },
+  beetle_plate: { type: 'equip', slot: 'armor', jobs: ['swordman'], name: 'Beetle Plate', def: 6, icon: 'armor3', desc: 'Heavy, dark and very hard.' },
+  chain_mail:   { type: 'equip', slot: 'armor', jobs: ['swordman'], name: 'Chain Mail', def: 5, icon: 'armor_chain', desc: 'Iron rings, oiled and tight.' },
+  mage_robe:    { type: 'equip', slot: 'armor', jobs: ['mage'], name: 'Rune Robe', def: 2, msp: 30, icon: 'armor_robe', desc: 'Blue wool stitched with silver runes. DEF 2, Max SP +30.' },
+  round_shield: { type: 'equip', slot: 'shield', jobs: ['novice', 'swordman'], name: 'Round Shield', def: 2, icon: 'shield_round', desc: 'Linden boards with an iron boss.' },
   wool_cape:    { type: 'equip', slot: 'garment', name: 'Wool Cape', def: 1, icon: 'cape', desc: 'Warm, grey and hard-wearing.' },
   leather_boots: { type: 'equip', slot: 'shoes', name: 'Leather Boots', def: 1, icon: 'boots_leather', desc: 'Good soles for long roads.' },
   swift_boots:  { type: 'equip', slot: 'shoes', name: 'Swift Boots', def: 1, fx: 'speed', icon: 'boots', desc: '+20% move speed.' },
@@ -115,7 +119,7 @@ export const ITEMS = {
   glow_charm:   { type: 'equip', slot: 'acc', name: 'Glow Charm',   fx: 'exp',   icon: 'charm_glow', desc: '+25% experience.' },
 };
 
-// Prices in zeny, Ragnarok style: what a shop asks; any shop buys for half. 0 = can't be sold.
+// Prices in perz (Aria's coin, like Ragnarok's zeny): what a shop asks; any shop buys for half. 0 = can't be sold.
 export const PRICES = {
   gel: 6, dew: 10, seed: 8, leaf: 8, shell: 24, spore: 40, stone: 60, glow: 50, ember_heart: 4000,
   thorn: 70, salt: 90, pearl: 600, gloom: 150, shade: 180, cinder: 240, ember_dust: 220, shiny_gel: 1200,
@@ -129,7 +133,7 @@ export const PRICES = {
   sprout_charm: 700, spore_charm: 1000, shell_charm: 1000, glow_charm: 1200,
   heartwood: 3000, king_pearl: 4000, gloom_heart: 5000, cinder_core: 6000, jarl_horn: 8000,
   thorn_mantle: 12000, tidebreaker: 20000, gloom_staff: 22000, cinder_greaves: 16000, jarl_mantle: 30000,
-  heartwood_staff: 14000, birch_staff: 1800, frost_staff: 3600, tide_staff: 12000, ember_staff: 20000, shade_staff: 16000, jarl_staff: 42000, runeking_staff: 50000, pearl_mail: 12000, gloom_robe: 14000, cinderfang: 24000, hornblade: 45000, prism_ring: 8000, slime_band: 12000,
+  heartwood_staff: 14000, frostbite: 5200, gale_blade: 9000, birch_staff: 1800, frost_staff: 3600, tide_staff: 12000, ember_staff: 20000, shade_staff: 16000, jarl_staff: 42000, runeking_staff: 50000, pearl_mail: 12000, gloom_robe: 14000, cinderfang: 24000, hornblade: 45000, prism_ring: 8000, slime_band: 12000,
 };
 export const sellPrice = (id) => Math.floor((PRICES[id] || 0) / 2);
 
@@ -140,6 +144,11 @@ export const SHOPS = {
 };
 
 // equipment slots, in the Equipment window's order
+export const JOB_NAMES = { novice: 'Trainee', swordman: 'Blader', mage: 'Sorcerer' };
+export const canWear = (id, job) => !ITEMS[id]?.jobs || ITEMS[id].jobs.includes(job);
+// who can wear it, for item descriptions
+export const jobLine = (it) => (it.jobs ? it.jobs.map((j) => JOB_NAMES[j]).join(', ') + ' only' : 'All jobs');
+
 export const SLOTS = { head: 'Head', face: 'Face', weapon: 'Weapon', shield: 'Shield', garment: 'Garment', armor: 'Armor', shoes: 'Shoes', light: 'Light', acc: 'Accessory', acc2: 'Accessory' };
 
 // one line on what a piece of equipment does
@@ -184,6 +193,8 @@ export const RECIPES = [
   { item: 'wool_cape', lv: 5, cost: { thorn: 3, leaf: 4 } },
   { item: 'round_shield', lv: 6, cost: { thorn: 4, stone: 3 } },
   // from boss materials and rare finds
+  { item: 'frostbite', lv: 12, cost: { salt: 4, dew: 6, stone: 4 } },
+  { item: 'gale_blade', lv: 16, cost: { pearl: 1, glow: 8, stone: 6, thorn: 4 } },
   { item: 'heartwood_staff', lv: 14, cost: { heartwood: 1, shade: 3, glow: 5 } },
   { item: 'frost_staff', lv: 10, cost: { salt: 4, dew: 6, glow: 4 } },
   { item: 'tide_staff', lv: 16, cost: { king_pearl: 1, pearl: 2, salt: 4 } },
@@ -343,6 +354,8 @@ const PAINT = {
   weapon2: (g) => swordIcon(g, '#ffb35a', '#c8463c', '#ffe27a'),
   weapon3: (g) => swordIcon(g, '#3a2a2a', '#e05a1a', '#ff9a3a'),
   weapon_horn: (g) => swordIcon(g, '#e8dcc0', '#6a6a72', '#fff4dc'),
+  weapon_frost: (g) => swordIcon(g, '#cfeaff', '#4a7aa8', '#ffffff'),
+  weapon_gale: (g) => swordIcon(g, '#e8f4c8', '#6a9a4a', '#fff27a'),
   weapon_iron: (g) => swordIcon(g, '#b8c0ca', '#4a4e58', '#e8eef5'),
   staff0: (g) => staffIcon(g, '#8a5a33', '#9fd4ff'),
   staff1: (g) => staffIcon(g, '#4a3a5a', '#c8a0ff'),

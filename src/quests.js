@@ -76,7 +76,7 @@ export const NPCS = {
   },
 };
 
-// reward: { xp (Base EXP; Job EXP is 70% of it), zeny, items: { id: n } }. Levels and EXP follow
+// reward: { xp (Base EXP; Job EXP is 70% of it), perz, items: { id: n } }. Levels and EXP follow
 // the Ragnarok curve: a quest is worth a good handful of kills at its level.
 export const QUESTS = {
   slimes: {
@@ -132,86 +132,86 @@ export const QUESTS = {
     title: "The Blader's Trial", kind: 'kill', mob: 'russet', n: 8, lv: 1,
     intro: 'A Blader proves their sword first. Go east to Birkilund and cut down eight Russet Sproutlings. Come back standing, and I will make you one of us.',
     thanks: 'Not a scratch you could not live with. You have a Blader\'s arm.',
-    reward: { xp: 60, zeny: 200 },
+    reward: { xp: 60, perz: 200 },
   },
   sorcerer_trial: {
     title: 'The Rune Trial', kind: 'fetch', items: { glow: 4, dew: 3, seed: 3 }, lv: 1,
     intro: 'Magic gathers in small things. Bring me four Glow Dust, three Dew Drops and three Sprout Seeds, and we will see whether the runes answer you.',
     thanks: 'Light, water and life... and they hum in your hands. The runes have answered.',
-    reward: { xp: 60, zeny: 200 },
+    reward: { xp: 60, perz: 200 },
   },
   // ---------- Steinborg ----------
   roads: {
     title: 'Roads for Trade', kind: 'visit', zones: ['birch', 'coast', 'deep', 'heath'], lv: 5,
     intro: 'My carts need safe roads. Walk the four new lands for me: Birkilund, Saltvik, Svartskog and Askheid, and tell me what you see.',
     thanks: 'Four roads, four markets. You have earned a cut.',
-    reward: { xp: 400, zeny: 1500, items: { potion2: 3 } },
+    reward: { xp: 400, perz: 1500, items: { potion2: 3 } },
   },
   pearls: {
     title: 'Pearls of Saltvik', kind: 'fetch', items: { pearl: 2 }, lv: 10,
     intro: 'Tidecrabs on the Saltvik shore carry pearls in their shells. Bring me two and I pay well.',
     thanks: 'Beautiful! As promised.',
-    reward: { xp: 500, zeny: 2500 },
+    reward: { xp: 500, perz: 2500 },
   },
   ore: {
     title: 'Stone for the Forge', kind: 'fetch', items: { stone: 10, shell: 6 }, lv: 10,
     intro: 'My stock of ridge stone is gone. Ten Stone Chips and six Shell Bits, and I will see you right.',
     thanks: 'Good stone. Here, coin and a draught for the road.',
-    reward: { xp: 450, zeny: 1800, items: { potion2: 2 } },
+    reward: { xp: 450, perz: 1800, items: { potion2: 2 } },
   },
   brambles: {
     title: 'Bramble Tea', kind: 'fetch', items: { thorn: 5 }, lv: 6,
     intro: 'Bramble Twigs from Birkilund make a bitter tea that heals deep cuts. Five, please.',
     thanks: 'Lovely and sharp. Take these.',
-    reward: { xp: 150, zeny: 400, items: { potion: 4 } },
+    reward: { xp: 150, perz: 400, items: { potion: 4 } },
   },
   salt: {
     title: 'Salt of the Sea', kind: 'fetch', items: { salt: 6 }, lv: 9,
     intro: 'Brine Slimes in Saltvik leave Sea Salt behind them. Six handfuls, and I can brew tonics again.',
     thanks: 'Clean salt! Here, a tonic of the first batch.',
-    reward: { xp: 300, zeny: 800, items: { tonic: 3 } },
+    reward: { xp: 300, perz: 800, items: { tonic: 3 } },
   },
   gloom: {
     title: 'Spores of Svartskog', kind: 'fetch', items: { gloom: 5 }, lv: 16,
     intro: 'Gloomcaps grow in the black wood of Svartskog. Their spores make the strongest draughts. Five, if you dare.',
     thanks: 'They are still glowing. Wonderful.',
-    reward: { xp: 1200, zeny: 2000, items: { potion3: 2 } },
+    reward: { xp: 1200, perz: 2000, items: { potion3: 2 } },
   },
   embers: {
     title: 'Embers of Askheid', kind: 'fetch', items: { ember_dust: 5 }, lv: 20,
     intro: 'Ember Wisps drift over the ash heath of Askheid. Bring me five pinches of their dust.',
     thanks: 'Warm as a hearth. You are braver than you look.',
-    reward: { xp: 2200, zeny: 3000, items: { potion3: 3 } },
+    reward: { xp: 2200, perz: 3000, items: { potion3: 3 } },
   },
   russets: {
     title: 'Briars on the Road', kind: 'kill', mob: 'russet', n: 10, lv: 7,
     intro: 'Russet Sproutlings are tripping our carts in Birkilund. Clear out ten of them.',
     thanks: 'The road is clear again. The Watch pays its debts.',
-    reward: { xp: 250, zeny: 600, items: { potion: 3 } },
+    reward: { xp: 250, perz: 600, items: { potion: 3 } },
   },
   tidecrabs: {
     title: 'The Saltvik Shore', kind: 'kill', mob: 'tidecrab', n: 8, lv: 10,
     intro: 'Tidecrabs have taken the Saltvik beach. Eight of them, and the fishers can go out again.',
     thanks: 'Good work. The fishers send their thanks, and fish.',
-    reward: { xp: 600, zeny: 1200, items: { crableg: 4 } },
+    reward: { xp: 600, perz: 1200, items: { crableg: 4 } },
   },
   gloomcaps: {
     title: 'Into the Black Wood', kind: 'kill', mob: 'gloomcap', n: 8, lv: 16,
     intro: 'Something rots in Svartskog, east of Myrkdal. Gloomcaps. Burn out eight of them.',
     thanks: 'You came back from Svartskog. Not everyone does.',
-    reward: { xp: 1500, zeny: 2500, items: { potion2: 4 } },
+    reward: { xp: 1500, perz: 2500, items: { potion2: 4 } },
   },
   cinders: {
     title: 'Fire on the Heath', kind: 'kill', mob: 'cinderBeetle', n: 8, lv: 20,
     intro: 'Cinder Beetles roam Askheid, east of Glodberg. Their shells set the heather alight. Eight of them.',
     thanks: 'The heath can breathe. The Watch thanks you.',
-    reward: { xp: 2600, zeny: 4000, items: { potion3: 2 } },
+    reward: { xp: 2600, perz: 4000, items: { potion3: 2 } },
   },
   shades: {
     title: 'Shadows in Svartskog', kind: 'fetch', items: { shade: 4 }, lv: 16,
     intro: 'Shade Wisps drift between the black trees of Svartskog. Bring me four of their shards; the runes want them.',
     thanks: 'Cold, and singing. Thank you.',
-    reward: { xp: 1300, zeny: 2200, items: { tonic: 4 } },
+    reward: { xp: 1300, perz: 2200, items: { tonic: 4 } },
   },
   explore: {
     title: 'The Four Realms', kind: 'visit', zones: ['grove', 'hollow', 'ridge', 'fen'], lv: 1,
