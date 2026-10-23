@@ -19,6 +19,8 @@ MIRROR = {'right': 'left', 'left': 'right'}
 # name -> options.
 #   eight:   also pack the four diagonal directions
 #   use:     {game name: export name}, e.g. play the 'stride' animation as 'walk'
+#   prefer:  export groups that win over others of the same name (e.g. a redone direction)
+#   skip:    export animations left out of the sheet (tries that weren't used)
 #   mirror:  (anim, direction) pairs drawn as the mirror of the opposite side
 #   outline: (pixels, colour) border traced around the silhouette. colour 'shade' tints each
 #            border pixel a dark shade of the colour beside it, like Ragnarok Online sprites
@@ -26,7 +28,9 @@ MIRROR = {'right': 'left', 'left': 'right'}
 # attack had no sword)
 # The PixelLab Pro art already has Ragnarok-style shaded edges, so no extra outline.
 CHARS = {name: {} for name in ['slime', 'blueslime', 'sprout', 'crab', 'mushling', 'beetle', 'wisp']}
-CHARS['player'] = {'eight': True, 'use': {'walk': 'walking'}}  # even 8-frame template walk; the first one limped
+# even 8-frame template walk (the first one limped); front and back redone as a skeleton walk,
+# where the template's legs barely moved
+CHARS['player'] = {'eight': True, 'use': {'walk': 'walking'}, 'prefer': {'walking-e8b5c561'}, 'skip': {'stepv3'}}
 CHARS.update({name: {'eight': True} for name in ['bram', 'tilly', 'wren']})
 
 
@@ -93,7 +97,7 @@ def outline(f, width, colour):
     return out
 
 
-def load(name, eight=False):
+def load(name, eight=False, prefer=(), skip=()):
     base = os.path.join(SRC, name)
     meta = json.load(open(os.path.join(base, 'metadata.json')))
     frames = meta['states'][0]['frames']
@@ -101,15 +105,17 @@ def load(name, eight=False):
     out = {}
     for d, ours in {**DIRS, **(DIAGONALS if eight else {})}.items():
         out[ours] = {'idle': [img(frames['rotations'][d])]}
-        for anim, per_dir in frames['animations'].items():
+        # preferred groups last, so they win
+        for anim, per_dir in sorted(frames['animations'].items(), key=lambda a: a[0] in prefer):
             # directions requested separately come back as e.g. 'walk-b730b657'
-            if d in per_dir:
-                out[ours][re.sub(r'-[0-9a-f]{8}$', '', anim)] = [img(p) for p in per_dir[d]]
+            base_name = re.sub(r'-[0-9a-f]{8}$', '', anim)
+            if d in per_dir and base_name not in skip:
+                out[ours][base_name] = [img(p) for p in per_dir[d]]
     return out
 
 
 def pack(name, opts):
-    art = load(name, opts.get('eight'))
+    art = load(name, opts.get('eight'), opts.get('prefer', ()), opts.get('skip', ()))
     for d in art.values():
         for ours, theirs in opts.get('use', {}).items():
             if theirs in d:
