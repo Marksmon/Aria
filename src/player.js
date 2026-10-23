@@ -6,6 +6,9 @@ const RADIUS = 0.3;      // collision radius
 const HEIGHT = 1.38;     // standing height in world units
 const WALK_FPS = 11;
 const ROLL_TIME = 0.4, ROLL_SPEED = 8.4, ROLL_CD = 0.75; // 3.4 units, fast then easing out
+// dodge frames played as dive-and-recover: some directions end lying down (frame 6), so the
+// roll goes into the dive and back out through the earlier frames instead
+const DODGE_SEQ = [1, 2, 3, 4, 5, 3, 1];
 const ATTACK_RANGE = 1.65, ATTACK_COS = 0.34; // ~70 degrees either side
 const AIM_RANGE = 2.8;
 
@@ -145,6 +148,8 @@ export class Player {
       this.iframes = Math.max(this.iframes, ROLL_TIME + 0.08);
       this.rollDir = mag > 0.1 ? { x: move.x / mag, z: move.z / mag } : { ...this.face };
       this.face = { ...this.rollDir };
+      const y = this.world.heightAt(this.x, this.z);
+      this.fx.puff(this.x - this.rollDir.x * 0.2, y + 0.1, this.z - this.rollDir.z * 0.2, 0.55);
     }
 
     if (this.state === 'roll') {
@@ -176,7 +181,7 @@ export class Player {
     let tex = A.idle[0];
     if (this.state === 'roll') {
       const k = 1 - this.rollT / ROLL_TIME;
-      tex = A.dodge[Math.min(A.dodge.length - 1, Math.floor(k * A.dodge.length))];
+      tex = A.dodge[DODGE_SEQ[Math.min(DODGE_SEQ.length - 1, Math.floor(k * DODGE_SEQ.length))]];
     } else if (this.atkAnim > 0) {
       const k = 1 - this.atkAnim / this.atkDur;
       tex = A.attack[Math.min(A.attack.length - 1, Math.floor(k * A.attack.length))];

@@ -105,11 +105,49 @@
               "Idle/animations/walk-b730b657/south/frame_005.png",
               "Idle/animations/walk-b730b657/south/frame_006.png"
             ]
+          },
+          "dodge": {
+            "north": [
+              "Idle/animations/dodge/north/frame_000.png",
+              "Idle/animations/dodge/north/frame_001.png",
+              "Idle/animations/dodge/north/frame_002.png",
+              "Idle/animations/dodge/north/frame_003.png",
+              "Idle/animations/dodge/north/frame_004.png",
+              "Idle/animations/dodge/north/frame_005.png",
+              "Idle/animations/dodge/north/frame_006.png"
+            ],
+            "west": [
+              "Idle/animations/dodge/west/frame_000.png",
+              "Idle/animations/dodge/west/frame_001.png",
+              "Idle/animations/dodge/west/frame_002.png",
+              "Idle/animations/dodge/west/frame_003.png",
+              "Idle/animations/dodge/west/frame_004.png",
+              "Idle/animations/dodge/west/frame_005.png",
+              "Idle/animations/dodge/west/frame_006.png"
+            ],
+            "east": [
+              "Idle/animations/dodge/east/frame_000.png",
+              "Idle/animations/dodge/east/frame_001.png",
+              "Idle/animations/dodge/east/frame_002.png",
+              "Idle/animations/dodge/east/frame_003.png",
+              "Idle/animations/dodge/east/frame_004.png",
+              "Idle/animations/dodge/east/frame_005.png",
+              "Idle/animations/dodge/east/frame_006.png"
+            ],
+            "south": [
+              "Idle/animations/dodge/south/frame_000.png",
+              "Idle/animations/dodge/south/frame_001.png",
+              "Idle/animations/dodge/south/frame_002.png",
+              "Idle/animations/dodge/south/frame_003.png",
+              "Idle/animations/dodge/south/frame_004.png",
+              "Idle/animations/dodge/south/frame_005.png",
+              "Idle/animations/dodge/south/frame_006.png"
+            ]
           }
         }
       }
     }
   ],
   "export_version": "3.1",
-  "export_date": "2026-10-23T12:25:15.234495"
+  "export_date": "2026-10-23T14:02:34.054998"
 }
