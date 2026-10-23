@@ -55,7 +55,9 @@ HOP = [("hop", "bouncing hop in place, squashing and stretching"), ("attack", "l
 CHARACTERS = [
     pro("player", "young novice swordsman with spiky orange-brown hair, blue tunic with a brown belt, "
         "red scarf, brown boots, short sword",
-        [("walk", "walking"), ("attack", "quick forward sword slash attack")], size=(64, 96), ref=None),
+        [("walk", "walking"), ("attack", "quick forward sword slash attack"),
+         ("dodge", "quick dodge roll forward, tucking into a somersault and landing on his feet")],
+        size=(64, 96), ref=None),
     pro("slime", "round moss-green jelly slime blob with a tiny two-leaf sprout on top, no arms, no legs, "
         "big shiny eyes, rosy cheeks", HOP),
     pro("blueslime", "round translucent blue jelly slime blob shaped like a water drop, no arms, no legs, "

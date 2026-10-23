@@ -244,7 +244,7 @@ class Mob {
     if (d.ai === 'hopper' && moving && this.hop % 1 < 0.55) lift = Math.sin(((this.hop % 1) / 0.55) * Math.PI) * 0.28 * d.w;
     else if (d.fly) lift = 0.7 + Math.sin(this.t * 4) * 0.15;
     const tex = this.frame(moving);
-    if (this.mat.map !== tex) this.mat.map = tex;
+    if (this.mat.map !== tex) { this.mat.map = tex; this.sprite.center.y = tex.userData.anchor; }
     this.mat.rotation = low ? Math.sin(this.t * 15) * 0.13 : 0;
 
     const y = this.mgr.world.heightAt(this.x, this.z);

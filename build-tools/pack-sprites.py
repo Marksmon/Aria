@@ -127,12 +127,19 @@ def pack(name, opts):
     box = (int(W / 2 - half), y0, int(W / 2 + half + 0.5), y1)
     fw, fh = box[2] - box[0], box[3] - box[1]
 
+    # each frame also records its feet (bottom of the body, effects ignored) as pixels up from
+    # the frame's bottom edge, so the game can plant every frame's feet on the ground
+    def feet(f):
+        gs = islands(f)
+        return fh - max(y for _, y in gs[0]) - 1 if gs else 0
+
     rows, layout = [], {}
     for d in ['down', 'right', 'up', 'left']:
         layout[d] = {}
         for anim in ['idle'] + sorted(a for a in art[d] if a != 'idle'):
-            layout[d][anim] = [len(rows), len(art[d][anim])]
-            rows.append([f.crop(box) for f in art[d][anim]])
+            frames = [f.crop(box) for f in art[d][anim]]
+            layout[d][anim] = [len(rows), len(frames), [feet(f) for f in frames]]
+            rows.append(frames)
     # body size: how big the character itself is when standing, used to scale it in the world
     idle = [f.crop(box).getbbox() for d in art.values() for f in d['idle']]
     body = [max(b[2] - b[0] for b in idle), max(b[3] - b[1] for b in idle)]

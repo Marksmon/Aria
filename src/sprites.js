@@ -400,25 +400,28 @@ function tex(canvas, opts = {}) {
 
 // A packed PixelLab sheet cut into textures: anims[dir][anim] = [tex], flash = white copies
 // for the hit flash. Frames start blank and fill in once the sheet image has loaded.
-// body = [w, h] in pixels of the standing character, used to size it in the world;
-// anchor = where its feet are, as a fraction of the frame height from the bottom.
+// body = [w, h] in pixels of the standing character, used to size it in the world.
+// Each texture's userData.anchor is where that frame's feet are, as a fraction of the frame
+// height from the bottom: set it as the sprite's center so the feet stay on the ground.
 function pixelSet(url, { fw, fh, body, foot = 0, anims }) {
+  const at = (px) => px / fh;
   const blank = () => {
     const t = tex(mk(fw, fh).c);
     t.magFilter = t.minFilter = THREE.NearestFilter;
     t.generateMipmaps = false;
     return t;
   };
-  const set = { pixel: true, fw, fh, body, anchor: foot / fh, anims: {}, flash: {} };
+  const set = { pixel: true, fw, fh, body, anchor: at(foot), anims: {}, flash: {} };
   const cuts = [];
   for (const [dir, list] of Object.entries(anims)) {
     set.anims[dir] = {};
     set.flash[dir] = {};
-    for (const [anim, [row, n]] of Object.entries(list)) {
+    for (const [anim, [row, n, feet]] of Object.entries(list)) {
       set.anims[dir][anim] = [];
       set.flash[dir][anim] = [];
       for (let i = 0; i < n; i++) {
         const t = blank(), f = blank();
+        t.userData.anchor = f.userData.anchor = feet ? at(feet[i]) : set.anchor;
         set.anims[dir][anim].push(t);
         set.flash[dir][anim].push(f);
         cuts.push([t, f, i * fw, row * fh]);

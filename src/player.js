@@ -5,7 +5,7 @@ const BASE_SPEED = 4.2;  // world units per second
 const RADIUS = 0.3;      // collision radius
 const HEIGHT = 1.38;     // standing height in world units
 const WALK_FPS = 11;
-const ROLL_TIME = 0.28, ROLL_SPEED = 12, ROLL_CD = 0.7;
+const ROLL_TIME = 0.4, ROLL_SPEED = 8.4, ROLL_CD = 0.75; // 3.4 units, fast then easing out
 const ATTACK_RANGE = 1.65, ATTACK_COS = 0.34; // ~70 degrees either side
 const AIM_RANGE = 2.8;
 
@@ -149,11 +149,10 @@ export class Player {
 
     if (this.state === 'roll') {
       this.rollT -= dt;
-      this.tryMove(this.rollDir.x * ROLL_SPEED * dt, this.rollDir.z * ROLL_SPEED * dt);
-      const spin = (1 - this.rollT / ROLL_TIME) * Math.PI * 2;
-      this.mat.rotation = -Math.sign(this.rollDir.x * cam.rx + this.rollDir.z * cam.rz || 1) * spin;
+      const sp = ROLL_SPEED * (1.35 - 0.7 * (1 - this.rollT / ROLL_TIME));
+      this.tryMove(this.rollDir.x * sp * dt, this.rollDir.z * sp * dt);
       this.moving = true;
-      if (this.rollT <= 0) { this.state = 'normal'; this.mat.rotation = 0; }
+      if (this.rollT <= 0) this.state = 'normal';
     } else {
       this.moving = mag > 0.08;
       const attacking = this.atkAnim > 0;
@@ -175,14 +174,17 @@ export class Player {
 
     const A = this.art.anims[this.dir];
     let tex = A.idle[0];
-    if (this.atkAnim > 0) {
+    if (this.state === 'roll') {
+      const k = 1 - this.rollT / ROLL_TIME;
+      tex = A.dodge[Math.min(A.dodge.length - 1, Math.floor(k * A.dodge.length))];
+    } else if (this.atkAnim > 0) {
       const k = 1 - this.atkAnim / this.atkDur;
       tex = A.attack[Math.min(A.attack.length - 1, Math.floor(k * A.attack.length))];
     } else if (this.moving && this.state === 'normal') {
       // walk frame 0 is the standing pose; the loop is frames 1..n
       tex = A.walk[1 + (Math.floor(this.animT) % (A.walk.length - 1))];
     }
-    if (this.mat.map !== tex) this.mat.map = tex;
+    if (this.mat.map !== tex) { this.mat.map = tex; this.sprite.center.y = tex.userData.anchor; }
 
     this.mat.color.set(this.slowT > 0 ? '#c8e6a0' : '#ffffff');
     if (this.tint) this.mat.color.multiply(this.tint);
