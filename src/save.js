@@ -16,3 +16,7 @@ export function writeSave(data) {
     /* storage unavailable (private mode / preview) - game still runs */
   }
 }
+
+export function clearSave() {
+  try { localStorage.removeItem(KEY); } catch { /* ignore */ }
+}

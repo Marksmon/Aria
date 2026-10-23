@@ -12,6 +12,8 @@ import { Inventory } from './inventory.js';
 import { Menus } from './menus.js';
 import { iconTexture, iconURL, ITEMS } from './items.js';
 import { DayNight } from './daynight.js';
+import { Audio } from './audio.js';
+import { clearSave } from './save.js';
 import { clamp, lerp } from './noise.js';
 
 const canvas = document.getElementById('game');
@@ -67,9 +69,14 @@ ui.mobs = mobs;
 const cam = { yaw: save?.yaw ?? 0, dist: save?.dist ?? 12, target: new THREE.Vector3(), shake: 0 };
 cam.target.set(player.x, world.heightAt(player.x, player.z), player.z);
 
+const audio = new Audio();
+
 // ---------- combat wiring ----------
-player.on('hurt', () => { ui.hurt(); cam.shake = 0.25; });
+player.on('swing', () => audio.play('swing'));
+player.on('hit', () => audio.play('hit'));
+player.on('hurt', () => { ui.hurt(); cam.shake = 0.25; audio.play('hurt'); });
 player.on('faint', () => {
+  audio.play('faint');
   ui.faint(true);
   setTimeout(() => {
     player.revive(world.spawn.x, world.spawn.z);
@@ -78,6 +85,7 @@ player.on('faint', () => {
   }, 2200);
 });
 mobs.on('death', (m, drops) => {
+  audio.play('kill');
   for (const [item, count] of drops) {
     if (item === 'heart') fx.drop(m.x, m.z, 'heart', 1, lib.fx.heart);
     else fx.drop(m.x, m.z, item, count, iconTexture(item));
@@ -85,6 +93,7 @@ mobs.on('death', (m, drops) => {
 });
 
 mobs.on('spore', (m) => {
+  audio.play('spore');
   const y = world.heightAt(m.x, m.z) + 0.4;
   fx.cloud(m.x, y, m.z);
   if (Math.hypot(player.x - m.x, player.z - m.z) < 2.6) {
@@ -98,10 +107,11 @@ function collect(p) {
   if (p.item === 'heart') {
     if (player.hp >= player.maxHp) return false; // leave it for later
     player.heal(2);
+    audio.play('heart');
     return true;
   }
   const got = inv.add(p.item, p.count);
-  if (got) menus.toast(p.item, got);
+  if (got) { menus.toast(p.item, got); audio.play('pickup'); }
   if (got < p.count) {
     p.count -= got;
     if (performance.now() - bagFullNote > 4000) { bagFullNote = performance.now(); menus.message('Bag is full. Store items in the camp chest.'); }
@@ -116,7 +126,10 @@ const menus = new Menus(inv, {
     if (player.hp >= player.maxHp) { menus.message('Your hearts are already full'); return; }
     if (inv.bag.remove('potion', 1)) { player.heal(6); inv.changed(); menus.message('You feel better'); }
   },
-  crafted() { persist(); },
+  crafted() { audio.play('craft'); persist(); },
+  ui() { audio.play('ui'); },
+  soundOn: () => audio.enabled,
+  toggleSound() { audio.setEnabled(!audio.enabled); },
   closed() { persist(); },
 });
 const actionBtn = document.getElementById('btn-action');
@@ -164,7 +177,10 @@ function rest() {
 
 const dayNight = new DayNight({
   scene, hemi, sun, world, mobs, player, inv,
-  onPhase(night) { menus.message(night ? 'Night falls over Aibachu. Wisps are stirring.' : 'Morning has come.'); },
+  onPhase(night) {
+    audio.play(night ? 'night' : 'morning');
+    menus.message(night ? 'Night falls over Aibachu. Wisps are stirring.' : 'Morning has come.');
+  },
 });
 if (typeof save?.time === 'number') dayNight.t = save.time;
 
@@ -193,12 +209,15 @@ function camBasis() {
 }
 
 let saveT = 0;
+let resetting = false;
 function persist() {
+  if (!started || resetting) return;
   writeSave({ x: player.x, z: player.z, yaw: cam.yaw, dist: cam.dist, hp: player.hp, inv: inv.toJSON(), time: dayNight.t });
 }
 
 const clock = new THREE.Clock();
 let started = false;
+let stepT = 0;
 const tmpV = new THREE.Vector3();
 function frame() {
   const dt = Math.min(clock.getDelta(), 0.05);
@@ -219,7 +238,15 @@ function frame() {
   input.tapped('attack');
   if (!live) input.tapped('dodge');
 
+  const wasRoll = player.state === 'roll';
   player.update(live ? dt : 0, live ? move : { x: 0, z: 0 }, b, ctl, mobs);
+  if (!wasRoll && player.state === 'roll') audio.play('dodge');
+  if (live && player.moving && player.state === 'normal') {
+    stepT -= dt;
+    if (stepT <= 0) { stepT = 0.33 / player.speedMul; audio.play('step'); }
+  }
+  audio.update(dt, dayNight.night);
+  if (!started) cam.yaw += dt * 0.05; // slow orbit behind the title screen
   if (live) mobs.update(dt, player);
   if (live) dayNight.update(dt, t); else if (!started) dayNight.update(0, t);
   world.update(dt, t);
@@ -254,11 +281,34 @@ requestAnimationFrame(frame);
 document.addEventListener('visibilitychange', () => { if (document.hidden) persist(); });
 
 const title = document.getElementById('title');
-title.addEventListener('pointerdown', (e) => {
-  e.stopPropagation();
+const tContinue = document.getElementById('t-continue');
+const tNew = document.getElementById('t-new');
+const tSound = document.getElementById('t-sound');
+if (save) { tContinue.textContent = 'Continue'; tNew.hidden = false; }
+const soundLabel = () => { tSound.textContent = `Sound: ${audio.enabled ? 'On' : 'Off'}`; };
+soundLabel();
+tSound.addEventListener('click', () => { audio.start(); audio.setEnabled(!audio.enabled); soundLabel(); audio.play('ui'); });
+let confirmNew = false;
+tNew.addEventListener('click', () => {
+  if (!confirmNew) {
+    confirmNew = true;
+    tNew.textContent = 'Tap again to start over';
+    tNew.classList.add('warn');
+    setTimeout(() => { confirmNew = false; tNew.textContent = 'New Game'; tNew.classList.remove('warn'); }, 3000);
+    return;
+  }
+  resetting = true;
+  clearSave();
+  location.reload();
+});
+tContinue.addEventListener('click', () => {
+  audio.start();
+  audio.play('ui');
   title.classList.add('hide');
+  document.getElementById('hud').classList.remove('pre');
   started = true;
   input.enabled = true;
+  cam.yaw = save?.yaw ?? 0;
   try { screen.orientation?.lock?.('landscape').catch(() => {}); } catch { /* not supported */ }
   setTimeout(() => {
     title.remove();
@@ -269,4 +319,4 @@ title.addEventListener('pointerdown', (e) => {
   }, 450);
 });
 
-window.__aibachu = { player, world, cam, mobs, fx, inv, menus, dayNight, stats: world.stats };
+window.__aibachu = { player, world, cam, mobs, fx, inv, menus, dayNight, audio, stats: world.stats };

@@ -115,9 +115,28 @@ html, body {
   color: #ffe6a8;
   text-shadow: 0 0 4px #2e2118, 0 0 4px #2e2118, 0 4px 12px rgba(0, 0, 0, .7);
 }
-#title p { margin: 14px 0 0; font-size: 18px; animation: pulse 1.6s ease-in-out infinite; }
-#title small { margin-top: 26px; font-size: 12px; opacity: .6; letter-spacing: .2em; text-transform: uppercase; }
-@keyframes pulse { 50% { opacity: .45; } }
+#title { gap: 18px; cursor: default; }
+#title .logo { text-align: center; animation: rise .9s ease-out both; }
+#title .tagline { margin: 4px 0 0; font-size: 16px; font-style: italic; color: #f1e3c2; text-shadow: 0 0 4px #2e2118; }
+#title .menu { display: flex; flex-direction: column; gap: 8px; align-items: stretch; width: 220px; animation: rise .9s .15s ease-out both; }
+.tbtn {
+  font: 700 16px system-ui, sans-serif;
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: 3px solid #2e2118;
+  background: linear-gradient(#f4e8c8, #e2cf9f);
+  color: #3a2a1c;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .5), 0 4px 10px rgba(0, 0, 0, .4);
+}
+.tbtn.main { background: linear-gradient(#7fc860, #4f9a35); color: #fff; text-shadow: 0 1px 0 rgba(0, 0, 0, .35); font-size: 18px; }
+.tbtn.small { font-size: 13px; padding: 6px 12px; opacity: .9; }
+.tbtn.warn { background: linear-gradient(#f08a6a, #c8463c); color: #fff; }
+.tbtn:active { transform: scale(.97); }
+.tbtn:focus-visible { outline: 3px solid #ffe6a8; outline-offset: 2px; }
+#title .ver { font-size: 11px; opacity: .6; letter-spacing: .12em; text-transform: uppercase; }
+@keyframes rise { from { opacity: 0; transform: translateY(10px); } }
+@media (prefers-reduced-motion: reduce) { #title .logo, #title .menu { animation: none; } }
+@media (max-height: 360px) { #title h1 { font-size: 42px; } #title { gap: 10px; } }
 
 /* ---------- M2: combat HUD ---------- */
 #hearts {
@@ -336,3 +355,6 @@ html, body {
   box-shadow: 0 0 6px #ffd34a;
 }
 #clock.night i { background: transparent; box-shadow: inset -4px -1px 0 0 #dfe6ff; }
+
+#hud.pre { opacity: 0; }
+#hud { transition: opacity .5s; }

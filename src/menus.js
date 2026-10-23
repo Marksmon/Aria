@@ -24,6 +24,7 @@ export class Menus {
     this.selected = null;
     this.render();
     this.root.classList.add('show');
+    this.hooks.ui?.();
     this.openedAt = performance.now();
     this.hooks.opened?.(mode);
   }
@@ -73,7 +74,7 @@ export class Menus {
     if (this.mode === 'bag') {
       const sel = this.selected && ITEMS[this.selected];
       body = `
-        <header><h2>Bag</h2><span class="sub">${inv.bag.slots.length}/${BAG_SLOTS} slots</span><button class="x" data-act="close" aria-label="Close">✕</button></header>
+        <header><h2>Bag</h2><span class="sub">${inv.bag.slots.length}/${BAG_SLOTS} slots</span><button class="x snd" data-act="sound" aria-label="Toggle sound">${this.hooks.soundOn?.() ? '♪' : '♪̸'}</button><button class="x" data-act="close" aria-label="Close">✕</button></header>
         <div class="bagwrap">
           <div class="gear">
             <div class="g">${icon('weapon' + g.weapon)}<div><small>Weapon</small>${WEAPONS[g.weapon].name}<em>${WEAPONS[g.weapon].dmg} dmg · ${WEAPONS[g.weapon].spd}/s</em></div></div>
@@ -120,6 +121,7 @@ export class Menus {
     if (!t) { if (e.target === this.root) this.close(); return; }
     const act = t.dataset.act, inv = this.inv;
     if (act === 'close') this.close();
+    if (act === 'sound') { this.hooks.toggleSound?.(); this.render(); }
     if (act === 'slot') {
       if (this.mode === 'chest') {
         const from = t.dataset.side === 'bag' ? inv.bag : inv.chest;
