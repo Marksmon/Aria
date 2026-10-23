@@ -20,7 +20,7 @@ export const MOB_DEFS = {
   wisp:      { name: 'Firefly Wisp', ai: 'wisp', art: 'wisp', lv: 8,  hp: 169, atk: [22, 27], def: 5,  vit: 8,  agi: 20, dex: 17, exp: [19, 15], adelay: 1292, speed: 2.4, aggro: 6, reach: 0.75, w: 0.7, r: 0.3, fly: true, night: true, drops: [['glow', 1, 1, 1], ['wander', 1, 1, 0.15]] },
   // MVP boss of Glodberg: one at a time, back 15 minutes after it falls. Its slayer gets the MVP
   // reward on top of the drops. Stomps the ground around it every few seconds.
-  jarl:      { name: 'Ember Jarl', ai: 'boss', art: 'jarl', lv: 28, hp: 6500, atk: [110, 150], def: 25, vit: 40, agi: 20, dex: 45, exp: [2600, 1800], adelay: 1700, speed: 1.35, aggro: 7, chase: 25, reach: 1.5, w: 2.2, r: 0.9, heavy: true,
+  jarl:      { name: 'Ember Jarl', ai: 'boss', art: 'jarl', lv: 28, hp: 6500, atk: [110, 150], def: 25, vit: 40, agi: 20, dex: 45, exp: [2600, 1800], adelay: 1700, speed: 1.35, aggro: 7, chase: 25, reach: 1.9, w: 3.1, r: 1.15, heavy: true,
     mvp: true, respawn: 900, lair: { x: 32, z: 48 }, mvpExp: 1300, mvpDrops: [['potion3', 3], ['ember_heart', 1]],
     drops: [['potion2', 2, 3, 0.8], ['potion3', 1, 2, 0.5], ['stone', 4, 6, 1], ['ember_crown', 1, 1, 0.3], ['emberbrand', 1, 1, 0.08]] },
 };
@@ -307,7 +307,7 @@ class Mob {
       if (ph < 0.55) { list = A.hop; k = ph / 0.55; }
     } else if (this.def.fly && A.walk) { list = A.walk; k = (this.t * 1.6) % 1; } // fliers flutter in place
     else if (moving && A.walk) { list = A.walk; k = (this.walked / (STRIDE * this.def.w)) % 1; }
-    return list[Math.min(list.length - 1, Math.floor(k * list.length))];
+    return list[Math.max(0, Math.min(list.length - 1, Math.floor(k * list.length)))]; // a long wind-up holds the first frame
   }
 }
 

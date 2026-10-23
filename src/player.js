@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { dirFor, dirFor8 } from './noise.js';
 import { playerAttack } from './rules.js';
+import { HeadLayer } from './headgear.js';
 
 const BASE_SPEED = 4.2;  // world units per second
 const RADIUS = 0.3;      // collision radius
@@ -71,7 +72,11 @@ export class Player {
       map: shadowTex, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2,
     }));
     scene.add(this.shadow);
+    // worn headgear, drawn over the head of whatever frame shows: top (hats) and face (glasses)
+    this.heads = [new HeadLayer(scene), new HeadLayer(scene)];
   }
+
+  setHeadgear(top, face) { this.heads[0].set(top); this.heads[1].set(face); }
 
   // a different sprite set (the Novice and the Swordsman look different)
   setArt(art) {
@@ -201,6 +206,7 @@ export class Player {
 
     if (this.state === 'down') {
       this.sync();
+      for (const l of this.heads) l.sprite.visible = false;
       return;
     }
 
@@ -251,6 +257,7 @@ export class Player {
       tex = A.walk[Math.floor(this.animT * A.walk.length) % A.walk.length]; // every frame is part of the cycle
     }
     if (this.mat.map !== tex) { this.mat.map = tex; this.sprite.center.y = tex.userData.anchor; }
+    this.tex = tex;
 
     this.mat.color.set(this.slowT > 0 ? '#c8e6a0' : '#ffffff');
     if (this.tint) this.mat.color.multiply(this.tint);
@@ -258,6 +265,8 @@ export class Player {
     this.sprite.scale.y = this.size.h * breathe;
     this.sprite.visible = !(this.iframes > 0 && this.state === 'normal' && Math.floor(this.iframes * 14) % 2 === 0);
     this.sync();
+    const upright = this.state !== 'down' && this.state !== 'feign';
+    for (const l of this.heads) l.update(this.sprite, this.tex, this.dir, this.art.fw, this.art.fh, upright);
   }
 
   // carry out the current order: walk the path, swing at a target in reach, or arrive somewhere

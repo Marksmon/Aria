@@ -1,0 +1,113 @@
+{
+  "group_id": "d25f1c11-399b-4c01-a095-d6e32e31e973",
+  "states": [
+    {
+      "character": {
+        "id": "921887aa-f68a-4d75-95b4-7194e792dbbc",
+        "name": "Idle",
+        "prompt": "towering ember jotunn giant made of dark volcanic rock with glowing orange lava cracks, horned iron helm, braided beard of fire, huge stone axe",
+        "size": {
+          "width": 128,
+          "height": 128
+        },
+        "template_id": "mannequin",
+        "directions": 8,
+        "view": "low top-down",
+        "created_at": "2026-10-23T15:29:54.638428+00:00"
+      },
+      "folder": "Idle",
+      "frames": {
+        "rotations": {
+          "south": "Idle/rotations/south.png",
+          "south-east": "Idle/rotations/south-east.png",
+          "east": "Idle/rotations/east.png",
+          "north-east": "Idle/rotations/north-east.png",
+          "north": "Idle/rotations/north.png",
+          "north-west": "Idle/rotations/north-west.png",
+          "west": "Idle/rotations/west.png",
+          "south-west": "Idle/rotations/south-west.png"
+        },
+        "animations": {
+          "attack": {
+            "west": [
+              "Idle/animations/attack/west/frame_000.png",
+              "Idle/animations/attack/west/frame_001.png",
+              "Idle/animations/attack/west/frame_002.png",
+              "Idle/animations/attack/west/frame_003.png",
+              "Idle/animations/attack/west/frame_004.png",
+              "Idle/animations/attack/west/frame_005.png",
+              "Idle/animations/attack/west/frame_006.png"
+            ],
+            "north": [
+              "Idle/animations/attack/north/frame_000.png",
+              "Idle/animations/attack/north/frame_001.png",
+              "Idle/animations/attack/north/frame_002.png",
+              "Idle/animations/attack/north/frame_003.png",
+              "Idle/animations/attack/north/frame_004.png",
+              "Idle/animations/attack/north/frame_005.png",
+              "Idle/animations/attack/north/frame_006.png"
+            ],
+            "east": [
+              "Idle/animations/attack/east/frame_000.png",
+              "Idle/animations/attack/east/frame_001.png",
+              "Idle/animations/attack/east/frame_002.png",
+              "Idle/animations/attack/east/frame_003.png",
+              "Idle/animations/attack/east/frame_004.png",
+              "Idle/animations/attack/east/frame_005.png",
+              "Idle/animations/attack/east/frame_006.png"
+            ],
+            "south": [
+              "Idle/animations/attack/south/frame_000.png",
+              "Idle/animations/attack/south/frame_001.png",
+              "Idle/animations/attack/south/frame_002.png",
+              "Idle/animations/attack/south/frame_003.png",
+              "Idle/animations/attack/south/frame_004.png",
+              "Idle/animations/attack/south/frame_005.png",
+              "Idle/animations/attack/south/frame_006.png"
+            ]
+          },
+          "walk": {
+            "south": [
+              "Idle/animations/walk/south/frame_000.png",
+              "Idle/animations/walk/south/frame_001.png",
+              "Idle/animations/walk/south/frame_002.png",
+              "Idle/animations/walk/south/frame_003.png",
+              "Idle/animations/walk/south/frame_004.png",
+              "Idle/animations/walk/south/frame_005.png",
+              "Idle/animations/walk/south/frame_006.png"
+            ],
+            "north": [
+              "Idle/animations/walk/north/frame_000.png",
+              "Idle/animations/walk/north/frame_001.png",
+              "Idle/animations/walk/north/frame_002.png",
+              "Idle/animations/walk/north/frame_003.png",
+              "Idle/animations/walk/north/frame_004.png",
+              "Idle/animations/walk/north/frame_005.png",
+              "Idle/animations/walk/north/frame_006.png"
+            ],
+            "west": [
+              "Idle/animations/walk/west/frame_000.png",
+              "Idle/animations/walk/west/frame_001.png",
+              "Idle/animations/walk/west/frame_002.png",
+              "Idle/animations/walk/west/frame_003.png",
+              "Idle/animations/walk/west/frame_004.png",
+              "Idle/animations/walk/west/frame_005.png",
+              "Idle/animations/walk/west/frame_006.png"
+            ],
+            "east": [
+              "Idle/animations/walk/east/frame_000.png",
+              "Idle/animations/walk/east/frame_001.png",
+              "Idle/animations/walk/east/frame_002.png",
+              "Idle/animations/walk/east/frame_003.png",
+              "Idle/animations/walk/east/frame_004.png",
+              "Idle/animations/walk/east/frame_005.png",
+              "Idle/animations/walk/east/frame_006.png"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "export_version": "3.1",
+  "export_date": "2026-10-23T15:54:14.303041"
+}

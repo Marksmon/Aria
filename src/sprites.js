@@ -400,13 +400,15 @@ function pixelSet(url, { fw, fh, body, foot = 0, anims }) {
   for (const [dir, list] of Object.entries(anims)) {
     set.anims[dir] = {};
     set.flash[dir] = {};
-    for (const [anim, [row, n, feet]] of Object.entries(list)) {
+    for (const [anim, [row, n, feet, heads]] of Object.entries(list)) {
       set.anims[dir][anim] = [];
       set.flash[dir][anim] = [];
       const anchor = feet ? at([...feet].sort((a, b) => a - b)[feet.length >> 1]) : set.anchor;
       for (let i = 0; i < n; i++) {
         const t = blank(), f = blank();
         t.userData.anchor = f.userData.anchor = anchor;
+        // where the head is in this frame (frame pixels), for headgear: { x, crown, neck, w }
+        if (heads?.[i]) t.userData.head = f.userData.head = { x: heads[i][0], crown: heads[i][1], neck: heads[i][2], w: heads[i][3] };
         set.anims[dir][anim].push(t);
         set.flash[dir][anim].push(f);
         cuts.push([t, f, i * fw, row * fh]);

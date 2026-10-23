@@ -147,12 +147,40 @@ def pack(name, opts):
         gs = islands(f)
         return fh - max(y for _, y in gs[0]) - 1 if gs else 0
 
+    # and its head, for headgear drawn over any job's sprite: [centre x, crown y, neck y, width] in
+    # frame pixels. Crown = top of the head (where the hair mass starts), neck = bottom of the head;
+    # the game puts hat brims and eye lines between the two.
+    # A frame that strays far from its animation's middle (a sword raised over the head) uses that.
+    bh = max((f.getbbox() or (0, 0, 0, 0))[3] - (f.getbbox() or (0, 0, 0, 0))[1] for d in art.values() for f in d['idle'])
+
+    def head(f):
+        gs = islands(f)
+        if not gs:
+            return [fw // 2, 0, 0, 0]
+        rows_ = {}
+        for x, y in gs[0]:
+            lo, hi = rows_.get(y, (x, x))
+            rows_[y] = (min(lo, x), max(hi, x))
+        top = min(rows_)
+        span = lambda y: rows_[y][1] - rows_[y][0] + 1 if y in rows_ else 0
+        band = [y for y in range(top, top + int(bh * 0.4)) if y in rows_]
+        widest = max(band, key=span)
+        mw = span(widest)
+        crown = next(y for y in band if span(y) >= mw * 0.6)
+        neck = next((y for y in range(widest, top + int(bh * 0.55)) if 0 < span(y) < mw * 0.72), crown + int(bh * 0.3))
+        return [round((rows_[widest][0] + rows_[widest][1]) / 2), crown, neck, mw]
+
+    def heads(frames):
+        hs = [head(f) for f in frames]
+        mid = sorted(hs, key=lambda h: h[1])[len(hs) // 2]
+        return [h if abs(h[1] - mid[1]) <= 6 and abs(h[0] - mid[0]) <= 8 else mid for h in hs]
+
     rows, layout = [], {}
     for d in art:
         layout[d] = {}
         for anim in ['idle'] + sorted(a for a in art[d] if a != 'idle'):
             frames = [f.crop(box) for f in art[d][anim]]
-            layout[d][anim] = [len(rows), len(frames), [feet(f) for f in frames]]
+            layout[d][anim] = [len(rows), len(frames), [feet(f) for f in frames], heads(frames)]
             rows.append(frames)
     # body size: how big the character itself is when standing, used to scale it in the world
     idle = [f.crop(box).getbbox() for d in art.values() for f in d['idle']]

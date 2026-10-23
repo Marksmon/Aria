@@ -1,5 +1,6 @@
 // Items (materials, usables and equipment) and recipes, plus the painted icons used both on the ground and in menus.
 import * as THREE from 'three';
+import { headgearIcon } from './headgear.js';
 
 // type: use (Usables tab), equip (Equips tab, one per slot, never stacks) or misc (Miscs tab).
 // Equipment: slot (weapon, armor, shoes, light, acc), atk + wlv for weapons, def, and fx for a
@@ -33,8 +34,13 @@ export const ITEMS = {
   stone_blade:  { type: 'equip', slot: 'weapon', name: 'Stone Blade', atk: 25, wlv: 1, icon: 'weapon1', desc: 'Ridge stone, knapped sharp.' },
   ember_edge:   { type: 'equip', slot: 'weapon', name: 'Ember Edge',  atk: 44, wlv: 2, icon: 'weapon2', desc: 'Warm to the touch, glowing at the edge.' },
   emberbrand:   { type: 'equip', slot: 'weapon', name: 'Emberbrand', atk: 110, wlv: 3, icon: 'weapon3', desc: "The Ember Jarl's own blade, still burning.", from: 'the Ember Jarl' },
-  // headgear
-  ember_crown:  { type: 'equip', slot: 'head', name: "Jarl's Ember Crown", def: 4, icon: 'crown', desc: 'A horned iron crown, still warm.', from: 'the Ember Jarl' },
+  // headgear: worn on the head (head) or face, and seen on your character (see headgear.js)
+  ember_crown:  { type: 'equip', slot: 'head', name: "Jarl's Ember Crown", def: 4, desc: 'A horned iron crown, still warm.', from: 'the Ember Jarl' },
+  woven_cap:    { type: 'equip', slot: 'head', name: 'Woven Cap', def: 1, desc: 'Leaves woven tight, with a sturdy band.' },
+  flower_wreath: { type: 'equip', slot: 'head', name: 'Flower Wreath', def: 0, flee: 1, desc: 'Meadow flowers on a green ring. +1 FLEE.' },
+  horned_helm:  { type: 'equip', slot: 'head', name: 'Horned Helm', def: 3, desc: 'Iron, brass and two proud horns.' },
+  round_glasses: { type: 'equip', slot: 'face', name: 'Round Glasses', hit: 3, desc: 'Polished dew-glass lenses. +3 HIT.' },
+  eyepatch:     { type: 'equip', slot: 'face', name: 'Eyepatch', flee: 2, desc: 'Makes you look like trouble. +2 FLEE.' },
   // body armor: hard DEF
   clothes:      { type: 'equip', slot: 'armor', name: 'Traveler Clothes', def: 1, icon: 'armor0', desc: 'Patched and comfortable.' },
   leaf_tunic:   { type: 'equip', slot: 'armor', name: 'Leaf Tunic',  def: 2, icon: 'armor1', desc: 'Woven leaves, surprisingly tough.' },
@@ -50,13 +56,15 @@ export const ITEMS = {
 };
 
 // equipment slots, in the Equipment window's order
-export const SLOTS = { head: 'Head', weapon: 'Weapon', armor: 'Armor', shoes: 'Shoes', light: 'Light', acc: 'Accessory' };
+export const SLOTS = { head: 'Head', face: 'Face', weapon: 'Weapon', armor: 'Armor', shoes: 'Shoes', light: 'Light', acc: 'Accessory' };
 
 // one line on what a piece of equipment does
 export function equipLine(it) {
   const p = [];
   if (it.atk) p.push(`ATK ${it.atk}`, `Weapon Lv ${it.wlv}`);
   if (it.def) p.push(`DEF ${it.def}`);
+  if (it.hit) p.push(`HIT +${it.hit}`);
+  if (it.flee) p.push(`FLEE +${it.flee}`);
   return p.join(' · ');
 }
 
@@ -76,6 +84,11 @@ export const RECIPES = [
   { item: 'homeward', lv: 2, cost: { glow: 2, seed: 1 } },
   { item: 'torch', cost: { glow: 3, leaf: 2 } },
   { item: 'swift_boots', cost: { shell: 4, dew: 3, leaf: 3 } },
+  { item: 'flower_wreath', cost: { leaf: 3, seed: 2 } },
+  { item: 'woven_cap', lv: 2, cost: { leaf: 5, seed: 2 } },
+  { item: 'eyepatch', lv: 3, cost: { gel: 2, leaf: 2 } },
+  { item: 'round_glasses', lv: 5, cost: { dew: 3, stone: 2 } },
+  { item: 'horned_helm', lv: 8, cost: { stone: 6, shell: 4, glow: 1 } },
   { item: 'sprout_charm', lv: 2, cost: { seed: 5, leaf: 3 } },
   { item: 'spore_charm',  lv: 4, cost: { spore: 5, gel: 3 } },
   { item: 'shell_charm',  lv: 4, cost: { shell: 5, stone: 2 } },
@@ -279,7 +292,8 @@ const cache = {};
 export function iconCanvas(id) {
   if (!cache[id]) {
     const { c, g } = mk();
-    (PAINT[ITEMS[id]?.icon || id] || PAINT.gel)(g);
+    if (ITEMS[id]?.slot === 'head' || ITEMS[id]?.slot === 'face') headgearIcon(g, id);
+    else (PAINT[ITEMS[id]?.icon || id] || PAINT.gel)(g);
     cache[id] = c;
   }
   return cache[id];

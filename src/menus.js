@@ -184,7 +184,7 @@ export class Menus {
       if (!it) return `<div class="eq ${side} off"><i></i><span>${label}</span></div>`;
       return `<button class="eq ${side}" data-act="unequip" data-id="${key}" title="${esc(it.name)}${equipLine(it) ? ' · ' + equipLine(it) : ''} (tap to take off)">${icon(id, 'eqi')}<span>${esc(it.name)}</span></button>`;
     };
-    const left = [slot('head', 'head', 'l'), slot('mid head', null, 'l'), slot('armor', 'armor', 'l'), slot('weapon', 'weapon', 'l'), slot('accessory', 'acc', 'l')];
+    const left = [slot('head', 'head', 'l'), slot('face', 'face', 'l'), slot('armor', 'armor', 'l'), slot('weapon', 'weapon', 'l'), slot('accessory', 'acc', 'l')];
     const right = [slot('low head', null, 'r'), slot('garment', null, 'r'), slot('shield', null, 'r'), slot('shoes', 'shoes', 'r'), slot('light', 'light', 'r')];
     return `<div class="equipwrap"><div class="ecol">${left.join('')}</div><div class="eme"><img src="${this.portrait?.('player') || ''}" alt=""></div><div class="ecol">${right.join('')}</div></div>
       <div class="rfoot"><span>Tap a piece to take it off</span></div>`;

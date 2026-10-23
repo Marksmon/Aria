@@ -60,7 +60,7 @@ export class Inventory {
   constructor() {
     this.bag = new Store(BAG_SLOTS);
     this.chest = new Store(CHEST_SLOTS);
-    this.gear = { head: null, weapon: 'twig_sword', armor: 'clothes', shoes: null, light: null, acc: null }; // slot -> item id
+    this.gear = { head: null, face: null, weapon: 'twig_sword', armor: 'clothes', shoes: null, light: null, acc: null }; // slot -> item id
     this.listeners = [];
     this.level = () => 1; // set by the game: current Base Level, for recipe requirements
   }
@@ -129,9 +129,12 @@ export class Inventory {
   // equipment as the battle rules see it (rules.js derive)
   gearStats() {
     const w = ITEMS[this.gear.weapon];
-    let def = 0;
-    for (const id of Object.values(this.gear)) if (id) def += ITEMS[id].def || 0;
-    return { atk: w?.atk || 0, wlv: w?.wlv || 0, def, mastery: 0, aspdRate: this.wearing('aspd') ? 0.9 : 1 };
+    let def = 0, hit = 0, flee = 0;
+    for (const id of Object.values(this.gear)) {
+      if (!id) continue;
+      def += ITEMS[id].def || 0; hit += ITEMS[id].hit || 0; flee += ITEMS[id].flee || 0;
+    }
+    return { atk: w?.atk || 0, wlv: w?.wlv || 0, def, hit, flee, mastery: 0, aspdRate: this.wearing('aspd') ? 0.9 : 1 };
   }
 
   toJSON() { return { v: 2, bag: this.bag.toJSON(), chest: this.chest.toJSON(), gear: this.gear }; }

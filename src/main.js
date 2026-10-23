@@ -76,7 +76,7 @@ function applyStats() {
   const gear = inv.gearStats();
   const hide = skillLv(prog, 'ironhide');
   gear.mastery = skillLv(prog, 'basics') + 2 * skillLv(prog, 'discipline'); // every Aria weapon is a sword
-  gear.flee = skillLv(prog, 'footwork') ? 3 : 0;
+  gear.flee += skillLv(prog, 'footwork') ? 3 : 0;
   gear.def += hide;
   if (buffs.aspd > 0) gear.aspdRate *= 0.9;
   const ps = derive(prog, gear);
@@ -87,6 +87,7 @@ function applyStats() {
   player.hp = Math.min(player.hp, ps.maxHp);
   player.sp = Math.min(player.sp, ps.maxSp);
   player.speedMul = inv.wearing('speed') ? 1.2 : 1;
+  player.setHeadgear(inv.gear.head, inv.gear.face);
   player.blockChance = inv.wearing('block') ? 0.2 : 0;
 }
 applyStats();
