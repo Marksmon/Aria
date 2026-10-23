@@ -1,0 +1,36 @@
+{
+  "group_id": "5c2d275c-3d6e-496a-8880-e5946d1b745a",
+  "states": [
+    {
+      "character": {
+        "id": "6cb80878-85d9-4af6-95a8-37eed5a2ec23",
+        "name": "Idle",
+        "prompt": "cheerful village cook woman with brown hair in a bun, red headscarf, red dress with a white apron, holding a wooden ladle",
+        "size": {
+          "width": 96,
+          "height": 96
+        },
+        "template_id": "mannequin",
+        "directions": 8,
+        "view": "low top-down",
+        "created_at": "2026-10-23T12:31:57.703096+00:00"
+      },
+      "folder": "Idle",
+      "frames": {
+        "rotations": {
+          "south": "Idle/rotations/south.png",
+          "south-east": "Idle/rotations/south-east.png",
+          "east": "Idle/rotations/east.png",
+          "north-east": "Idle/rotations/north-east.png",
+          "north": "Idle/rotations/north.png",
+          "north-west": "Idle/rotations/north-west.png",
+          "west": "Idle/rotations/west.png",
+          "south-west": "Idle/rotations/south-west.png"
+        },
+        "animations": {}
+      }
+    }
+  ],
+  "export_version": "3.1",
+  "export_date": "2026-10-23T12:37:14.667192"
+}
