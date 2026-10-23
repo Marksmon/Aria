@@ -59,3 +59,10 @@ export function dirFor(x, z, cam) {
   const f = x * cam.fx + z * cam.fz, r = x * cam.rx + z * cam.rz;
   return Math.abs(r) > Math.abs(f) * 0.9 ? (r > 0 ? 'right' : 'left') : (f > 0 ? 'up' : 'down');
 }
+
+// Eight-way version for sprites drawn in diagonals too: 'downright', 'upleft', ...
+const DIR8 = ['up', 'upright', 'right', 'downright', 'down', 'downleft', 'left', 'upleft'];
+export function dirFor8(x, z, cam) {
+  const f = x * cam.fx + z * cam.fz, r = x * cam.rx + z * cam.rz;
+  return DIR8[(Math.round(Math.atan2(r, f) / (Math.PI / 4)) + 8) % 8];
+}

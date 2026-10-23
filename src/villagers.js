@@ -2,7 +2,7 @@
 // and show a '!' or '?' bubble over their head.
 import * as THREE from 'three';
 import { NPCS } from './quests.js';
-import { dirFor } from './noise.js';
+import { dirFor, dirFor8 } from './noise.js';
 
 const HEIGHT = 1.38;  // standing height in world units, same as the player
 const NOTICE = 4.5;   // turn towards the player within this distance
@@ -55,7 +55,8 @@ export class Villagers {
       v.t += dt;
       const dx = player.x - v.x, dz = player.z - v.z, d = Math.hypot(dx, dz);
       v.face = d < NOTICE && d > 0.01 ? { x: dx / d, z: dz / d } : { x: 0, z: 1 };
-      const tex = v.art.anims[dirFor(v.face.x, v.face.z, cam)].idle[0];
+      const turn = 'downright' in v.art.anims ? dirFor8 : dirFor;
+      const tex = v.art.anims[turn(v.face.x, v.face.z, cam)].idle[0];
       if (v.mat.map !== tex) { v.mat.map = tex; v.s.center.y = tex.userData.anchor; }
       v.s.scale.y = v.h * (1 + Math.sin(v.t * 2.2) * 0.015);
       v.mark.position.set(v.x, v.y + v.top + 0.15 + Math.sin(v.t * 3) * 0.06, v.z);

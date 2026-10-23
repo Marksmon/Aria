@@ -13,17 +13,21 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC = os.path.join(ROOT, 'art', 'pixellab')
 OUT = os.path.join(ROOT, 'src', 'art')
 DIRS = {'south': 'down', 'east': 'right', 'north': 'up', 'west': 'left'}
+DIAGONALS = {'south-east': 'downright', 'north-east': 'upright', 'north-west': 'upleft', 'south-west': 'downleft'}
 MIRROR = {'right': 'left', 'left': 'right'}
 
 # name -> options.
+#   eight:   also pack the four diagonal directions
+#   use:     {game name: export name}, e.g. play the 'stride' animation as 'walk'
 #   mirror:  (anim, direction) pairs drawn as the mirror of the opposite side
 #   outline: (pixels, colour) border traced around the silhouette. colour 'shade' tints each
 #            border pixel a dark shade of the colour beside it, like Ragnarok Online sprites
 # (the first player, art/pixellab/player_v1, needed 'mirror': {('attack', 'right')}: its east
 # attack had no sword)
 # The PixelLab Pro art already has Ragnarok-style shaded edges, so no extra outline.
-CHARS = {name: {} for name in ['player', 'slime', 'blueslime', 'sprout', 'crab', 'mushling', 'beetle', 'wisp',
-                               'bram', 'tilly', 'wren']}
+CHARS = {name: {} for name in ['slime', 'blueslime', 'sprout', 'crab', 'mushling', 'beetle', 'wisp']}
+CHARS['player'] = {'eight': True, 'use': {'walk': 'stride'}}  # even 8-frame walk; the first one limped
+CHARS.update({name: {'eight': True} for name in ['bram', 'tilly', 'wren']})
 
 
 def islands(f):
@@ -89,13 +93,13 @@ def outline(f, width, colour):
     return out
 
 
-def load(name):
+def load(name, eight=False):
     base = os.path.join(SRC, name)
     meta = json.load(open(os.path.join(base, 'metadata.json')))
     frames = meta['states'][0]['frames']
     img = lambda p: Image.open(os.path.join(base, p)).convert('RGBA')
     out = {}
-    for d, ours in DIRS.items():
+    for d, ours in {**DIRS, **(DIAGONALS if eight else {})}.items():
         out[ours] = {'idle': [img(frames['rotations'][d])]}
         for anim, per_dir in frames['animations'].items():
             # directions requested separately come back as e.g. 'walk-b730b657'
@@ -105,7 +109,11 @@ def load(name):
 
 
 def pack(name, opts):
-    art = load(name)
+    art = load(name, opts.get('eight'))
+    for d in art.values():
+        for ours, theirs in opts.get('use', {}).items():
+            if theirs in d:
+                d[ours] = d.pop(theirs)
     for d in art.values():
         for anim, fs in d.items():
             d[anim] = [clean(f, anim == 'idle') for f in fs]
@@ -134,7 +142,7 @@ def pack(name, opts):
         return fh - max(y for _, y in gs[0]) - 1 if gs else 0
 
     rows, layout = [], {}
-    for d in ['down', 'right', 'up', 'left']:
+    for d in art:
         layout[d] = {}
         for anim in ['idle'] + sorted(a for a in art[d] if a != 'idle'):
             frames = [f.crop(box) for f in art[d][anim]]

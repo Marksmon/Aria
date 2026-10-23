@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { dirFor } from './noise.js';
+import { dirFor, dirFor8 } from './noise.js';
 
 const BASE_SPEED = 4.2;  // world units per second
 const RADIUS = 0.3;      // collision radius
@@ -174,10 +174,12 @@ export class Player {
       if (ctl.attack && this.atkTimer <= 0) this.swing(cam, mobs);
     }
 
-    // sprite direction follows facing relative to the camera
-    this.dir = dirFor(this.face.x, this.face.z, cam);
-
-    const A = this.art.anims[this.dir];
+    // sprite direction follows facing relative to the camera; 8 ways when the art has diagonals,
+    // and a diagonal missing an animation borrows it from the nearest straight direction
+    const eight = 'downright' in this.art.anims;
+    this.dir = eight ? dirFor8(this.face.x, this.face.z, cam) : dirFor(this.face.x, this.face.z, cam);
+    const D = this.art.anims[this.dir], S = this.art.anims[dirFor(this.face.x, this.face.z, cam)];
+    const A = { idle: D.idle, walk: D.walk || S.walk, attack: D.attack || S.attack, dodge: D.dodge || S.dodge };
     let tex = A.idle[0];
     if (this.state === 'roll') {
       const k = 1 - this.rollT / ROLL_TIME;

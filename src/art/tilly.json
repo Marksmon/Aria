@@ -1,1 +1,1 @@
-{"fw": 62, "fh": 90, "body": [56, 90], "foot": 0, "anims": {"down": {"idle": [0, 1, [1]]}, "right": {"idle": [1, 1, [0]]}, "up": {"idle": [2, 1, [0]]}, "left": {"idle": [3, 1, [0]]}}}
+{"fw": 62, "fh": 90, "body": [56, 90], "foot": 0, "anims": {"down": {"idle": [0, 1, [1]]}, "right": {"idle": [1, 1, [0]]}, "up": {"idle": [2, 1, [0]]}, "left": {"idle": [3, 1, [0]]}, "downright": {"idle": [4, 1, [0]]}, "upright": {"idle": [5, 1, [0]]}, "upleft": {"idle": [6, 1, [0]]}, "downleft": {"idle": [7, 1, [0]]}}}

@@ -23,6 +23,7 @@ task, out, only = sys.argv[1], sys.argv[2], sys.argv[3:]
 key = os.environ.get("PIXELLAB_API_KEY", "")
 H = {"Authorization": f"Bearer {key}", "Content-Type": "application/json"}
 DIRS = ["south", "east", "north", "west"]
+DIRS8 = ["south", "south-east", "east", "north-east", "north", "north-west", "west", "south-west"]
 
 # Every character uses PixelLab's Pro mode with a style reference image. The player was made
 # from a Ragnarok Online sprite (path in PIXELLAB_STYLE_REF, not kept in the repo); everything
@@ -33,7 +34,15 @@ PLAYER_REF = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "art
                           "Idle", "rotations", "south.png")
 
 
-def pro(name, desc, anims=(), size=(64, 64), template="mannequin", ref=PLAYER_REF):
+# anims: (name, action description) for a custom 6-frame v3 animation, or
+#        (name, {"template": id}) for one of PixelLab's skeleton templates (1 generation/direction)
+def anim(n, d):
+    if isinstance(d, dict):
+        return {"animation_name": n, "mode": "template", "template_animation_id": d["template"]}
+    return {"animation_name": n, "mode": "v3", "action_description": d, "frame_count": 6}
+
+
+def pro(name, desc, anims=(), size=(64, 64), template="mannequin", ref=PLAYER_REF, dirs=DIRS):
     return {
         "name": name,
         "endpoint": "/create-character-pro",
@@ -47,7 +56,8 @@ def pro(name, desc, anims=(), size=(64, 64), template="mannequin", ref=PLAYER_RE
             "template_id": template,
             "no_background": True,
         },
-        "animations": [{"animation_name": n, "action_description": d, "frame_count": 6} for n, d in anims],
+        "animations": [anim(n, d) for n, d in anims],
+        "dirs": dirs,
     }
 
 
@@ -55,9 +65,11 @@ HOP = [("hop", "bouncing hop in place, squashing and stretching"), ("attack", "l
 CHARACTERS = [
     pro("player", "young novice swordsman with spiky orange-brown hair, blue tunic with a brown belt, "
         "red scarf, brown boots, short sword",
-        [("walk", "walking"), ("attack", "quick forward sword slash attack"),
+        # 'stride' is the walk the game uses (an even 8-frame template cycle in 8 directions);
+        # the first 'walk' made a limp facing the camera and stays only in the export
+        [("stride", {"template": "walking-8-frames"}), ("attack", "quick forward sword slash attack"),
          ("dodge", "quick dodge roll forward, tucking into a somersault and landing on his feet")],
-        size=(64, 96), ref=None),
+        size=(64, 96), ref=None, dirs=DIRS8),
     pro("slime", "round moss-green jelly slime blob with a tiny two-leaf sprout on top, no arms, no legs, "
         "big shiny eyes, rosy cheeks", HOP),
     pro("blueslime", "round translucent blue jelly slime blob shaped like a water drop, no arms, no legs, "
@@ -148,15 +160,15 @@ if task == "probe":
         log("no PIXELLAB_API_KEY secret set yet")
     sys.exit(0)
 
-def animate(name, cid, anims, have=None):
+def animate(name, cid, anims, have=None, dirs=DIRS):
     """Request each animation in every direction not in have[anim]; wait for all of them."""
     have = have or {}
     pending = []
     for a in anims:
-        todo = [d for d in DIRS if d not in have.get(a["animation_name"], ())]
+        todo = [d for d in dirs if d not in have.get(a["animation_name"], ())]
         while todo:
             try:
-                r = post("/characters/animations", {"character_id": cid, "mode": "v3", "directions": todo, **a})
+                r = post("/characters/animations", {"character_id": cid, "directions": todo, **a})
             except Exception as e:  # keep going with whatever works
                 log(name, a["animation_name"], "animation request failed:", e)
                 break
@@ -178,7 +190,7 @@ if task == "finish":
         for a, dirs in meta["frames"].get("animations", {}).items():
             have.setdefault(re.sub(r"-[0-9a-f]{8}$", "", a), set()).update(dirs)
         log(name, "has", {a: sorted(d) for a, d in have.items()})
-        animate(name, meta["character"]["id"], ch["animations"], have)
+        animate(name, meta["character"]["id"], ch["animations"], have, ch["dirs"])
         download_zip(meta["character"]["id"], base)
     sys.exit(0)
 
@@ -208,7 +220,7 @@ if task == "generate":
             manifest[name] = {"character_id": cid}
             if job and not wait_job(job, f"{name} create"):
                 continue
-            animate(name, cid, ch["animations"])
+            animate(name, cid, ch["animations"], dirs=ch["dirs"])
             download_zip(cid, f"{out}/{name}")
         except Exception as e:
             log(name, "error:", e)
