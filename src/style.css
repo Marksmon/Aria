@@ -118,3 +118,65 @@ html, body {
 #title p { margin: 14px 0 0; font-size: 18px; animation: pulse 1.6s ease-in-out infinite; }
 #title small { margin-top: 26px; font-size: 12px; opacity: .6; letter-spacing: .2em; text-transform: uppercase; }
 @keyframes pulse { 50% { opacity: .45; } }
+
+/* ---------- M2: combat HUD ---------- */
+#hearts {
+  position: absolute;
+  top: calc(12px + env(safe-area-inset-top));
+  left: calc(12px + env(safe-area-inset-left));
+  width: 200px;
+  height: 22px;
+}
+#hint { right: auto; left: 50%; transform: translateX(-50%); white-space: nowrap; }
+
+#btns {
+  position: absolute;
+  right: calc(22px + env(safe-area-inset-right));
+  bottom: calc(22px + env(safe-area-inset-bottom));
+  width: 170px;
+  height: 150px;
+}
+.btn {
+  position: absolute;
+  pointer-events: auto;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(circle at 35% 30%, rgba(255, 245, 225, .32), rgba(60, 42, 28, .55));
+  border: 3px solid rgba(46, 33, 24, .75);
+  box-shadow: inset 0 0 0 2px rgba(255, 230, 180, .35), 0 4px 10px rgba(0, 0, 0, .35);
+  transition: transform .06s;
+  touch-action: none;
+}
+.btn svg { width: 58%; height: 58%; fill: none; stroke: #fff4dc; stroke-width: 3.4; stroke-linecap: round; stroke-linejoin: round; }
+.btn.pressed { transform: scale(.9); background: radial-gradient(circle at 35% 30%, rgba(255, 245, 225, .5), rgba(90, 60, 36, .7)); }
+#btn-attack { right: 0; bottom: 0; width: 84px; height: 84px; }
+#btn-dodge { right: 96px; bottom: 10px; width: 58px; height: 58px; }
+#btn-action { right: 8px; bottom: 98px; width: 66px; height: 66px; }
+
+#hurt {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  background: radial-gradient(ellipse at center, rgba(200, 40, 30, 0) 55%, rgba(200, 40, 30, .55));
+}
+#hurt.show { animation: hurt .45s ease-out; }
+@keyframes hurt { 0% { opacity: 1; } 100% { opacity: 0; } }
+
+#faint {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: rgba(14, 12, 10, .75);
+  opacity: 0;
+  transition: opacity .6s;
+  font-size: 28px;
+  font-style: italic;
+  text-shadow: 0 0 4px #2e2118;
+}
+#faint small { font-size: 14px; font-style: normal; opacity: .75; letter-spacing: .1em; }
+#faint.show { opacity: 1; }

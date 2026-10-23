@@ -86,8 +86,9 @@ const TUNIC = '#4a78b5', TUNIC_DK = '#36598c', BELT = '#6b4426', BOOT = '#4a3324
 
 function drawPlayer(g, dir, frame) {
   const step = frame === 1 ? 1 : frame === 2 ? -1 : 0;
-  const bob = frame === 0 ? 0 : -2;
+  const bob = frame === 1 || frame === 2 ? -2 : 0;
   const side = dir === 'right';
+  const attack = frame === 3;
 
   // legs
   if (side) {
@@ -137,6 +138,8 @@ function drawPlayer(g, dir, frame) {
   if (dir === 'up') rrect(g, 58, 90, 11, 20, 4, SCARF);
   if (side) rrect(g, 42, 88, 14, 7, 3, SCARF);
 
+  if (attack && dir === 'up') sword(g, 90, 98, 0.45);
+
   // head
   ell(g, 64, 60, 30, 28, SKIN);
 
@@ -182,6 +185,22 @@ function drawPlayer(g, dir, frame) {
     ell(g, 84, 80, 4, 3, 'rgba(235,110,110,.45)', null);
     ell(g, 58, 70, 5, 6, SKIN); // ear
   }
+  if (attack && dir === 'down') sword(g, 92, 112, 2.5);
+  if (attack && dir === 'right') sword(g, 80, 106, Math.PI / 2);
+  g.restore();
+}
+
+// angle 0 = blade pointing up; (x, y) = the hand
+function sword(g, x, y, angle) {
+  g.save();
+  g.translate(x, y);
+  g.rotate(angle);
+  poly(g, [[-3.5, -6], [3.5, -6], [3.5, -38], [0, -46], [-3.5, -38]], '#e8eef5', OUT, 3);
+  g.beginPath(); g.moveTo(0, -8); g.lineTo(0, -40); g.strokeStyle = '#b9c6d6'; g.lineWidth = 1.5; g.stroke();
+  rrect(g, -10, -7, 20, 5, 2, '#e3b341', OUT, 2);
+  rrect(g, -2.5, -2, 5, 10, 2, '#6b4426', OUT, 2);
+  ell(g, 0, 9, 3.5, 3.5, '#e3b341', OUT, 2);
+  ell(g, 0, 0, 5.5, 5.5, SKIN, OUT, 2); // hand
   g.restore();
 }
 
@@ -433,6 +452,150 @@ function waterTex() {
   return c;
 }
 
+// ---------- Monsters ----------
+// Green Slime: our own design - a moss-green blob with a leaf sprout on top.
+function slime(frame, low = false) {
+  const { c, g } = mk(96, 88);
+  const sx = [1, 1.14, 0.88][frame], sy = [1, 0.84, 1.14][frame];
+  g.save();
+  g.translate(48, 84);
+  g.scale(sx, sy);
+  g.translate(-48, -84);
+  // sprout
+  g.beginPath(); g.moveTo(48, 34); g.quadraticCurveTo(50, 24, 47, 16);
+  g.strokeStyle = OUT; g.lineWidth = 6; g.stroke();
+  g.strokeStyle = '#3f8f3a'; g.lineWidth = 3; g.stroke();
+  g.save(); g.translate(47, 18); g.rotate(-0.6); ell(g, -9, 0, 10, 5, '#5fae45', OUT, 2.5); g.restore();
+  g.save(); g.translate(47, 16); g.rotate(0.5); ell(g, 9, 0, 9, 4.5, '#7cc455', OUT, 2.5); g.restore();
+  // body
+  g.beginPath();
+  g.moveTo(10, 80);
+  g.bezierCurveTo(4, 50, 26, 30, 48, 30);
+  g.bezierCurveTo(70, 30, 92, 50, 86, 80);
+  g.quadraticCurveTo(48, 88, 10, 80);
+  g.closePath();
+  g.fillStyle = low ? '#8fb84e' : '#6cc24a'; g.fill();
+  g.strokeStyle = OUT; g.lineWidth = 3.5; g.stroke();
+  g.beginPath(); g.moveTo(16, 76); g.quadraticCurveTo(48, 86, 80, 76); g.quadraticCurveTo(48, 80, 16, 76);
+  g.fillStyle = '#4e9a35'; g.fill();
+  ell(g, 30, 46, 9, 6, 'rgba(255,255,255,.55)', null);
+  circleFill(g, 24, 54, 3, 'rgba(255,255,255,.5)');
+  // face
+  if (low) {
+    for (const x of [36, 60]) {
+      g.beginPath(); g.moveTo(x - 4, 54); g.lineTo(x + 4, 62); g.moveTo(x + 4, 54); g.lineTo(x - 4, 62);
+      g.strokeStyle = '#1f2a1a'; g.lineWidth = 3; g.stroke();
+    }
+  } else {
+    ell(g, 36, 58, 4.5, 6, '#1f2a1a', null);
+    ell(g, 60, 58, 4.5, 6, '#1f2a1a', null);
+    circleFill(g, 34.6, 55.6, 1.8, '#fff');
+    circleFill(g, 58.6, 55.6, 1.8, '#fff');
+  }
+  g.beginPath(); g.arc(48, 66, 4, 0.2, Math.PI - 0.2); g.strokeStyle = '#1f2a1a'; g.lineWidth = 2.2; g.stroke();
+  ell(g, 27, 66, 5, 3, 'rgba(240,120,120,.45)', null);
+  ell(g, 69, 66, 5, 3, 'rgba(240,120,120,.45)', null);
+  g.restore();
+  return c;
+}
+
+// Sproutling: a little bulb creature with a two-leaf head and stubby legs.
+function sproutling(frame, angry = false) {
+  const { c, g } = mk(96, 112);
+  const step = frame === 1 ? 1 : -1;
+  // legs
+  rrect(g, 34 + step * 3, 88, 10, 18, 4, '#9a6f45');
+  rrect(g, 52 - step * 3, 88, 10, 18, 4, '#9a6f45');
+  // body (bulb)
+  ell(g, 48, 72, 26, 24, '#d8ab72');
+  g.beginPath(); g.ellipse(48, 72, 26, 24, 0, 0.15, Math.PI - 0.15);
+  g.strokeStyle = '#b8874f'; g.lineWidth = 6; g.stroke();
+  ell(g, 40, 62, 7, 5, 'rgba(255,245,220,.6)', null);
+  // stem + leaves
+  g.beginPath(); g.moveTo(48, 50); g.lineTo(48, 32); g.strokeStyle = OUT; g.lineWidth = 7; g.stroke();
+  g.strokeStyle = '#4f8f3a'; g.lineWidth = 4; g.stroke();
+  const leaf = (rot, col) => {
+    g.save(); g.translate(48, 32); g.rotate(rot);
+    g.beginPath(); g.moveTo(0, 0); g.quadraticCurveTo(10, -22, 30, -16); g.quadraticCurveTo(18, 4, 0, 0);
+    g.fillStyle = col; g.fill(); g.strokeStyle = OUT; g.lineWidth = 3; g.stroke();
+    g.beginPath(); g.moveTo(3, -2); g.quadraticCurveTo(14, -10, 24, -13); g.strokeStyle = 'rgba(30,60,20,.5)'; g.lineWidth = 1.5; g.stroke();
+    g.restore();
+  };
+  leaf(-0.1 + step * 0.06, '#7cc455');
+  g.save(); g.translate(96, 0); g.scale(-1, 1); leaf(-0.1 - step * 0.06, '#5fae45'); g.restore();
+  // face
+  ell(g, 39, 74, 3.8, 5, '#2a2018', null);
+  ell(g, 57, 74, 3.8, 5, '#2a2018', null);
+  circleFill(g, 38, 72, 1.5, '#fff');
+  circleFill(g, 56, 72, 1.5, '#fff');
+  if (angry) {
+    g.beginPath(); g.moveTo(33, 64); g.lineTo(44, 68); g.moveTo(63, 64); g.lineTo(52, 68);
+    g.strokeStyle = OUT; g.lineWidth = 3; g.stroke();
+    g.beginPath(); g.moveTo(43, 85); g.lineTo(48, 82); g.lineTo(53, 85); g.strokeStyle = OUT; g.lineWidth = 2.2; g.stroke();
+  } else {
+    g.beginPath(); g.arc(48, 81, 3, 0.2, Math.PI - 0.2); g.strokeStyle = OUT; g.lineWidth = 2; g.stroke();
+    ell(g, 31, 81, 4, 2.5, 'rgba(240,120,120,.45)', null);
+    ell(g, 65, 81, 4, 2.5, 'rgba(240,120,120,.45)', null);
+  }
+  return c;
+}
+
+// White silhouette for the hit flash
+function silhouette(src) {
+  const { c, g } = mk(src.width, src.height);
+  g.drawImage(src, 0, 0);
+  g.globalCompositeOperation = 'source-in';
+  g.fillStyle = '#ffffff';
+  g.fillRect(0, 0, c.width, c.height);
+  return c;
+}
+
+// ---------- Effects ----------
+function slashArc() {
+  const { c, g } = mk(128, 128);
+  // crescent opening to the right
+  const band = (r0, r1, a0, a1, col) => {
+    g.beginPath();
+    g.arc(52, 64, r1, a0, a1);
+    g.arc(40, 64, r0, a1, a0, true);
+    g.closePath();
+    g.fillStyle = col; g.fill();
+  };
+  band(44, 58, -1.25, 1.25, 'rgba(150,200,255,.55)');
+  band(46, 54, -1.15, 1.15, 'rgba(255,255,255,.95)');
+  return c;
+}
+
+function puff() {
+  const { c, g } = mk(64, 64);
+  const grd = g.createRadialGradient(32, 32, 2, 32, 32, 30);
+  grd.addColorStop(0, 'rgba(255,255,255,.95)');
+  grd.addColorStop(0.6, 'rgba(240,240,230,.7)');
+  grd.addColorStop(1, 'rgba(240,240,230,0)');
+  g.fillStyle = grd;
+  g.fillRect(0, 0, 64, 64);
+  return c;
+}
+
+export function heartPath(g, x, y, s) {
+  g.beginPath();
+  g.moveTo(x, y + s * 0.3);
+  g.bezierCurveTo(x, y, x - s * 0.5, y - s * 0.05, x - s * 0.5, y + s * 0.3);
+  g.bezierCurveTo(x - s * 0.5, y + s * 0.6, x - s * 0.15, y + s * 0.75, x, y + s * 0.95);
+  g.bezierCurveTo(x + s * 0.15, y + s * 0.75, x + s * 0.5, y + s * 0.6, x + s * 0.5, y + s * 0.3);
+  g.bezierCurveTo(x + s * 0.5, y - s * 0.05, x, y, x, y + s * 0.3);
+  g.closePath();
+}
+
+function heartPickup() {
+  const { c, g } = mk(56, 56);
+  heartPath(g, 28, 6, 46);
+  g.fillStyle = '#e04a4a'; g.fill();
+  g.strokeStyle = OUT; g.lineWidth = 3.5; g.stroke();
+  ell(g, 18, 18, 5, 4, 'rgba(255,255,255,.6)', null);
+  return c;
+}
+
 // ---------- Library ----------
 function tex(canvas, opts = {}) {
   const t = new THREE.CanvasTexture(canvas);
@@ -487,7 +650,7 @@ export function createSprites() {
 
   const player = {};
   for (const dir of ['down', 'up', 'right']) {
-    player[dir] = [0, 1, 2].map((f) => {
+    player[dir] = [0, 1, 2, 3].map((f) => {
       const { c, g } = mk(128, 160);
       drawPlayer(g, dir, f);
       return c;
@@ -497,7 +660,15 @@ export function createSprites() {
   const playerTex = {};
   for (const d of Object.keys(player)) playerTex[d] = player[d].map((c) => tex(c));
 
+  const withFlash = (canvases) => ({ frames: canvases.map((c) => tex(c)), flash: canvases.map((c) => tex(silhouette(c))) });
+  const mobs = {
+    slime: { ...withFlash([0, 1, 2].map((f) => slime(f))), low: [0, 1, 2].map((f) => tex(slime(f, true))), aspect: 88 / 96 },
+    sprout: { ...withFlash([0, 1].map((f) => sproutling(f))), angry: [0, 1].map((f) => tex(sproutling(f, true))), aspect: 112 / 96 },
+  };
+
   return {
+    mobs,
+    fx: { slash: tex(slashArc()), puff: tex(puff()), heart: tex(heartPickup()) },
     props,
     fire: { frames: fireFrames, aspect: fireAspect, w: 1.2 },
     player: { frames: playerTex, aspect: 160 / 128, w: 1.15 },

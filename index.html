@@ -11,14 +11,25 @@
   <div id="hud">
     <div id="zone-toast"><div class="map">Aibachu</div><div class="zone"></div></div>
     <canvas id="minimap" width="128" height="128"></canvas>
+    <canvas id="hearts" width="400" height="44"></canvas>
     <div id="joy"><div id="joy-knob"></div></div>
-    <div id="hint">Drag right side to rotate · Pinch to zoom</div>
+    <div id="btns">
+      <div id="btn-dodge" class="btn" data-btn="dodge" aria-label="Dodge">
+        <svg viewBox="0 0 48 48"><path d="M10 30c4 8 18 10 25 2" /><path d="M31 26l5 6-7 2" /><path d="M14 18c3-6 12-9 19-5" /></svg>
+      </div>
+      <div id="btn-attack" class="btn" data-btn="attack" aria-label="Attack">
+        <svg viewBox="0 0 48 48"><path d="M33 9l6 0 0 6-17 17-6-6z" /><path d="M14 26l8 8" /><path d="M16 32l-6 6" /><circle cx="9" cy="39" r="2.5" /></svg>
+      </div>
+    </div>
+    <div id="hurt"></div>
+    <div id="faint"><div>You fainted…</div><small>Returning to camp</small></div>
+    <div id="hint">Hold ⚔ to attack · Tap ↻ to dodge · Drag right side to rotate</div>
     <div id="fps"></div>
   </div>
   <div id="title">
     <h1>Aibachu</h1>
     <p>Tap to start</p>
-    <small>M1 · Explore</small>
+    <small>M2 · Combat</small>
   </div>
   <script type="module" src="/src/main.js"></script>
 </body>

@@ -254,6 +254,17 @@ export function buildWorld(scene, lib) {
   scene.add(water);
 
   // ---------- Prop sprites ----------
+  const tall = []; // big props that fade out when they hide the player
+  const tintMats = [];
+  for (const def of Object.values(lib.props)) for (const v of def.variants) {
+    tintMats.push(v.mat);
+    v.faded = v.mat.clone();
+    v.faded.transparent = true;
+    v.faded.opacity = 0.35;
+    v.faded.alphaTest = 0.05;
+    v.faded.depthWrite = false;
+    tintMats.push(v.faded);
+  }
   for (const p of props) {
     if (p.type === '_fire') continue;
     const def = lib.props[p.type];
@@ -264,6 +275,20 @@ export function buildWorld(scene, lib) {
     s.center.set(0.5, 0.04);
     s.position.set(p.x, heightAt(p.x, p.z), p.z);
     scene.add(s);
+    if (w >= 1.6) tall.push({ s, x: p.x, z: p.z, w, h: w * variant.aspect, variant });
+  }
+  function updateOcclusion(px, pz, cam) {
+    for (const t of tall) {
+      const dx = t.x - px, dz = t.z - pz;
+      let fade = false;
+      if (Math.abs(dx) < 6 && Math.abs(dz) < 6) {
+        const along = dx * cam.fx + dz * cam.fz;     // < 0 = between camera and player
+        const side = dx * cam.rx + dz * cam.rz;
+        fade = along < 0.2 && along > -t.h * 0.9 && Math.abs(side) < t.w * 0.45 + 0.35;
+      }
+      const want = fade ? t.variant.faded : t.variant.mat;
+      if (t.s.material !== want) t.s.material = want;
+    }
   }
 
   // ---------- Campfire ----------
@@ -337,7 +362,7 @@ export function buildWorld(scene, lib) {
   mg.beginPath(); mg.moveTo(64, 57); mg.lineTo(70, 66); mg.lineTo(58, 66); mg.closePath(); mg.fill(); mg.stroke();
 
   return {
-    heightAt, zoneAt, walkable, resolve, update,
+    heightAt, zoneAt, walkable, resolve, update, updateOcclusion, tintMats, fireMat, fireLight,
     spawn: { x: 32, z: 36.2 },
     minimap: mini,
     stats: { props: props.length, interior },

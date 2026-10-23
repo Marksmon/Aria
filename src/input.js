@@ -14,6 +14,8 @@ export class Input {
     this.keys = new Set();
     this.lastPinch = 0;
     this.enabled = false;
+    this.buttons = new Map(); // name -> pointerId
+    this.taps = new Set();    // one-shot presses
     this.resetJoy();
 
     const opts = { passive: false };
@@ -21,7 +23,15 @@ export class Input {
     window.addEventListener('pointermove', (e) => this.moveEvt(e), opts);
     window.addEventListener('pointerup', (e) => this.up(e), opts);
     window.addEventListener('pointercancel', (e) => this.up(e), opts);
-    window.addEventListener('keydown', (e) => this.keys.add(e.key.toLowerCase()));
+    window.addEventListener('keydown', (e) => {
+      const k = e.key.toLowerCase();
+      if (!e.repeat) {
+        if (k === 'k' || k === 'shift') this.taps.add('dodge');
+        if (k === 'f') this.taps.add('action');
+        if (k === 'i' || k === 'b') this.taps.add('bag');
+      }
+      this.keys.add(k);
+    });
     window.addEventListener('keyup', (e) => this.keys.delete(e.key.toLowerCase()));
     window.addEventListener('blur', () => { this.keys.clear(); this.releaseJoy(); this.cam.clear(); });
     window.addEventListener('wheel', (e) => { this.zoomDelta += e.deltaY * 0.01; }, { passive: true });
@@ -42,6 +52,16 @@ export class Input {
 
   down(e) {
     if (!this.enabled) return;
+    const btn = e.target.closest?.('[data-btn]');
+    if (btn) {
+      e.preventDefault();
+      const name = btn.dataset.btn;
+      this.buttons.set(name, e.pointerId);
+      this.taps.add(name);
+      btn.classList.add('pressed');
+      return;
+    }
+    if (e.target.closest?.('.panel, .ui-click')) return; // menus handle their own taps
     e.preventDefault();
     const left = e.clientX < window.innerWidth * 0.45;
     if (left && this.joy.id === null) {
@@ -79,6 +99,12 @@ export class Input {
   }
 
   up(e) {
+    for (const [name, id] of this.buttons) {
+      if (id === e.pointerId) {
+        this.buttons.delete(name);
+        document.querySelector(`[data-btn="${name}"]`)?.classList.remove('pressed');
+      }
+    }
     if (e.pointerId === this.joy.id) this.releaseJoy();
     this.cam.delete(e.pointerId);
   }
@@ -104,6 +130,19 @@ export class Input {
     const m = Math.hypot(x, y);
     if (m > 1) { x /= m; y /= m; }
     return { x, y };
+  }
+
+  held(name) {
+    const k = this.keys;
+    if (name === 'attack' && (k.has(' ') || k.has('j'))) return true;
+    return this.buttons.has(name);
+  }
+
+  // true once per press (touch button or key)
+  tapped(name) {
+    const hit = this.taps.has(name);
+    this.taps.delete(name);
+    return hit;
   }
 
   consumeCamera(dt) {

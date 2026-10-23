@@ -1,18 +1,40 @@
 import * as THREE from 'three';
 
-const SPEED = 4.2;     // world units per second
-const RADIUS = 0.3;    // collision radius
+const BASE_SPEED = 4.2;  // world units per second
+const RADIUS = 0.3;      // collision radius
 const WALK_SEQ = [1, 0, 2, 0];
+const ROLL_TIME = 0.28, ROLL_SPEED = 12, ROLL_CD = 0.7;
+const ATTACK_RANGE = 1.65, ATTACK_COS = 0.34; // ~70 degrees either side
+const AIM_RANGE = 2.8;
 
 export class Player {
-  constructor(scene, world, art, shadowTex) {
+  constructor(scene, world, art, shadowTex, fx) {
     this.world = world;
     this.art = art;
+    this.fx = fx;
     this.x = 0;
     this.z = 0;
+    this.face = { x: 0, z: 1 };
     this.dir = 'down';
     this.moving = false;
     this.animT = 0;
+
+    // stats (hp is in half-hearts)
+    this.maxHp = 10;
+    this.hp = 10;
+    this.damage = 1;
+    this.attackSpeed = 1.5; // swings per second
+    this.speedMul = 1;
+
+    this.state = 'normal'; // normal | roll | down
+    this.atkTimer = 0;
+    this.atkAnim = 0;
+    this.rollT = 0;
+    this.rollCd = 0;
+    this.rollDir = { x: 0, z: 1 };
+    this.iframes = 0;
+    this.knock = { x: 0, z: 0 };
+    this.events = { swing: [], hurt: [], faint: [], hit: [] };
 
     this.mat = new THREE.SpriteMaterial({ map: art.frames.down[0], alphaTest: 0.5 });
     this.sprite = new THREE.Sprite(this.mat);
@@ -29,6 +51,9 @@ export class Player {
     scene.add(this.shadow);
   }
 
+  on(name, fn) { this.events[name].push(fn); }
+  emit(name, ...a) { for (const fn of this.events[name]) fn(...a); }
+
   setPos(x, z) {
     if (!this.world.walkable(x, z)) { x = this.world.spawn.x; z = this.world.spawn.z; }
     this.x = x;
@@ -38,38 +63,129 @@ export class Player {
 
   tryMove(dx, dz) {
     const w = this.world;
+    const ox = this.x, oz = this.z;
     const attempt = (tx, tz) => {
       const [rx, rz] = w.resolve(tx, tz, RADIUS);
       if (w.walkable(rx, rz)) { this.x = rx; this.z = rz; return true; }
       return false;
     };
-    if (attempt(this.x + dx, this.z + dz)) return;
-    if (attempt(this.x + dx, this.z)) return;
-    attempt(this.x, this.z + dz);
+    if (!attempt(this.x + dx, this.z + dz) && !attempt(this.x + dx, this.z)) attempt(this.x, this.z + dz);
+    return Math.hypot(this.x - ox, this.z - oz);
   }
 
-  // move: {x, z} world-space direction (length 0..1). cam: {fx, fz, rx, rz} camera basis on the ground plane.
-  update(dt, move, cam) {
-    const mag = Math.hypot(move.x, move.z);
-    this.moving = mag > 0.08;
-    if (this.moving) {
-      this.tryMove(move.x * SPEED * dt, move.z * SPEED * dt);
-      // facing relative to the camera so the sprite turns the right way when the view rotates
-      const f = move.x * cam.fx + move.z * cam.fz;
-      const r = move.x * cam.rx + move.z * cam.rz;
-      this.dir = Math.abs(r) > Math.abs(f) * 0.9 ? (r > 0 ? 'right' : 'left') : (f > 0 ? 'up' : 'down');
-      this.animT += dt * 9 * Math.min(1, mag + 0.3);
-    } else {
-      this.animT = 0;
+  takeDamage(amount, fromX, fromZ) {
+    if (this.state === 'down' || this.iframes > 0) return false;
+    this.hp = Math.max(0, this.hp - amount);
+    this.iframes = 0.9;
+    const dx = this.x - fromX, dz = this.z - fromZ, d = Math.hypot(dx, dz) || 1;
+    this.knock.x = (dx / d) * 7;
+    this.knock.z = (dz / d) * 7;
+    this.emit('hurt', amount);
+    if (this.hp <= 0) {
+      this.state = 'down';
+      this.sprite.material.rotation = Math.PI / 2;
+      this.emit('faint');
     }
-    const frame = this.moving ? WALK_SEQ[Math.floor(this.animT) % 4] : 0;
+    return true;
+  }
+
+  heal(n) {
+    const before = this.hp;
+    this.hp = Math.min(this.maxHp, this.hp + n);
+    return this.hp - before;
+  }
+
+  revive(x, z) {
+    this.state = 'normal';
+    this.hp = this.maxHp;
+    this.iframes = 1.5;
+    this.knock.x = this.knock.z = 0;
+    this.mat.rotation = 0;
+    this.setPos(x, z);
+  }
+
+  // move: world-space direction (0..1). cam: camera basis. ctl: {attack, dodge}. mobs: MobManager
+  update(dt, move, cam, ctl, mobs) {
+    this.atkTimer -= dt;
+    this.atkAnim -= dt;
+    this.rollCd -= dt;
+    this.iframes -= dt;
+
+    if (this.state === 'down') {
+      this.sync();
+      return;
+    }
+
+    // knockback
+    if (Math.abs(this.knock.x) + Math.abs(this.knock.z) > 0.05) {
+      this.tryMove(this.knock.x * dt, this.knock.z * dt);
+      const k = Math.exp(-10 * dt);
+      this.knock.x *= k;
+      this.knock.z *= k;
+    }
+
+    const mag = Math.hypot(move.x, move.z);
+    if (ctl.dodge && this.state === 'normal' && this.rollCd <= 0) {
+      this.state = 'roll';
+      this.rollT = ROLL_TIME;
+      this.rollCd = ROLL_CD;
+      this.iframes = Math.max(this.iframes, ROLL_TIME + 0.08);
+      this.rollDir = mag > 0.1 ? { x: move.x / mag, z: move.z / mag } : { ...this.face };
+      this.face = { ...this.rollDir };
+    }
+
+    if (this.state === 'roll') {
+      this.rollT -= dt;
+      this.tryMove(this.rollDir.x * ROLL_SPEED * dt, this.rollDir.z * ROLL_SPEED * dt);
+      const spin = (1 - this.rollT / ROLL_TIME) * Math.PI * 2;
+      this.mat.rotation = -Math.sign(this.rollDir.x * cam.rx + this.rollDir.z * cam.rz || 1) * spin;
+      this.moving = true;
+      if (this.rollT <= 0) { this.state = 'normal'; this.mat.rotation = 0; }
+    } else {
+      this.moving = mag > 0.08;
+      const attacking = this.atkAnim > 0;
+      if (this.moving) {
+        const speed = BASE_SPEED * this.speedMul * (attacking ? 0.55 : 1);
+        this.tryMove(move.x * speed * dt, move.z * speed * dt);
+        if (!attacking) this.face = { x: move.x / mag, z: move.z / mag };
+        this.animT += dt * 9 * Math.min(1, mag + 0.3);
+      } else {
+        this.animT = 0;
+      }
+
+      if (ctl.attack && this.atkTimer <= 0) this.swing(cam, mobs);
+    }
+
+    // sprite direction follows facing relative to the camera
+    const f = this.face.x * cam.fx + this.face.z * cam.fz;
+    const r = this.face.x * cam.rx + this.face.z * cam.rz;
+    this.dir = Math.abs(r) > Math.abs(f) * 0.9 ? (r > 0 ? 'right' : 'left') : (f > 0 ? 'up' : 'down');
+
+    let frame = 0;
+    if (this.atkAnim > 0) frame = 3;
+    else if (this.moving && this.state === 'normal') frame = WALK_SEQ[Math.floor(this.animT) % 4];
     const tex = this.art.frames[this.dir][frame];
     if (this.mat.map !== tex) this.mat.map = tex;
 
-    // idle breathing
     const breathe = this.moving ? 1 : 1 + Math.sin(performance.now() / 420) * 0.015;
     this.sprite.scale.y = this.art.w * this.art.aspect * breathe;
+    this.sprite.visible = !(this.iframes > 0 && this.state === 'normal' && Math.floor(this.iframes * 14) % 2 === 0);
     this.sync();
+  }
+
+  swing(cam, mobs) {
+    this.atkTimer = 1 / this.attackSpeed;
+    this.atkAnim = Math.min(0.18, this.atkTimer * 0.6);
+    const target = mobs.nearest(this.x, this.z, AIM_RANGE);
+    if (target) {
+      const dx = target.x - this.x, dz = target.z - this.z, d = Math.hypot(dx, dz) || 1;
+      this.face = { x: dx / d, z: dz / d };
+    }
+    const y = this.world.heightAt(this.x, this.z);
+    this.fx.slash(this.x + this.face.x * 0.7, y + 0.55, this.z + this.face.z * 0.7, this.face, cam);
+    const hits = mobs.hitArc(this.x, this.z, this.face, ATTACK_RANGE, ATTACK_COS, this.damage);
+    this.emit('swing', hits);
+    if (hits > 0) this.emit('hit', hits);
   }
 
   sync() {
