@@ -1,12 +1,12 @@
-// Most art is painted into canvases at startup; the player and Green Slime are PixelLab
-// sprite sheets (src/art, packed by build-tools/pack-sprites.py). Each sprite is drawn
-// bottom-centered so it stands on the ground. Sizes are in world units, not pixels.
+// Characters (player, monsters, villagers) are PixelLab sprite sheets in src/art, packed by
+// build-tools/pack-sprites.py; the world, props and effects are painted into canvases at
+// startup. Each sprite is drawn bottom-centered so it stands on the ground. Sizes are in
+// world units, not pixels.
 import * as THREE from 'three';
 import { mulberry32 } from './noise.js';
-import playerSheet from './art/player.png';
-import playerLayout from './art/player.json';
-import slimeSheet from './art/slime.png';
-import slimeLayout from './art/slime.json';
+
+const SHEETS = import.meta.glob('./art/*.png', { eager: true, import: 'default' });
+const LAYOUTS = import.meta.glob('./art/*.json', { eager: true, import: 'default' });
 
 const OUT = '#2e2118';
 const TAU = Math.PI * 2;
@@ -324,293 +324,7 @@ function waterTex() {
   return c;
 }
 
-// ---------- Monsters ----------
-const SLIME_GREEN = { body: '#6cc24a', dark: '#4e9a35', low: '#8fb84e', sprout: true };
-const SLIME_BLUE = { body: '#5aa8e0', dark: '#3a7cb5', low: '#86b4cf', sprout: false };
-
-// Green Slime: our own design - a moss-green blob with a leaf sprout on top.
-function slime(frame, low = false, pal = SLIME_GREEN) {
-  const { c, g } = mk(96, 88);
-  const sx = [1, 1.14, 0.88][frame], sy = [1, 0.84, 1.14][frame];
-  g.save();
-  g.translate(48, 84);
-  g.scale(sx, sy);
-  g.translate(-48, -84);
-  if (pal.sprout) {
-    g.beginPath(); g.moveTo(48, 34); g.quadraticCurveTo(50, 24, 47, 16);
-    g.strokeStyle = OUT; g.lineWidth = 6; g.stroke();
-    g.strokeStyle = '#3f8f3a'; g.lineWidth = 3; g.stroke();
-    g.save(); g.translate(47, 18); g.rotate(-0.6); ell(g, -9, 0, 10, 5, '#5fae45', OUT, 2.5); g.restore();
-    g.save(); g.translate(47, 16); g.rotate(0.5); ell(g, 9, 0, 9, 4.5, '#7cc455', OUT, 2.5); g.restore();
-  } else {
-    // a single dew droplet floating on top
-    g.beginPath(); g.moveTo(48, 12); g.quadraticCurveTo(56, 22, 48, 28); g.quadraticCurveTo(40, 22, 48, 12);
-    g.fillStyle = '#bfe8ff'; g.fill(); g.strokeStyle = OUT; g.lineWidth = 2.5; g.stroke();
-  }
-  // body
-  g.beginPath();
-  g.moveTo(10, 80);
-  g.bezierCurveTo(4, 50, 26, 30, 48, 30);
-  g.bezierCurveTo(70, 30, 92, 50, 86, 80);
-  g.quadraticCurveTo(48, 88, 10, 80);
-  g.closePath();
-  g.fillStyle = low ? pal.low : pal.body; g.fill();
-  g.strokeStyle = OUT; g.lineWidth = 3.5; g.stroke();
-  g.beginPath(); g.moveTo(16, 76); g.quadraticCurveTo(48, 86, 80, 76); g.quadraticCurveTo(48, 80, 16, 76);
-  g.fillStyle = pal.dark; g.fill();
-  ell(g, 30, 46, 9, 6, 'rgba(255,255,255,.55)', null);
-  circleFill(g, 24, 54, 3, 'rgba(255,255,255,.5)');
-  // face
-  if (low) {
-    for (const x of [36, 60]) {
-      g.beginPath(); g.moveTo(x - 4, 54); g.lineTo(x + 4, 62); g.moveTo(x + 4, 54); g.lineTo(x - 4, 62);
-      g.strokeStyle = '#1f2a1a'; g.lineWidth = 3; g.stroke();
-    }
-  } else {
-    ell(g, 36, 58, 4.5, 6, '#1f2a1a', null);
-    ell(g, 60, 58, 4.5, 6, '#1f2a1a', null);
-    circleFill(g, 34.6, 55.6, 1.8, '#fff');
-    circleFill(g, 58.6, 55.6, 1.8, '#fff');
-  }
-  g.beginPath(); g.arc(48, 66, 4, 0.2, Math.PI - 0.2); g.strokeStyle = '#1f2a1a'; g.lineWidth = 2.2; g.stroke();
-  ell(g, 27, 66, 5, 3, 'rgba(240,120,120,.45)', null);
-  ell(g, 69, 66, 5, 3, 'rgba(240,120,120,.45)', null);
-  g.restore();
-  return c;
-}
-
-// Sproutling: a little bulb creature with a two-leaf head and stubby legs.
-function sproutling(frame, angry = false) {
-  const { c, g } = mk(96, 112);
-  const step = frame === 1 ? 1 : -1;
-  // legs
-  rrect(g, 34 + step * 3, 88, 10, 18, 4, '#9a6f45');
-  rrect(g, 52 - step * 3, 88, 10, 18, 4, '#9a6f45');
-  // body (bulb)
-  ell(g, 48, 72, 26, 24, '#d8ab72');
-  g.beginPath(); g.ellipse(48, 72, 26, 24, 0, 0.15, Math.PI - 0.15);
-  g.strokeStyle = '#b8874f'; g.lineWidth = 6; g.stroke();
-  ell(g, 40, 62, 7, 5, 'rgba(255,245,220,.6)', null);
-  // stem + leaves
-  g.beginPath(); g.moveTo(48, 50); g.lineTo(48, 32); g.strokeStyle = OUT; g.lineWidth = 7; g.stroke();
-  g.strokeStyle = '#4f8f3a'; g.lineWidth = 4; g.stroke();
-  const leaf = (rot, col) => {
-    g.save(); g.translate(48, 32); g.rotate(rot);
-    g.beginPath(); g.moveTo(0, 0); g.quadraticCurveTo(10, -22, 30, -16); g.quadraticCurveTo(18, 4, 0, 0);
-    g.fillStyle = col; g.fill(); g.strokeStyle = OUT; g.lineWidth = 3; g.stroke();
-    g.beginPath(); g.moveTo(3, -2); g.quadraticCurveTo(14, -10, 24, -13); g.strokeStyle = 'rgba(30,60,20,.5)'; g.lineWidth = 1.5; g.stroke();
-    g.restore();
-  };
-  leaf(-0.1 + step * 0.06, '#7cc455');
-  g.save(); g.translate(96, 0); g.scale(-1, 1); leaf(-0.1 - step * 0.06, '#5fae45'); g.restore();
-  // face
-  ell(g, 39, 74, 3.8, 5, '#2a2018', null);
-  ell(g, 57, 74, 3.8, 5, '#2a2018', null);
-  circleFill(g, 38, 72, 1.5, '#fff');
-  circleFill(g, 56, 72, 1.5, '#fff');
-  if (angry) {
-    g.beginPath(); g.moveTo(33, 64); g.lineTo(44, 68); g.moveTo(63, 64); g.lineTo(52, 68);
-    g.strokeStyle = OUT; g.lineWidth = 3; g.stroke();
-    g.beginPath(); g.moveTo(43, 85); g.lineTo(48, 82); g.lineTo(53, 85); g.strokeStyle = OUT; g.lineWidth = 2.2; g.stroke();
-  } else {
-    g.beginPath(); g.arc(48, 81, 3, 0.2, Math.PI - 0.2); g.strokeStyle = OUT; g.lineWidth = 2; g.stroke();
-    ell(g, 31, 81, 4, 2.5, 'rgba(240,120,120,.45)', null);
-    ell(g, 65, 81, 4, 2.5, 'rgba(240,120,120,.45)', null);
-  }
-  return c;
-}
-
-
-// Mudcrab: squat pinkish-brown crab, claws up. frame toggles claw snap.
-function crab(frame) {
-  const { c, g } = mk(112, 88);
-  const snap = frame === 1 ? 4 : 0;
-  // legs
-  for (const s of [-1, 1]) for (let i = 0; i < 3; i++) {
-    g.beginPath(); g.moveTo(56 + s * 22, 62 + i * 5); g.lineTo(56 + s * (36 + i * 4), 70 + i * 5 + (frame ? (i % 2 ? 2 : -2) : 0)); g.lineTo(56 + s * (40 + i * 4), 80);
-    g.strokeStyle = OUT; g.lineWidth = 6; g.stroke(); g.strokeStyle = '#b5664a'; g.lineWidth = 3; g.stroke();
-  }
-  // claws
-  for (const s of [-1, 1]) {
-    g.beginPath(); g.moveTo(56 + s * 20, 52); g.lineTo(56 + s * 34, 38);
-    g.strokeStyle = OUT; g.lineWidth = 8; g.stroke(); g.strokeStyle = '#c97a5a'; g.lineWidth = 4.5; g.stroke();
-    g.save(); g.translate(56 + s * 38, 30); g.rotate(s * 0.4);
-    ell(g, 0, 0, 11, 9, '#d9886a');
-    poly(g, [[-4, -6 - snap], [4, -14 - snap], [8, -4]], '#d9886a', OUT, 2.5);
-    g.restore();
-  }
-  // shell
-  ell(g, 56, 60, 30, 20, '#c97a5a', OUT, 3.5);
-  ell(g, 56, 56, 22, 12, '#e09a78', null);
-  ell(g, 48, 52, 7, 4, 'rgba(255,255,255,.45)', null);
-  // eyes on stalks
-  for (const x of [48, 64]) {
-    g.beginPath(); g.moveTo(x, 46); g.lineTo(x, 36); g.strokeStyle = OUT; g.lineWidth = 3; g.stroke();
-    ell(g, x, 34, 5, 5, '#fff', OUT, 2.5); circleFill(g, x + 1, 34, 2.4, '#1f1a18');
-  }
-  g.beginPath(); g.arc(56, 64, 4, 0.2, Math.PI - 0.2); g.strokeStyle = OUT; g.lineWidth = 2; g.stroke();
-  return c;
-}
-
-// Mushling: a walking mushroom with a sleepy face on its stem.
-function mushling(frame, puffing = false) {
-  const { c, g } = mk(96, 112);
-  const step = frame === 1 ? 1 : -1;
-  rrect(g, 34 + step * 3, 92, 11, 14, 5, '#c9b48a');
-  rrect(g, 51 - step * 3, 92, 11, 14, 5, '#c9b48a');
-  rrect(g, 28, 54, 40, 44, 16, '#efe2c4');
-  rrect(g, 52, 58, 12, 36, 6, '#d9c8a2', null);
-  // cap
-  g.beginPath(); g.ellipse(48, 56, 46, 40, 0, Math.PI, Math.PI * 2); g.closePath();
-  g.fillStyle = '#7a58ad'; g.fill(); g.strokeStyle = OUT; g.lineWidth = 3.5; g.stroke();
-  ell(g, 48, 57, 44, 7, '#5e447f');
-  for (const [x, y, r] of [[30, 34, 6], [52, 24, 7], [68, 40, 5], [40, 46, 4]]) ell(g, x, y, r, r * 0.8, '#d8c8f0', null);
-  // face
-  if (puffing) {
-    ell(g, 39, 74, 4, 4, '#2a2018', null); ell(g, 57, 74, 4, 4, '#2a2018', null);
-    ell(g, 48, 86, 6, 5, '#2a2018', null);
-  } else {
-    g.beginPath(); g.moveTo(34, 74); g.quadraticCurveTo(39, 78, 44, 74); g.moveTo(52, 74); g.quadraticCurveTo(57, 78, 62, 74);
-    g.strokeStyle = '#2a2018'; g.lineWidth = 2.5; g.stroke();
-    g.beginPath(); g.arc(48, 84, 3, 0.2, Math.PI - 0.2); g.stroke();
-  }
-  ell(g, 32, 82, 4, 2.5, 'rgba(240,120,120,.45)', null);
-  ell(g, 64, 82, 4, 2.5, 'rgba(240,120,120,.45)', null);
-  return c;
-}
-
-// Pebble Beetle: round stony shell with pebbles stuck on, slow and sturdy.
-function beetle(frame) {
-  const { c, g } = mk(112, 96);
-  for (const s of [-1, 1]) for (let i = 0; i < 3; i++) {
-    const off = (frame === 1) === (i % 2 === 0) ? 3 : -3;
-    g.beginPath(); g.moveTo(56 + s * 26, 62 + i * 7); g.lineTo(56 + s * (42 + off), 74 + i * 6); g.lineTo(56 + s * (44 + off), 88);
-    g.strokeStyle = OUT; g.lineWidth = 6; g.stroke(); g.strokeStyle = '#5a4a3c'; g.lineWidth = 3; g.stroke();
-  }
-  // head
-  ell(g, 56, 74, 18, 13, '#5a4a3c');
-  ell(g, 48, 74, 4.5, 4.5, '#ffe08a', OUT, 2); ell(g, 64, 74, 4.5, 4.5, '#ffe08a', OUT, 2);
-  circleFill(g, 48, 75, 2, '#2a2018'); circleFill(g, 64, 75, 2, '#2a2018');
-  // shell
-  g.beginPath(); g.ellipse(56, 58, 40, 34, 0, Math.PI, Math.PI * 2); g.lineTo(96, 62); g.quadraticCurveTo(56, 72, 16, 62); g.closePath();
-  g.fillStyle = '#8c7d6c'; g.fill(); g.strokeStyle = OUT; g.lineWidth = 3.5; g.stroke();
-  g.beginPath(); g.moveTo(56, 26); g.lineTo(56, 66); g.strokeStyle = '#5e5246'; g.lineWidth = 3; g.stroke();
-  for (const [x, y, r, col] of [[36, 44, 7, '#a39b8e'], [70, 38, 8, '#b0a89a'], [44, 30, 5, '#c49670'], [78, 54, 6, '#a07558'], [30, 58, 5, '#b0a89a']]) {
-    ell(g, x, y, r, r * 0.8, col, OUT, 2);
-  }
-  ell(g, 40, 36, 8, 4, 'rgba(255,255,255,.35)', null);
-  return c;
-}
-
-// Firefly Wisp: a glowing ember with leaf-like wings. Night only.
-function wisp(frame) {
-  const { c, g } = mk(80, 80);
-  const grd = g.createRadialGradient(40, 42, 4, 40, 42, 38);
-  grd.addColorStop(0, 'rgba(255,240,150,.9)');
-  grd.addColorStop(0.45, 'rgba(255,210,90,.35)');
-  grd.addColorStop(1, 'rgba(255,200,80,0)');
-  g.fillStyle = grd; g.fillRect(0, 0, 80, 80);
-  const flap = frame === 1 ? 0.5 : 0;
-  for (const s of [-1, 1]) {
-    g.save(); g.translate(40 + s * 8, 36); g.rotate(s * (0.5 + flap));
-    ell(g, s * 12, -6, 13, 7, 'rgba(220,245,255,.85)', OUT, 2);
-    g.restore();
-  }
-  ell(g, 40, 44, 12, 13, '#ffd34a', OUT, 3);
-  ell(g, 37, 40, 4, 3, 'rgba(255,255,255,.8)', null);
-  circleFill(g, 36, 46, 2.2, '#3a2a10'); circleFill(g, 45, 46, 2.2, '#3a2a10');
-  return c;
-}
-
-// ---------- Camp villagers (front view; frame 1 = blink) ----------
-const SKINS = { light: '#f7d6b5', tan: '#e2b48a' };
-const VILLAGERS = {
-  bram:  { skin: SKINS.light, hair: '#eceae4', robe: '#6d5a8f', robeDk: '#544470', trim: '#e3b341', style: 'elder' },
-  tilly: { skin: SKINS.tan, hair: '#8a4a2a', robe: '#c8463c', robeDk: '#9a3329', trim: '#f4ead2', style: 'cook' },
-  wren:  { skin: SKINS.light, hair: '#3a2a1c', robe: '#4f8a4a', robeDk: '#3a6a36', trim: '#9a6f45', style: 'scout' },
-};
-
-function villager(look, frame = 0) {
-  const { c, g } = mk(112, 150);
-  const { skin, hair, robe, robeDk, trim, style } = look;
-  // staff behind the elder
-  if (style === 'elder') {
-    g.beginPath(); g.moveTo(92, 146); g.lineTo(88, 40); g.strokeStyle = OUT; g.lineWidth = 8; g.stroke();
-    g.strokeStyle = '#8a5a33'; g.lineWidth = 4.5; g.stroke();
-    ell(g, 88, 36, 8, 8, '#7fd0e0');
-    ell(g, 85, 33, 2.5, 2, 'rgba(255,255,255,.8)', null);
-  }
-  // boots
-  rrect(g, 38, 128, 15, 18, 5, '#4a3324');
-  rrect(g, 59, 128, 15, 18, 5, '#4a3324');
-  // body: robe / dress / tunic
-  const hem = style === 'scout' ? 132 : 138;
-  poly(g, [[36, 80], [76, 80], [86, hem], [26, hem]], robe);
-  poly(g, [[56, 82], [76, 80], [86, hem], [62, hem]], robeDk, null);
-  poly(g, [[36, 80], [76, 80], [86, hem], [26, hem]], null);
-  if (style === 'cook') {
-    poly(g, [[42, 94], [70, 94], [76, 136], [36, 136]], '#f4ead2');
-    rrect(g, 48, 106, 16, 10, 3, '#e6d8b8', OUT, 2);
-  }
-  if (style === 'scout') {
-    g.beginPath(); g.moveTo(36, 84); g.lineTo(80, 122); g.strokeStyle = OUT; g.lineWidth = 7; g.stroke();
-    g.strokeStyle = '#9a6f45'; g.lineWidth = 4; g.stroke();
-  }
-  rrect(g, 30, hem - 8, 52, 7, 3, trim, OUT, 2);
-  // arms
-  ell(g, 31, 100, 8, 16, robeDk);
-  ell(g, 81, 100, 8, 16, robeDk);
-  ell(g, 31, 116, 6, 6, skin);
-  ell(g, 81, 116, 6, 6, skin);
-  // head
-  ell(g, 56, 52, 31, 29, skin);
-  if (style === 'elder') {
-    // bald crown, white tufts and a long beard
-    ell(g, 28, 50, 9, 13, hair);
-    ell(g, 84, 50, 9, 13, hair);
-    poly(g, [[34, 60], [78, 60], [72, 92], [56, 104], [40, 92]], hair);
-    ell(g, 56, 60, 11, 5, hair, OUT, 2);
-    ell(g, 46, 30, 8, 5, 'rgba(255,255,255,.55)', null);
-  } else if (style === 'cook') {
-    // bun and headscarf
-    ell(g, 56, 20, 13, 11, hair);
-    g.beginPath(); g.ellipse(56, 44, 32, 24, 0, Math.PI, TAU); g.closePath();
-    g.fillStyle = robe; g.fill(); g.strokeStyle = OUT; g.lineWidth = 3; g.stroke();
-    for (const x of [42, 56, 70]) circleFill(g, x, 34, 3, '#f4ead2');
-    ell(g, 27, 56, 6, 10, hair);
-    ell(g, 85, 56, 6, 10, hair);
-  } else {
-    // green hood with a feather
-    g.beginPath(); g.ellipse(56, 48, 35, 32, 0, Math.PI * 0.95, Math.PI * 2.05); g.lineTo(88, 70); g.lineTo(24, 70); g.closePath();
-    g.fillStyle = robe; g.fill(); g.strokeStyle = OUT; g.lineWidth = 3; g.stroke();
-    ell(g, 56, 56, 25, 20, skin, null);
-    g.beginPath(); g.moveTo(34, 44); g.quadraticCurveTo(56, 30, 78, 44); g.lineTo(78, 50); g.quadraticCurveTo(56, 40, 34, 50); g.closePath();
-    g.fillStyle = hair; g.fill();
-    g.save(); g.translate(84, 26); g.rotate(0.5);
-    ell(g, 0, 0, 5, 16, '#e8563a');
-    g.restore();
-  }
-  // face
-  const ey = style === 'elder' ? 50 : 56;
-  if (frame === 1) {
-    for (const x of [44, 68]) { g.beginPath(); g.moveTo(x - 4, ey); g.lineTo(x + 4, ey); g.strokeStyle = OUT; g.lineWidth = 2.5; g.stroke(); }
-  } else {
-    ell(g, 44, ey, 3.8, 5, '#2a2018', null);
-    ell(g, 68, ey, 3.8, 5, '#2a2018', null);
-    circleFill(g, 43, ey - 2, 1.5, '#fff');
-    circleFill(g, 67, ey - 2, 1.5, '#fff');
-  }
-  if (style === 'elder') {
-    g.beginPath(); g.moveTo(38, ey - 9); g.lineTo(50, ey - 7); g.moveTo(74, ey - 9); g.lineTo(62, ey - 7);
-    g.strokeStyle = '#d8d4cc'; g.lineWidth = 3.5; g.stroke();
-  } else {
-    g.beginPath(); g.arc(56, ey + 9, 4, 0.2, Math.PI - 0.2); g.strokeStyle = OUT; g.lineWidth = 2; g.stroke();
-  }
-  ell(g, 36, ey + 9, 4.5, 2.8, 'rgba(240,120,120,.45)', null);
-  ell(g, 76, ey + 9, 4.5, 2.8, 'rgba(240,120,120,.45)', null);
-  return c;
-}
-
+// ---------- Quest markers ----------
 // speech-bubble marker over a villager: '!' = new quest, '?' = ready to hand in
 function questMark(ch, fill) {
   const { c, g } = mk(64, 72);
@@ -623,16 +337,6 @@ function questMark(ch, fill) {
   g.textBaseline = 'middle';
   g.lineWidth = 5; g.strokeText(ch, 32, 31);
   g.fillStyle = '#fff'; g.fillText(ch, 32, 31);
-  return c;
-}
-
-// White silhouette for the hit flash
-function silhouette(src) {
-  const { c, g } = mk(src.width, src.height);
-  g.drawImage(src, 0, 0);
-  g.globalCompositeOperation = 'source-in';
-  g.fillStyle = '#ffffff';
-  g.fillRect(0, 0, c.width, c.height);
   return c;
 }
 
@@ -776,22 +480,17 @@ export function createSprites() {
   const fireFrames = [0, 1, 2].map((f) => tex(campfire(f)));
   const fireAspect = 112 / 96;
 
-  const withFlash = (canvases) => ({ frames: canvases.map((c) => tex(c)), flash: canvases.map((c) => tex(silhouette(c))) });
+  const sheet = (name) => pixelSet(SHEETS[`./art/${name}.png`], LAYOUTS[`./art/${name}.json`]);
   const mobs = {
-    slime: pixelSet(slimeSheet, slimeLayout),
-    sprout: { ...withFlash([0, 1].map((f) => sproutling(f))), angry: [0, 1].map((f) => tex(sproutling(f, true))), aspect: 112 / 96 },
-    slimeBlue: { ...withFlash([0, 1, 2].map((f) => slime(f, false, SLIME_BLUE))), low: [0, 1, 2].map((f) => tex(slime(f, true, SLIME_BLUE))), aspect: 88 / 96 },
-    crab: { ...withFlash([0, 1].map((f) => crab(f))), aspect: 88 / 112 },
-    mushling: { ...withFlash([0, 1].map((f) => mushling(f))), puff: [tex(mushling(0, true))], aspect: 112 / 96 },
-    beetle: { ...withFlash([0, 1].map((f) => beetle(f))), aspect: 96 / 112 },
-    wisp: { ...withFlash([0, 1].map((f) => wisp(f))), aspect: 1 },
+    slime: sheet('slime'),
+    slimeBlue: sheet('blueslime'),
+    sprout: sheet('sprout'),
+    crab: sheet('crab'),
+    mushling: sheet('mushling'),
+    beetle: sheet('beetle'),
+    wisp: sheet('wisp'),
   };
-
-  const villagers = {};
-  for (const [id, look] of Object.entries(VILLAGERS)) {
-    const frames = [0, 1].map((f) => villager(look, f));
-    villagers[id] = { frames: frames.map((cv) => tex(cv)), portrait: frames[0], aspect: 150 / 112, w: 1.15 };
-  }
+  const villagers = { bram: sheet('bram'), tilly: sheet('tilly'), wren: sheet('wren') };
 
   return {
     mobs,
@@ -800,7 +499,7 @@ export function createSprites() {
     fx: { slash: tex(slashArc()), puff: tex(puff()), heart: tex(heartPickup()) },
     props,
     fire: { frames: fireFrames, aspect: fireAspect, w: 1.2 },
-    player: pixelSet(playerSheet, playerLayout),
+    player: sheet('player'),
     ground: tex(groundDetail(), { repeat: 28 }),
     shadow: tex(blobShadow()),
     water: tex(waterTex(), { repeat: 4 }),

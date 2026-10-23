@@ -27,7 +27,7 @@ class Mob {
     this.type = type;
     this.def = MOB_DEFS[type];
     this.art = mgr.lib.mobs[this.def.art];
-    this.mat = new THREE.SpriteMaterial({ map: this.art.pixel ? this.art.anims.down.idle[0] : this.art.frames[0], alphaTest: 0.5 });
+    this.mat = new THREE.SpriteMaterial({ map: this.art.anims.down.idle[0], alphaTest: 0.5 });
     if (!this.def.night) this.mgr.tint.push(this.mat); // wisps keep their own glow
     this.sprite = new THREE.Sprite(this.mat);
     this.sprite.center.set(0.5, 0.04);
@@ -61,10 +61,8 @@ class Mob {
     this.heading = { x: 0, z: 1 };
     this.atkAnim = 0;
     this.sprite.visible = this.shadow.visible = true;
-    if (this.art.pixel) {
-      const upp = d.w / this.art.body[0]; // def.w is the body width
-      this.sprite.scale.set(this.art.fw * upp, this.art.fh * upp, 1);
-    } else this.sprite.scale.set(d.w, d.w * this.art.aspect, 1);
+    const upp = d.w / this.art.body[0]; // def.w is the body width
+    this.sprite.scale.set(this.art.fw * upp, this.art.fh * upp, 1);
     this.mat.rotation = 0;
   }
 
@@ -220,6 +218,7 @@ class Mob {
               this.specialCd = 4.5;
               this.special = 0.4;
               this.mgr.emit('spore', this);
+              this.atkAnim = ATTACK_ANIM;
             }
             contact();
           }
@@ -241,25 +240,10 @@ class Mob {
 
     // ---- visuals ----
     if (d.ai === 'hopper') this.hop += dt * (moving ? 1.25 : 0.6);
-    let frame = 0, lift = 0;
-    const set = this.art;
-    if (d.ai === 'hopper') {
-      const ph = this.hop % 1;
-      if (moving && ph < 0.55) { frame = 2; lift = Math.sin((ph / 0.55) * Math.PI) * 0.28 * d.w; }
-      else if (ph < 0.7) frame = 1;
-    } else if (d.ai === 'wisp') {
-      frame = Math.floor(this.t * 8) % 2;
-      lift = 0.7 + Math.sin(this.t * 4) * 0.15;
-    } else {
-      frame = moving ? Math.floor(this.t * 7) % 2 : 0;
-    }
-    let tex;
-    if (set.pixel) tex = this.pixelFrame(set, moving);
-    else if (this.flash > 0) tex = set.flash[frame % set.flash.length];
-    else if (d.ai === 'skittish' && this.angry > 0) tex = set.angry[frame];
-    else if (d.ai === 'puffer' && this.special > 0) tex = set.puff ? set.puff[0] : set.frames[frame];
-    else if (low && set.low) tex = set.low[frame];
-    else tex = set.frames[frame % set.frames.length];
+    let lift = 0;
+    if (d.ai === 'hopper' && moving && this.hop % 1 < 0.55) lift = Math.sin(((this.hop % 1) / 0.55) * Math.PI) * 0.28 * d.w;
+    else if (d.fly) lift = 0.7 + Math.sin(this.t * 4) * 0.15;
+    const tex = this.frame(moving);
     if (this.mat.map !== tex) this.mat.map = tex;
     this.mat.rotation = low ? Math.sin(this.t * 15) * 0.13 : 0;
 
@@ -268,8 +252,9 @@ class Mob {
     this.shadow.position.set(this.x, y + 0.03, this.z);
   }
 
-  // PixelLab sets: frames by facing (relative to the camera) and by what the monster is doing
-  pixelFrame(set, moving) {
+  // frame by facing (relative to the camera) and by what the monster is doing
+  frame(moving) {
+    const set = this.art;
     const dir = dirFor(this.heading.x, this.heading.z, this.mgr.cam);
     const A = (this.flash > 0 ? set.flash : set.anims)[dir];
     let list = A.idle, k = 0;
@@ -277,7 +262,7 @@ class Mob {
     else if (moving && this.def.ai === 'hopper' && A.hop) {
       const ph = this.hop % 1;
       if (ph < 0.55) { list = A.hop; k = ph / 0.55; }
-    } else if (moving && A.walk) { list = A.walk; k = (this.t * 1.6) % 1; }
+    } else if ((moving || this.def.fly) && A.walk) { list = A.walk; k = (this.t * 1.6) % 1; } // fliers never stop
     return list[Math.min(list.length - 1, Math.floor(k * list.length))];
   }
 }

@@ -212,7 +212,7 @@ const menus = new Menus(inv, prog, player, {
 });
 menus.quests = quests;
 const portraits = {};
-menus.portrait = (id) => (portraits[id] ||= lib.villagers[id].portrait.toDataURL());
+menus.portrait = (id) => (portraits[id] ||= lib.villagers[id].anims.down.idle[0].image.toDataURL());
 const actionBtn = document.getElementById('btn-action');
 // things at camp you can use with the context button
 const SPOTS = [
@@ -336,7 +336,7 @@ function frame() {
   if (live) mobs.update(dt, player);
   if (live) dayNight.update(dt, t); else if (!started) dayNight.update(0, t);
   world.update(dt, t);
-  villagers.update(dt);
+  villagers.update(dt, player, b);
   if (live) fx.update(dt, player, collect);
   if (live) campRegen(dt);
   updateAction();

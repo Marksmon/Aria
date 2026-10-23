@@ -1,6 +1,11 @@
-// Villagers standing around camp: idle bob and blink, plus a '!' or '?' bubble over their head.
+// Villagers standing around camp: they turn to face you when you come close, breathe a little,
+// and show a '!' or '?' bubble over their head.
 import * as THREE from 'three';
 import { NPCS } from './quests.js';
+import { dirFor } from './noise.js';
+
+const HEIGHT = 1.38;  // standing height in world units, same as the player
+const NOTICE = 4.5;   // turn towards the player within this distance
 
 export class Villagers {
   constructor(scene, world, lib) {
@@ -13,12 +18,13 @@ export class Villagers {
     });
     for (const [id, n] of Object.entries(NPCS)) {
       const art = lib.villagers[id];
-      const mat = new THREE.SpriteMaterial({ map: art.frames[0], alphaTest: 0.5 });
+      const mat = new THREE.SpriteMaterial({ map: art.anims.down.idle[0], alphaTest: 0.5 });
       world.tintMats.push(mat); // darkens with the night like the rest of the world
       const s = new THREE.Sprite(mat);
-      const h = art.w * art.aspect;
-      s.scale.set(art.w, h, 1);
-      s.center.set(0.5, 0.03);
+      const upp = HEIGHT / art.body[1];
+      const h = art.fh * upp;
+      s.scale.set(art.fw * upp, h, 1);
+      s.center.set(0.5, 0.02);
       const y = world.heightAt(n.x, n.z);
       s.position.set(n.x, y, n.z);
       s.renderOrder = 2;
@@ -31,7 +37,7 @@ export class Villagers {
       mark.visible = false;
       scene.add(s, shadow, mark);
       world.addSolid(n.x, n.z, 0.35);
-      this.list.push({ id, x: n.x, z: n.z, y, h, art, mat, s, mark, t: Math.random() * 6, blink: 1 + Math.random() * 3 });
+      this.list.push({ id, x: n.x, z: n.z, y, h, top: HEIGHT, art, mat, s, mark, face: { x: 0, z: 1 }, t: Math.random() * 6 });
     }
   }
 
@@ -44,15 +50,15 @@ export class Villagers {
     }
   }
 
-  update(dt) {
+  update(dt, player, cam) {
     for (const v of this.list) {
       v.t += dt;
-      v.blink -= dt;
-      if (v.blink < -0.12) v.blink = 2 + Math.random() * 3;
-      const tex = v.art.frames[v.blink < 0 ? 1 : 0];
+      const dx = player.x - v.x, dz = player.z - v.z, d = Math.hypot(dx, dz);
+      v.face = d < NOTICE && d > 0.01 ? { x: dx / d, z: dz / d } : { x: 0, z: 1 };
+      const tex = v.art.anims[dirFor(v.face.x, v.face.z, cam)].idle[0];
       if (v.mat.map !== tex) v.mat.map = tex;
       v.s.scale.y = v.h * (1 + Math.sin(v.t * 2.2) * 0.015);
-      v.mark.position.set(v.x, v.y + v.h + 0.12 + Math.sin(v.t * 3) * 0.06, v.z);
+      v.mark.position.set(v.x, v.y + v.top + 0.15 + Math.sin(v.t * 3) * 0.06, v.z);
     }
   }
 }
