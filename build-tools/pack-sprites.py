@@ -31,7 +31,7 @@ CHARS = {name: {} for name in ['slime', 'blueslime', 'sprout', 'crab', 'mushling
 # even 8-frame template walk (the first one limped); front and back redone as a skeleton walk,
 # where the template's legs barely moved
 CHARS['player'] = {'eight': True, 'use': {'walk': 'walking'}, 'prefer': {'walking-e8b5c561'}, 'skip': {'stepv3'}}
-CHARS.update({name: {'eight': True} for name in ['bram', 'tilly', 'wren']})
+CHARS.update({name: {'eight': True} for name in ['bram', 'tilly', 'wren', 'novice']})
 
 
 def islands(f):

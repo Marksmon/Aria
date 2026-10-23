@@ -35,10 +35,11 @@ PLAYER_REF = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "art
 
 
 # anims: (name, action description) for a custom 6-frame v3 animation, or
-#        (name, {"template": id}) for one of PixelLab's skeleton templates (1 generation/direction)
+#        (name, {"template": id}) for one of PixelLab's skeleton templates (1 generation/direction);
+#        add "mode": "skeleton-v3" to pose the character itself (steadier, 2-4 generations/direction)
 def anim(n, d):
-    if isinstance(d, dict):
-        return {"animation_name": n, "mode": "template", "template_animation_id": d["template"]}
+    if isinstance(d, dict):  # {"template": id} or {"template": id, "mode": "skeleton-v3"} (steadier)
+        return {"animation_name": n, "mode": d.get("mode", "template"), "template_animation_id": d["template"]}
     return {"animation_name": n, "mode": "v3", "action_description": d, "frame_count": 6}
 
 
@@ -68,6 +69,14 @@ CHARACTERS = [
         # 'stride' is the walk the game uses (an even 8-frame template cycle in 8 directions);
         # the first 'walk' made a limp facing the camera and stays only in the export
         [("stride", {"template": "walking-8-frames"}), ("attack", "quick forward sword slash attack"),
+         ("dodge", "quick dodge roll forward, tucking into a somersault and landing on his feet")],
+        size=(64, 96), ref=None, dirs=DIRS8),
+    # the Novice: the player before the Swordsman job (the sprite above is the Swordsman)
+    pro("novice", "young novice adventurer with messy short brown hair, plain beige linen tunic with a rope "
+        "belt, brown trousers, simple leather shoes, small travel satchel at the hip, holding a short wooden "
+        "practice sword",
+        [("walk", {"template": "walking-8-frames", "mode": "skeleton-v3"}),
+         ("attack", "quick forward sword slash attack"),
          ("dodge", "quick dodge roll forward, tucking into a somersault and landing on his feet")],
         size=(64, 96), ref=None, dirs=DIRS8),
     pro("slime", "round moss-green jelly slime blob with a tiny two-leaf sprout on top, no arms, no legs, "

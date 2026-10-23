@@ -489,7 +489,8 @@ export function createSprites() {
     fx: { slash: tex(slashArc()), puff: tex(puff()) },
     props,
     fire: { frames: fireFrames, aspect: fireAspect, w: 1.2 },
-    player: sheet('player'),
+    player: sheet('player'), // the Swordsman
+    novice: SHEETS['./art/novice.png'] ? sheet('novice') : null,
     ground: tex(groundDetail(), { repeat: 28 }),
     shadow: tex(blobShadow()),
     water: tex(waterTex(), { repeat: 4 }),

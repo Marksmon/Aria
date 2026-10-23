@@ -64,6 +64,9 @@ const villagers = new Villagers(scene, world, lib);
 player.tiles = new Tiles(world); // after the villagers: they block their tiles
 const inv = new Inventory();
 inv.level = () => prog.baseLv;
+// the player's look follows the job: Novice clothes, then the Swordsman's
+const jobArt = () => (prog.job === 'novice' && lib.novice) || lib.player;
+player.setArt(jobArt());
 inv.load(save?.inv);
 // stats + gear -> the player's battle numbers (Ragnarok rules); HP/SP stay put, capped by the new max
 // timed buffs, in seconds left: aspd (Quickening Draught), warcry (War Cry's ATK bonus)
@@ -334,6 +337,7 @@ const menus = new Menus(inv, prog, player, {
     prog.job = 'swordman';
     prog.jobLv = 1;
     prog.jobExp = 0;
+    player.setArt(jobArt());
     applyStats();
     player.heal(player.maxHp);
     player.healSp(player.maxSp);
@@ -373,7 +377,8 @@ const menus = new Menus(inv, prog, player, {
 });
 menus.quests = quests;
 const portraits = {};
-menus.portrait = (id) => (portraits[id] ||= (id === 'player' ? lib.player : lib.villagers[id]).anims.down.idle[0].image.toDataURL());
+menus.portrait = (id) => (id === 'player' ? (portraits[jobArt() === lib.player ? 'sword' : 'novice'] ||= jobArt().anims.down.idle[0].image.toDataURL())
+  : (portraits[id] ||= lib.villagers[id].anims.down.idle[0].image.toDataURL()));
 // things at camp you tap to use: the player walks over, then it opens. h = height on screen
 const SPOTS = [
   { ...world.camp.fire, h: 0.9, run: () => menus.show('craft') },

@@ -73,6 +73,17 @@ export class Player {
     scene.add(this.shadow);
   }
 
+  // a different sprite set (the Novice and the Swordsman look different)
+  setArt(art) {
+    if (!art || art === this.art) return;
+    this.art = art;
+    const upp = HEIGHT / art.body[1];
+    this.size = { w: art.fw * upp, h: art.fh * upp };
+    this.sprite.scale.set(this.size.w, this.size.h, 1);
+    this.mat.map = art.anims.down.idle[0];
+    this.sprite.center.y = this.mat.map.userData.anchor;
+  }
+
   on(name, fn) { this.events[name].push(fn); }
   emit(name, ...a) { for (const fn of this.events[name]) fn(...a); }
 
