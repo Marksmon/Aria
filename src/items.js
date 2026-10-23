@@ -53,7 +53,7 @@ export const ITEMS = {
   flower_wreath: { type: 'equip', slot: 'head', name: 'Flower Wreath', def: 0, flee: 1, desc: 'Meadow flowers on a green ring. +1 FLEE.' },
   horned_helm:  { type: 'equip', slot: 'head', name: 'Horned Helm', def: 3, desc: 'Iron, brass and two proud horns.' },
   round_glasses: { type: 'equip', slot: 'face', name: 'Round Glasses', hit: 3, desc: 'Polished dew-glass lenses. +3 HIT.' },
-  eyepatch:     { type: 'equip', slot: 'face', name: 'Eyepatch', flee: 2, desc: 'Makes you look like trouble. +2 FLEE.' },
+  raven_mask:   { type: 'equip', slot: 'face', name: 'Raven Mask', flee: 2, desc: 'Black feathers and a short beak: you look like trouble. +2 FLEE.' },
   // body armor: hard DEF
   clothes:      { type: 'equip', slot: 'armor', name: 'Traveler Clothes', def: 1, icon: 'armor0', desc: 'Patched and comfortable.' },
   leaf_tunic:   { type: 'equip', slot: 'armor', name: 'Leaf Tunic',  def: 2, icon: 'armor1', desc: 'Woven leaves, surprisingly tough.' },
@@ -102,7 +102,7 @@ export const RECIPES = [
   { item: 'swift_boots', cost: { shell: 4, dew: 3, leaf: 3 } },
   { item: 'flower_wreath', cost: { leaf: 3, seed: 2 } },
   { item: 'woven_cap', lv: 2, cost: { leaf: 5, seed: 2 } },
-  { item: 'eyepatch', lv: 3, cost: { gel: 2, leaf: 2 } },
+  { item: 'raven_mask', lv: 3, cost: { wander: 2, gel: 2 } },
   { item: 'round_glasses', lv: 5, cost: { dew: 3, stone: 2 } },
   { item: 'flame_circlet', lv: 12, cost: { ember_heart: 1, glow: 6, stone: 6 } },
   { item: 'horned_helm', lv: 8, cost: { stone: 6, shell: 4, glow: 1 } },

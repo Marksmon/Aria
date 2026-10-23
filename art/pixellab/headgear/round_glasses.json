@@ -1,0 +1,41 @@
+{
+ "id": "01512d71-45a4-48e3-b0c7-a4fc448e24e8",
+ "name": "a pair of small round wire-rim",
+ "state_name": "base",
+ "prompt": "a pair of small round wire-rimmed glasses with pale blue lenses, item only",
+ "size": {
+  "width": 48,
+  "height": 48
+ },
+ "directions": 8,
+ "created_at": "2026-10-23T16:39:45.840377+00:00",
+ "view": "low top-down",
+ "rotation_urls": {
+  "south": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/5457cd81-4a1e-4383-9a16-5a765d8933b0/01512d71-45a4-48e3-b0c7-a4fc448e24e8/rotations/south.png",
+  "west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/5457cd81-4a1e-4383-9a16-5a765d8933b0/01512d71-45a4-48e3-b0c7-a4fc448e24e8/rotations/west.png",
+  "east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/5457cd81-4a1e-4383-9a16-5a765d8933b0/01512d71-45a4-48e3-b0c7-a4fc448e24e8/rotations/east.png",
+  "north": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/5457cd81-4a1e-4383-9a16-5a765d8933b0/01512d71-45a4-48e3-b0c7-a4fc448e24e8/rotations/north.png",
+  "south-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/5457cd81-4a1e-4383-9a16-5a765d8933b0/01512d71-45a4-48e3-b0c7-a4fc448e24e8/rotations/south-east.png",
+  "south-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/5457cd81-4a1e-4383-9a16-5a765d8933b0/01512d71-45a4-48e3-b0c7-a4fc448e24e8/rotations/south-west.png",
+  "north-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/5457cd81-4a1e-4383-9a16-5a765d8933b0/01512d71-45a4-48e3-b0c7-a4fc448e24e8/rotations/north-east.png",
+  "north-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/5457cd81-4a1e-4383-9a16-5a765d8933b0/01512d71-45a4-48e3-b0c7-a4fc448e24e8/rotations/north-west.png"
+ },
+ "storage_urls": {
+  "east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/5457cd81-4a1e-4383-9a16-5a765d8933b0/01512d71-45a4-48e3-b0c7-a4fc448e24e8/rotations/east.png",
+  "west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/5457cd81-4a1e-4383-9a16-5a765d8933b0/01512d71-45a4-48e3-b0c7-a4fc448e24e8/rotations/west.png",
+  "north": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/5457cd81-4a1e-4383-9a16-5a765d8933b0/01512d71-45a4-48e3-b0c7-a4fc448e24e8/rotations/north.png",
+  "south": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/5457cd81-4a1e-4383-9a16-5a765d8933b0/01512d71-45a4-48e3-b0c7-a4fc448e24e8/rotations/south.png",
+  "north-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/5457cd81-4a1e-4383-9a16-5a765d8933b0/01512d71-45a4-48e3-b0c7-a4fc448e24e8/rotations/north-east.png",
+  "north-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/5457cd81-4a1e-4383-9a16-5a765d8933b0/01512d71-45a4-48e3-b0c7-a4fc448e24e8/rotations/north-west.png",
+  "south-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/5457cd81-4a1e-4383-9a16-5a765d8933b0/01512d71-45a4-48e3-b0c7-a4fc448e24e8/rotations/south-east.png",
+  "south-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/5457cd81-4a1e-4383-9a16-5a765d8933b0/01512d71-45a4-48e3-b0c7-a4fc448e24e8/rotations/south-west.png"
+ },
+ "frame_urls": null,
+ "style_settings": {},
+ "tags": [],
+ "status": "completed",
+ "group_id": "e1f5c38c-fd8f-46d6-9867-9abb097167f6",
+ "progress_percent": null,
+ "eta_seconds": null,
+ "animations": []
+}

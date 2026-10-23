@@ -17,16 +17,17 @@ const LAYOUTS = import.meta.glob('./art/hg_*.json', { eager: true, import: 'defa
 // `at` of the way from crown to neck: a hat's brim just above the brows, glasses on the eyes.
 // A piece can tune its own fit (see TUNE): w and at as above, dx / dy to nudge it (in head
 // widths / head heights), and hair: hide the wearer's hair above that line (same scale as at),
-// so spikes don't poke through a helmet. 0 leaves the hair alone.
+// so spikes don't poke through a helmet. 0 leaves the hair alone. swap: { dir: other dir } shows
+// another direction's art where PixelLab drew one badly.
 const ANIM_FPS = 9;
 const FIT = { head: { w: 0.86, at: 0.47, dx: 0, dy: 0, hair: 0 }, face: { w: 0.78, at: 0.82, dx: 0, dy: 0, hair: 0 } };
 export const TUNE = {
   horned_helm: { hair: 0.44 },          // a full helm: the hair above the rim goes
   woven_cap: { hair: 0.4 },
-  ember_crown: { at: 0.36, hair: 0.2 }, // sits higher, on top of the hair: only the tips go
-  flower_wreath: { at: 0.3, hair: 0 },  // rests on the hair
+  ember_crown: { at: 0.36, hair: 0.2, swap: { right: 'downright', left: 'downleft' } }, // sits on the hair; its side views are poor
+  flower_wreath: { at: 0.33, w: 0.9, hair: 0 }, // rests on top of the hair
   round_glasses: {},
-  eyepatch: {},
+  raven_mask: { at: 0.78, w: 0.8 },
   flame_circlet: { at: 0.4, hair: 0.3 },
 };
 const fitOf = (id) => ({ ...FIT[HEADGEAR[id].slot], ...TUNE[id] });
@@ -177,20 +178,7 @@ export const HEADGEAR = {
     },
     back: null, // not seen from behind
   },
-  eyepatch: {
-    slot: 'face', size: [38, 12], anchor: [19, 6],
-    front: (g) => {
-      g.beginPath(); g.moveTo(1, 2); g.lineTo(37, 3); g.strokeStyle = OUT; g.lineWidth = 1.6; g.stroke();
-      fill(g, '#2a2026', () => g.ellipse(12, 6, 5, 4.5, 0, 0, Math.PI * 2));
-    },
-    side: (g) => {
-      g.beginPath(); g.moveTo(6, 3); g.lineTo(30, 4); g.strokeStyle = OUT; g.lineWidth = 1.6; g.stroke();
-    },
-    back: (g) => {
-      g.beginPath(); g.moveTo(3, 3); g.lineTo(35, 3); g.strokeStyle = OUT; g.lineWidth = 1.6; g.stroke();
-      fill(g, '#2a2026', () => g.rect(17, 1, 4, 4), 0.8); // the knot
-    },
-  },
+  raven_mask: { slot: 'face' }, // PixelLab only
 };
 
 // the views of one piece as nearest-filtered textures: { front, side, sideL, back } (null = hidden)
@@ -258,6 +246,7 @@ export class HeadLayer {
   // a PixelLab piece: scaled from its front view to the head's width, then sat on the head
   updateImage(pc, body, tex, dir, fw, fh) {
     const h = tex.userData.head, slot = HEADGEAR[this.id].slot, fit = fitOf(this.id);
+    if (fit.swap?.[dir]) dir = fit.swap[dir];
     const cell = pc.L.dirs[dir], front = pc.L.dirs.down;
     if (!cell || !front || (slot === 'face' && dir.startsWith('up'))) { this.sprite.visible = false; return; }
     const [, , , , , rx, , ry] = cell, { cw, ch } = pc.L;

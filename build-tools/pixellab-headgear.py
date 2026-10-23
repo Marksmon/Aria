@@ -26,7 +26,9 @@ PIECES = {
     "flower_wreath": "a thin ring wreath of green leaves with small pink, white and yellow flowers, item only",
     "ember_crown": "a dark iron crown with three points, glowing orange ember gems and two small curved horns, item only",
     "round_glasses": "a pair of small round wire-rimmed glasses with pale blue lenses, item only",
-    "eyepatch": "a black leather eyepatch on a thin black strap, item only",
+    # (an eyepatch came out as a strap ring across the face: a strap can't go behind the head in
+    # one layer, so the face piece is a mask instead)
+    "raven_mask": "a black feathered raven half-mask with a short dark beak and gold-rimmed eye holes, item only, nobody wearing it",
     "flame_circlet": "a thin dark iron circlet with a crest of bright orange and gold flames rising from it, item only, nobody wearing it",
 }
 # pieces that also get a looping animation (8 directions)
