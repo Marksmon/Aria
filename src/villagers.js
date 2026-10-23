@@ -11,6 +11,8 @@ export class Villagers {
   constructor(scene, world, lib) {
     this.lib = lib;
     this.list = [];
+    this.group = new THREE.Group(); // they live on the camp map only
+    scene.add(this.group);
     const sg = new THREE.PlaneGeometry(0.9, 0.55);
     sg.rotateX(-Math.PI / 2);
     const shadowMat = new THREE.MeshBasicMaterial({
@@ -35,7 +37,7 @@ export class Villagers {
       mark.center.set(0.5, 0);
       mark.renderOrder = 3;
       mark.visible = false;
-      scene.add(s, shadow, mark);
+      this.group.add(s, shadow, mark);
       world.addSolid(n.x, n.z, 0.35);
       this.list.push({ id, x: n.x, z: n.z, y, h, top: HEIGHT, art, mat, s, mark, face: { x: 0, z: 1 }, t: Math.random() * 6 });
     }

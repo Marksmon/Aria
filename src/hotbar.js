@@ -1,13 +1,11 @@
 // Skill and item hotbar, like Ragnarok's F-key bar: six slots along the bottom of the screen.
 // Tap a slot (or press 1-6) to use it. Skills show their cooldown; items show how many you have.
-// Drag skills (Hero tab) and usable items (bag) onto a slot; drag slots to swap them, or off the
-// bar to clear them.
+// It starts empty: drag active skills (Skills window) and usable items (Items window) onto a
+// slot; drag slots to swap them, or off the bar to clear them.
 import { ITEMS, iconURL } from './items.js';
+import { SKILLS } from './skills.js';
 
 export const SLOTS = 6;
-export const SKILLS = {
-  dodge: { name: 'Dodge Roll', desc: 'Dive out of the way, briefly untouchable.', icon: 'skill_dodge' },
-};
 
 export class Hotbar {
   constructor(el, inv, hooks) {
@@ -15,7 +13,7 @@ export class Hotbar {
     this.inv = inv;
     this.hooks = hooks; // { use(entry), cooldown(entry) -> 0..1 left, changed() }
     el.classList.add('ui-click');
-    this.slots = [{ kind: 'skill', id: 'dodge' }, { kind: 'item', id: 'potion' }, null, null, null, null];
+    this.slots = Array(SLOTS).fill(null);
     this.cells = [];
     for (let i = 0; i < SLOTS; i++) {
       const b = document.createElement('button');
@@ -53,7 +51,7 @@ export class Hotbar {
   }
 
   // Start dragging entry ({ kind, id }) from a pointerdown. from = the slot it came from, or -1
-  // for the bag / Hero tab. A press that never moves is a tap: it uses the slot it came from.
+  // for the Items / Skills window. A press that never moves is a tap: it uses the slot it came from.
   drag(entry, e, from = -1) {
     const sx = e.clientX, sy = e.clientY;
     let ghost = null, over = -1;
@@ -126,7 +124,7 @@ export class Hotbar {
     if (!Array.isArray(d)) return;
     this.slots = Array.from({ length: SLOTS }, (_, i) => {
       const s = d[i];
-      return s && ((s.kind === 'skill' && SKILLS[s.id]) || (s.kind === 'item' && ITEMS[s.id]?.usable)) ? { kind: s.kind, id: s.id } : null;
+      return s && ((s.kind === 'skill' && SKILLS[s.id]?.kind === 'active') || (s.kind === 'item' && ITEMS[s.id]?.usable)) ? { kind: s.kind, id: s.id } : null;
     });
     this.render();
   }

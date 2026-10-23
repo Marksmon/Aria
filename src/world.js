@@ -1,22 +1,34 @@
-// Aria: one 64x64 open map. Camp in the middle, four zones around it.
-// Grove = north-west, Old Hollow = north-east, Ember Ridge = south-east, Fen Shore = south-west.
+// Aria's maps, Ragnarok style: the camp is a small town map, and each of the four zones is a
+// 64x64 field map of its own. Warp portals join them: camp's north, east, south and west portals
+// lead to Mosvangr, Myrkdal, Glodberg and Fenstrand, and neighbouring fields link up.
+// Every map is built once, at load, into its own group; only the current one is shown.
 import * as THREE from 'three';
 import { makeNoise, mulberry32, sstep, lerp, clamp } from './noise.js';
 
 export const SIZE = 64;
 export const CENTER = 32;
 export const WATER_Y = -0.35;
+// Old Norse-style place names (the great names of the myths are kept for later lands)
 export const ZONE_NAMES = {
-  camp: 'Camp',
-  grove: 'Mossy Grove',
-  hollow: 'Old Hollow',
-  ridge: 'Ember Ridge',
-  fen: 'Fen Shore',
+  camp: 'Eldrun Camp',  // "fire-ring"
+  grove: 'Mosvangr',    // "moss-field"
+  hollow: 'Myrkdal',    // "dark dale"
+  ridge: 'Glodberg',    // "ember-hill"
+  fen: 'Fenstrand',     // "fen-shore"
 };
 
-const ZONE_KEYS = ['grove', 'hollow', 'ridge', 'fen'];
-const SECTOR = { grove: -0.75 * Math.PI, hollow: -0.25 * Math.PI, ridge: 0.25 * Math.PI, fen: 0.75 * Math.PI };
-const LAKE = { x: 13, z: 41, rx: 6.5, rz: 5 };
+const CAMP_R = 17;   // the camp clearing's walkable radius
+const CAMP_SAFE = 8.5; // monsters never come this close to the fire
+// portals: where they stand and where they lead. Arriving through one puts you beside the
+// portal on the other side that leads back.
+export const MAPS = {
+  camp:   { portals: [{ to: 'grove', x: 32, z: 16.5 }, { to: 'hollow', x: 47.5, z: 32 }, { to: 'ridge', x: 32, z: 47.5 }, { to: 'fen', x: 16.5, z: 32 }] },
+  grove:  { portals: [{ to: 'camp', x: 32, z: 58 }, { to: 'hollow', x: 58, z: 32 }, { to: 'fen', x: 6, z: 32 }] },
+  hollow: { portals: [{ to: 'camp', x: 6, z: 32 }, { to: 'grove', x: 32, z: 6 }, { to: 'ridge', x: 32, z: 58 }] },
+  // the Ember Jarl's lair: an open bowl in the south of Glodberg (see mobs.js)
+  ridge:  { portals: [{ to: 'camp', x: 32, z: 6 }, { to: 'hollow', x: 58, z: 32 }, { to: 'fen', x: 6, z: 32 }], clear: { x: 32, z: 48, r: 6 } },
+  fen:    { portals: [{ to: 'camp', x: 58, z: 32 }, { to: 'grove', x: 32, z: 6 }, { to: 'ridge', x: 32, z: 58 }], lake: { x: 30, z: 37, rx: 8, rz: 6 } },
+};
 const SEG = 128; // terrain vertices per side - 1 (0.5 unit spacing)
 
 const GROUND = {
@@ -28,102 +40,98 @@ const GROUND = {
   dirt: '#b49a6c',
   sand: '#c6b483',
 };
+const TABLE = {
+  grove: [['tree_grove', 30], ['bush', 16], ['flowers', 22], ['grass', 26], ['stump', 3], ['rock_grey', 3]],
+  hollow: [['tree_dark', 34], ['mushroom_big', 10], ['mushrooms', 22], ['grass_dark', 24], ['tree_dead', 5], ['rock_grey', 5]],
+  ridge: [['rock', 22], ['rock_small', 20], ['shrub_dry', 18], ['tree_dead', 12], ['grass_dry', 28]],
+  fen: [['tree_willow', 14], ['reeds', 30], ['grass', 30], ['stump', 6], ['bush', 10]],
+  camp: [['grass', 6], ['flowers', 3], ['bush', 1]],
+};
+const BORDER = { grove: 'tree_grove', hollow: 'tree_dark', ridge: 'rock', fen: 'tree_willow', camp: 'tree_grove' };
 
-function angDiff(a, b) {
-  let d = a - b;
-  while (d > Math.PI) d -= 2 * Math.PI;
-  while (d < -Math.PI) d += 2 * Math.PI;
-  return d;
-}
-
-export function buildWorld(scene, lib) {
-  const noise = makeNoise(41);
+// one map: terrain, props, water, collision and minimap, in a group of its own
+function buildMap(id, scene, lib, shared) {
+  const def = MAPS[id];
+  const isCamp = id === 'camp';
+  const group = new THREE.Group();
+  group.visible = false;
+  scene.add(group);
+  const noise = makeNoise(41 + id.length * 7 + id.charCodeAt(0));
   const groundCols = {};
   for (const [k, v] of Object.entries(GROUND)) {
     groundCols[k] = Array.isArray(v) ? v.map((h) => new THREE.Color(h)) : new THREE.Color(v);
   }
-
-  function weights(x, z) {
-    const dx = x - CENTER, dz = z - CENTER, r = Math.hypot(dx, dz);
-    const a = Math.atan2(dz, dx) + (noise.fbm(x * 0.07 + 40, z * 0.07 + 40, 3) - 0.5) * 1.3;
-    const w = { camp: 0 };
-    let sum = 0;
-    for (const k of ZONE_KEYS) {
-      const d = Math.abs(angDiff(a, SECTOR[k]));
-      const v = clamp(0.5 + (Math.PI / 4 - d) / 0.4, 0, 1);
-      w[k] = v;
-      sum += v;
-    }
-    const c = 1 - sstep(5.5, 8.5, r + (noise.n(x * 0.3, z * 0.3) - 0.5) * 1.5);
-    for (const k of ZONE_KEYS) w[k] = (w[k] / (sum || 1)) * (1 - c);
-    w.camp = c;
-    return w;
-  }
-
-  function zoneAt(x, z) {
-    const w = weights(x, z);
-    let best = 'camp', bv = -1;
-    for (const k in w) if (w[k] > bv) { bv = w[k]; best = k; }
-    return best;
-  }
-
+  const LAKE = def.lake;
   const edgeDist = (x, z) => Math.min(x, z, SIZE - x, SIZE - z);
-  const lakeD = (x, z) => Math.hypot((x - LAKE.x) / LAKE.rx, (z - LAKE.z) / LAKE.rz);
+  const lakeD = (x, z) => (LAKE ? Math.hypot((x - LAKE.x) / LAKE.rx, (z - LAKE.z) / LAKE.rz) : 9);
+  const campR = (x, z) => Math.hypot(x - CENTER, z - CENTER);
+
+  // dirt trails from each portal to the middle of the map, wandering a little
+  const trails = def.portals.map((p, i) => ({ ax: p.x, az: p.z, bx: CENTER, bz: CENTER, k: i * 1.7 }));
+  function pathDist(x, z) {
+    let best = Infinity;
+    for (const t of trails) {
+      const vx = t.bx - t.ax, vz = t.bz - t.az, L = Math.hypot(vx, vz);
+      const u = clamp(((x - t.ax) * vx + (z - t.az) * vz) / (L * L), 0, 1);
+      const wob = Math.sin(u * 7 + t.k) * 1.4 * Math.sin(u * Math.PI);
+      const px = t.ax + vx * u - (vz / L) * wob, pz = t.az + vz * u + (vx / L) * wob;
+      best = Math.min(best, Math.hypot(x - px, z - pz));
+    }
+    return isCamp && campR(x, z) < 5 ? Infinity : best;
+  }
 
   function heightAt(x, z) {
-    const w = weights(x, z);
-    const r = Math.hypot(x - CENTER, z - CENTER);
     let h = (noise.fbm(x * 0.06, z * 0.06) - 0.5) * 1.4;
-    h += w.ridge * (1.3 + (noise.fbm(x * 0.15 + 9, z * 0.15) - 0.5) * 1.6);
-    h -= w.hollow * 0.15;
-    h = lerp(0.05, h, sstep(4, 9, r));
+    if (id === 'ridge') h += 1.3 + (noise.fbm(x * 0.15 + 9, z * 0.15) - 0.5) * 1.8;
+    if (id === 'hollow') h -= 0.15;
+    if (isCamp) {
+      const r = campR(x, z);
+      h = lerp(0.05, h * 0.5, sstep(4, 12, r));
+      if (r > CAMP_R - 1) h += Math.pow(Math.min(1, (r - CAMP_R + 1) / 7), 2) * 3.5; // wooded hills all around
+    }
     // soften dips so only the lake goes below water (lowest result ≈ WATER_Y + 0.1)
     if (h < WATER_Y + 0.25) h = WATER_Y + 0.25 + (h - WATER_Y - 0.25) * 0.2;
     const ld = lakeD(x, z);
     if (ld < 1.5) h = lerp(h, -1.1, sstep(1.5, 0.65, ld));
+    // flat ground under the portals and along the trails' ends
+    for (const p of def.portals) {
+      const d = Math.hypot(x - p.x, z - p.z);
+      if (d < 3) h = lerp(h, heightNoPortal(p.x, p.z), sstep(3, 1.2, d));
+    }
     const e = edgeDist(x, z);
     if (e < 6) h += Math.pow((6 - e) / 6, 2) * 3.5;
     return h;
   }
-
-  // Dirt trails from camp out into each zone.
-  function pathDist(x, z) {
-    const dx = x - CENTER, dz = z - CENTER, r = Math.hypot(dx, dz);
-    if (r < 4.5 || r > 26) return Infinity;
-    let best = Infinity;
-    ZONE_KEYS.forEach((k, i) => {
-      const a = SECTOR[k] + 0.2 * Math.sin(r * 0.33 + i * 1.7);
-      const d = Math.hypot(x - (CENTER + Math.cos(a) * r), z - (CENTER + Math.sin(a) * r));
-      best = Math.min(best, d + sstep(20, 26, r) * 1.5);
-    });
-    return best;
+  function heightNoPortal(x, z) {
+    let h = (noise.fbm(x * 0.06, z * 0.06) - 0.5) * 1.4;
+    if (id === 'ridge') h += 1.3;
+    if (isCamp) h = lerp(0.05, h * 0.5, sstep(4, 12, campR(x, z)));
+    return Math.max(h, WATER_Y + 0.25);
   }
 
-  const walkable = (x, z) => edgeDist(x, z) > 2.4 && heightAt(x, z) > WATER_Y + 0.08;
+  const walkable = (x, z) => edgeDist(x, z) > 2.4 && (!isCamp || campR(x, z) < CAMP_R) && heightAt(x, z) > WATER_Y + 0.08;
+  const isSafe = (x, z) => isCamp; // the whole camp map is safe ground
 
   function colorAt(x, z, h) {
-    const w = weights(x, z);
-    const out = new THREE.Color(0, 0, 0);
-    const tmp = new THREE.Color();
-    for (const k of ['camp', ...ZONE_KEYS]) {
-      if (w[k] <= 0.001) continue;
-      const [a, b] = groundCols[k];
-      const t = sstep(0.35, 0.65, noise.fbm(x * 0.16 + k.length * 13, z * 0.16, 3));
-      tmp.copy(a).lerp(b, t);
-      out.r += tmp.r * w[k]; out.g += tmp.g * w[k]; out.b += tmp.b * w[k];
+    const out = new THREE.Color();
+    const [a, b] = groundCols[id];
+    out.copy(a).lerp(b, sstep(0.35, 0.65, noise.fbm(x * 0.16 + 13, z * 0.16, 3)));
+    if (isCamp) {
+      const grass = groundCols.grove[0].clone().lerp(groundCols.grove[1], noise.fbm(x * 0.2, z * 0.2, 2));
+      out.lerp(grass, sstep(9, 15, campR(x, z) + (noise.n(x * 0.3, z * 0.3) - 0.5) * 3));
+      out.lerp(groundCols.dirt, sstep(4.5, 2.5, campR(x, z)) * 0.8);
     }
     const pd = pathDist(x, z);
     if (pd < 1.4) out.lerp(groundCols.dirt, sstep(1.4, 0.5, pd + (noise.n(x * 0.9, z * 0.9) - 0.5) * 0.6) * 0.9);
-    if (w.camp > 0.3) out.lerp(groundCols.dirt, sstep(0.3, 1, w.camp) * sstep(4.5, 2.5, Math.hypot(x - CENTER, z - CENTER)) * 0.8);
     if (lakeD(x, z) < 1.6 && h < WATER_Y + 0.45) out.lerp(groundCols.sand, sstep(WATER_Y + 0.45, WATER_Y + 0.05, h) * 0.85);
-    const e = edgeDist(x, z);
+    const e = Math.min(edgeDist(x, z), isCamp ? CAMP_R + 3 - campR(x, z) : 99);
     if (e < 6) out.multiplyScalar(1 - 0.3 * sstep(6, 1.5, e));
     out.multiplyScalar(0.9 + noise.fbm(x * 0.4, z * 0.4, 2) * 0.2);
     return out;
   }
 
   // ---------- Props ----------
-  const rng = mulberry32(7);
+  const rng = mulberry32(7 + id.length * 31);
   const props = [];
   const grid = new Map(); // 2-unit buckets for spacing + collision
   const key = (cx, cz) => cx * 1000 + cz;
@@ -136,14 +144,17 @@ export function buildWorld(scene, lib) {
     return true;
   };
   function place(type, x, z, force = false) {
-    const def = lib.props[type];
+    const pd = lib.props[type];
     if (!force) {
-      const ok = near(x, z, (p) => Math.hypot(p.x - x, p.z - z) >= Math.max(def.space, p.space) * 0.9);
+      const ok = near(x, z, (p) => Math.hypot(p.x - x, p.z - z) >= Math.max(pd.space, p.space) * 0.9);
       if (!ok) return false;
+      // keep portals clear
+      if (def.portals.some((p) => Math.hypot(p.x - x, p.z - z) < 2.6 + (pd.coll > 0 ? 0.8 : 0))) return false;
+      if (def.clear && Math.hypot(def.clear.x - x, def.clear.z - z) < def.clear.r && pd.coll > 0) return false;
     }
-    const v = Math.floor(rng() * def.variants.length);
+    const v = Math.floor(rng() * pd.variants.length);
     const s = force ? 1 : 0.85 + rng() * 0.3;
-    const p = { type, v, x, z, s, coll: def.coll * s, shadow: def.shadow * s, space: def.space };
+    const p = { type, v, x, z, s, coll: pd.coll * s, shadow: pd.shadow * s, space: pd.space };
     props.push(p);
     const k = key(Math.floor(x / 2), Math.floor(z / 2));
     if (!grid.has(k)) grid.set(k, []);
@@ -151,13 +162,12 @@ export function buildWorld(scene, lib) {
     return true;
   }
 
-  // Camp layout (fixed)
-  place('tent', 30.2, 29.6, true);
-  place('chest', 34.4, 30.6, true);
-  place('log', 30.4, 34.3, true);
-  place('log', 33.8, 34.5, true);
   const FIRE = { x: 32, z: 32.4 };
-  {
+  if (isCamp) {
+    place('tent', 30.2, 29.6, true);
+    place('chest', 34.4, 30.6, true);
+    place('log', 30.4, 34.3, true);
+    place('log', 33.8, 34.5, true);
     const p = { type: '_fire', x: FIRE.x, z: FIRE.z, s: 1, coll: 0.55, shadow: 0, space: 1.2 };
     props.push(p);
     const k = key(Math.floor(p.x / 2), Math.floor(p.z / 2));
@@ -165,48 +175,36 @@ export function buildWorld(scene, lib) {
     grid.get(k).push(p);
   }
 
-  const TABLE = {
-    grove: [['tree_grove', 30], ['bush', 16], ['flowers', 22], ['grass', 26], ['stump', 3], ['rock_grey', 3]],
-    hollow: [['tree_dark', 34], ['mushroom_big', 10], ['mushrooms', 22], ['grass_dark', 24], ['tree_dead', 5], ['rock_grey', 5]],
-    ridge: [['rock', 22], ['rock_small', 20], ['shrub_dry', 18], ['tree_dead', 12], ['grass_dry', 28]],
-    fen: [['tree_willow', 14], ['reeds', 30], ['grass', 30], ['stump', 6], ['bush', 10]],
-    camp: [['grass', 1]],
-  };
-  const pick = (zone) => {
-    const t = TABLE[zone];
+  const pick = (t) => {
     const total = t.reduce((s, [, w]) => s + w, 0);
     let r = rng() * total;
     for (const [type, w] of t) { if ((r -= w) <= 0) return type; }
     return t[0][0];
   };
-  const BORDER = { grove: 'tree_grove', hollow: 'tree_dark', ridge: 'rock', fen: 'tree_willow', camp: 'tree_grove' };
 
-  // Edge treeline frames the map
-  for (let i = 0; i < 900; i++) {
+  // treeline framing the map (camp: a ring of forest around the clearing)
+  for (let i = 0; i < (isCamp ? 1400 : 900); i++) {
     const x = 0.5 + rng() * 63, z = 0.5 + rng() * 63;
-    const e = edgeDist(x, z);
-    if (e < 0.8 || e > 3.6) continue;
-    const zone = zoneAt(x, z);
-    const type = zone === 'ridge' && rng() < 0.3 ? 'tree_dead' : BORDER[zone];
+    const e = isCamp ? campR(x, z) - CAMP_R : 3.6 - edgeDist(x, z);
+    if (isCamp ? e < 0.3 || e > 9 : e < 0 || edgeDist(x, z) < 0.8) continue;
+    const type = id === 'ridge' && rng() < 0.3 ? 'tree_dead' : BORDER[id];
     place(type, x, z);
   }
 
-  // Interior scatter
+  // interior scatter
   let interior = 0;
-  for (let i = 0; i < 5000 && interior < 300; i++) {
+  const want = isCamp ? 40 : 330;
+  for (let i = 0; i < 6000 && interior < want; i++) {
     const x = 3 + rng() * 58, z = 3 + rng() * 58;
-    const r = Math.hypot(x - CENTER, z - CENTER);
-    if (r < 7.5 && rng() > 0.15) continue;
+    if (isCamp && (campR(x, z) < 7.5 || campR(x, z) > CAMP_R - 1)) continue;
     const h = heightAt(x, z);
     if (h < WATER_Y + 0.15) continue;
-    const zone = r < 7.5 ? 'camp' : zoneAt(x, z);
-    let type = pick(zone);
-    const def = lib.props[type];
-    const pd = pathDist(x, z);
-    if (pd < 1.6 && def.coll > 0) continue;
-    if (pd < 0.9) continue;
-    // reeds hug the lake shore
-    if (zone === 'fen' && lakeD(x, z) < 1.7 && rng() < 0.7) type = 'reeds';
+    let type = pick(TABLE[id]);
+    const pd = lib.props[type];
+    const pdist = pathDist(x, z);
+    if (pdist < 1.6 && pd.coll > 0) continue;
+    if (pdist < 0.9) continue;
+    if (id === 'fen' && lakeD(x, z) < 1.7 && rng() < 0.7) type = 'reeds'; // reeds hug the lake shore
     if (place(type, x, z)) interior++;
   }
 
@@ -217,10 +215,7 @@ export function buildWorld(scene, lib) {
   const pos = geo.attributes.position;
   const colors = new Float32Array(pos.count * 3);
   const shade = new Float32Array(pos.count).fill(1);
-  for (let i = 0; i < pos.count; i++) {
-    const x = pos.getX(i), z = pos.getZ(i);
-    pos.setY(i, heightAt(x, z));
-  }
+  for (let i = 0; i < pos.count; i++) pos.setY(i, heightAt(pos.getX(i), pos.getZ(i)));
   // bake soft shadows under props (light from upper-left)
   const stride = SEG + 1;
   for (const p of props) {
@@ -234,47 +229,38 @@ export function buildWorld(scene, lib) {
     }
   }
   for (let i = 0; i < pos.count; i++) {
-    const x = pos.getX(i), z = pos.getZ(i);
-    const c = colorAt(x, z, pos.getY(i)).multiplyScalar(shade[i]);
+    const c = colorAt(pos.getX(i), pos.getZ(i), pos.getY(i)).multiplyScalar(shade[i]);
     colors[i * 3] = c.r; colors[i * 3 + 1] = c.g; colors[i * 3 + 2] = c.b;
   }
   geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
   geo.computeVertexNormals();
   const terrain = new THREE.Mesh(geo, new THREE.MeshLambertMaterial({ vertexColors: true, map: lib.ground }));
-  scene.add(terrain);
+  group.add(terrain);
 
   // ---------- Water ----------
-  const waterGeo = new THREE.PlaneGeometry(LAKE.rx * 3.2, LAKE.rz * 3.2);
-  waterGeo.rotateX(-Math.PI / 2);
-  const water = new THREE.Mesh(waterGeo, new THREE.MeshLambertMaterial({
-    color: '#5aa6c4', map: lib.water, transparent: true, opacity: 0.82, depthWrite: false,
-  }));
-  water.position.set(LAKE.x, WATER_Y, LAKE.z);
-  water.renderOrder = 1;
-  scene.add(water);
+  if (LAKE) {
+    const waterGeo = new THREE.PlaneGeometry(LAKE.rx * 3.2, LAKE.rz * 3.2);
+    waterGeo.rotateX(-Math.PI / 2);
+    const water = new THREE.Mesh(waterGeo, new THREE.MeshLambertMaterial({
+      color: '#5aa6c4', map: lib.water, transparent: true, opacity: 0.82, depthWrite: false,
+    }));
+    water.position.set(LAKE.x, WATER_Y, LAKE.z);
+    water.renderOrder = 1;
+    group.add(water);
+  }
 
   // ---------- Prop sprites ----------
   const tall = []; // big props that fade out when they hide the player
-  const tintMats = [];
-  for (const def of Object.values(lib.props)) for (const v of def.variants) {
-    tintMats.push(v.mat);
-    v.faded = v.mat.clone();
-    v.faded.transparent = true;
-    v.faded.opacity = 0.35;
-    v.faded.alphaTest = 0.05;
-    v.faded.depthWrite = false;
-    tintMats.push(v.faded);
-  }
   for (const p of props) {
     if (p.type === '_fire') continue;
-    const def = lib.props[p.type];
-    const variant = def.variants[p.v];
+    const pd = lib.props[p.type];
+    const variant = pd.variants[p.v];
     const s = new THREE.Sprite(variant.mat);
-    const w = def.w * p.s;
+    const w = pd.w * p.s;
     s.scale.set(w, w * variant.aspect, 1);
     s.center.set(0.5, 0.04);
     s.position.set(p.x, heightAt(p.x, p.z), p.z);
-    scene.add(s);
+    group.add(s);
     if (w >= 1.6) tall.push({ s, x: p.x, z: p.z, w, h: w * variant.aspect, variant });
   }
   function updateOcclusion(px, pz, cam) {
@@ -291,29 +277,64 @@ export function buildWorld(scene, lib) {
     }
   }
 
+  // ---------- Warp portals: a swirl of light on the ground with motes rising ----------
+  const portals = def.portals.map((p) => {
+    const y = heightAt(p.x, p.z);
+    const disc = new THREE.Mesh(shared.portalGeo, shared.portalMat);
+    disc.position.set(p.x, y + 0.06, p.z);
+    disc.renderOrder = 1;
+    const glow = new THREE.Sprite(shared.glowMat);
+    glow.scale.set(2.2, 2.6, 1);
+    glow.center.set(0.5, 0.1);
+    glow.position.set(p.x, y, p.z);
+    glow.renderOrder = 3;
+    const motes = [];
+    for (let i = 0; i < 7; i++) {
+      const m = new THREE.Sprite(shared.moteMat);
+      m.renderOrder = 3;
+      motes.push({ s: m, a: (i / 7) * Math.PI * 2, t: i / 7 });
+      group.add(m);
+    }
+    group.add(disc, glow);
+    return { ...p, y, disc, glow, motes };
+  });
+
   // ---------- Campfire ----------
-  const fireMat = new THREE.SpriteMaterial({ map: lib.fire.frames[0], alphaTest: 0.5 });
-  const fire = new THREE.Sprite(fireMat);
-  fire.scale.set(lib.fire.w, lib.fire.w * lib.fire.aspect, 1);
-  fire.center.set(0.5, 0.04);
-  fire.position.set(FIRE.x, heightAt(FIRE.x, FIRE.z), FIRE.z);
-  scene.add(fire);
-  const fireLight = new THREE.PointLight('#ff9a4a', 6, 9, 1.4);
-  fireLight.position.set(FIRE.x, 1.2, FIRE.z);
-  scene.add(fireLight);
+  let fireMat = null, fireLight = null;
+  if (isCamp) {
+    fireMat = new THREE.SpriteMaterial({ map: lib.fire.frames[0], alphaTest: 0.5 });
+    const fire = new THREE.Sprite(fireMat);
+    fire.scale.set(lib.fire.w, lib.fire.w * lib.fire.aspect, 1);
+    fire.center.set(0.5, 0.04);
+    fire.position.set(FIRE.x, heightAt(FIRE.x, FIRE.z), FIRE.z);
+    group.add(fire);
+    fireLight = new THREE.PointLight('#ff9a4a', 6, 9, 1.4);
+    fireLight.position.set(FIRE.x, 1.2, FIRE.z);
+    group.add(fireLight);
+  }
   let fireT = 0;
   function update(dt, t) {
-    fireT += dt;
-    const f = Math.floor(fireT * 8) % 3;
-    if (fireMat.map !== lib.fire.frames[f]) fireMat.map = lib.fire.frames[f];
-    fireLight.intensity = (5.5 + Math.sin(t * 9) * 0.6 + Math.sin(t * 23) * 0.4) * api.fireBoost;
-    lib.water.offset.set(t * 0.015, t * 0.008);
+    if (fireMat) {
+      fireT += dt;
+      const f = Math.floor(fireT * 8) % 3;
+      if (fireMat.map !== lib.fire.frames[f]) fireMat.map = lib.fire.frames[f];
+      fireLight.intensity = (5.5 + Math.sin(t * 9) * 0.6 + Math.sin(t * 23) * 0.4) * shared.fireBoost;
+    }
+    for (const p of portals) {
+      p.disc.rotation.y = t * 1.6;
+      p.glow.scale.y = 2.6 + Math.sin(t * 3) * 0.2;
+      for (const m of p.motes) {
+        const k = (m.t + t * 0.45) % 1, r = 0.9 * (1 - k * 0.6), a = m.a + t * 1.8;
+        m.s.position.set(p.x + Math.cos(a) * r, p.y + 0.1 + k * 2.2, p.z + Math.sin(a) * r);
+        const sc = 0.22 * (1 - k * 0.5);
+        m.s.scale.set(sc, sc, 1);
+      }
+    }
   }
 
   // ---------- Collision ----------
-  const solids = props.filter((p) => p.coll > 0);
   const sgrid = new Map();
-  for (const p of solids) {
+  for (const p of props.filter((q) => q.coll > 0)) {
     const k = key(Math.floor(p.x / 2), Math.floor(p.z / 2));
     if (!sgrid.has(k)) sgrid.set(k, []);
     sgrid.get(k).push(p);
@@ -332,8 +353,7 @@ export function buildWorld(scene, lib) {
     }
     return [x, z];
   }
-
-  // extra colliders added after the world is built (camp villagers)
+  // extra colliders added after the map is built (camp villagers)
   function addSolid(x, z, coll) {
     const k = key(Math.floor(x / 2), Math.floor(z / 2));
     if (!sgrid.has(k)) sgrid.set(k, []);
@@ -348,9 +368,7 @@ export function buildWorld(scene, lib) {
   for (let j = 0; j < 128; j++) for (let i = 0; i < 128; i++) {
     const x = i * 0.5 + 0.25, z = j * 0.5 + 0.25;
     const h = heightAt(x, z);
-    let hex;
-    if (h < WATER_Y) hex = '4f9cc0';
-    else hex = colorAt(x, z, h).getHexString();
+    const hex = h < WATER_Y ? '4f9cc0' : colorAt(x, z, h).getHexString();
     const o = (j * 128 + i) * 4;
     img.data[o] = parseInt(hex.slice(0, 2), 16);
     img.data[o + 1] = parseInt(hex.slice(2, 4), 16);
@@ -363,18 +381,129 @@ export function buildWorld(scene, lib) {
     mg.fillStyle = 'rgba(30,40,25,.45)';
     mg.fillRect(p.x * 2 - 1, p.z * 2 - 1, 2, 2);
   }
-  mg.fillStyle = '#ffd36b';
-  mg.strokeStyle = '#3b2a1e';
-  mg.lineWidth = 1.5;
-  mg.beginPath(); mg.moveTo(64, 57); mg.lineTo(70, 66); mg.lineTo(58, 66); mg.closePath(); mg.fill(); mg.stroke();
+  if (isCamp) {
+    mg.fillStyle = '#ffd36b';
+    mg.strokeStyle = '#3b2a1e';
+    mg.lineWidth = 1.5;
+    mg.beginPath(); mg.moveTo(64, 57); mg.lineTo(70, 66); mg.lineTo(58, 66); mg.closePath(); mg.fill(); mg.stroke();
+  }
+  for (const p of def.portals) { // portals: little blue rings
+    mg.strokeStyle = '#1a2a48'; mg.lineWidth = 4;
+    mg.beginPath(); mg.arc(p.x * 2, p.z * 2, 3.5, 0, Math.PI * 2); mg.stroke();
+    mg.strokeStyle = '#8fd8ff'; mg.lineWidth = 2;
+    mg.beginPath(); mg.arc(p.x * 2, p.z * 2, 3.5, 0, Math.PI * 2); mg.stroke();
+  }
+
+  return {
+    id, group, heightAt, walkable, isSafe, resolve, addSolid, update, terrain, updateOcclusion, portals,
+    minimap: mini, fireMat, fireLight, stats: { props: props.length, interior },
+    zoneAt: () => id,
+  };
+}
+
+// a soft swirl for the portal floor, a glow column and a mote, drawn once
+function portalTextures() {
+  const mk = (w, h, draw) => {
+    const c = document.createElement('canvas');
+    c.width = w; c.height = h;
+    draw(c.getContext('2d'), w, h);
+    const t = new THREE.CanvasTexture(c);
+    t.colorSpace = THREE.SRGBColorSpace;
+    return t;
+  };
+  const swirl = mk(128, 128, (g) => {
+    const rg = g.createRadialGradient(64, 64, 4, 64, 64, 62);
+    rg.addColorStop(0, 'rgba(230,250,255,.95)');
+    rg.addColorStop(0.45, 'rgba(120,200,255,.6)');
+    rg.addColorStop(1, 'rgba(60,120,255,0)');
+    g.fillStyle = rg; g.fillRect(0, 0, 128, 128);
+    g.strokeStyle = 'rgba(255,255,255,.75)'; g.lineWidth = 4;
+    for (let k = 0; k < 3; k++) {
+      g.beginPath();
+      for (let a = 0; a < Math.PI * 1.4; a += 0.05) {
+        const r = 8 + a * 16, b = a + (k * Math.PI * 2) / 3;
+        g.lineTo(64 + Math.cos(b) * r, 64 + Math.sin(b) * r);
+      }
+      g.stroke();
+    }
+  });
+  const glow = mk(64, 128, (g) => {
+    const lg = g.createLinearGradient(0, 128, 0, 0);
+    lg.addColorStop(0, 'rgba(170,225,255,.55)');
+    lg.addColorStop(1, 'rgba(170,225,255,0)');
+    g.fillStyle = lg;
+    g.beginPath(); g.ellipse(32, 64, 26, 64, 0, 0, Math.PI * 2); g.fill();
+  });
+  const mote = mk(32, 32, (g) => {
+    const rg = g.createRadialGradient(16, 16, 1, 16, 16, 15);
+    rg.addColorStop(0, 'rgba(255,255,255,1)');
+    rg.addColorStop(1, 'rgba(140,210,255,0)');
+    g.fillStyle = rg; g.fillRect(0, 0, 32, 32);
+  });
+  return { swirl, glow, mote };
+}
+
+// All the maps, behind one object that always talks to the current map, so the rest of the
+// game keeps calling world.heightAt(), world.walkable() and so on without caring which it is.
+export function buildWorld(scene, lib) {
+  const tex = portalTextures();
+  const add = { transparent: true, depthWrite: false, blending: THREE.AdditiveBlending };
+  const pg = new THREE.PlaneGeometry(2.4, 2.4);
+  pg.rotateX(-Math.PI / 2);
+  const shared = {
+    fireBoost: 1,
+    portalGeo: pg,
+    portalMat: new THREE.MeshBasicMaterial({ map: tex.swirl, ...add }),
+    glowMat: new THREE.SpriteMaterial({ map: tex.glow, ...add }),
+    moteMat: new THREE.SpriteMaterial({ map: tex.mote, ...add }),
+  };
+  const tintMats = [];
+  for (const d of Object.values(lib.props)) for (const v of d.variants) {
+    tintMats.push(v.mat);
+    v.faded = v.mat.clone();
+    v.faded.transparent = true;
+    v.faded.opacity = 0.35;
+    v.faded.alphaTest = 0.05;
+    v.faded.depthWrite = false;
+    tintMats.push(v.faded);
+  }
+  const maps = {};
+  for (const id of Object.keys(MAPS)) maps[id] = buildMap(id, scene, lib, shared);
+  let cur = maps.camp;
+  cur.group.visible = true;
 
   const api = {
-    fireBoost: 1,
-    heightAt, zoneAt, walkable, resolve, addSolid, update, terrain, updateOcclusion, tintMats, fireMat, fireLight,
+    maps,
+    tintMats,
     spawn: { x: 32, z: 36.2 },
-    camp: { fire: FIRE, chest: { x: 34.4, z: 30.6 }, tent: { x: 30.2, z: 29.6 } },
-    minimap: mini,
-    stats: { props: props.length, interior },
+    camp: { fire: { x: 32, z: 32.4 }, chest: { x: 34.4, z: 30.6 }, tent: { x: 30.2, z: 29.6 } },
+    get id() { return cur.id; },
+    get terrain() { return cur.terrain; },
+    get minimap() { return cur.minimap; },
+    get portals() { return cur.portals; },
+    get fireBoost() { return shared.fireBoost; },
+    set fireBoost(v) { shared.fireBoost = v; },
+    get stats() { return cur.stats; },
+    heightAt: (x, z) => cur.heightAt(x, z),
+    walkable: (x, z) => cur.walkable(x, z),
+    resolve: (x, z, r) => cur.resolve(x, z, r),
+    isSafe: (x, z) => cur.isSafe(x, z) && (cur.id !== 'camp' || Math.hypot(x - CENTER, z - CENTER) < CAMP_R + 2),
+    zoneAt: () => cur.id,
+    addSolid: (x, z, c) => cur.addSolid(x, z, c),
+    update: (dt, t) => cur.update(dt, t),
+    updateOcclusion: (px, pz, cam) => cur.updateOcclusion(px, pz, cam),
+    // switch maps; returns where you arrive coming from map `from` (beside its portal back)
+    go(id, from) {
+      cur.group.visible = false;
+      cur = maps[id] || maps.camp;
+      cur.group.visible = true;
+      const back = cur.portals.find((p) => p.to === from);
+      if (!back) return id === 'camp' ? { ...api.spawn } : { x: CENTER, z: CENTER };
+      const dx = CENTER - back.x, dz = CENTER - back.z, d = Math.hypot(dx, dz);
+      return { x: back.x + (dx / d) * 2.6, z: back.z + (dz / d) * 2.6 };
+    },
   };
   return api;
 }
+
+export { CAMP_SAFE };

@@ -13,12 +13,28 @@ export const ITEMS = {
   spore:  { type: 'misc', name: 'Spore Cap',  desc: 'Smells like rain in the woods.', from: 'Mushlings' },
   stone:  { type: 'misc', name: 'Stone Chip', desc: 'Sharp ridge stone.', from: 'Pebble Beetles' },
   glow:   { type: 'misc', name: 'Glow Dust',  desc: 'Faintly warm, glows at night.', from: 'Firefly Wisps' },
-  potion: { type: 'use', name: 'Healing Draught', desc: 'Restores 45–65 HP.', usable: true },
+  ember_heart: { type: 'misc', name: 'Ember Heart', desc: "The Ember Jarl's smouldering heart: proof of an MVP.", from: 'the Ember Jarl (MVP reward)' },
+
+  // usables, like Ragnarok's potions and wings. use: hp/sp [min, max], warp (random | camp),
+  // buff + t (seconds), cure (ends the Mushling spores' slow)
+  potion:  { type: 'use', usable: true, name: 'Healing Draught', use: { hp: [45, 65] }, desc: 'Restores 45–65 HP.' },
+  potion2: { type: 'use', usable: true, name: 'Strong Draught',  use: { hp: [105, 145] }, desc: 'Restores 105–145 HP.' },
+  potion3: { type: 'use', usable: true, name: 'Greater Draught', use: { hp: [175, 235] }, desc: 'Restores 175–235 HP.' },
+  tonic:   { type: 'use', usable: true, name: 'Mana Tonic', use: { sp: [40, 60] }, desc: 'Restores 40–60 SP.' },
+  berry:   { type: 'use', usable: true, name: 'Wild Berry', use: { hp: [16, 22] }, desc: 'Sweet and juicy. Restores 16–22 HP.', from: 'Slimes and Sproutlings' },
+  crableg: { type: 'use', usable: true, name: 'Crab Leg', use: { hp: [70, 100] }, desc: 'Roasted in its shell. Restores 70–100 HP.', from: 'Mudcrabs' },
+  herb:    { type: 'use', usable: true, name: 'Green Herb', use: { hp: [5, 8], cure: true }, desc: 'Clears the head: cures spore sickness and restores a little HP.', from: 'Sproutlings and Mushlings' },
+  quick:   { type: 'use', usable: true, name: 'Quickening Draught', use: { buff: 'aspd', t: 180 }, desc: '+10% attack speed for 3 minutes.' },
+  wander:  { type: 'use', usable: true, name: 'Wander Feather', use: { warp: 'random' }, desc: 'Whisks you to a random spot on this map.', from: 'Firefly Wisps' },
+  homeward: { type: 'use', usable: true, name: 'Homeward Feather', use: { warp: 'camp' }, desc: 'Carries you back to camp.' },
 
   // one-handed swords (Ragnarok rules, see rules.js)
   twig_sword:   { type: 'equip', slot: 'weapon', name: 'Twig Sword',  atk: 15, wlv: 1, icon: 'weapon0', desc: 'A stick with ambitions.' },
   stone_blade:  { type: 'equip', slot: 'weapon', name: 'Stone Blade', atk: 25, wlv: 1, icon: 'weapon1', desc: 'Ridge stone, knapped sharp.' },
   ember_edge:   { type: 'equip', slot: 'weapon', name: 'Ember Edge',  atk: 44, wlv: 2, icon: 'weapon2', desc: 'Warm to the touch, glowing at the edge.' },
+  emberbrand:   { type: 'equip', slot: 'weapon', name: 'Emberbrand', atk: 110, wlv: 3, icon: 'weapon3', desc: "The Ember Jarl's own blade, still burning.", from: 'the Ember Jarl' },
+  // headgear
+  ember_crown:  { type: 'equip', slot: 'head', name: "Jarl's Ember Crown", def: 4, icon: 'crown', desc: 'A horned iron crown, still warm.', from: 'the Ember Jarl' },
   // body armor: hard DEF
   clothes:      { type: 'equip', slot: 'armor', name: 'Traveler Clothes', def: 1, icon: 'armor0', desc: 'Patched and comfortable.' },
   leaf_tunic:   { type: 'equip', slot: 'armor', name: 'Leaf Tunic',  def: 2, icon: 'armor1', desc: 'Woven leaves, surprisingly tough.' },
@@ -34,7 +50,7 @@ export const ITEMS = {
 };
 
 // equipment slots, in the Equipment window's order
-export const SLOTS = { weapon: 'Weapon', armor: 'Armor', shoes: 'Shoes', light: 'Light', acc: 'Accessory' };
+export const SLOTS = { head: 'Head', weapon: 'Weapon', armor: 'Armor', shoes: 'Shoes', light: 'Light', acc: 'Accessory' };
 
 // one line on what a piece of equipment does
 export function equipLine(it) {
@@ -52,6 +68,12 @@ export const RECIPES = [
   { item: 'shell_mail',  lv: 4, cost: { shell: 6, gel: 4 } },
   { item: 'beetle_plate', lv: 7, cost: { stone: 8, dew: 4, spore: 2 } },
   { item: 'potion', cost: { gel: 2, dew: 1, leaf: 1 } },
+  { item: 'potion2', lv: 5, cost: { potion: 2, spore: 1 } },
+  { item: 'potion3', lv: 10, cost: { potion2: 2, glow: 2 } },
+  { item: 'tonic', lv: 3, cost: { dew: 3, glow: 1 } },
+  { item: 'quick', lv: 6, cost: { spore: 2, dew: 2, stone: 1 } },
+  { item: 'wander', lv: 2, cost: { glow: 1, leaf: 1 } },
+  { item: 'homeward', lv: 2, cost: { glow: 2, seed: 1 } },
   { item: 'torch', cost: { glow: 3, leaf: 2 } },
   { item: 'swift_boots', cost: { shell: 4, dew: 3, leaf: 3 } },
   { item: 'sprout_charm', lv: 2, cost: { seed: 5, leaf: 3 } },
@@ -104,6 +126,26 @@ function charmIcon(g, gem, rim) {
   gloss(g, 28, 34, 3, 2.5);
 }
 
+function potionIcon(g, col) {
+  shape(g, () => g.roundRect(26, 8, 12, 12, 3), '#b07a4c', 3);
+  shape(g, () => { g.moveTo(24, 20); g.lineTo(40, 20); g.lineTo(40, 26); g.quadraticCurveTo(54, 32, 52, 44); g.quadraticCurveTo(50, 56, 32, 56); g.quadraticCurveTo(14, 56, 12, 44); g.quadraticCurveTo(10, 32, 24, 26); g.closePath(); }, col);
+  gloss(g, 22, 38, 4, 6);
+}
+
+function featherIcon(g, vane, rib) {
+  shape(g, () => { g.moveTo(14, 54); g.quadraticCurveTo(12, 22, 48, 8); g.quadraticCurveTo(52, 34, 20, 52); g.closePath(); }, vane);
+  g.beginPath(); g.moveTo(10, 58); g.quadraticCurveTo(26, 34, 46, 12); g.strokeStyle = rib; g.lineWidth = 3; g.stroke();
+  for (const t of [0.35, 0.55, 0.75]) { g.beginPath(); g.moveTo(14 + t * 30, 50 - t * 38); g.lineTo(22 + t * 30, 44 - t * 34); g.strokeStyle = rib; g.lineWidth = 1.5; g.stroke(); }
+}
+
+// skill icons: a coloured disc with a white symbol
+function skillIcon(g, col, draw) {
+  shape(g, () => g.arc(32, 32, 26, 0, Math.PI * 2), col);
+  g.strokeStyle = g.fillStyle = '#fff4dc';
+  g.lineWidth = 5;
+  draw();
+}
+
 const PAINT = {
   gel: (g) => {
     shape(g, () => { g.moveTo(10, 50); g.bezierCurveTo(6, 26, 22, 14, 32, 14); g.bezierCurveTo(42, 14, 58, 26, 54, 50); g.quadraticCurveTo(32, 56, 10, 50); }, '#7fd05a');
@@ -146,14 +188,44 @@ const PAINT = {
     }, col, 2.5);
     star(28, 34, 18, '#ffe37a'); star(46, 18, 9, '#fff3b0'); star(48, 46, 7, '#ffd34a');
   },
-  potion: (g) => {
-    shape(g, () => g.roundRect(26, 8, 12, 12, 3), '#b07a4c', 3);
-    shape(g, () => { g.moveTo(24, 20); g.lineTo(40, 20); g.lineTo(40, 26); g.quadraticCurveTo(54, 32, 52, 44); g.quadraticCurveTo(50, 56, 32, 56); g.quadraticCurveTo(14, 56, 12, 44); g.quadraticCurveTo(10, 32, 24, 26); g.closePath(); }, '#e2554a');
-    gloss(g, 22, 38, 4, 6);
+  potion: (g) => potionIcon(g, '#e2554a'),
+  potion2: (g) => potionIcon(g, '#f08a32'),
+  potion3: (g) => potionIcon(g, '#f2cf3a'),
+  tonic: (g) => potionIcon(g, '#4a8ce8'),
+  quick: (g) => { potionIcon(g, '#a36ad8'); g.beginPath(); g.moveTo(34, 30); g.lineTo(27, 42); g.lineTo(33, 42); g.lineTo(29, 52); g.strokeStyle = '#fff4dc'; g.lineWidth = 3; g.stroke(); },
+  berry: (g) => {
+    for (const [x, y] of [[24, 40], [40, 40], [32, 28]]) { shape(g, () => g.arc(x, y, 11, 0, Math.PI * 2), '#d23a5a', 3); gloss(g, x - 4, y - 4, 3, 2.5); }
+    shape(g, () => g.ellipse(40, 14, 9, 4.5, -0.5, 0, Math.PI * 2), '#6bbd4a', 2.5);
   },
+  crableg: (g) => {
+    shape(g, () => { g.moveTo(10, 50); g.lineTo(30, 30); g.lineTo(36, 36); g.lineTo(16, 56); g.closePath(); }, '#e86a4a');
+    shape(g, () => { g.moveTo(30, 30); g.quadraticCurveTo(36, 8, 54, 10); g.quadraticCurveTo(50, 22, 40, 26); g.quadraticCurveTo(52, 26, 56, 34); g.quadraticCurveTo(40, 40, 36, 36); g.closePath(); }, '#f08a6a');
+    gloss(g, 40, 18, 4, 2.5);
+  },
+  herb: (g) => {
+    for (const a of [-0.9, 0, 0.9]) {
+      g.save(); g.translate(32, 50); g.rotate(a);
+      shape(g, () => { g.moveTo(0, 0); g.quadraticCurveTo(-12, -20, 0, -40); g.quadraticCurveTo(12, -20, 0, 0); }, '#5fae45', 3);
+      g.restore();
+    }
+  },
+  wander: (g) => featherIcon(g, '#9fd4ff', '#4a8ce8'),
+  homeward: (g) => featherIcon(g, '#ffd27a', '#e08a3a'),
   weapon0: (g) => swordIcon(g, '#c49a63', '#8a5a33', '#a07848'),
   weapon1: (g) => swordIcon(g, '#cfd6de', '#7a7f8a', '#9aa4b2'),
   weapon2: (g) => swordIcon(g, '#ffb35a', '#c8463c', '#ffe27a'),
+  weapon3: (g) => swordIcon(g, '#3a2a2a', '#e05a1a', '#ff9a3a'),
+  crown: (g) => {
+    shape(g, () => { g.moveTo(12, 46); g.lineTo(12, 24); g.lineTo(22, 34); g.lineTo(32, 16); g.lineTo(42, 34); g.lineTo(52, 24); g.lineTo(52, 46); g.closePath(); }, '#6a6a72');
+    for (const x of [22, 32, 42]) { shape(g, () => g.arc(x, 40, 3.5, 0, Math.PI * 2), '#ff8a3a', 2); }
+    shape(g, () => { g.moveTo(12, 26); g.quadraticCurveTo(2, 16, 6, 6); g.quadraticCurveTo(14, 14, 16, 28); }, '#e8e0cc', 2.5);
+    shape(g, () => { g.moveTo(52, 26); g.quadraticCurveTo(62, 16, 58, 6); g.quadraticCurveTo(50, 14, 48, 28); }, '#e8e0cc', 2.5);
+  },
+  ember_heart: (g) => {
+    shape(g, () => { g.moveTo(32, 54); g.bezierCurveTo(4, 34, 14, 8, 32, 22); g.bezierCurveTo(50, 8, 60, 34, 32, 54); }, '#d8401a');
+    g.beginPath(); g.moveTo(26, 30); g.lineTo(32, 38); g.lineTo(28, 46); g.strokeStyle = '#ffd23a'; g.lineWidth = 2.5; g.stroke();
+    gloss(g, 22, 28, 4, 3);
+  },
   armor0: (g) => armorIcon(g, '#4a78b5', '#6b4426'),
   armor1: (g) => armorIcon(g, '#6bbd4a', '#3f7a35'),
   armor2: (g) => armorIcon(g, '#f2a8a0', '#c9726a'),
@@ -170,6 +242,22 @@ const PAINT = {
     shape(g, () => { g.moveTo(44, 28); g.lineTo(52, 42); g.lineTo(37, 41); g.closePath(); }, '#fff4dc', 2.5);
     for (const [y, w] of [[22, 10], [30, 14], [38, 8]]) { g.beginPath(); g.moveTo(10, y); g.lineTo(10 + w, y); g.strokeStyle = 'rgba(255,244,220,.7)'; g.lineWidth = 3; g.stroke(); }
   },
+  skill_lore: (g) => skillIcon(g, '#7a8a9a', () => { g.beginPath(); g.moveTo(32, 14); g.lineTo(40, 32); g.lineTo(32, 50); g.lineTo(24, 32); g.closePath(); g.stroke(); g.beginPath(); g.arc(32, 32, 3, 0, 7); g.fill(); }),
+  skill_rest: (g) => skillIcon(g, '#6b8a5a', () => { g.beginPath(); g.arc(28, 20, 6, 0, 7); g.fill(); g.beginPath(); g.moveTo(28, 27); g.lineTo(30, 40); g.lineTo(44, 40); g.lineTo(44, 50); g.stroke(); }),
+  skill_mend: (g) => skillIcon(g, '#c8463c', () => { g.save(); g.translate(32, 32); g.rotate(-0.6); g.fillRect(-14, -6, 28, 12); g.restore(); g.fillStyle = '#c8463c'; g.beginPath(); g.arc(32, 32, 3, 0, 7); g.fill(); }),
+  skill_secondwind: (g) => skillIcon(g, '#4aa88a', () => { for (const y of [22, 32, 42]) { g.beginPath(); g.moveTo(14, y); g.quadraticCurveTo(32, y - 8, 50, y); g.stroke(); } }),
+  skill_stone: (g) => skillIcon(g, '#8a7a6a', () => { g.beginPath(); g.ellipse(38, 36, 9, 7, 0.3, 0, 7); g.fill(); for (const [y, w] of [[26, 12], [34, 16], [42, 10]]) { g.beginPath(); g.moveTo(10, y); g.lineTo(10 + w, y); g.lineWidth = 3; g.stroke(); } }),
+  skill_hush: (g) => skillIcon(g, '#5a5a7a', () => { g.beginPath(); g.moveTo(22, 32); g.lineTo(42, 32); g.stroke(); g.beginPath(); g.moveTo(32, 18); g.lineTo(32, 46); g.lineWidth = 3; g.stroke(); }),
+  skill_quickfeet: (g) => skillIcon(g, '#4a90d8', () => { g.beginPath(); g.moveTo(20, 46); g.lineTo(30, 18); g.lineTo(36, 32); g.lineTo(46, 22); g.stroke(); }),
+  skill_discipline: (g) => skillIcon(g, '#5a6a8a', () => { g.beginPath(); g.moveTo(18, 46); g.lineTo(46, 18); g.stroke(); g.beginPath(); g.moveTo(16, 34); g.lineTo(30, 48); g.stroke(); }),
+  skill_ironhide: (g) => skillIcon(g, '#6a7480', () => { g.beginPath(); g.moveTo(32, 12); g.lineTo(50, 20); g.quadraticCurveTo(48, 42, 32, 52); g.quadraticCurveTo(16, 42, 14, 20); g.closePath(); g.fill(); }),
+  skill_cleave: (g) => skillIcon(g, '#c86a2a', () => { g.beginPath(); g.arc(32, 40, 18, Math.PI * 1.1, Math.PI * 1.9); g.stroke(); g.beginPath(); g.moveTo(46, 22); g.lineTo(52, 30); g.lineTo(42, 30); g.closePath(); g.fill(); }),
+  skill_rend: (g) => skillIcon(g, '#a83a2a', () => { for (const dx of [-8, 0, 8]) { g.beginPath(); g.moveTo(26 + dx, 16); g.lineTo(38 + dx, 48); g.lineWidth = 4; g.stroke(); } }),
+  skill_warcry: (g) => skillIcon(g, '#b03a4a', () => { for (const r of [8, 14, 20]) { g.beginPath(); g.arc(22, 32, r, -0.7, 0.7); g.lineWidth = 3.5; g.stroke(); } }),
+  skill_standfirm: (g) => skillIcon(g, '#8a7a3a', () => { g.beginPath(); g.moveTo(32, 12); g.lineTo(50, 20); g.quadraticCurveTo(48, 42, 32, 52); g.quadraticCurveTo(16, 42, 14, 20); g.closePath(); g.stroke(); g.beginPath(); g.moveTo(32, 22); g.lineTo(32, 42); g.stroke(); }),
+  skill_earthsplit: (g) => skillIcon(g, '#8a5a2a', () => { g.beginPath(); g.moveTo(32, 12); g.lineTo(28, 26); g.lineTo(36, 34); g.lineTo(26, 52); g.lineWidth = 4; g.stroke(); g.beginPath(); g.moveTo(14, 46); g.lineTo(50, 46); g.stroke(); }),
+  skill_rhythm: (g) => skillIcon(g, '#3a7aa0', () => { g.beginPath(); g.moveTo(10, 34); g.lineTo(20, 34); g.lineTo(26, 18); g.lineTo(34, 48); g.lineTo(40, 30); g.lineTo(54, 30); g.lineWidth = 4; g.stroke(); }),
+  skill_laststand: (g) => skillIcon(g, '#a01a1a', () => { g.beginPath(); g.moveTo(32, 12); g.lineTo(32, 40); g.lineWidth = 6; g.stroke(); g.beginPath(); g.arc(32, 48, 3.5, 0, 7); g.fill(); }),
   talk: (g) => {
     shape(g, () => { g.roundRect(6, 8, 52, 36, 12); g.moveTo(18, 42); g.lineTo(14, 56); g.lineTo(30, 43); }, '#fff4dc');
     for (const x of [20, 32, 44]) { g.beginPath(); g.arc(x, 26, 3.5, 0, Math.PI * 2); g.fillStyle = OUT; g.fill(); }

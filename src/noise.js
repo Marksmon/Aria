@@ -62,7 +62,16 @@ export function dirFor(x, z, cam) {
 
 // Eight-way version for sprites drawn in diagonals too: 'downright', 'upleft', ...
 const DIR8 = ['up', 'upright', 'right', 'downright', 'down', 'downleft', 'left', 'upleft'];
-export function dirFor8(x, z, cam) {
+// prev: the direction shown last frame. It is kept until the facing is well inside another
+// direction's sector, so moving along a sector edge doesn't flip the sprite back and forth.
+export function dirFor8(x, z, cam, prev) {
   const f = x * cam.fx + z * cam.fz, r = x * cam.rx + z * cam.rz;
-  return DIR8[(Math.round(Math.atan2(r, f) / (Math.PI / 4)) + 8) % 8];
+  const a = Math.atan2(r, f) / (Math.PI / 4);
+  const i = DIR8.indexOf(prev);
+  if (i >= 0) {
+    let d = a - i;
+    d -= Math.round(d / 8) * 8;
+    if (Math.abs(d) < 0.5 + 0.2) return prev; // 0.2 of a sector ≈ 9°
+  }
+  return DIR8[(Math.round(a) + 8) % 8];
 }

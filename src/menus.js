@@ -6,7 +6,7 @@ import { ITEMS, RECIPES, SLOTS, equipLine, iconURL } from './items.js';
 import { BAG_SLOTS, CHEST_SLOTS } from './inventory.js';
 import { STATS, STAT_KEYS, JOBS } from './progress.js';
 import { NPCS } from './quests.js';
-import { SKILLS } from './hotbar.js';
+import { SKILLS, skillList, skillLv, learnBlock, spCost } from './skills.js';
 
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const icon = (id, cls = '') => `<img class="ico ${cls}" src="${iconURL(id)}" alt="">`;
@@ -15,7 +15,7 @@ const icon = (id, cls = '') => `<img class="ico ${cls}" src="${iconURL(id)}" alt
 const WINDOWS = {
   items:  { title: 'Items',      at: [0.80, 0.30], w: 236 },
   equip:  { title: 'Equipment',  at: [0.50, 0.16], w: 260 },
-  skills: { title: 'Skills',     at: [0.80, 0.22], w: 236 },
+  skills: { title: 'Skills',     at: [0.80, 0.18], w: 290 },
   status: { title: 'Status',     at: [0.19, 0.30], w: 300 },
   craft:  { title: 'Campfire',   at: [0.50, 0.14], w: 300 },
   chest:  { title: 'Camp Chest', at: [0.50, 0.16], w: 320 },
@@ -28,7 +28,7 @@ export class Menus {
     this.inv = inv;
     this.prog = prog;
     this.player = player;
-    this.hooks = hooks; // { usePotion(), crafted(recipe), equipped(), raised(stat), accept(id), handIn(id), ui(), closed() }
+    this.hooks = hooks; // { useItem(id), learn(id), jobChange(), crafted(recipe), equipped(), raised(stat), accept(id), handIn(id), ui(), closed() }
     this.quests = null;     // set by the game, for villager dialogue
     this.portrait = null;   // villager id (or 'player') -> image URL
     this.hotbar = null;     // set by the game: skills and usable items drag onto it
@@ -81,8 +81,8 @@ export class Menus {
     this.wins[id] = el;
     el.addEventListener('pointerdown', (e) => {
       this.raise(el);
-      const d = e.target.closest('[data-drag]');
-      if (d && this.hotbar) {
+      const d = e.target.closest('[data-drag]'), b = e.target.closest('button');
+      if (d && this.hotbar && (!b || b === d)) { // not from a button inside it (a skill's ▲)
         e.preventDefault(); // no native image drag: it would cancel the pointer
         const [kind, iid] = d.dataset.drag.split(':');
         this.hotbar.drag({ kind, id: iid }, e);
@@ -184,19 +184,32 @@ export class Menus {
       if (!it) return `<div class="eq ${side} off"><i></i><span>${label}</span></div>`;
       return `<button class="eq ${side}" data-act="unequip" data-id="${key}" title="${esc(it.name)}${equipLine(it) ? ' · ' + equipLine(it) : ''} (tap to take off)">${icon(id, 'eqi')}<span>${esc(it.name)}</span></button>`;
     };
-    const left = [slot('head', null, 'l'), slot('mid head', null, 'l'), slot('armor', 'armor', 'l'), slot('weapon', 'weapon', 'l'), slot('accessory', 'acc', 'l')];
+    const left = [slot('head', 'head', 'l'), slot('mid head', null, 'l'), slot('armor', 'armor', 'l'), slot('weapon', 'weapon', 'l'), slot('accessory', 'acc', 'l')];
     const right = [slot('low head', null, 'r'), slot('garment', null, 'r'), slot('shield', null, 'r'), slot('shoes', 'shoes', 'r'), slot('light', 'light', 'r')];
     return `<div class="equipwrap"><div class="ecol">${left.join('')}</div><div class="eme"><img src="${this.portrait?.('player') || ''}" alt=""></div><div class="ecol">${right.join('')}</div></div>
       <div class="rfoot"><span>Tap a piece to take it off</span></div>`;
   }
 
+  // Ragnarok's skill window: the job's tree with levels, SP costs and a raise button
   skills() {
-    let h = `<div class="rnote">Skill points: ${this.prog.skillPoints}</div><div class="rlist">`;
-    for (const [id, sk] of Object.entries(SKILLS)) {
-      const on = this.hotbar?.has('skill', id);
-      h += `<div class="ritem skill" data-drag="skill:${id}">${icon(sk.icon, 'sm')}<div><b>${esc(sk.name)}</b><small>${esc(sk.desc)}</small></div><span class="rtag">${on ? 'On hotbar' : 'Drag to hotbar'}</span></div>`;
+    const p = this.prog;
+    let h = '', group = null;
+    for (const id of skillList(p.job)) {
+      const sk = SKILLS[id], lv = skillLv(p, id), block = learnBlock(p, id);
+      if (sk.job !== group) { group = sk.job; h += `<div class="rsub">${esc(JOBS[group].name)}</div>`; }
+      const active = sk.kind === 'active';
+      let tag = '';
+      if (sk.free && !lv) tag = `Job Lv ${sk.free.jobLv}`;
+      else if (sk.granted && !lv) tag = Object.entries(sk.needs).map(([k, n]) => `${SKILLS[k].name} ${n}`).join(', ');
+      else if (active && lv) tag = this.hotbar?.has('skill', id) ? 'On hotbar' : 'Drag to hotbar';
+      else if (block && block !== 'points' && block !== 'max' && block !== 'job' && block !== 'free') tag = block;
+      const cost = active && spCost(id, Math.max(1, lv)) ? ` · SP ${spCost(id, Math.max(1, lv))}` : '';
+      const lvTxt = sk.max > 1 ? `Lv ${lv} / ${sk.max}` : lv ? 'Learnt' : '';
+      h += `<div class="ritem skill ${lv ? '' : 'off'}"${active && lv ? ` data-drag="skill:${id}"` : ''}>${icon(sk.icon, 'sm')}
+        <div><b>${esc(sk.name)} <span class="lvl">${lvTxt}</span></b><small>${esc(sk.desc(Math.max(1, lv)))}${sk.kind === 'passive' ? ' (passive)' : ''}${cost}</small>${tag ? `<span class="rtag">${esc(tag)}</span>` : ''}</div>
+        ${!block ? `<button class="splus big" data-act="learn" data-id="${id}" aria-label="Raise ${esc(sk.name)}">▲</button>` : ''}</div>`;
     }
-    return h + '</div>';
+    return `<div class="rlist">${h}</div><div class="rfoot"><span>${esc(JOBS[p.job].name)} · Job Lv ${p.jobLv}</span><span>Skill Points <b>${p.skillPoints}</b></span></div>`;
   }
 
   // Ragnarok's status window: stats (value + job bonus, raise button, cost) beside the battle numbers
@@ -249,8 +262,19 @@ export class Menus {
   }
 
   talk() {
-    const n = NPCS[this.npc], st = this.quests.status(this.npc, this.prog.baseLv, this.inv);
+    const n = NPCS[this.npc], st = this.quests.status(this.npc, this.prog.baseLv, this.inv), p = this.prog;
     let text, box = '', btns = '<button class="rbtn soft" data-act="close">Bye</button>';
+    // the Elder makes Swordsmen: Novice Job Lv 10 with Wayfarer's Lore 9
+    if (this.npc === 'bram' && p.job === 'novice' && p.jobLv >= 10) {
+      const ready = skillLv(p, 'lore') >= 9;
+      text = ready ? 'You have learnt all a Novice can. The way of the sword is open to you: will you take it?'
+        : "You are nearly ready for the way of the sword. Learn all of the Wayfarer's Lore (Lv 9) first, then come back to me.";
+      box = `<b>Job change: Swordsman</b><small>Sturdy fighters with more HP: Cleave, Rending Strike, War Cry, Stand Firm and Earthsplitter. Job Level starts again at 1.</small>`;
+      if (ready) btns = `<button class="rbtn soft" data-act="close">Not yet</button><button class="rbtn" data-act="jobchange">Become a Swordsman</button>`;
+      this.wins.talk.querySelector('.rw-title').textContent = n.name;
+      return `<div class="talkwrap"><img class="portrait" src="${this.portrait(this.npc)}" alt="">
+        <div class="say"><p>${esc(text)}</p><div class="qbox">${box}</div><div class="btnrow">${btns}</div></div></div>`;
+    }
     if (st.state === 'offer') {
       const first = st.id === n.quests[0];
       text = (first ? n.hello + ' ' : '') + st.q.intro;
@@ -284,6 +308,8 @@ export class Menus {
     const act = t.dataset.act, inv = this.inv;
     if (act === 'close') this.close(id);
     if (act === 'raise' && this.prog.raise(t.dataset.stat)) { this.hooks.raised?.(t.dataset.stat); this.render(); }
+    if (act === 'learn') this.hooks.learn?.(t.dataset.id);
+    if (act === 'jobchange') this.hooks.jobChange?.();
     if (act === 'accept') this.hooks.accept?.(t.dataset.id);
     if (act === 'handin') this.hooks.handIn?.(t.dataset.id);
     if (act === 'tab') { this.tab = t.dataset.id; this.selected = null; this.render(id); }
@@ -302,7 +328,7 @@ export class Menus {
         this.render(id);
       }
     }
-    if (act === 'use' && this.selected === 'potion') this.hooks.usePotion?.();
+    if (act === 'use' && this.selected) this.hooks.useItem?.(this.selected);
     if (act === 'craft') {
       const r = RECIPES.find((x) => x.item === t.dataset.id);
       if (inv.craft(r)) { this.hooks.crafted?.(r); this.message(`Crafted ${ITEMS[r.item].name}. It's in your bag.`); }

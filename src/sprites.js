@@ -478,6 +478,7 @@ export function createSprites() {
     mushling: sheet('mushling'),
     beetle: sheet('beetle'),
     wisp: sheet('wisp'),
+    jarl: SHEETS['./art/jarl.png'] ? sheet('jarl') : sheet('beetle'), // the MVP (PixelLab art, packed like the rest)
   };
   const villagers = { bram: sheet('bram'), tilly: sheet('tilly'), wren: sheet('wren') };
 

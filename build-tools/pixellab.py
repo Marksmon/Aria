@@ -84,6 +84,10 @@ CHARACTERS = [
         [("walk", "crawling walk"), ("attack", "ramming forward with its horn")], template="dog"),
     pro("wisp", "glowing yellow firefly wisp spirit, small round glowing body with tiny translucent wings, "
         "no arms, no legs", [("walk", "hovering and fluttering in place"), ("attack", "darting forward")]),
+    # the MVP boss of Ember Ridge: twice the canvas of the other monsters
+    pro("jarl", "towering ember jotunn giant made of dark volcanic rock with glowing orange lava cracks, "
+        "horned iron helm, braided beard of fire, huge stone axe", [("walk", "heavy stomping walk"),
+        ("attack", "raising its stone axe overhead and smashing it down")], size=(128, 128)),
     # villagers stand still: no animations
     pro("bram", "kind old village elder with a long white beard, bald head with white tufts, purple robe with "
         "gold trim, wooden staff topped with a blue crystal", size=(64, 96)),

@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import './style.css';
 import { createSprites } from './sprites.js';
-import { buildWorld } from './world.js';
+import { buildWorld, ZONE_NAMES } from './world.js';
 import { Player } from './player.js';
 import { Input } from './input.js';
 import { UI } from './ui.js';
@@ -9,12 +9,13 @@ import { FX } from './fx.js';
 import { MobManager } from './mobs.js';
 import { loadSave, writeSave } from './save.js';
 import { Inventory } from './inventory.js';
-import { Progress } from './progress.js';
+import { Progress, JOBS } from './progress.js';
 import { Quests, QUESTS, NPCS } from './quests.js';
 import { Villagers } from './villagers.js';
 import { Tiles } from './tiles.js';
 import { Hotbar } from './hotbar.js';
-import { derive } from './rules.js';
+import { derive, playerAttack, mobAttack } from './rules.js';
+import { SKILLS, skillLv, spCost, learn, skillList } from './skills.js';
 import { Menus } from './menus.js';
 import { iconTexture, iconURL, ITEMS } from './items.js';
 import { DayNight } from './daynight.js';
@@ -42,24 +43,17 @@ const lib = createSprites();
 const world = buildWorld(scene, lib);
 const fx = new FX(scene, world, lib);
 const mobs = new MobManager(scene, world, lib, fx);
-mobs.populate([
-  ['slime', 7, ['grove']],
-  ['sprout', 5, ['grove']],
-  ['blueSlime', 5, ['fen']],
-  ['crab', 4, ['fen']],
-  ['mushling', 7, ['hollow']],
-  ['beetle', 6, ['ridge']],
-  // night: Firefly Wisps anywhere, plus ~20% more of everything
-  ['wisp', 7, null, true],
-  ['slime', 2, ['grove'], true],
-  ['sprout', 1, ['grove'], true],
-  ['blueSlime', 1, ['fen'], true],
-  ['crab', 1, ['fen'], true],
-  ['mushling', 1, ['hollow'], true],
-  ['beetle', 1, ['ridge'], true],
-]);
+// monsters per map: [type, count, nightOnly]. Night brings Firefly Wisps and ~20% more of the rest
+const SPAWNS = {
+  camp: [],
+  grove: [['slime', 12], ['sprout', 9], ['wisp', 5, true], ['slime', 3, true], ['sprout', 2, true]],
+  fen: [['blueSlime', 9], ['crab', 7], ['wisp', 5, true], ['blueSlime', 2, true], ['crab', 1, true]],
+  hollow: [['mushling', 12], ['wisp', 5, true], ['mushling', 2, true]],
+  ridge: [['beetle', 10], ['jarl', 1], ['wisp', 5, true], ['beetle', 2, true]],
+};
 
 const save = loadSave();
+mobs.mvpAt = save?.mvpAt || 0;
 const player = new Player(scene, world, lib.player, lib.shadow, fx);
 player.setPos(save?.x ?? world.spawn.x, save?.z ?? world.spawn.z);
 const prog = new Progress();
@@ -72,8 +66,19 @@ const inv = new Inventory();
 inv.level = () => prog.baseLv;
 inv.load(save?.inv);
 // stats + gear -> the player's battle numbers (Ragnarok rules); HP/SP stay put, capped by the new max
+// timed buffs, in seconds left: aspd (Quickening Draught), warcry (War Cry's ATK bonus)
+const buffs = { aspd: 0, warcry: 0 };
+let warcryLv = 0;
 function applyStats() {
-  const ps = derive(prog, inv.gearStats());
+  const gear = inv.gearStats();
+  const lore = skillLv(prog, 'lore'), disc = skillLv(prog, 'discipline'), hide = skillLv(prog, 'ironhide');
+  gear.mastery = 3 * disc; // every Aria weapon is a sword
+  gear.hit = lore + disc;
+  gear.flee = lore + (skillLv(prog, 'quickfeet') ? 5 : 0);
+  gear.def += hide;
+  if (buffs.aspd > 0) gear.aspdRate *= 0.9;
+  const ps = derive(prog, gear);
+  ps.maxHp = Math.floor(ps.maxHp * (1 + hide / 100));
   player.ps = ps;
   player.maxHp = ps.maxHp;
   player.maxSp = ps.maxSp;
@@ -91,9 +96,60 @@ const input = new Input();
 const ui = new UI(world);
 ui.mobs = mobs;
 ui.prog = prog;
+ui.jobName = () => JOBS[prog.job].name;
 
 const cam = { yaw: save?.yaw ?? 0, dist: save?.dist ?? 12, target: new THREE.Vector3(), shake: 0 };
-cam.target.set(player.x, world.heightAt(player.x, player.z), player.z);
+
+// ---------- maps and warp portals ----------
+// go to a map: its monsters, tiles and ground; at = where to stand (else beside the portal back)
+function enterMap(id, from, at) {
+  const arrive = world.go(id, from);
+  const pos = at || arrive;
+  mobs.setMap(SPAWNS[world.id], 11 + world.id.length);
+  villagers.group.visible = world.id === 'camp';
+  player.tiles.rebuild();
+  fx.clearPickups();
+  player.stop();
+  player.setPos(pos.x, pos.z);
+  cam.target.set(player.x, world.heightAt(player.x, player.z), player.z);
+}
+// saves from before the maps were split only know the camp
+enterMap(save?.map && ZONE_NAMES[save.map] ? save.map : 'camp', null, save?.map ? { x: save.x, z: save.z } : null);
+
+let warping = false;
+function warp(id, from, at) {
+  if (warping) return;
+  warping = true;
+  player.stop();
+  audio.play('dodge');
+  const veil = document.getElementById('warp');
+  veil.classList.add('show');
+  setTimeout(() => {
+    enterMap(id, from, at);
+    ui.showZone(world.id);
+    persist();
+    veil.classList.remove('show');
+    setTimeout(() => { warping = false; }, 300);
+  }, 260);
+}
+const warpTo = (id) => warp(id, null);
+// Wander Feather: a random open spot on this map
+function warpRandom() {
+  for (let i = 0; i < 200; i++) {
+    const x = 4 + Math.random() * 56, z = 4 + Math.random() * 56;
+    const t = player.tiles.tileAt(x, z);
+    if (player.tiles.blocked[t[1] * 64 + t[0]] || world.portals.some((p) => Math.hypot(p.x - x, p.z - z) < 3)) continue;
+    warp(world.id, null, { x: t[0] + 0.5, z: t[1] + 0.5 });
+    return;
+  }
+}
+// stepping onto a portal takes you through it
+function checkPortals() {
+  if (warping || player.state !== 'normal') return;
+  for (const p of world.portals) {
+    if (Math.hypot(p.x - player.x, p.z - player.z) < 0.75) { warp(p.to, world.id); return; }
+  }
+}
 
 const audio = new Audio();
 
@@ -104,7 +160,12 @@ player.on('swing', () => audio.play('swing'));
 player.on('strike', (m, res) => {
   const y = overHead(m, m.sprite.scale.y * 0.8);
   if (res.miss) fx.number(m.x, y, m.z, 'Miss', 'miss');
-  else { fx.number(m.x, y, m.z, res.dmg, res.crit ? 'crit' : 'dealt'); audio.play('hit'); }
+  else {
+    fx.number(m.x, y, m.z, res.dmg, res.crit ? 'crit' : 'dealt');
+    audio.play('hit');
+    // Battle Rhythm: every fourth hit that lands gives back 2 SP
+    if (skillLv(prog, 'rhythm') && ++rhythm % 4 === 0) player.healSp(2);
+  }
 });
 player.on('hurt', (n) => {
   ui.hurt(); cam.shake = 0.2; audio.play('hurt');
@@ -121,6 +182,7 @@ player.on('faint', () => {
   const lost = prog.deathPenalty();
   ui.faint(true, lost.base || lost.job ? `Returning to camp · lost ${lost.base} Base EXP, ${lost.job} Job EXP` : 'Returning to camp');
   setTimeout(() => {
+    enterMap('camp', null);
     player.revive(world.spawn.x, world.spawn.z);
     cam.target.set(player.x, world.heightAt(player.x, player.z), player.z);
     ui.faint(false);
@@ -143,9 +205,53 @@ mobs.on('spore', (m) => {
   }
 });
 
+// ---------- the MVP ----------
+mobs.on('windup', (m) => {
+  audio.play('swing');
+  fx.sparkle(m.x, world.heightAt(m.x, m.z) + 1.2, m.z, '#ff8a3a', 10);
+});
+mobs.on('stomp', (m) => { // the ground bursts around the boss
+  const y = world.heightAt(m.x, m.z);
+  fx.puff(m.x, y + 0.2, m.z, 2.4);
+  fx.sparkle(m.x, y + 0.3, m.z, '#ff6a1a', 24);
+  audio.play('hit');
+  if (Math.hypot(player.x - m.x, player.z - m.z) > 3.2) return;
+  cam.shake = 0.35;
+  if (!player.canBeHit()) return;
+  const res = mobAttack(m.def, player.ps, 1.5);
+  if (res.miss) fx.number(player.x, overHead(player, 1.3), player.z, 'Miss', 'miss');
+  else player.takeDamage(res.dmg, m.x, m.z);
+});
+mobs.on('mvpSpawn', () => {
+  menus.message('The ground trembles… the Ember Jarl has woken in Glodberg!');
+  audio.play('night');
+});
+// Ragnarok's MVP: the announcement over the slayer's head, MVP EXP and items straight to the bag
+mobs.on('mvp', (m) => {
+  const d = m.def;
+  fx.number(player.x, overHead(player, 1.7), player.z, 'MVP', 'mvp', player);
+  fx.sparkle(player.x, world.heightAt(player.x, player.z) + 1, player.z, '#ffd23a', 30);
+  audio.play('levelup');
+  menus.message(`You defeated the ${d.name}! MVP! +${d.mvpExp} Base EXP`);
+  for (const [id, n] of d.mvpDrops) {
+    const got = inv.add(id, n);
+    if (got < n) inv.chest.add(id, n - got);
+    menus.toast(id, n);
+  }
+  gainExp(d.mvpExp, 0);
+  const mins = Math.round(d.respawn / 60);
+  setTimeout(() => menus.message(`The ${d.name} will return in about ${mins} minutes.`), 2500);
+  persist();
+});
+
 // ---------- experience: Base and Job EXP, like Ragnarok ----------
+const knownSkills = () => new Set(skillList(prog.job).filter((id) => skillLv(prog, id)));
+function announceSkills(before) {
+  for (const id of knownSkills()) if (!before.has(id) && (SKILLS[id].free || SKILLS[id].granted)) menus.message(`New skill: ${SKILLS[id].name}! See the Skills window.`);
+}
 function gainExp(base, job) {
   const k = inv.wearing('exp') ? 1.25 : 1;
+  const known = knownSkills();
   const ups = prog.gain(Math.round(base * k), Math.round(job * k));
   if (!ups.base && !ups.job) return;
   applyStats();
@@ -162,7 +268,8 @@ function gainExp(base, job) {
     if (!ups.base) audio.play('levelup');
     fx.sparkle(player.x, y + 0.6, player.z, '#9fd4ff', 10);
     fx.number(player.x, y + (ups.base ? 2.3 : 1.9), player.z, 'Job Level Up', 'job');
-    menus.message(`Job Level ${prog.jobLv}!`);
+    menus.message(`Job Level ${prog.jobLv}!${prog.skillPoints ? ` ${prog.skillPoints} skill point${prog.skillPoints === 1 ? '' : 's'} to spend in the Skills window.` : ''}`);
+    announceSkills(known);
   }
   if (menus.open) menus.render();
   persist();
@@ -213,13 +320,32 @@ function collect(p) {
 
 // ---------- menus + camp interactions ----------
 const menus = new Menus(inv, prog, player, {
-  usePotion() {
-    if (player.hp >= player.maxHp) { menus.message('Your HP is already full'); return; }
-    if (inv.bag.remove('potion', 1)) {
-      const n = player.heal(45 + Math.floor(Math.random() * 21)); // like a Red Potion: 45-65 HP
-      fx.number(player.x, overHead(player, 1.3), player.z, n, 'heal');
-      inv.changed();
-    }
+  useItem: (id) => useItem(id),
+  learn(id) {
+    const known = knownSkills();
+    if (!learn(prog, id)) return;
+    applyStats();
+    audio.play('craft');
+    announceSkills(known);
+    menus.render();
+    persist();
+  },
+  jobChange() {
+    const known = knownSkills();
+    prog.job = 'swordman';
+    prog.jobLv = 1;
+    prog.jobExp = 0;
+    applyStats();
+    player.heal(player.maxHp);
+    player.healSp(player.maxSp);
+    audio.play('levelup');
+    const y = world.heightAt(player.x, player.z);
+    fx.sparkle(player.x, y + 0.6, player.z, '#ffe37a', 24);
+    fx.number(player.x, y + 1.9, player.z, 'Swordsman!', 'level');
+    menus.message('You are now a Swordsman! Earn Job Levels for skill points.');
+    announceSkills(known);
+    menus.render();
+    persist();
   },
   crafted() { audio.play('craft'); persist(); },
   equipped() { audio.play('ui'); persist(); },
@@ -259,16 +385,170 @@ const SPOTS = [
 
 // ---------- hotbar: skills and items ----------
 const hotbar = new Hotbar(document.getElementById('hotbar'), inv, {
-  use(s) {
-    if (s.kind === 'skill' && s.id === 'dodge') wantDodge = true;
-    if (s.kind === 'item' && s.id === 'potion') menus.hooks.usePotion();
+  use(s) { if (s.kind === 'skill') useSkill(s.id); else useItem(s.id); },
+  cooldown(s) {
+    if (s.kind !== 'skill') return 0;
+    if (s.id === 'dodge') return Math.max(0, player.rollCd / 0.75);
+    return SKILLS[s.id].cd ? Math.max(0, (skillCd[s.id] || 0) / SKILLS[s.id].cd) : 0;
   },
-  cooldown: (s) => (s.kind === 'skill' && s.id === 'dodge' ? Math.max(0, player.rollCd / 0.75) : 0),
   changed() { if (menus.open) menus.render(); persist(); },
 });
 hotbar.load(save?.hotbar);
 menus.hotbar = hotbar;
 let wantDodge = false;
+
+// ---------- items and skills in use ----------
+const roll = ([a, b]) => a + Math.floor(Math.random() * (b - a + 1));
+function useItem(id) {
+  const u = ITEMS[id]?.use;
+  if (!u || !inv.bag.count(id) || player.state === 'down') return;
+  if (u.hp && !u.cure && player.hp >= player.maxHp) { menus.message('Your HP is already full'); return; }
+  if (u.sp && player.sp >= player.maxSp) { menus.message('Your SP is already full'); return; }
+  inv.bag.remove(id, 1);
+  const y = overHead(player, 1.3);
+  if (u.hp) {
+    const n = player.heal(roll(u.hp));
+    fx.number(player.x, y, player.z, n, 'heal');
+  }
+  if (u.sp) fx.number(player.x, y, player.z, player.healSp(roll(u.sp)), 'sp');
+  if (u.cure) player.slowT = 0;
+  if (u.buff) { buffs[u.buff] = u.t; applyStats(); menus.message(`${ITEMS[id].name}: ${ITEMS[id].desc}`); }
+  if (u.warp === 'random') warpRandom();
+  if (u.warp === 'camp') warpTo('camp');
+  audio.play('pickup');
+  inv.changed();
+}
+
+const skillCd = {}; // skill id -> seconds left
+let hushT = 0;       // Hush ends by itself after a while
+function useSkill(id) {
+  const sk = SKILLS[id], lv = skillLv(prog, id);
+  if (!lv || sk.kind !== 'active' || player.state === 'down' || (skillCd[id] || 0) > 0) return;
+  const sp = spCost(id, lv);
+  const pay = () => {
+    if (player.sp < sp) { menus.message('Not enough SP'); return false; }
+    player.sp -= sp;
+    if (sk.cd) skillCd[id] = sk.cd;
+    return true;
+  };
+  const say = (text) => fx.number(player.x, overHead(player, 1.6), player.z, text, 'skill');
+  const y = world.heightAt(player.x, player.z);
+  if (id === 'dodge') { wantDodge = true; return; }
+  if (id === 'rest') { if (player.state === 'sit') player.standUp(); else player.sit('sit'); return; }
+  if (id === 'hush') {
+    if (player.state === 'feign') { player.standUp(); return; }
+    if (player.state === 'normal' && pay()) {
+      player.sit('feign');
+      hushT = 6;
+      for (const m of mobs.list) { m.provokeT = 0; m.state = 'wander'; m.tired = 3; }
+      say('Hush');
+    }
+    return;
+  }
+  if (id === 'mend') {
+    if (player.hp >= player.maxHp) { menus.message('Your HP is already full'); return; }
+    if (pay()) { say('Mend'); fx.number(player.x, overHead(player, 1.3), player.z, player.heal(5 + Math.floor(player.maxHp * 0.08)), 'heal'); }
+    return;
+  }
+  if (player.state !== 'normal') return;
+  if (id === 'standfirm') {
+    if (pay()) { player.endureT = 8 + lv; player.guard = lv / 50; say('Stand Firm'); audio.play('block'); }
+    return;
+  }
+  if (id === 'warcry') {
+    if (!pay()) return;
+    say('War Cry');
+    audio.play('night');
+    cam.shake = 0.15;
+    fx.sparkle(player.x, y + 1, player.z, '#ff9a6a', 16);
+    for (const m of mobs.list) if (m.alive && Math.hypot(m.x - player.x, m.z - player.z) < 6) m.provoke(0);
+    buffs.warcry = 30;
+    warcryLv = lv;
+    return;
+  }
+  if (id === 'earthsplit') {
+    if (!pay()) return;
+    say('Earthsplitter');
+    fx.sparkle(player.x, y + 0.3, player.z, '#c8a06a', 26);
+    fx.puff(player.x, y + 0.2, player.z, 1.8);
+    cam.shake = 0.3;
+    audio.play('hit');
+    player.atkAnim = player.atkDur = 0.4;
+    for (const m of [...mobs.list]) {
+      if (!m.alive) continue;
+      const dx = m.x - player.x, dz = m.z - player.z, d = Math.hypot(dx, dz);
+      if (d > 2.8 + m.def.r) continue;
+      const res = playerAttack(player.ps, m.effDef(), (120 + 25 * lv) / 100 * player.atkMul, 1 + lv / 10, true);
+      const yy = overHead(m, m.sprite.scale.y * 0.8);
+      if (res.miss) { fx.number(m.x, yy, m.z, 'Miss', 'miss'); continue; }
+      fx.number(m.x, yy, m.z, res.dmg, 'dealt');
+      m.hit(res.dmg, d ? dx / d : 0, d ? dz / d : 1);
+      m.knock.x *= 3; m.knock.z *= 3; // thrown back a couple of paces
+    }
+    return;
+  }
+  // the rest aim at your current target, or the nearest monster
+  const target = (player.goal?.mob?.alive && player.goal.mob) || mobs.nearest(player.x, player.z, 8);
+  if (!target) { menus.message('No monster nearby'); return; }
+  if (id === 'stone') {
+    const dx = target.x - player.x, dz = target.z - player.z, d = Math.hypot(dx, dz);
+    if (d > sk.range + target.def.r) { menus.message('Too far away'); return; }
+    if (!pay()) return;
+    player.face = { x: dx / d, z: dz / d };
+    player.atkAnim = player.atkDur = 0.3;
+    audio.play('swing');
+    const res = playerAttack(player.ps, target.effDef(), 0.6 * player.atkMul, 1, true);
+    const yy = overHead(target, target.sprite.scale.y * 0.8);
+    fx.sparkle(target.x, yy - 0.3, target.z, '#c8b8a0', 6);
+    if (res.miss) fx.number(target.x, yy, target.z, 'Miss', 'miss');
+    else { fx.number(target.x, yy, target.z, res.dmg, 'dealt'); target.hit(res.dmg, dx / d, dz / d); }
+    if (target.alive) target.provoke(0);
+    return;
+  }
+  // Cleave and Rending Strike: walk up and hit with the next swing
+  const strike = (mult, hitMult, done) => player.command({ mob: target, skill: { mult, hitMult, pay, done } });
+  if (id === 'cleave') {
+    strike((110 + 15 * lv) / 100, 1, (t, res) => {
+      say('Cleave');
+      // the sweep catches monsters beside the target
+      for (const m of [...mobs.list]) {
+        if (!m.alive || m === t || Math.hypot(m.x - t.x, m.z - t.z) > 1.7 + m.def.r) continue;
+        const r = playerAttack(player.ps, m.effDef(), (110 + 15 * lv) / 100 * player.atkMul, 1, true);
+        const yy = overHead(m, m.sprite.scale.y * 0.8);
+        if (r.miss) { fx.number(m.x, yy, m.z, 'Miss', 'miss'); continue; }
+        fx.number(m.x, yy, m.z, r.dmg, 'dealt');
+        const dx = m.x - player.x, dz = m.z - player.z, d = Math.hypot(dx, dz) || 1;
+        m.hit(r.dmg, dx / d, dz / d);
+      }
+    });
+  }
+  if (id === 'rend') {
+    strike((150 + 25 * lv) / 100, 1 + lv / 20, (t, res) => {
+      say('Rending Strike');
+      // Lv 6+: a chance to stagger (not the MVP)
+      if (!res.miss && lv >= 6 && t.alive && !t.def.mvp && Math.random() * 100 < (lv - 5) * 4) {
+        t.stunT = 2.5;
+        fx.number(t.x, overHead(t, t.sprite.scale.y + 0.2), t.z, 'Staggered', 'miss');
+      }
+    });
+  }
+}
+
+// skill cooldowns, buffs and the damage bonuses that depend on HP, every frame
+let rhythm = 0;
+function tickSkills(dt) {
+  for (const k in skillCd) skillCd[k] -= dt;
+  for (const k in buffs) {
+    if (buffs[k] <= 0) continue;
+    buffs[k] -= dt;
+    if (buffs[k] <= 0 && k === 'aspd') { applyStats(); menus.message('The Quickening Draught wears off'); }
+  }
+  if (player.state === 'feign' && (hushT -= dt) <= 0) player.standUp();
+  if (player.endureT <= 0) player.guard = 0;
+  const low = player.hp < player.maxHp * 0.25 && skillLv(prog, 'laststand');
+  player.atkMul = (buffs.warcry > 0 ? 1 + warcryLv / 50 : 1) * (low ? 1.25 : 1);
+  player.guard = Math.max(player.endureT > 0 ? player.guard : 0, low ? 0.1 : 0);
+}
 
 // ---------- tap to walk, attack, pick up, talk ----------
 const PICK_PX = 44; // how far from a thing (in CSS pixels) a tap still picks it
@@ -289,7 +569,7 @@ function pick(cx, cy) {
   };
   for (const m of mobs.list) if (m.alive) consider({ mob: m }, m.x, m.sprite.position.y, m.sprite.scale.y * 0.8, m.z, 0.8);
   for (const p of fx.pickups) consider({ item: p }, p.x, p.s.position.y, 0.5, p.z);
-  for (const sp of SPOTS) consider({ spot: sp }, sp.x, world.heightAt(sp.x, sp.z), sp.h, sp.z);
+  if (world.id === 'camp') for (const sp of SPOTS) consider({ spot: sp }, sp.x, world.heightAt(sp.x, sp.z), sp.h, sp.z);
   return best;
 }
 function tap(cx, cy) {
@@ -340,14 +620,15 @@ const dayNight = new DayNight({
 });
 if (typeof save?.time === 'number') dayNight.t = save.time;
 
-// natural recovery, Ragnarok style: HP every 6 s, SP every 8 s, twice as often resting at camp
-// (like sitting) or, for HP, with the Sprout Charm
+// HP doesn't recover while walking, like Ragnarok. Resting (the skill, or at camp) doubles it.
 let hpT = 0, spT = 0;
 function naturalRegen(dt) {
   if (player.state === 'down') return;
-  const atCamp = Math.hypot(player.x - 32, player.z - 32) < 5.5;
-  const fast = atCamp ? 2 : 1;
-  hpT += dt * fast * (inv.wearing('regen') ? 2 : 1);
+  const resting = world.isSafe(player.x, player.z) || player.state === 'sit';
+  const fast = resting ? 2 : 1;
+  const walking = player.moving;
+  const low = player.hp < player.maxHp * 0.25 && skillLv(prog, 'secondwind') ? 3 : 1;
+  if (!walking) hpT += dt * fast * low * (inv.wearing('regen') ? 2 : 1);
   spT += dt * fast;
   if (hpT >= 6) { hpT -= 6; player.heal(player.ps.hpRegen); }
   if (spT >= 8) { spT -= 8; player.healSp(player.ps.spRegen); }
@@ -372,7 +653,7 @@ let questZone = null, questT = 0;
 let resetting = false;
 function persist() {
   if (!started || resetting) return;
-  writeSave({ x: player.x, z: player.z, yaw: cam.yaw, dist: cam.dist, hp: player.hp, sp: player.sp, inv: inv.toJSON(), prog: prog.toJSON(), quests: quests.toJSON(), hotbar: hotbar.toJSON(), time: dayNight.t });
+  writeSave({ map: world.id, mvpAt: mobs.mvpAt, x: player.x, z: player.z, yaw: cam.yaw, dist: cam.dist, hp: player.hp, sp: player.sp, inv: inv.toJSON(), prog: prog.toJSON(), quests: quests.toJSON(), hotbar: hotbar.toJSON(), time: dayNight.t });
 }
 
 const clock = new THREE.Clock();
@@ -413,7 +694,7 @@ function frame() {
   world.update(dt, t);
   villagers.update(dt, player, b);
   if (live) fx.update(dt);
-  if (live) naturalRegen(dt);
+  if (live) { naturalRegen(dt); tickSkills(dt); checkPortals(); }
   hotbar.update();
   world.updateOcclusion(player.x, player.z, b);
 
@@ -480,11 +761,11 @@ tContinue.addEventListener('click', () => {
   try { screen.orientation?.lock?.('landscape').catch(() => {}); } catch { /* not supported */ }
   setTimeout(() => {
     title.remove();
-    ui.showZone(world.zoneAt(player.x, player.z));
+    ui.showZone(world.id);
     const hint = document.getElementById('hint');
     hint.classList.add('show');
     setTimeout(() => hint.classList.remove('show'), 6000);
   }, 450);
 });
 
-window.__aria = { player, world, cam, camera, mobs, fx, inv, prog, quests, villagers, menus, hotbar, dayNight, audio, stats: world.stats };
+window.__aria = { warp, enterMap, player, world, cam, camera, mobs, fx, inv, prog, quests, villagers, menus, hotbar, dayNight, audio, stats: world.stats };

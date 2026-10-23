@@ -439,7 +439,7 @@ button.eq:active { background: var(--w-sel); }
 .ritem > div { flex: 1; min-width: 0; }
 .ritem b { display: block; color: var(--w-text); }
 .ritem small { display: block; color: var(--w-dim); font-size: 10px; }
-.ritem.skill { cursor: grab; touch-action: none; }
+.ritem[data-drag] { cursor: grab; touch-action: none; }
 .ritem.level, .ritem.missing { color: var(--w-dim); }
 .ritem.level { opacity: .6; }
 .costs { display: flex; flex-wrap: wrap; gap: 2px 6px; margin-top: 1px; }
@@ -457,3 +457,11 @@ button.eq:active { background: var(--w-sel); }
 .qbox { display: flex; flex-direction: column; gap: 2px; padding: 4px 6px; border: 1px solid var(--w-line2); border-radius: 2px; background: var(--w-cell); }
 .qbox small { font-size: 10px; color: var(--w-dim); }
 .btnrow { display: flex; justify-content: flex-end; gap: 4px; }
+.ritem.skill.off { opacity: .55; }
+.ritem .lvl { font-weight: 400; font-size: 10px; color: var(--w-dim); margin-left: 4px; }
+.ritem .rtag { display: block; color: var(--w-gold); }
+.splus.big { width: 18px; height: 18px; font-size: 9px; flex: none; }
+
+/* warp portal: a quick flash of light between maps */
+#warp { position: absolute; inset: 0; background: radial-gradient(#eaf8ff, #8fc8ff 60%, #3a6ab8); opacity: 0; transition: opacity .25s; pointer-events: none; }
+#warp.show { opacity: 1; }

@@ -33,7 +33,10 @@ export class Player {
     this.speedMul = 1;
     this.blockChance = 0;
 
-    this.state = 'normal'; // normal | roll | down
+    this.state = 'normal'; // normal | roll | down (fainted) | sit | feign (Play Dead)
+    this.endureT = 0;      // Stand Firm: no flinching
+    this.guard = 0;        // share of damage shrugged off (Stand Firm, Last Stand)
+    this.atkMul = 1;       // damage bonus from buffs (Magnum Break's fire, Auto Berserk), set by the game
     this.atkTimer = 0;
     this.atkAnim = 0;
     this.atkDur = 1;
@@ -93,7 +96,7 @@ export class Player {
   }
 
   // monsters may attack: not while down or mid-roll
-  canBeHit() { return this.state !== 'down' && this.iframes <= 0; }
+  canBeHit() { return this.state !== 'down' && this.state !== 'feign' && this.iframes <= 0; }
 
   takeDamage(amount, fromX, fromZ) {
     if (!this.canBeHit()) return false;
@@ -101,11 +104,14 @@ export class Player {
       this.emit('block');
       return true;
     }
+    amount = Math.max(1, Math.round(amount * (1 - this.guard)));
     this.hp = Math.max(0, this.hp - amount);
     // a small flinch, like Ragnarok's hit stun
     const dx = this.x - fromX, dz = this.z - fromZ, d = Math.hypot(dx, dz) || 1;
-    this.knock.x = (dx / d) * 2;
-    this.knock.z = (dz / d) * 2;
+    const k = this.endureT > 0 ? 0 : 2;
+    this.knock.x = (dx / d) * k;
+    this.knock.z = (dz / d) * k;
+    if (this.state === 'sit') this.state = 'normal'; // a hit gets you up
     this.emit('hurt', amount);
     if (this.hp <= 0) {
       this.state = 'down';
@@ -128,12 +134,14 @@ export class Player {
   }
 
   command(goal) {
+    this.standUp();
     this.goal = goal;
     this.repath();
   }
 
   stop() {
     this.goal = null;
+    this.engaged = null;
     this.path = [];
   }
 
@@ -144,6 +152,21 @@ export class Player {
     this.path = this.tiles.path(this.x, this.z, tx, tz) || [];
     this.repathT = 0.35;
     this.stuckT = 0;
+  }
+
+  // Sit and Play Dead: stay put until told to move
+  sit(kind) {
+    if (this.state !== 'normal') return false;
+    this.stop();
+    this.state = kind;
+    this.mat.rotation = kind === 'feign' ? Math.PI / 2 : 0;
+    return true;
+  }
+
+  standUp() {
+    if (this.state !== 'sit' && this.state !== 'feign') return;
+    this.state = 'normal';
+    this.mat.rotation = 0;
   }
 
   revive(x, z) {
@@ -163,6 +186,7 @@ export class Player {
     this.rollCd -= dt;
     this.iframes -= dt;
     this.slowT -= dt;
+    this.endureT -= dt;
 
     if (this.state === 'down') {
       this.sync();
@@ -177,6 +201,7 @@ export class Player {
       this.knock.z *= k;
     }
 
+    if (ctl.dodge) this.standUp();
     if (ctl.dodge && this.state === 'normal' && this.rollCd <= 0) {
       this.state = 'roll';
       this.rollT = ROLL_TIME;
@@ -193,12 +218,13 @@ export class Player {
       this.tryMove(this.rollDir.x * sp * dt, this.rollDir.z * sp * dt);
       this.moving = true;
       if (this.rollT <= 0) { this.state = 'normal'; this.repath(); }
-    } else this.follow(dt, cam, mobs);
+    } else if (this.state === 'normal') this.follow(dt, cam, mobs);
+    else { this.moving = false; this.animT = 0; }
 
     // sprite direction follows facing relative to the camera; 8 ways when the art has diagonals,
     // and a diagonal missing an animation borrows it from the nearest straight direction
     const eight = 'downright' in this.art.anims;
-    this.dir = eight ? dirFor8(this.face.x, this.face.z, cam) : dirFor(this.face.x, this.face.z, cam);
+    this.dir = eight ? dirFor8(this.face.x, this.face.z, cam, this.dir) : dirFor(this.face.x, this.face.z, cam);
     const D = this.art.anims[this.dir], S = this.art.anims[dirFor(this.face.x, this.face.z, cam)];
     const A = { idle: D.idle, walk: D.walk || S.walk, attack: D.attack || S.attack, dodge: D.dodge || S.dodge };
     let tex = A.idle[0];
@@ -208,6 +234,8 @@ export class Player {
     } else if (this.atkAnim > 0) {
       const k = 1 - this.atkAnim / this.atkDur;
       tex = A.attack[Math.min(A.attack.length - 1, Math.floor(k * A.attack.length))];
+    } else if (this.state === 'sit') {
+      tex = A.dodge[1]; // crouched down
     } else if (this.moving && this.state === 'normal') {
       tex = A.walk[Math.floor(this.animT * A.walk.length) % A.walk.length]; // every frame is part of the cycle
     }
@@ -226,13 +254,22 @@ export class Player {
     const g = this.goal;
     if (g?.mob) {
       const m = g.mob;
+      const gap = Math.hypot(m.x - this.x, m.z - this.z) - m.def.r;
+      // once in reach, stay put until the monster is clearly out of it: no stop-start at the edge
+      const reach = REACH_MOB + (this.engaged === m ? 0.5 : 0);
       if (!m.alive) this.stop();
-      else if (Math.hypot(m.x - this.x, m.z - this.z) - m.def.r <= REACH_MOB) {
+      else if (gap <= reach) {
+        this.engaged = m;
         this.path = [];
         const dx = m.x - this.x, dz = m.z - this.z, d = Math.hypot(dx, dz) || 1;
         if (this.atkAnim <= 0) this.face = { x: dx / d, z: dz / d };
         if (this.atkTimer <= 0) this.swing(cam, mobs);
-      } else if ((this.repathT -= dt) <= 0 || !this.path.length) this.repath(); // it moves: keep chasing
+      } else {
+        this.engaged = null;
+        // close by, step straight at it instead of zig-zagging between tile centres
+        if (gap < 3) this.path = [{ x: m.x, z: m.z }];
+        else if ((this.repathT -= dt) <= 0 || !this.path.length) this.repath(); // it moves: keep chasing
+      }
     } else if (g && Math.hypot(g.x - this.x, g.z - this.z) <= g.reach) {
       this.stop();
       g.arrive?.();
@@ -254,20 +291,26 @@ export class Player {
     if (this.stuckT > 0.5) { if (g) this.repath(); else this.path = []; }
   }
 
-  // one normal attack on the target, timed by ASPD; hit, crit and damage roll by the rules
+  // one attack on the target, timed by ASPD; hit, crit and damage roll by the rules. A skill
+  // waiting on the goal (goal.skill: { mult, hitMult, pay() -> bool, done(target, res) }) goes
+  // off instead of a normal attack, then the fight carries on with normal attacks.
   swing(cam, mobs) {
     const target = this.goal?.mob;
     if (!target?.alive) return;
+    let sk = this.goal.skill;
+    this.goal.skill = null;
+    if (sk && !sk.pay()) sk = null;
     this.atkTimer = this.ps.interval;
     this.atkAnim = this.atkDur = Math.min(0.42, this.atkTimer * 0.9);
     const dx = target.x - this.x, dz = target.z - this.z, d = Math.hypot(dx, dz) || 1;
     this.face = { x: dx / d, z: dz / d };
     const y = this.world.heightAt(this.x, this.z);
     this.fx.slash(this.x + this.face.x * 0.7, y + 0.55, this.z + this.face.z * 0.7, this.face, cam);
-    const res = playerAttack(this.ps, target.def);
+    const res = playerAttack(this.ps, target.effDef(), (sk?.mult || 1) * this.atkMul, sk?.hitMult || 1, !!sk);
     if (!res.miss) target.hit(res.dmg, dx / d, dz / d);
     this.emit('swing');
     this.emit('strike', target, res);
+    sk?.done?.(target, res);
   }
 
   sync() {

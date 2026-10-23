@@ -17,7 +17,7 @@ function baseHp(lv, j) {
 }
 
 // Everything the battle rules need about the player, from progress (levels, stats) and gear.
-// gear: { atk, wlv (weapon level, 0 = bare hands), def, mastery (flat ATK), aspdRate (1 = normal) }
+// gear: { atk, wlv (weapon level, 0 = bare hands), def, mastery (flat ATK), aspdRate (1 = normal), hit, flee }
 export function derive(prog, gear) {
   const s = (k) => prog.total(k), lv = prog.baseLv, j = JOB_RULES[prog.job];
   const pow = s('pow'), qkn = s('qkn'), end = s('end'), knl = s('knl'), fns = s('fns'), ftn = s('ftn');
@@ -30,8 +30,8 @@ export function derive(prog, gear) {
     wlv: gear.wlv || 0,
     fns,
     mastery: gear.mastery || 0,
-    hit: lv + fns,
-    flee: lv + qkn,
+    hit: lv + fns + (gear.hit || 0),
+    flee: lv + qkn + (gear.flee || 0),
     crit: (10 + Math.floor(ftn * 10 / 3)) / 10,  // %
     dodge: (ftn + 10) / 10,                       // % perfect dodge
     def: clamp(gear.def || 0, 0, 100),            // hard DEF from equipment
@@ -50,11 +50,11 @@ const playerSoftDef = (end) => Math.floor(end * 0.3) + rnd(Math.max(0, Math.floo
 // A monster's VIT soft DEF, rolled per hit
 const mobSoftDef = (vit) => { const r = Math.floor(vit / 20) ** 2; return vit + (r > 0 ? rnd(r) : 0); };
 
-// The player hits a monster. mult = skill damage % / 100, hitMult = skill bonus on hit chance.
-// Returns { miss, crit, dmg }.
-export function playerAttack(ps, md, mult = 1, hitMult = 1) {
+// The player hits a monster. mult = damage % / 100 (skill and buffs), hitMult = skill bonus on hit
+// chance, skill = a skill attack (those never crit). Returns { miss, crit, dmg }.
+export function playerAttack(ps, md, mult = 1, hitMult = 1, skill = false) {
   const mflee = md.lv + md.agi;
-  const crit = mult === 1 && Math.random() * 100 < ps.crit; // skills never crit
+  const crit = !skill && Math.random() * 100 < ps.crit;
   if (!crit) {
     const hit = clamp((80 + ps.hit - mflee) * hitMult, 5, 100);
     if (Math.random() * 100 >= hit) return { miss: true, crit: false, dmg: 0 };

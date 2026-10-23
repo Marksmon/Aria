@@ -36,25 +36,25 @@ export const NPCS = {
 export const QUESTS = {
   slimes: {
     title: 'The Green Blight', kind: 'kill', mob: 'slime', n: 5, lv: 1,
-    intro: 'Green Slimes have been nibbling at our supplies. Chase off five of them in the Mossy Grove.',
+    intro: 'Green Slimes have been nibbling at our supplies. Chase off five of them in Mosvangr.',
     thanks: 'Ha! That will teach them. Here, take these draughts for your troubles.',
     reward: { xp: 12, items: { potion: 2 } },
   },
   crabs: {
     title: 'Claws of the Fen', kind: 'kill', mob: 'crab', n: 4, lv: 5,
-    intro: 'Mudcrabs snap at anyone who goes near the Fen Shore. Beat four of them. Watch for their charge!',
+    intro: 'Mudcrabs snap at anyone who goes near Fenstrand. Beat four of them. Watch for their charge!',
     thanks: 'The shore is safe to walk again. Well done.',
     reward: { xp: 60, items: { potion: 1, shell: 3 } },
   },
   beetles: {
     title: 'Wrath of the Stone-Backs', kind: 'kill', mob: 'beetle', n: 5, lv: 14,
-    intro: 'Pebble Beetles are rolling down from Ember Ridge. They hit hard, so bring good armor. Five should do.',
+    intro: 'Pebble Beetles are rolling down from Glodberg. They hit hard, so bring good armor. Five should do.',
     thanks: 'Tough as stone, and yet here you are. Take these.',
     reward: { xp: 500, items: { potion: 3 } },
   },
   mushlings: {
     title: 'The Rot of Myrkvid', kind: 'kill', mob: 'mushling', n: 6, lv: 10,
-    intro: 'The Old Hollow was called Myrkvid once, the dark wood. Its Mushlings spread their spores further each night. Thin them out: six of them.',
+    intro: 'The dale of Myrkdal was called Myrkvid once, the dark wood. Its Mushlings spread their spores further each night. Thin them out: six of them.',
     thanks: 'The air already smells cleaner. You have become a true guardian of Aria.',
     reward: { xp: 250, items: { potion: 2, glow: 4 } },
   },
@@ -66,7 +66,7 @@ export const QUESTS = {
   },
   stew: {
     title: "The Jarl's Stew", kind: 'fetch', items: { spore: 5 }, lv: 8,
-    intro: 'My famous stew, fit for a jarl, needs five Spore Caps from the Old Hollow. Mind the spores!',
+    intro: 'My famous stew, fit for a jarl, needs five Spore Caps from Myrkdal. Mind the spores!',
     thanks: 'Smell that? Pure Hollow. Take a bowl, and these.',
     reward: { xp: 150, items: { potion: 2 } },
   },
@@ -96,7 +96,7 @@ export const QUESTS = {
   },
   blues: {
     title: 'Twin-Born of the Fen', kind: 'kill', mob: 'blueSlime', n: 5, lv: 4,
-    intro: 'The Blue Slimes on the Fen Shore split in two when you hit them! Beat five big ones.',
+    intro: 'The Blue Slimes on Fenstrand split in two when you hit them! Beat five big ones.',
     thanks: 'Splitting slimes, noted on the map. Here, a little dew for you.',
     reward: { xp: 35, items: { dew: 3 } },
   },

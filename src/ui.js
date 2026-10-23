@@ -45,7 +45,7 @@ export class UI {
     this.lastInfo = key;
     const el = this.infoEl;
     el.querySelector('.jobname').textContent = jobName;
-    el.querySelector('.lv').textContent = `Base Lv ${prog.baseLv} · Job Lv ${prog.jobLv}`;
+    el.querySelector('.lv').textContent = `Lv ${prog.baseLv} · Job ${prog.jobLv}`;
     el.querySelector('.who em').hidden = prog.statPoints <= 0 && prog.skillPoints <= 0;
     const bar = (cls, v, max, label) => {
       el.querySelector(`.${cls} i`).style.width = `${(v / max) * 100}%`;

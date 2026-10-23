@@ -82,11 +82,14 @@ export class FX {
   }
 
   // Floating battle text, Ragnarok style: numbers rise and fade above whoever was hit.
-  // kind: dealt (white), crit (big yellow), taken (red), heal (green), miss, level, job
-  number(x, y, z, text, kind = 'dealt') {
+  // kind: dealt (white), crit (big yellow), taken (red), heal (green), sp (blue), miss, level, job,
+  // skill (a skill's name as it goes off), mvp (the MVP announcement, big and long)
+  // follow: something with x and z (the player) for the text to stay over
+  number(x, y, z, text, kind = 'dealt', follow = null) {
     const look = {
       dealt: ['#ffffff', 30], crit: ['#ffe14a', 40], taken: ['#ff5a4a', 30], heal: ['#7cf08a', 30],
-      miss: ['#d8dde6', 24], level: ['#ffe37a', 30], job: ['#9fd4ff', 28],
+      miss: ['#d8dde6', 24], level: ['#ffe37a', 30], job: ['#9fd4ff', 28], sp: ['#7ab8ff', 30],
+      skill: ['#ffb35a', 26], mvp: ['#ffd23a', 24],
     }[kind] || ['#ffffff', 30];
     const c = document.createElement('canvas');
     const g = c.getContext('2d');
@@ -108,7 +111,7 @@ export class FX {
     const h = 0.36 * (look[1] / 30);
     s.scale.set(h * c.width / c.height, h, 1);
     s.position.set(x + (Math.random() - 0.5) * 0.3, y, z);
-    this.live.push({ s, t: 0, life: kind === 'level' || kind === 'job' ? 1.6 : 0.95, kind: 'number', tex, y0: y, pop: kind === 'crit' });
+    this.live.push({ s, t: 0, life: { level: 1.6, job: 1.6, skill: 1.1, mvp: 4 }[kind] || 0.95, kind: 'number', tex, y0: y, pop: kind === 'crit', follow });
   }
 
   // tapped tile: a square that fades on the ground, like Ragnarok's cell cursor
@@ -137,6 +140,12 @@ export class FX {
     if (i < 0) return;
     this.release(p.s);
     this.pickups.splice(i, 1);
+  }
+
+  // leaving a map: whatever lay on the ground is gone
+  clearPickups() {
+    for (const p of this.pickups) this.release(p.s);
+    this.pickups = [];
   }
 
   // item: id, tex: texture. Pickups stay on the ground until tapped (see take)
@@ -173,7 +182,8 @@ export class FX {
         const sc = 1.3 + k * 0.5;
         e.s.scale.set(sc, sc, 1);
       } else if (e.kind === 'number') {
-        e.s.position.y = e.y0 + 0.9 * (1 - (1 - k) * (1 - k));
+        e.s.position.y = e.y0 + (e.follow ? 0.3 : 0.9) * (1 - (1 - k) * (1 - k));
+        if (e.follow) { e.s.position.x = e.follow.x; e.s.position.z = e.follow.z; }
         e.s.material.opacity = k < 0.6 ? 1 : 1 - (k - 0.6) / 0.4;
         if (e.pop && k < 0.15) e.s.scale.multiplyScalar(1 + (0.15 - k) * 0.6);
       } else if (e.kind === 'puff') {
