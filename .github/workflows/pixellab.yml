@@ -1,0 +1,47 @@
+name: PixelLab sprites
+
+# Runs the sprite generator on GitHub's servers (they can reach the PixelLab API).
+# Results are committed to the `art` branch under art/pixellab/.
+on:
+  workflow_dispatch:
+    inputs:
+      task:
+        description: "What to run (probe | generate)"
+        default: probe
+        required: true
+  push:
+    branches: [pixellab-run]
+
+permissions:
+  contents: write
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run
+        env:
+          PIXELLAB_API_KEY: ${{ secrets.PIXELLAB_API_KEY }}
+          TASK: ${{ github.event.inputs.task || 'generate' }}
+        run: |
+          pip install requests >/dev/null
+          mkdir -p out
+          python build-tools/pixellab.py "$TASK" out 2>&1 | tee out/log.txt
+      - name: Commit results to the art branch
+        if: always()
+        run: |
+          git config user.name "aibachu-bot"
+          git config user.email "aibachu-bot@users.noreply.github.com"
+          git fetch origin art || true
+          mkdir -p /tmp/res && cp -r out/. /tmp/res/
+          if git rev-parse --verify origin/art >/dev/null 2>&1; then git checkout -B art origin/art; else git checkout --orphan art && git rm -rf . >/dev/null; fi
+          mkdir -p art/pixellab && cp -r /tmp/res/. art/pixellab/
+          git add art
+          git commit -m "PixelLab: ${TASK:-generate} run ${{ github.run_number }}" || echo "nothing to commit"
+          git push origin art
+        env:
+          TASK: ${{ github.event.inputs.task || 'generate' }}
