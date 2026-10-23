@@ -1,7 +1,8 @@
 """Pack PixelLab headgear (art/pixellab/headgear/<id>/<direction>.png) into src/art/hg_<id>.png + .json.
 
-Each sheet is one row of eight cells (down, downright, right, upright, up, upleft, left, downleft),
-every direction cropped to the union of the visible pixels, with stray specks removed. The JSON
+Each sheet has a column per direction (down, downright, right, upright, up, upleft, left, downleft)
+and a row per animation frame (one row for a still piece), every cell cropped to the union of the
+visible pixels, with stray specks removed. The JSON
 lists each direction's cell, the box its pixels fill and its rim: the widest row in the bottom part
 of the piece (a hat's brim, a pair of glasses' frame), [centre x, width, y]. The game sizes the rim
 to the head and sits it on the head's attach line, so horns or plumes don't throw the fit off.
@@ -65,24 +66,36 @@ def rim(im, band=0.35):
 
 def pack(pid):
     base = os.path.join(SRC, pid)
-    ims = {ours: clean(Image.open(os.path.join(base, f"{d}.png")).convert("RGBA")) for d, ours in DIRS.items()
-           if os.path.exists(os.path.join(base, f"{d}.png"))}
+    load = lambda name: clean(Image.open(os.path.join(base, name)).convert("RGBA"))
+    ims, frames = {}, {}
+    for d, ours in DIRS.items():
+        if not os.path.exists(os.path.join(base, f"{d}.png")):
+            continue
+        ims[ours] = load(f"{d}.png")
+        n = 0
+        while os.path.exists(os.path.join(base, f"{d}_{n}.png")):
+            n += 1
+        frames[ours] = [load(f"{d}_{i}.png") for i in range(n)] or [ims[ours]]
     boxes = {k: im.getbbox() for k, im in ims.items() if im.getbbox()}
-    x0 = min(b[0] for b in boxes.values()); y0 = min(b[1] for b in boxes.values())
-    x1 = max(b[2] for b in boxes.values()); y1 = max(b[3] for b in boxes.values())
+    every = [f.getbbox() for fs in frames.values() for f in fs if f.getbbox()] + list(boxes.values())
+    x0 = min(b[0] for b in every); y0 = min(b[1] for b in every)
+    x1 = max(b[2] for b in every); y1 = max(b[3] for b in every)
     cw, ch = x1 - x0, y1 - y0
     order = list(DIRS.values())
-    sheet = Image.new("RGBA", (cw * len(order), ch))
+    rows = max(len(fs) for fs in frames.values())
+    sheet = Image.new("RGBA", (cw * len(order), ch * rows))
     layout = {"cw": cw, "ch": ch, "dirs": {}}
     for i, k in enumerate(order):
         if k not in boxes:
             continue
-        sheet.paste(ims[k].crop((x0, y0, x1, y1)), (i * cw, 0))
+        for r, f in enumerate(frames[k]):
+            sheet.paste(f.crop((x0, y0, x1, y1)), (i * cw, r * ch))
         b = boxes[k]
-        layout["dirs"][k] = [i, b[0] - x0, b[1] - y0, b[2] - x0, b[3] - y0, *rim(ims[k].crop((x0, y0, x1, y1)))]
+        # [column, box (x0, y0, x1, y1), rim (cx, width, y), frame count]
+        layout["dirs"][k] = [i, b[0] - x0, b[1] - y0, b[2] - x0, b[3] - y0, *rim(ims[k].crop((x0, y0, x1, y1))), len(frames[k])]
     sheet.save(os.path.join(OUT, f"hg_{pid}.png"), optimize=True)
     json.dump(layout, open(os.path.join(OUT, f"hg_{pid}.json"), "w"))
-    print(pid, "cell", cw, "x", ch, "directions", len(layout["dirs"]))
+    print(pid, "cell", cw, "x", ch, "directions", len(layout["dirs"]), "frames", rows)
 
 
 for pid in sys.argv[1:] or sorted(os.listdir(SRC)):

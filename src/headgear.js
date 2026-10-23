@@ -18,6 +18,7 @@ const LAYOUTS = import.meta.glob('./art/hg_*.json', { eager: true, import: 'defa
 // A piece can tune its own fit (see TUNE): w and at as above, dx / dy to nudge it (in head
 // widths / head heights), and hair: hide the wearer's hair above that line (same scale as at),
 // so spikes don't poke through a helmet. 0 leaves the hair alone.
+const ANIM_FPS = 9;
 const FIT = { head: { w: 0.86, at: 0.47, dx: 0, dy: 0, hair: 0 }, face: { w: 0.78, at: 0.82, dx: 0, dy: 0, hair: 0 } };
 export const TUNE = {
   horned_helm: { hair: 0.44 },          // a full helm: the hair above the rim goes
@@ -26,6 +27,7 @@ export const TUNE = {
   flower_wreath: { at: 0.3, hair: 0 },  // rests on the hair
   round_glasses: {},
   eyepatch: {},
+  flame_circlet: { at: 0.4, hair: 0.3 },
 };
 const fitOf = (id) => ({ ...FIT[HEADGEAR[id].slot], ...TUNE[id] });
 
@@ -35,20 +37,25 @@ function imagePiece(id) {
   if (id in images) return images[id];
   const url = SHEETS[`./art/hg_${id}.png`], L = LAYOUTS[`./art/hg_${id}.json`];
   if (!url || !L) return (images[id] = null);
+  // tex[dir] = one texture per animation frame (just one for a still piece)
   const piece = { L, tex: {}, loaded: false, img: new Image() };
-  for (const dir of Object.keys(L.dirs)) {
-    const c = document.createElement('canvas');
-    c.width = L.cw; c.height = L.ch;
-    const t = new THREE.CanvasTexture(c);
-    t.colorSpace = THREE.SRGBColorSpace;
-    t.magFilter = t.minFilter = THREE.NearestFilter;
-    t.generateMipmaps = false;
-    piece.tex[dir] = t;
+  for (const [dir, cell] of Object.entries(L.dirs)) {
+    piece.tex[dir] = Array.from({ length: cell[8] || 1 }, () => {
+      const c = document.createElement('canvas');
+      c.width = L.cw; c.height = L.ch;
+      const t = new THREE.CanvasTexture(c);
+      t.colorSpace = THREE.SRGBColorSpace;
+      t.magFilter = t.minFilter = THREE.NearestFilter;
+      t.generateMipmaps = false;
+      return t;
+    });
   }
   piece.img.onload = () => {
     for (const [dir, [i]] of Object.entries(L.dirs)) {
-      piece.tex[dir].image.getContext('2d').drawImage(piece.img, i * L.cw, 0, L.cw, L.ch, 0, 0, L.cw, L.ch);
-      piece.tex[dir].needsUpdate = true;
+      piece.tex[dir].forEach((t, f) => {
+        t.image.getContext('2d').drawImage(piece.img, i * L.cw, f * L.ch, L.cw, L.ch, 0, 0, L.cw, L.ch);
+        t.needsUpdate = true;
+      });
     }
     piece.loaded = true;
   };
@@ -152,6 +159,7 @@ export const HEADGEAR = {
       for (const s of [-1, 1]) fill(g, '#d8d0bc', () => { g.moveTo(23 + s * 15, 18); g.quadraticCurveTo(23 + s * 22, 12, 23 + s * 21, 2); g.quadraticCurveTo(23 + s * 17, 10, 23 + s * 14, 14); g.closePath(); });
     },
   },
+  flame_circlet: { slot: 'head' }, // PixelLab only, animated
   round_glasses: {
     slot: 'face', size: [34, 12], anchor: [17, 6],
     front: (g) => {
@@ -189,7 +197,7 @@ export const HEADGEAR = {
 const cache = {};
 export function headgearViews(id) {
   const def = HEADGEAR[id];
-  if (!def) return null;
+  if (!def?.front) return null; // made only with PixelLab
   if (cache[id]) return cache[id];
   const [w, h] = def.size;
   const make = (paint, mirror) => {
@@ -261,7 +269,8 @@ export class HeadLayer {
     const flip = dir.includes('left') ? -1 : 1; // nudges mirror with the facing
     const dx = ((h.x + fit.dx * flip * h.w) / fw - 0.5) * body.scale.x, dy = (1 - py / fh - body.center.y) * body.scale.y;
     this.cover = { cx: h.x + fit.dx * flip * h.w, half: (cell[6] * k) / upp / 2, y: py };
-    if (this.mat.map !== pc.tex[dir]) { if (!this.mat.map) this.mat.needsUpdate = true; this.mat.map = pc.tex[dir]; }
+    const fr = pc.tex[dir], t = fr[Math.floor(performance.now() / 1000 * ANIM_FPS) % fr.length]; // animated pieces loop
+    if (this.mat.map !== t) { if (!this.mat.map) this.mat.needsUpdate = true; this.mat.map = t; }
     this.sprite.scale.set(HW, HH, 1);
     this.sprite.center.set(ax / cw - dx / HW, (1 - ay / ch) - dy / HH);
     this.sprite.position.copy(body.position);

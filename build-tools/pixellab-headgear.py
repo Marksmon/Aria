@@ -6,7 +6,8 @@ head (see src/headgear.js), so one piece fits every job's sprite.
 
   python3 build-tools/pixellab-headgear.py art/pixellab/headgear horned_helm   (needs PIXELLAB_API_KEY)
 
-Results: <out>/<id>/<direction>.png for the eight directions, plus the layout and object info.
+Results: <out>/<id>/<direction>.png for the eight directions (and <direction>_<frame>.png for an
+animated piece), plus the layout and object info.
 """
 import base64, io, json, os, sys, time, zipfile
 import requests
@@ -26,6 +27,11 @@ PIECES = {
     "ember_crown": "a dark iron crown with three points, glowing orange ember gems and two small curved horns, item only",
     "round_glasses": "a pair of small round wire-rimmed glasses with pale blue lenses, item only",
     "eyepatch": "a black leather eyepatch on a thin black strap, item only",
+    "flame_circlet": "a thin dark iron circlet with a crest of bright orange and gold flames rising from it, item only, nobody wearing it",
+}
+# pieces that also get a looping animation (8 directions)
+ANIMS = {
+    "flame_circlet": "the flames flicker, dance and lick upward in a seamless loop while the circlet stays still",
 }
 
 
@@ -70,6 +76,16 @@ def wait(oid, limit=1500):
     return None
 
 
+def wait_job(jid, limit=3600):
+    t0 = time.time()
+    while time.time() - t0 < limit:
+        r = requests.get(f"{BASE}/background-jobs/{jid}", headers=H, timeout=60)
+        if r.ok and r.json().get("status") in ("completed", "failed"):
+            log(jid, r.json()["status"], int(time.time() - t0), "s")
+            return
+        time.sleep(15)
+
+
 def save(oid, dest):
     """Download the object's spritesheet (row 0 = its rotations) and cut it into one PNG per direction."""
     os.makedirs(dest, exist_ok=True)
@@ -87,6 +103,13 @@ def save(oid, dest):
     for i, d in enumerate(dirs):
         sheet.crop((i * cw, 0, (i + 1) * cw, ch)).save(os.path.join(dest, f"{d}.png"))
         log("saved", dest, d)
+    for row in ss["rows"]:  # animation rows: one per direction, frames left to right
+        if row.get("type") == "rotations" or not row.get("direction"):
+            continue
+        y = row["row"] * ch
+        for f in range(row.get("frame_count", 0)):
+            sheet.crop((f * cw, y, (f + 1) * cw, y + ch)).save(os.path.join(dest, f"{row['direction']}_{f}.png"))
+        log("saved", dest, row["direction"], row.get("frame_count"), "frames")
 
 
 DIR_ORDER = ["south", "south-east", "east", "north-east", "north", "north-west", "west", "south-west"]
@@ -104,6 +127,10 @@ if __name__ == "__main__":
         queued[pid] = res.get("object_id")
     for pid, oid in queued.items():
         j = wait(oid, limit=3600)
+        if j and j.get("status") == "completed" and pid in ANIMS:
+            res = post(f"/objects/{oid}/animations", {"animation_description": ANIMS[pid], "directions": DIR_ORDER, "frame_count": 8})
+            for jid in res.get("background_job_ids", []):
+                wait_job(jid)
         if j and j.get("status") == "completed":
             os.makedirs(out, exist_ok=True)
             json.dump(j, open(os.path.join(out, pid + ".json"), "w"), indent=1)

@@ -48,6 +48,7 @@ export const ITEMS = {
 
   // headgear: worn on the head (head) or face, and seen on your character (see headgear.js)
   ember_crown:  { type: 'equip', slot: 'head', rare: true, name: "Jarl's Ember Crown", def: 4, stats: { pow: 2, end: 1 }, desc: 'A horned iron crown, still warm.', from: 'the Ember Jarl' },
+  flame_circlet: { type: 'equip', slot: 'head', rare: true, name: 'Flame Circlet', def: 2, stats: { pow: 1, ftn: 1 }, desc: 'An iron circlet crowned with living flame, forged around an Ember Heart. POW +1, FTN +1.' },
   woven_cap:    { type: 'equip', slot: 'head', name: 'Woven Cap', def: 1, desc: 'Leaves woven tight, with a sturdy band.' },
   flower_wreath: { type: 'equip', slot: 'head', name: 'Flower Wreath', def: 0, flee: 1, desc: 'Meadow flowers on a green ring. +1 FLEE.' },
   horned_helm:  { type: 'equip', slot: 'head', name: 'Horned Helm', def: 3, desc: 'Iron, brass and two proud horns.' },
@@ -103,6 +104,7 @@ export const RECIPES = [
   { item: 'woven_cap', lv: 2, cost: { leaf: 5, seed: 2 } },
   { item: 'eyepatch', lv: 3, cost: { gel: 2, leaf: 2 } },
   { item: 'round_glasses', lv: 5, cost: { dew: 3, stone: 2 } },
+  { item: 'flame_circlet', lv: 12, cost: { ember_heart: 1, glow: 6, stone: 6 } },
   { item: 'horned_helm', lv: 8, cost: { stone: 6, shell: 4, glow: 1 } },
   { item: 'sprout_charm', lv: 2, cost: { seed: 5, leaf: 3 } },
   { item: 'spore_charm',  lv: 4, cost: { spore: 5, gel: 3 } },
