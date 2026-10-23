@@ -164,7 +164,7 @@ export function buildCity(ctx) {
   const faded = (m) => {
     if (!fadeMats.has(m)) {
       const f = m.clone();
-      f.transparent = true; f.opacity = 0.32; f.depthWrite = false;
+      f.transparent = true; f.opacity = 0.18; f.depthWrite = false;
       fadeMats.set(m, f);
     }
     return fadeMats.get(m);
