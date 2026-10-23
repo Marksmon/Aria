@@ -7,7 +7,7 @@ with the frame size and where each animation lives. Frames are cropped to one sh
 character, kept horizontally centered on the body so the sprite anchor stays under the feet.
 """
 import json, os, sys
-from PIL import Image, ImageOps
+from PIL import Image, ImageFilter, ImageOps
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC = os.path.join(ROOT, 'art', 'pixellab')
@@ -15,12 +15,21 @@ OUT = os.path.join(ROOT, 'src', 'art')
 DIRS = {'south': 'down', 'east': 'right', 'north': 'up', 'west': 'left'}
 MIRROR = {'right': 'left', 'left': 'right'}
 
-# name -> options. 'mirror' lists (anim, direction) pairs drawn as the mirror of the opposite side:
-# PixelLab drew the player's east attack without the sword, so it reuses the west one.
+# name -> options.
+#   mirror:  (anim, direction) pairs drawn as the mirror of the opposite side
+#   outline: (pixels, colour) solid border traced around the silhouette, Ragnarok Online style
 CHARS = {
-    'player': {'mirror': {('attack', 'right')}},
+    'player': {'mirror': {('attack', 'right')}, 'outline': (1, (34, 22, 14))},
     'slime': {},
 }
+
+
+def outline(f, width, colour):
+    solid = f.getchannel('A').point(lambda a: 255 if a >= 128 else 0)
+    ring = solid.filter(ImageFilter.MaxFilter(2 * width + 1))
+    out = Image.new('RGBA', f.size, colour + (0,))
+    out.putalpha(ring)
+    return Image.alpha_composite(out, f)
 
 
 def load(name):
@@ -40,6 +49,10 @@ def pack(name, opts):
     art = load(name)
     for anim, d in opts.get('mirror', ()):
         art[d][anim] = [ImageOps.mirror(f) for f in art[MIRROR[d]][anim]]
+    if 'outline' in opts:
+        for d in art.values():
+            for anim, fs in d.items():
+                d[anim] = [outline(f, *opts['outline']) for f in fs]
 
     every = [f for d in art.values() for fs in d.values() for f in fs]
     W, H = every[0].size

@@ -1,8 +1,10 @@
 """PixelLab sprite generator. Runs inside GitHub Actions (GitHub's servers can reach the API).
 
-  probe     save the API schema + account balance
-  generate  create the player + Green Slime with walk and attack animations, then download
-            each character's zip into <out>/<name>/
+  probe             save the API schema + account balance
+  generate [names]  create the characters (default: all) with their animations, then download
+                    each character's zip into <out>/<name>/
+
+  python3 build-tools/pixellab.py generate art/pixellab player   (needs PIXELLAB_API_KEY)
 
 Results are committed to the `art` branch by the workflow.
 """
@@ -10,25 +12,29 @@ import io, json, os, sys, time, zipfile
 import requests
 
 BASE = "https://api.pixellab.ai/v2"
-task, out = sys.argv[1], sys.argv[2]
+task, out, only = sys.argv[1], sys.argv[2], sys.argv[3:]
 key = os.environ.get("PIXELLAB_API_KEY", "")
 H = {"Authorization": f"Bearer {key}", "Content-Type": "application/json"}
 DIRS = ["south", "east", "north", "west"]
 
 STYLE = "cute chibi fantasy RPG sprite in the style of classic 2000s MMORPGs, soft shading"
+# Ragnarok Online look: big head, small body, bold dark outline, soft cel shading
+RO_STYLE = ("Ragnarok Online style 2D sprite, chibi with a big head and large anime eyes, small body, "
+            "bold dark brown outline around the whole figure, soft painterly cel shading, warm colors")
 
 CHARACTERS = [
     {
         "name": "player",
         "endpoint": "/create-character-with-4-directions",
         "body": {
-            "description": "young adventurer with messy orange-brown hair, blue tunic with a brown belt, "
-                           "red scarf, brown boots, small sword at the hip. " + STYLE,
+            "description": "young novice swordsman with spiky orange-brown hair, blue tunic with a brown belt, "
+                           "red scarf, brown boots, short sword. " + RO_STYLE,
             "image_size": {"width": 64, "height": 64},
             "view": "low top-down",
-            "proportions": {"type": "preset", "name": "chibi"},
+            "proportions": {"type": "custom", "head_size": 1.5, "arms_length": 0.9, "legs_length": 0.8,
+                            "shoulder_width": 0.9, "hip_width": 0.9},
             "outline": "single color black outline",
-            "shading": "basic shading",
+            "shading": "medium shading",
             "detail": "medium detail",
         },
         "animations": [
@@ -126,6 +132,8 @@ if task == "generate":
     manifest = {}
     for ch in CHARACTERS:
         name = ch["name"]
+        if only and name not in only:
+            continue
         try:
             res = post(ch["endpoint"], ch["body"])
             cid = res["character_id"]
