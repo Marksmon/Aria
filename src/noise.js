@@ -52,3 +52,10 @@ export const sstep = (e0, e1, x) => {
   return t * t * (3 - 2 * t);
 };
 export const lerp = (a, b, t) => a + (b - a) * t;
+
+// Which of the four sprite directions a world-space facing shows as, seen from the camera.
+// cam = { fx, fz, rx, rz } (camera forward and right on the ground).
+export function dirFor(x, z, cam) {
+  const f = x * cam.fx + z * cam.fz, r = x * cam.rx + z * cam.rz;
+  return Math.abs(r) > Math.abs(f) * 0.9 ? (r > 0 ? 'right' : 'left') : (f > 0 ? 'up' : 'down');
+}

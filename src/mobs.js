@@ -1,7 +1,7 @@
 // Small monsters with hidden HP. No health bars: hits flash white and knock back,
 // below 30% HP they wobble and slow down, at 0 they vanish in a puff.
 import * as THREE from 'three';
-import { mulberry32 } from './noise.js';
+import { mulberry32, dirFor } from './noise.js';
 
 const CAMP_SAFE = 8.5; // monsters never enter the camp circle
 
@@ -19,6 +19,7 @@ export const MOB_DEFS = {
 
 const HEART_CHANCE = 0.15;
 const RESPAWN = 60;
+const ATTACK_ANIM = 0.5; // PixelLab monsters play their attack animation for this long
 
 class Mob {
   constructor(mgr, type, x, z) {
@@ -26,7 +27,7 @@ class Mob {
     this.type = type;
     this.def = MOB_DEFS[type];
     this.art = mgr.lib.mobs[this.def.art];
-    this.mat = new THREE.SpriteMaterial({ map: this.art.frames[0], alphaTest: 0.5 });
+    this.mat = new THREE.SpriteMaterial({ map: this.art.pixel ? this.art.anims.down.idle[0] : this.art.frames[0], alphaTest: 0.5 });
     if (!this.def.night) this.mgr.tint.push(this.mat); // wisps keep their own glow
     this.sprite = new THREE.Sprite(this.mat);
     this.sprite.center.set(0.5, 0.04);
@@ -58,8 +59,12 @@ class Mob {
     this.special = 0;    // charge / puff timer
     this.specialCd = 2;
     this.heading = { x: 0, z: 1 };
+    this.atkAnim = 0;
     this.sprite.visible = this.shadow.visible = true;
-    this.sprite.scale.set(d.w, d.w * this.art.aspect, 1);
+    if (this.art.pixel) {
+      const upp = d.w / this.art.body[0]; // def.w is the body width
+      this.sprite.scale.set(this.art.fw * upp, this.art.fh * upp, 1);
+    } else this.sprite.scale.set(d.w, d.w * this.art.aspect, 1);
     this.mat.rotation = 0;
   }
 
@@ -106,6 +111,7 @@ class Mob {
     this.angry -= dt;
     this.specialCd -= dt;
     this.wanderT -= dt;
+    this.atkAnim -= dt;
 
     if (Math.abs(this.knock.x) + Math.abs(this.knock.z) > 0.05) {
       this.tryMove(this.knock.x * dt, this.knock.z * dt);
@@ -136,7 +142,11 @@ class Mob {
     };
     const contact = () => {
       if (available && dist < d.reach + 0.3 && this.atkCd <= 0) {
-        if (p.takeDamage(d.dmg, this.x, this.z)) this.mgr.emit('attack', this);
+        if (p.takeDamage(d.dmg, this.x, this.z)) {
+          this.mgr.emit('attack', this);
+          this.atkAnim = ATTACK_ANIM;
+          if (dist > 0.01) this.heading = { x: dx / dist, z: dz / dist };
+        }
         this.atkCd = 1.2;
       }
     };
@@ -244,7 +254,8 @@ class Mob {
       frame = moving ? Math.floor(this.t * 7) % 2 : 0;
     }
     let tex;
-    if (this.flash > 0) tex = set.flash[frame % set.flash.length];
+    if (set.pixel) tex = this.pixelFrame(set, moving);
+    else if (this.flash > 0) tex = set.flash[frame % set.flash.length];
     else if (d.ai === 'skittish' && this.angry > 0) tex = set.angry[frame];
     else if (d.ai === 'puffer' && this.special > 0) tex = set.puff ? set.puff[0] : set.frames[frame];
     else if (low && set.low) tex = set.low[frame];
@@ -255,6 +266,19 @@ class Mob {
     const y = this.mgr.world.heightAt(this.x, this.z);
     this.sprite.position.set(this.x, y + lift, this.z);
     this.shadow.position.set(this.x, y + 0.03, this.z);
+  }
+
+  // PixelLab sets: frames by facing (relative to the camera) and by what the monster is doing
+  pixelFrame(set, moving) {
+    const dir = dirFor(this.heading.x, this.heading.z, this.mgr.cam);
+    const A = (this.flash > 0 ? set.flash : set.anims)[dir];
+    let list = A.idle, k = 0;
+    if (this.atkAnim > 0 && A.attack) { list = A.attack; k = 1 - this.atkAnim / ATTACK_ANIM; }
+    else if (moving && this.def.ai === 'hopper' && A.hop) {
+      const ph = this.hop % 1;
+      if (ph < 0.55) { list = A.hop; k = ph / 0.55; }
+    } else if (moving && A.walk) { list = A.walk; k = (this.t * 1.6) % 1; }
+    return list[Math.min(list.length - 1, Math.floor(k * list.length))];
   }
 }
 
@@ -269,6 +293,7 @@ export class MobManager {
     this.tint = [];
     this.handlers = {};
     this.night = false;
+    this.cam = { fx: 0, fz: -1, rx: 1, rz: 0 }; // camera basis, set by the game each frame
     const sg = new THREE.PlaneGeometry(1, 0.6);
     sg.rotateX(-Math.PI / 2);
     this.shadowGeo = sg;

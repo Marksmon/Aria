@@ -4,8 +4,9 @@ A small 2.5D open-world fantasy RPG for phones, in the spirit of old-school Ragn
 painted 2D sprites standing in a 3D world. You camp in the valley of Aibachu, explore freely,
 fight small monsters, collect what they drop and craft better gear at the campfire.
 
-Built with Three.js + Vite, wrapped as an Android app with Capacitor. All art is painted in
-code and all sound is synthesized, so the game ships as one offline HTML file.
+Built with Three.js + Vite, wrapped as an Android app with Capacitor. The player and the
+Green Slime are PixelLab pixel-art sprites; everything else is painted in code and all sound is
+synthesized, so the game ships as one offline HTML file.
 
 ## Get the APK
 
@@ -70,7 +71,9 @@ to restore hearts, save, and sleep until morning.
 - [x] **M4** Monsters in every zone
 - [x] **M5** Day/night, night spawns, sleeping, save
 - [x] **M6** Sound and music, title screen, polish
-- [ ] PixelLab sprites for the player and monsters (`build-tools/pixellab.py`, workflow "PixelLab sprites")
+- [x] **M7** PixelLab sprites: player (walk, sword attack) and Green Slime (hop, attack), 4 directions
+- [ ] **M8** Leveling and equipment
+- [ ] **M9** Camp NPCs and quests
 
 ## Dev
 
@@ -82,4 +85,18 @@ npm run build    # single-file build in dist/index.html
 
 Code map: `world.js` (terrain, zones, props), `player.js`, `mobs.js` (all monster AI),
 `items.js` + `inventory.js` + `menus.js` (loot and crafting), `daynight.js`, `audio.js`,
-`sprites.js` (all placeholder art — swap any sprite without touching game logic).
+`sprites.js` (painted art plus the PixelLab sheets — swap any sprite without touching game logic).
+
+## PixelLab art
+
+Raw exports live in `art/pixellab/<name>/` (from `build-tools/pixellab.py`, run locally with
+`PIXELLAB_API_KEY` set, or through the "PixelLab sprites" workflow). Pack them into the sheets the
+game loads with:
+
+```bash
+python3 build-tools/pack-sprites.py   # writes src/art/<name>.png + .json
+```
+
+Each character needs `idle` (PixelLab rotations) in 4 directions; the player also uses `walk` and
+`attack`, monsters use `hop` or `walk` and `attack`. A monster switches to its PixelLab sheet when
+its entry in `createSprites()` is a `pixelSet(...)`.

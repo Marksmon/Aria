@@ -1,8 +1,12 @@
-// All art is painted into canvases at startup. Each sprite is drawn bottom-centered
-// so it stands on the ground. Swap any of these for real art later by loading an
-// image into the same texture slot — sizes are in world units, not pixels.
+// Most art is painted into canvases at startup; the player and Green Slime are PixelLab
+// sprite sheets (src/art, packed by build-tools/pack-sprites.py). Each sprite is drawn
+// bottom-centered so it stands on the ground. Sizes are in world units, not pixels.
 import * as THREE from 'three';
 import { mulberry32 } from './noise.js';
+import playerSheet from './art/player.png';
+import playerLayout from './art/player.json';
+import slimeSheet from './art/slime.png';
+import slimeLayout from './art/slime.json';
 
 const OUT = '#2e2118';
 const TAU = Math.PI * 2;
@@ -78,138 +82,6 @@ function trunk(g, x, top, bottom, w, col = '#7a5232', dark = '#5a3a22') {
   poly(g, [[x + w * 0.05, top + 2], [x + w * 0.45, top + 2], [x + w * 0.55, bottom - 2], [x + w * 0.1, bottom - 2]], dark, null);
   // root flare
   ell(g, x, bottom - 2, w * 0.9, 5, col);
-}
-
-// ---------- Player (chibi adventurer) ----------
-const SKIN = '#f7d6b5', HAIR = '#c9692f', HAIR_HI = '#e99a5a';
-const TUNIC = '#4a78b5', TUNIC_DK = '#36598c', BELT = '#6b4426', BOOT = '#4a3324', SCARF = '#c8463c';
-
-function drawPlayer(g, dir, frame) {
-  const step = frame === 1 ? 1 : frame === 2 ? -1 : 0;
-  const bob = frame === 1 || frame === 2 ? -2 : 0;
-  const side = dir === 'right';
-  const attack = frame === 3;
-
-  // legs
-  if (side) {
-    const back = 58 - step * 7, front = 66 + step * 7;
-    rrect(g, back - 6, 118, 12, 28, 5, '#3b4f6e');
-    rrect(g, back - 7, 138, 15, 10, 4, BOOT);
-    rrect(g, front - 6, 118, 12, 28, 5, '#465d80');
-    rrect(g, front - 6, 138, 16, 10, 4, BOOT);
-  } else {
-    const lh = step === 1 ? -4 : 0, rh = step === -1 ? -4 : 0;
-    rrect(g, 49, 118 + lh, 13, 28, 5, '#465d80');
-    rrect(g, 47, 138 + lh, 16, 10, 4, BOOT);
-    rrect(g, 66, 118 + rh, 13, 28, 5, '#465d80');
-    rrect(g, 65, 138 + rh, 16, 10, 4, BOOT);
-  }
-
-  g.save();
-  g.translate(0, bob);
-
-  // back arm (side view)
-  if (side) ell(g, 58 - step * 6, 104, 7, 12, TUNIC_DK);
-
-  // tunic
-  if (side) {
-    poly(g, [[48, 90], [80, 90], [86, 126], [44, 126]], TUNIC);
-    poly(g, [[66, 92], [79, 92], [84, 124], [68, 124]], TUNIC_DK, null);
-  } else {
-    poly(g, [[44, 90], [84, 90], [90, 126], [38, 126]], TUNIC);
-    poly(g, [[66, 92], [83, 92], [88, 124], [68, 124]], TUNIC_DK, null);
-  }
-  rrect(g, side ? 46 : 40, 108, side ? 38 : 48, 7, 3, BELT, OUT, 2);
-  if (!side && dir === 'down') rrect(g, 60, 107, 8, 9, 2, '#e3b341', OUT, 2);
-
-  // arms
-  if (side) {
-    ell(g, 70 + step * 6, 104, 7, 12, TUNIC);
-    ell(g, 71 + step * 7, 116, 5, 5, SKIN);
-  } else {
-    ell(g, 38, 103 - step * 3, 7, 12, TUNIC);
-    ell(g, 90, 103 + step * 3, 7, 12, TUNIC);
-    ell(g, 38, 115 - step * 3, 5, 5, SKIN);
-    ell(g, 90, 115 + step * 3, 5, 5, SKIN);
-  }
-
-  // scarf
-  ell(g, 64, 89, side ? 18 : 23, 7, SCARF);
-  if (dir === 'up') rrect(g, 58, 90, 11, 20, 4, SCARF);
-  if (side) rrect(g, 42, 88, 14, 7, 3, SCARF);
-
-  if (attack && dir === 'up') sword(g, 90, 98, 0.45);
-
-  // head
-  ell(g, 64, 60, 30, 28, SKIN);
-
-  if (dir === 'down') {
-    g.beginPath();
-    g.moveTo(33, 64);
-    g.bezierCurveTo(28, 20, 100, 20, 95, 64);
-    g.lineTo(88, 54); g.lineTo(81, 63); g.lineTo(74, 50); g.lineTo(66, 61);
-    g.lineTo(58, 49); g.lineTo(50, 62); g.lineTo(42, 52); g.closePath();
-    g.fillStyle = HAIR; g.fill(); g.strokeStyle = OUT; g.lineWidth = 3; g.stroke();
-    ell(g, 34, 70, 6, 12, HAIR);
-    ell(g, 94, 70, 6, 12, HAIR);
-    g.beginPath(); g.arc(56, 40, 12, Math.PI * 1.1, Math.PI * 1.6);
-    g.strokeStyle = HAIR_HI; g.lineWidth = 4; g.stroke();
-    // face
-    ell(g, 53, 71, 4.5, 6.5, '#2a2438', null);
-    ell(g, 75, 71, 4.5, 6.5, '#2a2438', null);
-    circleFill(g, 51.5, 68.5, 1.8, '#fff');
-    circleFill(g, 73.5, 68.5, 1.8, '#fff');
-    ell(g, 45, 79, 5, 3, 'rgba(235,110,110,.45)', null);
-    ell(g, 83, 79, 5, 3, 'rgba(235,110,110,.45)', null);
-    g.beginPath(); g.arc(64, 80, 3, 0.2, Math.PI - 0.2);
-    g.strokeStyle = OUT; g.lineWidth = 2; g.stroke();
-  } else if (dir === 'up') {
-    ell(g, 64, 58, 31, 30, HAIR);
-    poly(g, [[38, 74], [44, 86], [52, 76], [60, 88], [68, 76], [76, 88], [84, 76], [90, 84], [92, 70]], HAIR);
-    ell(g, 64, 60, 24, 22, HAIR, null);
-    g.beginPath(); g.arc(58, 44, 14, Math.PI * 1.1, Math.PI * 1.7);
-    g.strokeStyle = HAIR_HI; g.lineWidth = 4; g.stroke();
-  } else {
-    // facing right
-    g.beginPath();
-    g.moveTo(38, 82);
-    g.bezierCurveTo(22, 40, 50, 18, 78, 30);
-    g.bezierCurveTo(92, 38, 96, 48, 94, 58);
-    g.lineTo(86, 52); g.lineTo(80, 60); g.lineTo(72, 48); g.lineTo(62, 58); g.lineTo(54, 62);
-    g.lineTo(50, 76); g.closePath();
-    g.fillStyle = HAIR; g.fill(); g.strokeStyle = OUT; g.lineWidth = 3; g.stroke();
-    g.beginPath(); g.arc(54, 42, 13, Math.PI * 1.1, Math.PI * 1.7);
-    g.strokeStyle = HAIR_HI; g.lineWidth = 4; g.stroke();
-    ell(g, 80, 71, 4, 6.5, '#2a2438', null);
-    circleFill(g, 78.8, 68.5, 1.6, '#fff');
-    ell(g, 84, 80, 4, 3, 'rgba(235,110,110,.45)', null);
-    ell(g, 58, 70, 5, 6, SKIN); // ear
-  }
-  if (attack && dir === 'down') sword(g, 92, 112, 2.5);
-  if (attack && dir === 'right') sword(g, 80, 106, Math.PI / 2);
-  g.restore();
-}
-
-// angle 0 = blade pointing up; (x, y) = the hand
-function sword(g, x, y, angle) {
-  g.save();
-  g.translate(x, y);
-  g.rotate(angle);
-  poly(g, [[-3.5, -6], [3.5, -6], [3.5, -38], [0, -46], [-3.5, -38]], '#e8eef5', OUT, 3);
-  g.beginPath(); g.moveTo(0, -8); g.lineTo(0, -40); g.strokeStyle = '#b9c6d6'; g.lineWidth = 1.5; g.stroke();
-  rrect(g, -10, -7, 20, 5, 2, '#e3b341', OUT, 2);
-  rrect(g, -2.5, -2, 5, 10, 2, '#6b4426', OUT, 2);
-  ell(g, 0, 9, 3.5, 3.5, '#e3b341', OUT, 2);
-  ell(g, 0, 0, 5.5, 5.5, SKIN, OUT, 2); // hand
-  g.restore();
-}
-
-function mirror(src) {
-  const { c, g } = mk(src.width, src.height);
-  g.translate(src.width, 0);
-  g.scale(-1, 1);
-  g.drawImage(src, 0, 0);
-  return c;
 }
 
 // ---------- Props ----------
@@ -718,6 +590,48 @@ function tex(canvas, opts = {}) {
   return t;
 }
 
+// A packed PixelLab sheet cut into textures: anims[dir][anim] = [tex], flash = white copies
+// for the hit flash. Frames start blank and fill in once the sheet image has loaded.
+// body = [w, h] in pixels of the standing character, used to size it in the world.
+function pixelSet(url, { fw, fh, body, anims }) {
+  const blank = () => {
+    const t = tex(mk(fw, fh).c);
+    t.magFilter = t.minFilter = THREE.NearestFilter;
+    t.generateMipmaps = false;
+    return t;
+  };
+  const set = { pixel: true, fw, fh, body, anims: {}, flash: {} };
+  const cuts = [];
+  for (const [dir, list] of Object.entries(anims)) {
+    set.anims[dir] = {};
+    set.flash[dir] = {};
+    for (const [anim, [row, n]] of Object.entries(list)) {
+      set.anims[dir][anim] = [];
+      set.flash[dir][anim] = [];
+      for (let i = 0; i < n; i++) {
+        const t = blank(), f = blank();
+        set.anims[dir][anim].push(t);
+        set.flash[dir][anim].push(f);
+        cuts.push([t, f, i * fw, row * fh]);
+      }
+    }
+  }
+  const img = new Image();
+  img.onload = () => {
+    for (const [t, f, x, y] of cuts) {
+      t.image.getContext('2d').drawImage(img, x, y, fw, fh, 0, 0, fw, fh);
+      const g = f.image.getContext('2d');
+      g.drawImage(t.image, 0, 0);
+      g.globalCompositeOperation = 'source-in';
+      g.fillStyle = '#ffffff';
+      g.fillRect(0, 0, fw, fh);
+      t.needsUpdate = f.needsUpdate = true;
+    }
+  };
+  img.src = url;
+  return set;
+}
+
 // w = world width; height follows canvas aspect. coll = collision radius, shadow = baked shadow radius, space = min spacing.
 const PROP_DEFS = {
   tree_grove: { w: 3.0, coll: 0.45, shadow: 1.5, space: 1.7, variants: 3, make: (r, i) => treeRound(r, i % 2 ? PAL.grove2 : PAL.grove) },
@@ -758,21 +672,9 @@ export function createSprites() {
   const fireFrames = [0, 1, 2].map((f) => tex(campfire(f)));
   const fireAspect = 112 / 96;
 
-  const player = {};
-  for (const dir of ['down', 'up', 'right']) {
-    player[dir] = [0, 1, 2, 3].map((f) => {
-      const { c, g } = mk(128, 160);
-      drawPlayer(g, dir, f);
-      return c;
-    });
-  }
-  player.left = player.right.map(mirror);
-  const playerTex = {};
-  for (const d of Object.keys(player)) playerTex[d] = player[d].map((c) => tex(c));
-
   const withFlash = (canvases) => ({ frames: canvases.map((c) => tex(c)), flash: canvases.map((c) => tex(silhouette(c))) });
   const mobs = {
-    slime: { ...withFlash([0, 1, 2].map((f) => slime(f))), low: [0, 1, 2].map((f) => tex(slime(f, true))), aspect: 88 / 96 },
+    slime: pixelSet(slimeSheet, slimeLayout),
     sprout: { ...withFlash([0, 1].map((f) => sproutling(f))), angry: [0, 1].map((f) => tex(sproutling(f, true))), aspect: 112 / 96 },
     slimeBlue: { ...withFlash([0, 1, 2].map((f) => slime(f, false, SLIME_BLUE))), low: [0, 1, 2].map((f) => tex(slime(f, true, SLIME_BLUE))), aspect: 88 / 96 },
     crab: { ...withFlash([0, 1].map((f) => crab(f))), aspect: 88 / 112 },
@@ -786,7 +688,7 @@ export function createSprites() {
     fx: { slash: tex(slashArc()), puff: tex(puff()), heart: tex(heartPickup()) },
     props,
     fire: { frames: fireFrames, aspect: fireAspect, w: 1.2 },
-    player: { frames: playerTex, aspect: 160 / 128, w: 1.15 },
+    player: pixelSet(playerSheet, playerLayout),
     ground: tex(groundDetail(), { repeat: 28 }),
     shadow: tex(blobShadow()),
     water: tex(waterTex(), { repeat: 4 }),

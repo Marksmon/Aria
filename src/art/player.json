@@ -1,0 +1,1 @@
+{"fw": 82, "fh": 68, "body": [29, 64], "anims": {"down": {"idle": [0, 1], "attack": [1, 7], "walk": [2, 7]}, "right": {"idle": [3, 1], "attack": [4, 7], "walk": [5, 7]}, "up": {"idle": [6, 1], "attack": [7, 7], "walk": [8, 7]}, "left": {"idle": [9, 1], "attack": [10, 7], "walk": [11, 7]}}}

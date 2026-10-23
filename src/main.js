@@ -247,6 +247,7 @@ function frame() {
   }
   audio.update(dt, dayNight.night);
   if (!started) cam.yaw += dt * 0.05; // slow orbit behind the title screen
+  mobs.cam = b;
   if (live) mobs.update(dt, player);
   if (live) dayNight.update(dt, t); else if (!started) dayNight.update(0, t);
   world.update(dt, t);

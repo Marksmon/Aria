@@ -1,8 +1,10 @@
 import * as THREE from 'three';
+import { dirFor } from './noise.js';
 
 const BASE_SPEED = 4.2;  // world units per second
 const RADIUS = 0.3;      // collision radius
-const WALK_SEQ = [1, 0, 2, 0];
+const HEIGHT = 1.38;     // standing height in world units
+const WALK_FPS = 11;
 const ROLL_TIME = 0.28, ROLL_SPEED = 12, ROLL_CD = 0.7;
 const ATTACK_RANGE = 1.65, ATTACK_COS = 0.34; // ~70 degrees either side
 const AIM_RANGE = 2.8;
@@ -29,6 +31,7 @@ export class Player {
     this.state = 'normal'; // normal | roll | down
     this.atkTimer = 0;
     this.atkAnim = 0;
+    this.atkDur = 1;
     this.rollT = 0;
     this.rollCd = 0;
     this.rollDir = { x: 0, z: 1 };
@@ -37,10 +40,12 @@ export class Player {
     this.knock = { x: 0, z: 0 };
     this.events = { swing: [], hurt: [], faint: [], hit: [] };
 
-    this.mat = new THREE.SpriteMaterial({ map: art.frames.down[0], alphaTest: 0.5 });
+    this.mat = new THREE.SpriteMaterial({ map: art.anims.down.idle[0], alphaTest: 0.5 });
     this.sprite = new THREE.Sprite(this.mat);
-    this.sprite.scale.set(art.w, art.w * art.aspect, 1);
-    this.sprite.center.set(0.5, 0.03);
+    const upp = HEIGHT / art.body[1]; // world units per pixel
+    this.size = { w: art.fw * upp, h: art.fh * upp };
+    this.sprite.scale.set(this.size.w, this.size.h, 1);
+    this.sprite.center.set(0.5, 0.02);
     this.sprite.renderOrder = 2;
     scene.add(this.sprite);
 
@@ -146,11 +151,12 @@ export class Player {
     } else {
       this.moving = mag > 0.08;
       const attacking = this.atkAnim > 0;
+      const winding = this.atkAnim > this.atkDur - 0.18; // only the start of a swing slows you
       if (this.moving) {
-        const speed = BASE_SPEED * this.speedMul * (attacking ? 0.55 : 1) * (this.slowT > 0 ? 0.5 : 1);
+        const speed = BASE_SPEED * this.speedMul * (winding ? 0.55 : 1) * (this.slowT > 0 ? 0.5 : 1);
         this.tryMove(move.x * speed * dt, move.z * speed * dt);
         if (!attacking) this.face = { x: move.x / mag, z: move.z / mag };
-        this.animT += dt * 9 * Math.min(1, mag + 0.3);
+        this.animT += dt * WALK_FPS * Math.min(1, mag + 0.3) * this.speedMul;
       } else {
         this.animT = 0;
       }
@@ -159,27 +165,30 @@ export class Player {
     }
 
     // sprite direction follows facing relative to the camera
-    const f = this.face.x * cam.fx + this.face.z * cam.fz;
-    const r = this.face.x * cam.rx + this.face.z * cam.rz;
-    this.dir = Math.abs(r) > Math.abs(f) * 0.9 ? (r > 0 ? 'right' : 'left') : (f > 0 ? 'up' : 'down');
+    this.dir = dirFor(this.face.x, this.face.z, cam);
 
-    let frame = 0;
-    if (this.atkAnim > 0) frame = 3;
-    else if (this.moving && this.state === 'normal') frame = WALK_SEQ[Math.floor(this.animT) % 4];
-    const tex = this.art.frames[this.dir][frame];
+    const A = this.art.anims[this.dir];
+    let tex = A.idle[0];
+    if (this.atkAnim > 0) {
+      const k = 1 - this.atkAnim / this.atkDur;
+      tex = A.attack[Math.min(A.attack.length - 1, Math.floor(k * A.attack.length))];
+    } else if (this.moving && this.state === 'normal') {
+      // walk frame 0 is the standing pose; the loop is frames 1..n
+      tex = A.walk[1 + (Math.floor(this.animT) % (A.walk.length - 1))];
+    }
     if (this.mat.map !== tex) this.mat.map = tex;
 
     this.mat.color.set(this.slowT > 0 ? '#c8e6a0' : '#ffffff');
     if (this.tint) this.mat.color.multiply(this.tint);
     const breathe = this.moving ? 1 : 1 + Math.sin(performance.now() / 420) * 0.015;
-    this.sprite.scale.y = this.art.w * this.art.aspect * breathe;
+    this.sprite.scale.y = this.size.h * breathe;
     this.sprite.visible = !(this.iframes > 0 && this.state === 'normal' && Math.floor(this.iframes * 14) % 2 === 0);
     this.sync();
   }
 
   swing(cam, mobs) {
     this.atkTimer = 1 / this.attackSpeed;
-    this.atkAnim = Math.min(0.18, this.atkTimer * 0.6);
+    this.atkAnim = this.atkDur = Math.min(0.42, this.atkTimer * 0.9);
     const target = mobs.nearest(this.x, this.z, AIM_RANGE);
     if (target) {
       const dx = target.x - this.x, dz = target.z - this.z, d = Math.hypot(dx, dz) || 1;
