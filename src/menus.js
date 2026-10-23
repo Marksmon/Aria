@@ -153,7 +153,7 @@ export class Menus {
     for (let i = 0; i < cells; i++) {
       const s = slots[i], it = s && ITEMS[s.id];
       h += s
-        ? `<button class="rslot${this.selected === s.id && side === 'bag' ? ' sel' : ''}" data-act="slot" data-side="${side}" data-id="${s.id}"${side === 'bag' && it.usable ? ` data-drag="item:${s.id}"` : ''} title="${esc(it.name)}">${icon(s.id)}${it.type === 'equip' ? '' : `<b>${s.n}</b>`}</button>`
+        ? `<button class="rslot${this.selected === s.id && side === 'bag' ? ' sel' : ''}${it.rare ? ' rare' : ''}" data-act="slot" data-side="${side}" data-id="${s.id}"${side === 'bag' && it.usable ? ` data-drag="item:${s.id}"` : ''} title="${esc(it.name)}">${icon(s.id)}${it.type === 'equip' ? '' : `<b>${s.n}</b>`}</button>`
         : '<div class="rslot empty"></div>';
     }
     return h + '</div>';
@@ -170,7 +170,7 @@ export class Menus {
     return `<div class="rtabs">${Object.entries(tabs).map(([k, n]) => `<button class="rtab${this.tab === k ? ' on' : ''}" data-act="tab" data-id="${k}">${n}</button>`).join('')}</div>
       ${this.grid(inv.bag.ofType(this.tab), 'bag')}
       <div class="rdetail">${sel
-        ? `<b>${esc(sel.name)}</b>${line}<span>${esc(sel.desc)}${sel.from ? ' Dropped by ' + esc(sel.from) + '.' : ''}${sel.usable ? ' Drag it onto the hotbar to use it quickly.' : ''}</span>${act}`
+        ? `<b class="${sel.rare ? 'rare' : ''}">${esc(sel.name)}${sel.rare ? ' ✦' : ''}</b>${line}<span>${esc(sel.desc)}${sel.from ? ' Dropped by ' + esc(sel.from) + '.' : ''}${sel.usable ? ' Drag it onto the hotbar to use it quickly.' : ''}</span>${act}`
         : '<span>Tap an item to see what it is.</span>'}</div>
       <div class="rfoot"><span>${inv.bag.slots.length} / ${BAG_SLOTS} slots</span></div>`;
   }
@@ -185,7 +185,7 @@ export class Menus {
       return `<button class="eq ${side}" data-act="unequip" data-id="${key}" title="${esc(it.name)}${equipLine(it) ? ' · ' + equipLine(it) : ''} (tap to take off)">${icon(id, 'eqi')}<span>${esc(it.name)}</span></button>`;
     };
     const left = [slot('head', 'head', 'l'), slot('face', 'face', 'l'), slot('armor', 'armor', 'l'), slot('weapon', 'weapon', 'l'), slot('accessory', 'acc', 'l')];
-    const right = [slot('low head', null, 'r'), slot('garment', null, 'r'), slot('shield', null, 'r'), slot('shoes', 'shoes', 'r'), slot('light', 'light', 'r')];
+    const right = [slot('garment', 'garment', 'r'), slot('shield', 'shield', 'r'), slot('shoes', 'shoes', 'r'), slot('accessory', 'acc2', 'r'), slot('light', 'light', 'r')];
     return `<div class="equipwrap"><div class="ecol">${left.join('')}</div><div class="eme"><img src="${this.portrait?.('player') || ''}" alt=""></div><div class="ecol">${right.join('')}</div></div>
       <div class="rfoot"><span>Tap a piece to take it off</span></div>`;
   }

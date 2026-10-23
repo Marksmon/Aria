@@ -33,9 +33,21 @@ export const ITEMS = {
   twig_sword:   { type: 'equip', slot: 'weapon', name: 'Twig Sword',  atk: 15, wlv: 1, icon: 'weapon0', desc: 'A stick with ambitions.' },
   stone_blade:  { type: 'equip', slot: 'weapon', name: 'Stone Blade', atk: 25, wlv: 1, icon: 'weapon1', desc: 'Ridge stone, knapped sharp.' },
   ember_edge:   { type: 'equip', slot: 'weapon', name: 'Ember Edge',  atk: 44, wlv: 2, icon: 'weapon2', desc: 'Warm to the touch, glowing at the edge.' },
-  emberbrand:   { type: 'equip', slot: 'weapon', name: 'Emberbrand', atk: 110, wlv: 3, icon: 'weapon3', desc: "The Ember Jarl's own blade, still burning.", from: 'the Ember Jarl' },
+  emberbrand:   { type: 'equip', slot: 'weapon', rare: true, name: 'Emberbrand', atk: 110, wlv: 3, icon: 'weapon3', desc: "The Ember Jarl's own blade, still burning.", from: 'the Ember Jarl' },
+  // rare drops, Ragnarok style: each from one kind of monster at a fraction of a percent.
+  // stats: bonus points to POW, QKN, END, KNL, FNS, FTN; mhp / msp: extra Max HP / SP
+  gooey_ring:   { type: 'equip', slot: 'acc', rare: true, name: 'Gooey Ring', stats: { ftn: 2 }, mhp: 20, icon: 'r_gooey', desc: 'A ring of hardened slime that never quite dries. FTN +2, Max HP +20.', from: 'Green Slimes (0.5%)' },
+  tide_pendant: { type: 'equip', slot: 'acc', rare: true, name: 'Tidewater Pendant', stats: { knl: 2 }, msp: 15, icon: 'r_tide', desc: 'Cool to the touch, like deep water. KNL +2, Max SP +15.', from: 'Blue Slimes (0.3%)' },
+  seedling_band: { type: 'equip', slot: 'acc', rare: true, name: 'Seedling Band', stats: { end: 1, qkn: 1 }, fx: 'regen', icon: 'r_seed', desc: 'A living green bracelet. END +1, QKN +1, HP recovers twice as fast.', from: 'Sproutlings (0.4%)' },
+  mud_buckler:  { type: 'equip', slot: 'shield', rare: true, name: 'Mudshell Buckler', def: 3, mhp: 40, icon: 'r_buckler', desc: 'A small round shield from a giant crab shell. DEF 3, Max HP +40.', from: 'Mudcrabs (0.3%)' },
+  spore_cloak:  { type: 'equip', slot: 'garment', rare: true, name: 'Sporeweave Cloak', def: 1, flee: 4, icon: 'r_cloak', desc: 'Woven from mushroom threads, light as mist. DEF 1, FLEE +4.', from: 'Mushlings (0.25%)' },
+  horn_blade:   { type: 'equip', slot: 'weapon', rare: true, name: 'Beetlehorn Blade', atk: 68, wlv: 3, stats: { pow: 1 }, icon: 'weapon_horn', desc: 'A sword ground from a beetle horn, harder than iron. POW +1.', from: 'Pebble Beetles (0.15%)' },
+  pebble_ring:  { type: 'equip', slot: 'acc', rare: true, name: 'Pebble Ring', stats: { end: 2 }, def: 1, icon: 'r_pebble', desc: 'A plain stone band. END +2, DEF 1.', from: 'Pebble Beetles (0.3%)' },
+  wisp_lantern: { type: 'equip', slot: 'light', rare: true, name: 'Wisp Lantern', fx: 'light', stats: { knl: 1, fns: 1 }, icon: 'r_lantern', desc: 'A Firefly Wisp sleeps inside. Lights the night. KNL +1, FNS +1.', from: 'Firefly Wisps (0.4%)' },
+  shiny_gel:    { type: 'misc', rare: true, name: 'Shimmering Gel', desc: 'Slime gel that glows with every colour. Prized by collectors.', from: 'any slime (1%)' },
+
   // headgear: worn on the head (head) or face, and seen on your character (see headgear.js)
-  ember_crown:  { type: 'equip', slot: 'head', name: "Jarl's Ember Crown", def: 4, desc: 'A horned iron crown, still warm.', from: 'the Ember Jarl' },
+  ember_crown:  { type: 'equip', slot: 'head', rare: true, name: "Jarl's Ember Crown", def: 4, stats: { pow: 2, end: 1 }, desc: 'A horned iron crown, still warm.', from: 'the Ember Jarl' },
   woven_cap:    { type: 'equip', slot: 'head', name: 'Woven Cap', def: 1, desc: 'Leaves woven tight, with a sturdy band.' },
   flower_wreath: { type: 'equip', slot: 'head', name: 'Flower Wreath', def: 0, flee: 1, desc: 'Meadow flowers on a green ring. +1 FLEE.' },
   horned_helm:  { type: 'equip', slot: 'head', name: 'Horned Helm', def: 3, desc: 'Iron, brass and two proud horns.' },
@@ -56,7 +68,7 @@ export const ITEMS = {
 };
 
 // equipment slots, in the Equipment window's order
-export const SLOTS = { head: 'Head', face: 'Face', weapon: 'Weapon', armor: 'Armor', shoes: 'Shoes', light: 'Light', acc: 'Accessory' };
+export const SLOTS = { head: 'Head', face: 'Face', weapon: 'Weapon', shield: 'Shield', garment: 'Garment', armor: 'Armor', shoes: 'Shoes', light: 'Light', acc: 'Accessory', acc2: 'Accessory' };
 
 // one line on what a piece of equipment does
 export function equipLine(it) {
@@ -64,6 +76,9 @@ export function equipLine(it) {
   if (it.atk) p.push(`ATK ${it.atk}`, `Weapon Lv ${it.wlv}`);
   if (it.def) p.push(`DEF ${it.def}`);
   if (it.hit) p.push(`HIT +${it.hit}`);
+  for (const [k, v] of Object.entries(it.stats || {})) p.push(`${k.toUpperCase()} +${v}`);
+  if (it.mhp) p.push(`Max HP +${it.mhp}`);
+  if (it.msp) p.push(`Max SP +${it.msp}`);
   if (it.flee) p.push(`FLEE +${it.flee}`);
   return p.join(' · ');
 }
@@ -228,6 +243,42 @@ const PAINT = {
   weapon1: (g) => swordIcon(g, '#cfd6de', '#7a7f8a', '#9aa4b2'),
   weapon2: (g) => swordIcon(g, '#ffb35a', '#c8463c', '#ffe27a'),
   weapon3: (g) => swordIcon(g, '#3a2a2a', '#e05a1a', '#ff9a3a'),
+  weapon_horn: (g) => swordIcon(g, '#e8dcc0', '#6a6a72', '#fff4dc'),
+  r_gooey: (g) => charmIcon(g, '#7fd05a', '#c8f0a8'),
+  r_tide: (g) => charmIcon(g, '#3a8ce8', '#9fd4ff'),
+  r_seed: (g) => {
+    g.beginPath(); g.ellipse(32, 36, 20, 14, 0, 0, Math.PI * 2); g.strokeStyle = OUT; g.lineWidth = 9; g.stroke();
+    g.strokeStyle = '#5fae45'; g.lineWidth = 5; g.stroke();
+    for (const [x, y] of [[14, 30], [32, 22], [50, 30]]) shape(g, () => g.ellipse(x, y, 6, 3.5, -0.4, 0, Math.PI * 2), '#8fd060', 2);
+  },
+  r_buckler: (g) => {
+    shape(g, () => g.arc(32, 32, 24, 0, Math.PI * 2), '#c9726a');
+    shape(g, () => g.arc(32, 32, 16, 0, Math.PI * 2), '#f2a8a0', 2.5);
+    shape(g, () => g.arc(32, 32, 6, 0, Math.PI * 2), '#8c8478', 2.5);
+    gloss(g, 24, 22, 5, 3);
+  },
+  r_cloak: (g) => {
+    shape(g, () => { g.moveTo(22, 10); g.lineTo(42, 10); g.quadraticCurveTo(54, 34, 52, 56); g.lineTo(12, 56); g.quadraticCurveTo(10, 34, 22, 10); g.closePath(); }, '#8a64b8');
+    for (const [x, y] of [[24, 30], [38, 38], [28, 46]]) { g.beginPath(); g.arc(x, y, 3, 0, 7); g.fillStyle = '#e0d2f5'; g.fill(); }
+    shape(g, () => g.rect(20, 8, 24, 6), '#efe2c4', 2.5);
+  },
+  r_pebble: (g) => {
+    g.beginPath(); g.arc(32, 38, 16, 0, Math.PI * 2); g.strokeStyle = OUT; g.lineWidth = 10; g.stroke();
+    g.strokeStyle = '#a09a8e'; g.lineWidth = 6; g.stroke();
+    shape(g, () => { g.moveTo(24, 22); g.lineTo(32, 10); g.lineTo(40, 22); g.closePath(); }, '#c4beb2', 2.5);
+  },
+  r_lantern: (g) => {
+    shape(g, () => g.roundRect(18, 16, 28, 36, 6), '#3a3a42');
+    shape(g, () => g.roundRect(23, 21, 18, 26, 4), '#ffe37a', 2);
+    g.beginPath(); g.arc(32, 34, 5, 0, 7); g.fillStyle = '#fff8d0'; g.fill();
+    g.beginPath(); g.moveTo(26, 16); g.quadraticCurveTo(32, 4, 38, 16); g.strokeStyle = OUT; g.lineWidth = 3; g.stroke();
+  },
+  shiny_gel: (g) => {
+    const grd = g.createLinearGradient(10, 14, 54, 52);
+    grd.addColorStop(0, '#ff9ab8'); grd.addColorStop(0.5, '#9fd4ff'); grd.addColorStop(1, '#b6ec8e');
+    shape(g, () => { g.moveTo(10, 50); g.bezierCurveTo(6, 26, 22, 14, 32, 14); g.bezierCurveTo(42, 14, 58, 26, 54, 50); g.quadraticCurveTo(32, 56, 10, 50); }, grd);
+    gloss(g, 24, 26, 7, 4.5);
+  },
   crown: (g) => {
     shape(g, () => { g.moveTo(12, 46); g.lineTo(12, 24); g.lineTo(22, 34); g.lineTo(32, 16); g.lineTo(42, 34); g.lineTo(52, 24); g.lineTo(52, 46); g.closePath(); }, '#6a6a72');
     for (const x of [22, 32, 42]) { shape(g, () => g.arc(x, 40, 3.5, 0, Math.PI * 2), '#ff8a3a', 2); }

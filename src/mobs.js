@@ -8,21 +8,21 @@ import { mobAttack } from './rules.js';
 // Battle stats follow Ragnarok's rules (rules.js): lv, hp, atk [min, max], def (hard DEF %),
 // vit (soft DEF), agi (FLEE = lv + agi), dex (HIT = lv + dex), exp [base, job], adelay = ms
 // between attacks. Each is modelled on a classic monster of the same level.
-// drops: [itemId, min, max, chance]
+// drops: [itemId, min, max, chance]. Rare finds are Ragnarok-rare: 0.15-0.5% (15-50 in 10 000)
 export const MOB_DEFS = {
-  slime:     { name: 'Green Slime', ai: 'hopper', art: 'slime', lv: 1,  hp: 50,  atk: [7, 10],  def: 0,  vit: 1,  agi: 1,  dex: 6,  exp: [2, 1],   adelay: 1872, speed: 1.7, aggro: 4.5, chase: 4, reach: 0.8, w: 0.9, r: 0.35, drops: [['gel', 1, 2, 1], ['berry', 1, 1, 0.12]] },
-  blueSlime: { name: 'Blue Slime', ai: 'hopper', art: 'slimeBlue', lv: 5,  hp: 120, atk: [11, 14], def: 0,  vit: 5,  agi: 5,  dex: 10, exp: [6, 5],   adelay: 1600, speed: 1.8, aggro: 4.5, chase: 4.5, reach: 0.8, w: 1.0, r: 0.38, split: 'miniSlime', drops: [['gel', 1, 1, 1], ['dew', 1, 1, 0.6], ['tonic', 1, 1, 0.04]] },
+  slime:     { name: 'Green Slime', ai: 'hopper', art: 'slime', lv: 1,  hp: 50,  atk: [7, 10],  def: 0,  vit: 1,  agi: 1,  dex: 6,  exp: [2, 1],   adelay: 1872, speed: 1.7, aggro: 4.5, chase: 4, reach: 0.8, w: 0.9, r: 0.35, drops: [['gel', 1, 2, 1], ['berry', 1, 1, 0.12], ['shiny_gel', 1, 1, 0.01], ['gooey_ring', 1, 1, 0.005]] },
+  blueSlime: { name: 'Blue Slime', ai: 'hopper', art: 'slimeBlue', lv: 5,  hp: 120, atk: [11, 14], def: 0,  vit: 5,  agi: 5,  dex: 10, exp: [6, 5],   adelay: 1600, speed: 1.8, aggro: 4.5, chase: 4.5, reach: 0.8, w: 1.0, r: 0.38, split: 'miniSlime', drops: [['gel', 1, 1, 1], ['dew', 1, 1, 0.6], ['tonic', 1, 1, 0.04], ['shiny_gel', 1, 1, 0.01], ['tide_pendant', 1, 1, 0.003]] },
   miniSlime: { name: 'Mini Slime', ai: 'hopper', art: 'slimeBlue', lv: 3,  hp: 40,  atk: [8, 11],  def: 0,  vit: 3,  agi: 3,  dex: 8,  exp: [2, 2],   adelay: 1400, speed: 2.3, aggro: 6, chase: 5, reach: 0.6, w: 0.55, r: 0.22, noRespawn: true, drops: [['dew', 1, 1, 0.5]] },
-  sprout:    { name: 'Sproutling', ai: 'skittish', art: 'sprout', lv: 3,  hp: 60,  atk: [9, 12],  def: 0,  vit: 3,  agi: 3,  dex: 8,  exp: [6, 2],   adelay: 1456, speed: 1.5, flee: 2.9, fear: 3.5, angry: 6, reach: 0.8, w: 0.95, r: 0.35, drops: [['seed', 1, 1, 1], ['leaf', 1, 1, 0.6], ['berry', 1, 1, 0.2], ['herb', 1, 1, 0.25]] },
-  crab:      { name: 'Mudcrab', ai: 'crab', art: 'crab', lv: 7,  hp: 150, atk: [18, 24], def: 5,  vit: 8,  agi: 6,  dex: 11, exp: [15, 9],  adelay: 1300, speed: 1.6, aggro: 5, reach: 0.85, w: 1.1, r: 0.42, drops: [['shell', 1, 2, 1], ['crableg', 1, 1, 0.25]] },
-  mushling:  { name: 'Mushling', ai: 'puffer', art: 'mushling', lv: 12, hp: 405, atk: [26, 35], def: 0,  vit: 24, agi: 12, dex: 36, exp: [45, 32], adelay: 1768, speed: 1.2, aggro: 4, chase: 6, reach: 0.8, w: 0.95, r: 0.36, drops: [['spore', 1, 2, 1], ['herb', 1, 1, 0.2], ['potion', 1, 1, 0.08]] },
-  beetle:    { name: 'Pebble Beetle', ai: 'tank', art: 'beetle', lv: 16, hp: 620, atk: [50, 62], def: 10, vit: 24, agi: 17, dex: 26, exp: [90, 60], adelay: 1500, speed: 1.15, aggro: 4, chase: 8, reach: 0.9, w: 1.15, r: 0.45, heavy: true, drops: [['stone', 1, 2, 1], ['potion2', 1, 1, 0.06]] },
-  wisp:      { name: 'Firefly Wisp', ai: 'wisp', art: 'wisp', lv: 8,  hp: 169, atk: [22, 27], def: 5,  vit: 8,  agi: 20, dex: 17, exp: [19, 15], adelay: 1292, speed: 2.4, aggro: 6, reach: 0.75, w: 0.7, r: 0.3, fly: true, night: true, drops: [['glow', 1, 1, 1], ['wander', 1, 1, 0.15]] },
+  sprout:    { name: 'Sproutling', ai: 'skittish', art: 'sprout', lv: 3,  hp: 60,  atk: [9, 12],  def: 0,  vit: 3,  agi: 3,  dex: 8,  exp: [6, 2],   adelay: 1456, speed: 1.5, flee: 2.9, fear: 3.5, angry: 6, reach: 0.8, w: 0.95, r: 0.35, drops: [['seed', 1, 1, 1], ['leaf', 1, 1, 0.6], ['berry', 1, 1, 0.2], ['herb', 1, 1, 0.25], ['seedling_band', 1, 1, 0.004], ['flower_wreath', 1, 1, 0.005]] },
+  crab:      { name: 'Mudcrab', ai: 'crab', art: 'crab', lv: 7,  hp: 150, atk: [18, 24], def: 5,  vit: 8,  agi: 6,  dex: 11, exp: [15, 9],  adelay: 1300, speed: 1.6, aggro: 5, reach: 0.85, w: 1.1, r: 0.42, drops: [['shell', 1, 2, 1], ['crableg', 1, 1, 0.25], ['mud_buckler', 1, 1, 0.003]] },
+  mushling:  { name: 'Mushling', ai: 'puffer', art: 'mushling', lv: 12, hp: 405, atk: [26, 35], def: 0,  vit: 24, agi: 12, dex: 36, exp: [45, 32], adelay: 1768, speed: 1.2, aggro: 4, chase: 6, reach: 0.8, w: 0.95, r: 0.36, drops: [['spore', 1, 2, 1], ['herb', 1, 1, 0.2], ['potion', 1, 1, 0.08], ['spore_cloak', 1, 1, 0.0025]] },
+  beetle:    { name: 'Pebble Beetle', ai: 'tank', art: 'beetle', lv: 16, hp: 620, atk: [50, 62], def: 10, vit: 24, agi: 17, dex: 26, exp: [90, 60], adelay: 1500, speed: 1.15, aggro: 4, chase: 8, reach: 0.9, w: 1.15, r: 0.45, heavy: true, drops: [['stone', 1, 2, 1], ['potion2', 1, 1, 0.06], ['pebble_ring', 1, 1, 0.003], ['horn_blade', 1, 1, 0.0015]] },
+  wisp:      { name: 'Firefly Wisp', ai: 'wisp', art: 'wisp', lv: 8,  hp: 169, atk: [22, 27], def: 5,  vit: 8,  agi: 20, dex: 17, exp: [19, 15], adelay: 1292, speed: 2.4, aggro: 6, reach: 0.75, w: 0.7, r: 0.3, fly: true, night: true, drops: [['glow', 1, 1, 1], ['wander', 1, 1, 0.15], ['wisp_lantern', 1, 1, 0.004]] },
   // MVP boss of Glodberg: one at a time, back 15 minutes after it falls. Its slayer gets the MVP
   // reward on top of the drops. Stomps the ground around it every few seconds.
   jarl:      { name: 'Ember Jarl', ai: 'boss', art: 'jarl', lv: 28, hp: 6500, atk: [110, 150], def: 25, vit: 40, agi: 20, dex: 45, exp: [2600, 1800], adelay: 1700, speed: 1.35, aggro: 7, chase: 25, reach: 1.9, w: 3.1, r: 1.15, heavy: true,
     mvp: true, respawn: 900, lair: { x: 32, z: 48 }, mvpExp: 1300, mvpDrops: [['potion3', 3], ['ember_heart', 1]],
-    drops: [['potion2', 2, 3, 0.8], ['potion3', 1, 2, 0.5], ['stone', 4, 6, 1], ['ember_crown', 1, 1, 0.3], ['emberbrand', 1, 1, 0.08]] },
+    drops: [['potion2', 2, 3, 0.8], ['potion3', 1, 2, 0.5], ['stone', 4, 6, 1], ['ember_crown', 1, 1, 0.05], ['emberbrand', 1, 1, 0.01]] },
 };
 
 const RESPAWN = 60;

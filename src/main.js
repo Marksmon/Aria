@@ -195,7 +195,14 @@ mobs.on('death', (m, drops) => {
   audio.play('kill');
   gainExp(...m.def.exp);
   for (const id of quests.onKill(m.type)) questComplete(id);
-  for (const [item, count] of drops) fx.drop(m.x, m.z, item, count, iconTexture(item));
+  for (const [item, count] of drops) {
+    fx.drop(m.x, m.z, item, count, iconTexture(item));
+    if (ITEMS[item].rare) { // a rare find: a golden burst and a word, like Ragnarok's drop glow
+      fx.sparkle(m.x, world.heightAt(m.x, m.z) + 0.5, m.z, '#ffd23a', 20);
+      audio.play('heart');
+      menus.message(`Rare drop! The ${m.def.name} dropped ${ITEMS[item].name}.`);
+    }
+  }
 });
 
 mobs.on('spore', (m) => {

@@ -465,3 +465,7 @@ button.eq:active { background: var(--w-sel); }
 /* warp portal: a quick flash of light between maps */
 #warp { position: absolute; inset: 0; background: radial-gradient(#eaf8ff, #8fc8ff 60%, #3a6ab8); opacity: 0; transition: opacity .25s; pointer-events: none; }
 #warp.show { opacity: 1; }
+
+/* rare finds: a gold edge and name */
+.rslot.rare { border-color: rgba(255, 210, 58, .75); box-shadow: inset 0 0 6px rgba(255, 210, 58, .35); }
+.rdetail b.rare, .toast .rare { color: #ffd23a; }

@@ -60,7 +60,7 @@ export class Inventory {
   constructor() {
     this.bag = new Store(BAG_SLOTS);
     this.chest = new Store(CHEST_SLOTS);
-    this.gear = { head: null, face: null, weapon: 'twig_sword', armor: 'clothes', shoes: null, light: null, acc: null }; // slot -> item id
+    this.gear = { head: null, face: null, shield: null, garment: null, weapon: 'twig_sword', armor: 'clothes', shoes: null, light: null, acc: null, acc2: null }; // slot -> item id (two accessories, like Ragnarok)
     this.listeners = [];
     this.level = () => 1; // set by the game: current Base Level, for recipe requirements
   }
@@ -108,8 +108,10 @@ export class Inventory {
   equip(id) {
     const it = ITEMS[id];
     if (it?.type !== 'equip' || !this.bag.remove(id, 1)) return false;
-    const old = this.gear[it.slot];
-    this.gear[it.slot] = id;
+    // a second accessory goes in the free hand
+    const slot = it.slot === 'acc' && this.gear.acc && !this.gear.acc2 ? 'acc2' : it.slot;
+    const old = this.gear[slot];
+    this.gear[slot] = id;
     if (old) this.bag.add(old, 1); // the slot just freed always has room
     this.changed();
     return true;
@@ -129,12 +131,15 @@ export class Inventory {
   // equipment as the battle rules see it (rules.js derive)
   gearStats() {
     const w = ITEMS[this.gear.weapon];
-    let def = 0, hit = 0, flee = 0;
+    let def = 0, hit = 0, flee = 0, mhp = 0, msp = 0;
+    const stats = {};
     for (const id of Object.values(this.gear)) {
       if (!id) continue;
-      def += ITEMS[id].def || 0; hit += ITEMS[id].hit || 0; flee += ITEMS[id].flee || 0;
+      const it = ITEMS[id];
+      def += it.def || 0; hit += it.hit || 0; flee += it.flee || 0; mhp += it.mhp || 0; msp += it.msp || 0;
+      for (const [k, v] of Object.entries(it.stats || {})) stats[k] = (stats[k] || 0) + v;
     }
-    return { atk: w?.atk || 0, wlv: w?.wlv || 0, def, hit, flee, mastery: 0, aspdRate: this.wearing('aspd') ? 0.9 : 1 };
+    return { atk: w?.atk || 0, wlv: w?.wlv || 0, def, hit, flee, mhp, msp, stats, mastery: 0, aspdRate: this.wearing('aspd') ? 0.9 : 1 };
   }
 
   toJSON() { return { v: 2, bag: this.bag.toJSON(), chest: this.chest.toJSON(), gear: this.gear }; }
@@ -146,7 +151,7 @@ export class Inventory {
     if (data.v === 2) {
       for (const slot of Object.keys(SLOTS)) {
         const id = g[slot];
-        this.gear[slot] = ITEMS[id]?.slot === slot ? id : null;
+        this.gear[slot] = ITEMS[id]?.slot === (slot === 'acc2' ? 'acc' : slot) ? id : null;
       }
       return;
     }

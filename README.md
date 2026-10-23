@@ -105,6 +105,26 @@ the Equipment window to take it off.
 | Wander Feather | random spot on this map | campfire; Wisps |
 | Homeward Feather | back to camp | campfire |
 
+**Rare drops.** Like Ragnarok, each monster has a rare equip it drops very seldom. A rare find
+bursts gold on the ground and shows in gold in your bag.
+
+| Rare item | Slot | Effect | From |
+|---|---|---|---|
+| Gooey Ring | Accessory | FTN +2, Max HP +20 | Green Slime, 0.5% |
+| Tidewater Pendant | Accessory | KNL +2, Max SP +15 | Blue Slime, 0.3% |
+| Seedling Band | Accessory | END +1, QKN +1, HP recovers twice as fast | Sproutling, 0.4% |
+| Flower Wreath | Head | FLEE +1 | Sproutling, 0.5% (also crafted) |
+| Mudshell Buckler | Shield | DEF 3, Max HP +40 | Mudcrab, 0.3% |
+| Sporeweave Cloak | Garment | DEF 1, FLEE +4 | Mushling, 0.25% |
+| Pebble Ring | Accessory | END +2, DEF 1 | Pebble Beetle, 0.3% |
+| Beetlehorn Blade | Weapon | ATK 68, weapon Lv 3, POW +1 | Pebble Beetle, 0.15% |
+| Wisp Lantern | Light | lights the night, KNL +1, FNS +1 | Firefly Wisp, 0.4% |
+| Shimmering Gel | Misc | a collector's prize | Green and Blue Slimes, 1% |
+| Jarl's Ember Crown | Head | DEF 4, POW +2, END +1 | Ember Jarl, 5% |
+| Emberbrand | Weapon | ATK 110, weapon Lv 3 | Ember Jarl, 1% |
+
+Two accessory slots, a shield and a garment slot join head, face, armor, weapon, shoes and light.
+
 The campfire crafts weapons, armor, boots, the torch, the four charms and all of the above from
 materials in your bag and the camp chest. Gear and charms need a Base Level.
 
