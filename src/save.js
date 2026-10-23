@@ -1,3 +1,4 @@
+// The game was called Aibachu before Aria; the key keeps the old name so existing saves load.
 const KEY = 'aibachu.save.v1';
 
 export function loadSave() {

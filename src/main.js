@@ -302,7 +302,7 @@ const dayNight = new DayNight({
   scene, hemi, sun, world, mobs, player, inv,
   onPhase(night) {
     audio.play(night ? 'night' : 'morning');
-    menus.message(night ? 'Night falls over Aibachu. Wisps are stirring.' : 'Morning has come.');
+    menus.message(night ? 'Night falls over Aria. Wisps are stirring.' : 'Morning has come.');
   },
 });
 if (typeof save?.time === 'number') dayNight.t = save.time;
@@ -450,4 +450,4 @@ tContinue.addEventListener('click', () => {
   }, 450);
 });
 
-window.__aibachu = { player, world, cam, camera, mobs, fx, inv, prog, quests, villagers, menus, hotbar, dayNight, audio, stats: world.stats };
+window.__aria = { player, world, cam, camera, mobs, fx, inv, prog, quests, villagers, menus, hotbar, dayNight, audio, stats: world.stats };

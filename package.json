@@ -1,7 +1,7 @@
 {
-  "name": "aibachu",
+  "name": "aria",
   "version": "1.0.0",
-  "description": "Aibachu - cozy 2.5D open-world mobile RPG",
+  "description": "Aria - cozy 2.5D open-world mobile RPG",
   "scripts": {
     "dev": "vite --host",
     "build": "vite build",

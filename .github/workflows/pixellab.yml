@@ -34,8 +34,8 @@ jobs:
       - name: Commit results to the art branch
         if: always()
         run: |
-          git config user.name "aibachu-bot"
-          git config user.email "aibachu-bot@users.noreply.github.com"
+          git config user.name "aria-bot"
+          git config user.email "aria-bot@users.noreply.github.com"
           git fetch origin art || true
           mkdir -p /tmp/res && cp -r out/. /tmp/res/
           if git rev-parse --verify origin/art >/dev/null 2>&1; then git checkout -B art origin/art; else git checkout --orphan art && git rm -rf . >/dev/null; fi

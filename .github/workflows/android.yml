@@ -55,15 +55,15 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           MSG: ${{ github.event.head_commit.message }}
         run: |
-          cp android/app/build/outputs/apk/debug/app-debug.apk Aibachu.apk
+          cp android/app/build/outputs/apk/debug/app-debug.apk Aria.apk
           gh release delete apk-latest --yes --cleanup-tag || true
-          gh release create apk-latest Aibachu.apk \
+          gh release create apk-latest Aria.apk \
             --prerelease \
             --target "$GITHUB_SHA" \
-            --title "Aibachu — latest build #${{ github.run_number }}" \
+            --title "Aria — latest build #${{ github.run_number }}" \
             --notes "Built from ${GITHUB_SHA::7}. ${MSG:-Manual run}"
 
       - uses: actions/upload-artifact@v4
         with:
-          name: Aibachu-apk
-          path: Aibachu.apk
+          name: Aria-apk
+          path: Aria.apk

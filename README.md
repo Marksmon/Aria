@@ -1,7 +1,7 @@
-# Aibachu
+# Aria
 
 A small 2.5D open-world fantasy RPG for phones, in the spirit of old-school Ragnarok Online:
-painted 2D sprites standing in a 3D world. You camp in the valley of Aibachu, explore freely,
+painted 2D sprites standing in a 3D world. You camp in the valley of Aria, explore freely,
 fight small monsters, collect what they drop and craft better gear at the campfire.
 
 Built with Three.js + Vite, wrapped as an Android app with Capacitor. The player, monsters and
@@ -11,7 +11,7 @@ code and all sound is synthesized, so the game ships as one offline HTML file.
 ## Get the APK
 
 Every push to `main` builds a new APK automatically (about 3–5 minutes).
-Download it from **Releases → "Aibachu — latest build"** → `Aibachu.apk`.
+Download it from **Releases → "Aria — latest build"** → `Aria.apk`.
 New builds install over old ones (same signing key), so your save is kept.
 
 ## Controls

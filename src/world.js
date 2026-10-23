@@ -1,4 +1,4 @@
-// Aibachu: one 64x64 open map. Camp in the middle, four zones around it.
+// Aria: one 64x64 open map. Camp in the middle, four zones around it.
 // Grove = north-west, Old Hollow = north-east, Ember Ridge = south-east, Fen Shore = south-west.
 import * as THREE from 'three';
 import { makeNoise, mulberry32, sstep, lerp, clamp } from './noise.js';

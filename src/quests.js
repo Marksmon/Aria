@@ -54,7 +54,7 @@ export const QUESTS = {
   mushlings: {
     title: 'The Rot of Myrkvid', kind: 'kill', mob: 'mushling', n: 6, lv: 7,
     intro: 'The Old Hollow was called Myrkvid once, the dark wood. Its Mushlings spread their spores further each night. Thin them out: six of them.',
-    thanks: 'The air already smells cleaner. You have become a true guardian of Aibachu.',
+    thanks: 'The air already smells cleaner. You have become a true guardian of Aria.',
     reward: { xp: 90, items: { potion: 2, glow: 4 } },
   },
   gel: {

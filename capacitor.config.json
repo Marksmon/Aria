@@ -1,6 +1,6 @@
 {
   "appId": "com.marksmon.aibachu",
-  "appName": "Aibachu",
+  "appName": "Aria",
   "webDir": "dist",
   "android": { "backgroundColor": "#141a16" }
 }
