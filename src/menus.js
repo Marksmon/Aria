@@ -264,12 +264,12 @@ export class Menus {
   talk() {
     const n = NPCS[this.npc], st = this.quests.status(this.npc, this.prog.baseLv, this.inv), p = this.prog;
     let text, box = '', btns = '<button class="rbtn soft" data-act="close">Bye</button>';
-    // the Elder makes Swordsmen: Novice Job Lv 10 with Wayfarer's Lore 9
+    // the Elder makes Swordsmen: Novice Job Lv 10 with Sword Basics 9
     if (this.npc === 'bram' && p.job === 'novice' && p.jobLv >= 10) {
-      const ready = skillLv(p, 'lore') >= 9;
+      const ready = skillLv(p, 'basics') >= 9;
       text = ready ? 'You have learnt all a Novice can. The way of the sword is open to you: will you take it?'
-        : "You are nearly ready for the way of the sword. Learn all of the Wayfarer's Lore (Lv 9) first, then come back to me.";
-      box = `<b>Job change: Swordsman</b><small>Sturdy fighters with more HP: Cleave, Rending Strike, War Cry, Stand Firm and Earthsplitter. Job Level starts again at 1.</small>`;
+        : "You are nearly ready for the way of the sword. Master your Sword Basics (Lv 9) first, then come back to me.";
+      box = `<b>Job change: Swordsman</b><small>Sturdy fighters with more HP: Cleave, Heavy Strike, War Cry, Stand Firm and Ground Slash. Job Level starts again at 1.</small>`;
       if (ready) btns = `<button class="rbtn soft" data-act="close">Not yet</button><button class="rbtn" data-act="jobchange">Become a Swordsman</button>`;
       this.wins.talk.querySelector('.rw-title').textContent = n.name;
       return `<div class="talkwrap"><img class="portrait" src="${this.portrait(this.npc)}" alt="">

@@ -71,10 +71,9 @@ const buffs = { aspd: 0, warcry: 0 };
 let warcryLv = 0;
 function applyStats() {
   const gear = inv.gearStats();
-  const lore = skillLv(prog, 'lore'), disc = skillLv(prog, 'discipline'), hide = skillLv(prog, 'ironhide');
-  gear.mastery = 3 * disc; // every Aria weapon is a sword
-  gear.hit = lore + disc;
-  gear.flee = lore + (skillLv(prog, 'quickfeet') ? 5 : 0);
+  const hide = skillLv(prog, 'ironhide');
+  gear.mastery = skillLv(prog, 'basics') + 2 * skillLv(prog, 'discipline'); // every Aria weapon is a sword
+  gear.flee = skillLv(prog, 'footwork') ? 3 : 0;
   gear.def += hide;
   if (buffs.aspd > 0) gear.aspdRate *= 0.9;
   const ps = derive(prog, gear);
@@ -163,8 +162,8 @@ player.on('strike', (m, res) => {
   else {
     fx.number(m.x, y, m.z, res.dmg, res.crit ? 'crit' : 'dealt');
     audio.play('hit');
-    // Battle Rhythm: every fourth hit that lands gives back 2 SP
-    if (skillLv(prog, 'rhythm') && ++rhythm % 4 === 0) player.healSp(2);
+    // Battle Rhythm: every fifth hit that lands gives back 1 SP
+    if (skillLv(prog, 'rhythm') && ++rhythm % 5 === 0) player.healSp(1);
   }
 });
 player.on('hurt', (n) => {
@@ -420,7 +419,6 @@ function useItem(id) {
 }
 
 const skillCd = {}; // skill id -> seconds left
-let hushT = 0;       // Hush ends by itself after a while
 function useSkill(id) {
   const sk = SKILLS[id], lv = skillLv(prog, id);
   if (!lv || sk.kind !== 'active' || player.state === 'down' || (skillCd[id] || 0) > 0) return;
@@ -435,24 +433,18 @@ function useSkill(id) {
   const y = world.heightAt(player.x, player.z);
   if (id === 'dodge') { wantDodge = true; return; }
   if (id === 'rest') { if (player.state === 'sit') player.standUp(); else player.sit('sit'); return; }
-  if (id === 'hush') {
-    if (player.state === 'feign') { player.standUp(); return; }
-    if (player.state === 'normal' && pay()) {
-      player.sit('feign');
-      hushT = 6;
-      for (const m of mobs.list) { m.provokeT = 0; m.state = 'wander'; m.tired = 3; }
-      say('Hush');
-    }
+  if (id === 'guard') {
+    if (player.state === 'normal' && pay()) { player.endureT = 4; player.guard = 0.15; say('Guard'); audio.play('block'); }
     return;
   }
   if (id === 'mend') {
     if (player.hp >= player.maxHp) { menus.message('Your HP is already full'); return; }
-    if (pay()) { say('Mend'); fx.number(player.x, overHead(player, 1.3), player.z, player.heal(5 + Math.floor(player.maxHp * 0.08)), 'heal'); }
+    if (pay()) { say('Mend'); fx.number(player.x, overHead(player, 1.3), player.z, player.heal(5 + Math.floor(player.maxHp * 0.03)), 'heal'); }
     return;
   }
   if (player.state !== 'normal') return;
   if (id === 'standfirm') {
-    if (pay()) { player.endureT = 8 + lv; player.guard = lv / 50; say('Stand Firm'); audio.play('block'); }
+    if (pay()) { player.endureT = 6 + Math.floor(lv / 2); player.guard = lv / 100; say('Stand Firm'); audio.play('block'); }
     return;
   }
   if (id === 'warcry') {
@@ -462,13 +454,13 @@ function useSkill(id) {
     cam.shake = 0.15;
     fx.sparkle(player.x, y + 1, player.z, '#ff9a6a', 16);
     for (const m of mobs.list) if (m.alive && Math.hypot(m.x - player.x, m.z - player.z) < 6) m.provoke(0);
-    buffs.warcry = 30;
+    buffs.warcry = 20;
     warcryLv = lv;
     return;
   }
   if (id === 'earthsplit') {
     if (!pay()) return;
-    say('Earthsplitter');
+    say('Ground Slash');
     fx.sparkle(player.x, y + 0.3, player.z, '#c8a06a', 26);
     fx.puff(player.x, y + 0.2, player.z, 1.8);
     cam.shake = 0.3;
@@ -478,42 +470,28 @@ function useSkill(id) {
       if (!m.alive) continue;
       const dx = m.x - player.x, dz = m.z - player.z, d = Math.hypot(dx, dz);
       if (d > 2.8 + m.def.r) continue;
-      const res = playerAttack(player.ps, m.effDef(), (120 + 25 * lv) / 100 * player.atkMul, 1 + lv / 10, true);
+      const res = playerAttack(player.ps, m.effDef(), (100 + 10 * lv) / 100 * player.atkMul, 1, true);
       const yy = overHead(m, m.sprite.scale.y * 0.8);
       if (res.miss) { fx.number(m.x, yy, m.z, 'Miss', 'miss'); continue; }
       fx.number(m.x, yy, m.z, res.dmg, 'dealt');
       m.hit(res.dmg, d ? dx / d : 0, d ? dz / d : 1);
-      m.knock.x *= 3; m.knock.z *= 3; // thrown back a couple of paces
+      m.knock.x *= 2; m.knock.z *= 2; // pushed back a little
     }
     return;
   }
   // the rest aim at your current target, or the nearest monster
   const target = (player.goal?.mob?.alive && player.goal.mob) || mobs.nearest(player.x, player.z, 8);
   if (!target) { menus.message('No monster nearby'); return; }
-  if (id === 'stone') {
-    const dx = target.x - player.x, dz = target.z - player.z, d = Math.hypot(dx, dz);
-    if (d > sk.range + target.def.r) { menus.message('Too far away'); return; }
-    if (!pay()) return;
-    player.face = { x: dx / d, z: dz / d };
-    player.atkAnim = player.atkDur = 0.3;
-    audio.play('swing');
-    const res = playerAttack(player.ps, target.effDef(), 0.6 * player.atkMul, 1, true);
-    const yy = overHead(target, target.sprite.scale.y * 0.8);
-    fx.sparkle(target.x, yy - 0.3, target.z, '#c8b8a0', 6);
-    if (res.miss) fx.number(target.x, yy, target.z, 'Miss', 'miss');
-    else { fx.number(target.x, yy, target.z, res.dmg, 'dealt'); target.hit(res.dmg, dx / d, dz / d); }
-    if (target.alive) target.provoke(0);
-    return;
-  }
-  // Cleave and Rending Strike: walk up and hit with the next swing
+  // Thrust, Cleave and Heavy Strike: walk up and hit with the next swing
   const strike = (mult, hitMult, done) => player.command({ mob: target, skill: { mult, hitMult, pay, done } });
+  if (id === 'thrust') strike(1.25, 1, () => say('Thrust'));
   if (id === 'cleave') {
-    strike((110 + 15 * lv) / 100, 1, (t, res) => {
+    strike((100 + 10 * lv) / 100, 1, (t) => {
       say('Cleave');
       // the sweep catches monsters beside the target
       for (const m of [...mobs.list]) {
         if (!m.alive || m === t || Math.hypot(m.x - t.x, m.z - t.z) > 1.7 + m.def.r) continue;
-        const r = playerAttack(player.ps, m.effDef(), (110 + 15 * lv) / 100 * player.atkMul, 1, true);
+        const r = playerAttack(player.ps, m.effDef(), (100 + 10 * lv) / 200 * player.atkMul, 1, true);
         const yy = overHead(m, m.sprite.scale.y * 0.8);
         if (r.miss) { fx.number(m.x, yy, m.z, 'Miss', 'miss'); continue; }
         fx.number(m.x, yy, m.z, r.dmg, 'dealt');
@@ -522,16 +500,7 @@ function useSkill(id) {
       }
     });
   }
-  if (id === 'rend') {
-    strike((150 + 25 * lv) / 100, 1 + lv / 20, (t, res) => {
-      say('Rending Strike');
-      // Lv 6+: a chance to stagger (not the MVP)
-      if (!res.miss && lv >= 6 && t.alive && !t.def.mvp && Math.random() * 100 < (lv - 5) * 4) {
-        t.stunT = 2.5;
-        fx.number(t.x, overHead(t, t.sprite.scale.y + 0.2), t.z, 'Staggered', 'miss');
-      }
-    });
-  }
+  if (id === 'heavy') strike((130 + 15 * lv) / 100, 1 + (3 * lv) / 100, () => say('Heavy Strike'));
 }
 
 // skill cooldowns, buffs and the damage bonuses that depend on HP, every frame
@@ -543,11 +512,9 @@ function tickSkills(dt) {
     buffs[k] -= dt;
     if (buffs[k] <= 0 && k === 'aspd') { applyStats(); menus.message('The Quickening Draught wears off'); }
   }
-  if (player.state === 'feign' && (hushT -= dt) <= 0) player.standUp();
   if (player.endureT <= 0) player.guard = 0;
   const low = player.hp < player.maxHp * 0.25 && skillLv(prog, 'laststand');
-  player.atkMul = (buffs.warcry > 0 ? 1 + warcryLv / 50 : 1) * (low ? 1.25 : 1);
-  player.guard = Math.max(player.endureT > 0 ? player.guard : 0, low ? 0.1 : 0);
+  player.atkMul = (buffs.warcry > 0 ? 1 + warcryLv / 100 : 1) * (low ? 1.15 : 1);
 }
 
 // ---------- tap to walk, attack, pick up, talk ----------

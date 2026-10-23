@@ -1,50 +1,47 @@
 // Aria's own skills, on Ragnarok-style rules: skill points from Job Levels, actives for the
-// hotbar, passives, prerequisites and SP costs. A Novice spends points on Wayfarer's Lore (Lv 9
-// opens the Swordsman calling); the other Novice skills come free as the Job Level rises. A
-// Swordsman buys from their own tree and gets two free skills at Job 10.
+// hotbar, passives, prerequisites and SP costs. They are plain sword craft, kept modest: a Novice
+// is a swordsman's apprentice, spends points on Sword Basics (Lv 9 opens the Swordsman job) and
+// picks up the other basics free as the Job Level rises. A Swordsman buys from their own tree and
+// gets two free passives at Job 10.
 //
 // kind: active (goes on the hotbar) | passive
 // target: 'mob' for skills aimed at a monster; range = how close you must be (world units)
 // free: { jobLv } learnt automatically; granted: learnt once its needs are met; else bought with points
 export const SKILLS = {
   // ---------- Novice ----------
-  lore: {
-    name: "Wayfarer's Lore", job: 'novice', kind: 'passive', max: 9, icon: 'skill_lore',
-    desc: (lv) => `+${lv} HIT and FLEE. Lv 3: you can Rest anywhere. Lv 9: you may take up a calling.`,
+  basics: {
+    name: 'Sword Basics', job: 'novice', kind: 'passive', max: 9, icon: 'skill_lore',
+    desc: (lv) => `+${lv} ATK. Lv 3: you can Rest. Lv 9: you may become a Swordsman.`,
   },
   rest: {
-    name: 'Rest', job: 'novice', kind: 'active', max: 1, needs: { lore: 3 }, granted: true, icon: 'skill_rest',
+    name: 'Rest', job: 'novice', kind: 'active', max: 1, needs: { basics: 3 }, granted: true, icon: 'skill_rest',
     desc: () => 'Kneel and catch your breath: HP and SP recover twice as fast. Walk to get up.',
   },
   mend: {
     name: 'Mend', job: 'novice', kind: 'active', max: 1, free: { jobLv: 1 }, sp: () => 4, cd: 2, icon: 'skill_mend',
-    desc: () => 'Bind your wounds: heals 5 HP plus 8% of your Max HP.',
+    desc: () => 'Bind a wound: heals 5 HP plus 3% of your Max HP.',
   },
   dodge: {
     name: 'Dodge Roll', job: 'novice', kind: 'active', max: 1, free: { jobLv: 1 }, cd: 0.75, icon: 'skill_dodge',
     desc: () => 'Dive out of the way, briefly untouchable.',
   },
-  secondwind: {
-    name: 'Second Wind', job: 'novice', kind: 'passive', max: 1, free: { jobLv: 3 }, icon: 'skill_secondwind',
-    desc: () => 'Below 25% HP, HP recovers three times as fast.',
+  thrust: {
+    name: 'Thrust', job: 'novice', kind: 'active', max: 1, free: { jobLv: 3 }, target: 'mob', range: 1.35, sp: () => 3, icon: 'skill_thrust',
+    desc: () => 'A quick stab with the point: 125% damage.',
   },
-  stone: {
-    name: 'Stone Throw', job: 'novice', kind: 'active', max: 1, free: { jobLv: 4 }, target: 'mob', range: 6, sp: () => 2, cd: 1.5, icon: 'skill_stone',
-    desc: () => 'Hurl a stone at a monster up to 6 paces away: 60% damage, and it comes for you.',
+  guard: {
+    name: 'Guard', job: 'novice', kind: 'active', max: 1, free: { jobLv: 5 }, sp: () => 4, cd: 8, icon: 'skill_guard',
+    desc: () => 'Raise your blade for 4 s: 15% less damage taken and no flinching.',
   },
-  hush: {
-    name: 'Hush', job: 'novice', kind: 'active', max: 1, free: { jobLv: 5 }, sp: () => 5, cd: 8, icon: 'skill_hush',
-    desc: () => 'Crouch and go perfectly still for up to 6 s: monsters lose track of you. Moving ends it.',
-  },
-  quickfeet: {
-    name: 'Quick Feet', job: 'novice', kind: 'passive', max: 1, free: { jobLv: 7 }, icon: 'skill_quickfeet',
-    desc: () => '+5 FLEE.',
+  footwork: {
+    name: 'Footwork', job: 'novice', kind: 'passive', max: 1, free: { jobLv: 7 }, icon: 'skill_quickfeet',
+    desc: () => '+3 FLEE.',
   },
 
   // ---------- Swordsman ----------
   discipline: {
     name: 'Blade Discipline', job: 'swordman', kind: 'passive', max: 10, icon: 'skill_discipline',
-    desc: (lv) => `+${3 * lv} ATK and +${lv} HIT with swords.`,
+    desc: (lv) => `+${2 * lv} ATK with swords.`,
   },
   ironhide: {
     name: 'Iron Hide', job: 'swordman', kind: 'passive', max: 10, icon: 'skill_ironhide',
@@ -52,36 +49,36 @@ export const SKILLS = {
   },
   cleave: {
     name: 'Cleave', job: 'swordman', kind: 'active', max: 10, target: 'mob', range: 1.35, icon: 'skill_cleave',
-    sp: (lv) => 6 + Math.floor(lv / 2),
-    desc: (lv) => `A wide sweep: ${110 + 15 * lv}% damage to your target and any monster beside it.`,
+    sp: (lv) => 5 + Math.floor(lv / 2),
+    desc: (lv) => `A wide sweep: ${100 + 10 * lv}% damage to your target, half that to any monster beside it.`,
   },
-  rend: {
-    name: 'Rending Strike', job: 'swordman', kind: 'active', max: 10, needs: { cleave: 3 }, target: 'mob', range: 1.35, icon: 'skill_rend',
-    sp: () => 10,
-    desc: (lv) => `One crushing blow: ${150 + 25 * lv}% damage, +${5 * lv}% hit chance. Lv 6+: may stagger.`,
+  heavy: {
+    name: 'Heavy Strike', job: 'swordman', kind: 'active', max: 10, needs: { cleave: 3 }, target: 'mob', range: 1.35, icon: 'skill_rend',
+    sp: () => 8,
+    desc: (lv) => `A two-handed blow: ${130 + 15 * lv}% damage, +${3 * lv}% hit chance.`,
   },
   warcry: {
-    name: 'War Cry', job: 'swordman', kind: 'active', max: 10, cd: 6, icon: 'skill_warcry',
-    sp: () => 12,
-    desc: (lv) => `Roar: monsters within 6 paces turn on you, and your ATK rises ${2 * lv}% for 30 s.`,
+    name: 'War Cry', job: 'swordman', kind: 'active', max: 10, cd: 8, icon: 'skill_warcry',
+    sp: () => 10,
+    desc: (lv) => `Shout: monsters within 6 paces turn on you, and your ATK rises ${lv}% for 20 s.`,
   },
   standfirm: {
     name: 'Stand Firm', job: 'swordman', kind: 'active', max: 10, needs: { warcry: 3 }, cd: 20, icon: 'skill_standfirm',
-    sp: () => 15,
-    desc: (lv) => `Plant your feet for ${8 + lv} s: no flinching, ${2 * lv}% less damage taken.`,
+    sp: () => 12,
+    desc: (lv) => `Plant your feet for ${6 + Math.floor(lv / 2)} s: no flinching, ${lv}% less damage taken.`,
   },
   earthsplit: {
-    name: 'Earthsplitter', job: 'swordman', kind: 'active', max: 10, needs: { rend: 5 }, cd: 3, icon: 'skill_earthsplit',
-    sp: () => 28,
-    desc: (lv) => `Drive your blade into the ground: ${120 + 25 * lv}% damage to everything close, knocking it back.`,
+    name: 'Ground Slash', job: 'swordman', kind: 'active', max: 10, needs: { heavy: 5 }, cd: 3, icon: 'skill_earthsplit',
+    sp: () => 20,
+    desc: (lv) => `Sweep the blade low all around you: ${100 + 10 * lv}% damage to everything close, pushing it back a little.`,
   },
   rhythm: {
     name: 'Battle Rhythm', job: 'swordman', kind: 'passive', max: 1, free: { jobLv: 10 }, icon: 'skill_rhythm',
-    desc: () => 'Every fourth hit that lands restores 2 SP.',
+    desc: () => 'Every fifth hit that lands restores 1 SP.',
   },
   laststand: {
     name: 'Last Stand', job: 'swordman', kind: 'passive', max: 1, free: { jobLv: 10 }, icon: 'skill_laststand',
-    desc: () => 'Below 25% HP: +25% ATK and 10% less damage taken.',
+    desc: () => 'Below 25% HP: +15% ATK.',
   },
 };
 

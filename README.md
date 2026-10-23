@@ -16,7 +16,7 @@ New builds install over old ones (same signing key), so your save is kept.
 
 ## Controls
 
-Ragnarok-style: no on-screen controller.
+Ragnarok-style: no on-screen controller. Landscape.
 
 | Touch | Desktop |
 |---|---|
@@ -24,92 +24,114 @@ Ragnarok-style: no on-screen controller.
 | Tap a monster: walk up and keep attacking it | Click |
 | Tap an item on the ground: pick it up | Click |
 | Tap a villager, the campfire, chest or tent: talk / craft / open / rest | Click |
+| Step onto a glowing portal: go to the next map | |
 | Hotbar (bottom): tap a slot to use a skill or item | 1–6 |
-| Drag skills (Bag → Hero) and usable items (Bag) onto the hotbar; drag a slot off to clear it | Drag |
+| Drag active skills (Skills window) and usable items (Items window) onto the hotbar; drag a slot off to clear it | Drag |
 | Drag one finger: turn the camera · pinch: zoom | Drag or Q / E · mouse wheel |
-| Bag button (top left) | I / B |
+| Window buttons under the HP / SP box: Status, Equip, Items, Skills | Alt+A, Alt+Q, Alt+E (or I / B), Alt+S · Esc closes |
 
-Dodge Roll is a skill on the hotbar (K / Shift on a keyboard).
+The hotbar starts empty. Windows are small, can be dragged anywhere by their title bar, and the
+game keeps running while they are open.
 
-## The valley
+## Maps
 
-One 64×64 open map. Camp in the center is a safe zone where hearts slowly refill.
+Eldrun Camp is a safe town map. Four portals lead to the field maps, and neighbouring fields
+link to each other. Each map is 64×64; place names are Old Norse in style.
 
-| Zone | Direction | Monsters (hidden HP) | Drops |
+| Map | From camp | Monsters | Drops |
 |---|---|---|---|
-| Mossy Grove | North-west | Green Slime (3), Sproutling (3) | Slime Gel · Sprout Seed, Fresh Leaf |
-| Fen Shore | South-west | Blue Slime (4, splits), Mudcrab (5) | Slime Gel, Dew Drop · Shell Bit |
-| Old Hollow | North-east | Mushling (4, slowing spores) | Spore Cap |
-| Ember Ridge | South-east | Pebble Beetle (6, hits hard) | Stone Chip |
-| Anywhere, at night | | Firefly Wisp (2) | Glow Dust |
+| Mosvangr (moss-field) | North | Green Slime (Lv 1), Sproutling (3) | Slime Gel, Wild Berry · Sprout Seed, Fresh Leaf, Green Herb |
+| Myrkdal (dark dale) | East | Mushling (12, slowing spores) | Spore Cap, Green Herb |
+| Glodberg (ember-hill) | South | Pebble Beetle (16), **Ember Jarl (MVP)** | Stone Chip, Strong Draught |
+| Fenstrand (fen-shore) | West | Blue Slime (5, splits), Mudcrab (7) | Slime Gel, Dew Drop, Mana Tonic · Shell Bit, Crab Leg |
+| Any field, at night | | Firefly Wisp (8) | Glow Dust, Wander Feather |
 
-No health bars: monsters flash white when hit, wobble and slow down when nearly beaten,
-and vanish in a puff. Any monster can drop a heart (15%). Monsters respawn 60 s after you
-leave the area, twice as fast at night.
+No health bars: monsters flash white when hit and wobble when nearly beaten. They respawn 60 s
+after they fall, twice as fast at night.
 
-## Leveling
+**MVP.** The Ember Jarl waits in the south of Glodberg. It stomps the ground around it every few
+seconds. Whoever brings it down gets **MVP** over their head, bonus Base EXP and MVP items
+straight to the bag, plus its drops (it may drop its crown or its sword). It comes back 15
+minutes later, even if you leave the map or close the game.
 
-Monsters give experience (Mini Slime 1, Slimes and Sproutlings 3–4, Wisps 4, Mudcrabs and
-Mushlings 5, Pebble Beetles 8). Levels go up to 15; each level-up restores your hearts and gives one
-stat point to spend in **Bag → Hero**:
+## Character
 
-| Stat | Per point |
-|---|---|
-| STR | +8% damage |
-| AGI | +4% swing speed, +1.5% move speed |
-| VIT | +1 heart every 3 points |
+Ragnarok's classic rules with Aria's own stat names (see `docs/ragnarok-mechanics.md`):
+POW (STR), QKN (AGI), END (VIT), KNL (INT), FNS (DEX), FTN (LUK). Base Level and Job Level
+gain EXP separately; stat points come from Base Levels, skill points from Job Levels. HP does
+not recover while you walk; resting doubles it.
 
-## Crafting (campfire)
+## Skills
 
-| Recipe | Level | Cost | Effect |
-|---|---|---|---|
-| Stone Blade | 3 | 4 Stone Chip, 3 Shell Bit | 1.5 damage, 1.8 swings/s |
-| Ember Edge | 6 | 6 Stone Chip, 4 Glow Dust, 3 Spore Cap | 2 damage, 2.2 swings/s |
-| Leaf Tunic | 2 | 6 Fresh Leaf, 4 Sprout Seed | +1 heart |
-| Shell Mail | 4 | 6 Shell Bit, 4 Slime Gel | +2 hearts |
-| Beetle Plate | 7 | 8 Stone Chip, 4 Dew Drop, 2 Spore Cap | +3 hearts |
-| Healing Draught | | 2 Slime Gel, 1 Dew Drop, 1 Fresh Leaf | restores 3 hearts |
-| Torch | | 3 Glow Dust, 2 Fresh Leaf | lights the night |
-| Swift Boots | | 4 Shell Bit, 3 Dew Drop, 3 Fresh Leaf | +20% move speed |
-| Sprout Charm | 2 | 5 Sprout Seed, 3 Fresh Leaf | slowly restores hearts anywhere |
-| Spore Charm | 4 | 5 Spore Cap, 3 Slime Gel | +15% swing speed |
-| Shell Charm | 4 | 5 Shell Bit, 2 Stone Chip | blocks 1 in 5 hits |
-| Glow Charm | 5 | 4 Glow Dust, 2 Dew Drop | +25% experience |
+Aria's own skills: plain sword craft, kept modest. A Novice is a swordsman's apprentice and puts
+points into **Sword Basics**; the other Novice skills come free with Job Levels. At Novice Job 10
+with Sword Basics 9, talk to **Elder Halvard** at camp to become a Swordsman.
 
-You wear one charm at a time; swap them in **Bag → Hero**.
+| Novice | | |
+|---|---|---|
+| Sword Basics | passive, 9 | +1 ATK per level; Lv 3 Rest; Lv 9 opens the Swordsman job |
+| Rest | from Sword Basics 3 | HP and SP recover twice as fast |
+| Mend | Job 1, 4 SP | heals 5 HP + 3% Max HP |
+| Dodge Roll | Job 1 | dive away, briefly untouchable |
+| Thrust | Job 3, 3 SP | a quick stab for 125% damage |
+| Guard | Job 5, 4 SP | 4 s: 15% less damage, no flinching |
+| Footwork | Job 7, passive | +3 FLEE |
 
-Crafting uses items from both your bag (16 slots) and the camp chest (32 slots).
+| Swordsman | | |
+|---|---|---|
+| Blade Discipline | passive, 10 | +2 ATK per level |
+| Iron Hide | passive, 10 | +1 DEF, +1% Max HP per level |
+| Cleave | 10 | 110–200% to the target, half to monsters beside it |
+| Heavy Strike | 10, needs Cleave 3 | 145–280%, +3% hit per level |
+| War Cry | 10 | monsters within 6 paces turn on you; ATK +1% per level for 20 s |
+| Stand Firm | 10, needs War Cry 3 | no flinching, 1% less damage per level |
+| Ground Slash | 10, needs Heavy Strike 5 | 110–200% to everything close, pushing it back a little |
+| Battle Rhythm | Job 10, passive | every 5th hit restores 1 SP |
+| Last Stand | Job 10, passive | below 25% HP: +15% ATK |
+
+## Items
+
+The Items window has three tabs: **Usables**, **Equips** and **Miscs**. Weapons, armor, boots,
+torch, headgear and charms are items: equip them from the Equips tab, and tap a worn piece in
+the Equipment window to take it off.
+
+| Usable | Effect | Where |
+|---|---|---|
+| Healing / Strong / Greater Draught | 45–65 / 105–145 / 175–235 HP | campfire; drops |
+| Mana Tonic | 40–60 SP | campfire; Blue Slimes |
+| Wild Berry · Crab Leg | 16–22 · 70–100 HP | Slimes, Sproutlings · Mudcrabs |
+| Green Herb | cures spore sickness, a little HP | Sproutlings, Mushlings |
+| Quickening Draught | +10% attack speed for 3 minutes | campfire |
+| Wander Feather | random spot on this map | campfire; Wisps |
+| Homeward Feather | back to camp | campfire |
+
+The campfire crafts weapons, armor, boots, the torch, the four charms and all of the above from
+materials in your bag and the camp chest. Gear and charms need a Base Level.
 
 ## Villagers and quests
 
-Three villagers live at camp. Walk up to one and tap **Talk** (desktop: F). A **!** bubble means
-they have a quest for you, a **?** means you can hand one in. Active quests show under the clock.
+Three villagers live at camp. Tap one to talk. A **!** bubble means they have a quest for you,
+a **?** means you can hand one in. Active quests show under the clock.
 
-| Villager | Quests (level) |
+| Villager | Quests (Base Level) |
 |---|---|
-| Elder Halvard | The Green Blight (1), Claws of the Fen (3), Wrath of the Stone-Backs (5), The Rot of Myrkvid (7) |
-| Astrid the Cook | Jelly for the Mead-Hall (1), The Jarl's Stew (3), Water from Urd's Well (4), Sól's Lantern Soup (6) |
-| Sigrun the Scout | The Four Realms (1), Seeds of Yggdrasil (2), Twin-Born of the Fen (3), Lights of the Álfar (5) |
-
-Kill quests count from when you accept them; fetch quests take the items from your bag and chest
-when you hand in. Every quest pays experience plus potions or crafting materials.
+| Elder Halvard | The Green Blight (1), Claws of the Fen (5), The Rot of Myrkvid (10), Wrath of the Stone-Backs (14); job change |
+| Astrid the Cook | Jelly for the Mead-Hall (1), Water from Urd's Well (4), Sól's Lantern Soup (6), The Jarl's Stew (8) |
+| Sigrun the Scout | The Four Realms (1), Seeds of Yggdrasil (2), Twin-Born of the Fen (4), Lights of the Álfar (7) |
 
 ## Day and night
 
 A full day lasts 10 minutes. Night brings Firefly Wisps and extra monsters. Rest in the tent
-to restore hearts, save, and sleep until morning.
+to restore HP, save, and sleep until morning.
 
 ## Roadmap
 
-- [x] **M1** Map, movement, camera, camp
-- [x] **M2** Combat (attack speed, hidden HP, dodge) + Slimes and Sproutlings
-- [x] **M3** Drops, inventory, campfire crafting, chest
-- [x] **M4** Monsters in every zone
-- [x] **M5** Day/night, night spawns, sleeping, save
-- [x] **M6** Sound and music, title screen, polish
-- [x] **M7** PixelLab sprites: player (walk, sword attack) and Green Slime (hop, attack), 4 directions
-- [x] **M8** Leveling (XP, levels, STR/AGI/VIT), charms, level requirements for gear
-- [x] **M9** Camp villagers with dialogue, kill / fetch / explore quest chains and rewards
+- [x] **M1–M6** Map, combat, drops and crafting, monsters, day/night, sound and title screen
+- [x] **M7** PixelLab sprites for the whole cast
+- [x] **M8** Leveling and equipment
+- [x] **M9** Camp villagers and quest chains
+- [x] Ragnarok-style controls, rules, windows, maps and portals; Aria's own skills; MVP boss
+- [ ] Zeny, shop, more equipment slots, cards
 
 ## Dev
 
@@ -119,8 +141,10 @@ npm run dev      # local server, open on your phone via LAN
 npm run build    # single-file build in dist/index.html
 ```
 
-Code map: `world.js` (terrain, zones, props), `player.js`, `mobs.js` (all monster AI),
-`items.js` + `inventory.js` + `menus.js` (loot, crafting, gear), `progress.js` (levels and stats), `quests.js` + `villagers.js` (camp NPCs and quests), `daynight.js`, `audio.js`,
+Code map: `world.js` (maps, portals, props), `player.js`, `mobs.js` (all monster AI and the MVP),
+`rules.js` (battle rules), `skills.js`, `items.js` + `inventory.js` + `menus.js` (items, crafting,
+gear, windows), `progress.js` (levels and stats), `quests.js` + `villagers.js` (camp NPCs and
+quests), `hotbar.js`, `daynight.js`, `audio.js`,
 `sprites.js` (painted art plus the PixelLab sheets — swap any sprite without touching game logic).
 
 ## PixelLab art
