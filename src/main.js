@@ -242,7 +242,7 @@ mobs.on('mvp', (m) => {
   fx.number(player.x, overHead(player, 1.7), player.z, 'MVP', 'mvp', player);
   fx.sparkle(player.x, world.heightAt(player.x, player.z) + 1, player.z, '#ffd23a', 30);
   audio.play('levelup');
-  menus.message(`You defeated the ${d.name}! MVP! +${d.mvpExp} Base EXP`);
+  menus.message(`You defeated the ${d.name}! MVP! +${d.mvpExp * RATES.base} Base EXP`);
   for (const [id, n] of d.mvpDrops) {
     const got = inv.add(id, n);
     if (got < n) inv.chest.add(id, n - got);
@@ -255,6 +255,9 @@ mobs.on('mvp', (m) => {
 });
 
 // ---------- experience: Base and Job EXP, like Ragnarok ----------
+// server rates, like a Ragnarok server's "x8 / x12": every Base and Job EXP gain is multiplied.
+// Set high for now so the Ember Jarl is in reach after about half an hour of play.
+const RATES = { base: 8, job: 12 };
 const knownSkills = () => new Set(skillList(prog.job).filter((id) => skillLv(prog, id)));
 function announceSkills(before) {
   for (const id of knownSkills()) if (!before.has(id) && (SKILLS[id].free || SKILLS[id].granted)) menus.message(`New skill: ${SKILLS[id].name}! See the Skills window.`);
@@ -262,7 +265,7 @@ function announceSkills(before) {
 function gainExp(base, job) {
   const k = inv.wearing('exp') ? 1.25 : 1;
   const known = knownSkills();
-  const ups = prog.gain(Math.round(base * k), Math.round(job * k));
+  const ups = prog.gain(Math.round(base * k * RATES.base), Math.round(job * k * RATES.job));
   if (!ups.base && !ups.job) return;
   applyStats();
   const y = world.heightAt(player.x, player.z);

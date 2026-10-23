@@ -52,7 +52,8 @@ after they fall, twice as fast at night.
 **MVP.** The Ember Jarl waits in the south of Glodberg. It stomps the ground around it every few
 seconds. Whoever brings it down gets **MVP** over their head, bonus Base EXP and MVP items
 straight to the bag, plus its drops (it may drop its crown or its sword). It comes back 15
-minutes later, even if you leave the map or close the game.
+minutes later, even if you leave the map or close the game. For now it is softened (Lv 25,
+3,200 HP) so a Base ~25 Swordsman can take it alone with a few Strong Draughts.
 
 ## Character
 
@@ -60,6 +61,9 @@ Ragnarok's classic rules with Aria's own stat names (see `docs/ragnarok-mechanic
 POW (STR), QKN (AGI), END (VIT), KNL (INT), FNS (DEX), FTN (LUK). Base Level and Job Level
 gain EXP separately; stat points come from Base Levels, skill points from Job Levels. HP does
 not recover while you walk; resting doubles it.
+
+**Rates.** Like a Ragnarok server's "x8 / x12", every Base EXP gain is ×8 and every Job EXP
+gain ×12 (`RATES` in `src/main.js`), so you can reach the Ember Jarl in about half an hour.
 
 ## Skills
 

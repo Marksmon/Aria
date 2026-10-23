@@ -20,7 +20,8 @@ export const MOB_DEFS = {
   wisp:      { name: 'Firefly Wisp', ai: 'wisp', art: 'wisp', lv: 8,  hp: 169, atk: [22, 27], def: 5,  vit: 8,  agi: 20, dex: 17, exp: [19, 15], adelay: 1292, speed: 2.4, aggro: 6, reach: 0.75, w: 0.7, r: 0.3, fly: true, night: true, drops: [['glow', 1, 1, 1], ['wander', 1, 1, 0.15], ['wisp_lantern', 1, 1, 0.004]] },
   // MVP boss of Glodberg: one at a time, back 15 minutes after it falls. Its slayer gets the MVP
   // reward on top of the drops. Stomps the ground around it every few seconds.
-  jarl:      { name: 'Ember Jarl', ai: 'boss', art: 'jarl', lv: 28, hp: 6500, atk: [110, 150], def: 25, vit: 40, agi: 20, dex: 45, exp: [2600, 1800], adelay: 1700, speed: 1.35, aggro: 7, chase: 25, reach: 1.9, w: 3.1, r: 1.15, heavy: true,
+  // (softened for now, for a Base ~25 Swordsman: it would need a party at Ragnarok strength)
+  jarl:      { name: 'Ember Jarl', ai: 'boss', art: 'jarl', lv: 25, hp: 3200, atk: [45, 65], def: 15, vit: 25, agi: 15, dex: 35, exp: [2600, 1800], adelay: 2000, speed: 1.35, aggro: 7, chase: 25, reach: 1.9, w: 3.1, r: 1.15, heavy: true,
     mvp: true, respawn: 900, lair: { x: 32, z: 48 }, mvpExp: 1300, mvpDrops: [['potion3', 3], ['ember_heart', 1]],
     drops: [['potion2', 2, 3, 0.8], ['potion3', 1, 2, 0.5], ['stone', 4, 6, 1], ['ember_crown', 1, 1, 0.05], ['emberbrand', 1, 1, 0.01]] },
 };

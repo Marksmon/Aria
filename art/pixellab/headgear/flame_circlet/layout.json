@@ -1,0 +1,109 @@
+{
+ "object": {
+  "id": "74b45e8b-5273-472b-a07d-ce0b927944a1",
+  "name": "base",
+  "prompt": "a crown band of dark blackened iron with glowing molten gold edges and small ember gems, its five points are tall living flames of orange, gold and white-hot yellow instead of metal, item only, nobody wearing it",
+  "size": {
+   "width": 48,
+   "height": 48
+  },
+  "directions": 8,
+  "view": "low top-down"
+ },
+ "spritesheet": {
+  "path": "a_crown_band_of_dark_blackened.png",
+  "cell_size": {
+   "width": 48,
+   "height": 48
+  },
+  "sheet_size": {
+   "width": 432,
+   "height": 432
+  },
+  "columns": 9,
+  "pivot": "cell-center",
+  "rows": [
+   {
+    "row": 0,
+    "type": "rotations",
+    "frame_count": 8,
+    "directions": [
+     "south",
+     "south-east",
+     "east",
+     "north-east",
+     "north",
+     "north-west",
+     "west",
+     "south-west"
+    ]
+   },
+   {
+    "row": 1,
+    "type": "animation",
+    "frame_count": 9,
+    "animation": "only the flames move: they flicker, dance and lick",
+    "animation_group_id": "2f7fc841-31e9-4da3-a8c3-a58fc7b580b3",
+    "direction": "south"
+   },
+   {
+    "row": 2,
+    "type": "animation",
+    "frame_count": 9,
+    "animation": "only the flames move: they flicker, dance and lick",
+    "animation_group_id": "2f7fc841-31e9-4da3-a8c3-a58fc7b580b3",
+    "direction": "south-east"
+   },
+   {
+    "row": 3,
+    "type": "animation",
+    "frame_count": 9,
+    "animation": "only the flames move: they flicker, dance and lick",
+    "animation_group_id": "2f7fc841-31e9-4da3-a8c3-a58fc7b580b3",
+    "direction": "east"
+   },
+   {
+    "row": 4,
+    "type": "animation",
+    "frame_count": 9,
+    "animation": "only the flames move: they flicker, dance and lick",
+    "animation_group_id": "2f7fc841-31e9-4da3-a8c3-a58fc7b580b3",
+    "direction": "north-east"
+   },
+   {
+    "row": 5,
+    "type": "animation",
+    "frame_count": 9,
+    "animation": "only the flames move: they flicker, dance and lick",
+    "animation_group_id": "2f7fc841-31e9-4da3-a8c3-a58fc7b580b3",
+    "direction": "north"
+   },
+   {
+    "row": 6,
+    "type": "animation",
+    "frame_count": 9,
+    "animation": "only the flames move: they flicker, dance and lick",
+    "animation_group_id": "2f7fc841-31e9-4da3-a8c3-a58fc7b580b3",
+    "direction": "north-west"
+   },
+   {
+    "row": 7,
+    "type": "animation",
+    "frame_count": 9,
+    "animation": "only the flames move: they flicker, dance and lick",
+    "animation_group_id": "2f7fc841-31e9-4da3-a8c3-a58fc7b580b3",
+    "direction": "west"
+   },
+   {
+    "row": 8,
+    "type": "animation",
+    "frame_count": 9,
+    "animation": "only the flames move: they flicker, dance and lick",
+    "animation_group_id": "2f7fc841-31e9-4da3-a8c3-a58fc7b580b3",
+    "direction": "south-west"
+   }
+  ]
+ },
+ "export_version": "1.0",
+ "export_date": "2026-10-23T17:45:46.533755+00:00"
+}
