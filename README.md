@@ -16,16 +16,20 @@ New builds install over old ones (same signing key), so your save is kept.
 
 ## Controls
 
+Ragnarok-style: no on-screen controller.
+
 | Touch | Desktop |
 |---|---|
-| Left side: floating joystick | WASD / arrows |
-| Hold ⚔: attack (auto-aims the nearest monster) | Space / J |
-| ↻: dodge roll (brief invincibility) | Shift / K |
-| Context button at camp: Craft / Chest / Rest / Talk | F |
+| Tap the ground: walk there (tile by tile) | Click |
+| Tap a monster: walk up and keep attacking it | Click |
+| Tap an item on the ground: pick it up | Click |
+| Tap a villager, the campfire, chest or tent: talk / craft / open / rest | Click |
+| Hotbar (bottom): tap a slot to use a skill or item | 1–6 |
+| Drag skills (Bag → Hero) and usable items (Bag) onto the hotbar; drag a slot off to clear it | Drag |
+| Drag one finger: turn the camera · pinch: zoom | Drag or Q / E · mouse wheel |
 | Bag button (top left) | I / B |
-| Right side drag: rotate camera · pinch: zoom | Q / E · mouse wheel |
 
-Add `?debug` to the URL for an FPS / position readout.
+Dodge Roll is a skill on the hotbar (K / Shift on a keyboard).
 
 ## The valley
 
