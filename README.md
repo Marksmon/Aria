@@ -125,6 +125,14 @@ bursts gold on the ground and shows in gold in your bag.
 
 Two accessory slots, a shield and a garment slot join head, face, armor, weapon, shoes and light.
 
+**Headgear you can see.** Hats are drawn on your character, pinned to the head in every frame,
+for any job's sprite, and hide the hair they cover: Horned Helm, Woven Cap, Flower Wreath, Jarl's
+Ember Crown, and the animated **Flame Circlet** (crafted from the MVP's Ember Heart). Face pieces
+are made but left out for now.
+
+**Looks by job.** Novices wear plain linen with a wooden practice sword; the Swordsman look comes
+with the job change.
+
 The campfire crafts weapons, armor, boots, the torch, the four charms and all of the above from
 materials in your bag and the camp chest. Gear and charms need a Base Level.
 

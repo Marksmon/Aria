@@ -46,14 +46,13 @@ export const ITEMS = {
   wisp_lantern: { type: 'equip', slot: 'light', rare: true, name: 'Wisp Lantern', fx: 'light', stats: { knl: 1, fns: 1 }, icon: 'r_lantern', desc: 'A Firefly Wisp sleeps inside. Lights the night. KNL +1, FNS +1.', from: 'Firefly Wisps (0.4%)' },
   shiny_gel:    { type: 'misc', rare: true, name: 'Shimmering Gel', desc: 'Slime gel that glows with every colour. Prized by collectors.', from: 'any slime (1%)' },
 
-  // headgear: worn on the head (head) or face, and seen on your character (see headgear.js)
+  // headgear: worn on the head and seen on your character (see headgear.js). Face pieces (Round
+  // Glasses, Raven Mask) are made and fitted but left out of the game for now.
   ember_crown:  { type: 'equip', slot: 'head', rare: true, name: "Jarl's Ember Crown", def: 4, stats: { pow: 2, end: 1 }, desc: 'A horned iron crown, still warm.', from: 'the Ember Jarl' },
   flame_circlet: { type: 'equip', slot: 'head', rare: true, name: 'Flame Circlet', def: 2, stats: { pow: 1, ftn: 1 }, desc: 'An iron circlet crowned with living flame, forged around an Ember Heart. POW +1, FTN +1.' },
   woven_cap:    { type: 'equip', slot: 'head', name: 'Woven Cap', def: 1, desc: 'Leaves woven tight, with a sturdy band.' },
   flower_wreath: { type: 'equip', slot: 'head', name: 'Flower Wreath', def: 0, flee: 1, desc: 'Meadow flowers on a green ring. +1 FLEE.' },
   horned_helm:  { type: 'equip', slot: 'head', name: 'Horned Helm', def: 3, desc: 'Iron, brass and two proud horns.' },
-  round_glasses: { type: 'equip', slot: 'face', name: 'Round Glasses', hit: 3, desc: 'Polished dew-glass lenses. +3 HIT.' },
-  raven_mask:   { type: 'equip', slot: 'face', name: 'Raven Mask', flee: 2, desc: 'Black feathers and a short beak: you look like trouble. +2 FLEE.' },
   // body armor: hard DEF
   clothes:      { type: 'equip', slot: 'armor', name: 'Traveler Clothes', def: 1, icon: 'armor0', desc: 'Patched and comfortable.' },
   leaf_tunic:   { type: 'equip', slot: 'armor', name: 'Leaf Tunic',  def: 2, icon: 'armor1', desc: 'Woven leaves, surprisingly tough.' },
@@ -102,8 +101,6 @@ export const RECIPES = [
   { item: 'swift_boots', cost: { shell: 4, dew: 3, leaf: 3 } },
   { item: 'flower_wreath', cost: { leaf: 3, seed: 2 } },
   { item: 'woven_cap', lv: 2, cost: { leaf: 5, seed: 2 } },
-  { item: 'raven_mask', lv: 3, cost: { wander: 2, gel: 2 } },
-  { item: 'round_glasses', lv: 5, cost: { dew: 3, stone: 2 } },
   { item: 'flame_circlet', lv: 12, cost: { ember_heart: 1, glow: 6, stone: 6 } },
   { item: 'horned_helm', lv: 8, cost: { stone: 6, shell: 4, glow: 1 } },
   { item: 'sprout_charm', lv: 2, cost: { seed: 5, leaf: 3 } },

@@ -29,12 +29,16 @@ PIECES = {
     # (an eyepatch came out as a strap ring across the face: a strap can't go behind the head in
     # one layer, so the face piece is a mask instead)
     "raven_mask": "a black feathered raven half-mask with a short dark beak and gold-rimmed eye holes, item only, nobody wearing it",
-    "flame_circlet": "a thin dark iron circlet with a crest of bright orange and gold flames rising from it, item only, nobody wearing it",
+    # a crown shape sits on the sprites' heads well (an upright hoop didn't), so the Flame Circlet is
+    # built on the Ember Crown's shape: a band whose points are flames
+    "flame_circlet": "a crown band of dark blackened iron with glowing molten gold edges and small ember gems, its five points are tall living flames of orange, gold and white-hot yellow instead of metal, item only, nobody wearing it",
 }
 # pieces that also get a looping animation (8 directions)
 ANIMS = {
-    "flame_circlet": "the flames flicker, dance and lick upward in a seamless loop while the circlet stays still",
+    "flame_circlet": "only the flames move: they flicker, dance and lick upward in a seamless loop; the iron crown band stays perfectly still and does not turn or tilt",
 }
+# pieces shaped after an existing object (its id), instead of styled on the player's head
+SHAPE = {"flame_circlet": "ember_crown"}
 
 
 def log(*a):
@@ -125,7 +129,11 @@ if __name__ == "__main__":
     for pid, desc in PIECES.items():
         if only and pid not in only:
             continue
-        res = post("/create-8-direction-object", {"description": desc, "view": "low top-down", "style_image": ref})
+        body = {"description": desc, "view": "low top-down", "style_image": ref}
+        if pid in SHAPE:  # the other piece's 8 views guide this one's shape and style
+            other = json.load(open(os.path.join(out, SHAPE[pid] + ".json")))
+            body = {"description": desc, "view": "low top-down", "style_object_id": other["id"], "size": 48}
+        res = post("/create-8-direction-object", body)
         queued[pid] = res.get("object_id")
     for pid, oid in queued.items():
         j = wait(oid, limit=3600)

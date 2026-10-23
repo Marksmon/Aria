@@ -18,7 +18,8 @@ const LAYOUTS = import.meta.glob('./art/hg_*.json', { eager: true, import: 'defa
 // A piece can tune its own fit (see TUNE): w and at as above, dx / dy to nudge it (in head
 // widths / head heights), and hair: hide the wearer's hair above that line (same scale as at),
 // so spikes don't poke through a helmet. 0 leaves the hair alone. swap: { dir: other dir } shows
-// another direction's art where PixelLab drew one badly. dirs: { dir: { at, w, dx, dy } } tunes
+// another direction's art where PixelLab drew one badly. base: sit the piece on its bottom edge
+// instead of its rim (a ring's widest row is its middle). sy: squash it vertically. dirs: { dir: { at, w, dx, dy } } tunes
 // one direction on its own (left mirrors right, so give the facing's own direction).
 const ANIM_FPS = 9;
 const FIT = { head: { w: 0.86, at: 0.47, dx: 0, dy: 0, hair: 0 }, face: { w: 0.78, at: 0.82, dx: 0, dy: 0, hair: 0 } };
@@ -31,7 +32,8 @@ export const TUNE = {
   // the front of the face
   round_glasses: { w: 0.62, at: 0.74 }, // on the eyes when the packer found them; this is the fallback
   raven_mask: { w: 0.78, at: 0.74 },
-  flame_circlet: { at: 0.4, hair: 0.3 },
+  // built on the Ember Crown's shape, so it sits the same way
+  flame_circlet: { at: 0.36, hair: 0.2, swap: { right: 'downright', left: 'downleft' } },
 };
 const fitOf = (id) => ({ ...FIT[HEADGEAR[id].slot], ...TUNE[id] });
 
@@ -277,7 +279,7 @@ export class HeadLayer {
     const [, , , , , rx, , ry, , lens] = cell, { cw, ch } = pc.L;
     const upp = body.scale.x / fw;
     let sx = h.w * fit.w / front[6], sy = sx; // body pixels per headgear pixel: front rim = head width
-    let ax = rx, ay = ry + 0.5;               // the rim's middle goes on the attach line...
+    let ax = rx, ay = fit.base ? cell[4] : ry + 0.5; // the rim's middle (or its bottom) goes on the attach line...
     let px = h.x + fit.dx * (dir.includes('left') ? -1 : 1) * h.w;
     let py = h.crown + (h.neck - h.crown) * (fit.at + fit.dy);
     const eyes = h.eyes || [];
@@ -291,7 +293,7 @@ export class HeadLayer {
     } else if (slot === 'face' && lens?.length === 2 && eyes.length === 2) { // a side view: one lens, one eye
       ax = lens[0]; ay = lens[1]; px = eyes[0]; py = eyes[1];
     }
-    const k = sx * upp, HW = cw * k, HH = ch * sy * upp;
+    const k = sx * upp, HW = cw * k, HH = ch * sy * (fit.sy || 1) * upp;
     const dx = (px / fw - 0.5) * body.scale.x, dy = (1 - py / fh - body.center.y) * body.scale.y;
     const fr = pc.tex[dir], t = fr[Math.floor(performance.now() / 1000 * ANIM_FPS) % fr.length]; // animated pieces loop
     if (this.mat.map !== t) { if (!this.mat.map) this.mat.needsUpdate = true; this.mat.map = t; }
