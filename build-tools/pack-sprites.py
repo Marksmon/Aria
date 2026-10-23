@@ -168,19 +168,28 @@ def pack(name, opts):
         mw = span(widest)
         crown = next(y for y in band if span(y) >= mw * 0.6)
         neck = next((y for y in range(widest, top + int(bh * 0.55)) if 0 < span(y) < mw * 0.72), crown + int(bh * 0.3))
-        return [round((rows_[widest][0] + rows_[widest][1]) / 2), crown, neck, mw]
+        # centre: the middle of the rows just under the crown (the widest row can be the shoulders
+        # in a tucked roll)
+        top_rows = [y for y in range(crown, crown + max(3, int(bh * 0.18))) if y in rows_]
+        cx = sum(rows_[y][0] + rows_[y][1] for y in top_rows) / (2 * len(top_rows))
+        return [round(cx), crown, neck, mw]
 
-    def heads(frames):
+    # one head width per direction, the standing pose's (a slash effect, a raised sword or a tucked
+    # roll can make a frame look wider);
+    # a frame whose head looks far wider than that is confused by the weapon, so it borrows the
+    # middle frame's head, while rolls and lunges that really move the head keep their own
+    def heads(frames, mw=None):
         hs = [head(f) for f in frames]
+        mw = mw or sorted(h[3] for h in hs)[len(hs) // 2]
         mid = sorted(hs, key=lambda h: h[1])[len(hs) // 2]
-        return [h if abs(h[1] - mid[1]) <= 6 and abs(h[0] - mid[0]) <= 8 else mid for h in hs]
+        return [[h[0], h[1], h[2], mw] if h[3] <= mw * 1.3 else [mid[0], mid[1], mid[2], mw] for h in hs]
 
     rows, layout = [], {}
     for d in art:
         layout[d] = {}
         for anim in ['idle'] + sorted(a for a in art[d] if a != 'idle'):
             frames = [f.crop(box) for f in art[d][anim]]
-            layout[d][anim] = [len(rows), len(frames), [feet(f) for f in frames], heads(frames)]
+            layout[d][anim] = [len(rows), len(frames), [feet(f) for f in frames], heads(frames, layout[d].get('idle', [0, 0, 0, [[0, 0, 0, 0]]])[3][0][3])]
             rows.append(frames)
     # body size: how big the character itself is when standing, used to scale it in the world
     idle = [f.crop(box).getbbox() for d in art.values() for f in d['idle']]

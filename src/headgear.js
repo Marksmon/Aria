@@ -13,7 +13,9 @@ import * as THREE from 'three';
 
 const SHEETS = import.meta.glob('./art/hg_*.png', { eager: true, import: 'default' });
 const LAYOUTS = import.meta.glob('./art/hg_*.json', { eager: true, import: 'default' });
-const FIT = { head: { w: 1.16, at: 0.5 }, face: { w: 0.8, at: 0.7 } }; // width vs head, attach line
+// a piece's rim (see pack-headgear.py) is sized to `w` times the head's width and put on the line
+// `at` of the way from crown to neck: a hat's brim just above the brows, glasses on the eyes
+const FIT = { head: { w: 0.86, at: 0.47 }, face: { w: 0.78, at: 0.74 } };
 
 // a PixelLab piece: one texture per direction, cut from its sheet once the image loads
 const images = {};
@@ -233,12 +235,11 @@ export class HeadLayer {
     const h = tex.userData.head, slot = HEADGEAR[this.id].slot, fit = FIT[slot];
     const cell = pc.L.dirs[dir], front = pc.L.dirs.down;
     if (!cell || !front || (slot === 'face' && dir.startsWith('up'))) { this.sprite.visible = false; return; }
-    const [, x0, y0, x1, y1] = cell, { cw, ch } = pc.L;
+    const [, , , , , rx, , ry] = cell, { cw, ch } = pc.L;
     const upp = body.scale.x / fw;
-    const k = (h.w * fit.w / (front[3] - front[1])) * upp; // world units per headgear pixel
+    const k = (h.w * fit.w / front[6]) * upp; // world units per headgear pixel: front rim = head width
     const HW = cw * k, HH = ch * k;
-    // attach: a hat's base (a little above its bottom edge) on the line; glasses by their middle
-    const ax = (x0 + x1) / 2, ay = slot === 'head' ? y1 - (y1 - y0) * 0.12 : (y0 + y1) / 2;
+    const ax = rx, ay = ry + 0.5; // the rim's middle goes on the attach line
     const py = h.crown + (h.neck - h.crown) * fit.at;
     const dx = (h.x / fw - 0.5) * body.scale.x, dy = (1 - py / fh - body.center.y) * body.scale.y;
     if (this.mat.map !== pc.tex[dir]) { if (!this.mat.map) this.mat.needsUpdate = true; this.mat.map = pc.tex[dir]; }
