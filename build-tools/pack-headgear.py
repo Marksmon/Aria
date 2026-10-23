@@ -68,7 +68,30 @@ def rim(im, band=0.35):
 # renders glasses as a loose object (arms sticking out at every angle), so the packer keeps the
 # front's lenses, squashes the far side for the diagonals, and makes a thin profile with a short
 # arm for the sides. Faces aren't seen from behind. arms: cut what rises above the lenses.
-FACE = {"round_glasses": {"arms": True, "temple": True}, "raven_mask": {}}
+# raw: keep PixelLab's own views (a mask has no arms to stick out) and find its eye holes by
+# colour, given as (r, g, b) lower bounds and a blue upper bound.
+FACE = {"round_glasses": {"arms": True, "temple": True}, "raven_mask": {"raw": (150, 110, 90)}}
+
+
+def raw_face_views(ims, eye):
+    """PixelLab's own front, diagonal and side views of a face piece, with its eye holes found by colour."""
+    out = {}
+    for k in ("down", "downright", "right", "downleft", "left"):
+        im = ims[k]
+        px = im.load()
+        pts = [(x, y) for x in range(im.width) for y in range(im.height)
+               if px[x, y][3] > 128 and px[x, y][0] >= eye[0] and px[x, y][1] >= eye[1] and px[x, y][2] <= eye[2]]
+        pts.sort()
+        groups, cur = [], []
+        for p in pts:  # split into eyes where the columns jump
+            if cur and p[0] - cur[-1][0] > 2:
+                groups.append(cur); cur = []
+            cur.append(p)
+        if cur:
+            groups.append(cur)
+        groups = sorted(sorted(groups, key=len, reverse=True)[:1 if k in ("right", "left") else 2], key=lambda g: g[0][0])
+        out[k] = (im, [(sum(p[0] for p in g) / len(g), sum(p[1] for p in g) / len(g)) for g in groups])
+    return out
 
 
 def rows_of(im):
@@ -122,10 +145,9 @@ def face_views(front, opts):
     def squash(im, k):
         return im.resize((max(1, round(im.width * k)), im.height), Image.NEAREST)
 
-    left, right = f.crop((0, 0, half, h)), squash(f.crop((half, 0, w, h)), 0.6)
-    diag = Image.new("RGBA", (left.width + right.width, h))
-    diag.paste(left, (0, 0)); diag.paste(right, (left.width, 0))
-    diag_lens = [(L[0], L[1]), (half + (R[0] - half) * 0.6, R[1])]
+    # turned part way: narrower all over (which eye is foreshortened depends on the art's turn)
+    diag = squash(f, 0.85)
+    diag_lens = [(L[0] * 0.85, L[1]), (R[0] * 0.85, R[1])]
     near = squash(f.crop((half, 0, w, h)), 0.32)
     near_cx = (R[0] - half) * 0.32
     if opts.get("temple"):  # an arm back to the ear, in the frame's own dark outline colour
@@ -161,7 +183,7 @@ def pack(pid):
         frames[ours] = [load(f"{d}_{i}.png") for i in range(n)] or [ims[ours]]
     lenses = {}
     if pid in FACE and "down" in ims:  # built from the front, each view centred in a cell
-        views = face_views(ims["down"], FACE[pid])
+        views = raw_face_views(ims, FACE[pid]["raw"]) if "raw" in FACE[pid] else face_views(ims["down"], FACE[pid])
         W = max(v.width for v, _ in views.values()) + 4
         H = max(v.height for v, _ in views.values()) + 4
         ims = {}

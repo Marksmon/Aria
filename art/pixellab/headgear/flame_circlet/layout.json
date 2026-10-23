@@ -17,10 +17,10 @@
    "height": 48
   },
   "sheet_size": {
-   "width": 384,
-   "height": 48
+   "width": 432,
+   "height": 432
   },
-  "columns": 8,
+  "columns": 9,
   "pivot": "cell-center",
   "rows": [
    {
@@ -37,9 +37,73 @@
      "west",
      "south-west"
     ]
+   },
+   {
+    "row": 1,
+    "type": "animation",
+    "frame_count": 9,
+    "animation": "the flames flicker, dance and lick upward in a sea",
+    "animation_group_id": "d29cb914-029e-464f-8df8-bb8241d44c9c",
+    "direction": "south"
+   },
+   {
+    "row": 2,
+    "type": "animation",
+    "frame_count": 9,
+    "animation": "the flames flicker, dance and lick upward in a sea",
+    "animation_group_id": "d29cb914-029e-464f-8df8-bb8241d44c9c",
+    "direction": "south-east"
+   },
+   {
+    "row": 3,
+    "type": "animation",
+    "frame_count": 9,
+    "animation": "the flames flicker, dance and lick upward in a sea",
+    "animation_group_id": "d29cb914-029e-464f-8df8-bb8241d44c9c",
+    "direction": "east"
+   },
+   {
+    "row": 4,
+    "type": "animation",
+    "frame_count": 9,
+    "animation": "the flames flicker, dance and lick upward in a sea",
+    "animation_group_id": "d29cb914-029e-464f-8df8-bb8241d44c9c",
+    "direction": "north-east"
+   },
+   {
+    "row": 5,
+    "type": "animation",
+    "frame_count": 9,
+    "animation": "the flames flicker, dance and lick upward in a sea",
+    "animation_group_id": "d29cb914-029e-464f-8df8-bb8241d44c9c",
+    "direction": "north"
+   },
+   {
+    "row": 6,
+    "type": "animation",
+    "frame_count": 9,
+    "animation": "the flames flicker, dance and lick upward in a sea",
+    "animation_group_id": "d29cb914-029e-464f-8df8-bb8241d44c9c",
+    "direction": "north-west"
+   },
+   {
+    "row": 7,
+    "type": "animation",
+    "frame_count": 9,
+    "animation": "the flames flicker, dance and lick upward in a sea",
+    "animation_group_id": "d29cb914-029e-464f-8df8-bb8241d44c9c",
+    "direction": "west"
+   },
+   {
+    "row": 8,
+    "type": "animation",
+    "frame_count": 9,
+    "animation": "the flames flicker, dance and lick upward in a sea",
+    "animation_group_id": "d29cb914-029e-464f-8df8-bb8241d44c9c",
+    "direction": "south-west"
    }
   ]
  },
  "export_version": "1.0",
- "export_date": "2026-10-23T16:55:08.072515+00:00"
+ "export_date": "2026-10-23T17:07:09.204454+00:00"
 }

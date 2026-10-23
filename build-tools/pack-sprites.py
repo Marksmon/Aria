@@ -20,6 +20,8 @@ MIRROR = {'right': 'left', 'left': 'right'}
 #   eight:   also pack the four diagonal directions
 #   use:     {game name: export name}, e.g. play the 'stride' animation as 'walk'
 #   prefer:  export groups that win over others of the same name (e.g. a redone direction)
+#   eyes:    the eye centres measured by hand from the standing poses, relative to the head (centre
+#            x, crown): {'down': [x1, y1, x2, y2], 'right': [x, y]}. Without it they are detected.
 #   skip:    export animations left out of the sheet (tries that weren't used)
 #   mirror:  (anim, direction) pairs drawn as the mirror of the opposite side
 #   outline: (pixels, colour) border traced around the silhouette. colour 'shade' tints each
@@ -30,9 +32,11 @@ MIRROR = {'right': 'left', 'left': 'right'}
 CHARS = {name: {} for name in ['slime', 'blueslime', 'sprout', 'crab', 'mushling', 'beetle', 'wisp', 'jarl']}
 # even 8-frame template walk (the first one limped); front and back redone as a skeleton walk,
 # where the template's legs barely moved
-CHARS['player'] = {'eight': True, 'use': {'walk': 'walking'}, 'prefer': {'walking-e8b5c561'}, 'skip': {'stepv3'}}
+CHARS['player'] = {'eight': True, 'use': {'walk': 'walking'}, 'prefer': {'walking-e8b5c561'}, 'skip': {'stepv3'},
+                   'eyes': {'down': [-4.5, 20, 5.5, 20], 'right': [4.5, 19.5]}}
 CHARS.update({name: {'eight': True} for name in ['bram', 'tilly', 'wren']})
-CHARS['novice'] = {'eight': True, 'use': {'walk': 'walking'}}  # skeleton walk in all eight directions
+CHARS['novice'] = {'eight': True, 'use': {'walk': 'walking'},  # skeleton walk in all eight directions
+                   'eyes': {'down': [-5, 19, 6, 19], 'right': [6, 18]}}
 
 
 def islands(f):
@@ -202,7 +206,7 @@ def pack(name, opts):
             xs = [x for x in range(fw) if skin(px[x, y])]
             if len(xs) < 3:
                 continue
-            for x in range(xs[0] + 1, xs[-1]):
+            for x in range(xs[0] + 3, xs[-1] - 2):  # not the face's outline or an ear at its edge
                 c = px[x, y]
                 if c[3] > 128 and lum(c) < 110:
                     pts.append((x, y))
@@ -264,6 +268,30 @@ def pack(name, opts):
 
     os.makedirs(OUT, exist_ok=True)
     sheet.save(os.path.join(OUT, name + '.png'), optimize=True)
+    # Eyes per frame come from the standing poses, where detection is reliable: offsets from the
+    # head (centre x, crown) found facing front and to the side, the diagonals blended from those
+    # (the face turned part way, the far eye foreshortened), then placed on every frame's head.
+    def rel(d):
+        h = layout.get(d, {}).get('idle', [0, 0, 0, [[0] * 4]])[3][0]
+        e = h[4:]
+        return [(e[i] - h[0], e[i + 1] - h[1]) for i in range(0, len(e), 2)]
+    front, side = rel('down'), rel('right')
+    if 'eyes' in opts:  # measured by hand
+        e = opts['eyes']
+        front, side = [(e['down'][0], e['down'][1]), (e['down'][2], e['down'][3])], [(e['right'][0], e['right'][1])]
+    if len(front) == 2 and len(side) == 1:
+        (fl, fy1), (fr, fy2) = front
+        fy, mid, gap = (fy1 + fy2) / 2, (fl + fr) / 2, fr - fl
+        sx = side[0][0]
+        dmid, dgap = mid + (sx - mid) * 0.5, gap * 0.8
+        sy = side[0][1]
+        offs = {'down': [fl, fy, fr, fy], 'right': [sx, sy], 'left': [-sx, sy],
+                'downright': [dmid - dgap / 2, fy, dmid + dgap / 2, fy], 'downleft': [-dmid - dgap / 2, fy, -dmid + dgap / 2, fy]}
+        for d in layout:
+            o = offs.get(d, [])
+            for anim, entry in layout[d].items():
+                entry[3] = [h[:4] + [round((h[0] if i % 2 == 0 else h[1]) + v, 1) for i, v in enumerate(o)] for h in entry[3]]
+
     # hair colours: the commonest colours at the top of the head in the standing poses, so headgear
     # can hide the hair it covers (and only hair, not a sword raised over the head)
     from collections import Counter
