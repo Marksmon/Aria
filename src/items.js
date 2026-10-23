@@ -1,6 +1,6 @@
 // Items (materials, usables and equipment) and recipes, plus the painted icons used both on the ground and in menus.
 import * as THREE from 'three';
-import { headgearIcon } from './headgear.js';
+import { headgearIcon, headgearReady } from './headgear.js';
 
 // type: use (Usables tab), equip (Equips tab, one per slot, never stacks) or misc (Miscs tab).
 // Equipment: slot (weapon, armor, shoes, light, acc), atk + wlv for weapons, def, and fx for a
@@ -290,9 +290,9 @@ const PAINT = {
 
 const cache = {};
 export function iconCanvas(id) {
-  if (!cache[id]) {
+  if (!cache[id] || cache[id].pending) {
     const { c, g } = mk();
-    if (ITEMS[id]?.slot === 'head' || ITEMS[id]?.slot === 'face') headgearIcon(g, id);
+    if (ITEMS[id]?.slot === 'head' || ITEMS[id]?.slot === 'face') { headgearIcon(g, id); c.pending = !headgearReady(id); }
     else (PAINT[ITEMS[id]?.icon || id] || PAINT.gel)(g);
     cache[id] = c;
   }
@@ -301,7 +301,10 @@ export function iconCanvas(id) {
 
 const urls = {};
 export function iconURL(id) {
-  return (urls[id] ||= iconCanvas(id).toDataURL());
+  if (urls[id]) return urls[id];
+  const c = iconCanvas(id), u = c.toDataURL();
+  if (!c.pending) urls[id] = u; // headgear art still loading: draw it again next time
+  return u;
 }
 
 const texes = {};

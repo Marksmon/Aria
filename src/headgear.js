@@ -4,10 +4,44 @@
 // without new sprites per job: it follows the head through walking, attacking and rolling and
 // scales to the head's width.
 //
-// Each piece is painted as tiny pixel art in three views: front, side (facing right; left is the
-// mirror) and back. slot: 'head' (sits on the crown) or 'face' (sits on the eye line; most face
-// pieces vanish when you face away). Sizes are in sprite pixels for a head 34 px wide.
+// Pieces made with PixelLab (build-tools/pixellab-headgear.py, packed by pack-headgear.py into
+// src/art/hg_<id>.png) come in all eight directions in the sprites' own style; a hat is sized a
+// little wider than the head and sits down over the hair, glasses sit on the eye line. Pieces not
+// made yet fall back to the small painted versions below (front, side and back views).
+// slot: 'head' (on the crown) or 'face' (on the eyes; hidden when you face away).
 import * as THREE from 'three';
+
+const SHEETS = import.meta.glob('./art/hg_*.png', { eager: true, import: 'default' });
+const LAYOUTS = import.meta.glob('./art/hg_*.json', { eager: true, import: 'default' });
+const FIT = { head: { w: 1.16, at: 0.5 }, face: { w: 0.8, at: 0.7 } }; // width vs head, attach line
+
+// a PixelLab piece: one texture per direction, cut from its sheet once the image loads
+const images = {};
+function imagePiece(id) {
+  if (id in images) return images[id];
+  const url = SHEETS[`./art/hg_${id}.png`], L = LAYOUTS[`./art/hg_${id}.json`];
+  if (!url || !L) return (images[id] = null);
+  const piece = { L, tex: {}, loaded: false, img: new Image() };
+  for (const dir of Object.keys(L.dirs)) {
+    const c = document.createElement('canvas');
+    c.width = L.cw; c.height = L.ch;
+    const t = new THREE.CanvasTexture(c);
+    t.colorSpace = THREE.SRGBColorSpace;
+    t.magFilter = t.minFilter = THREE.NearestFilter;
+    t.generateMipmaps = false;
+    piece.tex[dir] = t;
+  }
+  piece.img.onload = () => {
+    for (const [dir, [i]] of Object.entries(L.dirs)) {
+      piece.tex[dir].image.getContext('2d').drawImage(piece.img, i * L.cw, 0, L.cw, L.ch, 0, 0, L.cw, L.ch);
+      piece.tex[dir].needsUpdate = true;
+    }
+    piece.loaded = true;
+  };
+  piece.img.src = url;
+  return (images[id] = piece);
+}
+export const headgearReady = (id) => !imagePiece(id) || imagePiece(id).loaded;
 
 const REF_W = 34;   // head width the art is drawn for
 const OUT = '#2e2118';
@@ -161,6 +195,14 @@ export function headgearViews(id) {
 
 // a 64x64 icon from the front view
 export function headgearIcon(g, id) {
+  const pc = imagePiece(id);
+  if (pc) {
+    const [i, x0, y0, x1, y1] = pc.L.dirs.down || Object.values(pc.L.dirs)[0];
+    const w = x1 - x0, h = y1 - y0, k = Math.min(56 / w, 52 / h);
+    g.imageSmoothingEnabled = false;
+    if (pc.loaded) g.drawImage(pc.img, i * pc.L.cw + x0, y0, w, h, 32 - (w * k) / 2, 32 - (h * k) / 2, w * k, h * k);
+    return;
+  }
   const def = HEADGEAR[id];
   const [w, h] = def.size;
   const { c, g: hg } = canvas(w, h);
@@ -186,9 +228,32 @@ export class HeadLayer {
 
   set(id) { this.id = HEADGEAR[id] ? id : null; }
 
+  // a PixelLab piece: scaled from its front view to the head's width, then sat on the head
+  updateImage(pc, body, tex, dir, fw, fh) {
+    const h = tex.userData.head, slot = HEADGEAR[this.id].slot, fit = FIT[slot];
+    const cell = pc.L.dirs[dir], front = pc.L.dirs.down;
+    if (!cell || !front || (slot === 'face' && dir.startsWith('up'))) { this.sprite.visible = false; return; }
+    const [, x0, y0, x1, y1] = cell, { cw, ch } = pc.L;
+    const upp = body.scale.x / fw;
+    const k = (h.w * fit.w / (front[3] - front[1])) * upp; // world units per headgear pixel
+    const HW = cw * k, HH = ch * k;
+    // attach: a hat's base (a little above its bottom edge) on the line; glasses by their middle
+    const ax = (x0 + x1) / 2, ay = slot === 'head' ? y1 - (y1 - y0) * 0.12 : (y0 + y1) / 2;
+    const py = h.crown + (h.neck - h.crown) * fit.at;
+    const dx = (h.x / fw - 0.5) * body.scale.x, dy = (1 - py / fh - body.center.y) * body.scale.y;
+    if (this.mat.map !== pc.tex[dir]) { if (!this.mat.map) this.mat.needsUpdate = true; this.mat.map = pc.tex[dir]; }
+    this.sprite.scale.set(HW, HH, 1);
+    this.sprite.center.set(ax / cw - dx / HW, (1 - ay / ch) - dy / HH);
+    this.sprite.position.copy(body.position);
+    this.mat.color.copy(body.material.color);
+    this.sprite.visible = true;
+  }
+
   // body: the character's sprite; tex: its current frame; dir: sprite direction; fw, fh: frame size
   update(body, tex, dir, fw, fh, show) {
-    const h = tex.userData.head, v = this.id && headgearViews(this.id);
+    const pc = this.id && imagePiece(this.id);
+    if (pc && show && tex.userData.head && body.visible) { this.updateImage(pc, body, tex, dir, fw, fh); return; }
+    const h = tex.userData.head, v = !pc && this.id && headgearViews(this.id);
     const view = v && v[VIEW[dir] || 'front'];
     if (!show || !h || !view || !body.visible) { this.sprite.visible = false; return; }
     const def = v.def, [cw, ch] = def.size, [ax, ay] = def.anchor;
