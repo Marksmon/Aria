@@ -26,11 +26,11 @@ jobs:
       - name: Run
         env:
           PIXELLAB_API_KEY: ${{ secrets.PIXELLAB_API_KEY }}
-          TASK: ${{ github.event.inputs.task || 'generate' }}
+          TASK: ${{ github.event.inputs.task }}
         run: |
           pip install requests >/dev/null
           mkdir -p out
-          python build-tools/pixellab.py "$TASK" out 2>&1 | tee out/log.txt
+          TASK="${TASK:-$(cat build-tools/pixellab-task.txt)}"; echo "task=$TASK"; python build-tools/pixellab.py "$TASK" out 2>&1 | tee out/log.txt
       - name: Commit results to the art branch
         if: always()
         run: |
@@ -41,7 +41,7 @@ jobs:
           if git rev-parse --verify origin/art >/dev/null 2>&1; then git checkout -B art origin/art; else git checkout --orphan art && git rm -rf . >/dev/null; fi
           mkdir -p art/pixellab && cp -r /tmp/res/. art/pixellab/
           git add art
-          git commit -m "PixelLab: ${TASK:-generate} run ${{ github.run_number }}" || echo "nothing to commit"
+          git commit -m "PixelLab: ${TASK:-$(cat build-tools/pixellab-task.txt 2>/dev/null)} run ${{ github.run_number }}" || echo "nothing to commit"
           git push origin art
         env:
-          TASK: ${{ github.event.inputs.task || 'generate' }}
+          TASK: ${{ github.event.inputs.task }}
