@@ -4,7 +4,7 @@ import { dirFor } from './noise.js';
 const BASE_SPEED = 4.2;  // world units per second
 const RADIUS = 0.3;      // collision radius
 const HEIGHT = 1.38;     // standing height in world units
-const WALK_FPS = 11;
+const STRIDE = 1.6;       // world units covered by one walk cycle, so feet keep pace with the ground
 const ROLL_TIME = 0.4, ROLL_SPEED = 8.4, ROLL_CD = 0.75; // 3.4 units, fast then easing out
 // dodge frames played as dive-and-recover: some directions end lying down (frame 6), so the
 // roll goes into the dive and back out through the earlier frames instead
@@ -164,9 +164,9 @@ export class Player {
       const winding = this.atkAnim > this.atkDur - 0.18; // only the start of a swing slows you
       if (this.moving) {
         const speed = BASE_SPEED * this.speedMul * (winding ? 0.55 : 1) * (this.slowT > 0 ? 0.5 : 1);
-        this.tryMove(move.x * speed * dt, move.z * speed * dt);
+        const moved = this.tryMove(move.x * speed * dt, move.z * speed * dt);
         if (!attacking) this.face = { x: move.x / mag, z: move.z / mag };
-        this.animT += dt * WALK_FPS * Math.min(1, mag + 0.3) * this.speedMul;
+        this.animT += moved / STRIDE; // in walk cycles
       } else {
         this.animT = 0;
       }
@@ -187,7 +187,7 @@ export class Player {
       tex = A.attack[Math.min(A.attack.length - 1, Math.floor(k * A.attack.length))];
     } else if (this.moving && this.state === 'normal') {
       // walk frame 0 is the standing pose; the loop is frames 1..n
-      tex = A.walk[1 + (Math.floor(this.animT) % (A.walk.length - 1))];
+      tex = A.walk[1 + (Math.floor(this.animT * (A.walk.length - 1)) % (A.walk.length - 1))];
     }
     if (this.mat.map !== tex) { this.mat.map = tex; this.sprite.center.y = tex.userData.anchor; }
 

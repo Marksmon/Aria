@@ -20,6 +20,7 @@ export const MOB_DEFS = {
 const HEART_CHANCE = 0.15;
 const RESPAWN = 60;
 const ATTACK_ANIM = 0.5; // PixelLab monsters play their attack animation for this long
+const STRIDE = 1.5;      // walk cycle length in body widths: legs keep pace with the ground
 
 class Mob {
   constructor(mgr, type, x, z) {
@@ -60,6 +61,7 @@ class Mob {
     this.specialCd = 2;
     this.heading = { x: 0, z: 1 };
     this.atkAnim = 0;
+    this.walked = 0; // distance walked, drives the walk cycle
     this.sprite.visible = this.shadow.visible = true;
     const upp = d.w / this.art.body[0]; // def.w is the body width
     this.sprite.scale.set(this.art.fw * upp, this.art.fh * upp, 1);
@@ -118,6 +120,7 @@ class Mob {
       this.knock.z *= k;
     }
 
+    const x0 = this.x, z0 = this.z; // after knockback, so being pushed doesn't move the legs
     const dx = p.x - this.x, dz = p.z - this.z, dist = Math.hypot(dx, dz);
     const low = this.hp / d.hp <= 0.3 && d.hp > 1;
     const speed = d.speed * (low ? 0.6 : 1);
@@ -239,6 +242,7 @@ class Mob {
     }
 
     // ---- visuals ----
+    this.walked += Math.hypot(this.x - x0, this.z - z0);
     if (d.ai === 'hopper') this.hop += dt * (moving ? 1.25 : 0.6);
     let lift = 0;
     if (d.ai === 'hopper' && moving && this.hop % 1 < 0.55) lift = Math.sin(((this.hop % 1) / 0.55) * Math.PI) * 0.28 * d.w;
@@ -262,7 +266,8 @@ class Mob {
     else if (moving && this.def.ai === 'hopper' && A.hop) {
       const ph = this.hop % 1;
       if (ph < 0.55) { list = A.hop; k = ph / 0.55; }
-    } else if ((moving || this.def.fly) && A.walk) { list = A.walk; k = (this.t * 1.6) % 1; } // fliers never stop
+    } else if (this.def.fly && A.walk) { list = A.walk; k = (this.t * 1.6) % 1; } // fliers flutter in place
+    else if (moving && A.walk) { list = A.walk; k = (this.walked / (STRIDE * this.def.w)) % 1; }
     return list[Math.min(list.length - 1, Math.floor(k * list.length))];
   }
 }
