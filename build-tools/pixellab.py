@@ -1,20 +1,152 @@
-"""PixelLab helper, run inside GitHub Actions.
+"""PixelLab sprite generator. Runs inside GitHub Actions (GitHub's servers can reach the API).
 
-probe: saves the API schema + account balance so the generator can be written against the real API.
+  probe     save the API schema + account balance
+  generate  create the player + Green Slime with walk and attack animations, then download
+            each character's zip into <out>/<name>/
+
+Results are committed to the `art` branch by the workflow.
 """
-import json, os, sys, requests
+import io, json, os, sys, time, zipfile
+import requests
 
 BASE = "https://api.pixellab.ai/v2"
 task, out = sys.argv[1], sys.argv[2]
 key = os.environ.get("PIXELLAB_API_KEY", "")
-H = {"Authorization": f"Bearer {key}"} if key else {}
+H = {"Authorization": f"Bearer {key}", "Content-Type": "application/json"}
+DIRS = ["south", "east", "north", "west"]
+
+STYLE = "cute chibi fantasy RPG sprite in the style of classic 2000s MMORPGs, soft shading"
+
+CHARACTERS = [
+    {
+        "name": "player",
+        "endpoint": "/create-character-with-4-directions",
+        "body": {
+            "description": "young adventurer with messy orange-brown hair, blue tunic with a brown belt, "
+                           "red scarf, brown boots, small sword at the hip. " + STYLE,
+            "image_size": {"width": 64, "height": 64},
+            "view": "low top-down",
+            "proportions": {"type": "preset", "name": "chibi"},
+            "outline": "single color black outline",
+            "shading": "basic shading",
+            "detail": "medium detail",
+        },
+        "animations": [
+            {"animation_name": "walk", "action_description": "walking", "frame_count": 6},
+            {"animation_name": "attack", "action_description": "quick forward sword slash attack", "frame_count": 6},
+        ],
+    },
+    {
+        "name": "slime",
+        "endpoint": "/create-character-v3",
+        "body": {
+            "description": "small round moss-green slime blob monster with a tiny two-leaf sprout on top, "
+                           "big shiny eyes, rosy cheeks, " + STYLE,
+            "image_size": {"width": 64, "height": 64},
+            "view": "low top-down",
+            "outline": "single color black outline",
+            "detail": "medium detail",
+        },
+        "animations": [
+            {"animation_name": "hop", "action_description": "bouncing hop in place, squashing and stretching", "frame_count": 6},
+            {"animation_name": "attack", "action_description": "lunging forward to bump attack", "frame_count": 6},
+        ],
+    },
+]
+
+
+def log(*a):
+    print(time.strftime("%H:%M:%S"), *a, flush=True)
+
+
+def post(path, body):
+    r = requests.post(BASE + path, headers=H, json=body, timeout=120)
+    log("POST", path, r.status_code, r.text[:600])
+    r.raise_for_status()
+    return r.json()
+
+
+def get(path):
+    r = requests.get(BASE + path, headers=H, timeout=120)
+    return r
+
+
+def wait_job(job_id, label, limit=1500):
+    t0 = time.time()
+    while time.time() - t0 < limit:
+        r = get(f"/background-jobs/{job_id}")
+        if r.ok:
+            j = r.json()
+            st = j.get("status")
+            if st == "completed":
+                log(label, "completed in", int(time.time() - t0), "s")
+                return j
+            if st == "failed":
+                log(label, "FAILED", json.dumps(j.get("last_response"))[:800])
+                return None
+        else:
+            log(label, "poll", r.status_code, r.text[:200])
+        time.sleep(10)
+    log(label, "timed out")
+    return None
+
+
+def download_zip(cid, dest, limit=900):
+    t0 = time.time()
+    while time.time() - t0 < limit:
+        r = requests.get(f"{BASE}/characters/{cid}/zip", headers=H, timeout=180)
+        if r.status_code == 200:
+            os.makedirs(dest, exist_ok=True)
+            with zipfile.ZipFile(io.BytesIO(r.content)) as z:
+                z.extractall(dest)
+                log("zip", dest, len(z.namelist()), "files")
+            return True
+        log("zip", r.status_code, r.text[:200])
+        time.sleep(15)
+    return False
+
 
 if task == "probe":
     r = requests.get(f"{BASE}/openapi.json", timeout=60)
     open(f"{out}/openapi.json", "w").write(r.text)
-    print("openapi", r.status_code, len(r.text))
+    log("openapi", r.status_code, len(r.text))
     if key:
-        b = requests.get(f"{BASE}/balance", headers=H, timeout=60)
-        print("balance", b.status_code, b.text[:300])
+        b = get("/balance")
+        log("balance", b.status_code, b.text[:300])
     else:
-        print("no PIXELLAB_API_KEY secret set yet")
+        log("no PIXELLAB_API_KEY secret set yet")
+    sys.exit(0)
+
+if task == "generate":
+    if not key:
+        log("PIXELLAB_API_KEY secret is missing: add it under Settings > Secrets and variables > Actions")
+        sys.exit(1)
+    b = get("/balance")
+    log("balance before", b.status_code, b.text[:300])
+    manifest = {}
+    for ch in CHARACTERS:
+        name = ch["name"]
+        try:
+            res = post(ch["endpoint"], ch["body"])
+            cid = res["character_id"]
+            job = res.get("background_job_id")
+            manifest[name] = {"character_id": cid}
+            if job and not wait_job(job, f"{name} create"):
+                continue
+            # animations: one request each, all 4 directions
+            jobs = []
+            for a in ch["animations"]:
+                body = {"character_id": cid, "mode": "v3", "directions": DIRS, **a}
+                try:
+                    r = post("/characters/animations", body)
+                    jobs += [(a["animation_name"], j) for j in r.get("background_job_ids", [])]
+                except Exception as e:  # keep going with whatever works
+                    log(name, a["animation_name"], "animation request failed:", e)
+            for anim, j in jobs:
+                wait_job(j, f"{name} {anim}")
+            download_zip(cid, f"{out}/{name}")
+        except Exception as e:
+            log(name, "error:", e)
+    json.dump(manifest, open(f"{out}/manifest.json", "w"), indent=2)
+    b = get("/balance")
+    log("balance after", b.status_code, b.text[:300])
