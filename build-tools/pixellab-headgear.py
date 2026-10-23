@@ -95,12 +95,16 @@ DIR_ORDER = ["south", "south-east", "east", "north-east", "north", "north-west",
 if __name__ == "__main__":
     out, only = sys.argv[1], sys.argv[2:]
     ref = {"type": "base64", "format": "png", "base64": style_crop()}
+    # queue every piece first, so they render side by side, then collect them
+    queued = {}
     for pid, desc in PIECES.items():
         if only and pid not in only:
             continue
         res = post("/create-8-direction-object", {"description": desc, "view": "low top-down", "style_image": ref})
-        oid = res.get("object_id")
-        j = wait(oid)
-        if j:
+        queued[pid] = res.get("object_id")
+    for pid, oid in queued.items():
+        j = wait(oid, limit=3600)
+        if j and j.get("status") == "completed":
+            os.makedirs(out, exist_ok=True)
             json.dump(j, open(os.path.join(out, pid + ".json"), "w"), indent=1)
             save(oid, os.path.join(out, pid))
