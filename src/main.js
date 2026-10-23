@@ -36,6 +36,10 @@ const mobs = new MobManager(scene, world, lib, fx);
 mobs.populate([
   ['slime', 7, ['grove']],
   ['sprout', 5, ['grove']],
+  ['blueSlime', 5, ['fen']],
+  ['crab', 4, ['fen']],
+  ['mushling', 7, ['hollow']],
+  ['beetle', 6, ['ridge']],
 ]);
 
 const save = loadSave();
@@ -68,6 +72,15 @@ mobs.on('death', (m, drops) => {
   for (const [item, count] of drops) {
     if (item === 'heart') fx.drop(m.x, m.z, 'heart', 1, lib.fx.heart);
     else fx.drop(m.x, m.z, item, count, iconTexture(item));
+  }
+});
+
+mobs.on('spore', (m) => {
+  const y = world.heightAt(m.x, m.z) + 0.4;
+  fx.cloud(m.x, y, m.z);
+  if (Math.hypot(player.x - m.x, player.z - m.z) < 2.6) {
+    if (player.slowT <= 0) menus.message('Spores! You feel sluggish');
+    player.slowT = 2.2;
   }
 });
 

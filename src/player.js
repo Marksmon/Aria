@@ -33,6 +33,7 @@ export class Player {
     this.rollCd = 0;
     this.rollDir = { x: 0, z: 1 };
     this.iframes = 0;
+    this.slowT = 0;
     this.knock = { x: 0, z: 0 };
     this.events = { swing: [], hurt: [], faint: [], hit: [] };
 
@@ -110,6 +111,7 @@ export class Player {
     this.atkAnim -= dt;
     this.rollCd -= dt;
     this.iframes -= dt;
+    this.slowT -= dt;
 
     if (this.state === 'down') {
       this.sync();
@@ -145,7 +147,7 @@ export class Player {
       this.moving = mag > 0.08;
       const attacking = this.atkAnim > 0;
       if (this.moving) {
-        const speed = BASE_SPEED * this.speedMul * (attacking ? 0.55 : 1);
+        const speed = BASE_SPEED * this.speedMul * (attacking ? 0.55 : 1) * (this.slowT > 0 ? 0.5 : 1);
         this.tryMove(move.x * speed * dt, move.z * speed * dt);
         if (!attacking) this.face = { x: move.x / mag, z: move.z / mag };
         this.animT += dt * 9 * Math.min(1, mag + 0.3);
@@ -167,6 +169,8 @@ export class Player {
     const tex = this.art.frames[this.dir][frame];
     if (this.mat.map !== tex) this.mat.map = tex;
 
+    this.mat.color.set(this.slowT > 0 ? '#c8e6a0' : '#ffffff');
+    if (this.tint) this.mat.color.multiply(this.tint);
     const breathe = this.moving ? 1 : 1 + Math.sin(performance.now() / 420) * 0.015;
     this.sprite.scale.y = this.art.w * this.art.aspect * breathe;
     this.sprite.visible = !(this.iframes > 0 && this.state === 'normal' && Math.floor(this.iframes * 14) % 2 === 0);

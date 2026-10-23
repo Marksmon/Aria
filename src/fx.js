@@ -61,7 +61,7 @@ export class FX {
   cloud(x, y, z) {
     for (let i = 0; i < 9; i++) {
       const s = this.sprite(this.lib.fx.puff);
-      s.material.color?.set?.('#b9e08a');
+      s.material.color.set('#b9e08a');
       const a = (i / 9) * Math.PI * 2;
       s.position.set(x, y, z);
       s.scale.set(0.6, 0.6, 1);

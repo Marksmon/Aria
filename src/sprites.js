@@ -453,20 +453,28 @@ function waterTex() {
 }
 
 // ---------- Monsters ----------
+const SLIME_GREEN = { body: '#6cc24a', dark: '#4e9a35', low: '#8fb84e', sprout: true };
+const SLIME_BLUE = { body: '#5aa8e0', dark: '#3a7cb5', low: '#86b4cf', sprout: false };
+
 // Green Slime: our own design - a moss-green blob with a leaf sprout on top.
-function slime(frame, low = false) {
+function slime(frame, low = false, pal = SLIME_GREEN) {
   const { c, g } = mk(96, 88);
   const sx = [1, 1.14, 0.88][frame], sy = [1, 0.84, 1.14][frame];
   g.save();
   g.translate(48, 84);
   g.scale(sx, sy);
   g.translate(-48, -84);
-  // sprout
-  g.beginPath(); g.moveTo(48, 34); g.quadraticCurveTo(50, 24, 47, 16);
-  g.strokeStyle = OUT; g.lineWidth = 6; g.stroke();
-  g.strokeStyle = '#3f8f3a'; g.lineWidth = 3; g.stroke();
-  g.save(); g.translate(47, 18); g.rotate(-0.6); ell(g, -9, 0, 10, 5, '#5fae45', OUT, 2.5); g.restore();
-  g.save(); g.translate(47, 16); g.rotate(0.5); ell(g, 9, 0, 9, 4.5, '#7cc455', OUT, 2.5); g.restore();
+  if (pal.sprout) {
+    g.beginPath(); g.moveTo(48, 34); g.quadraticCurveTo(50, 24, 47, 16);
+    g.strokeStyle = OUT; g.lineWidth = 6; g.stroke();
+    g.strokeStyle = '#3f8f3a'; g.lineWidth = 3; g.stroke();
+    g.save(); g.translate(47, 18); g.rotate(-0.6); ell(g, -9, 0, 10, 5, '#5fae45', OUT, 2.5); g.restore();
+    g.save(); g.translate(47, 16); g.rotate(0.5); ell(g, 9, 0, 9, 4.5, '#7cc455', OUT, 2.5); g.restore();
+  } else {
+    // a single dew droplet floating on top
+    g.beginPath(); g.moveTo(48, 12); g.quadraticCurveTo(56, 22, 48, 28); g.quadraticCurveTo(40, 22, 48, 12);
+    g.fillStyle = '#bfe8ff'; g.fill(); g.strokeStyle = OUT; g.lineWidth = 2.5; g.stroke();
+  }
   // body
   g.beginPath();
   g.moveTo(10, 80);
@@ -474,10 +482,10 @@ function slime(frame, low = false) {
   g.bezierCurveTo(70, 30, 92, 50, 86, 80);
   g.quadraticCurveTo(48, 88, 10, 80);
   g.closePath();
-  g.fillStyle = low ? '#8fb84e' : '#6cc24a'; g.fill();
+  g.fillStyle = low ? pal.low : pal.body; g.fill();
   g.strokeStyle = OUT; g.lineWidth = 3.5; g.stroke();
   g.beginPath(); g.moveTo(16, 76); g.quadraticCurveTo(48, 86, 80, 76); g.quadraticCurveTo(48, 80, 16, 76);
-  g.fillStyle = '#4e9a35'; g.fill();
+  g.fillStyle = pal.dark; g.fill();
   ell(g, 30, 46, 9, 6, 'rgba(255,255,255,.55)', null);
   circleFill(g, 24, 54, 3, 'rgba(255,255,255,.5)');
   // face
@@ -537,6 +545,108 @@ function sproutling(frame, angry = false) {
     ell(g, 31, 81, 4, 2.5, 'rgba(240,120,120,.45)', null);
     ell(g, 65, 81, 4, 2.5, 'rgba(240,120,120,.45)', null);
   }
+  return c;
+}
+
+
+// Mudcrab: squat pinkish-brown crab, claws up. frame toggles claw snap.
+function crab(frame) {
+  const { c, g } = mk(112, 88);
+  const snap = frame === 1 ? 4 : 0;
+  // legs
+  for (const s of [-1, 1]) for (let i = 0; i < 3; i++) {
+    g.beginPath(); g.moveTo(56 + s * 22, 62 + i * 5); g.lineTo(56 + s * (36 + i * 4), 70 + i * 5 + (frame ? (i % 2 ? 2 : -2) : 0)); g.lineTo(56 + s * (40 + i * 4), 80);
+    g.strokeStyle = OUT; g.lineWidth = 6; g.stroke(); g.strokeStyle = '#b5664a'; g.lineWidth = 3; g.stroke();
+  }
+  // claws
+  for (const s of [-1, 1]) {
+    g.beginPath(); g.moveTo(56 + s * 20, 52); g.lineTo(56 + s * 34, 38);
+    g.strokeStyle = OUT; g.lineWidth = 8; g.stroke(); g.strokeStyle = '#c97a5a'; g.lineWidth = 4.5; g.stroke();
+    g.save(); g.translate(56 + s * 38, 30); g.rotate(s * 0.4);
+    ell(g, 0, 0, 11, 9, '#d9886a');
+    poly(g, [[-4, -6 - snap], [4, -14 - snap], [8, -4]], '#d9886a', OUT, 2.5);
+    g.restore();
+  }
+  // shell
+  ell(g, 56, 60, 30, 20, '#c97a5a', OUT, 3.5);
+  ell(g, 56, 56, 22, 12, '#e09a78', null);
+  ell(g, 48, 52, 7, 4, 'rgba(255,255,255,.45)', null);
+  // eyes on stalks
+  for (const x of [48, 64]) {
+    g.beginPath(); g.moveTo(x, 46); g.lineTo(x, 36); g.strokeStyle = OUT; g.lineWidth = 3; g.stroke();
+    ell(g, x, 34, 5, 5, '#fff', OUT, 2.5); circleFill(g, x + 1, 34, 2.4, '#1f1a18');
+  }
+  g.beginPath(); g.arc(56, 64, 4, 0.2, Math.PI - 0.2); g.strokeStyle = OUT; g.lineWidth = 2; g.stroke();
+  return c;
+}
+
+// Mushling: a walking mushroom with a sleepy face on its stem.
+function mushling(frame, puffing = false) {
+  const { c, g } = mk(96, 112);
+  const step = frame === 1 ? 1 : -1;
+  rrect(g, 34 + step * 3, 92, 11, 14, 5, '#c9b48a');
+  rrect(g, 51 - step * 3, 92, 11, 14, 5, '#c9b48a');
+  rrect(g, 28, 54, 40, 44, 16, '#efe2c4');
+  rrect(g, 52, 58, 12, 36, 6, '#d9c8a2', null);
+  // cap
+  g.beginPath(); g.ellipse(48, 56, 46, 40, 0, Math.PI, Math.PI * 2); g.closePath();
+  g.fillStyle = '#7a58ad'; g.fill(); g.strokeStyle = OUT; g.lineWidth = 3.5; g.stroke();
+  ell(g, 48, 57, 44, 7, '#5e447f');
+  for (const [x, y, r] of [[30, 34, 6], [52, 24, 7], [68, 40, 5], [40, 46, 4]]) ell(g, x, y, r, r * 0.8, '#d8c8f0', null);
+  // face
+  if (puffing) {
+    ell(g, 39, 74, 4, 4, '#2a2018', null); ell(g, 57, 74, 4, 4, '#2a2018', null);
+    ell(g, 48, 86, 6, 5, '#2a2018', null);
+  } else {
+    g.beginPath(); g.moveTo(34, 74); g.quadraticCurveTo(39, 78, 44, 74); g.moveTo(52, 74); g.quadraticCurveTo(57, 78, 62, 74);
+    g.strokeStyle = '#2a2018'; g.lineWidth = 2.5; g.stroke();
+    g.beginPath(); g.arc(48, 84, 3, 0.2, Math.PI - 0.2); g.stroke();
+  }
+  ell(g, 32, 82, 4, 2.5, 'rgba(240,120,120,.45)', null);
+  ell(g, 64, 82, 4, 2.5, 'rgba(240,120,120,.45)', null);
+  return c;
+}
+
+// Pebble Beetle: round stony shell with pebbles stuck on, slow and sturdy.
+function beetle(frame) {
+  const { c, g } = mk(112, 96);
+  for (const s of [-1, 1]) for (let i = 0; i < 3; i++) {
+    const off = (frame === 1) === (i % 2 === 0) ? 3 : -3;
+    g.beginPath(); g.moveTo(56 + s * 26, 62 + i * 7); g.lineTo(56 + s * (42 + off), 74 + i * 6); g.lineTo(56 + s * (44 + off), 88);
+    g.strokeStyle = OUT; g.lineWidth = 6; g.stroke(); g.strokeStyle = '#5a4a3c'; g.lineWidth = 3; g.stroke();
+  }
+  // head
+  ell(g, 56, 74, 18, 13, '#5a4a3c');
+  ell(g, 48, 74, 4.5, 4.5, '#ffe08a', OUT, 2); ell(g, 64, 74, 4.5, 4.5, '#ffe08a', OUT, 2);
+  circleFill(g, 48, 75, 2, '#2a2018'); circleFill(g, 64, 75, 2, '#2a2018');
+  // shell
+  g.beginPath(); g.ellipse(56, 58, 40, 34, 0, Math.PI, Math.PI * 2); g.lineTo(96, 62); g.quadraticCurveTo(56, 72, 16, 62); g.closePath();
+  g.fillStyle = '#8c7d6c'; g.fill(); g.strokeStyle = OUT; g.lineWidth = 3.5; g.stroke();
+  g.beginPath(); g.moveTo(56, 26); g.lineTo(56, 66); g.strokeStyle = '#5e5246'; g.lineWidth = 3; g.stroke();
+  for (const [x, y, r, col] of [[36, 44, 7, '#a39b8e'], [70, 38, 8, '#b0a89a'], [44, 30, 5, '#c49670'], [78, 54, 6, '#a07558'], [30, 58, 5, '#b0a89a']]) {
+    ell(g, x, y, r, r * 0.8, col, OUT, 2);
+  }
+  ell(g, 40, 36, 8, 4, 'rgba(255,255,255,.35)', null);
+  return c;
+}
+
+// Firefly Wisp: a glowing ember with leaf-like wings. Night only.
+function wisp(frame) {
+  const { c, g } = mk(80, 80);
+  const grd = g.createRadialGradient(40, 42, 4, 40, 42, 38);
+  grd.addColorStop(0, 'rgba(255,240,150,.9)');
+  grd.addColorStop(0.45, 'rgba(255,210,90,.35)');
+  grd.addColorStop(1, 'rgba(255,200,80,0)');
+  g.fillStyle = grd; g.fillRect(0, 0, 80, 80);
+  const flap = frame === 1 ? 0.5 : 0;
+  for (const s of [-1, 1]) {
+    g.save(); g.translate(40 + s * 8, 36); g.rotate(s * (0.5 + flap));
+    ell(g, s * 12, -6, 13, 7, 'rgba(220,245,255,.85)', OUT, 2);
+    g.restore();
+  }
+  ell(g, 40, 44, 12, 13, '#ffd34a', OUT, 3);
+  ell(g, 37, 40, 4, 3, 'rgba(255,255,255,.8)', null);
+  circleFill(g, 36, 46, 2.2, '#3a2a10'); circleFill(g, 45, 46, 2.2, '#3a2a10');
   return c;
 }
 
@@ -664,6 +774,11 @@ export function createSprites() {
   const mobs = {
     slime: { ...withFlash([0, 1, 2].map((f) => slime(f))), low: [0, 1, 2].map((f) => tex(slime(f, true))), aspect: 88 / 96 },
     sprout: { ...withFlash([0, 1].map((f) => sproutling(f))), angry: [0, 1].map((f) => tex(sproutling(f, true))), aspect: 112 / 96 },
+    slimeBlue: { ...withFlash([0, 1, 2].map((f) => slime(f, false, SLIME_BLUE))), low: [0, 1, 2].map((f) => tex(slime(f, true, SLIME_BLUE))), aspect: 88 / 96 },
+    crab: { ...withFlash([0, 1].map((f) => crab(f))), aspect: 88 / 112 },
+    mushling: { ...withFlash([0, 1].map((f) => mushling(f))), puff: [tex(mushling(0, true))], aspect: 112 / 96 },
+    beetle: { ...withFlash([0, 1].map((f) => beetle(f))), aspect: 96 / 112 },
+    wisp: { ...withFlash([0, 1].map((f) => wisp(f))), aspect: 1 },
   };
 
   return {
