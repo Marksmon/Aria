@@ -15,7 +15,7 @@ Characters are made in PixelLab's Pro mode from a style reference image (see STY
 
 Results are committed to the `art` branch by the workflow.
 """
-import base64, io, json, os, sys, time, zipfile
+import base64, io, json, os, re, sys, time, zipfile
 import requests
 
 BASE = "https://api.pixellab.ai/v2"
@@ -172,7 +172,9 @@ if task == "finish":
         ch = next(c for c in CHARACTERS if c["name"] == name)
         base = f"{out}/{name}"
         meta = json.load(open(f"{base}/metadata.json"))["states"][0]
-        have = {a: set(dirs) for a, dirs in meta["frames"].get("animations", {}).items()}
+        have = {}  # directions requested separately come back as e.g. 'walk-b730b657'
+        for a, dirs in meta["frames"].get("animations", {}).items():
+            have.setdefault(re.sub(r"-[0-9a-f]{8}$", "", a), set()).update(dirs)
         log(name, "has", {a: sorted(d) for a, d in have.items()})
         animate(name, meta["character"]["id"], ch["animations"], have)
         download_zip(meta["character"]["id"], base)

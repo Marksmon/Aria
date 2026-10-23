@@ -6,7 +6,7 @@ Writes src/art/<name>.png (rows = direction x animation, idle first) and src/art
 with the frame size and where each animation lives. Frames are cropped to one shared box per
 character, kept horizontally centered on the body so the sprite anchor stays under the feet.
 """
-import json, os, sys
+import json, os, re, sys
 from PIL import Image, ImageFilter, ImageOps
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -98,7 +98,9 @@ def load(name):
     for d, ours in DIRS.items():
         out[ours] = {'idle': [img(frames['rotations'][d])]}
         for anim, per_dir in frames['animations'].items():
-            out[ours][anim] = [img(p) for p in per_dir[d]]
+            # directions requested separately come back as e.g. 'walk-b730b657'
+            if d in per_dir:
+                out[ours][re.sub(r'-[0-9a-f]{8}$', '', anim)] = [img(p) for p in per_dir[d]]
     return out
 
 
