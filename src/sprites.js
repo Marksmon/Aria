@@ -522,6 +522,110 @@ function wisp(frame) {
   return c;
 }
 
+// ---------- Camp villagers (front view; frame 1 = blink) ----------
+const SKINS = { light: '#f7d6b5', tan: '#e2b48a' };
+const VILLAGERS = {
+  bram:  { skin: SKINS.light, hair: '#eceae4', robe: '#6d5a8f', robeDk: '#544470', trim: '#e3b341', style: 'elder' },
+  tilly: { skin: SKINS.tan, hair: '#8a4a2a', robe: '#c8463c', robeDk: '#9a3329', trim: '#f4ead2', style: 'cook' },
+  wren:  { skin: SKINS.light, hair: '#3a2a1c', robe: '#4f8a4a', robeDk: '#3a6a36', trim: '#9a6f45', style: 'scout' },
+};
+
+function villager(look, frame = 0) {
+  const { c, g } = mk(112, 150);
+  const { skin, hair, robe, robeDk, trim, style } = look;
+  // staff behind the elder
+  if (style === 'elder') {
+    g.beginPath(); g.moveTo(92, 146); g.lineTo(88, 40); g.strokeStyle = OUT; g.lineWidth = 8; g.stroke();
+    g.strokeStyle = '#8a5a33'; g.lineWidth = 4.5; g.stroke();
+    ell(g, 88, 36, 8, 8, '#7fd0e0');
+    ell(g, 85, 33, 2.5, 2, 'rgba(255,255,255,.8)', null);
+  }
+  // boots
+  rrect(g, 38, 128, 15, 18, 5, '#4a3324');
+  rrect(g, 59, 128, 15, 18, 5, '#4a3324');
+  // body: robe / dress / tunic
+  const hem = style === 'scout' ? 132 : 138;
+  poly(g, [[36, 80], [76, 80], [86, hem], [26, hem]], robe);
+  poly(g, [[56, 82], [76, 80], [86, hem], [62, hem]], robeDk, null);
+  poly(g, [[36, 80], [76, 80], [86, hem], [26, hem]], null);
+  if (style === 'cook') {
+    poly(g, [[42, 94], [70, 94], [76, 136], [36, 136]], '#f4ead2');
+    rrect(g, 48, 106, 16, 10, 3, '#e6d8b8', OUT, 2);
+  }
+  if (style === 'scout') {
+    g.beginPath(); g.moveTo(36, 84); g.lineTo(80, 122); g.strokeStyle = OUT; g.lineWidth = 7; g.stroke();
+    g.strokeStyle = '#9a6f45'; g.lineWidth = 4; g.stroke();
+  }
+  rrect(g, 30, hem - 8, 52, 7, 3, trim, OUT, 2);
+  // arms
+  ell(g, 31, 100, 8, 16, robeDk);
+  ell(g, 81, 100, 8, 16, robeDk);
+  ell(g, 31, 116, 6, 6, skin);
+  ell(g, 81, 116, 6, 6, skin);
+  // head
+  ell(g, 56, 52, 31, 29, skin);
+  if (style === 'elder') {
+    // bald crown, white tufts and a long beard
+    ell(g, 28, 50, 9, 13, hair);
+    ell(g, 84, 50, 9, 13, hair);
+    poly(g, [[34, 60], [78, 60], [72, 92], [56, 104], [40, 92]], hair);
+    ell(g, 56, 60, 11, 5, hair, OUT, 2);
+    ell(g, 46, 30, 8, 5, 'rgba(255,255,255,.55)', null);
+  } else if (style === 'cook') {
+    // bun and headscarf
+    ell(g, 56, 20, 13, 11, hair);
+    g.beginPath(); g.ellipse(56, 44, 32, 24, 0, Math.PI, TAU); g.closePath();
+    g.fillStyle = robe; g.fill(); g.strokeStyle = OUT; g.lineWidth = 3; g.stroke();
+    for (const x of [42, 56, 70]) circleFill(g, x, 34, 3, '#f4ead2');
+    ell(g, 27, 56, 6, 10, hair);
+    ell(g, 85, 56, 6, 10, hair);
+  } else {
+    // green hood with a feather
+    g.beginPath(); g.ellipse(56, 48, 35, 32, 0, Math.PI * 0.95, Math.PI * 2.05); g.lineTo(88, 70); g.lineTo(24, 70); g.closePath();
+    g.fillStyle = robe; g.fill(); g.strokeStyle = OUT; g.lineWidth = 3; g.stroke();
+    ell(g, 56, 56, 25, 20, skin, null);
+    g.beginPath(); g.moveTo(34, 44); g.quadraticCurveTo(56, 30, 78, 44); g.lineTo(78, 50); g.quadraticCurveTo(56, 40, 34, 50); g.closePath();
+    g.fillStyle = hair; g.fill();
+    g.save(); g.translate(84, 26); g.rotate(0.5);
+    ell(g, 0, 0, 5, 16, '#e8563a');
+    g.restore();
+  }
+  // face
+  const ey = style === 'elder' ? 50 : 56;
+  if (frame === 1) {
+    for (const x of [44, 68]) { g.beginPath(); g.moveTo(x - 4, ey); g.lineTo(x + 4, ey); g.strokeStyle = OUT; g.lineWidth = 2.5; g.stroke(); }
+  } else {
+    ell(g, 44, ey, 3.8, 5, '#2a2018', null);
+    ell(g, 68, ey, 3.8, 5, '#2a2018', null);
+    circleFill(g, 43, ey - 2, 1.5, '#fff');
+    circleFill(g, 67, ey - 2, 1.5, '#fff');
+  }
+  if (style === 'elder') {
+    g.beginPath(); g.moveTo(38, ey - 9); g.lineTo(50, ey - 7); g.moveTo(74, ey - 9); g.lineTo(62, ey - 7);
+    g.strokeStyle = '#d8d4cc'; g.lineWidth = 3.5; g.stroke();
+  } else {
+    g.beginPath(); g.arc(56, ey + 9, 4, 0.2, Math.PI - 0.2); g.strokeStyle = OUT; g.lineWidth = 2; g.stroke();
+  }
+  ell(g, 36, ey + 9, 4.5, 2.8, 'rgba(240,120,120,.45)', null);
+  ell(g, 76, ey + 9, 4.5, 2.8, 'rgba(240,120,120,.45)', null);
+  return c;
+}
+
+// speech-bubble marker over a villager: '!' = new quest, '?' = ready to hand in
+function questMark(ch, fill) {
+  const { c, g } = mk(64, 72);
+  g.beginPath();
+  g.roundRect(8, 6, 48, 46, 14);
+  g.moveTo(26, 50); g.lineTo(32, 64); g.lineTo(40, 50);
+  g.fillStyle = fill; g.fill(); g.strokeStyle = OUT; g.lineWidth = 3.5; g.stroke();
+  g.font = '900 34px Georgia, serif';
+  g.textAlign = 'center';
+  g.textBaseline = 'middle';
+  g.lineWidth = 5; g.strokeText(ch, 32, 31);
+  g.fillStyle = '#fff'; g.fillText(ch, 32, 31);
+  return c;
+}
+
 // White silhouette for the hit flash
 function silhouette(src) {
   const { c, g } = mk(src.width, src.height);
@@ -683,8 +787,16 @@ export function createSprites() {
     wisp: { ...withFlash([0, 1].map((f) => wisp(f))), aspect: 1 },
   };
 
+  const villagers = {};
+  for (const [id, look] of Object.entries(VILLAGERS)) {
+    const frames = [0, 1].map((f) => villager(look, f));
+    villagers[id] = { frames: frames.map((cv) => tex(cv)), portrait: frames[0], aspect: 150 / 112, w: 1.15 };
+  }
+
   return {
     mobs,
+    villagers,
+    marks: { offer: tex(questMark('!', '#e3a13a')), ready: tex(questMark('?', '#5fae45')) },
     fx: { slash: tex(slashArc()), puff: tex(puff()), heart: tex(heartPickup()) },
     props,
     fire: { frames: fireFrames, aspect: fireAspect, w: 1.2 },

@@ -21,7 +21,7 @@ New builds install over old ones (same signing key), so your save is kept.
 | Left side: floating joystick | WASD / arrows |
 | Hold ⚔: attack (auto-aims the nearest monster) | Space / J |
 | ↻: dodge roll (brief invincibility) | Shift / K |
-| Context button at camp: Craft / Chest / Rest | F |
+| Context button at camp: Craft / Chest / Rest / Talk | F |
 | Bag button (top left) | I / B |
 | Right side drag: rotate camera · pinch: zoom | Q / E · mouse wheel |
 
@@ -76,6 +76,20 @@ You wear one charm at a time; swap them in **Bag → Hero**.
 
 Crafting uses items from both your bag (16 slots) and the camp chest (32 slots).
 
+## Villagers and quests
+
+Three villagers live at camp. Walk up to one and tap **Talk** (desktop: F). A **!** bubble means
+they have a quest for you, a **?** means you can hand one in. Active quests show under the clock.
+
+| Villager | Quests (level) |
+|---|---|
+| Elder Bram | Slime Trouble (1), Snapping Shores (3), Rocks That Walk (5), Spores in the Hollow (7) |
+| Tilly the Cook | Jelly for Supper (1), Mushroom Stew (3), Fresh Water (4), Lantern Soup (6) |
+| Wren the Scout | Know the Valley (1), Shy Sprouts (2), Blue and Bouncy (3), Lights in the Dark (5) |
+
+Kill quests count from when you accept them; fetch quests take the items from your bag and chest
+when you hand in. Every quest pays experience plus potions or crafting materials.
+
 ## Day and night
 
 A full day lasts 10 minutes. Night brings Firefly Wisps and extra monsters. Rest in the tent
@@ -91,7 +105,7 @@ to restore hearts, save, and sleep until morning.
 - [x] **M6** Sound and music, title screen, polish
 - [x] **M7** PixelLab sprites: player (walk, sword attack) and Green Slime (hop, attack), 4 directions
 - [x] **M8** Leveling (XP, levels, STR/AGI/VIT), charms, level requirements for gear
-- [ ] **M9** Camp NPCs and quests
+- [x] **M9** Camp villagers with dialogue, kill / fetch / explore quest chains and rewards
 
 ## Dev
 
@@ -102,7 +116,7 @@ npm run build    # single-file build in dist/index.html
 ```
 
 Code map: `world.js` (terrain, zones, props), `player.js`, `mobs.js` (all monster AI),
-`items.js` + `inventory.js` + `menus.js` (loot, crafting, gear), `progress.js` (levels and stats), `daynight.js`, `audio.js`,
+`items.js` + `inventory.js` + `menus.js` (loot, crafting, gear), `progress.js` (levels and stats), `quests.js` + `villagers.js` (camp NPCs and quests), `daynight.js`, `audio.js`,
 `sprites.js` (painted art plus the PixelLab sheets — swap any sprite without touching game logic).
 
 ## PixelLab art

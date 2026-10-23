@@ -1,0 +1,195 @@
+// Camp villagers and their quest chains. Each villager offers one quest at a time, in order;
+// later quests wait for a player level. Quest kinds:
+//   kill  - beat n monsters of a type (counted from when you accept)
+//   fetch - bring items (taken from bag + chest when you hand in)
+//   visit - set foot in every listed zone
+import { ITEMS } from './items.js';
+import { MOB_DEFS } from './mobs.js';
+import { ZONE_NAMES } from './world.js';
+
+export const NPCS = {
+  bram: {
+    name: 'Elder Bram', x: 27.9, z: 31.9,
+    hello: 'The valley is restless these days. Young legs like yours could help an old man.',
+    later: (lv) => `Rest now. Come back to me when you reach level ${lv}.`,
+    bye: 'You have done this valley a great kindness. Sit by the fire whenever you like.',
+    quests: ['slimes', 'crabs', 'beetles', 'mushlings'],
+  },
+  tilly: {
+    name: 'Tilly the Cook', x: 36.2, z: 33.2,
+    hello: 'Hungry? So am I! But my pantry is bare...',
+    later: (lv) => `Nothing to cook right now. Pop back at level ${lv}, I'll have a new recipe.`,
+    bye: 'The pot is always on for you, dear.',
+    quests: ['gel', 'stew', 'water', 'lantern'],
+  },
+  wren: {
+    name: 'Wren the Scout', x: 35.6, z: 28.2,
+    hello: "Oh, a new face! I'm mapping the valley. Want to help?",
+    later: (lv) => `I'm still scribbling notes. Find me again at level ${lv}.`,
+    bye: "My map is finished, thanks to you. Best map in the valley, if I say so myself.",
+    quests: ['explore', 'sprouts', 'blues', 'wisps'],
+  },
+};
+
+// reward: { xp, items: { id: n } }
+export const QUESTS = {
+  slimes: {
+    title: 'Slime Trouble', kind: 'kill', mob: 'slime', n: 5, lv: 1,
+    intro: 'Green Slimes have been nibbling at our supplies. Chase off five of them in the Mossy Grove.',
+    thanks: 'Ha! That will teach them. Here, take these draughts for your troubles.',
+    reward: { xp: 15, items: { potion: 2 } },
+  },
+  crabs: {
+    title: 'Snapping Shores', kind: 'kill', mob: 'crab', n: 4, lv: 3,
+    intro: 'Mudcrabs snap at anyone who goes near the Fen Shore. Beat four of them. Watch for their charge!',
+    thanks: 'The shore is safe to walk again. Well done.',
+    reward: { xp: 30, items: { potion: 1, shell: 3 } },
+  },
+  beetles: {
+    title: 'Rocks That Walk', kind: 'kill', mob: 'beetle', n: 5, lv: 5,
+    intro: 'Pebble Beetles are rolling down from Ember Ridge. They hit hard, so bring good armor. Five should do.',
+    thanks: 'Tough as stone, and yet here you are. Take these.',
+    reward: { xp: 60, items: { potion: 3 } },
+  },
+  mushlings: {
+    title: 'Spores in the Hollow', kind: 'kill', mob: 'mushling', n: 6, lv: 7,
+    intro: 'The Mushlings of the Old Hollow are spreading their spores further each night. Thin them out: six of them.',
+    thanks: 'The air already smells cleaner. You have become a true guardian of Aibachu.',
+    reward: { xp: 90, items: { potion: 2, glow: 4 } },
+  },
+  gel: {
+    title: 'Jelly for Supper', kind: 'fetch', items: { gel: 6 }, lv: 1,
+    intro: "Slime Gel makes the best jelly. Bring me six blobs and I'll share!",
+    thanks: 'Wobbly and perfect! Here, a draught from my own shelf.',
+    reward: { xp: 12, items: { potion: 1, leaf: 3 } },
+  },
+  stew: {
+    title: 'Mushroom Stew', kind: 'fetch', items: { spore: 5 }, lv: 3,
+    intro: 'My famous stew needs five Spore Caps from the Old Hollow. Mind the spores!',
+    thanks: 'Smell that? Pure Hollow. Take a bowl, and these.',
+    reward: { xp: 25, items: { potion: 2 } },
+  },
+  water: {
+    title: 'Fresh Water', kind: 'fetch', items: { dew: 5, leaf: 3 }, lv: 4,
+    intro: 'The well tastes of mud. Five Dew Drops and three Fresh Leaves will make a lovely tea.',
+    thanks: 'Mmm, like a spring morning. I found these stones in the pot, you have them.',
+    reward: { xp: 35, items: { stone: 4 } },
+  },
+  lantern: {
+    title: 'Lantern Soup', kind: 'fetch', items: { glow: 4 }, lv: 6,
+    intro: "An old family recipe: soup that glows in the dark! I need four Glow Dust from the night Wisps.",
+    thanks: "It's glowing! Grandma would be proud. These are yours.",
+    reward: { xp: 60, items: { potion: 3 } },
+  },
+  explore: {
+    title: 'Know the Valley', kind: 'visit', zones: ['grove', 'hollow', 'ridge', 'fen'], lv: 1,
+    intro: 'First things first: visit all four corners of the valley. Grove, Hollow, Ridge and Fen.',
+    thanks: "You've seen it all now! Here's something for the road.",
+    reward: { xp: 20, items: { potion: 1 } },
+  },
+  sprouts: {
+    title: 'Shy Sprouts', kind: 'kill', mob: 'sprout', n: 4, lv: 2,
+    intro: "Sproutlings run away when you get close. Corner four of them; I need to study their seeds.",
+    thanks: 'Fascinating little things. Take some seeds for your crafting.',
+    reward: { xp: 20, items: { seed: 3 } },
+  },
+  blues: {
+    title: 'Blue and Bouncy', kind: 'kill', mob: 'blueSlime', n: 5, lv: 3,
+    intro: 'The Blue Slimes on the Fen Shore split in two when you hit them! Beat five big ones.',
+    thanks: 'Splitting slimes, noted on the map. Here, a little dew for you.',
+    reward: { xp: 30, items: { dew: 3 } },
+  },
+  wisps: {
+    title: 'Lights in the Dark', kind: 'kill', mob: 'wisp', n: 6, lv: 5,
+    intro: 'At night, Firefly Wisps drift all over the valley. Catch six and I can finally map them.',
+    thanks: 'A map of lights! It is beautiful. Keep this dust.',
+    reward: { xp: 50, items: { glow: 3 } },
+  },
+};
+
+export class Quests {
+  constructor() {
+    this.active = {}; // id -> kills so far, or list of zones visited
+    this.done = [];
+  }
+
+  // what a villager has for you: { q, id, state } with state
+  //   offer | locked (needs level) | active | ready | finished
+  status(npc, level, inv) {
+    const id = NPCS[npc].quests.find((k) => !this.done.includes(k));
+    if (!id) return { state: 'finished' };
+    const q = QUESTS[id];
+    if (id in this.active) return { id, q, state: this.ready(id, inv) ? 'ready' : 'active' };
+    return { id, q, state: level >= q.lv ? 'offer' : 'locked' };
+  }
+
+  accept(id) {
+    if (QUESTS[id] && !(id in this.active) && !this.done.includes(id)) {
+      this.active[id] = QUESTS[id].kind === 'visit' ? [] : 0;
+    }
+  }
+
+  ready(id, inv) {
+    const q = QUESTS[id], a = this.active[id];
+    if (q.kind === 'kill') return a >= q.n;
+    if (q.kind === 'visit') return q.zones.every((z) => a.includes(z));
+    return Object.entries(q.items).every(([item, n]) => inv.have(item) >= n);
+  }
+
+  // returns the ids of quests that just became complete
+  onKill(type) {
+    const out = [];
+    for (const [id, a] of Object.entries(this.active)) {
+      const q = QUESTS[id];
+      if (q.kind !== 'kill' || q.mob !== type || a >= q.n) continue;
+      this.active[id] = a + 1;
+      if (a + 1 === q.n) out.push(id);
+    }
+    return out;
+  }
+
+  onZone(zone) {
+    const out = [];
+    for (const [id, a] of Object.entries(this.active)) {
+      const q = QUESTS[id];
+      if (q.kind !== 'visit' || !q.zones.includes(zone) || a.includes(zone)) continue;
+      a.push(zone);
+      if (a.length === q.zones.length) out.push(id);
+    }
+    return out;
+  }
+
+  // takes fetched items; the caller pays out the reward
+  turnIn(id, inv) {
+    if (!(id in this.active) || !this.ready(id, inv)) return null;
+    const q = QUESTS[id];
+    if (q.kind === 'fetch') for (const [item, n] of Object.entries(q.items)) inv.spend(item, n);
+    delete this.active[id];
+    this.done.push(id);
+    return q.reward;
+  }
+
+  // short progress text for the tracker and dialogue
+  progress(id, inv) {
+    const q = QUESTS[id], a = this.active[id];
+    if (q.kind === 'kill') return `${MOB_DEFS[q.mob].name} ${Math.min(a, q.n)}/${q.n}`;
+    if (q.kind === 'visit') return `Zones ${a.length}/${q.zones.length}`;
+    return Object.entries(q.items).map(([item, n]) => `${ITEMS[item].name} ${Math.min(inv.have(item), n)}/${n}`).join(' · ');
+  }
+
+  goal(q) {
+    if (q.kind === 'kill') return `Defeat ${q.n} ${MOB_DEFS[q.mob].name}${q.n > 1 ? 's' : ''}`;
+    if (q.kind === 'visit') return `Visit ${q.zones.map((z) => ZONE_NAMES[z]).join(', ')}`;
+    return 'Bring ' + Object.entries(q.items).map(([item, n]) => `${n} ${ITEMS[item].name}`).join(', ');
+  }
+
+  toJSON() { return { active: this.active, done: this.done }; }
+  load(d) {
+    if (!d) return;
+    this.done = (d.done || []).filter((id) => QUESTS[id]);
+    for (const [id, a] of Object.entries(d.active || {})) {
+      if (!QUESTS[id] || this.done.includes(id)) continue;
+      this.active[id] = QUESTS[id].kind === 'visit' ? (Array.isArray(a) ? a : []) : Math.max(0, a | 0);
+    }
+  }
+}

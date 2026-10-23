@@ -169,6 +169,10 @@ const PAINT = {
     shape(g, () => { g.moveTo(22, 30); g.quadraticCurveTo(20, 16, 32, 4); g.quadraticCurveTo(44, 16, 42, 30); g.closePath(); }, '#f59a2b');
     g.beginPath(); g.moveTo(27, 28); g.quadraticCurveTo(27, 18, 32, 12); g.quadraticCurveTo(37, 18, 37, 28); g.fillStyle = '#ffe27a'; g.fill();
   },
+  talk: (g) => {
+    shape(g, () => { g.roundRect(6, 8, 52, 36, 12); g.moveTo(18, 42); g.lineTo(14, 56); g.lineTo(30, 43); }, '#fff4dc');
+    for (const x of [20, 32, 44]) { g.beginPath(); g.arc(x, 26, 3.5, 0, Math.PI * 2); g.fillStyle = OUT; g.fill(); }
+  },
   charm_sprout: (g) => charmIcon(g, '#7cc455', '#e3b341'),
   charm_spore: (g) => charmIcon(g, '#a383d6', '#e3b341'),
   charm_shell: (g) => charmIcon(g, '#f2a8a0', '#cfd6de'),

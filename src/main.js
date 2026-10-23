@@ -10,6 +10,8 @@ import { MobManager } from './mobs.js';
 import { loadSave, writeSave } from './save.js';
 import { Inventory } from './inventory.js';
 import { Progress } from './progress.js';
+import { Quests, QUESTS, NPCS } from './quests.js';
+import { Villagers } from './villagers.js';
 import { Menus } from './menus.js';
 import { iconTexture, iconURL, ITEMS } from './items.js';
 import { DayNight } from './daynight.js';
@@ -59,6 +61,9 @@ const player = new Player(scene, world, lib.player, lib.shadow, fx);
 player.setPos(save?.x ?? world.spawn.x, save?.z ?? world.spawn.z);
 const prog = new Progress();
 prog.load(save?.prog);
+const quests = new Quests();
+quests.load(save?.quests);
+const villagers = new Villagers(scene, world, lib);
 const inv = new Inventory();
 inv.level = () => prog.level;
 inv.load(save?.inv);
@@ -96,6 +101,7 @@ player.on('faint', () => {
 mobs.on('death', (m, drops) => {
   audio.play('kill');
   gainXp(m.def.xp);
+  for (const id of quests.onKill(m.type)) questComplete(id);
   for (const [item, count] of drops) {
     if (item === 'heart') fx.drop(m.x, m.z, 'heart', 1, lib.fx.heart);
     else fx.drop(m.x, m.z, item, count, iconTexture(item));
@@ -125,6 +131,37 @@ function gainXp(n) {
   persist();
 }
 
+// ---------- quests ----------
+const questGiver = (id) => Object.keys(NPCS).find((n) => NPCS[n].quests.includes(id));
+function questComplete(id) {
+  audio.play('heart');
+  menus.message(`${QUESTS[id].title} complete! Return to ${NPCS[questGiver(id)].name}.`);
+  refreshQuests();
+}
+function giveReward(r) {
+  for (const [id, n] of Object.entries(r.items || {})) {
+    const got = inv.add(id, n);
+    if (got < n) inv.chest.add(id, n - got); // bag full: it goes to the chest
+    menus.toast(id, n);
+  }
+  gainXp(r.xp);
+}
+// '!' / '?' bubbles over villagers and the quest list under the clock
+const tracker = document.getElementById('quests');
+let trackerHTML = '';
+function refreshQuests() {
+  villagers.setMarks((npc) => {
+    const st = quests.status(npc, prog.level, inv).state;
+    return st === 'offer' ? 'offer' : st === 'ready' ? 'ready' : null;
+  });
+  let h = '';
+  for (const id of Object.keys(quests.active)) {
+    const done = quests.ready(id, inv);
+    h += `<div class="${done ? 'done' : ''}"><b>${QUESTS[id].title}</b><span>${done ? `Return to ${NPCS[questGiver(id)].name}` : quests.progress(id, inv)}</span></div>`;
+  }
+  if (h !== trackerHTML) { trackerHTML = h; tracker.innerHTML = h; }
+}
+
 let bagFullNote = 0;
 function collect(p) {
   if (p.item === 'heart') {
@@ -151,33 +188,55 @@ const menus = new Menus(inv, prog, player, {
   },
   crafted() { audio.play('craft'); persist(); },
   raised() { inv.applyTo(player, prog); audio.play('craft'); persist(); },
+  accept(id) {
+    quests.accept(id);
+    for (const done of quests.onZone(world.zoneAt(player.x, player.z))) questComplete(done);
+    audio.play('ui');
+    menus.message(`New quest: ${QUESTS[id].title}`);
+    menus.close();
+    refreshQuests();
+  },
+  handIn(id) {
+    const r = quests.turnIn(id, inv);
+    if (!r) return;
+    audio.play('craft');
+    giveReward(r);
+    refreshQuests();
+    menus.render();
+    persist();
+  },
   ui() { audio.play('ui'); },
   soundOn: () => audio.enabled,
   toggleSound() { audio.setEnabled(!audio.enabled); },
   closed() { persist(); },
 });
+menus.quests = quests;
+const portraits = {};
+menus.portrait = (id) => (portraits[id] ||= lib.villagers[id].portrait.toDataURL());
 const actionBtn = document.getElementById('btn-action');
-const ACTIONS = {
-  fire: { label: 'Craft', icon: 'torch', run: () => menus.show('craft') },
-  chest: { label: 'Chest', icon: 'shell', run: () => menus.show('chest') },
-  tent: { label: 'Rest', icon: 'potion', run: () => rest() },
-};
+// things at camp you can use with the context button
+const SPOTS = [
+  { ...world.camp.fire, label: 'Craft', icon: 'torch', run: () => menus.show('craft') },
+  { ...world.camp.chest, label: 'Chest', icon: 'shell', run: () => menus.show('chest') },
+  { ...world.camp.tent, label: 'Rest', icon: 'potion', run: () => rest() },
+  ...villagers.list.map((v) => ({ x: v.x, z: v.z, label: 'Talk', icon: 'talk', run: () => menus.talkTo(v.id) })),
+];
 actionBtn.querySelector('img').src = iconURL('torch');
 let nearAction = null;
 function updateAction() {
   let best = null, bd = 2.1;
   if (player.state === 'normal') {
-    for (const [k, p] of Object.entries(world.camp)) {
+    for (const p of SPOTS) {
       const d = Math.hypot(player.x - p.x, player.z - p.z);
-      if (d < bd) { bd = d; best = k; }
+      if (d < bd) { bd = d; best = p; }
     }
   }
   if (best !== nearAction) {
     nearAction = best;
     actionBtn.hidden = !best;
     if (best) {
-      actionBtn.querySelector('img').src = iconURL(ACTIONS[best].icon);
-      actionBtn.querySelector('span').textContent = ACTIONS[best].label;
+      actionBtn.querySelector('img').src = iconURL(best.icon);
+      actionBtn.querySelector('span').textContent = best.label;
     }
   }
 }
@@ -234,10 +293,11 @@ function camBasis() {
 }
 
 let saveT = 0;
+let questZone = null, questT = 0;
 let resetting = false;
 function persist() {
   if (!started || resetting) return;
-  writeSave({ x: player.x, z: player.z, yaw: cam.yaw, dist: cam.dist, hp: player.hp, inv: inv.toJSON(), prog: prog.toJSON(), time: dayNight.t });
+  writeSave({ x: player.x, z: player.z, yaw: cam.yaw, dist: cam.dist, hp: player.hp, inv: inv.toJSON(), prog: prog.toJSON(), quests: quests.toJSON(), time: dayNight.t });
 }
 
 const clock = new THREE.Clock();
@@ -257,7 +317,7 @@ function frame() {
   const move = { x: b.rx * m.x - b.fx * m.y, z: b.rz * m.x - b.fz * m.y };
   const paused = menus.open;
   if (input.tapped('bag') && started) menus.toggle('bag');
-  if (input.tapped('action') && nearAction && !paused) ACTIONS[nearAction].run();
+  if (input.tapped('action') && nearAction && !paused) nearAction.run();
   const live = started && !paused;
   const ctl = live ? { attack: input.held('attack'), dodge: input.tapped('dodge') } : { attack: false, dodge: false };
   input.tapped('attack');
@@ -276,6 +336,7 @@ function frame() {
   if (live) mobs.update(dt, player);
   if (live) dayNight.update(dt, t); else if (!started) dayNight.update(0, t);
   world.update(dt, t);
+  villagers.update(dt);
   if (live) fx.update(dt, player, collect);
   if (live) campRegen(dt);
   updateAction();
@@ -295,6 +356,12 @@ function frame() {
   camera.lookAt(cam.target.x, cam.target.y + 0.7, cam.target.z);
 
   ui.update(dt, player, cam.yaw);
+  if (live && ui.zone !== questZone) {
+    questZone = ui.zone;
+    for (const id of quests.onZone(questZone)) questComplete(id);
+  }
+  questT -= dt;
+  if (questT <= 0) { questT = 0.5; refreshQuests(); }
 
   saveT += dt;
   if (saveT > 3) { saveT = 0; persist(); }
@@ -345,4 +412,4 @@ tContinue.addEventListener('click', () => {
   }, 450);
 });
 
-window.__aibachu = { player, world, cam, mobs, fx, inv, prog, menus, dayNight, audio, stats: world.stats };
+window.__aibachu = { player, world, cam, mobs, fx, inv, prog, quests, villagers, menus, dayNight, audio, stats: world.stats };

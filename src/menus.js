@@ -3,6 +3,7 @@
 import { ITEMS, WEAPONS, ARMORS, RECIPES, CHARMS, recipeName, recipeIcon, iconURL } from './items.js';
 import { BAG_SLOTS, CHEST_SLOTS } from './inventory.js';
 import { STATS } from './progress.js';
+import { NPCS } from './quests.js';
 
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const icon = (id, cls = '') => `<img class="ico ${cls}" src="${iconURL(id)}" alt="">`;
@@ -12,7 +13,10 @@ export class Menus {
     this.inv = inv;
     this.prog = prog;
     this.player = player;
-    this.hooks = hooks; // { usePotion(), crafted(recipe), raised(stat), opened(), closed() }
+    this.hooks = hooks; // { usePotion(), crafted(recipe), raised(stat), accept(id), handIn(id), opened(), closed() }
+    this.quests = null;     // set by the game, for villager dialogue
+    this.portrait = null;   // villager id -> image URL
+    this.npc = null;
     this.root = document.getElementById('panel');
     this.toasts = document.getElementById('toasts');
     this.mode = null;
@@ -41,6 +45,11 @@ export class Menus {
   }
 
   // the bag button closes the window from either of its tabs
+  talkTo(npc) {
+    this.npc = npc;
+    this.show('talk');
+  }
+
   toggle(mode) { this.mode === mode || (mode === 'bag' && this.mode === 'hero') ? this.close() : this.show(mode); }
 
   toast(id, n) {
@@ -100,10 +109,38 @@ export class Menus {
     return h + '</div></div>';
   }
 
+  reward(r) {
+    const items = Object.entries(r.items || {}).map(([id, n]) => `<span class="cost ok">${icon(id, 'sm')}${n} ${esc(ITEMS[id].name)}</span>`).join('');
+    return `<div class="costs"><span class="cost ok">★ ${r.xp} XP</span>${items}</div>`;
+  }
+
+  talk() {
+    const n = NPCS[this.npc], st = this.quests.status(this.npc, this.prog.level, this.inv);
+    let text, box = '', btns = '<button class="go soft" data-act="close">Bye</button>';
+    if (st.state === 'offer') {
+      const first = st.id === n.quests[0];
+      text = (first ? n.hello + ' ' : '') + st.q.intro;
+      box = `<b>${esc(st.q.title)}</b><small>${esc(this.quests.goal(st.q))}</small>${this.reward(st.q.reward)}`;
+      btns = `<button class="go soft" data-act="close">Not now</button><button class="go" data-act="accept" data-id="${st.id}">Accept</button>`;
+    } else if (st.state === 'active') {
+      text = `Any luck? ${this.quests.goal(st.q)}.`;
+      box = `<b>${esc(st.q.title)}</b><small>${esc(this.quests.progress(st.id, this.inv))}</small>${this.reward(st.q.reward)}`;
+    } else if (st.state === 'ready') {
+      text = st.q.thanks;
+      box = `<b>${esc(st.q.title)} ✓</b>${this.reward(st.q.reward)}`;
+      btns = `<button class="go" data-act="handin" data-id="${st.id}">Hand in</button>`;
+    } else if (st.state === 'locked') text = n.later(st.q.lv);
+    else text = n.bye;
+    return `<header><h2>${esc(n.name)}</h2><span class="sub"></span><button class="x" data-act="close" aria-label="Close">✕</button></header>
+      <div class="talkwrap"><img class="portrait" src="${this.portrait(this.npc)}" alt="">
+        <div class="say"><p>${esc(text)}</p>${box ? `<div class="qbox">${box}</div>` : ''}<div class="btnrow">${btns}</div></div></div>`;
+  }
+
   render() {
     const inv = this.inv, g = inv.gear;
     let body = '';
-    if (this.mode === 'hero') body = this.tabs() + this.hero();
+    if (this.mode === 'talk') body = this.talk();
+    else if (this.mode === 'hero') body = this.tabs() + this.hero();
     else if (this.mode === 'bag') {
       const sel = this.selected && ITEMS[this.selected];
       body = `
@@ -159,6 +196,8 @@ export class Menus {
     if (act === 'sound') { this.hooks.toggleSound?.(); this.render(); }
     if (act === 'tab') { this.mode = t.dataset.mode; this.selected = null; this.hooks.ui?.(); this.render(); }
     if (act === 'raise' && this.prog.raise(t.dataset.stat)) { this.hooks.raised?.(t.dataset.stat); this.render(); }
+    if (act === 'accept') this.hooks.accept?.(t.dataset.id);
+    if (act === 'handin') this.hooks.handIn?.(t.dataset.id);
     if (act === 'wear') { inv.wear(t.dataset.id || null); this.hooks.ui?.(); }
     if (act === 'slot') {
       if (this.mode === 'chest') {
