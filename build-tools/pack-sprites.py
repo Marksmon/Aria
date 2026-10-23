@@ -26,7 +26,7 @@ MIRROR = {'right': 'left', 'left': 'right'}
 # attack had no sword)
 # The PixelLab Pro art already has Ragnarok-style shaded edges, so no extra outline.
 CHARS = {name: {} for name in ['slime', 'blueslime', 'sprout', 'crab', 'mushling', 'beetle', 'wisp']}
-CHARS['player'] = {'eight': True, 'use': {'walk': 'stride'}}  # even 8-frame walk; the first one limped
+CHARS['player'] = {'eight': True, 'use': {'walk': 'walking'}}  # even 8-frame template walk; the first one limped
 CHARS.update({name: {'eight': True} for name in ['bram', 'tilly', 'wren']})
 
 

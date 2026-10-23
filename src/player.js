@@ -4,7 +4,7 @@ import { dirFor, dirFor8 } from './noise.js';
 const BASE_SPEED = 4.2;  // world units per second
 const RADIUS = 0.3;      // collision radius
 const HEIGHT = 1.38;     // standing height in world units
-const STRIDE = 1.6;       // world units covered by one walk cycle, so feet keep pace with the ground
+const STRIDE = 2.0;       // world units covered by one walk cycle, so feet keep pace with the ground
 const ROLL_TIME = 0.4, ROLL_SPEED = 8.4, ROLL_CD = 0.75; // 3.4 units, fast then easing out
 // dodge frames played as dive-and-recover: some directions end lying down (frame 6), so the
 // roll goes into the dive and back out through the earlier frames instead
@@ -201,8 +201,7 @@ export class Player {
       const k = 1 - this.atkAnim / this.atkDur;
       tex = A.attack[Math.min(A.attack.length - 1, Math.floor(k * A.attack.length))];
     } else if (this.moving && this.state === 'normal') {
-      // walk frame 0 is the standing pose; the loop is frames 1..n
-      tex = A.walk[1 + (Math.floor(this.animT * (A.walk.length - 1)) % (A.walk.length - 1))];
+      tex = A.walk[Math.floor(this.animT * A.walk.length) % A.walk.length]; // every frame is part of the cycle
     }
     if (this.mat.map !== tex) { this.mat.map = tex; this.sprite.center.y = tex.userData.anchor; }
 
