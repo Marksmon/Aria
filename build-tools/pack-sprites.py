@@ -17,10 +17,11 @@ MIRROR = {'right': 'left', 'left': 'right'}
 
 # name -> options.
 #   mirror:  (anim, direction) pairs drawn as the mirror of the opposite side
-#   outline: (pixels, colour) solid border traced around the silhouette, Ragnarok Online style
+#   outline: (pixels, colour) border traced around the silhouette. colour 'shade' tints each
+#            border pixel a dark shade of the colour beside it, like Ragnarok Online sprites
 # (the first player, art/pixellab/player_v1, needed 'mirror': {('attack', 'right')}: its east
 # attack had no sword)
-OUTLINE = {'outline': (1, (34, 22, 14))}
+OUTLINE = {'outline': (1, 'shade')}
 CHARS = {name: OUTLINE for name in ['player', 'slime', 'blueslime', 'sprout', 'crab', 'mushling', 'beetle', 'wisp']}
 
 
@@ -66,9 +67,25 @@ def clean(f, still):
 def outline(f, width, colour):
     solid = f.getchannel('A').point(lambda a: 255 if a >= 128 else 0)
     ring = solid.filter(ImageFilter.MaxFilter(2 * width + 1))
-    out = Image.new('RGBA', f.size, colour + (0,))
-    out.putalpha(ring)
-    return Image.alpha_composite(out, f)
+    if colour != 'shade':
+        out = Image.new('RGBA', f.size, colour + (0,))
+        out.putalpha(ring)
+        return Image.alpha_composite(out, f)
+    # each new border pixel: the average of the solid pixels around it, darkened
+    src, rg, sd = f.load(), ring.load(), solid.load()
+    out = f.copy()
+    px = out.load()
+    W, H = f.size
+    for y in range(H):
+        for x in range(W):
+            if not rg[x, y] or sd[x, y]:
+                continue
+            near = [src[x + i, y + j] for i in range(-width, width + 1) for j in range(-width, width + 1)
+                    if 0 <= x + i < W and 0 <= y + j < H and sd[x + i, y + j]]
+            if near:
+                r, g, b = (sum(p[k] for p in near) / len(near) for k in range(3))
+                px[x, y] = (int(r * 0.38), int(g * 0.32), int(b * 0.3), 255)
+    return out
 
 
 def load(name):

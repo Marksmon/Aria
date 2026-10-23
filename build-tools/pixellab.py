@@ -6,9 +6,12 @@
 
   python3 build-tools/pixellab.py generate art/pixellab player   (needs PIXELLAB_API_KEY)
 
+Characters marked style_ref use PixelLab's Pro mode with a style reference image (a PNG up to
+168x168, path in PIXELLAB_STYLE_REF). The reference is not kept in the repo.
+
 Results are committed to the `art` branch by the workflow.
 """
-import io, json, os, sys, time, zipfile
+import base64, io, json, os, sys, time, zipfile
 import requests
 
 BASE = "https://api.pixellab.ai/v2"
@@ -120,6 +123,36 @@ CHARACTERS += [
 ]
 
 
+# Pro mode, styled after a reference sprite (PIXELLAB_STYLE_REF)
+RO_PRO_STYLE = ("Ragnarok Online sprite style: soft dark coloured outlines instead of black, muted warm "
+                "palette, detailed soft shading, chibi proportions about three heads tall")
+
+
+def pro(name, desc, anims, size=(64, 96), template="mannequin"):
+    return {
+        "name": name,
+        "endpoint": "/create-character-pro",
+        "style_ref": True,
+        "body": {
+            "description": desc,
+            "style_description": RO_PRO_STYLE,
+            "method": "create_with_style",
+            "image_size": {"width": size[0], "height": size[1]},
+            "view": "low top-down",
+            "template_id": template,
+            "no_background": True,
+        },
+        "animations": [{"animation_name": n, "action_description": d, "frame_count": 6} for n, d in anims],
+    }
+
+
+CHARACTERS += [
+    pro("player_pro", "young novice swordsman with spiky orange-brown hair, blue tunic with a brown belt, "
+        "red scarf, brown boots, short sword",
+        [("walk", "walking"), ("attack", "quick forward sword slash attack")]),
+]
+
+
 def log(*a):
     print(time.strftime("%H:%M:%S"), *a, flush=True)
 
@@ -194,7 +227,15 @@ if task == "generate":
         if only and name not in only:
             continue
         try:
-            res = post(ch["endpoint"], ch["body"])
+            body = dict(ch["body"])
+            if ch.get("style_ref"):
+                ref = os.environ.get("PIXELLAB_STYLE_REF")
+                if not ref:
+                    log(name, "needs PIXELLAB_STYLE_REF")
+                    continue
+                body["reference_image"] = {"type": "base64", "format": "png",
+                                           "base64": base64.b64encode(open(ref, "rb").read()).decode()}
+            res = post(ch["endpoint"], body)
             cid = res["character_id"]
             job = res.get("background_job_id")
             manifest[name] = {"character_id": cid}
