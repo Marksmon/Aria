@@ -25,22 +25,36 @@ export const ARMORS = [
   { name: 'Beetle Plate', hearts: 3 },
 ];
 
-// kind: weapon|armor (tier = new tier, needs tier-1), tool (one-off), item (stackable result)
+// One charm can be worn at a time; swap them in the Hero tab of the bag.
+export const CHARMS = {
+  sprout: { name: 'Sprout Charm', desc: 'Slowly restores hearts anywhere' },
+  spore:  { name: 'Spore Charm',  desc: '+15% swing speed' },
+  shell:  { name: 'Shell Charm',  desc: '1 in 5 hits is blocked' },
+  glow:   { name: 'Glow Charm',   desc: '+25% experience' },
+};
+
+// kind: weapon|armor (tier = new tier, needs tier-1), tool (one-off), charm, item (stackable result)
+// lv = player level needed to craft it
 export const RECIPES = [
-  { id: 'stoneblade', kind: 'weapon', tier: 1, cost: { stone: 4, shell: 3 }, desc: 'Damage 1.5 · 1.8 swings/s' },
-  { id: 'emberedge',  kind: 'weapon', tier: 2, cost: { stone: 6, glow: 4, spore: 3 }, desc: 'Damage 2 · 2.2 swings/s' },
-  { id: 'leaftunic',  kind: 'armor',  tier: 1, cost: { leaf: 6, seed: 4 }, desc: '+1 heart' },
-  { id: 'shellmail',  kind: 'armor',  tier: 2, cost: { shell: 6, gel: 4 }, desc: '+2 hearts total' },
-  { id: 'beetleplate', kind: 'armor', tier: 3, cost: { stone: 8, dew: 4, spore: 2 }, desc: '+3 hearts total' },
+  { id: 'stoneblade', kind: 'weapon', tier: 1, lv: 3, cost: { stone: 4, shell: 3 }, desc: 'Damage 1.5 · 1.8 swings/s' },
+  { id: 'emberedge',  kind: 'weapon', tier: 2, lv: 6, cost: { stone: 6, glow: 4, spore: 3 }, desc: 'Damage 2 · 2.2 swings/s' },
+  { id: 'leaftunic',  kind: 'armor',  tier: 1, lv: 2, cost: { leaf: 6, seed: 4 }, desc: '+1 heart' },
+  { id: 'shellmail',  kind: 'armor',  tier: 2, lv: 4, cost: { shell: 6, gel: 4 }, desc: '+2 hearts total' },
+  { id: 'beetleplate', kind: 'armor', tier: 3, lv: 7, cost: { stone: 8, dew: 4, spore: 2 }, desc: '+3 hearts total' },
   { id: 'potion',     kind: 'item', item: 'potion', cost: { gel: 2, dew: 1, leaf: 1 }, desc: 'Restores 3 hearts' },
   { id: 'torch',      kind: 'tool', tool: 'torch', cost: { glow: 3, leaf: 2 }, desc: 'Lights your way at night' },
   { id: 'boots',      kind: 'tool', tool: 'boots', cost: { shell: 4, dew: 3, leaf: 3 }, desc: '+20% move speed' },
+  { id: 'c_sprout', kind: 'charm', charm: 'sprout', lv: 2, cost: { seed: 5, leaf: 3 }, desc: CHARMS.sprout.desc },
+  { id: 'c_spore',  kind: 'charm', charm: 'spore',  lv: 4, cost: { spore: 5, gel: 3 }, desc: CHARMS.spore.desc },
+  { id: 'c_shell',  kind: 'charm', charm: 'shell',  lv: 4, cost: { shell: 5, stone: 2 }, desc: CHARMS.shell.desc },
+  { id: 'c_glow',   kind: 'charm', charm: 'glow',   lv: 5, cost: { glow: 4, dew: 2 }, desc: CHARMS.glow.desc },
 ];
 
 export function recipeName(r) {
   if (r.kind === 'weapon') return WEAPONS[r.tier].name;
   if (r.kind === 'armor') return ARMORS[r.tier].name;
   if (r.kind === 'tool') return r.tool === 'torch' ? 'Torch' : 'Swift Boots';
+  if (r.kind === 'charm') return CHARMS[r.charm].name;
   return ITEMS[r.item].name;
 }
 
@@ -48,6 +62,7 @@ export function recipeIcon(r) {
   if (r.kind === 'weapon') return 'weapon' + r.tier;
   if (r.kind === 'armor') return 'armor' + r.tier;
   if (r.kind === 'tool') return r.tool;
+  if (r.kind === 'charm') return 'charm_' + r.charm;
   return r.item;
 }
 
@@ -84,6 +99,15 @@ function armorIcon(g, main, trim) {
   }, main);
   g.beginPath(); g.moveTo(19, 44); g.lineTo(45, 44); g.strokeStyle = trim; g.lineWidth = 4; g.stroke();
   gloss(g, 26, 24);
+}
+
+// a pendant on a cord; gem colour per charm
+function charmIcon(g, gem, rim) {
+  g.beginPath(); g.moveTo(14, 8); g.quadraticCurveTo(32, 30, 50, 8); g.strokeStyle = OUT; g.lineWidth = 5; g.stroke();
+  g.strokeStyle = '#b07a4c'; g.lineWidth = 2.5; g.stroke();
+  shape(g, () => g.arc(32, 38, 17, 0, Math.PI * 2), rim);
+  shape(g, () => { g.moveTo(32, 26); g.lineTo(43, 38); g.lineTo(32, 50); g.lineTo(21, 38); g.closePath(); }, gem, 2.5);
+  gloss(g, 28, 34, 3, 2.5);
 }
 
 const PAINT = {
@@ -145,6 +169,10 @@ const PAINT = {
     shape(g, () => { g.moveTo(22, 30); g.quadraticCurveTo(20, 16, 32, 4); g.quadraticCurveTo(44, 16, 42, 30); g.closePath(); }, '#f59a2b');
     g.beginPath(); g.moveTo(27, 28); g.quadraticCurveTo(27, 18, 32, 12); g.quadraticCurveTo(37, 18, 37, 28); g.fillStyle = '#ffe27a'; g.fill();
   },
+  charm_sprout: (g) => charmIcon(g, '#7cc455', '#e3b341'),
+  charm_spore: (g) => charmIcon(g, '#a383d6', '#e3b341'),
+  charm_shell: (g) => charmIcon(g, '#f2a8a0', '#cfd6de'),
+  charm_glow: (g) => charmIcon(g, '#ffe37a', '#cfd6de'),
   boots: (g) => {
     shape(g, () => { g.moveTo(18, 10); g.lineTo(34, 10); g.lineTo(34, 40); g.lineTo(52, 44); g.quadraticCurveTo(56, 54, 48, 56); g.lineTo(14, 56); g.lineTo(18, 34); g.closePath(); }, '#8a5a33');
     g.beginPath(); g.moveTo(18, 20); g.lineTo(34, 20); g.strokeStyle = '#6cc4ef'; g.lineWidth = 4; g.stroke();

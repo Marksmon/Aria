@@ -43,18 +43,36 @@ No health bars: monsters flash white when hit, wobble and slow down when nearly 
 and vanish in a puff. Any monster can drop a heart (15%). Monsters respawn 60 s after you
 leave the area, twice as fast at night.
 
+## Leveling
+
+Monsters give experience (Mini Slime 1, Slimes and Sproutlings 3–4, Wisps 4, Mudcrabs and
+Mushlings 5, Pebble Beetles 8). Levels go up to 15; each level-up restores your hearts and gives one
+stat point to spend in **Bag → Hero**:
+
+| Stat | Per point |
+|---|---|
+| STR | +8% damage |
+| AGI | +4% swing speed, +1.5% move speed |
+| VIT | +1 heart every 3 points |
+
 ## Crafting (campfire)
 
-| Recipe | Cost | Effect |
-|---|---|---|
-| Stone Blade | 4 Stone Chip, 3 Shell Bit | 1.5 damage, 1.8 swings/s |
-| Ember Edge | 6 Stone Chip, 4 Glow Dust, 3 Spore Cap | 2 damage, 2.2 swings/s |
-| Leaf Tunic | 6 Fresh Leaf, 4 Sprout Seed | +1 heart |
-| Shell Mail | 6 Shell Bit, 4 Slime Gel | +2 hearts |
-| Beetle Plate | 8 Stone Chip, 4 Dew Drop, 2 Spore Cap | +3 hearts |
-| Healing Draught | 2 Slime Gel, 1 Dew Drop, 1 Fresh Leaf | restores 3 hearts |
-| Torch | 3 Glow Dust, 2 Fresh Leaf | lights the night |
-| Swift Boots | 4 Shell Bit, 3 Dew Drop, 3 Fresh Leaf | +20% move speed |
+| Recipe | Level | Cost | Effect |
+|---|---|---|---|
+| Stone Blade | 3 | 4 Stone Chip, 3 Shell Bit | 1.5 damage, 1.8 swings/s |
+| Ember Edge | 6 | 6 Stone Chip, 4 Glow Dust, 3 Spore Cap | 2 damage, 2.2 swings/s |
+| Leaf Tunic | 2 | 6 Fresh Leaf, 4 Sprout Seed | +1 heart |
+| Shell Mail | 4 | 6 Shell Bit, 4 Slime Gel | +2 hearts |
+| Beetle Plate | 7 | 8 Stone Chip, 4 Dew Drop, 2 Spore Cap | +3 hearts |
+| Healing Draught | | 2 Slime Gel, 1 Dew Drop, 1 Fresh Leaf | restores 3 hearts |
+| Torch | | 3 Glow Dust, 2 Fresh Leaf | lights the night |
+| Swift Boots | | 4 Shell Bit, 3 Dew Drop, 3 Fresh Leaf | +20% move speed |
+| Sprout Charm | 2 | 5 Sprout Seed, 3 Fresh Leaf | slowly restores hearts anywhere |
+| Spore Charm | 4 | 5 Spore Cap, 3 Slime Gel | +15% swing speed |
+| Shell Charm | 4 | 5 Shell Bit, 2 Stone Chip | blocks 1 in 5 hits |
+| Glow Charm | 5 | 4 Glow Dust, 2 Dew Drop | +25% experience |
+
+You wear one charm at a time; swap them in **Bag → Hero**.
 
 Crafting uses items from both your bag (16 slots) and the camp chest (32 slots).
 
@@ -72,7 +90,7 @@ to restore hearts, save, and sleep until morning.
 - [x] **M5** Day/night, night spawns, sleeping, save
 - [x] **M6** Sound and music, title screen, polish
 - [x] **M7** PixelLab sprites: player (walk, sword attack) and Green Slime (hop, attack), 4 directions
-- [ ] **M8** Leveling and equipment
+- [x] **M8** Leveling (XP, levels, STR/AGI/VIT), charms, level requirements for gear
 - [ ] **M9** Camp NPCs and quests
 
 ## Dev
@@ -84,7 +102,7 @@ npm run build    # single-file build in dist/index.html
 ```
 
 Code map: `world.js` (terrain, zones, props), `player.js`, `mobs.js` (all monster AI),
-`items.js` + `inventory.js` + `menus.js` (loot and crafting), `daynight.js`, `audio.js`,
+`items.js` + `inventory.js` + `menus.js` (loot, crafting, gear), `progress.js` (levels and stats), `daynight.js`, `audio.js`,
 `sprites.js` (painted art plus the PixelLab sheets — swap any sprite without touching game logic).
 
 ## PixelLab art

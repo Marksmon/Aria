@@ -9,6 +9,7 @@ import { FX } from './fx.js';
 import { MobManager } from './mobs.js';
 import { loadSave, writeSave } from './save.js';
 import { Inventory } from './inventory.js';
+import { Progress } from './progress.js';
 import { Menus } from './menus.js';
 import { iconTexture, iconURL, ITEMS } from './items.js';
 import { DayNight } from './daynight.js';
@@ -56,15 +57,19 @@ mobs.populate([
 const save = loadSave();
 const player = new Player(scene, world, lib.player, lib.shadow, fx);
 player.setPos(save?.x ?? world.spawn.x, save?.z ?? world.spawn.z);
+const prog = new Progress();
+prog.load(save?.prog);
 const inv = new Inventory();
+inv.level = () => prog.level;
 inv.load(save?.inv);
-inv.applyTo(player);
+inv.applyTo(player, prog);
 if (save?.hp) player.hp = clamp(save.hp, 1, player.maxHp);
-inv.onChange(() => inv.applyTo(player));
+inv.onChange(() => inv.applyTo(player, prog));
 
 const input = new Input(document.getElementById('joy'), document.getElementById('joy-knob'));
 const ui = new UI(world);
 ui.mobs = mobs;
+ui.prog = prog;
 
 const cam = { yaw: save?.yaw ?? 0, dist: save?.dist ?? 12, target: new THREE.Vector3(), shake: 0 };
 cam.target.set(player.x, world.heightAt(player.x, player.z), player.z);
@@ -75,6 +80,10 @@ const audio = new Audio();
 player.on('swing', () => audio.play('swing'));
 player.on('hit', () => audio.play('hit'));
 player.on('hurt', () => { ui.hurt(); cam.shake = 0.25; audio.play('hurt'); });
+player.on('block', () => {
+  audio.play('block');
+  fx.sparkle(player.x, world.heightAt(player.x, player.z) + 0.8, player.z, '#e8eef5', 5);
+});
 player.on('faint', () => {
   audio.play('faint');
   ui.faint(true);
@@ -86,6 +95,7 @@ player.on('faint', () => {
 });
 mobs.on('death', (m, drops) => {
   audio.play('kill');
+  gainXp(m.def.xp);
   for (const [item, count] of drops) {
     if (item === 'heart') fx.drop(m.x, m.z, 'heart', 1, lib.fx.heart);
     else fx.drop(m.x, m.z, item, count, iconTexture(item));
@@ -101,6 +111,19 @@ mobs.on('spore', (m) => {
     player.slowT = 2.2;
   }
 });
+
+// ---------- experience ----------
+function gainXp(n) {
+  const ups = prog.gain(n * (inv.gear.charm === 'glow' ? 1.25 : 1));
+  if (!ups) return;
+  inv.applyTo(player, prog);
+  player.heal(player.maxHp);
+  audio.play('levelup');
+  fx.sparkle(player.x, world.heightAt(player.x, player.z) + 0.6, player.z, '#ffe37a', 14);
+  menus.message(`Level ${prog.level}! Hearts restored. Spend your point in Bag → Hero.`);
+  if (menus.open) menus.render();
+  persist();
+}
 
 let bagFullNote = 0;
 function collect(p) {
@@ -121,12 +144,13 @@ function collect(p) {
 }
 
 // ---------- menus + camp interactions ----------
-const menus = new Menus(inv, {
+const menus = new Menus(inv, prog, player, {
   usePotion() {
     if (player.hp >= player.maxHp) { menus.message('Your hearts are already full'); return; }
     if (inv.bag.remove('potion', 1)) { player.heal(6); inv.changed(); menus.message('You feel better'); }
   },
   crafted() { audio.play('craft'); persist(); },
+  raised() { inv.applyTo(player, prog); audio.play('craft'); persist(); },
   ui() { audio.play('ui'); },
   soundOn: () => audio.enabled,
   toggleSound() { audio.setEnabled(!audio.enabled); },
@@ -188,9 +212,10 @@ if (typeof save?.time === 'number') dayNight.t = save.time;
 let regenT = 0;
 function campRegen(dt) {
   const atCamp = Math.hypot(player.x - 32, player.z - 32) < 5.5;
-  if (!atCamp || player.state === 'down' || player.hp >= player.maxHp) { regenT = 0; return; }
+  const every = atCamp ? 2.5 : inv.gear.charm === 'sprout' ? 10 : 0; // Sprout Charm: slow regen anywhere
+  if (!every || player.state === 'down' || player.hp >= player.maxHp) { regenT = 0; return; }
   regenT += dt;
-  if (regenT > 2.5) { regenT = 0; player.heal(1); }
+  if (regenT > every) { regenT = 0; player.heal(1); }
 }
 
 function resize() {
@@ -212,7 +237,7 @@ let saveT = 0;
 let resetting = false;
 function persist() {
   if (!started || resetting) return;
-  writeSave({ x: player.x, z: player.z, yaw: cam.yaw, dist: cam.dist, hp: player.hp, inv: inv.toJSON(), time: dayNight.t });
+  writeSave({ x: player.x, z: player.z, yaw: cam.yaw, dist: cam.dist, hp: player.hp, inv: inv.toJSON(), prog: prog.toJSON(), time: dayNight.t });
 }
 
 const clock = new THREE.Clock();
@@ -320,4 +345,4 @@ tContinue.addEventListener('click', () => {
   }, 450);
 });
 
-window.__aibachu = { player, world, cam, mobs, fx, inv, menus, dayNight, audio, stats: world.stats };
+window.__aibachu = { player, world, cam, mobs, fx, inv, prog, menus, dayNight, audio, stats: world.stats };

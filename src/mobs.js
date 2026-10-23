@@ -5,16 +5,16 @@ import { mulberry32, dirFor } from './noise.js';
 
 const CAMP_SAFE = 8.5; // monsters never enter the camp circle
 
-// drops: [itemId, min, max, chance]
+// xp = experience for beating it. drops: [itemId, min, max, chance]
 export const MOB_DEFS = {
-  slime:     { name: 'Green Slime', ai: 'hopper', art: 'slime', hp: 3, speed: 1.7, aggro: 4.5, chase: 4, dmg: 1, reach: 0.8, w: 0.9, r: 0.35, drops: [['gel', 1, 2, 1]] },
-  blueSlime: { name: 'Blue Slime', ai: 'hopper', art: 'slimeBlue', hp: 4, speed: 1.8, aggro: 4.5, chase: 4.5, dmg: 1, reach: 0.8, w: 1.0, r: 0.38, split: 'miniSlime', drops: [['gel', 1, 1, 1], ['dew', 1, 1, 0.6]] },
-  miniSlime: { name: 'Mini Slime', ai: 'hopper', art: 'slimeBlue', hp: 1, speed: 2.3, aggro: 6, chase: 5, dmg: 1, reach: 0.6, w: 0.55, r: 0.22, noRespawn: true, drops: [['dew', 1, 1, 0.5]] },
-  sprout:    { name: 'Sproutling', ai: 'skittish', art: 'sprout', hp: 3, speed: 1.5, flee: 2.9, fear: 3.5, angry: 6, dmg: 1, reach: 0.8, w: 0.95, r: 0.35, drops: [['seed', 1, 1, 1], ['leaf', 1, 1, 0.6]] },
-  crab:      { name: 'Mudcrab', ai: 'crab', art: 'crab', hp: 5, speed: 1.6, aggro: 5, dmg: 1, reach: 0.85, w: 1.1, r: 0.42, drops: [['shell', 1, 2, 1]] },
-  mushling:  { name: 'Mushling', ai: 'puffer', art: 'mushling', hp: 4, speed: 1.2, aggro: 4, chase: 6, dmg: 1, reach: 0.8, w: 0.95, r: 0.36, drops: [['spore', 1, 2, 1]] },
-  beetle:    { name: 'Pebble Beetle', ai: 'tank', art: 'beetle', hp: 6, speed: 1.15, aggro: 4, chase: 8, dmg: 2, reach: 0.9, w: 1.15, r: 0.45, heavy: true, drops: [['stone', 1, 2, 1]] },
-  wisp:      { name: 'Firefly Wisp', ai: 'wisp', art: 'wisp', hp: 2, speed: 2.4, aggro: 6, dmg: 1, reach: 0.75, w: 0.7, r: 0.3, fly: true, night: true, drops: [['glow', 1, 1, 1]] },
+  slime:     { name: 'Green Slime', xp: 3, ai: 'hopper', art: 'slime', hp: 3, speed: 1.7, aggro: 4.5, chase: 4, dmg: 1, reach: 0.8, w: 0.9, r: 0.35, drops: [['gel', 1, 2, 1]] },
+  blueSlime: { name: 'Blue Slime', xp: 4, ai: 'hopper', art: 'slimeBlue', hp: 4, speed: 1.8, aggro: 4.5, chase: 4.5, dmg: 1, reach: 0.8, w: 1.0, r: 0.38, split: 'miniSlime', drops: [['gel', 1, 1, 1], ['dew', 1, 1, 0.6]] },
+  miniSlime: { name: 'Mini Slime', xp: 1, ai: 'hopper', art: 'slimeBlue', hp: 1, speed: 2.3, aggro: 6, chase: 5, dmg: 1, reach: 0.6, w: 0.55, r: 0.22, noRespawn: true, drops: [['dew', 1, 1, 0.5]] },
+  sprout:    { name: 'Sproutling', xp: 3, ai: 'skittish', art: 'sprout', hp: 3, speed: 1.5, flee: 2.9, fear: 3.5, angry: 6, dmg: 1, reach: 0.8, w: 0.95, r: 0.35, drops: [['seed', 1, 1, 1], ['leaf', 1, 1, 0.6]] },
+  crab:      { name: 'Mudcrab', xp: 5, ai: 'crab', art: 'crab', hp: 5, speed: 1.6, aggro: 5, dmg: 1, reach: 0.85, w: 1.1, r: 0.42, drops: [['shell', 1, 2, 1]] },
+  mushling:  { name: 'Mushling', xp: 5, ai: 'puffer', art: 'mushling', hp: 4, speed: 1.2, aggro: 4, chase: 6, dmg: 1, reach: 0.8, w: 0.95, r: 0.36, drops: [['spore', 1, 2, 1]] },
+  beetle:    { name: 'Pebble Beetle', xp: 8, ai: 'tank', art: 'beetle', hp: 6, speed: 1.15, aggro: 4, chase: 8, dmg: 2, reach: 0.9, w: 1.15, r: 0.45, heavy: true, drops: [['stone', 1, 2, 1]] },
+  wisp:      { name: 'Firefly Wisp', xp: 4, ai: 'wisp', art: 'wisp', hp: 2, speed: 2.4, aggro: 6, dmg: 1, reach: 0.75, w: 0.7, r: 0.3, fly: true, night: true, drops: [['glow', 1, 1, 1]] },
 };
 
 const HEART_CHANCE = 0.15;

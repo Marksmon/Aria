@@ -69,6 +69,18 @@ export class FX {
     }
   }
 
+  // rising coloured specks (level up, blocked hit)
+  sparkle(x, y, z, color, n = 10) {
+    for (let i = 0; i < n; i++) {
+      const s = this.sprite(this.lib.fx.puff, { depthTest: false, renderOrder: 5 });
+      s.material.color.set(color);
+      const a = (i / n) * Math.PI * 2, sp = 0.5 + Math.random() * 0.8;
+      s.position.set(x, y, z);
+      this.live.push({ s, t: 0, life: 0.7 + Math.random() * 0.3, kind: 'puff', v: [Math.cos(a) * sp, 1.4 + Math.random(), Math.sin(a) * sp], sc: 0.22, color: true });
+      s.scale.set(0.22, 0.22, 1);
+    }
+  }
+
   // item: id, tex: texture, onCollect(pickup) -> bool (true = picked up)
   drop(x, z, item, count, tex) {
     const s = this.sprite(tex, { bottom: true, renderOrder: 2 });

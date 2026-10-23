@@ -23,6 +23,9 @@ export class UI {
     this.faintEl = document.getElementById('faint');
     this.lastHearts = '';
     this.mobs = null;
+    this.prog = null;
+    this.lvlEl = document.getElementById('lvl');
+    this.lastLvl = '';
   }
 
   hurt() {
@@ -38,8 +41,10 @@ export class UI {
     if (key === this.lastHearts) return;
     this.lastHearts = key;
     const g = this.hg, n = Math.ceil(maxHp / 2), size = 40, gap = 4;
-    this.heartsEl.style.width = (n * (size + gap)) / 2 + 'px';
-    g.clearRect(0, 0, 400, 44);
+    // canvas is drawn at 2x; size it to the heart count so they are not squashed
+    this.heartsEl.width = n * (size + gap);
+    this.heartsEl.style.width = this.heartsEl.width / 2 + 'px';
+    g.clearRect(0, 0, this.heartsEl.width, 44);
     for (let i = 0; i < n; i++) {
       const x = i * (size + gap) + size / 2 + 2, fill = Math.max(0, Math.min(2, hp - i * 2));
       heartPath(g, x, 3, size - 2);
@@ -66,8 +71,20 @@ export class UI {
     this.toast.classList.add('show');
   }
 
+  // level badge and experience bar under the bag button; "+" while stat points are unspent
+  drawLevel(p) {
+    const pct = p.maxed ? 100 : Math.floor((p.xp / p.need) * 100);
+    const key = `${p.level}/${pct}/${p.points}`;
+    if (key === this.lastLvl) return;
+    this.lastLvl = key;
+    this.lvlEl.querySelector('b').textContent = `Lv ${p.level}`;
+    this.lvlEl.querySelector('s').style.width = pct + '%';
+    this.lvlEl.querySelector('em').hidden = !p.points;
+  }
+
   update(dt, player, yaw) {
     this.drawHearts(player.hp, player.maxHp);
+    if (this.prog) this.drawLevel(this.prog);
     this.zoneTimer -= dt;
     if (this.zoneTimer <= 0) {
       this.zoneTimer = 0.3;

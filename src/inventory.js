@@ -1,5 +1,5 @@
 // Bag, camp chest and equipment. Each item type uses one slot and stacks to 99.
-import { ITEMS, WEAPONS, ARMORS, RECIPES } from './items.js';
+import { ITEMS, WEAPONS, ARMORS, RECIPES, CHARMS } from './items.js';
 
 export const BAG_SLOTS = 16;
 export const CHEST_SLOTS = 32;
@@ -37,8 +37,9 @@ export class Inventory {
   constructor() {
     this.bag = new Store(BAG_SLOTS);
     this.chest = new Store(CHEST_SLOTS);
-    this.gear = { weapon: 0, armor: 0, torch: false, boots: false };
+    this.gear = { weapon: 0, armor: 0, torch: false, boots: false, charms: [], charm: null };
     this.listeners = [];
+    this.level = () => 1; // set by the game: current player level, for recipe requirements
   }
 
   onChange(fn) { this.listeners.push(fn); }
@@ -62,8 +63,10 @@ export class Inventory {
     if (r.kind === 'weapon' && this.gear.weapon >= r.tier) return 'owned';
     if (r.kind === 'armor' && this.gear.armor >= r.tier) return 'owned';
     if (r.kind === 'tool' && this.gear[r.tool]) return 'owned';
+    if (r.kind === 'charm' && this.gear.charms.includes(r.charm)) return 'owned';
     if (r.kind === 'weapon' && this.gear.weapon < r.tier - 1) return 'locked';
     if (r.kind === 'armor' && this.gear.armor < r.tier - 1) return 'locked';
+    if (r.lv && this.level() < r.lv) return 'level';
     const ok = Object.entries(r.cost).every(([id, n]) => this.have(id) >= n);
     return ok ? 'ready' : 'missing';
   }
@@ -75,6 +78,10 @@ export class Inventory {
     if (r.kind === 'weapon') this.gear.weapon = r.tier;
     if (r.kind === 'armor') this.gear.armor = r.tier;
     if (r.kind === 'tool') this.gear[r.tool] = true;
+    if (r.kind === 'charm') {
+      this.gear.charms.push(r.charm);
+      this.gear.charm ||= r.charm; // the first charm goes straight on
+    }
     if (r.kind === 'item') this.bag.add(r.item, 1);
     this.changed();
     return true;
@@ -88,15 +95,23 @@ export class Inventory {
     return got;
   }
 
-  applyTo(player) {
-    const w = WEAPONS[this.gear.weapon], a = ARMORS[this.gear.armor];
-    player.damage = w.dmg;
-    player.attackSpeed = w.spd;
-    const newMax = 10 + a.hearts * 2;
+  wear(charm) {
+    if (charm !== null && !this.gear.charms.includes(charm)) return;
+    this.gear.charm = charm;
+    this.changed();
+  }
+
+  // gear plus stat points (Progress) -> player numbers
+  applyTo(player, prog) {
+    const w = WEAPONS[this.gear.weapon], a = ARMORS[this.gear.armor], st = prog.stats, charm = this.gear.charm;
+    player.damage = w.dmg * (1 + 0.08 * st.str);
+    player.attackSpeed = w.spd * (1 + 0.04 * st.agi) * (charm === 'spore' ? 1.15 : 1);
+    const newMax = 10 + a.hearts * 2 + Math.floor(st.vit / 3) * 2;
     if (newMax > player.maxHp) player.hp += newMax - player.maxHp;
     player.maxHp = newMax;
     player.hp = Math.min(player.hp, player.maxHp);
-    player.speedMul = this.gear.boots ? 1.2 : 1;
+    player.speedMul = (this.gear.boots ? 1.2 : 1) * (1 + 0.015 * st.agi);
+    player.blockChance = charm === 'shell' ? 0.2 : 0;
   }
 
   toJSON() { return { bag: this.bag.toJSON(), chest: this.chest.toJSON(), gear: this.gear }; }
@@ -107,6 +122,8 @@ export class Inventory {
     this.gear = { ...this.gear, ...(data.gear || {}) };
     this.gear.weapon = Math.min(this.gear.weapon | 0, WEAPONS.length - 1);
     this.gear.armor = Math.min(this.gear.armor | 0, ARMORS.length - 1);
+    this.gear.charms = (this.gear.charms || []).filter((c) => CHARMS[c]);
+    if (!this.gear.charms.includes(this.gear.charm)) this.gear.charm = null;
   }
 }
 

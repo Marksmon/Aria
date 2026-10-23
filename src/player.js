@@ -27,6 +27,7 @@ export class Player {
     this.damage = 1;
     this.attackSpeed = 1.5; // swings per second
     this.speedMul = 1;
+    this.blockChance = 0;
 
     this.state = 'normal'; // normal | roll | down
     this.atkTimer = 0;
@@ -38,7 +39,7 @@ export class Player {
     this.iframes = 0;
     this.slowT = 0;
     this.knock = { x: 0, z: 0 };
-    this.events = { swing: [], hurt: [], faint: [], hit: [] };
+    this.events = { swing: [], hurt: [], faint: [], hit: [], block: [] };
 
     this.mat = new THREE.SpriteMaterial({ map: art.anims.down.idle[0], alphaTest: 0.5 });
     this.sprite = new THREE.Sprite(this.mat);
@@ -81,6 +82,11 @@ export class Player {
 
   takeDamage(amount, fromX, fromZ) {
     if (this.state === 'down' || this.iframes > 0) return false;
+    if (Math.random() < this.blockChance) {
+      this.iframes = 0.5;
+      this.emit('block');
+      return true;
+    }
     this.hp = Math.max(0, this.hp - amount);
     this.iframes = 0.9;
     const dx = this.x - fromX, dz = this.z - fromZ, d = Math.hypot(dx, dz) || 1;

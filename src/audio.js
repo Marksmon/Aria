@@ -108,6 +108,14 @@ export class Audio {
       case 'faint': [392, 330, 262].forEach((f, i) => this.tone({ type: 'triangle', f0: f, dur: 0.4, vol: 0.22, at: i * 0.18 })); break;
       case 'night': this.tone({ type: 'sine', f0: 220, dur: 2.2, vol: 0.22, attack: 0.05 }); this.tone({ type: 'sine', f0: 330, dur: 2.2, vol: 0.12, attack: 0.05, at: 0.1 }); break;
       case 'morning': [587, 740, 880, 1175].forEach((f, i) => this.tone({ type: 'sine', f0: f, dur: 0.9, vol: 0.14, at: i * 0.12 })); break;
+      case 'levelup':
+        [523, 659, 784, 1046, 1318].forEach((f, i) => this.tone({ type: 'triangle', f0: f, dur: 0.35, vol: 0.2, at: i * 0.07 }));
+        this.tone({ type: 'sine', f0: 1568, dur: 0.9, vol: 0.14, at: 0.36 });
+        break;
+      case 'block':
+        this.tone({ type: 'square', f0: 1800, f1: 1400, dur: 0.12, vol: 0.08, filter: 4000 });
+        this.tone({ type: 'sine', f0: 2600, dur: 0.25, vol: 0.1, at: 0.01 });
+        break;
       case 'step': this.noise({ dur: 0.05, vol: 0.06, f0: 500, f1: 300, q: 1 }); break;
     }
   }
