@@ -91,6 +91,35 @@ CHARACTERS += [
 ]
 
 
+# Camp villagers: same Ragnarok look as the player. They stand still, so no animations.
+def villager(name, desc):
+    return {
+        "name": name,
+        "endpoint": "/create-character-with-4-directions",
+        "body": {
+            "description": desc + ". " + RO_STYLE,
+            "image_size": {"width": 64, "height": 64},
+            "view": "low top-down",
+            "proportions": {"type": "custom", "head_size": 1.5, "arms_length": 0.9, "legs_length": 0.8,
+                            "shoulder_width": 0.9, "hip_width": 0.9},
+            "outline": "single color black outline",
+            "shading": "medium shading",
+            "detail": "medium detail",
+        },
+        "animations": [],
+    }
+
+
+CHARACTERS += [
+    villager("bram", "kind old village elder with a long white beard, bald head with white tufts, purple robe "
+             "with gold trim, wooden staff topped with a blue crystal"),
+    villager("tilly", "cheerful village cook woman with brown hair in a bun, red headscarf, red dress with a "
+             "white apron, holding a wooden ladle"),
+    villager("wren", "young scout girl with short dark hair under a green hood with a red feather, green tunic, "
+             "leather satchel strap, bow on her back"),
+]
+
+
 def log(*a):
     print(time.strftime("%H:%M:%S"), *a, flush=True)
 
