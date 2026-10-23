@@ -83,9 +83,9 @@ they have a quest for you, a **?** means you can hand one in. Active quests show
 
 | Villager | Quests (level) |
 |---|---|
-| Elder Bram | Slime Trouble (1), Snapping Shores (3), Rocks That Walk (5), Spores in the Hollow (7) |
-| Tilly the Cook | Jelly for Supper (1), Mushroom Stew (3), Fresh Water (4), Lantern Soup (6) |
-| Wren the Scout | Know the Valley (1), Shy Sprouts (2), Blue and Bouncy (3), Lights in the Dark (5) |
+| Elder Halvard | Slime Trouble (1), Snapping Shores (3), Rocks That Walk (5), Spores in the Hollow (7) |
+| Astrid the Cook | Jelly for Supper (1), Mushroom Stew (3), Fresh Water (4), Lantern Soup (6) |
+| Sigrun the Scout | Know the Valley (1), Shy Sprouts (2), Blue and Bouncy (3), Lights in the Dark (5) |
 
 Kill quests count from when you accept them; fetch quests take the items from your bag and chest
 when you hand in. Every quest pays experience plus potions or crafting materials.

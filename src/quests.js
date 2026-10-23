@@ -9,21 +9,21 @@ import { ZONE_NAMES } from './world.js';
 
 export const NPCS = {
   bram: {
-    name: 'Elder Bram', x: 27.9, z: 31.9,
+    name: 'Elder Halvard', x: 27.9, z: 31.9,
     hello: 'The valley is restless these days. Young legs like yours could help an old man.',
     later: (lv) => `Rest now. Come back to me when you reach level ${lv}.`,
     bye: 'You have done this valley a great kindness. Sit by the fire whenever you like.',
     quests: ['slimes', 'crabs', 'beetles', 'mushlings'],
   },
   tilly: {
-    name: 'Tilly the Cook', x: 36.2, z: 33.2,
+    name: 'Astrid the Cook', x: 36.2, z: 33.2,
     hello: 'Hungry? So am I! But my pantry is bare...',
     later: (lv) => `Nothing to cook right now. Pop back at level ${lv}, I'll have a new recipe.`,
     bye: 'The pot is always on for you, dear.',
     quests: ['gel', 'stew', 'water', 'lantern'],
   },
   wren: {
-    name: 'Wren the Scout', x: 35.6, z: 28.2,
+    name: 'Sigrun the Scout', x: 35.6, z: 28.2,
     hello: "Oh, a new face! I'm mapping the valley. Want to help?",
     later: (lv) => `I'm still scribbling notes. Find me again at level ${lv}.`,
     bye: "My map is finished, thanks to you. Best map in the valley, if I say so myself.",
