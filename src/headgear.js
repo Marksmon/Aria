@@ -18,7 +18,8 @@ const LAYOUTS = import.meta.glob('./art/hg_*.json', { eager: true, import: 'defa
 // A piece can tune its own fit (see TUNE): w and at as above, dx / dy to nudge it (in head
 // widths / head heights), and hair: hide the wearer's hair above that line (same scale as at),
 // so spikes don't poke through a helmet. 0 leaves the hair alone. swap: { dir: other dir } shows
-// another direction's art where PixelLab drew one badly.
+// another direction's art where PixelLab drew one badly. dirs: { dir: { at, w, dx, dy } } tunes
+// one direction on its own (left mirrors right, so give the facing's own direction).
 const ANIM_FPS = 9;
 const FIT = { head: { w: 0.86, at: 0.47, dx: 0, dy: 0, hair: 0 }, face: { w: 0.78, at: 0.82, dx: 0, dy: 0, hair: 0 } };
 export const TUNE = {
@@ -26,7 +27,7 @@ export const TUNE = {
   woven_cap: { hair: 0.4 },
   ember_crown: { at: 0.36, hair: 0.2, swap: { right: 'downright', left: 'downleft' } }, // sits on the hair; its side views are poor
   flower_wreath: { at: 0.33, w: 0.9, hair: 0 }, // rests on top of the hair
-  round_glasses: {},
+  round_glasses: { dirs: { right: { dy: 0.12, dx: -0.06, w: 0.62 }, left: { dy: 0.12, dx: -0.06, w: 0.62 } } },
   raven_mask: { at: 0.78, w: 0.8 },
   flame_circlet: { at: 0.4, hair: 0.3 },
 };
@@ -246,6 +247,7 @@ export class HeadLayer {
   // a PixelLab piece: scaled from its front view to the head's width, then sat on the head
   updateImage(pc, body, tex, dir, fw, fh) {
     const h = tex.userData.head, slot = HEADGEAR[this.id].slot, fit = fitOf(this.id);
+    if (fit.dirs?.[dir]) Object.assign(fit, fit.dirs[dir]); // fitOf() returns a fresh copy
     if (fit.swap?.[dir]) dir = fit.swap[dir];
     const cell = pc.L.dirs[dir], front = pc.L.dirs.down;
     if (!cell || !front || (slot === 'face' && dir.startsWith('up'))) { this.sprite.visible = false; return; }

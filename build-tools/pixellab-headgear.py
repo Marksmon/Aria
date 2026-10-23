@@ -131,7 +131,8 @@ if __name__ == "__main__":
         j = wait(oid, limit=3600)
         if j and j.get("status") == "completed" and pid in ANIMS:
             res = post(f"/objects/{oid}/animations", {"animation_description": ANIMS[pid], "directions": DIR_ORDER, "frame_count": 8})
-            for jid in res.get("background_job_ids", []):
+            jobs = res.get("background_job_ids") or [x.get("background_job_id") for x in res.get("submissions", [])]
+            for jid in filter(None, jobs):
                 wait_job(jid)
         if j and j.get("status") == "completed":
             os.makedirs(out, exist_ok=True)
