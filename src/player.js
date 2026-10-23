@@ -243,7 +243,7 @@ export class Player {
     const eight = 'downright' in this.art.anims;
     this.dir = eight ? dirFor8(this.face.x, this.face.z, cam, this.dir) : dirFor(this.face.x, this.face.z, cam);
     const D = this.art.anims[this.dir], S = this.art.anims[dirFor(this.face.x, this.face.z, cam)];
-    const A = { idle: D.idle, walk: D.walk || S.walk, attack: D.attack || S.attack, dodge: D.dodge || S.dodge };
+    const A = { idle: D.idle, walk: D.walk || S.walk, attack: D.attack || S.attack || D.idle, dodge: D.dodge || S.dodge || D.walk || S.walk };
     let tex = A.idle[0];
     if (this.state === 'roll') {
       const k = 1 - this.rollT / ROLL_TIME;

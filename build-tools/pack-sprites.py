@@ -31,7 +31,8 @@ CHARS = {name: {} for name in ['slime', 'blueslime', 'sprout', 'crab', 'mushling
 # even 8-frame template walk (the first one limped); front and back redone as a skeleton walk,
 # where the template's legs barely moved
 CHARS['player'] = {'eight': True, 'use': {'walk': 'walking'}, 'prefer': {'walking-e8b5c561'}, 'skip': {'stepv3'}}
-CHARS.update({name: {'eight': True} for name in ['bram', 'tilly', 'wren', 'novice']})
+CHARS.update({name: {'eight': True} for name in ['bram', 'tilly', 'wren']})
+CHARS['novice'] = {'eight': True, 'use': {'walk': 'walking'}}  # skeleton walk in all eight directions
 
 
 def islands(f):
@@ -157,21 +158,34 @@ def pack(name, opts):
         gs = islands(f)
         if not gs:
             return [fw // 2, 0, 0, 0]
-        rows_ = {}
-        for x, y in gs[0]:
-            lo, hi = rows_.get(y, (x, x))
-            rows_[y] = (min(lo, x), max(hi, x))
-        top = min(rows_)
-        span = lambda y: rows_[y][1] - rows_[y][0] + 1 if y in rows_ else 0
-        band = [y for y in range(top, top + int(bh * 0.4)) if y in rows_]
-        widest = max(band, key=span)
-        mw = span(widest)
-        crown = next(y for y in band if span(y) >= mw * 0.6)
-        neck = next((y for y in range(widest, top + int(bh * 0.55)) if 0 < span(y) < mw * 0.72), crown + int(bh * 0.3))
-        # centre: the middle of the rows just under the crown (the widest row can be the shoulders
-        # in a tucked roll)
-        top_rows = [y for y in range(crown, crown + max(3, int(bh * 0.18))) if y in rows_]
-        cx = sum(rows_[y][0] + rows_[y][1] for y in top_rows) / (2 * len(top_rows))
+        solid = set(gs[0])
+        top = min(y for _, y in solid)
+        # follow the head down row by row, keeping only the run of pixels around its centre, so a
+        # sword or an arm held beside the head doesn't count as head
+        xs = [x for x, y in solid if y <= top + 4]
+        cx = sum(xs) / len(xs)
+        runs = {}
+        for y in range(top, top + int(bh * 0.6)):
+            c = int(round(cx))
+            near = [x for x in range(c - 5, c + 6) if (x, y) in solid]
+            if not near:
+                continue
+            x = min(near, key=lambda v: abs(v - c))
+            lo = hi = x
+            while (lo - 1, y) in solid: lo -= 1
+            while (hi + 1, y) in solid: hi += 1
+            runs[y] = (lo, hi)
+            cx = (lo + hi) / 2
+        width = lambda y: runs[y][1] - runs[y][0] + 1 if y in runs else 0
+        # chibi heads keep their proportions, so the bottom of the head ("neck") is a fixed share of
+        # the body's height below the crown; that holds facing any way, unlike narrowing rows
+        mw = max(width(y) for y in runs if y < top + bh * 0.3)
+        crown = next(y for y in sorted(runs) if width(y) >= mw * 0.6)
+        neck = crown + round(bh * 0.3)
+        mw = max(width(y) for y in runs if crown <= y < neck)
+        # centre: the middle of the rows just under the crown
+        top_rows = [y for y in range(crown, crown + max(3, int(bh * 0.18))) if y in runs and y < neck]
+        cx = sum(runs[y][0] + runs[y][1] for y in top_rows) / (2 * len(top_rows))
         return [round(cx), crown, neck, mw]
 
     # one head width per direction, the standing pose's (a slash effect, a raised sword or a tucked

@@ -15,7 +15,7 @@ const SHEETS = import.meta.glob('./art/hg_*.png', { eager: true, import: 'defaul
 const LAYOUTS = import.meta.glob('./art/hg_*.json', { eager: true, import: 'default' });
 // a piece's rim (see pack-headgear.py) is sized to `w` times the head's width and put on the line
 // `at` of the way from crown to neck: a hat's brim just above the brows, glasses on the eyes
-const FIT = { head: { w: 0.86, at: 0.47 }, face: { w: 0.78, at: 0.74 } };
+const FIT = { head: { w: 0.86, at: 0.47 }, face: { w: 0.78, at: 0.82 } };
 
 // a PixelLab piece: one texture per direction, cut from its sheet once the image loads
 const images = {};

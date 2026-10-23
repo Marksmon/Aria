@@ -741,4 +741,4 @@ tContinue.addEventListener('click', () => {
   }, 450);
 });
 
-window.__aria = { warp, enterMap, player, world, cam, camera, mobs, fx, inv, prog, quests, villagers, menus, hotbar, dayNight, audio, stats: world.stats };
+window.__aria = { lib, warp, enterMap, player, world, cam, camera, mobs, fx, inv, prog, quests, villagers, menus, hotbar, dayNight, audio, stats: world.stats };
