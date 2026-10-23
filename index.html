@@ -12,8 +12,15 @@
     <div id="zone-toast"><div class="map">Aibachu</div><div class="zone"></div></div>
     <canvas id="minimap" width="128" height="128"></canvas>
     <canvas id="hearts" width="400" height="44"></canvas>
+    <div id="btn-bag" class="btn" data-btn="bag" aria-label="Bag">
+      <svg viewBox="0 0 48 48"><path d="M14 18h20l3 22H11z" /><path d="M18 18c0-6 3-9 6-9s6 3 6 9" /><path d="M17 27h14" /></svg>
+    </div>
+    <div id="toasts"></div>
     <div id="joy"><div id="joy-knob"></div></div>
     <div id="btns">
+      <div id="btn-action" class="btn" data-btn="action" aria-label="Use" hidden>
+        <img alt=""><span></span>
+      </div>
       <div id="btn-dodge" class="btn" data-btn="dodge" aria-label="Dodge">
         <svg viewBox="0 0 48 48"><path d="M10 30c4 8 18 10 25 2" /><path d="M31 26l5 6-7 2" /><path d="M14 18c3-6 12-9 19-5" /></svg>
       </div>
@@ -26,10 +33,11 @@
     <div id="hint">Hold ⚔ to attack · Tap ↻ to dodge · Drag right side to rotate</div>
     <div id="fps"></div>
   </div>
+  <div id="panel" class="panel"></div>
   <div id="title">
     <h1>Aibachu</h1>
     <p>Tap to start</p>
-    <small>M2 · Combat</small>
+    <small>M3 · Loot &amp; Crafting</small>
   </div>
   <script type="module" src="/src/main.js"></script>
 </body>

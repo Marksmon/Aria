@@ -4,7 +4,6 @@ html, body {
   height: 100%;
   overflow: hidden;
   background: #141a16;
-  touch-action: none;
   user-select: none;
   -webkit-user-select: none;
   -webkit-touch-callout: none;
@@ -12,6 +11,7 @@ html, body {
   font-family: Georgia, 'Times New Roman', serif;
   color: #fff;
 }
+#game, #hud, #title { touch-action: none; }
 #game { position: fixed; inset: 0; width: 100vw; height: 100vh; display: block; }
 #hud { position: fixed; inset: 0; pointer-events: none; }
 
@@ -180,3 +180,134 @@ html, body {
 }
 #faint small { font-size: 14px; font-style: normal; opacity: .75; letter-spacing: .1em; }
 #faint.show { opacity: 1; }
+
+/* ---------- M3: bag, crafting, chest ---------- */
+#btn-bag {
+  top: calc(40px + env(safe-area-inset-top));
+  left: calc(12px + env(safe-area-inset-left));
+  width: 46px;
+  height: 46px;
+}
+#btn-action { display: flex; flex-direction: column; gap: 0; }
+#btn-action[hidden] { display: none !important; }
+#btn-action img { width: 34px; height: 34px; }
+#btn-action span { font-size: 10px; margin-top: -3px; color: #fff4dc; text-shadow: 0 1px 2px #000; font-family: system-ui, sans-serif; font-weight: 700; letter-spacing: .04em; }
+
+#toasts {
+  position: absolute;
+  left: calc(12px + env(safe-area-inset-left));
+  top: calc(96px + env(safe-area-inset-top));
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-start;
+}
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px 3px 4px;
+  border-radius: 999px;
+  background: rgba(30, 22, 16, .72);
+  font: 600 13px system-ui, sans-serif;
+  animation: tin .2s ease-out;
+  transition: opacity .45s, transform .45s;
+}
+.toast.note { padding: 5px 12px; }
+.toast .ico { width: 24px; height: 24px; }
+.toast.out { opacity: 0; transform: translateX(-10px); }
+@keyframes tin { from { opacity: 0; transform: translateX(-10px); } }
+
+.panel {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(10, 8, 6, .45);
+  padding: max(10px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right)) max(10px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left));
+  z-index: 20;
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color: #3a2a1c;
+}
+.panel.show { display: flex; }
+.win {
+  width: min(620px, 100%);
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(#f4e8c8, #e9d8ad);
+  border: 3px solid #7a5232;
+  border-radius: 12px;
+  box-shadow: 0 0 0 2px #2e2118, 0 10px 30px rgba(0, 0, 0, .5);
+  overflow: hidden;
+}
+.win header {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 8px 10px 8px 14px;
+  background: #7a5232;
+  color: #fff1d2;
+}
+.win h2 { margin: 0; font: italic 20px Georgia, serif; }
+.win .sub { font-size: 12px; opacity: .8; flex: 1; }
+.win .x { border: 0; background: rgba(0, 0, 0, .2); color: #fff1d2; width: 30px; height: 30px; border-radius: 8px; font-size: 15px; }
+.win h3 { margin: 0 0 6px; font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: #7a5232; }
+.ico { width: 36px; height: 36px; display: block; }
+.ico.sm { width: 18px; height: 18px; }
+
+.bagwrap, .chestwrap { display: flex; gap: 12px; padding: 12px; overflow-y: auto; touch-action: pan-y; min-height: 0; }
+.gear { display: flex; flex-direction: column; gap: 6px; width: 170px; flex: none; }
+.g { display: flex; align-items: center; gap: 8px; padding: 5px 7px; border-radius: 8px; background: rgba(122, 82, 50, .12); font-size: 13px; font-weight: 600; line-height: 1.15; }
+.g small { display: block; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: #7a5232; }
+.g em { display: block; font-style: normal; font-weight: 500; font-size: 11px; color: #6b5440; }
+.g.off { opacity: .45; }
+.bagright { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(46px, 1fr)); gap: 5px; }
+.chestwrap > div { flex: 1; min-width: 0; }
+.chestwrap > div:last-child .grid { grid-template-columns: repeat(auto-fill, minmax(40px, 1fr)); }
+.slot {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 8px;
+  border: 2px solid rgba(122, 82, 50, .45);
+  background: rgba(255, 250, 235, .7);
+  display: grid;
+  place-items: center;
+  padding: 0;
+}
+.slot.empty { background: rgba(122, 82, 50, .08); border-style: dashed; }
+.slot.sel { border-color: #c8463c; box-shadow: 0 0 0 2px rgba(200, 70, 60, .3); }
+.slot .ico { width: 80%; height: 80%; }
+.slot b { position: absolute; right: 3px; bottom: 1px; font-size: 11px; color: #3a2a1c; text-shadow: 0 0 2px #fff, 0 0 2px #fff; font-variant-numeric: tabular-nums; }
+.detail { font-size: 13px; line-height: 1.35; min-height: 38px; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; }
+.detail span { color: #6b5440; }
+
+.recipes { padding: 8px 10px 12px; overflow-y: auto; touch-action: pan-y; display: flex; flex-direction: column; gap: 6px; min-height: 0; }
+.recipe { display: flex; align-items: center; gap: 10px; padding: 6px 8px; border-radius: 9px; background: rgba(255, 250, 235, .6); border: 2px solid transparent; }
+.recipe.ready { border-color: rgba(95, 174, 69, .7); }
+.recipe.owned, .recipe.locked { opacity: .55; }
+.rtext { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.rtext b { font-size: 14px; }
+.rtext small { font-size: 11px; color: #6b5440; }
+.costs { display: flex; flex-wrap: wrap; gap: 4px 8px; margin-top: 2px; }
+.cost { display: inline-flex; align-items: center; gap: 2px; font-size: 12px; font-weight: 700; color: #b0442f; font-variant-numeric: tabular-nums; }
+.cost.ok { color: #3f7a35; }
+.go {
+  border: 2px solid #2e2118;
+  border-radius: 8px;
+  padding: 6px 14px;
+  background: #5fae45;
+  color: #fff;
+  font-weight: 700;
+  font-size: 13px;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .3);
+}
+.go:disabled { background: #b5a888; color: #f3ead6; }
+.go:focus-visible, .slot:focus-visible, .x:focus-visible { outline: 3px solid #c8463c; outline-offset: 1px; }
+.tag { font-size: 11px; font-weight: 700; color: #7a5232; text-transform: uppercase; letter-spacing: .05em; }
+@media (max-width: 520px) {
+  .bagwrap, .chestwrap { flex-direction: column; }
+  .gear { width: auto; display: grid; grid-template-columns: 1fr 1fr; }
+}

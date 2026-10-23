@@ -364,6 +364,7 @@ export function buildWorld(scene, lib) {
   return {
     heightAt, zoneAt, walkable, resolve, update, updateOcclusion, tintMats, fireMat, fireLight,
     spawn: { x: 32, z: 36.2 },
+    camp: { fire: FIRE, chest: { x: 34.4, z: 30.6 }, tent: { x: 30.2, z: 29.6 } },
     minimap: mini,
     stats: { props: props.length, interior },
   };

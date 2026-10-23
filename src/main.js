@@ -8,6 +8,9 @@ import { UI } from './ui.js';
 import { FX } from './fx.js';
 import { MobManager } from './mobs.js';
 import { loadSave, writeSave } from './save.js';
+import { Inventory } from './inventory.js';
+import { Menus } from './menus.js';
+import { iconTexture, iconURL, ITEMS } from './items.js';
 import { clamp, lerp } from './noise.js';
 
 const canvas = document.getElementById('game');
@@ -38,7 +41,11 @@ mobs.populate([
 const save = loadSave();
 const player = new Player(scene, world, lib.player, lib.shadow, fx);
 player.setPos(save?.x ?? world.spawn.x, save?.z ?? world.spawn.z);
+const inv = new Inventory();
+inv.load(save?.inv);
+inv.applyTo(player);
 if (save?.hp) player.hp = clamp(save.hp, 1, player.maxHp);
+inv.onChange(() => inv.applyTo(player));
 
 const input = new Input(document.getElementById('joy'), document.getElementById('joy-knob'));
 const ui = new UI(world);
@@ -60,16 +67,65 @@ player.on('faint', () => {
 mobs.on('death', (m, drops) => {
   for (const [item, count] of drops) {
     if (item === 'heart') fx.drop(m.x, m.z, 'heart', 1, lib.fx.heart);
+    else fx.drop(m.x, m.z, item, count, iconTexture(item));
   }
 });
 
+let bagFullNote = 0;
 function collect(p) {
   if (p.item === 'heart') {
     if (player.hp >= player.maxHp) return false; // leave it for later
     player.heal(2);
     return true;
   }
-  return false;
+  const got = inv.add(p.item, p.count);
+  if (got) menus.toast(p.item, got);
+  if (got < p.count) {
+    p.count -= got;
+    if (performance.now() - bagFullNote > 4000) { bagFullNote = performance.now(); menus.message('Bag is full. Store items in the camp chest.'); }
+    return false;
+  }
+  return true;
+}
+
+// ---------- menus + camp interactions ----------
+const menus = new Menus(inv, {
+  usePotion() {
+    if (player.hp >= player.maxHp) { menus.message('Your hearts are already full'); return; }
+    if (inv.bag.remove('potion', 1)) { player.heal(6); inv.changed(); menus.message('You feel better'); }
+  },
+  crafted() { persist(); },
+  closed() { persist(); },
+});
+const actionBtn = document.getElementById('btn-action');
+const ACTIONS = {
+  fire: { label: 'Craft', icon: 'torch', run: () => menus.show('craft') },
+  chest: { label: 'Chest', icon: 'shell', run: () => menus.show('chest') },
+  tent: { label: 'Rest', icon: 'potion', run: () => rest() },
+};
+actionBtn.querySelector('img').src = iconURL('torch');
+let nearAction = null;
+function updateAction() {
+  let best = null, bd = 2.1;
+  if (player.state === 'normal') {
+    for (const [k, p] of Object.entries(world.camp)) {
+      const d = Math.hypot(player.x - p.x, player.z - p.z);
+      if (d < bd) { bd = d; best = k; }
+    }
+  }
+  if (best !== nearAction) {
+    nearAction = best;
+    actionBtn.hidden = !best;
+    if (best) {
+      actionBtn.querySelector('img').src = iconURL(ACTIONS[best].icon);
+      actionBtn.querySelector('span').textContent = ACTIONS[best].label;
+    }
+  }
+}
+function rest() {
+  player.heal(player.maxHp);
+  persist();
+  menus.message('Rested. Hearts restored and game saved.');
 }
 
 // resting at camp slowly restores hearts
@@ -98,7 +154,7 @@ function camBasis() {
 
 let saveT = 0;
 function persist() {
-  writeSave({ x: player.x, z: player.z, yaw: cam.yaw, dist: cam.dist, hp: player.hp });
+  writeSave({ x: player.x, z: player.z, yaw: cam.yaw, dist: cam.dist, hp: player.hp, inv: inv.toJSON() });
 }
 
 const clock = new THREE.Clock();
@@ -115,14 +171,20 @@ function frame() {
   const b = camBasis();
   const m = started ? input.getMove() : { x: 0, y: 0 };
   const move = { x: b.rx * m.x - b.fx * m.y, z: b.rz * m.x - b.fz * m.y };
-  const ctl = started ? { attack: input.held('attack'), dodge: input.tapped('dodge') } : { attack: false, dodge: false };
+  const paused = menus.open;
+  if (input.tapped('bag') && started) menus.toggle('bag');
+  if (input.tapped('action') && nearAction && !paused) ACTIONS[nearAction].run();
+  const live = started && !paused;
+  const ctl = live ? { attack: input.held('attack'), dodge: input.tapped('dodge') } : { attack: false, dodge: false };
   input.tapped('attack');
+  if (!live) input.tapped('dodge');
 
-  player.update(dt, move, b, ctl, mobs);
-  if (started) mobs.update(dt, player);
+  player.update(live ? dt : 0, live ? move : { x: 0, z: 0 }, b, ctl, mobs);
+  if (live) mobs.update(dt, player);
   world.update(dt, t);
-  fx.update(dt, player, collect);
-  campRegen(dt);
+  if (live) fx.update(dt, player, collect);
+  if (live) campRegen(dt);
+  updateAction();
   world.updateOcclusion(player.x, player.z, b);
 
   const py = world.heightAt(player.x, player.z);
@@ -166,4 +228,4 @@ title.addEventListener('pointerdown', (e) => {
   }, 450);
 });
 
-window.__aibachu = { player, world, cam, mobs, fx, stats: world.stats };
+window.__aibachu = { player, world, cam, mobs, fx, inv, menus, stats: world.stats };
