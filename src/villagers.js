@@ -24,7 +24,7 @@ export class Villagers {
       const upp = HEIGHT / art.body[1];
       const h = art.fh * upp;
       s.scale.set(art.fw * upp, h, 1);
-      s.center.set(0.5, 0.02);
+      s.center.set(0.5, art.anchor);
       const y = world.heightAt(n.x, n.z);
       s.position.set(n.x, y, n.z);
       s.renderOrder = 2;

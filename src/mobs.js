@@ -30,7 +30,7 @@ class Mob {
     this.mat = new THREE.SpriteMaterial({ map: this.art.anims.down.idle[0], alphaTest: 0.5 });
     if (!this.def.night) this.mgr.tint.push(this.mat); // wisps keep their own glow
     this.sprite = new THREE.Sprite(this.mat);
-    this.sprite.center.set(0.5, 0.04);
+    this.sprite.center.set(0.5, this.art.anchor);
     this.sprite.renderOrder = 2;
     this.shadow = new THREE.Mesh(mgr.shadowGeo, mgr.shadowMat);
     this.shadow.scale.setScalar(this.def.w * 0.9);

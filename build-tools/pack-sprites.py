@@ -136,6 +136,8 @@ def pack(name, opts):
     # body size: how big the character itself is when standing, used to scale it in the world
     idle = [f.crop(box).getbbox() for d in art.values() for f in d['idle']]
     body = [max(b[2] - b[0] for b in idle), max(b[3] - b[1] for b in idle)]
+    # foot: pixels from the frame's bottom edge up to where it stands (effects can reach lower)
+    foot = fh - max(b[3] for b in idle)
     cols = max(len(r) for r in rows)
     sheet = Image.new('RGBA', (cols * fw, len(rows) * fh))
     for y, r in enumerate(rows):
@@ -144,8 +146,8 @@ def pack(name, opts):
 
     os.makedirs(OUT, exist_ok=True)
     sheet.save(os.path.join(OUT, name + '.png'), optimize=True)
-    json.dump({'fw': fw, 'fh': fh, 'body': body, 'anims': layout}, open(os.path.join(OUT, name + '.json'), 'w'))
-    print(name, 'frame', fw, 'x', fh, 'body', body, 'sheet', sheet.size, os.path.getsize(os.path.join(OUT, name + '.png')), 'bytes')
+    json.dump({'fw': fw, 'fh': fh, 'body': body, 'foot': foot, 'anims': layout}, open(os.path.join(OUT, name + '.json'), 'w'))
+    print(name, 'frame', fw, 'x', fh, 'body', body, 'foot', foot, 'sheet', sheet.size, os.path.getsize(os.path.join(OUT, name + '.png')), 'bytes')
 
 
 for n in sys.argv[1:] or CHARS:

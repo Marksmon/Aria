@@ -400,15 +400,16 @@ function tex(canvas, opts = {}) {
 
 // A packed PixelLab sheet cut into textures: anims[dir][anim] = [tex], flash = white copies
 // for the hit flash. Frames start blank and fill in once the sheet image has loaded.
-// body = [w, h] in pixels of the standing character, used to size it in the world.
-function pixelSet(url, { fw, fh, body, anims }) {
+// body = [w, h] in pixels of the standing character, used to size it in the world;
+// anchor = where its feet are, as a fraction of the frame height from the bottom.
+function pixelSet(url, { fw, fh, body, foot = 0, anims }) {
   const blank = () => {
     const t = tex(mk(fw, fh).c);
     t.magFilter = t.minFilter = THREE.NearestFilter;
     t.generateMipmaps = false;
     return t;
   };
-  const set = { pixel: true, fw, fh, body, anims: {}, flash: {} };
+  const set = { pixel: true, fw, fh, body, anchor: foot / fh, anims: {}, flash: {} };
   const cuts = [];
   for (const [dir, list] of Object.entries(anims)) {
     set.anims[dir] = {};

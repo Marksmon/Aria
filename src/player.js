@@ -46,7 +46,7 @@ export class Player {
     const upp = HEIGHT / art.body[1]; // world units per pixel
     this.size = { w: art.fw * upp, h: art.fh * upp };
     this.sprite.scale.set(this.size.w, this.size.h, 1);
-    this.sprite.center.set(0.5, 0.02);
+    this.sprite.center.set(0.5, art.anchor);
     this.sprite.renderOrder = 2;
     scene.add(this.sprite);
 
