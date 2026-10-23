@@ -1,0 +1,275 @@
+{
+  "group_id": "5b547f15-751c-41e7-848f-9f094121d986",
+  "states": [
+    {
+      "character": {
+        "id": "b88f36ea-4a2f-4b1d-a6de-7b35f10f72f6",
+        "name": "Idle",
+        "prompt": "young sorcerer apprentice with shaggy dark blue hair, deep blue hooded mantle with silver rune trim over a grey tunic, brown belt with a small spellbook, brown boots, holding a gnarled wooden staff topped with a glowing pale blue crystal",
+        "size": {
+          "width": 96,
+          "height": 96
+        },
+        "template_id": "mannequin",
+        "directions": 8,
+        "view": "low top-down",
+        "created_at": "2026-10-23T19:10:07.745289+00:00"
+      },
+      "folder": "Idle",
+      "frames": {
+        "rotations": {
+          "south": "Idle/rotations/south.png",
+          "south-east": "Idle/rotations/south-east.png",
+          "east": "Idle/rotations/east.png",
+          "north-east": "Idle/rotations/north-east.png",
+          "north": "Idle/rotations/north.png",
+          "north-west": "Idle/rotations/north-west.png",
+          "west": "Idle/rotations/west.png",
+          "south-west": "Idle/rotations/south-west.png"
+        },
+        "animations": {
+          "dodge": {
+            "east": [
+              "Idle/animations/dodge/east/frame_000.png",
+              "Idle/animations/dodge/east/frame_001.png",
+              "Idle/animations/dodge/east/frame_002.png",
+              "Idle/animations/dodge/east/frame_003.png",
+              "Idle/animations/dodge/east/frame_004.png",
+              "Idle/animations/dodge/east/frame_005.png",
+              "Idle/animations/dodge/east/frame_006.png"
+            ]
+          },
+          "dodge-3c3d6397": {
+            "west": [
+              "Idle/animations/dodge-3c3d6397/west/frame_000.png",
+              "Idle/animations/dodge-3c3d6397/west/frame_001.png",
+              "Idle/animations/dodge-3c3d6397/west/frame_002.png",
+              "Idle/animations/dodge-3c3d6397/west/frame_003.png",
+              "Idle/animations/dodge-3c3d6397/west/frame_004.png",
+              "Idle/animations/dodge-3c3d6397/west/frame_005.png",
+              "Idle/animations/dodge-3c3d6397/west/frame_006.png"
+            ],
+            "south-west": [
+              "Idle/animations/dodge-3c3d6397/south-west/frame_000.png",
+              "Idle/animations/dodge-3c3d6397/south-west/frame_001.png",
+              "Idle/animations/dodge-3c3d6397/south-west/frame_002.png",
+              "Idle/animations/dodge-3c3d6397/south-west/frame_003.png",
+              "Idle/animations/dodge-3c3d6397/south-west/frame_004.png",
+              "Idle/animations/dodge-3c3d6397/south-west/frame_005.png",
+              "Idle/animations/dodge-3c3d6397/south-west/frame_006.png"
+            ],
+            "north-west": [
+              "Idle/animations/dodge-3c3d6397/north-west/frame_000.png",
+              "Idle/animations/dodge-3c3d6397/north-west/frame_001.png",
+              "Idle/animations/dodge-3c3d6397/north-west/frame_002.png",
+              "Idle/animations/dodge-3c3d6397/north-west/frame_003.png",
+              "Idle/animations/dodge-3c3d6397/north-west/frame_004.png",
+              "Idle/animations/dodge-3c3d6397/north-west/frame_005.png",
+              "Idle/animations/dodge-3c3d6397/north-west/frame_006.png"
+            ]
+          },
+          "attack": {
+            "south": [
+              "Idle/animations/attack/south/frame_000.png",
+              "Idle/animations/attack/south/frame_001.png",
+              "Idle/animations/attack/south/frame_002.png",
+              "Idle/animations/attack/south/frame_003.png",
+              "Idle/animations/attack/south/frame_004.png",
+              "Idle/animations/attack/south/frame_005.png",
+              "Idle/animations/attack/south/frame_006.png"
+            ]
+          },
+          "walking": {
+            "east": [
+              "Idle/animations/walking/east/frame_000.png",
+              "Idle/animations/walking/east/frame_001.png",
+              "Idle/animations/walking/east/frame_002.png",
+              "Idle/animations/walking/east/frame_003.png",
+              "Idle/animations/walking/east/frame_004.png",
+              "Idle/animations/walking/east/frame_005.png",
+              "Idle/animations/walking/east/frame_006.png",
+              "Idle/animations/walking/east/frame_007.png"
+            ],
+            "north-east": [
+              "Idle/animations/walking/north-east/frame_000.png",
+              "Idle/animations/walking/north-east/frame_001.png",
+              "Idle/animations/walking/north-east/frame_002.png",
+              "Idle/animations/walking/north-east/frame_003.png",
+              "Idle/animations/walking/north-east/frame_004.png",
+              "Idle/animations/walking/north-east/frame_005.png",
+              "Idle/animations/walking/north-east/frame_006.png",
+              "Idle/animations/walking/north-east/frame_007.png"
+            ],
+            "south": [
+              "Idle/animations/walking/south/frame_000.png",
+              "Idle/animations/walking/south/frame_001.png",
+              "Idle/animations/walking/south/frame_002.png",
+              "Idle/animations/walking/south/frame_003.png",
+              "Idle/animations/walking/south/frame_004.png",
+              "Idle/animations/walking/south/frame_005.png",
+              "Idle/animations/walking/south/frame_006.png",
+              "Idle/animations/walking/south/frame_007.png"
+            ],
+            "west": [
+              "Idle/animations/walking/west/frame_000.png",
+              "Idle/animations/walking/west/frame_001.png",
+              "Idle/animations/walking/west/frame_002.png",
+              "Idle/animations/walking/west/frame_003.png",
+              "Idle/animations/walking/west/frame_004.png",
+              "Idle/animations/walking/west/frame_005.png",
+              "Idle/animations/walking/west/frame_006.png",
+              "Idle/animations/walking/west/frame_007.png"
+            ],
+            "north": [
+              "Idle/animations/walking/north/frame_000.png",
+              "Idle/animations/walking/north/frame_001.png",
+              "Idle/animations/walking/north/frame_002.png",
+              "Idle/animations/walking/north/frame_003.png",
+              "Idle/animations/walking/north/frame_004.png",
+              "Idle/animations/walking/north/frame_005.png",
+              "Idle/animations/walking/north/frame_006.png",
+              "Idle/animations/walking/north/frame_007.png"
+            ],
+            "south-west": [
+              "Idle/animations/walking/south-west/frame_000.png",
+              "Idle/animations/walking/south-west/frame_001.png",
+              "Idle/animations/walking/south-west/frame_002.png",
+              "Idle/animations/walking/south-west/frame_003.png",
+              "Idle/animations/walking/south-west/frame_004.png",
+              "Idle/animations/walking/south-west/frame_005.png",
+              "Idle/animations/walking/south-west/frame_006.png",
+              "Idle/animations/walking/south-west/frame_007.png"
+            ],
+            "south-east": [
+              "Idle/animations/walking/south-east/frame_000.png",
+              "Idle/animations/walking/south-east/frame_001.png",
+              "Idle/animations/walking/south-east/frame_002.png",
+              "Idle/animations/walking/south-east/frame_003.png",
+              "Idle/animations/walking/south-east/frame_004.png",
+              "Idle/animations/walking/south-east/frame_005.png",
+              "Idle/animations/walking/south-east/frame_006.png",
+              "Idle/animations/walking/south-east/frame_007.png"
+            ],
+            "north-west": [
+              "Idle/animations/walking/north-west/frame_000.png",
+              "Idle/animations/walking/north-west/frame_001.png",
+              "Idle/animations/walking/north-west/frame_002.png",
+              "Idle/animations/walking/north-west/frame_003.png",
+              "Idle/animations/walking/north-west/frame_004.png",
+              "Idle/animations/walking/north-west/frame_005.png",
+              "Idle/animations/walking/north-west/frame_006.png",
+              "Idle/animations/walking/north-west/frame_007.png"
+            ]
+          },
+          "attack-91de0cb2": {
+            "north-east": [
+              "Idle/animations/attack-91de0cb2/north-east/frame_000.png",
+              "Idle/animations/attack-91de0cb2/north-east/frame_001.png",
+              "Idle/animations/attack-91de0cb2/north-east/frame_002.png",
+              "Idle/animations/attack-91de0cb2/north-east/frame_003.png",
+              "Idle/animations/attack-91de0cb2/north-east/frame_004.png",
+              "Idle/animations/attack-91de0cb2/north-east/frame_005.png",
+              "Idle/animations/attack-91de0cb2/north-east/frame_006.png"
+            ],
+            "east": [
+              "Idle/animations/attack-91de0cb2/east/frame_000.png",
+              "Idle/animations/attack-91de0cb2/east/frame_001.png",
+              "Idle/animations/attack-91de0cb2/east/frame_002.png",
+              "Idle/animations/attack-91de0cb2/east/frame_003.png",
+              "Idle/animations/attack-91de0cb2/east/frame_004.png",
+              "Idle/animations/attack-91de0cb2/east/frame_005.png",
+              "Idle/animations/attack-91de0cb2/east/frame_006.png"
+            ],
+            "north": [
+              "Idle/animations/attack-91de0cb2/north/frame_000.png",
+              "Idle/animations/attack-91de0cb2/north/frame_001.png",
+              "Idle/animations/attack-91de0cb2/north/frame_002.png",
+              "Idle/animations/attack-91de0cb2/north/frame_003.png",
+              "Idle/animations/attack-91de0cb2/north/frame_004.png",
+              "Idle/animations/attack-91de0cb2/north/frame_005.png",
+              "Idle/animations/attack-91de0cb2/north/frame_006.png"
+            ],
+            "west": [
+              "Idle/animations/attack-91de0cb2/west/frame_000.png",
+              "Idle/animations/attack-91de0cb2/west/frame_001.png",
+              "Idle/animations/attack-91de0cb2/west/frame_002.png",
+              "Idle/animations/attack-91de0cb2/west/frame_003.png",
+              "Idle/animations/attack-91de0cb2/west/frame_004.png",
+              "Idle/animations/attack-91de0cb2/west/frame_005.png",
+              "Idle/animations/attack-91de0cb2/west/frame_006.png"
+            ],
+            "south-west": [
+              "Idle/animations/attack-91de0cb2/south-west/frame_000.png",
+              "Idle/animations/attack-91de0cb2/south-west/frame_001.png",
+              "Idle/animations/attack-91de0cb2/south-west/frame_002.png",
+              "Idle/animations/attack-91de0cb2/south-west/frame_003.png",
+              "Idle/animations/attack-91de0cb2/south-west/frame_004.png",
+              "Idle/animations/attack-91de0cb2/south-west/frame_005.png",
+              "Idle/animations/attack-91de0cb2/south-west/frame_006.png"
+            ],
+            "south-east": [
+              "Idle/animations/attack-91de0cb2/south-east/frame_000.png",
+              "Idle/animations/attack-91de0cb2/south-east/frame_001.png",
+              "Idle/animations/attack-91de0cb2/south-east/frame_002.png",
+              "Idle/animations/attack-91de0cb2/south-east/frame_003.png",
+              "Idle/animations/attack-91de0cb2/south-east/frame_004.png",
+              "Idle/animations/attack-91de0cb2/south-east/frame_005.png",
+              "Idle/animations/attack-91de0cb2/south-east/frame_006.png"
+            ],
+            "north-west": [
+              "Idle/animations/attack-91de0cb2/north-west/frame_000.png",
+              "Idle/animations/attack-91de0cb2/north-west/frame_001.png",
+              "Idle/animations/attack-91de0cb2/north-west/frame_002.png",
+              "Idle/animations/attack-91de0cb2/north-west/frame_003.png",
+              "Idle/animations/attack-91de0cb2/north-west/frame_004.png",
+              "Idle/animations/attack-91de0cb2/north-west/frame_005.png",
+              "Idle/animations/attack-91de0cb2/north-west/frame_006.png"
+            ]
+          },
+          "dodge-95130d47": {
+            "south": [
+              "Idle/animations/dodge-95130d47/south/frame_000.png",
+              "Idle/animations/dodge-95130d47/south/frame_001.png",
+              "Idle/animations/dodge-95130d47/south/frame_002.png",
+              "Idle/animations/dodge-95130d47/south/frame_003.png",
+              "Idle/animations/dodge-95130d47/south/frame_004.png",
+              "Idle/animations/dodge-95130d47/south/frame_005.png",
+              "Idle/animations/dodge-95130d47/south/frame_006.png"
+            ],
+            "south-east": [
+              "Idle/animations/dodge-95130d47/south-east/frame_000.png",
+              "Idle/animations/dodge-95130d47/south-east/frame_001.png",
+              "Idle/animations/dodge-95130d47/south-east/frame_002.png",
+              "Idle/animations/dodge-95130d47/south-east/frame_003.png",
+              "Idle/animations/dodge-95130d47/south-east/frame_004.png",
+              "Idle/animations/dodge-95130d47/south-east/frame_005.png",
+              "Idle/animations/dodge-95130d47/south-east/frame_006.png"
+            ]
+          },
+          "dodge-ac7c5afa": {
+            "north": [
+              "Idle/animations/dodge-ac7c5afa/north/frame_000.png",
+              "Idle/animations/dodge-ac7c5afa/north/frame_001.png",
+              "Idle/animations/dodge-ac7c5afa/north/frame_002.png",
+              "Idle/animations/dodge-ac7c5afa/north/frame_003.png",
+              "Idle/animations/dodge-ac7c5afa/north/frame_004.png",
+              "Idle/animations/dodge-ac7c5afa/north/frame_005.png",
+              "Idle/animations/dodge-ac7c5afa/north/frame_006.png"
+            ],
+            "north-east": [
+              "Idle/animations/dodge-ac7c5afa/north-east/frame_000.png",
+              "Idle/animations/dodge-ac7c5afa/north-east/frame_001.png",
+              "Idle/animations/dodge-ac7c5afa/north-east/frame_002.png",
+              "Idle/animations/dodge-ac7c5afa/north-east/frame_003.png",
+              "Idle/animations/dodge-ac7c5afa/north-east/frame_004.png",
+              "Idle/animations/dodge-ac7c5afa/north-east/frame_005.png",
+              "Idle/animations/dodge-ac7c5afa/north-east/frame_006.png"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "export_version": "3.1",
+  "export_date": "2026-10-23T20:25:13.031777"
+}
