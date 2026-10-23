@@ -27,7 +27,7 @@ MIRROR = {'right': 'left', 'left': 'right'}
 # (the first player, art/pixellab/player_v1, needed 'mirror': {('attack', 'right')}: its east
 # attack had no sword)
 # The PixelLab Pro art already has Ragnarok-style shaded edges, so no extra outline.
-CHARS = {name: {} for name in ['slime', 'blueslime', 'sprout', 'crab', 'mushling', 'beetle', 'wisp']}
+CHARS = {name: {} for name in ['slime', 'blueslime', 'sprout', 'crab', 'mushling', 'beetle', 'wisp', 'jarl']}
 # even 8-frame template walk (the first one limped); front and back redone as a skeleton walk,
 # where the template's legs barely moved
 CHARS['player'] = {'eight': True, 'use': {'walk': 'walking'}, 'prefer': {'walking-e8b5c561'}, 'skip': {'stepv3'}}
