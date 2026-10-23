@@ -83,9 +83,9 @@ they have a quest for you, a **?** means you can hand one in. Active quests show
 
 | Villager | Quests (level) |
 |---|---|
-| Elder Halvard | Slime Trouble (1), Snapping Shores (3), Rocks That Walk (5), Spores in the Hollow (7) |
-| Astrid the Cook | Jelly for Supper (1), Mushroom Stew (3), Fresh Water (4), Lantern Soup (6) |
-| Sigrun the Scout | Know the Valley (1), Shy Sprouts (2), Blue and Bouncy (3), Lights in the Dark (5) |
+| Elder Halvard | The Green Blight (1), Claws of the Fen (3), Wrath of the Stone-Backs (5), The Rot of Myrkvid (7) |
+| Astrid the Cook | Jelly for the Mead-Hall (1), The Jarl's Stew (3), Water from Urd's Well (4), Sól's Lantern Soup (6) |
+| Sigrun the Scout | The Four Realms (1), Seeds of Yggdrasil (2), Twin-Born of the Fen (3), Lights of the Álfar (5) |
 
 Kill quests count from when you accept them; fetch quests take the items from your bag and chest
 when you hand in. Every quest pays experience plus potions or crafting materials.
