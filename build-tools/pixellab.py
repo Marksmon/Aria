@@ -3,6 +3,11 @@
   probe             save the API schema + account balance
   generate [names]  create the characters (default: all) with their animations, then download
                     each character's zip into <out>/<name>/
+  finish names      for characters already downloaded into <out>/<name>/, request whichever
+                    animations or directions are missing, then download again
+
+PixelLab Tier 1 runs at most 9 jobs at once; requests that hit the limit wait and retry, and an
+animation request may only accept some directions, so the rest are asked for once slots free up.
 
   python3 build-tools/pixellab.py generate art/pixellab player   (needs PIXELLAB_API_KEY)
 
@@ -157,9 +162,13 @@ def log(*a):
     print(time.strftime("%H:%M:%S"), *a, flush=True)
 
 
-def post(path, body):
-    r = requests.post(BASE + path, headers=H, json=body, timeout=120)
-    log("POST", path, r.status_code, r.text[:600])
+def post(path, body, tries=40):
+    for _ in range(tries):
+        r = requests.post(BASE + path, headers=H, json=body, timeout=120)
+        log("POST", path, r.status_code, r.text[:600])
+        if r.status_code != 429:  # 429 = all job slots busy
+            break
+        time.sleep(30)
     r.raise_for_status()
     return r.json()
 
@@ -215,6 +224,38 @@ if task == "probe":
         log("no PIXELLAB_API_KEY secret set yet")
     sys.exit(0)
 
+def animate(name, cid, anims, have=None):
+    """Request each animation in every direction not in have[anim]; wait for all of them."""
+    have = have or {}
+    pending = []
+    for a in anims:
+        todo = [d for d in DIRS if d not in have.get(a["animation_name"], ())]
+        while todo:
+            try:
+                r = post("/characters/animations", {"character_id": cid, "mode": "v3", "directions": todo, **a})
+            except Exception as e:  # keep going with whatever works
+                log(name, a["animation_name"], "animation request failed:", e)
+                break
+            pending += [(a["animation_name"], j) for j in r.get("background_job_ids", [])]
+            todo = [d for d in todo if d not in r.get("directions", todo)]
+            if todo and pending:  # only some directions fit: free a slot first
+                anim, j = pending.pop(0)
+                wait_job(j, f"{name} {anim}")
+    for anim, j in pending:
+        wait_job(j, f"{name} {anim}")
+
+
+if task == "finish":
+    for name in only:
+        ch = next(c for c in CHARACTERS if c["name"] == name)
+        base = f"{out}/{name}"
+        meta = json.load(open(f"{base}/metadata.json"))["states"][0]
+        have = {a: set(dirs) for a, dirs in meta["frames"].get("animations", {}).items()}
+        log(name, "has", {a: sorted(d) for a, d in have.items()})
+        animate(name, meta["character"]["id"], ch["animations"], have)
+        download_zip(meta["character"]["id"], base)
+    sys.exit(0)
+
 if task == "generate":
     if not key:
         log("PIXELLAB_API_KEY secret is missing: add it under Settings > Secrets and variables > Actions")
@@ -241,17 +282,7 @@ if task == "generate":
             manifest[name] = {"character_id": cid}
             if job and not wait_job(job, f"{name} create"):
                 continue
-            # animations: one request each, all 4 directions
-            jobs = []
-            for a in ch["animations"]:
-                body = {"character_id": cid, "mode": "v3", "directions": DIRS, **a}
-                try:
-                    r = post("/characters/animations", body)
-                    jobs += [(a["animation_name"], j) for j in r.get("background_job_ids", [])]
-                except Exception as e:  # keep going with whatever works
-                    log(name, a["animation_name"], "animation request failed:", e)
-            for anim, j in jobs:
-                wait_job(j, f"{name} {anim}")
+            animate(name, cid, ch["animations"])
             download_zip(cid, f"{out}/{name}")
         except Exception as e:
             log(name, "error:", e)
