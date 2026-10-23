@@ -5,7 +5,7 @@ import { playerAttack } from './rules.js';
 const BASE_SPEED = 4.2;  // world units per second
 const RADIUS = 0.3;      // collision radius
 const HEIGHT = 1.38;     // standing height in world units
-const STRIDE = 2.0;       // world units covered by one walk cycle, so feet keep pace with the ground
+const STRIDE = 2.6;       // world units covered by one walk cycle, so feet keep pace with the ground
 const ROLL_TIME = 0.4, ROLL_SPEED = 8.4, ROLL_CD = 0.75; // 3.4 units, fast then easing out
 // dodge frames played as dive-and-recover: some directions end lying down (frame 6), so the
 // roll goes into the dive and back out through the earlier frames instead
