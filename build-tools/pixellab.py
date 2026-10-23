@@ -41,23 +41,8 @@ CHARACTERS = [
             {"animation_name": "walk", "action_description": "walking", "frame_count": 6},
             {"animation_name": "attack", "action_description": "quick forward sword slash attack", "frame_count": 6},
         ],
-    },
-    {
-        "name": "slime",
-        "endpoint": "/create-character-v3",
-        "body": {
-            "description": "small round moss-green slime blob monster with a tiny two-leaf sprout on top, "
-                           "big shiny eyes, rosy cheeks, " + STYLE,
-            "image_size": {"width": 64, "height": 64},
-            "view": "low top-down",
-            "outline": "single color black outline",
-            "detail": "medium detail",
-        },
-        "animations": [
-            {"animation_name": "hop", "action_description": "bouncing hop in place, squashing and stretching", "frame_count": 6},
-            {"animation_name": "attack", "action_description": "lunging forward to bump attack", "frame_count": 6},
-        ],
-    },
+    }
+
 ]
 
 
@@ -84,6 +69,9 @@ def mob(name, desc, template, anims):
 
 
 CHARACTERS += [
+    mob("slime", "round moss-green jelly slime blob with a tiny two-leaf sprout on top, no arms, no legs, "
+        "big shiny eyes, rosy cheeks", "mannequin",
+        [("hop", "bouncing hop in place, squashing and stretching"), ("attack", "lunging forward to bump attack")]),
     mob("blueslime", "round translucent blue jelly slime blob shaped like a water drop, no arms, no legs, "
         "big shiny eyes, small happy mouth", "mannequin",
         [("hop", "bouncing hop in place, squashing and stretching"), ("attack", "lunging forward to bump attack")]),
