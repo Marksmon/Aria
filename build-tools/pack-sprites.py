@@ -24,6 +24,45 @@ OUTLINE = {'outline': (1, (34, 22, 14))}
 CHARS = {name: OUTLINE for name in ['player', 'slime', 'blueslime', 'sprout', 'crab', 'mushling', 'beetle', 'wisp']}
 
 
+def islands(f):
+    """Connected groups of solid pixels, largest first, as lists of (x, y)."""
+    a = f.getchannel('A').load()
+    W, H = f.size
+    seen, groups = set(), []
+    for y in range(H):
+        for x in range(W):
+            if a[x, y] < 128 or (x, y) in seen:
+                continue
+            seen.add((x, y))
+            stack, g = [(x, y)], []
+            while stack:
+                p = stack.pop()
+                g.append(p)
+                for q in ((p[0] + 1, p[1]), (p[0] - 1, p[1]), (p[0], p[1] + 1), (p[0], p[1] - 1)):
+                    if 0 <= q[0] < W and 0 <= q[1] < H and q not in seen and a[q] >= 128:
+                        seen.add(q)
+                        stack.append(q)
+            groups.append(g)
+    return sorted(groups, key=len, reverse=True)
+
+
+def clean(f, still):
+    """Erase stray specks PixelLab sometimes leaves (dots, bits of text). Standing frames keep only
+    pieces at least 5% the size of the body; animation frames only lose tiny specks, so slash
+    effects survive."""
+    gs = islands(f)
+    if not gs:
+        return f
+    keep = max(len(gs[0]) * 0.05, 1) if still else 6
+    f = f.copy()
+    px = f.load()
+    for g in gs:
+        if len(g) < keep:
+            for p in g:
+                px[p] = (0, 0, 0, 0)
+    return f
+
+
 def outline(f, width, colour):
     solid = f.getchannel('A').point(lambda a: 255 if a >= 128 else 0)
     ring = solid.filter(ImageFilter.MaxFilter(2 * width + 1))
@@ -47,6 +86,9 @@ def load(name):
 
 def pack(name, opts):
     art = load(name)
+    for d in art.values():
+        for anim, fs in d.items():
+            d[anim] = [clean(f, anim == 'idle') for f in fs]
     for anim, d in opts.get('mirror', ()):
         art[d][anim] = [ImageOps.mirror(f) for f in art[MIRROR[d]][anim]]
     if 'outline' in opts:
