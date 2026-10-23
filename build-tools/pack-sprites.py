@@ -154,7 +154,7 @@ def pack(name, opts):
     # A frame that strays far from its animation's middle (a sword raised over the head) uses that.
     bh = max((f.getbbox() or (0, 0, 0, 0))[3] - (f.getbbox() or (0, 0, 0, 0))[1] for d in art.values() for f in d['idle'])
 
-    def head(f):
+    def head(f, d):
         gs = islands(f)
         if not gs:
             return [fw // 2, 0, 0, 0]
@@ -186,24 +186,70 @@ def pack(name, opts):
         # centre: the middle of the rows just under the crown
         top_rows = [y for y in range(crown, crown + max(3, int(bh * 0.18))) if y in runs and y < neck]
         cx = sum(runs[y][0] + runs[y][1] for y in top_rows) / (2 * len(top_rows))
-        return [round(cx), crown, neck, mw]
+        return [round(cx), crown, neck, mw, *eyes(f, runs, crown, neck, d)]
+
+    # the eyes: the dark shapes inside the skin of the face, below the fringe (face pieces sit on
+    # them). Each row's skin span is found, the dark pixels inside it are collected, and grouped by
+    # column into eyes. Returns [x1, y1, x2, y2] for two eyes (left to right), [x, y] for one (a
+    # side view), or [] if none show.
+    def eyes(f, runs, crown, neck, d):
+        px = f.load()
+        H = neck - crown
+        lum = lambda c: 0.3 * c[0] + 0.59 * c[1] + 0.11 * c[2]
+        skin = lambda c: c[3] > 128 and c[0] > 150 and c[0] >= c[1] >= c[2] - 10 and lum(c) >= 125
+        pts = []
+        for y in range(crown + int(H * 0.58), crown + int(H * 0.92)):
+            xs = [x for x in range(fw) if skin(px[x, y])]
+            if len(xs) < 3:
+                continue
+            for x in range(xs[0] + 1, xs[-1]):
+                c = px[x, y]
+                if c[3] > 128 and lum(c) < 110:
+                    pts.append((x, y))
+        if not pts or d.startswith('up'):
+            return []
+        # dark pixels per column, smoothed; eyes are the strongest peaks
+        cols = {}
+        for x, y in pts:
+            cols.setdefault(x, []).append(y)
+        lo, hi = min(cols), max(cols)
+        sm = {x: sum(len(cols.get(x + k, [])) for k in (-1, 0, 1)) for x in range(lo, hi + 1)}
+        peaks = [x for x in sm if sm[x] > 0 and sm[x] >= sm.get(x - 1, 0) and sm[x] >= sm.get(x + 1, 0)]
+        peaks.sort(key=lambda x: -sm[x])
+        chosen = []
+        for x in peaks:
+            if all(abs(x - c) >= 5 for c in chosen):
+                chosen.append(x)
+            if len(chosen) == 2:
+                break
+        def at(x):  # the eye's centre: dark pixels within two columns of the peak
+            ys = [y for k in range(-2, 3) for y in cols.get(x + k, [])]
+            xs = [x + k for k in range(-2, 3) for _ in cols.get(x + k, [])]
+            return [round(sum(xs) / len(xs)), sorted(ys)[len(ys) // 2]]  # median height: fringe strands sit above
+        if d in ('right', 'left'):  # one eye shows: the one at the front of the face
+            x = max(chosen) if d == 'right' else min(chosen)
+            return at(x)
+        if len(chosen) < 2:
+            return at(chosen[0]) if chosen else []
+        a, b = sorted(chosen)
+        return at(a) + at(b)
 
     # one head width per direction, the standing pose's (a slash effect, a raised sword or a tucked
     # roll can make a frame look wider);
     # a frame whose head looks far wider than that is confused by the weapon, so it borrows the
     # middle frame's head, while rolls and lunges that really move the head keep their own
-    def heads(frames, mw=None):
-        hs = [head(f) for f in frames]
+    def heads(frames, d, mw=None):
+        hs = [head(f, d) for f in frames]
         mw = mw or sorted(h[3] for h in hs)[len(hs) // 2]
         mid = sorted(hs, key=lambda h: h[1])[len(hs) // 2]
-        return [[h[0], h[1], h[2], mw] if h[3] <= mw * 1.3 else [mid[0], mid[1], mid[2], mw] for h in hs]
+        return [[h[0], h[1], h[2], mw, *h[4:]] if h[3] <= mw * 1.3 else [mid[0], mid[1], mid[2], mw, *mid[4:]] for h in hs]
 
     rows, layout = [], {}
     for d in art:
         layout[d] = {}
         for anim in ['idle'] + sorted(a for a in art[d] if a != 'idle'):
             frames = [f.crop(box) for f in art[d][anim]]
-            layout[d][anim] = [len(rows), len(frames), [feet(f) for f in frames], heads(frames, layout[d].get('idle', [0, 0, 0, [[0, 0, 0, 0]]])[3][0][3])]
+            layout[d][anim] = [len(rows), len(frames), [feet(f) for f in frames], heads(frames, d, layout[d].get('idle', [0, 0, 0, [[0, 0, 0, 0]]])[3][0][3])]
             rows.append(frames)
     # body size: how big the character itself is when standing, used to scale it in the world
     idle = [f.crop(box).getbbox() for d in art.values() for f in d['idle']]

@@ -74,6 +74,7 @@ export class Player {
           for (int i = 0; i < 12; i++) { if (i >= uHairN) break; if (distance(c, uHair[i]) < 0.06) discard; }
         }`);
     };
+    this.hairU = { uHair: this.clip.uHair, uHairN: this.clip.uHairN }; // shared with the headgear
     this.setHair(art);
     this.sprite = new THREE.Sprite(this.mat);
     const upp = HEIGHT / art.body[1]; // world units per pixel
@@ -90,7 +91,7 @@ export class Player {
     }));
     scene.add(this.shadow);
     // worn headgear, drawn over the head of whatever frame shows: top (hats) and face (glasses)
-    this.heads = [new HeadLayer(scene), new HeadLayer(scene)];
+    this.heads = [new HeadLayer(scene, this.hairU), new HeadLayer(scene, this.hairU)];
   }
 
   setHeadgear(top, face) { this.heads[0].set(top); this.heads[1].set(face); }
@@ -105,6 +106,7 @@ export class Player {
   setArt(art) {
     if (!art || art === this.art) return;
     this.art = art;
+    this.hairU = { uHair: this.clip.uHair, uHairN: this.clip.uHairN }; // shared with the headgear
     this.setHair(art);
     const upp = HEIGHT / art.body[1];
     this.size = { w: art.fw * upp, h: art.fh * upp };

@@ -1,0 +1,41 @@
+{
+ "id": "bd3ad85d-8057-4954-acd4-c644d166aeed",
+ "name": "a black feathered raven half-m",
+ "state_name": "base",
+ "prompt": "a black feathered raven half-mask with a short dark beak and gold-rimmed eye holes, item only, nobody wearing it",
+ "size": {
+  "width": 48,
+  "height": 48
+ },
+ "directions": 8,
+ "created_at": "2026-10-23T16:54:11.746344+00:00",
+ "view": "low top-down",
+ "rotation_urls": {
+  "south": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/5457cd81-4a1e-4383-9a16-5a765d8933b0/bd3ad85d-8057-4954-acd4-c644d166aeed/rotations/south.png",
+  "west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/5457cd81-4a1e-4383-9a16-5a765d8933b0/bd3ad85d-8057-4954-acd4-c644d166aeed/rotations/west.png",
+  "east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/5457cd81-4a1e-4383-9a16-5a765d8933b0/bd3ad85d-8057-4954-acd4-c644d166aeed/rotations/east.png",
+  "north": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/5457cd81-4a1e-4383-9a16-5a765d8933b0/bd3ad85d-8057-4954-acd4-c644d166aeed/rotations/north.png",
+  "south-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/5457cd81-4a1e-4383-9a16-5a765d8933b0/bd3ad85d-8057-4954-acd4-c644d166aeed/rotations/south-east.png",
+  "south-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/5457cd81-4a1e-4383-9a16-5a765d8933b0/bd3ad85d-8057-4954-acd4-c644d166aeed/rotations/south-west.png",
+  "north-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/5457cd81-4a1e-4383-9a16-5a765d8933b0/bd3ad85d-8057-4954-acd4-c644d166aeed/rotations/north-east.png",
+  "north-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/5457cd81-4a1e-4383-9a16-5a765d8933b0/bd3ad85d-8057-4954-acd4-c644d166aeed/rotations/north-west.png"
+ },
+ "storage_urls": {
+  "east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/5457cd81-4a1e-4383-9a16-5a765d8933b0/bd3ad85d-8057-4954-acd4-c644d166aeed/rotations/east.png",
+  "west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/5457cd81-4a1e-4383-9a16-5a765d8933b0/bd3ad85d-8057-4954-acd4-c644d166aeed/rotations/west.png",
+  "north": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/5457cd81-4a1e-4383-9a16-5a765d8933b0/bd3ad85d-8057-4954-acd4-c644d166aeed/rotations/north.png",
+  "south": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/5457cd81-4a1e-4383-9a16-5a765d8933b0/bd3ad85d-8057-4954-acd4-c644d166aeed/rotations/south.png",
+  "north-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/5457cd81-4a1e-4383-9a16-5a765d8933b0/bd3ad85d-8057-4954-acd4-c644d166aeed/rotations/north-east.png",
+  "north-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/5457cd81-4a1e-4383-9a16-5a765d8933b0/bd3ad85d-8057-4954-acd4-c644d166aeed/rotations/north-west.png",
+  "south-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/5457cd81-4a1e-4383-9a16-5a765d8933b0/bd3ad85d-8057-4954-acd4-c644d166aeed/rotations/south-east.png",
+  "south-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/5457cd81-4a1e-4383-9a16-5a765d8933b0/bd3ad85d-8057-4954-acd4-c644d166aeed/rotations/south-west.png"
+ },
+ "frame_urls": null,
+ "style_settings": {},
+ "tags": [],
+ "status": "completed",
+ "group_id": "9d122e4b-e998-4982-bdce-86d82eaf6e29",
+ "progress_percent": null,
+ "eta_seconds": null,
+ "animations": []
+}

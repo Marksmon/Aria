@@ -27,8 +27,10 @@ export const TUNE = {
   woven_cap: { hair: 0.4 },
   ember_crown: { at: 0.36, hair: 0.2, swap: { right: 'downright', left: 'downleft' } }, // sits on the hair; its side views are poor
   flower_wreath: { at: 0.33, w: 0.9, hair: 0 }, // rests on top of the hair
-  round_glasses: { dirs: { right: { dy: 0.12, dx: -0.06, w: 0.62 }, left: { dy: 0.12, dx: -0.06, w: 0.62 } } },
-  raven_mask: { at: 0.78, w: 0.8 },
+  // face pieces: their views come from the front (see pack-headgear.py); turning moves them toward
+  // the front of the face
+  round_glasses: { w: 0.62, at: 0.74 }, // on the eyes when the packer found them; this is the fallback
+  raven_mask: { w: 0.78, at: 0.74 },
   flame_circlet: { at: 0.4, hair: 0.3 },
 };
 const fitOf = (id) => ({ ...FIT[HEADGEAR[id].slot], ...TUNE[id] });
@@ -227,9 +229,30 @@ export function headgearIcon(g, id) {
 const VIEW = { down: 'front', downleft: 'front', downright: 'front', right: 'side', left: 'sideL', up: 'back', upleft: 'back', upright: 'back' };
 
 // One headgear layer over a character sprite. Call update() after the body's frame is set.
+// hair: the wearer's hair colours as shared uniforms ({ uHair, uHairN }). A face piece is masked by
+// the body under it: where it would cross the wearer's hair or leave the head's outline (a pair of
+// glasses' arms going back over the hair) its arms are hidden, the way they tuck under real hair;
+// the lenses themselves always show. Face pieces sit on the eyes the sprite packer found.
 export class HeadLayer {
-  constructor(scene) {
+  constructor(scene, hair) {
     this.mat = new THREE.SpriteMaterial({ alphaTest: 0.5 });
+    this.mask = { uBody: { value: null }, uXf: { value: new THREE.Vector4() }, uMask: { value: 0 }, ...hair };
+    this.mat.onBeforeCompile = (sh) => {
+      Object.assign(sh.uniforms, this.mask);
+      sh.fragmentShader = sh.fragmentShader
+        .replace('void main() {', 'uniform sampler2D uBody;\nuniform vec4 uXf;\nuniform float uMask;\nuniform vec3 uHair[12];\nuniform int uHairN;\nvoid main() {')
+        .replace('#include <map_fragment>', `#include <map_fragment>
+        if (uMask > 0.5 && sampledDiffuseColor.a < 0.995) { // an arm or hinge (pack-headgear marks them)
+          vec2 bu = vec2(vMapUv.x * uXf.x + uXf.y, vMapUv.y * uXf.z + uXf.w);
+          vec4 b = texture2D(uBody, bu);
+          if (b.a < 0.5 || bu.x < 0.0 || bu.x > 1.0 || bu.y < 0.0 || bu.y > 1.0) discard;
+          vec3 c = pow(max(b.rgb, vec3(0.0)), vec3(1.0 / 2.2));
+          for (int i = 0; i < 12; i++) {
+            if (i >= uHairN) break;
+            if (dot(uHair[i], vec3(0.3, 0.59, 0.11)) > 0.2 && distance(c, uHair[i]) < 0.08) discard; // under the hair
+          }
+        }`);
+    };
     this.sprite = new THREE.Sprite(this.mat);
     this.sprite.renderOrder = 3; // over the body
     this.sprite.visible = false;
@@ -251,15 +274,25 @@ export class HeadLayer {
     if (fit.swap?.[dir]) dir = fit.swap[dir];
     const cell = pc.L.dirs[dir], front = pc.L.dirs.down;
     if (!cell || !front || (slot === 'face' && dir.startsWith('up'))) { this.sprite.visible = false; return; }
-    const [, , , , , rx, , ry] = cell, { cw, ch } = pc.L;
+    const [, , , , , rx, , ry, , lens] = cell, { cw, ch } = pc.L;
     const upp = body.scale.x / fw;
-    const k = (h.w * fit.w / front[6]) * upp; // world units per headgear pixel: front rim = head width
-    const HW = cw * k, HH = ch * k;
-    const ax = rx, ay = ry + 0.5; // the rim's middle goes on the attach line
-    const py = h.crown + (h.neck - h.crown) * (fit.at + fit.dy);
-    const flip = dir.includes('left') ? -1 : 1; // nudges mirror with the facing
-    const dx = ((h.x + fit.dx * flip * h.w) / fw - 0.5) * body.scale.x, dy = (1 - py / fh - body.center.y) * body.scale.y;
-    this.cover = { cx: h.x + fit.dx * flip * h.w, half: (cell[6] * k) / upp / 2, y: py };
+    let sx = h.w * fit.w / front[6], sy = sx; // body pixels per headgear pixel: front rim = head width
+    let ax = rx, ay = ry + 0.5;               // the rim's middle goes on the attach line...
+    let px = h.x + fit.dx * (dir.includes('left') ? -1 : 1) * h.w;
+    let py = h.crown + (h.neck - h.crown) * (fit.at + fit.dy);
+    const eyes = h.eyes || [];
+    if (slot === 'face' && lens?.length === 4 && eyes.length === 4) {
+      // ...or, for a face piece, its lenses on the eyes: width from the eye spacing (squashed when
+      // turned), height from the head
+      const k = (eyes[2] - eyes[0]) / (lens[2] - lens[0]);
+      if (k > sx * 0.5 && k < sx * 1.8) sx = k;
+      ax = (lens[0] + lens[2]) / 2; ay = (lens[1] + lens[3]) / 2;
+      px = (eyes[0] + eyes[2]) / 2; py = (eyes[1] + eyes[3]) / 2;
+    } else if (slot === 'face' && lens?.length === 2 && eyes.length === 2) { // a side view: one lens, one eye
+      ax = lens[0]; ay = lens[1]; px = eyes[0]; py = eyes[1];
+    }
+    const k = sx * upp, HW = cw * k, HH = ch * sy * upp;
+    const dx = (px / fw - 0.5) * body.scale.x, dy = (1 - py / fh - body.center.y) * body.scale.y;
     const fr = pc.tex[dir], t = fr[Math.floor(performance.now() / 1000 * ANIM_FPS) % fr.length]; // animated pieces loop
     if (this.mat.map !== t) { if (!this.mat.map) this.mat.needsUpdate = true; this.mat.map = t; }
     this.sprite.scale.set(HW, HH, 1);
@@ -267,6 +300,14 @@ export class HeadLayer {
     this.sprite.position.copy(body.position);
     this.mat.color.copy(body.material.color);
     this.sprite.visible = true;
+    this.cover = { cx: px, half: (cell[6] * k) / upp / 2, y: py };
+    // face pieces: map this layer's texture coordinates onto the body frame's, for the mask
+    this.mask.uMask.value = slot === 'face' ? 1 : 0;
+    if (slot === 'face') {
+      const W = body.scale.x, Hb = body.scale.y, c = this.sprite.center;
+      this.mask.uBody.value = tex;
+      this.mask.uXf.value.set(HW / W, 0.5 - (c.x * HW) / W, HH / Hb, body.center.y - (c.y * HH) / Hb);
+    }
   }
 
   // body: the character's sprite; tex: its current frame; dir: sprite direction; fw, fh: frame size
