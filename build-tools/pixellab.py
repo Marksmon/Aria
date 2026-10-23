@@ -11,8 +11,7 @@ animation request may only accept some directions, so the rest are asked for onc
 
   python3 build-tools/pixellab.py generate art/pixellab player   (needs PIXELLAB_API_KEY)
 
-Characters marked style_ref use PixelLab's Pro mode with a style reference image (a PNG up to
-168x168, path in PIXELLAB_STYLE_REF). The reference is not kept in the repo.
+Characters are made in PixelLab's Pro mode from a style reference image (see STYLE below).
 
 Results are committed to the `art` branch by the workflow.
 """
@@ -25,122 +24,23 @@ key = os.environ.get("PIXELLAB_API_KEY", "")
 H = {"Authorization": f"Bearer {key}", "Content-Type": "application/json"}
 DIRS = ["south", "east", "north", "west"]
 
-STYLE = "cute chibi fantasy RPG sprite in the style of classic 2000s MMORPGs, soft shading"
-# Ragnarok Online look: big head, small body, bold dark outline, soft cel shading
-RO_STYLE = ("Ragnarok Online style 2D sprite, chibi with a big head and large anime eyes, small body, "
-            "bold dark brown outline around the whole figure, soft painterly cel shading, warm colors")
-
-CHARACTERS = [
-    {
-        "name": "player",
-        "endpoint": "/create-character-with-4-directions",
-        "body": {
-            "description": "young novice swordsman with spiky orange-brown hair, blue tunic with a brown belt, "
-                           "red scarf, brown boots, short sword. " + RO_STYLE,
-            "image_size": {"width": 64, "height": 64},
-            "view": "low top-down",
-            "proportions": {"type": "custom", "head_size": 1.5, "arms_length": 0.9, "legs_length": 0.8,
-                            "shoulder_width": 0.9, "hip_width": 0.9},
-            "outline": "single color black outline",
-            "shading": "medium shading",
-            "detail": "medium detail",
-        },
-        "animations": [
-            {"animation_name": "walk", "action_description": "walking", "frame_count": 6},
-            {"animation_name": "attack", "action_description": "quick forward sword slash attack", "frame_count": 6},
-        ],
-    }
-
-]
+# Every character uses PixelLab's Pro mode with a style reference image. The player was made
+# from a Ragnarok Online sprite (path in PIXELLAB_STYLE_REF, not kept in the repo); everything
+# else uses the player's own south view, so the whole cast shares one style.
+STYLE = ("Ragnarok Online sprite style: soft dark coloured outlines instead of black, muted warm "
+         "palette, detailed soft shading, chibi proportions about three heads tall")
+PLAYER_REF = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "art", "pixellab", "player",
+                          "Idle", "rotations", "south.png")
 
 
-# Ragnarok Online style monsters. template_id picks the skeleton used to animate them:
-# mannequin for two-legged or legless ones, a quadruped for crawlers.
-RO_MOB = ("Ragnarok Online style monster sprite, cute and chubby, bold dark brown outline, "
-          "soft painterly cel shading")
-
-
-def mob(name, desc, template, anims):
-    return {
-        "name": name,
-        "endpoint": "/create-character-v3",
-        "body": {
-            "description": desc + ". " + RO_MOB,
-            "image_size": {"width": 64, "height": 64},
-            "view": "low top-down",
-            "template_id": template,
-            "outline": "single color black outline",
-            "detail": "medium detail",
-        },
-        "animations": [{"animation_name": n, "action_description": d, "frame_count": 6} for n, d in anims],
-    }
-
-
-CHARACTERS += [
-    mob("slime", "round moss-green jelly slime blob with a tiny two-leaf sprout on top, no arms, no legs, "
-        "big shiny eyes, rosy cheeks", "mannequin",
-        [("hop", "bouncing hop in place, squashing and stretching"), ("attack", "lunging forward to bump attack")]),
-    mob("blueslime", "round translucent blue jelly slime blob shaped like a water drop, no arms, no legs, "
-        "big shiny eyes, small happy mouth", "mannequin",
-        [("hop", "bouncing hop in place, squashing and stretching"), ("attack", "lunging forward to bump attack")]),
-    mob("sprout", "tiny onion-bulb plant creature with two green leaves sprouting from its head, short stubby legs, "
-        "shy round eyes", "mannequin",
-        [("walk", "waddling walk"), ("attack", "angry headbutt forward")]),
-    mob("crab", "small pink mud crab with big pincers, stalk eyes and a muddy round shell", "cat",
-        [("walk", "scuttling walk"), ("attack", "snapping its pincers forward")]),
-    mob("mushling", "small mushroom creature with a big purple spotted cap, pale stem body, tiny feet, sleepy eyes",
-        "mannequin",
-        [("walk", "waddling walk"), ("attack", "shaking its cap and puffing a cloud of spores")]),
-    mob("beetle", "chunky beetle with a grey pebble stone shell, ochre legs and a small horn", "dog",
-        [("walk", "crawling walk"), ("attack", "ramming forward with its horn")]),
-    mob("wisp", "glowing yellow firefly wisp spirit, small round glowing body with tiny translucent wings, "
-        "no arms, no legs", "mannequin",
-        [("walk", "hovering and fluttering in place"), ("attack", "darting forward")]),
-]
-
-
-# Camp villagers: same Ragnarok look as the player. They stand still, so no animations.
-def villager(name, desc):
-    return {
-        "name": name,
-        "endpoint": "/create-character-with-4-directions",
-        "body": {
-            "description": desc + ". " + RO_STYLE,
-            "image_size": {"width": 64, "height": 64},
-            "view": "low top-down",
-            "proportions": {"type": "custom", "head_size": 1.5, "arms_length": 0.9, "legs_length": 0.8,
-                            "shoulder_width": 0.9, "hip_width": 0.9},
-            "outline": "single color black outline",
-            "shading": "medium shading",
-            "detail": "medium detail",
-        },
-        "animations": [],
-    }
-
-
-CHARACTERS += [
-    villager("bram", "kind old village elder with a long white beard, bald head with white tufts, purple robe "
-             "with gold trim, wooden staff topped with a blue crystal"),
-    villager("tilly", "cheerful village cook woman with brown hair in a bun, red headscarf, red dress with a "
-             "white apron, holding a wooden ladle"),
-    villager("wren", "young scout girl with short dark hair under a green hood with a red feather, green tunic, "
-             "leather satchel strap, bow on her back"),
-]
-
-
-# Pro mode, styled after a reference sprite (PIXELLAB_STYLE_REF)
-RO_PRO_STYLE = ("Ragnarok Online sprite style: soft dark coloured outlines instead of black, muted warm "
-                "palette, detailed soft shading, chibi proportions about three heads tall")
-
-
-def pro(name, desc, anims, size=(64, 96), template="mannequin"):
+def pro(name, desc, anims=(), size=(64, 64), template="mannequin", ref=PLAYER_REF):
     return {
         "name": name,
         "endpoint": "/create-character-pro",
-        "style_ref": True,
+        "style_ref": ref,
         "body": {
             "description": desc,
-            "style_description": RO_PRO_STYLE,
+            "style_description": STYLE,
             "method": "create_with_style",
             "image_size": {"width": size[0], "height": size[1]},
             "view": "low top-down",
@@ -151,10 +51,32 @@ def pro(name, desc, anims, size=(64, 96), template="mannequin"):
     }
 
 
-CHARACTERS += [
-    pro("player_pro", "young novice swordsman with spiky orange-brown hair, blue tunic with a brown belt, "
+HOP = [("hop", "bouncing hop in place, squashing and stretching"), ("attack", "lunging forward to bump attack")]
+CHARACTERS = [
+    pro("player", "young novice swordsman with spiky orange-brown hair, blue tunic with a brown belt, "
         "red scarf, brown boots, short sword",
-        [("walk", "walking"), ("attack", "quick forward sword slash attack")]),
+        [("walk", "walking"), ("attack", "quick forward sword slash attack")], size=(64, 96), ref=None),
+    pro("slime", "round moss-green jelly slime blob with a tiny two-leaf sprout on top, no arms, no legs, "
+        "big shiny eyes, rosy cheeks", HOP),
+    pro("blueslime", "round translucent blue jelly slime blob shaped like a water drop, no arms, no legs, "
+        "big shiny eyes, small happy mouth", HOP),
+    pro("sprout", "tiny onion-bulb plant creature with two green leaves sprouting from its head, short stubby "
+        "legs, shy round eyes", [("walk", "waddling walk"), ("attack", "angry headbutt forward")]),
+    pro("crab", "small pink mud crab with big pincers, stalk eyes and a muddy round shell",
+        [("walk", "scuttling walk"), ("attack", "snapping its pincers forward")], template="cat"),
+    pro("mushling", "small mushroom creature with a big purple spotted cap, pale stem body, tiny feet, sleepy "
+        "eyes", [("walk", "waddling walk"), ("attack", "shaking its cap and puffing a cloud of spores")]),
+    pro("beetle", "chunky beetle with a grey pebble stone shell, ochre legs and a small horn",
+        [("walk", "crawling walk"), ("attack", "ramming forward with its horn")], template="dog"),
+    pro("wisp", "glowing yellow firefly wisp spirit, small round glowing body with tiny translucent wings, "
+        "no arms, no legs", [("walk", "hovering and fluttering in place"), ("attack", "darting forward")]),
+    # villagers stand still: no animations
+    pro("bram", "kind old village elder with a long white beard, bald head with white tufts, purple robe with "
+        "gold trim, wooden staff topped with a blue crystal", size=(64, 96)),
+    pro("tilly", "cheerful village cook woman with brown hair in a bun, red headscarf, red dress with a white "
+        "apron, holding a wooden ladle", size=(64, 96)),
+    pro("wren", "young scout girl with short dark hair under a green hood with a red feather, green tunic, "
+        "leather satchel strap, bow on her back", size=(64, 96)),
 ]
 
 
@@ -162,7 +84,7 @@ def log(*a):
     print(time.strftime("%H:%M:%S"), *a, flush=True)
 
 
-def post(path, body, tries=40):
+def post(path, body, tries=120):
     for _ in range(tries):
         r = requests.post(BASE + path, headers=H, json=body, timeout=120)
         log("POST", path, r.status_code, r.text[:600])
@@ -269,8 +191,8 @@ if task == "generate":
             continue
         try:
             body = dict(ch["body"])
-            if ch.get("style_ref"):
-                ref = os.environ.get("PIXELLAB_STYLE_REF")
+            if "style_ref" in ch:
+                ref = ch["style_ref"] or os.environ.get("PIXELLAB_STYLE_REF")
                 if not ref:
                     log(name, "needs PIXELLAB_STYLE_REF")
                     continue

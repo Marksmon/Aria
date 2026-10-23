@@ -21,8 +21,9 @@ MIRROR = {'right': 'left', 'left': 'right'}
 #            border pixel a dark shade of the colour beside it, like Ragnarok Online sprites
 # (the first player, art/pixellab/player_v1, needed 'mirror': {('attack', 'right')}: its east
 # attack had no sword)
-OUTLINE = {'outline': (1, 'shade')}
-CHARS = {name: OUTLINE for name in ['player', 'slime', 'blueslime', 'sprout', 'crab', 'mushling', 'beetle', 'wisp']}
+# The PixelLab Pro art already has Ragnarok-style shaded edges, so no extra outline.
+CHARS = {name: {} for name in ['player', 'slime', 'blueslime', 'sprout', 'crab', 'mushling', 'beetle', 'wisp',
+                               'bram', 'tilly', 'wren']}
 
 
 def islands(f):
