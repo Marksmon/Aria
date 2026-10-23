@@ -311,3 +311,28 @@ html, body {
   .bagwrap, .chestwrap { flex-direction: column; }
   .gear { width: auto; display: grid; grid-template-columns: 1fr 1fr; }
 }
+
+/* ---------- M5: clock ---------- */
+#clock {
+  position: absolute;
+  top: calc(124px + env(safe-area-inset-top));
+  right: calc(12px + env(safe-area-inset-right));
+  width: 110px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 3px 0;
+  border-radius: 0 0 9px 9px;
+  background: rgba(46, 33, 24, .7);
+  font: 700 13px system-ui, sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+#clock i {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #ffd34a;
+  box-shadow: 0 0 6px #ffd34a;
+}
+#clock.night i { background: transparent; box-shadow: inset -4px -1px 0 0 #dfe6ff; }

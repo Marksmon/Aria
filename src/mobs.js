@@ -27,7 +27,7 @@ class Mob {
     this.def = MOB_DEFS[type];
     this.art = mgr.lib.mobs[this.def.art];
     this.mat = new THREE.SpriteMaterial({ map: this.art.frames[0], alphaTest: 0.5 });
-    this.mgr.tint.push(this.mat);
+    if (!this.def.night) this.mgr.tint.push(this.mat); // wisps keep their own glow
     this.sprite = new THREE.Sprite(this.mat);
     this.sprite.center.set(0.5, 0.04);
     this.sprite.renderOrder = 2;
@@ -294,13 +294,13 @@ export class MobManager {
     return null;
   }
 
-  // spawns: [[type, count, zones]]
+  // spawns: [[type, count, zones, nightOnly]]
   populate(spawns, seed = 11) {
     const rng = mulberry32(seed);
-    for (const [type, count, zones] of spawns) {
+    for (const [type, count, zones, nightOnly] of spawns) {
       for (let i = 0; i < count; i++) {
         const s = this.findSpot(rng, zones);
-        if (s) this.add(type, s.x, s.z);
+        if (s) this.add(type, s.x, s.z).nightOnly = !!nightOnly;
       }
     }
   }
@@ -361,7 +361,8 @@ export class MobManager {
       const e = this.dead[i];
       e.t -= dt * (this.night ? 2 : 1);
       const far = Math.hypot(player.x - e.m.home.x, player.z - e.m.home.z) > 14;
-      if (e.t <= 0 && far && (!e.m.def.night || this.night)) {
+      const nightOnly = e.m.def.night || e.m.nightOnly;
+      if (e.t <= 0 && far && (!nightOnly || this.night)) {
         e.m.reset(e.m.home.x, e.m.home.z);
         this.dead.splice(i, 1);
       }
@@ -396,11 +397,11 @@ export class MobManager {
   setNight(night) {
     this.night = night;
     for (const m of this.list) {
-      if (!m.def.night) continue;
+      if (!m.def.night && !m.nightOnly) continue;
       if (!night && m.alive) {
         m.alive = false;
         m.sprite.visible = m.shadow.visible = false;
-        this.dead.push({ m, t: 0 });
+        if (!this.dead.some((e) => e.m === m)) this.dead.push({ m, t: 0 });
       }
     }
   }

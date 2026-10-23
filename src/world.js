@@ -306,7 +306,7 @@ export function buildWorld(scene, lib) {
     fireT += dt;
     const f = Math.floor(fireT * 8) % 3;
     if (fireMat.map !== lib.fire.frames[f]) fireMat.map = lib.fire.frames[f];
-    fireLight.intensity = 5.5 + Math.sin(t * 9) * 0.6 + Math.sin(t * 23) * 0.4;
+    fireLight.intensity = (5.5 + Math.sin(t * 9) * 0.6 + Math.sin(t * 23) * 0.4) * api.fireBoost;
     lib.water.offset.set(t * 0.015, t * 0.008);
   }
 
@@ -361,11 +361,13 @@ export function buildWorld(scene, lib) {
   mg.lineWidth = 1.5;
   mg.beginPath(); mg.moveTo(64, 57); mg.lineTo(70, 66); mg.lineTo(58, 66); mg.closePath(); mg.fill(); mg.stroke();
 
-  return {
+  const api = {
+    fireBoost: 1,
     heightAt, zoneAt, walkable, resolve, update, updateOcclusion, tintMats, fireMat, fireLight,
     spawn: { x: 32, z: 36.2 },
     camp: { fire: FIRE, chest: { x: 34.4, z: 30.6 }, tent: { x: 30.2, z: 29.6 } },
     minimap: mini,
     stats: { props: props.length, interior },
   };
+  return api;
 }

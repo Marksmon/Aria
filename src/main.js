@@ -11,6 +11,7 @@ import { loadSave, writeSave } from './save.js';
 import { Inventory } from './inventory.js';
 import { Menus } from './menus.js';
 import { iconTexture, iconURL, ITEMS } from './items.js';
+import { DayNight } from './daynight.js';
 import { clamp, lerp } from './noise.js';
 
 const canvas = document.getElementById('game');
@@ -40,6 +41,14 @@ mobs.populate([
   ['crab', 4, ['fen']],
   ['mushling', 7, ['hollow']],
   ['beetle', 6, ['ridge']],
+  // night: Firefly Wisps anywhere, plus ~20% more of everything
+  ['wisp', 7, null, true],
+  ['slime', 2, ['grove'], true],
+  ['sprout', 1, ['grove'], true],
+  ['blueSlime', 1, ['fen'], true],
+  ['crab', 1, ['fen'], true],
+  ['mushling', 1, ['hollow'], true],
+  ['beetle', 1, ['ridge'], true],
 ]);
 
 const save = loadSave();
@@ -137,9 +146,27 @@ function updateAction() {
 }
 function rest() {
   player.heal(player.maxHp);
-  persist();
-  menus.message('Rested. Hearts restored and game saved.');
+  if (dayNight.night > 0.3) {
+    const veil = document.getElementById('faint');
+    veil.querySelector('div').textContent = 'You sleep until morning…';
+    veil.querySelector('small').textContent = 'Hearts restored · Game saved';
+    veil.classList.add('show');
+    setTimeout(() => { dayNight.skipToMorning(); persist(); }, 700);
+    setTimeout(() => {
+      veil.classList.remove('show');
+      setTimeout(() => { veil.querySelector('div').textContent = 'You fainted…'; veil.querySelector('small').textContent = 'Returning to camp'; }, 700);
+    }, 1900);
+  } else {
+    persist();
+    menus.message('Rested. Hearts restored and game saved.');
+  }
 }
+
+const dayNight = new DayNight({
+  scene, hemi, sun, world, mobs, player, inv,
+  onPhase(night) { menus.message(night ? 'Night falls over Aibachu. Wisps are stirring.' : 'Morning has come.'); },
+});
+if (typeof save?.time === 'number') dayNight.t = save.time;
 
 // resting at camp slowly restores hearts
 let regenT = 0;
@@ -167,7 +194,7 @@ function camBasis() {
 
 let saveT = 0;
 function persist() {
-  writeSave({ x: player.x, z: player.z, yaw: cam.yaw, dist: cam.dist, hp: player.hp, inv: inv.toJSON() });
+  writeSave({ x: player.x, z: player.z, yaw: cam.yaw, dist: cam.dist, hp: player.hp, inv: inv.toJSON(), time: dayNight.t });
 }
 
 const clock = new THREE.Clock();
@@ -194,6 +221,7 @@ function frame() {
 
   player.update(live ? dt : 0, live ? move : { x: 0, z: 0 }, b, ctl, mobs);
   if (live) mobs.update(dt, player);
+  if (live) dayNight.update(dt, t); else if (!started) dayNight.update(0, t);
   world.update(dt, t);
   if (live) fx.update(dt, player, collect);
   if (live) campRegen(dt);
@@ -241,4 +269,4 @@ title.addEventListener('pointerdown', (e) => {
   }, 450);
 });
 
-window.__aibachu = { player, world, cam, mobs, fx, inv, menus, stats: world.stats };
+window.__aibachu = { player, world, cam, mobs, fx, inv, menus, dayNight, stats: world.stats };
