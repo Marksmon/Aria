@@ -401,8 +401,11 @@ function tex(canvas, opts = {}) {
 // A packed PixelLab sheet cut into textures: anims[dir][anim] = [tex], flash = white copies
 // for the hit flash. Frames start blank and fill in once the sheet image has loaded.
 // body = [w, h] in pixels of the standing character, used to size it in the world.
-// Each texture's userData.anchor is where that frame's feet are, as a fraction of the frame
+// Each texture's userData.anchor is where its animation stands, as a fraction of the frame
 // height from the bottom: set it as the sprite's center so the feet stay on the ground.
+// PixelLab draws some animations lower in the canvas than the standing pose, so each one gets
+// its own anchor: the median of its frames' feet. Planting every frame separately would make
+// the character jump by a few pixels per frame; the median keeps the animation's own bob.
 function pixelSet(url, { fw, fh, body, foot = 0, anims }) {
   const at = (px) => px / fh;
   const blank = () => {
@@ -419,9 +422,10 @@ function pixelSet(url, { fw, fh, body, foot = 0, anims }) {
     for (const [anim, [row, n, feet]] of Object.entries(list)) {
       set.anims[dir][anim] = [];
       set.flash[dir][anim] = [];
+      const anchor = feet ? at([...feet].sort((a, b) => a - b)[feet.length >> 1]) : set.anchor;
       for (let i = 0; i < n; i++) {
         const t = blank(), f = blank();
-        t.userData.anchor = f.userData.anchor = feet ? at(feet[i]) : set.anchor;
+        t.userData.anchor = f.userData.anchor = anchor;
         set.anims[dir][anim].push(t);
         set.flash[dir][anim].push(f);
         cuts.push([t, f, i * fw, row * fh]);
