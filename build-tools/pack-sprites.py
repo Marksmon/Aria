@@ -18,8 +18,10 @@ MIRROR = {'right': 'left', 'left': 'right'}
 # name -> options.
 #   mirror:  (anim, direction) pairs drawn as the mirror of the opposite side
 #   outline: (pixels, colour) solid border traced around the silhouette, Ragnarok Online style
+# (the first player, art/pixellab/player_v1, needed 'mirror': {('attack', 'right')}: its east
+# attack had no sword)
 CHARS = {
-    'player': {'mirror': {('attack', 'right')}, 'outline': (1, (34, 22, 14))},
+    'player': {'outline': (1, (34, 22, 14))},
     'slime': {},
 }
 

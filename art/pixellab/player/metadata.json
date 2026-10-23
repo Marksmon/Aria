@@ -1,11 +1,11 @@
 {
-  "group_id": "f1f300b0-bf9c-44cb-b08d-cfe82be50993",
+  "group_id": "5c4c1895-dbc1-4e67-bf2b-d5d28831300b",
   "states": [
     {
       "character": {
-        "id": "855afcdb-fdb2-4004-be42-2496c74e16b5",
+        "id": "bbfe175f-3808-445a-9fb9-5d8e60e8b238",
         "name": "Idle",
-        "prompt": "young adventurer with messy orange-brown hair, blue tunic with a brown belt, red scarf, brown boots, small sword at the hip. cute chibi fantasy RPG sprite in the style of classic 2000s MMORPGs, soft shading",
+        "prompt": "young novice swordsman with spiky orange-brown hair, blue tunic with a brown belt, red scarf, brown boots, short sword. Ragnarok Online style 2D sprite, chibi with a big head and large anime eyes, small body, bold dark brown outline around the whole figure, soft painterly cel shading, warm colors",
         "size": {
           "width": 92,
           "height": 92
@@ -13,7 +13,7 @@
         "template_id": "mannequin",
         "directions": 4,
         "view": "low top-down",
-        "created_at": "2026-10-23T11:01:31.077039+00:00"
+        "created_at": "2026-10-23T11:41:52.824577+00:00"
       },
       "folder": "Idle",
       "frames": {
@@ -34,14 +34,14 @@
               "Idle/animations/attack/north/frame_005.png",
               "Idle/animations/attack/north/frame_006.png"
             ],
-            "west": [
-              "Idle/animations/attack/west/frame_000.png",
-              "Idle/animations/attack/west/frame_001.png",
-              "Idle/animations/attack/west/frame_002.png",
-              "Idle/animations/attack/west/frame_003.png",
-              "Idle/animations/attack/west/frame_004.png",
-              "Idle/animations/attack/west/frame_005.png",
-              "Idle/animations/attack/west/frame_006.png"
+            "east": [
+              "Idle/animations/attack/east/frame_000.png",
+              "Idle/animations/attack/east/frame_001.png",
+              "Idle/animations/attack/east/frame_002.png",
+              "Idle/animations/attack/east/frame_003.png",
+              "Idle/animations/attack/east/frame_004.png",
+              "Idle/animations/attack/east/frame_005.png",
+              "Idle/animations/attack/east/frame_006.png"
             ],
             "south": [
               "Idle/animations/attack/south/frame_000.png",
@@ -52,14 +52,14 @@
               "Idle/animations/attack/south/frame_005.png",
               "Idle/animations/attack/south/frame_006.png"
             ],
-            "east": [
-              "Idle/animations/attack/east/frame_000.png",
-              "Idle/animations/attack/east/frame_001.png",
-              "Idle/animations/attack/east/frame_002.png",
-              "Idle/animations/attack/east/frame_003.png",
-              "Idle/animations/attack/east/frame_004.png",
-              "Idle/animations/attack/east/frame_005.png",
-              "Idle/animations/attack/east/frame_006.png"
+            "west": [
+              "Idle/animations/attack/west/frame_000.png",
+              "Idle/animations/attack/west/frame_001.png",
+              "Idle/animations/attack/west/frame_002.png",
+              "Idle/animations/attack/west/frame_003.png",
+              "Idle/animations/attack/west/frame_004.png",
+              "Idle/animations/attack/west/frame_005.png",
+              "Idle/animations/attack/west/frame_006.png"
             ]
           },
           "walk": {
@@ -71,6 +71,15 @@
               "Idle/animations/walk/east/frame_004.png",
               "Idle/animations/walk/east/frame_005.png",
               "Idle/animations/walk/east/frame_006.png"
+            ],
+            "north": [
+              "Idle/animations/walk/north/frame_000.png",
+              "Idle/animations/walk/north/frame_001.png",
+              "Idle/animations/walk/north/frame_002.png",
+              "Idle/animations/walk/north/frame_003.png",
+              "Idle/animations/walk/north/frame_004.png",
+              "Idle/animations/walk/north/frame_005.png",
+              "Idle/animations/walk/north/frame_006.png"
             ],
             "south": [
               "Idle/animations/walk/south/frame_000.png",
@@ -89,15 +98,6 @@
               "Idle/animations/walk/west/frame_004.png",
               "Idle/animations/walk/west/frame_005.png",
               "Idle/animations/walk/west/frame_006.png"
-            ],
-            "north": [
-              "Idle/animations/walk/north/frame_000.png",
-              "Idle/animations/walk/north/frame_001.png",
-              "Idle/animations/walk/north/frame_002.png",
-              "Idle/animations/walk/north/frame_003.png",
-              "Idle/animations/walk/north/frame_004.png",
-              "Idle/animations/walk/north/frame_005.png",
-              "Idle/animations/walk/north/frame_006.png"
             ]
           }
         }
@@ -105,5 +105,5 @@
     }
   ],
   "export_version": "3.1",
-  "export_date": "2026-10-23T11:05:33.234399"
+  "export_date": "2026-10-23T11:47:45.847900"
 }
