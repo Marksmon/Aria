@@ -19,8 +19,8 @@ DIRS = {"south": "down", "south-east": "downright", "east": "right", "north-east
         "north": "up", "north-west": "upleft", "west": "left", "south-west": "downleft"}
 
 
-def clean(im, keep=0.04):
-    """Drop little islands of pixels (less than `keep` of the biggest one)."""
+def clean(im, keep=0.08):
+    """Drop little islands of pixels (less than `keep` of the biggest one), like edge bleed from the sheet."""
     a = im.getchannel("A").load()
     w, h = im.size
     seen, groups = set(), []
