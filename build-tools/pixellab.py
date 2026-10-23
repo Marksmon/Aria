@@ -61,6 +61,48 @@ CHARACTERS = [
 ]
 
 
+# Ragnarok Online style monsters. template_id picks the skeleton used to animate them:
+# mannequin for two-legged or legless ones, a quadruped for crawlers.
+RO_MOB = ("Ragnarok Online style monster sprite, cute and chubby, bold dark brown outline, "
+          "soft painterly cel shading")
+
+
+def mob(name, desc, template, anims):
+    return {
+        "name": name,
+        "endpoint": "/create-character-v3",
+        "body": {
+            "description": desc + ". " + RO_MOB,
+            "image_size": {"width": 64, "height": 64},
+            "view": "low top-down",
+            "template_id": template,
+            "outline": "single color black outline",
+            "detail": "medium detail",
+        },
+        "animations": [{"animation_name": n, "action_description": d, "frame_count": 6} for n, d in anims],
+    }
+
+
+CHARACTERS += [
+    mob("blueslime", "round translucent blue jelly slime blob shaped like a water drop, no arms, no legs, "
+        "big shiny eyes, small happy mouth", "mannequin",
+        [("hop", "bouncing hop in place, squashing and stretching"), ("attack", "lunging forward to bump attack")]),
+    mob("sprout", "tiny onion-bulb plant creature with two green leaves sprouting from its head, short stubby legs, "
+        "shy round eyes", "mannequin",
+        [("walk", "waddling walk"), ("attack", "angry headbutt forward")]),
+    mob("crab", "small pink mud crab with big pincers, stalk eyes and a muddy round shell", "cat",
+        [("walk", "scuttling walk"), ("attack", "snapping its pincers forward")]),
+    mob("mushling", "small mushroom creature with a big purple spotted cap, pale stem body, tiny feet, sleepy eyes",
+        "mannequin",
+        [("walk", "waddling walk"), ("attack", "shaking its cap and puffing a cloud of spores")]),
+    mob("beetle", "chunky beetle with a grey pebble stone shell, ochre legs and a small horn", "dog",
+        [("walk", "crawling walk"), ("attack", "ramming forward with its horn")]),
+    mob("wisp", "glowing yellow firefly wisp spirit, small round glowing body with tiny translucent wings, "
+        "no arms, no legs", "mannequin",
+        [("walk", "hovering and fluttering in place"), ("attack", "darting forward")]),
+]
+
+
 def log(*a):
     print(time.strftime("%H:%M:%S"), *a, flush=True)
 

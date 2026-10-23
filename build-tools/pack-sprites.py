@@ -20,10 +20,8 @@ MIRROR = {'right': 'left', 'left': 'right'}
 #   outline: (pixels, colour) solid border traced around the silhouette, Ragnarok Online style
 # (the first player, art/pixellab/player_v1, needed 'mirror': {('attack', 'right')}: its east
 # attack had no sword)
-CHARS = {
-    'player': {'outline': (1, (34, 22, 14))},
-    'slime': {},
-}
+OUTLINE = {'outline': (1, (34, 22, 14))}
+CHARS = {name: OUTLINE for name in ['player', 'slime', 'blueslime', 'sprout', 'crab', 'mushling', 'beetle', 'wisp']}
 
 
 def outline(f, width, colour):
