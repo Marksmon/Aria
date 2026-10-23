@@ -218,7 +218,25 @@ def pack(name, opts):
 
     os.makedirs(OUT, exist_ok=True)
     sheet.save(os.path.join(OUT, name + '.png'), optimize=True)
-    json.dump({'fw': fw, 'fh': fh, 'body': body, 'foot': foot, 'anims': layout}, open(os.path.join(OUT, name + '.json'), 'w'))
+    # hair colours: the commonest colours at the top of the head in the standing poses, so headgear
+    # can hide the hair it covers (and only hair, not a sword raised over the head)
+    from collections import Counter
+    tally = Counter()
+    for d in art:
+        f = art[d]['idle'][0].crop(box)
+        hd = layout[d]['idle'][3][0]
+        px = f.load()
+        for y in range(hd[1], hd[1] + max(2, int(bh * 0.09))):
+            for x in range(max(0, hd[0] - hd[3] // 2), min(fw, hd[0] + hd[3] // 2)):
+                r, g, b, a = px[x, y]
+                if a > 128:
+                    tally[(r // 8 * 8 + 4, g // 8 * 8 + 4, b // 8 * 8 + 4)] += 1
+    total, hair = sum(tally.values()), []
+    for c, n in tally.most_common(12):
+        if n < total * 0.02:
+            break
+        hair.append(list(c))
+    json.dump({'fw': fw, 'fh': fh, 'body': body, 'foot': foot, 'hair': hair, 'anims': layout}, open(os.path.join(OUT, name + '.json'), 'w'))
     print(name, 'frame', fw, 'x', fh, 'body', body, 'foot', foot, 'sheet', sheet.size, os.path.getsize(os.path.join(OUT, name + '.png')), 'bytes')
 
 

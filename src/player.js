@@ -58,6 +58,23 @@ export class Player {
     this.stuckT = 0;
 
     this.mat = new THREE.SpriteMaterial({ map: art.anims.down.idle[0], alphaTest: 0.5 });
+    // headgear hides the hair it covers: hair-coloured pixels inside uClip (texture uv: x0, y0, x1,
+    // y1) are dropped. The art's hair colours come from the sprite packer.
+    // uSide: at rim height (y0, y1), hair poking out past the rim's edges (x0, x1) goes too
+    this.clip = { uClip: { value: new THREE.Vector4() }, uSide: { value: new THREE.Vector4() }, uHair: { value: Array.from({ length: 12 }, () => new THREE.Vector3()) }, uHairN: { value: 0 } };
+    this.mat.onBeforeCompile = (sh) => {
+      Object.assign(sh.uniforms, this.clip);
+      sh.fragmentShader = sh.fragmentShader
+        .replace('void main() {', 'uniform vec4 uClip;\nuniform vec4 uSide;\nuniform vec3 uHair[12];\nuniform int uHairN;\nvoid main() {')
+        .replace('#include <map_fragment>', `#include <map_fragment>
+        bool inTop = vMapUv.x > uClip.x && vMapUv.x < uClip.z && vMapUv.y > uClip.y && vMapUv.y < uClip.w;
+        bool inSide = vMapUv.y > uSide.x && vMapUv.y < uSide.y && vMapUv.x > uClip.x && vMapUv.x < uClip.z && (vMapUv.x < uSide.z || vMapUv.x > uSide.w);
+        if (uClip.z > uClip.x && (inTop || inSide)) {
+          vec3 c = pow(max(sampledDiffuseColor.rgb, vec3(0.0)), vec3(1.0 / 2.2));
+          for (int i = 0; i < 12; i++) { if (i >= uHairN) break; if (distance(c, uHair[i]) < 0.06) discard; }
+        }`);
+    };
+    this.setHair(art);
     this.sprite = new THREE.Sprite(this.mat);
     const upp = HEIGHT / art.body[1]; // world units per pixel
     this.size = { w: art.fw * upp, h: art.fh * upp };
@@ -78,10 +95,17 @@ export class Player {
 
   setHeadgear(top, face) { this.heads[0].set(top); this.heads[1].set(face); }
 
+  setHair(art) {
+    const hair = art.hair || [];
+    this.clip.uHairN.value = Math.min(12, hair.length);
+    hair.slice(0, 12).forEach((c, i) => this.clip.uHair.value[i].set(c[0], c[1], c[2]));
+  }
+
   // a different sprite set (the Novice and the Swordsman look different)
   setArt(art) {
     if (!art || art === this.art) return;
     this.art = art;
+    this.setHair(art);
     const upp = HEIGHT / art.body[1];
     this.size = { w: art.fw * upp, h: art.fh * upp };
     this.sprite.scale.set(this.size.w, this.size.h, 1);
@@ -267,6 +291,17 @@ export class Player {
     this.sync();
     const upright = this.state !== 'down' && this.state !== 'feign';
     for (const l of this.heads) l.update(this.sprite, this.tex, this.dir, this.art.fw, this.art.fh, upright);
+    // hide the hair under the headgear: above the line it sets, across the head and its spikes
+    const hide = Math.max(...this.heads.map((l) => l.hair())), h = this.tex.userData.head;
+    if (hide > 0 && h) {
+      const { fw, fh } = this.art, y = h.crown + (h.neck - h.crown) * hide;
+      this.clip.uClip.value.set((h.x - h.w * 0.8) / fw, 1 - y / fh, (h.x + h.w * 0.8) / fw, 1);
+      const rim = this.heads[0].rim();
+      if (rim) { // a band from the hide line to a little under the rim, outside the rim's width
+        const y1 = rim.y + (h.neck - h.crown) * 0.12;
+        this.clip.uSide.value.set(1 - y1 / fh, 1 - y / fh, (rim.cx - rim.half) / fw, (rim.cx + rim.half) / fw);
+      } else this.clip.uSide.value.set(0, 0, 0, 0);
+    } else this.clip.uClip.value.set(0, 0, 0, 0);
   }
 
   // carry out the current order: walk the path, swing at a target in reach, or arrive somewhere

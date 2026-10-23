@@ -387,7 +387,7 @@ function tex(canvas, opts = {}) {
 // PixelLab draws some animations lower in the canvas than the standing pose, so each one gets
 // its own anchor: the median of its frames' feet. Planting every frame separately would make
 // the character jump by a few pixels per frame; the median keeps the animation's own bob.
-function pixelSet(url, { fw, fh, body, foot = 0, anims }) {
+function pixelSet(url, { fw, fh, body, foot = 0, hair = [], anims }) {
   const at = (px) => px / fh;
   const blank = () => {
     const t = tex(mk(fw, fh).c);
@@ -395,7 +395,7 @@ function pixelSet(url, { fw, fh, body, foot = 0, anims }) {
     t.generateMipmaps = false;
     return t;
   };
-  const set = { pixel: true, fw, fh, body, anchor: at(foot), anims: {}, flash: {} };
+  const set = { pixel: true, fw, fh, body, anchor: at(foot), hair: hair.map((c) => c.map((v) => v / 255)), anims: {}, flash: {} };
   const cuts = [];
   for (const [dir, list] of Object.entries(anims)) {
     set.anims[dir] = {};

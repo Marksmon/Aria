@@ -14,8 +14,20 @@ import * as THREE from 'three';
 const SHEETS = import.meta.glob('./art/hg_*.png', { eager: true, import: 'default' });
 const LAYOUTS = import.meta.glob('./art/hg_*.json', { eager: true, import: 'default' });
 // a piece's rim (see pack-headgear.py) is sized to `w` times the head's width and put on the line
-// `at` of the way from crown to neck: a hat's brim just above the brows, glasses on the eyes
-const FIT = { head: { w: 0.86, at: 0.47 }, face: { w: 0.78, at: 0.82 } };
+// `at` of the way from crown to neck: a hat's brim just above the brows, glasses on the eyes.
+// A piece can tune its own fit (see TUNE): w and at as above, dx / dy to nudge it (in head
+// widths / head heights), and hair: hide the wearer's hair above that line (same scale as at),
+// so spikes don't poke through a helmet. 0 leaves the hair alone.
+const FIT = { head: { w: 0.86, at: 0.47, dx: 0, dy: 0, hair: 0 }, face: { w: 0.78, at: 0.82, dx: 0, dy: 0, hair: 0 } };
+export const TUNE = {
+  horned_helm: { hair: 0.44 },          // a full helm: the hair above the rim goes
+  woven_cap: { hair: 0.4 },
+  ember_crown: { at: 0.36, hair: 0.2 }, // sits higher, on top of the hair: only the tips go
+  flower_wreath: { at: 0.3, hair: 0 },  // rests on the hair
+  round_glasses: {},
+  eyepatch: {},
+};
+const fitOf = (id) => ({ ...FIT[HEADGEAR[id].slot], ...TUNE[id] });
 
 // a PixelLab piece: one texture per direction, cut from its sheet once the image loads
 const images = {};
@@ -230,9 +242,14 @@ export class HeadLayer {
 
   set(id) { this.id = HEADGEAR[id] ? id : null; }
 
+  // how much of the wearer's hair this piece hides (share of crown → neck; 0 = none)
+  hair() { return this.id && this.sprite.visible ? fitOf(this.id).hair : 0; }
+  // where its rim sits this frame, in the body frame's pixels: { cx, half, y } (null if none)
+  rim() { return this.id && this.sprite.visible ? this.cover : null; }
+
   // a PixelLab piece: scaled from its front view to the head's width, then sat on the head
   updateImage(pc, body, tex, dir, fw, fh) {
-    const h = tex.userData.head, slot = HEADGEAR[this.id].slot, fit = FIT[slot];
+    const h = tex.userData.head, slot = HEADGEAR[this.id].slot, fit = fitOf(this.id);
     const cell = pc.L.dirs[dir], front = pc.L.dirs.down;
     if (!cell || !front || (slot === 'face' && dir.startsWith('up'))) { this.sprite.visible = false; return; }
     const [, , , , , rx, , ry] = cell, { cw, ch } = pc.L;
@@ -240,8 +257,10 @@ export class HeadLayer {
     const k = (h.w * fit.w / front[6]) * upp; // world units per headgear pixel: front rim = head width
     const HW = cw * k, HH = ch * k;
     const ax = rx, ay = ry + 0.5; // the rim's middle goes on the attach line
-    const py = h.crown + (h.neck - h.crown) * fit.at;
-    const dx = (h.x / fw - 0.5) * body.scale.x, dy = (1 - py / fh - body.center.y) * body.scale.y;
+    const py = h.crown + (h.neck - h.crown) * (fit.at + fit.dy);
+    const flip = dir.includes('left') ? -1 : 1; // nudges mirror with the facing
+    const dx = ((h.x + fit.dx * flip * h.w) / fw - 0.5) * body.scale.x, dy = (1 - py / fh - body.center.y) * body.scale.y;
+    this.cover = { cx: h.x + fit.dx * flip * h.w, half: (cell[6] * k) / upp / 2, y: py };
     if (this.mat.map !== pc.tex[dir]) { if (!this.mat.map) this.mat.needsUpdate = true; this.mat.map = pc.tex[dir]; }
     this.sprite.scale.set(HW, HH, 1);
     this.sprite.center.set(ax / cw - dx / HW, (1 - ay / ch) - dy / HH);
