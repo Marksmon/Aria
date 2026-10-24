@@ -401,7 +401,7 @@ export class Menus {
         : '<b>Job change: Blader</b><small>Sturdy sword fighters with more HP: Cleave, Heavy Strike, War Cry, Stand Firm and Ground Slash. Job Level starts again at 1.</small>';
       btns = `<button class="rbtn soft" data-act="close">Not yet</button><button class="rbtn" data-act="jobchange" data-id="${n.job}">Become a ${JOBS[n.job].name}</button>`;
     } else if (st.state === 'offer') {
-      const first = st.id === n.quests[0] || st.id === n.trial;
+      const first = st.id === n.quests[0] || st.id === n.trial?.[0];
       text = (first ? n.hello + ' ' : '') + st.q.intro;
       box = `<b>${esc(st.q.title)}</b><small>${esc(this.quests.goal(st.q))}</small>${this.reward(st.q.reward)}`;
       btns = `<button class="rbtn soft" data-act="close">Not now</button><button class="rbtn" data-act="accept" data-id="${st.id}">Accept</button>`;

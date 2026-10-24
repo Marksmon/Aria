@@ -114,8 +114,9 @@ give (`RATES` in `src/main.js`).
 
 Aria's own jobs and skills, kept modest. A **Trainee** puts points into **Basic Training**; the
 other Trainee skills come free with Job Levels. At Trainee Job 10 with Basic Training 9, a job
-trial opens in Steinborg: **Captain Ulfr** tests Bladers (defeat 10 Crabs in Fenstrand),
-**Archmage Vigdis** in Galdrheim tests Sorcerers (bring Glow Dust, Water Drops and Seeds). Pass, and
+trial opens: three short steps a Trainee of Base Level ~10 can do. **Captain Ulfr** in Steinborg
+tests Bladers (10 Slimes, 8 Sprouts, 5 Crabs); **Archmage Vigdis** in Galdrheim tests Sorcerers
+(Water Drops and Seeds, 6 Blue Slimes, then Glow Dust from the night Wisps). Pass, and
 they change your job. Elder Halvard sends ready Trainees on to the city.
 
 | Trainee | | |

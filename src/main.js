@@ -311,7 +311,7 @@ function gainExp(base, job) {
 }
 
 // ---------- quests ----------
-const questGiver = (id) => Object.keys(NPCS).find((n) => NPCS[n].quests.includes(id) || NPCS[n].trial === id);
+const questGiver = (id) => Object.keys(NPCS).find((n) => NPCS[n].quests.includes(id) || NPCS[n].trial?.includes(id));
 function questComplete(id) {
   audio.play('heart');
   menus.message(`${QUESTS[id].title} complete! Return to ${NPCS[questGiver(id)].name}.`);

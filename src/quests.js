@@ -4,8 +4,9 @@
 //   fetch - bring items (taken from bag + chest when you hand in)
 //   visit - set foot in every listed zone
 // map: where they stand (camp unless given). shop: they buy and sell (items.js SHOPS).
-// craft: they craft ('gear' or 'use' recipes). trial: a job trial quest for Trainees (Job Lv 10,
-// Basic Training 9) and the job it opens once it is done. heal: mends you for free. warp: the
+// craft: they craft ('gear' or 'use' recipes). trial: a job trial for Trainees (Job Lv 10,
+// Basic Training 9), a short series of quests one after another, and the job it opens once the last
+// is done. heal: mends you for free. warp: the
 // Ferryman (FARES). look: whose sprite they borrow until they have their own.
 import { ITEMS } from './items.js';
 import { MOB_DEFS } from './mobs.js';
@@ -67,7 +68,7 @@ export const NPCS = {
     quests: ['remedy'],
   },
   ulfr: {
-    name: 'Captain Ulfr', map: 'city', x: 36.4, z: 51.4, trial: 'blader_trial', job: 'swordman',
+    name: 'Captain Ulfr', map: 'city', x: 36.4, z: 51.4, trial: ['blader_trial', 'blader_trial2', 'blader_trial3'], job: 'swordman',
     hello: 'The Watch keeps the roads clear. Strong arms are always welcome.',
     later: (lv) => `Nothing for you yet. Report back at Base Level ${lv}.`,
     bye: 'The roads are safer for your blade. Well fought.',
@@ -109,7 +110,7 @@ export const NPCS = {
   },
   // ---------- Galdrheim, the city of sorcerers ----------
   vigdis: {
-    name: 'Archmage Vigdis', map: 'magic', x: 32, z: 20.8, look: 'saeunn', trial: 'sorcerer_trial', job: 'mage',
+    name: 'Archmage Vigdis', map: 'magic', x: 32, z: 20.8, look: 'saeunn', trial: ['sorcerer_trial', 'sorcerer_trial2', 'sorcerer_trial3'], job: 'mage',
     hello: 'Welcome to Galdrheim, child. Here we sing the world into shape; we call it galdr, the song-craft.',
     later: (lv) => `You are not ready for what I would ask. Come back at Base Level ${lv}.`,
     bye: 'Sing true, and the runes will answer.',
@@ -226,18 +227,42 @@ export const QUESTS = {
     thanks: 'A map of lights! It is beautiful. Keep these.',
     reward: { xp: 2000, perz: 800, items: { glow: 5, wander: 3 } },
   },
-  // ---------- the job trials ----------
+  // ---------- the job trials: three short steps each, easy for a Trainee of Base Level ~10 ----------
   blader_trial: {
-    title: "The Blader's Trial", kind: 'kill', mob: 'crab', n: 10, lv: 1,
-    intro: 'A Blader proves their sword first. Go to Fenstrand, west of the camp, and beat ten Crabs. Come back standing, and I will make you one of us.',
+    title: "Blader's Trial 1: Steel and Sweat", kind: 'kill', mob: 'slime', n: 10, lv: 1,
+    intro: 'A Blader proves their sword first. Three tasks, all small, all honest. First: go to Mosvangr and beat ten Slimes. Mind your footing.',
+    thanks: 'Ten Slimes and not one ran off with your sword. Good. Next task.',
+    reward: { xp: 120, perz: 100 },
+  },
+  blader_trial2: {
+    title: "Blader's Trial 2: Quick Feet", kind: 'kill', mob: 'sprout', n: 8, lv: 1,
+    intro: 'A sword is no use if you cannot catch what you swing at. Sprouts run from anyone with a blade. Corner eight of them.',
+    thanks: 'You can chase. Now let us see you stand your ground.',
+    reward: { xp: 150, perz: 150 },
+  },
+  blader_trial3: {
+    title: "Blader's Trial 3: The Fen Patrol", kind: 'kill', mob: 'crab', n: 5, lv: 1,
+    intro: 'Last task. The Crabs of Fenstrand, west of the camp, charge in a straight line and pinch hard. Beat five of them and come back standing.',
     thanks: 'Not a scratch you could not live with. You have a Blader\'s arm.',
-    reward: { xp: 300, perz: 500 },
+    reward: { xp: 250, perz: 300 },
   },
   sorcerer_trial: {
-    title: 'The Rune Trial', kind: 'fetch', items: { glow: 4, dew: 3, seed: 3 }, lv: 1,
-    intro: 'Magic gathers in small things. Bring me four Glow Dust, three Water Drops and three Seeds, and we will see whether the runes answer you.',
-    thanks: 'Light, water and life... and they hum in your hands. The runes have answered.',
-    reward: { xp: 300, perz: 500 },
+    title: 'Rune Trial 1: Water and Life', kind: 'fetch', items: { dew: 4, seed: 3 }, lv: 1,
+    intro: 'Magic gathers in small things. First bring me four Water Drops from the Blue Slimes of Fenstrand, and three Seeds from the Sprouts.',
+    thanks: 'Water and life. They hum in your hands; I can hear it from here. Next.',
+    reward: { xp: 120, perz: 100 },
+  },
+  sorcerer_trial2: {
+    title: 'Rune Trial 2: The Twice-Born', kind: 'kill', mob: 'blueSlime', n: 6, lv: 1,
+    intro: 'A sorcerer must keep a cool head when one foe becomes two. The Blue Slimes of Fenstrand split when struck. Beat six of them.',
+    thanks: 'You did not panic when they split. Most do. One more.',
+    reward: { xp: 150, perz: 150 },
+  },
+  sorcerer_trial3: {
+    title: 'Rune Trial 3: Light in the Dark', kind: 'fetch', items: { glow: 3 }, lv: 1,
+    intro: 'Last, light. At night, Wisps drift over the fields near the camp. Bring me three pinches of their Glow Dust.',
+    thanks: 'Light, water and life... and they all answer you. The runes have spoken.',
+    reward: { xp: 250, perz: 300 },
   },
   // ---------- Steinborg ----------
   pearls: {
@@ -310,8 +335,9 @@ export class Quests {
     const n = NPCS[npc];
     // a job trial comes first for a Trainee who is ready for it
     if (n.trial && prog.job === 'novice') {
-      const id = n.trial, q = QUESTS[id];
-      if (this.done.includes(id)) return { id, q, state: 'job' };
+      const series = n.trial, id = series.find((k) => !this.done.includes(k));
+      if (!id) return { id: series.at(-1), q: QUESTS[series.at(-1)], state: 'job' }; // every step done
+      const q = QUESTS[id];
       if (id in this.active) return { id, q, state: this.ready(id, inv) ? 'ready' : 'active' };
       if (prog.jobLv >= 10 && skillLv(prog, 'basics') >= 9) return { id, q, state: 'offer' };
     }
