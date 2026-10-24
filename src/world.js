@@ -29,6 +29,10 @@ export const ZONE_NAMES = {
   deep: 'Svartskog',    // "black wood"
   heath: 'Askheid',     // "ash heath"
   magic: 'Galdrheim',   // "spell-home": the city of sorcerers
+  stones: 'Grjotvangr', // "stone-field": the kobolds' hills
+  coalpit: 'Kolgrof',   // "coal pit": the Kobold King's quarry
+  burnt: 'Brennholt',   // "burnt wood": goblin country
+  serpent: 'Ormholt',   // "serpent wood": the Goblin King's wood
 };
 
 const CAMP_R = 17;   // the camp clearing's walkable radius
@@ -47,9 +51,16 @@ export const MAPS = {
   hollow: { portals: [{ to: 'grove', ...W }, { to: 'birch', ...N }, { to: 'deep', ...E }, { to: 'ridge', ...S }], lift: [-0.15, 0] },
   // the Ember Jarl's lair: an open bowl in the south of Glodberg (see mobs.js)
   ridge:  { portals: [{ to: 'hollow', ...N }, { to: 'heath', ...E }], clear: { x: 32, z: 48, r: 6 }, lift: [1.3, 1.8] },
-  coast:  { portals: [{ to: 'fen', ...E }], lake: { x: 20, z: 31, rx: 11, rz: 17 }, clear: { x: 44, z: 46, r: 5 } },
-  deep:   { portals: [{ to: 'hollow', ...W }, { to: 'heath', ...S }], lift: [-0.1, 0.5], clear: { x: 40, z: 40, r: 5 } },
-  heath:  { portals: [{ to: 'ridge', ...W }, { to: 'deep', ...N }], lift: [0.8, 1.2], clear: { x: 40, z: 44, r: 5 } },
+  coast:  { portals: [{ to: 'fen', ...E }, { to: 'stones', ...S }], lake: { x: 20, z: 31, rx: 11, rz: 17 }, clear: { x: 44, z: 46, r: 5 } },
+  deep:   { portals: [{ to: 'hollow', ...W }, { to: 'heath', ...S }, { to: 'serpent', ...E }], lift: [-0.1, 0.5], clear: { x: 40, z: 40, r: 5 } },
+  heath:  { portals: [{ to: 'ridge', ...W }, { to: 'deep', ...N }, { to: 'burnt', ...E }], lift: [0.8, 1.2], clear: { x: 40, z: 44, r: 5 } },
+  // the kobolds' hills and the Kobold King's quarry (his court is the open ground in the south),
+  // goblin country and the Goblin King's wood (his clearing is in the north). camps: [x, z] of
+  // a tent with crates and barrels round a log seat.
+  stones:  { portals: [{ to: 'coast', ...N }, { to: 'coalpit', ...S }], lift: [0.6, 1.4], camps: [[18, 20], [46, 44], [16, 46], [46, 18]] },
+  coalpit: { portals: [{ to: 'stones', ...N }], lift: [0.4, 2.0], clear: { x: 32, z: 46, r: 7 }, camps: [[18, 24], [46, 24], [22, 44], [42, 42]] },
+  burnt:   { portals: [{ to: 'heath', ...W }, { to: 'serpent', ...N }], lift: [0, 0.4], camps: [[20, 20], [46, 46], [20, 46]] },
+  serpent: { portals: [{ to: 'burnt', ...S }, { to: 'deep', ...W }], lift: [-0.1, 0.5], clear: { x: 32, z: 16, r: 7 }, camps: [[20, 20], [44, 40], [20, 44], [46, 18]] },
 };
 const SEG = 128; // terrain vertices per side - 1 (0.5 unit spacing)
 
@@ -65,6 +76,10 @@ const GROUND = {
   coast: ['#c2b07e', '#d4c494'],
   deep: ['#26382a', '#30402f'],
   heath: ['#6e665e', '#857a6c'],
+  stones: ['#9a8a62', '#b4a476'],
+  coalpit: ['#4c4642', '#625a52'],
+  burnt: ['#4a4036', '#62533f'],
+  serpent: ['#2c4230', '#3a5236'],
   dirt: '#b49a6c',
   sand: '#c6b483',
 };
@@ -80,8 +95,12 @@ const TABLE = {
   coast: [['grass_dry', 30], ['rock_grey', 9], ['reeds', 14], ['shrub_dry', 14], ['rock_small', 10], ['tree_willow', 3]],
   deep: [['tree_dark', 42], ['mushroom_big', 14], ['mushrooms', 24], ['grass_dark', 20], ['tree_dead', 4]],
   heath: [['tree_dead', 16], ['rock', 14], ['rock_small', 22], ['shrub_dry', 22], ['grass_dry', 26]],
+  stones: [['rock', 18], ['rock_grey', 14], ['rock_small', 22], ['shrub_dry', 16], ['grass_dry', 30], ['tree_dead', 5]],
+  coalpit: [['rock_grey', 24], ['rock', 8], ['rock_small', 28], ['tree_dead', 14], ['grass_dark', 12], ['shrub_dry', 8]],
+  burnt: [['tree_dead', 34], ['stump', 16], ['rock_small', 14], ['grass_dry', 18], ['shrub_dry', 10], ['rock_grey', 5]],
+  serpent: [['tree_dark', 36], ['mushroom_big', 10], ['mushrooms', 18], ['grass_dark', 22], ['stump', 6], ['tree_dead', 6]],
 };
-const BORDER = { grove: 'tree_grove', hollow: 'tree_dark', ridge: 'rock', fen: 'tree_willow', camp: 'tree_grove', city: 'tree_grove', magic: 'tree_birch', birch: 'tree_birch', coast: 'rock_grey', deep: 'tree_dark', heath: 'tree_dead' };
+const BORDER = { grove: 'tree_grove', hollow: 'tree_dark', ridge: 'rock', fen: 'tree_willow', camp: 'tree_grove', city: 'tree_grove', magic: 'tree_birch', birch: 'tree_birch', coast: 'rock_grey', deep: 'tree_dark', heath: 'tree_dead', stones: 'rock', coalpit: 'rock_grey', burnt: 'tree_dead', serpent: 'tree_dark' };
 // inside the city walls (and a step beyond them)
 const inWalls = (x, z, m = 0) => x > WALL.x0 - m && x < WALL.x1 + m && z > WALL.z0 - m && z < WALL.z1 + m;
 
@@ -230,6 +249,15 @@ function buildMap(id, scene, lib, shared) {
       addBox: (x0, z0, x1, z1, kind) => boxes.push({ x0, z0, x1, z1, kind }),
       addSolid: (x, z, coll) => solids.push({ x, z, coll }),
     }, def.city);
+  }
+
+  // kobold and goblin camps: a tent, crates and barrels round a log seat
+  for (const [x, z] of def.camps || []) {
+    place('tent', x, z, true);
+    place('crate', x + 2.4, z + 0.9, true);
+    place('barrel', x + 2.6, z - 0.9, true);
+    place('barrel', x - 2.4, z + 1.3, true);
+    place('log', x + 0.3, z + 2.9, true);
   }
 
   // treeline framing the map (camp: a ring of forest around the clearing; city: outside the walls)

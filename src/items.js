@@ -29,6 +29,13 @@ export const ITEMS = {
   gloom_heart: { type: 'misc', rare: true, name: 'Mushroom Heart', desc: 'The heart of the Giant Mushroom. It pulses slowly, like something asleep. Robes woven round it drink the light.', from: 'the Giant Mushroom (30%)' },
   cinder_core: { type: 'misc', rare: true, name: 'Fire Core', desc: 'A coal from the Giant Beetle that has burnt for a hundred years. Swords quenched in it never cool.', from: 'the Giant Beetle (30%)' },
   jarl_horn:   { type: 'misc', rare: true, name: "Giant Horn", desc: 'A black horn from the Fire Giant, cracked with orange light. Only the greatest weapons are worth it.', from: 'the Fire Giant (25%)' },
+  // the kobold and goblin lands, and the ores Holger refines gear with
+  kobold_fur:   { type: 'misc', name: 'Kobold Fur', desc: 'A tuft of coarse brown fur from a Kobold. It smells of smoke and wet dog. Tanners in Steinborg buy it by the sack.', from: 'Kobolds' },
+  goblin_tooth: { type: 'misc', name: 'Goblin Tooth', desc: 'A yellow Goblin tooth, filed sharp. Goblins wear strings of them; nobody likes to ask whose.', from: 'Goblins' },
+  iron_ore:     { type: 'misc', name: 'Iron Ore', desc: 'A lump of rusty iron ore. Holger uses it to refine Lv 1 weapons.', from: 'Kobolds, and Holger sells it' },
+  steel_ore:    { type: 'misc', name: 'Steel Ore', desc: 'Dark ore with a blue shine. Holger uses it to refine Lv 2 weapons.', from: 'Kobolds and Goblins, and Holger sells it' },
+  hard_ore:     { type: 'misc', name: 'Hard Ore', desc: 'Ore so hard it rings when you tap it. Holger refines Lv 3 and Lv 4 weapons with it, and Seyla wants it for her enchanting.', from: 'Kobolds, Goblins and their kings (1-2%)' },
+  armor_ore:    { type: 'misc', name: 'Armor Ore', desc: 'A heavy grey ore that never seems to scratch. Holger refines armor, shields, capes, boots and head gear with it.', from: 'Kobolds, Goblins and their kings (1-2%)' },
   ember_heart: { type: 'misc', name: 'Fire Heart', desc: 'The Fire Giant\'s smouldering heart, still beating: proof that you were the one who brought it down.', from: 'the Fire Giant (MVP reward)' },
 
   // usables, like Ragnarok's potions and wings. use: hp/sp [min, max], warp (random | camp),
@@ -91,6 +98,12 @@ export const ITEMS = {
   gloom_hood:   { type: 'equip', slot: 'garment', rare: true, name: 'Dark Hood', def: 2, flee: 3, stats: { knl: 1 }, icon: 'r_hood', desc: 'Woven from violet spore threads. Things in the dark see you less clearly.', from: 'Dark Mushrooms (0.25%)' },
   cinder_mail:  { type: 'equip', slot: 'armor', jobs: ['swordman'], rare: true, name: 'Fire Armor', def: 8, mhp: 80, icon: 'armor_cinder', desc: 'Black Fire Beetle plates with a warm glow inside. It never lets the cold in.', from: 'Fire Beetles (0.2%)' },
   ember_charm:  { type: 'equip', slot: 'acc', rare: true, name: 'Fire Charm', stats: { pow: 1, knl: 1 }, mhp: 30, icon: 'r_ember', desc: 'A Fire Wisp curled up asleep in a glass bead. Warm and strangely cheerful.', from: 'Fire Wisps (0.3%)' },
+  kobold_ring:  { type: 'equip', slot: 'acc', rare: true, name: 'King\'s Ring', stats: { pow: 2, end: 1 }, mhp: 50, icon: 'r_kobold', desc: 'A heavy gold ring from the Kobold King\'s paw, much too big for a person. It feels like a fist.', from: 'the Kobold King (5%)' },
+  goblin_charm: { type: 'equip', slot: 'acc', rare: true, name: 'Tooth Necklace', stats: { qkn: 2, fns: 1 }, hit: 5, icon: 'r_goblin', desc: 'The Goblin King\'s necklace of teeth. It rattles when you move, and you move faster.', from: 'the Goblin King (5%)' },
+  // cards (Ragnarok's monster cards): pressed into a slotted piece of gear for good, see Seyla
+  // and the Insert button. card: where it goes and what it adds (mhpRate: Max HP %)
+  kobold_card:  { type: 'misc', rare: true, name: 'Kobold King Card', icon: 'card_kobold', card: { on: 'armor', mhpRate: 15, stats: { end: 3 } }, desc: 'The Kobold King on a gilded card. Pressed into armor with a slot: Max HP +15%, END +3.', from: 'the Kobold King (1%)' },
+  goblin_card:  { type: 'misc', rare: true, name: 'Goblin King Card', icon: 'card_goblin', card: { on: 'weapon', atk: 25, stats: { pow: 3 } }, desc: 'The Goblin King on a gilded card. Pressed into a weapon with a slot: ATK +25, POW +3.', from: 'the Goblin King (1%)' },
   shiny_gel:    { type: 'misc', rare: true, name: 'Shiny Gel', desc: 'Slime gel that shimmers with every colour, found once in a hundred slimes. Collectors and ring-makers prize it.', from: 'any slime (1%)' },
 
   // headgear: worn on the head and seen on your character (see headgear.js): Head pieces on the
@@ -124,6 +137,8 @@ export const ITEMS = {
 // Prices in perz (Aria's coin, like Ragnarok's zeny): what a shop asks; any shop buys for half. 0 = can't be sold.
 export const PRICES = {
   gel: 6, dew: 10, seed: 8, leaf: 8, shell: 24, spore: 40, stone: 60, glow: 50, ember_heart: 4000,
+  kobold_fur: 260, goblin_tooth: 380, iron_ore: 50, steel_ore: 200, hard_ore: 4000, armor_ore: 4000,
+  kobold_ring: 20000, goblin_charm: 24000, kobold_card: 40000, goblin_card: 40000,
   thorn: 70, salt: 90, pearl: 600, gloom: 150, shade: 180, cinder: 240, ember_dust: 220, shiny_gel: 1200,
   potion: 50, potion2: 180, potion3: 550, tonic: 300, berry: 20, crableg: 60, herb: 30, quick: 600, wander: 120, homeward: 300,
   twig_sword: 50, stone_blade: 500, ember_edge: 2400, iron_sword: 3800, oak_staff: 400, rune_staff: 4200, emberbrand: 40000,
@@ -288,6 +303,25 @@ function featherIcon(g, vane, rib) {
   shape(g, () => { g.moveTo(14, 54); g.quadraticCurveTo(12, 22, 48, 8); g.quadraticCurveTo(52, 34, 20, 52); g.closePath(); }, vane);
   g.beginPath(); g.moveTo(10, 58); g.quadraticCurveTo(26, 34, 46, 12); g.strokeStyle = rib; g.lineWidth = 3; g.stroke();
   for (const t of [0.35, 0.55, 0.75]) { g.beginPath(); g.moveTo(14 + t * 30, 50 - t * 38); g.lineTo(22 + t * 30, 44 - t * 34); g.strokeStyle = rib; g.lineWidth = 1.5; g.stroke(); }
+}
+
+// a lump of ore with glints of metal
+function oreIcon(g, rock, glint) {
+  shape(g, () => { g.moveTo(10, 44); g.lineTo(16, 22); g.lineTo(32, 12); g.lineTo(50, 18); g.lineTo(56, 38); g.lineTo(44, 54); g.lineTo(20, 54); g.closePath(); }, rock);
+  for (const [x, y, r] of [[26, 26, 5], [40, 30, 4], [30, 42, 4.5], [46, 44, 3]]) {
+    g.beginPath(); g.moveTo(x, y - r); g.lineTo(x + r, y); g.lineTo(x, y + r); g.lineTo(x - r, y); g.closePath(); g.fillStyle = glint; g.fill();
+  }
+  gloss(g, 24, 20, 4, 2.5);
+}
+
+// a monster card: a gilded frame round a little portrait (a crowned head in the race's colour)
+function cardIcon(g, face, crown) {
+  shape(g, () => g.roundRect(14, 6, 36, 52, 4), '#f4ead0');
+  shape(g, () => g.roundRect(18, 10, 28, 30, 2), '#7aa0c8', 2);
+  shape(g, () => g.arc(32, 30, 8, 0, Math.PI * 2), face, 2);
+  shape(g, () => { g.moveTo(24, 22); g.lineTo(24, 14); g.lineTo(28, 18); g.lineTo(32, 12); g.lineTo(36, 18); g.lineTo(40, 14); g.lineTo(40, 22); g.closePath(); }, crown, 2);
+  for (const y of [46, 51]) { g.beginPath(); g.moveTo(20, y); g.lineTo(44, y); g.strokeStyle = '#b8a070'; g.lineWidth = 2; g.stroke(); }
+  g.strokeStyle = '#e3b341'; g.lineWidth = 2; g.strokeRect(16.5, 8.5, 31, 47);
 }
 
 // skill icons: a coloured disc with a white symbol
@@ -473,6 +507,34 @@ const PAINT = {
   r_twin: (g) => { charmIcon(g, '#7fd05a', '#3a8ce8'); },
   coin: (g) => { shape(g, () => g.arc(32, 32, 20, 0, Math.PI * 2), '#e3b341'); shape(g, () => g.arc(32, 32, 13, 0, Math.PI * 2), '#f2cf3a', 2); gloss(g, 26, 26, 4, 3); },
   r_tide: (g) => charmIcon(g, '#3a8ce8', '#9fd4ff'),
+  r_kobold: (g) => {
+    g.beginPath(); g.ellipse(32, 38, 18, 14, 0, 0, Math.PI * 2); g.strokeStyle = OUT; g.lineWidth = 11; g.stroke();
+    g.strokeStyle = '#f2c040'; g.lineWidth = 7; g.stroke();
+    shape(g, () => { g.moveTo(22, 26); g.lineTo(22, 12); g.lineTo(27, 18); g.lineTo(32, 10); g.lineTo(37, 18); g.lineTo(42, 12); g.lineTo(42, 26); g.closePath(); }, '#f2c040', 2.5);
+    shape(g, () => g.arc(32, 21, 3, 0, Math.PI * 2), '#d02a3a', 2);
+  },
+  r_goblin: (g) => {
+    g.beginPath(); g.moveTo(10, 12); g.quadraticCurveTo(32, 46, 54, 12); g.strokeStyle = OUT; g.lineWidth = 5; g.stroke(); g.strokeStyle = '#8a5a33'; g.lineWidth = 2.5; g.stroke();
+    for (let i = 0; i < 7; i++) {
+      const t = (i + 0.5) / 7, x = 10 + 44 * t, y = 12 + 34 * 4 * t * (1 - t) * 0.5 + 2;
+      shape(g, () => { g.moveTo(x - 3.5, y); g.lineTo(x + 3.5, y); g.lineTo(x, y + 12 + (i === 3 ? 6 : 0)); g.closePath(); }, '#efe6cc', 2);
+    }
+  },
+  card_kobold: (g) => cardIcon(g, '#8a5a32', '#f2c040'),
+  card_goblin: (g) => cardIcon(g, '#5f9a45', '#efe6cc'),
+  kobold_fur: (g) => {
+    for (const [x, y, a] of [[24, 40, -0.5], [32, 36, 0], [40, 40, 0.5]]) shape(g, () => g.ellipse(x, y, 7, 18, a, 0, Math.PI * 2), '#9a6a3c', 3);
+    for (const [x, y] of [[26, 30], [34, 26]]) { g.beginPath(); g.moveTo(x, y); g.lineTo(x + 3, y + 14); g.strokeStyle = '#c49260'; g.lineWidth = 2; g.stroke(); }
+  },
+  goblin_tooth: (g) => {
+    shape(g, () => { g.moveTo(20, 14); g.quadraticCurveTo(32, 8, 44, 14); g.quadraticCurveTo(44, 30, 36, 44); g.quadraticCurveTo(30, 54, 24, 58); g.quadraticCurveTo(26, 40, 20, 14); }, '#efe2b8');
+    g.beginPath(); g.moveTo(22, 18); g.quadraticCurveTo(32, 14, 42, 18); g.strokeStyle = '#b8a070'; g.lineWidth = 2.5; g.stroke();
+    gloss(g, 30, 24, 3, 6);
+  },
+  iron_ore: (g) => oreIcon(g, '#8a7466', '#c86a3a'),
+  steel_ore: (g) => oreIcon(g, '#5a6070', '#7ab0e8'),
+  hard_ore: (g) => oreIcon(g, '#4a4a58', '#e8eef8'),
+  armor_ore: (g) => oreIcon(g, '#6a6a62', '#c8c8b8'),
   r_seed: (g) => {
     g.beginPath(); g.ellipse(32, 36, 20, 14, 0, 0, Math.PI * 2); g.strokeStyle = OUT; g.lineWidth = 9; g.stroke();
     g.strokeStyle = '#5fae45'; g.lineWidth = 5; g.stroke();

@@ -36,11 +36,34 @@ export const MOB_DEFS = {
   gloomMother: { name: 'Giant Mushroom', ai: 'boss', art: 'mushling', el: 'shadow', tint: '#9a7cff', boss: true, lv: 40, hp: 14000, atk: [122, 158], def: 14, vit: 40, agi: 28, dex: 60, exp: [17000, 11900], adelay: 1700, speed: 1.15, aggro: 5.5, chase: 12, reach: 1.4, w: 2.2, r: 0.8, heavy: true, mdef: 30, respawn: 420, drops: [['gloom_heart', 1, 1, 0.3], ['gloom', 2, 4, 1], ['potion3', 1, 2, 0.4], ['gloom_staff', 1, 1, 0.02], ['gloom_hood', 1, 1, 0.05]] },
   cinderLord: { name: 'Giant Beetle', ai: 'boss', art: 'beetle', el: 'fire', tint: '#ff7a4a', boss: true, lv: 48, hp: 16000, atk: [125, 162], def: 22, vit: 48, agi: 32, dex: 70, exp: [28000, 19600], adelay: 1600, speed: 1.15, aggro: 5.5, chase: 12, reach: 1.5, w: 2.4, r: 0.9, heavy: true, respawn: 480, drops: [['cinder_core', 1, 1, 0.3], ['cinder', 2, 4, 1], ['potion3', 1, 2, 0.5], ['cinder_greaves', 1, 1, 0.03], ['cinder_mail', 1, 1, 0.04]] },
   // MVP boss of Glodberg: one at a time, back 15 minutes after it falls. Its slayer gets the MVP
-  // reward on top of the drops. Stomps the ground around it every few seconds (stomp: x its ATK).
+  // reward on top of the drops. Stomps the ground around it every few seconds (stomp: x its ATK),
+  // and calls 2 Fire Wisps and 3 Fire Beetles below 60% HP and again below 30% (summon).
   // Made for a Base 50 character in the best gear, alone: about 3 minutes and a bag of potions.
   jarl: { name: 'Fire Giant', ai: 'boss', art: 'jarl', el: 'fire', lv: 60, hp: 24000, atk: [150, 200], def: 20, vit: 40, agi: 30, dex: 70, mdef: 40, exp: [60000, 42000], adelay: 1600, speed: 1.35, aggro: 7, chase: 25, reach: 1.9, w: 3.1, r: 1.15, heavy: true,
-    mvp: true, respawn: 900, lair: { x: 32, z: 48 }, mvpExp: 30000, stomp: 1.8, mvpDrops: [['potion3', 3], ['ember_heart', 1]],
+    mvp: true, respawn: 900, lair: { x: 32, z: 48 }, mvpExp: 30000, stomp: 1.8,
+    summon: ['emberWisp', 'emberWisp', 'cinderBeetle', 'cinderBeetle', 'cinderBeetle'], summonText: 'The Fire Giant roars, and the fire answers!', mvpDrops: [['potion3', 3], ['ember_heart', 1]],
+    wake: 'The ground trembles… the Fire Giant has woken in Glodberg!',
     drops: [['potion2', 2, 3, 0.8], ['potion3', 1, 2, 0.5], ['stone', 4, 6, 1], ['jarl_horn', 1, 1, 0.25], ['ember_crown', 1, 1, 0.05], ['jarl_mantle', 1, 1, 0.03], ['jarl_staff', 1, 1, 0.02], ['emberbrand', 1, 1, 0.01]] },
+  // ---------- kobolds (Grjotvangr, Kolgrof) and goblins (Brennholt, Ormholt) ----------
+  // Painted in code (painted.js). Unlike the valley's monsters they attack on sight.
+  // archer: keeps `range` away and shoots. assassin: quick, darts in (a dash) and strikes twice
+  // `double` of the time. Hard Ore and Armor Ore (for Holger's refining) drop from them.
+  koboldWarrior: { name: 'Kobold', ai: 'tank', art: 'koboldWarrior', el: 'earth', lv: 28, hp: 1350, atk: [80, 100], def: 15, vit: 28, agi: 22, dex: 44, exp: [290, 200], adelay: 1400, speed: 1.6, aggro: 5, chase: 8, reach: 0.8, w: 0.7, r: 0.32, drops: [['kobold_fur', 1, 1, 0.55], ['iron_ore', 1, 1, 0.25], ['potion2', 1, 1, 0.05], ['armor_ore', 1, 1, 0.012], ['hard_ore', 1, 1, 0.006]] },
+  koboldArcher: { name: 'Kobold Archer', ai: 'archer', art: 'koboldArcher', el: 'earth', lv: 30, hp: 1100, atk: [76, 96], def: 8, vit: 20, agi: 30, dex: 62, exp: [320, 225], adelay: 1800, speed: 1.5, aggro: 6.5, chase: 8, range: 5, reach: 0.8, w: 0.7, r: 0.32, drops: [['kobold_fur', 1, 1, 0.5], ['steel_ore', 1, 1, 0.08], ['wander', 1, 1, 0.08], ['hard_ore', 1, 1, 0.01]] },
+  koboldAssassin: { name: 'Kobold Assassin', ai: 'assassin', art: 'koboldAssassin', el: 'earth', lv: 33, hp: 1150, atk: [100, 128], def: 6, vit: 18, agi: 58, dex: 62, exp: [400, 280], adelay: 1100, speed: 2.6, aggro: 5.5, chase: 9, reach: 0.75, double: 0.25, w: 0.7, r: 0.3, drops: [['kobold_fur', 1, 2, 0.5], ['steel_ore', 1, 1, 0.1], ['quick', 1, 1, 0.03], ['hard_ore', 1, 1, 0.015], ['armor_ore', 1, 1, 0.01]] },
+  goblinWarrior: { name: 'Goblin', ai: 'tank', art: 'goblinWarrior', el: 'wind', lv: 38, hp: 2000, atk: [118, 148], def: 18, vit: 38, agi: 30, dex: 56, exp: [580, 405], adelay: 1400, speed: 1.7, aggro: 5.5, chase: 9, reach: 0.8, w: 0.7, r: 0.32, drops: [['goblin_tooth', 1, 1, 0.55], ['steel_ore', 1, 1, 0.12], ['potion2', 1, 1, 0.08], ['armor_ore', 1, 1, 0.02], ['hard_ore', 1, 1, 0.01]] },
+  goblinArcher: { name: 'Goblin Archer', ai: 'archer', art: 'goblinArcher', el: 'wind', lv: 41, hp: 1700, atk: [120, 150], def: 10, vit: 28, agi: 40, dex: 82, exp: [700, 490], adelay: 1800, speed: 1.6, aggro: 7, chase: 9, range: 5.5, reach: 0.8, w: 0.7, r: 0.32, drops: [['goblin_tooth', 1, 1, 0.5], ['potion3', 1, 1, 0.04], ['wander', 1, 1, 0.1], ['hard_ore', 1, 1, 0.02]] },
+  goblinAssassin: { name: 'Goblin Assassin', ai: 'assassin', art: 'goblinAssassin', el: 'wind', lv: 44, hp: 1800, atk: [140, 178], def: 8, vit: 26, agi: 75, dex: 82, exp: [850, 595], adelay: 1100, speed: 2.7, aggro: 6, chase: 10, reach: 0.75, double: 0.25, w: 0.7, r: 0.3, drops: [['goblin_tooth', 1, 2, 0.5], ['quick', 1, 1, 0.04], ['potion3', 1, 1, 0.04], ['hard_ore', 1, 1, 0.025], ['armor_ore', 1, 1, 0.02]] },
+  // the kings: MVPs like the Fire Giant, a step below it. They stomp, and call two guards when
+  // they first fall below 60% HP and again below 30% (summon).
+  koboldKing: { name: 'Kobold King', ai: 'boss', art: 'koboldKing', el: 'earth', lv: 50, hp: 18000, atk: [120, 160], def: 22, vit: 45, agi: 30, dex: 70, mdef: 25, exp: [36000, 25200], adelay: 1500, speed: 1.4, aggro: 7, chase: 25, reach: 1.4, w: 1.3, r: 0.6, heavy: true,
+    mvp: true, respawn: 1200, lair: { x: 32, z: 46 }, mvpExp: 18000, stomp: 1.6, summon: ['koboldWarrior', 'koboldArcher'], mvpDrops: [['potion3', 3], ['hard_ore', 2]],
+    wake: 'War drums in the quarry… the Kobold King holds court in Kolgrof!',
+    drops: [['potion3', 1, 2, 0.5], ['kobold_fur', 4, 6, 1], ['hard_ore', 1, 2, 0.4], ['armor_ore', 1, 2, 0.4], ['kobold_ring', 1, 1, 0.05], ['kobold_card', 1, 1, 0.01]] },
+  goblinKing: { name: 'Goblin King', ai: 'boss', art: 'goblinKing', el: 'wind', lv: 55, hp: 21000, atk: [138, 180], def: 22, vit: 48, agi: 34, dex: 74, mdef: 30, exp: [48000, 33600], adelay: 1500, speed: 1.45, aggro: 7, chase: 25, reach: 1.4, w: 1.3, r: 0.6, heavy: true,
+    mvp: true, respawn: 1800, lair: { x: 32, z: 16 }, mvpExp: 24000, stomp: 1.7, summon: ['goblinWarrior', 'goblinAssassin'], mvpDrops: [['potion3', 3], ['hard_ore', 3]],
+    wake: 'Horns in the dark wood… the Goblin King rides out in Ormholt!',
+    drops: [['potion3', 1, 2, 0.6], ['goblin_tooth', 4, 6, 1], ['hard_ore', 1, 3, 0.45], ['armor_ore', 1, 3, 0.45], ['goblin_charm', 1, 1, 0.05], ['goblin_card', 1, 1, 0.01]] },
 };
 
 const RESPAWN = 60;
@@ -92,6 +115,7 @@ class Mob {
     this.walked = 0; // distance walked, drives the walk cycle
     this.provokeT = 0; // taunted: it comes for you
     this.stunT = 0;
+    this.calls = 0; // guards called (kings)
     this.sprite.visible = this.shadow.visible = true;
     const upp = d.w / this.art.body[0]; // def.w is the body width
     this.sprite.scale.set(this.art.fw * upp, this.art.fh * upp, 1);
@@ -135,9 +159,11 @@ class Mob {
     this.knock.x = fx * k;
     this.knock.z = fz * k;
     if (this.def.ai === 'skittish') this.angry = this.def.angry;
-    else if (this.def.passive) this.angry = Math.max(this.angry, 30); // hit a passive monster and it fights back for a while
+    else if (this.def.passive || this.def.ai === 'archer') this.angry = Math.max(this.angry, 30); // hit a passive monster and it fights back for a while
     if (this.def.boss) this.knock.x = this.knock.z = 0; // bosses stand their ground
-    if (this.def.ai === 'hopper' || this.def.ai === 'tank' || this.def.ai === 'puffer' || this.def.ai === 'boss') {
+    // a king calls his guards when he first falls below 60% HP, and again below 30%
+    if (this.def.summon && this.calls < 2 && this.hp > 0 && this.hp / this.def.hp < (this.calls ? 0.3 : 0.6)) { this.calls++; this.mgr.summon(this); }
+    if (['hopper', 'tank', 'puffer', 'boss', 'assassin'].includes(this.def.ai)) {
       this.state = 'chase';
       this.chaseT = Math.max(this.chaseT, this.def.chase || 4);
       this.tired = 0;
@@ -162,6 +188,17 @@ class Mob {
       const k = Math.exp(-9 * dt);
       this.knock.x *= k;
       this.knock.z *= k;
+    }
+
+    // a summoned guard keeps by its leader, and fights when the leader fights
+    const lead = this.leader;
+    if (lead) {
+      this.home = { x: lead.x, z: lead.z };
+      if (lead.state === 'chase') {
+        this.angry = Math.max(this.angry, 1);
+        if (this.state !== 'chase') { this.state = 'chase'; this.tired = 0; }
+        this.chaseT = Math.max(this.chaseT, 1);
+      } else if (this.state === 'chase') { this.state = 'wander'; this.angry = 0; this.target = null; }
     }
 
     const x0 = this.x, z0 = this.z; // after knockback, so being pushed doesn't move the legs
@@ -194,6 +231,10 @@ class Mob {
           const res = mobAttack(d, p.ps);
           if (res.miss) this.mgr.emit('miss', this, res);
           else p.takeDamage(res.dmg, this.x, this.z);
+          if (d.double && Math.random() < d.double && p.canBeHit()) { // an assassin's second, quicker cut
+            const again = mobAttack(d, p.ps);
+            if (!again.miss) { p.takeDamage(again.dmg, this.x, this.z); this.mgr.emit('double', this); }
+          }
           this.mgr.emit('attack', this);
           this.atkAnim = ATTACK_ANIM;
           if (dist > 0.01) this.heading = { x: dx / dist, z: dz / dist };
@@ -233,6 +274,44 @@ class Mob {
                 this.mgr.emit('windup', this);
               }
             }
+          }
+        } else wander();
+        break;
+      }
+      case 'archer': {
+        // keeps its distance and shoots; backs off when you come close
+        if (available && (hostile && dist < aggro || this.angry > 0) && dist < aggro * 2) {
+          if (dist > d.range) moving = this.moveToward(p.x, p.z, speed, dt) > 0;
+          else if (dist < 2.2) moving = this.moveToward(this.x - dx, this.z - dz, speed * 0.8, dt) > 0;
+          if (dist > 0.01) this.heading = { x: dx / dist, z: dz / dist }; // it keeps facing you as it steps back
+          if (dist <= d.range && this.atkCd <= 0) {
+            this.atkCd = d.adelay / 1000;
+            this.atkAnim = ATTACK_ANIM;
+            this.mgr.emit('shoot', this);
+          }
+        } else wander();
+        break;
+      }
+      case 'assassin': {
+        // a quick chaser that darts the last few steps
+        if (this.state === 'wander' && available && hostile && this.tired <= 0 && dist < aggro) { this.state = 'chase'; this.chaseT = d.chase; }
+        if (this.state === 'chase') {
+          this.chaseT -= dt;
+          if (this.chaseT <= 0 || !available || dist > aggro * 2.2) { this.state = 'wander'; this.tired = 3; }
+          else if (this.special > 0) { // the dash
+            this.special -= dt;
+            moving = this.tryMove(this.heading.x * 7 * dt, this.heading.z * 7 * dt);
+            if (!moving || dist < d.reach) this.special = 0;
+            contact();
+          } else {
+            if (dist > d.reach * 0.7) moving = this.moveToward(p.x, p.z, speed, dt) > 0;
+            if (dist > 1.8 && dist < 4.5 && this.specialCd <= 0) {
+              this.heading = { x: dx / dist, z: dz / dist };
+              this.special = 0.35;
+              this.specialCd = 3.5 + Math.random() * 1.5;
+              this.mgr.emit('dash', this);
+            }
+            contact();
           }
         } else wander();
         break;
@@ -347,7 +426,7 @@ export class MobManager {
     this.handlers = {};
     this.night = false;
     this.mvp = null;  // { type, x, z } on a map with an MVP
-    this.mvpAt = 0;   // when the MVP may next appear (ms since 1970)
+    this.mvpAt = {};  // per MVP: when it may next appear (ms since 1970)
     this.cam = { fx: 0, fz: -1, rx: 1, rz: 0 }; // camera basis, set by the game each frame
     const sg = new THREE.PlaneGeometry(1, 0.6);
     sg.rotateX(-Math.PI / 2);
@@ -393,6 +472,23 @@ export class MobManager {
     }
   }
 
+  // a king's guards: they come running, and don't come back once beaten
+  summon(boss) {
+    boss.mgr.emit('summon', boss);
+    const list = boss.def.summon, a0 = Math.random() * Math.PI * 2, r = 1.2 + boss.def.r;
+    list.forEach((type, i) => {
+      const a = a0 + (i / list.length) * Math.PI * 2;
+      const c = this.add(type, boss.x + Math.cos(a) * r, boss.z + Math.sin(a) * r);
+      if (!this.world.walkable(c.x, c.z)) { c.x = boss.x; c.z = boss.z; }
+      c.temp = true;
+      c.leader = boss; // it follows the boss and fights alongside it (see update)
+      c.home = { x: boss.x, z: boss.z };
+      c.state = 'chase';
+      c.chaseT = 15;
+      c.angry = 30;
+    });
+  }
+
   add(type, x, z) {
     const m = new Mob(this, type, x, z);
     this.list.push(m);
@@ -426,9 +522,14 @@ export class MobManager {
         c.atkCd = 0.6;
       }
     }
-    if (m.def.noRespawn) { this.remove(m); return; }
+    // a leader's guards go with it, as in Ragnarok (no EXP, no drops)
+    for (const s of this.list.filter((o) => o.leader === m && o.alive)) {
+      this.fx.puff(s.x, this.world.heightAt(s.x, s.z) + 0.3, s.z, s.def.w);
+      this.remove(s);
+    }
+    if (m.def.noRespawn || m.temp) { this.remove(m); return; }
     if (m.def.mvp) { // gone until its respawn time comes round (the game saves mvpAt)
-      this.mvpAt = Date.now() + m.def.respawn * 1000;
+      this.mvpAt[m.type] = Date.now() + m.def.respawn * 1000;
       this.emit('mvp', m);
       this.remove(m);
       return;
@@ -438,7 +539,7 @@ export class MobManager {
 
   update(dt, player) {
     // the MVP appears once its time has come
-    if (this.mvp && Date.now() >= this.mvpAt && !this.list.some((m) => m.def.mvp)) {
+    if (this.mvp && Date.now() >= (this.mvpAt[this.mvp.type] || 0) && !this.list.some((m) => m.def.mvp)) {
       this.add(this.mvp.type, this.mvp.x, this.mvp.z);
       this.emit('mvpSpawn', this.mvp);
     }

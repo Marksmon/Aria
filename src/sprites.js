@@ -4,6 +4,7 @@
 // world units, not pixels.
 import * as THREE from 'three';
 import { mulberry32 } from './noise.js';
+import { paintSet, frameSize } from './painted.js';
 
 const SHEETS = import.meta.glob('./art/*.png', { eager: true, import: 'default' });
 const LAYOUTS = import.meta.glob('./art/*.json', { eager: true, import: 'default' });
@@ -488,6 +489,31 @@ function pixelSet(url, { fw, fh, body, foot = 0, hair = [], anims, bald = false 
   return set;
 }
 
+// A hand-painted monster (painted.js) as a sprite set shaped like pixelSet's: the same anims and
+// white flash copies, drawn at once. body = the standing figure's [w, h] in pixels.
+function paintedSet(id, body) {
+  const [fw, fh] = frameSize(id), frames = paintSet(id);
+  const anchor = 2 / fh; // painted.js stands the feet two rows above the frame's bottom
+  const set = { pixel: true, fw, fh, body, bald: false, loaded: true, anchor, hair: [], anims: {}, flash: {}, dress() {}, repaint() {} };
+  const nearest = (c) => { const t = tex(c); t.magFilter = t.minFilter = THREE.NearestFilter; t.generateMipmaps = false; t.userData.anchor = anchor; return t; };
+  for (const [dir, list] of Object.entries(frames)) {
+    set.anims[dir] = {};
+    set.flash[dir] = {};
+    for (const [anim, canvases] of Object.entries(list)) {
+      set.anims[dir][anim] = canvases.map(nearest);
+      set.flash[dir][anim] = canvases.map((c) => {
+        const w = mk(fw, fh);
+        w.g.drawImage(c, 0, 0);
+        w.g.globalCompositeOperation = 'source-in';
+        w.g.fillStyle = '#ffffff';
+        w.g.fillRect(0, 0, fw, fh);
+        return nearest(w.c);
+      });
+    }
+  }
+  return set;
+}
+
 // w = world width; height follows canvas aspect. coll = collision radius, shadow = baked shadow radius, space = min spacing.
 const PROP_DEFS = {
   tree_grove: { w: 3.0, coll: 0.45, shadow: 1.5, space: 1.7, variants: 3, make: (r, i) => treeRound(r, i % 2 ? PAL.grove2 : PAL.grove) },
@@ -544,6 +570,9 @@ export function createSprites() {
     wisp: sheet('wisp'),
     jarl: SHEETS['./art/jarl.png'] ? sheet('jarl') : sheet('beetle'), // the MVP (PixelLab art, packed like the rest)
   };
+  // kobolds and goblins, painted in code (painted.js) until they get PixelLab art
+  for (const id of ['koboldWarrior', 'koboldArcher', 'koboldAssassin', 'goblinWarrior', 'goblinArcher', 'goblinAssassin']) mobs[id] = paintedSet(id, [16, 30]);
+  for (const id of ['koboldKing', 'goblinKing']) mobs[id] = paintedSet(id, [26, 48]);
   // the camp's and Steinborg's people (one still being drawn borrows the Elder's look)
   const villagers = {};
   for (const id of ['bram', 'tilly', 'wren', 'hild', 'gunnar', 'ragna', 'ulfr', 'saeunn', 'embla']) villagers[id] = SHEETS[`./art/${id}.png`] ? sheet(id) : null;

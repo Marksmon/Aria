@@ -203,7 +203,7 @@ export const NPCS = {
 };
 
 // the Ferryman's fares, by map (only lands you have already walked)
-export const FARES = { camp: 300, city: 500, magic: 500, grove: 300, fen: 400, hollow: 600, birch: 700, coast: 900, ridge: 1200, deep: 1500, heath: 1800 };
+export const FARES = { camp: 300, city: 500, magic: 500, grove: 300, fen: 400, hollow: 600, birch: 700, coast: 900, ridge: 1200, deep: 1500, heath: 1800, stones: 2000, coalpit: 2400, burnt: 2600, serpent: 3000 };
 
 // reward: { xp (Base EXP; Job EXP is 70% of it), perz, items: { id: n } }. Levels and EXP follow
 // the Ragnarok curve at 1x: a quest is a big job, worth a fair share of a level.

@@ -7,7 +7,7 @@ import { Player } from './player.js';
 import { Input } from './input.js';
 import { UI } from './ui.js';
 import { FX } from './fx.js';
-import { MobManager } from './mobs.js';
+import { MobManager, MOB_DEFS } from './mobs.js';
 import { loadSave, writeSave } from './save.js';
 import { Inventory } from './inventory.js';
 import { Progress, JOBS } from './progress.js';
@@ -58,11 +58,16 @@ const SPAWNS = {
   coast: [['brine', 9], ['tidecrab', 8], ['crab', 3], ['tideKing', 1], ['wisp', 2], ['wisp', 3, true], ['brine', 2, true]],
   deep: [['gloomcap', 10], ['mushling', 4], ['shadeWisp', 6], ['gloomMother', 1], ['gloomcap', 2, true]],
   heath: [['cinderBeetle', 9], ['emberWisp', 6], ['beetle', 3], ['cinderLord', 1], ['cinderBeetle', 2, true]],
+  // the kobold and goblin lands: they attack on sight; each race's king holds the second map
+  stones: [['koboldWarrior', 10], ['koboldArcher', 6], ['koboldAssassin', 2], ['koboldWarrior', 2, true]],
+  coalpit: [['koboldAssassin', 7], ['koboldWarrior', 5], ['koboldArcher', 5], ['koboldKing', 1], ['koboldAssassin', 2, true]],
+  burnt: [['goblinWarrior', 10], ['goblinArcher', 6], ['goblinAssassin', 2], ['goblinWarrior', 2, true]],
+  serpent: [['goblinAssassin', 7], ['goblinWarrior', 5], ['goblinArcher', 5], ['goblinKing', 1], ['goblinAssassin', 2, true]],
 };
 
 const save = loadSave();
 let lookBefore = null; // the look kept, while one is being tried on
-mobs.mvpAt = save?.mvpAt || 0;
+mobs.mvpAt = typeof save?.mvpAt === 'number' ? { jarl: save.mvpAt } : save?.mvpAt || {}; // older saves timed the Fire Giant alone
 const player = new Player(scene, world, lib.player, lib.shadow, fx);
 player.setPos(save?.x ?? world.spawn.x, save?.z ?? world.spawn.z);
 if (save?.look) player.setLook(save.look.hair === 'long' ? { ...save.look, hair: 'mane' } : save.look); // the straight long hair waits for a female look
@@ -254,8 +259,28 @@ mobs.on('stomp', (m) => { // the ground bursts around the boss
   if (res.miss) fx.number(player.x, overHead(player, 1.3), player.z, 'Miss', 'miss');
   else player.takeDamage(res.dmg, m.x, m.z);
 });
-mobs.on('mvpSpawn', () => {
-  menus.message('The ground trembles… the Fire Giant has woken in Glodberg!');
+// archers: an arrow flies at you, and the hit is rolled when it lands (FLEE and DEF apply)
+const playerMark = { get x() { return player.x; }, get z() { return player.z; }, alive: true };
+mobs.on('shoot', (m) => {
+  audio.play('swing');
+  const y = world.heightAt(m.x, m.z) + m.sprite.scale.y * 0.45;
+  fx.bolt(m.x, y, m.z, playerMark, '#efe2c0', () => {
+    if (!m.alive && !mobs.list.includes(m)) return;
+    if (!player.canBeHit() || player.state === 'down') return;
+    const res = mobAttack(m.def, player.ps);
+    if (res.miss) fx.number(player.x, overHead(player, 1.3), player.z, res.dodge ? 'Lucky!' : 'Miss', 'miss');
+    else player.takeDamage(res.dmg, m.x, m.z);
+  }, 0.2);
+});
+mobs.on('dash', (m) => { audio.play('dodge'); fx.puff(m.x, world.heightAt(m.x, m.z) + 0.15, m.z, 0.5); });
+mobs.on('double', () => fx.number(player.x, overHead(player, 1.6), player.z, 'Double!', 'miss'));
+mobs.on('summon', (m) => {
+  menus.message(m.def.summonText || `The ${m.def.name} calls his guards!`);
+  fx.sparkle(m.x, world.heightAt(m.x, m.z) + 1.5, m.z, '#ffd23a', 14);
+  audio.play('night');
+});
+mobs.on('mvpSpawn', (s) => {
+  menus.message(MOB_DEFS[s.type].wake || `The ${MOB_DEFS[s.type].name} has appeared!`);
   audio.play('night');
 });
 // Ragnarok's MVP: the announcement over the slayer's head, MVP EXP and items straight to the bag
