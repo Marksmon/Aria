@@ -65,6 +65,10 @@ const SPAWNS = {
   serpent: [['goblinAssassin', 7], ['goblinWarrior', 5], ['goblinArcher', 5], ['goblinKing', 1], ['goblinAssassin', 2, true]],
 };
 
+// which build this is, on the title screen (matches the APK's version, 1.0.<build>)
+const verEl = document.querySelector('#title .ver');
+if (verEl) verEl.textContent = `v1.0.${__BUILD__} · Explore, fight, craft, survive the night`;
+
 const save = loadSave();
 let lookBefore = null; // the look kept, while one is being tried on
 mobs.mvpAt = typeof save?.mvpAt === 'number' ? { jarl: save.mvpAt } : save?.mvpAt || {}; // older saves timed the Fire Giant alone

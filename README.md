@@ -13,7 +13,9 @@ code and all sound is synthesized, so the game ships as one offline HTML file.
 
 Every push to `main` builds a new APK automatically (about 3–5 minutes).
 Download it from **Releases → "Aria — latest build"** → `Aria.apk`.
-New builds install over old ones (same signing key), so your save is kept.
+New builds install over old ones as an **update**: they share the signing key, and each build's
+version (1.0.*build number*, shown on the title screen) is higher than the last. Just open the new
+APK and tap **Update**; don't uninstall first, or your save goes with the old app.
 
 ## Controls
 
