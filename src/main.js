@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import './style.css';
 import { createSprites } from './sprites.js';
-import { buildWorld, ZONE_NAMES } from './world.js';
+import { buildWorld, ZONE_NAMES, MAPS } from './world.js';
 import { CITY, MAGIC } from './city.js';
 import { Player } from './player.js';
 import { Input } from './input.js';
@@ -11,13 +11,13 @@ import { MobManager, MOB_DEFS } from './mobs.js';
 import { loadSave, writeSave } from './save.js';
 import { Inventory } from './inventory.js';
 import { Progress, JOBS, RATES } from './progress.js';
-import { Quests, QUESTS, NPCS, FARES } from './quests.js';
+import { Quests, QUESTS, NPCS, FARES, NEXT, giverOf } from './quests.js';
 import { Story, INTRO, route } from './story.js';
 import { Villagers } from './villagers.js';
 import { Tiles } from './tiles.js';
 import { Hotbar } from './hotbar.js';
 import { derive, playerAttack, mobAttack, magicAttack } from './rules.js';
-import { SKILLS, skillLv, spCost, castTime, learn, skillList } from './skills.js';
+import { SKILLS, skillLv, spCost, castTime, learn, skillList, weaponOk, WEAPON_NAMES } from './skills.js';
 import { Menus } from './menus.js';
 import { iconTexture, iconURL, ITEMS, baseOf } from './items.js';
 import { DayNight } from './daynight.js';
@@ -88,23 +88,31 @@ const villagers = new Villagers(scene, world, lib);
 player.tiles = new Tiles(world); // after the villagers: they block their tiles
 const inv = new Inventory();
 inv.level = () => prog.baseLv;
-inv.job = () => prog.job;
+inv.job = () => prog.wearJobs; // every job earned: a Blader who passed the Sorcerer's trial may hold a staff
 // the player's look follows the job: the Trainee's clothes, then the Blader's or the Sorcerer's
-const jobArt = () => ({ novice: lib.novice, swordman: lib.player, mage: lib.sorcerer || lib.novice }[prog.job] || lib.player);
+const jobArt = () => ({ novice: lib.novice, swordman: lib.player, mage: lib.sorcerer || lib.novice, blademaster: lib.blademaster, wizard: lib.wizard, magicknight: lib.magicknight }[prog.job] || lib.player);
 player.setArt(jobArt());
 inv.load(save?.inv);
 inv.dropUnwearable(); // gear rules can change between versions
 // stats + gear -> the player's battle numbers (Ragnarok rules); HP/SP stay put, capped by the new max
 // timed buffs, in seconds left: aspd (Quickening Draught), warcry (War Cry's ATK bonus)
-const buffs = { aspd: 0, warcry: 0, ward: 0 };
-let warcryLv = 0, wardLv = 0, endureGuard = 0;
+const buffs = { aspd: 0, warcry: 0, ward: 0, aegis: 0, momentum: 0 };
+let warcryLv = 0, wardLv = 0, endureGuard = 0, aegisLv = 0;
+let nav = null; // auto-navigation: { quest, map, npc, why } while walking to a quest by itself
+// second-job synergies: the BladeMaster's Momentum stacks, the last spell's element (Resonance),
+// the last Edge's element (Elemental Chain)
+let momentum = 0;
+const lastSpell = { el: null, t: -99 }, lastEdge = { el: null, t: -99 };
+let skillClock = 0; // seconds since the game started, for those windows
+const weaponKind = () => (ITEMS[inv.gear.weapon]?.kind === 'staff' ? 'staff' : 'sword');
 function applyStats() {
   const gear = inv.gearStats();
   const hide = skillLv(prog, 'ironhide');
   const sword = ITEMS[inv.gear.weapon]?.kind !== 'staff';
-  gear.mastery = skillLv(prog, 'basics') + (sword ? 2 * skillLv(prog, 'discipline') : 0);
+  gear.mastery = skillLv(prog, 'basics') + (sword ? 2 * skillLv(prog, 'discipline') + 3 * skillLv(prog, 'blademastery') : 0);
+  gear.hit += sword ? skillLv(prog, 'blademastery') : 0;
   gear.flee += skillLv(prog, 'footwork') ? 3 : 0;
-  gear.def += hide;
+  gear.def += hide + (buffs.aegis > 0 && player.barrier > 0 ? aegisLv : 0);
   if (buffs.aspd > 0) gear.aspdRate *= 0.9;
   const ps = derive(prog, gear);
   ps.maxHp = Math.floor(ps.maxHp * (1 + hide / 100));
@@ -117,6 +125,9 @@ function applyStats() {
   player.speedMul = inv.wearing('speed') ? 1.2 : 1;
   player.setHeadgear(inv.gear.head && baseOf(inv.gear.head), inv.gear.face && baseOf(inv.gear.face)); // refined headgear looks like the plain piece
   player.blockChance = inv.wearing('block') ? 0.2 : 0;
+  // Spellblade: normal sword hits carry some of the MATK
+  const sb = sword ? skillLv(prog, 'spellblade') : 0;
+  player.bonusDmg = sb ? () => Math.floor((player.ps.matk[0] + player.ps.matk[1]) / 2 * 0.03 * sb) : null;
 }
 applyStats();
 player.hp = typeof save?.hp === 'number' && save.prog?.v === 2 ? clamp(save.hp, 1, player.maxHp) : player.maxHp;
@@ -134,6 +145,9 @@ const cam = { yaw: save?.yaw ?? 0, dist: save?.dist ?? 12, target: new THREE.Vec
 // ---------- maps and warp portals ----------
 // go to a map: its monsters, tiles and ground; at = where to stand (else beside the portal back)
 const visited = new Set(save?.visited || ['camp']); // lands walked, for the Ferryman
+// Keepers whose ledger you have signed (the camp's is signed from the start), and where you saved
+const keepers = new Set(save?.keepers || ['keeper_camp']);
+let savePoint = save?.savePoint || null; // { keeper, map, x, z }; none = the camp fire
 function enterMap(id, from, at) {
   const arrive = world.go(id, from);
   visited.add(id);
@@ -213,10 +227,12 @@ player.on('block', () => {
 player.on('faint', () => {
   audio.play('faint');
   const lost = prog.deathPenalty();
-  ui.faint(true, lost.base || lost.job ? `Returning to camp · lost ${lost.base} Base EXP, ${lost.job} Job EXP` : 'Returning to camp');
+  const home = savePoint ? ZONE_NAMES[savePoint.map] : 'camp';
+  ui.faint(true, lost.base || lost.job ? `Returning to ${home} · lost ${lost.base} Base EXP, ${lost.job} Job EXP` : `Returning to ${home}`);
   setTimeout(() => {
-    enterMap('camp', null);
-    player.revive(world.spawn.x, world.spawn.z);
+    enterMap(savePoint ? savePoint.map : 'camp', null);
+    if (savePoint) player.revive(savePoint.x, savePoint.z);
+    else player.revive(world.spawn.x, world.spawn.z);
     cam.target.set(player.x, world.heightAt(player.x, player.z), player.z);
     ui.faint(false);
   }, 2200);
@@ -306,7 +322,7 @@ mobs.on('mvp', (m) => {
 });
 
 // ---------- experience: Base and Job EXP, like Ragnarok ----------
-const knownSkills = () => new Set(skillList(prog.job).filter((id) => skillLv(prog, id)));
+const knownSkills = () => new Set(skillList(prog).filter((id) => skillLv(prog, id)));
 function announceSkills(before) {
   for (const id of knownSkills()) if (!before.has(id) && (SKILLS[id].free || SKILLS[id].granted)) menus.message(`New skill: ${SKILLS[id].name}! See the Skills window.`);
 }
@@ -337,7 +353,7 @@ function gainExp(base, job) {
 }
 
 // ---------- quests ----------
-const questGiver = (id) => Object.keys(NPCS).find((n) => NPCS[n].quests.includes(id) || NPCS[n].trial?.includes(id));
+const questGiver = giverOf;
 function questComplete(id) {
   audio.play('heart');
   menus.message(`${QUESTS[id].title} complete! Return to ${NPCS[questGiver(id)].name}.`);
@@ -380,11 +396,11 @@ function refreshQuests() {
   const s = story.step;
   if (s && storyLive()) {
     const where = story.directions(world.id);
-    h += `<div class="story"><small>${esc(s.ch)}</small><b>★ ${esc(s.title)}</b><span>${esc(s.goal)}${story.progress()}</span>${where ? `<em>➜ ${esc(where)}</em>` : ''}</div>`;
+    h += `<div class="story" data-q="story"><small>${esc(s.ch)}</small><b>★ ${esc(s.title)}</b><span>${esc(s.goal)}${story.progress()}</span>${where ? `<em>➜ ${esc(where)}</em>` : ''}</div>`;
   }
   for (const id of Object.keys(quests.active)) {
     const done = quests.ready(id, inv);
-    h += `<div class="${done ? 'done' : ''}"><b>${QUESTS[id].title}</b><span>${done ? `Return to ${NPCS[questGiver(id)].name}` : quests.progress(id, inv)}</span></div>`;
+    h += `<div class="${done ? 'done' : ''}${QUESTS[id].job ? ' job' : ''}" data-q="${id}"><b>${QUESTS[id].title}</b><span>${done ? `Return to ${NPCS[questGiver(id)].name}` : quests.progress(id, inv)}</span>${nav?.quest === id ? '<em>➜ on the way</em>' : ''}</div>`;
   }
   const n = Object.keys(quests.active).length + (s && storyLive() ? 1 : 0);
   trackerHead.textContent = `Quests${n ? ` (${n})` : ''}`;
@@ -396,6 +412,82 @@ function refreshQuests() {
   if (map === world.id && s.kind === 'talk') ui.goal = { x: NPCS[s.npc].x, z: NPCS[s.npc].z };
   else if (map && map !== world.id) { const p = route(world.id, map); if (p) ui.goal = { x: p.x, z: p.z }; }
 }
+
+// tap a quest in the list: its Quest View, with a Go button
+trackerList.addEventListener('click', (e) => {
+  const el = e.target.closest('[data-q]');
+  if (!el) return;
+  audio.play('ui');
+  menus.openQuest(el.dataset.q);
+});
+
+// ---------- auto-navigation: walk portal by portal to where a quest happens ----------
+// portals between two maps (fewest first)
+function hops(from, to) {
+  if (from === to) return 0;
+  const seen = { [from]: 0 }, queue = [from];
+  while (queue.length) {
+    const m = queue.shift();
+    for (const p of MAPS[m].portals) {
+      if (p.to in seen) continue;
+      seen[p.to] = seen[m] + 1;
+      if (p.to === to) return seen[p.to];
+      queue.push(p.to);
+    }
+  }
+  return Infinity;
+}
+const mapsOf = (mob) => Object.keys(SPAWNS).filter((m) => SPAWNS[m].some(([t]) => t === mob));
+const nearestMap = (maps) => [...maps].sort((a, b) => hops(world.id, a) - hops(world.id, b))[0];
+// where a quest sends you next: { map, npc (talk to them there), why }, or null
+function questTarget(id) {
+  if (id === 'story') {
+    const s = story.step, map = s && story.map();
+    return map ? { map, npc: s.kind === 'talk' ? s.npc : null, why: s.title } : null;
+  }
+  const q = QUESTS[id], giver = questGiver(id);
+  if (!(id in quests.active) || quests.ready(id, inv)) return { map: NPCS[giver].map || 'camp', npc: giver, why: NPCS[giver].name };
+  if (q.kind === 'kill') { const map = nearestMap(mapsOf(q.mob)); return map ? { map, why: `${MOB_DEFS[q.mob].name}s` } : null; }
+  if (q.kind === 'visit') { const left = q.zones.filter((z) => !quests.active[id].includes(z)); return left.length ? { map: nearestMap(left), why: 'a land to visit' } : null; }
+  // a gathering quest: the nearest map where an item still missing drops
+  let best = null;
+  for (const [item, n] of Object.entries(q.items)) {
+    if (inv.have(item) >= n) continue;
+    for (const t of Object.keys(MOB_DEFS)) {
+      if (!MOB_DEFS[t].drops.some(([d]) => d === item)) continue;
+      for (const map of mapsOf(t)) {
+        const h = hops(world.id, map);
+        if (!best || h < best.h) best = { h, map, why: `${ITEMS[item].name} from ${MOB_DEFS[t].name}s` };
+      }
+    }
+  }
+  return best;
+}
+function startNav(id) {
+  const t = questTarget(id);
+  if (!t) { menus.message("You'll have to find that one yourself."); return; }
+  nav = { quest: id, ...t };
+  menus.close('quest');
+  menus.message(world.id === t.map && !t.npc ? `${t.why}: right here in ${ZONE_NAMES[t.map]}.` : `On the way to ${ZONE_NAMES[t.map]}: ${t.why}. Tap the ground to stop.`);
+  if (world.id === t.map && !t.npc) nav = null;
+  refreshQuests();
+}
+// each frame: when idle, head for the next portal (or the person) on the way
+function tickNav() {
+  if (!nav || warping || player.state !== 'normal' || player.goal || player.cast || menus.isOpen('story')) return;
+  if (world.id === nav.map) {
+    const k = nav.npc, spot = k && SPOTS.find((sp) => sp.npc === k);
+    nav = null;
+    if (spot) player.command({ x: spot.x, z: spot.z, reach: 1.7, arrive: spot.run });
+    else menus.message(`You have arrived in ${ZONE_NAMES[world.id]}.`);
+    refreshQuests();
+    return;
+  }
+  const p = route(world.id, nav.map);
+  if (!p) { nav = null; refreshQuests(); return; }
+  player.command({ x: p.x, z: p.z, reach: 0.05 });
+}
+const stopNav = () => { if (nav) { nav = null; refreshQuests(); } };
 
 // ---------- the story ----------
 const storyLive = () => !!story.flags.intro && !story.done; // after the opening pages
@@ -447,6 +539,36 @@ const menus = new Menus(inv, prog, player, {
     fx.sparkle(player.x, world.heightAt(player.x, player.z) + 0.8, player.z, '#9fffb0', 18);
     menus.message('Gyda mends your wounds. HP and SP are full.');
   },
+  // the Quest View: where a quest is, and walking there
+  questTarget: (id) => questTarget(id),
+  questGo: (id) => startNav(id),
+  storyStep: () => (storyLive() ? story.step : null),
+  storyProgress: () => story.progress(),
+  // the Keepers: sign their ledger, save there, and teleport between the ones you have signed
+  keeperKnown: (k) => keepers.has(k),
+  savedAt: () => savePoint?.keeper || 'keeper_camp',
+  keeperRegister(k) {
+    keepers.add(k);
+    audio.play('craft');
+    menus.message(`You sign ${NPCS[k].name}'s ledger. ${ZONE_NAMES[NPCS[k].map || 'camp']} remembers you.`);
+    persist();
+  },
+  keeperSave(k) {
+    const n = NPCS[k];
+    savePoint = { keeper: k, map: n.map || 'camp', x: n.x, z: n.z + 1.4 };
+    audio.play('craft');
+    fx.sparkle(player.x, world.heightAt(player.x, player.z) + 1, player.z, '#ffe37a', 14);
+    menus.message(`Saved at ${ZONE_NAMES[savePoint.map]}. You will wake here after a fall, and Return Feathers bring you here.`);
+    persist();
+  },
+  keeperList: (here) => [...keepers].filter((k) => k !== here && NPCS[k]).map((k) => [k, FARES[NPCS[k].map || 'camp']]),
+  keeperGo(k) {
+    const n = NPCS[k], fare = FARES[n.map || 'camp'];
+    if (!keepers.has(k) || inv.perz < fare) return;
+    inv.perz -= fare;
+    menus.close('talk');
+    warp(n.map || 'camp', null, { x: n.x, z: n.z + 1.4 });
+  },
   // Ivar the Ferryman: the lands you have walked, and his fares
   ferryList: () => Object.entries(FARES).filter(([m]) => visited.has(m) && m !== world.id),
   ferry(map) {
@@ -466,12 +588,10 @@ const menus = new Menus(inv, prog, player, {
     persist();
   },
   jobChange(job) {
-    const known = knownSkills();
-    prog.job = job;
-    prog.jobLv = 1;
-    prog.jobExp = 0;
+    const known = knownSkills(), switching = JOBS[job].tier === 1 && prog.unlocked.includes(job), first = !prog.unlocked.includes(job);
+    if (JOBS[job].tier === 1) prog.takeFirst(job); else prog.takeSecond(job);
     // a new Sorcerer is handed a staff
-    if (job === 'mage' && !inv.bag.count('oak_staff') && inv.gear.weapon !== 'oak_staff') { inv.add('oak_staff', 1); menus.toast('oak_staff', 1); }
+    if (job === 'mage' && first && !inv.bag.count('oak_staff') && inv.gear.weapon !== 'oak_staff') { inv.add('oak_staff', 1); menus.toast('oak_staff', 1); }
     const off = inv.dropUnwearable();
     if (job === 'mage' && !inv.gear.weapon) inv.equip('oak_staff'); // straight into the new Sorcerer's hand
     if (off.length) menus.message(`Put away what a ${JOBS[job].name} can't use: ${off.map((i) => ITEMS[i].name).join(', ')}`);
@@ -483,7 +603,10 @@ const menus = new Menus(inv, prog, player, {
     const y = world.heightAt(player.x, player.z);
     fx.sparkle(player.x, y + 0.6, player.z, '#ffe37a', 24);
     fx.number(player.x, y + 1.9, player.z, `${JOBS[job].name}!`, 'level');
-    menus.message(`You are now a ${JOBS[job].name}! Earn Job Levels for skill points.`);
+    menus.message(switching ? `You are a ${JOBS[job].name} again. Your Job Level and skills come with you.`
+      : JOBS[job].tier === 2 ? `You are now a ${JOBS[job].name}! Job Level starts again; new skills wait in the Skills window.`
+        : prog.unlocked.length > 1 ? `You are now a ${JOBS[job].name} too! Both paths share your Job Level and skill points.`
+          : `You are now a ${JOBS[job].name}! Earn Job Levels for skill points.`);
     announceSkills(known);
     menus.render();
     persist();
@@ -511,6 +634,8 @@ const menus = new Menus(inv, prog, player, {
     if (!r) return;
     audio.play('craft');
     giveReward(r);
+    // a series (the job trials) carries straight on to its next step
+    if (NEXT[id]) { quests.accept(NEXT[id]); menus.message(`Next: ${QUESTS[NEXT[id]].title}`); }
     refreshQuests();
     menus.render();
     persist();
@@ -547,7 +672,7 @@ const SPOTS = [
   { map: 'camp', ...world.camp.tent, h: 2.2, run: () => rest() },
   { map: 'city', ...CITY.chest, h: 0.8, run: () => menus.show('chest') }, // Steinborg's storehouse: the same chest
   { map: 'magic', ...MAGIC.chest, h: 0.8, run: () => menus.show('chest') }, // and Galdrheim's
-  ...villagers.list.map((v) => ({ map: v.map, x: v.x, z: v.z, h: v.top, run: () => { if (menus.isOpen('story')) return; if (story.talkStep(v.id) && storyLive()) storyDone(); else menus.talkTo(v.id); } })),
+  ...villagers.list.map((v) => ({ npc: v.id, map: v.map, x: v.x, z: v.z, h: v.top, run: () => { if (menus.isOpen('story')) return; if (story.talkStep(v.id) && storyLive()) storyDone(); else menus.talkTo(v.id); } })),
 ];
 
 // ---------- hotbar: skills and items ----------
@@ -579,7 +704,7 @@ function useItem(id) {
   if (u.cure) player.slowT = 0;
   if (u.buff) { buffs[u.buff] = u.t; applyStats(); menus.message(`${ITEMS[id].name}: ${ITEMS[id].desc}`); }
   if (u.warp === 'random') warpRandom();
-  if (u.warp === 'camp') warpTo('camp');
+  if (u.warp === 'camp') { if (savePoint) warp(savePoint.map, null, { x: savePoint.x, z: savePoint.z }); else warpTo('camp'); } // to your save point
   audio.play('pickup');
   inv.changed();
 }
@@ -588,6 +713,8 @@ const skillCd = {}; // skill id -> seconds left
 function useSkill(id) {
   const sk = SKILLS[id], lv = skillLv(prog, id);
   if (!lv || sk.kind !== 'active' || player.state === 'down' || (skillCd[id] || 0) > 0) return;
+  // skills of every job earned can be used, with the right weapon in hand
+  if (!weaponOk(id, weaponKind())) { menus.message(`${sk.name} needs ${WEAPON_NAMES[sk.weapon]} in hand`); return; }
   const sp = spCost(id, lv);
   const pay = () => {
     if (player.sp < sp) { menus.message('Not enough SP'); return false; }
@@ -602,7 +729,17 @@ function useSkill(id) {
     if (player.state === 'normal' && pay()) { player.endureT = 4; endureGuard = 0.15; say('Guard'); audio.play('block'); }
     return;
   }
-  if (sk.magic) { castSpell(id, lv, pay, sp); return; }
+  if (sk.magic && !sk.edge) { castSpell(id, lv, pay, sp); return; }
+  if (id === 'aegis') { // a barrier of ATK and MATK together
+    if (!pay()) return;
+    const ps = player.ps, k = (50 + 10 * lv) / 100;
+    player.barrier = Math.round((ps.batk + ps.watk) * k + (ps.matk[0] + ps.matk[1]) / 2 * k);
+    buffs.aegis = 20; aegisLv = lv;
+    applyStats();
+    say('Stone Aegis'); audio.play('block');
+    fx.sparkle(player.x, y + 0.8, player.z, '#c8a06a', 20);
+    return;
+  }
   if (id === 'ward') {
     if (pay()) { buffs.ward = 30; wardLv = lv; say('Rune Ward'); audio.play('craft'); fx.sparkle(player.x, y + 0.8, player.z, '#8fd8ff', 18); }
     return;
@@ -668,12 +805,13 @@ function useSkill(id) {
   // the rest aim at your current target, or the nearest monster
   const target = (player.goal?.mob?.alive && player.goal.mob) || mobs.nearest(player.x, player.z, 8);
   if (!target) { menus.message('No monster nearby'); return; }
-  // Thrust, Cleave and Heavy Strike: walk up and hit with the next swing
-  const strike = (mult, hitMult, done) => player.command({ mob: target, skill: { mult, hitMult, pay, done } });
-  if (id === 'thrust') strike(1.25, 1, () => say('Thrust'));
+  // Thrust, Cleave and Heavy Strike: walk up and hit with the next swing. opts: el, defMul
+  const strike = (mult, hitMult, done, opts = {}) => player.command({ mob: target, skill: { mult, hitMult, pay, done, ...opts } });
+  if (id === 'thrust') strike(1.25, 1, (t) => { say('Thrust'); combo(t); });
   if (id === 'cleave') {
     strike((100 + 10 * lv) / 100, 1, (t) => {
       say('Cleave');
+      combo(t);
       // the sweep catches monsters beside the target
       for (const m of [...mobs.list]) {
         if (!m.alive || m === t || Math.hypot(m.x - t.x, m.z - t.z) > 1.7 + m.def.r) continue;
@@ -686,15 +824,94 @@ function useSkill(id) {
       }
     });
   }
-  if (id === 'heavy') strike((130 + 15 * lv) / 100, 1 + (3 * lv) / 100, () => say('Heavy Strike'));
+  if (id === 'heavy') strike((130 + 15 * lv) / 100, 1 + (3 * lv) / 100, (t) => { say('Heavy Strike'); combo(t); });
+  // ---- BladeMaster ----
+  if (id === 'twinfang') {
+    const m = (90 + 10 * lv) / 100;
+    strike(m, 1, (t) => {
+      say('Twin Fang');
+      combo(t);
+      setTimeout(() => { if (t.alive) { bladeHit(t, m); combo(t); } }, 160); // the second cut
+    });
+  }
+  if (id === 'pierce') strike((200 + 25 * lv) / 100, 1, (t) => { say('Piercing Edge'); combo(t); }, { defMul: 0.5 });
+  if (id === 'finalblade') {
+    const stacks = momentum;
+    strike((300 + 60 * lv + 50 * stacks) / 100, 1, () => {
+      say(stacks ? `Final Blade ×${stacks}` : 'Final Blade');
+      momentum = 0; buffs.momentum = 0;
+      cam.shake = 0.25;
+    });
+  }
+  // ---- Magic Knight: Edges hit with ATK and MATK together, in an element ----
+  if (sk.edge) {
+    const chain = skillLv(prog, 'elemchain'), chained = chain && lastEdge.el && lastEdge.el !== sk.magic && skillClock - lastEdge.t < 6;
+    const k = chained ? 1 + 0.06 * chain : 1;
+    const [atkPct, matkPct] = { flameedge: [110, 60], frostedge: [100, 70], thunderedge: [90, 60] }[id];
+    strike((atkPct + 10 * lv) / 100 * k, 1, (t, res) => {
+      say(chained ? `${sk.name} · Chain` : sk.name);
+      lastEdge.el = sk.magic; lastEdge.t = skillClock;
+      if (chained) player.healSp(3);
+      const extra = (m, share) => {
+        if (!m.alive) return;
+        const r = magicAttack(player.ps, m.effDef(), (matkPct + 10 * lv) / 100 * k * share, sk.magic);
+        fx.number(m.x, overHead(m, m.sprite.scale.y * 0.8 + 0.25), m.z, r.dmg, r.el > 1 ? 'crit' : 'dealt');
+        m.hit(r.dmg, 0, 0);
+      };
+      extra(t, 1);
+      fx.sparkle(t.x, world.heightAt(t.x, t.z) + 0.6, t.z, SPELL_COL[id], 10);
+      if (id === 'frostedge' && t.alive && !t.def.mvp && Math.random() < 0.03 * lv) { t.stunT = 2; fx.number(t.x, overHead(t, t.sprite.scale.y * 0.8 + 0.3), t.z, 'Frozen', 'miss'); }
+      if (id === 'thunderedge') { // half to the monsters beside the target
+        for (const m of [...mobs.list]) {
+          if (!m.alive || m === t || Math.hypot(m.x - t.x, m.z - t.z) > 1.7 + m.def.r) continue;
+          const r = playerAttack({ ...player.ps, el: 'wind' }, m.effDef(), (atkPct + 10 * lv) / 200 * k * player.atkMul, 1, true);
+          if (!r.miss) { fx.number(m.x, overHead(m, m.sprite.scale.y * 0.8), m.z, r.dmg, 'dealt'); m.hit(r.dmg, 0, 0); }
+          extra(m, 0.5);
+        }
+      }
+    }, { el: sk.magic });
+  }
+}
+
+// one more blade hit on a monster (Twin Fang's second cut, a Combo): a skill hit, so no crit
+function bladeHit(t, mult) {
+  const res = playerAttack(player.ps, t.effDef(), mult * player.atkMul, 1, true);
+  const yy = overHead(t, t.sprite.scale.y * 0.8);
+  if (res.miss) { fx.number(t.x, yy, t.z, 'Miss', 'miss'); return res; }
+  fx.number(t.x, yy, t.z, res.dmg, 'dealt');
+  const dx = t.x - player.x, dz = t.z - player.z, d = Math.hypot(dx, dz) || 1;
+  t.hit(res.dmg, dx / d, dz / d);
+  audio.play('hit');
+  return res;
+}
+// Combo Edge: a blade skill may chain a free extra strike, and each Combo stacks Momentum
+function combo(t) {
+  const lv = skillLv(prog, 'comboedge');
+  if (!lv || weaponKind() !== 'sword' || Math.random() >= 0.04 * lv) return;
+  setTimeout(() => {
+    if (!t.alive) return;
+    fx.number(player.x, overHead(player, 1.9), player.z, 'Combo!', 'skill');
+    bladeHit(t, 1);
+    if (skillLv(prog, 'momentum')) { momentum = Math.min(5, momentum + 1); buffs.momentum = 8; }
+  }, 260);
 }
 
 // ---------- spells: stand still, chant (the cast bar), then the magic flies ----------
-const SPELL_COL = { spark: '#ff7a2a', frost: '#9fe0ff', arc: '#fff27a', flamering: '#ff6a1a' };
+const SPELL_COL = { spark: '#ff7a2a', frost: '#9fe0ff', arc: '#fff27a', flamering: '#ff6a1a', stonespike: '#c8a06a', quake: '#b9874f',
+  meteor: '#ff5a1a', stormgust: '#bfefff', thunder: '#fff27a', flameedge: '#ff7a2a', frostedge: '#9fe0ff', thunderedge: '#fff27a' };
+// the Wizard's passives for one cast: Attunement always, Resonance when the element changed
+function castMul(element) {
+  let k = 1 + 0.03 * skillLv(prog, 'attune');
+  const res = skillLv(prog, 'resonance');
+  if (res && lastSpell.el && lastSpell.el !== element && skillClock - lastSpell.t < 8) k *= 1 + 0.06 * res;
+  lastSpell.el = element; lastSpell.t = skillClock;
+  return k;
+}
 function spellHit(m, mult, element) {
   if (!m.alive) return null;
   const staff = ITEMS[inv.gear.weapon];
   if (staff?.kind === 'staff' && staff.el && staff.el === element) mult *= 1.15; // an elemental staff feeds its own spells
+  if (m.shatterT > skillClock && element !== 'earth') { mult *= 1.3; m.shatterT = 0; } // Stone Spike's Shatter
   const res = magicAttack(player.ps, m.effDef(), mult, element);
   const dx = m.x - player.x, dz = m.z - player.z, d = Math.hypot(dx, dz) || 1;
   // the right element hits hard (gold), the wrong one barely scratches (grey)
@@ -714,6 +931,7 @@ function castSpell(id, lv, pay, sp) {
     player.startCast(time, () => {
       if (!pay()) return;
       say();
+      const k = castMul(sk.magic);
       cam.shake = 0.25;
       const n = 28;
       for (let i = 0; i < n; i++) {
@@ -721,7 +939,7 @@ function castSpell(id, lv, pay, sp) {
         fx.sparkle(player.x + Math.cos(a) * 2.2, y() + 0.3, player.z + Math.sin(a) * 2.2, SPELL_COL.flamering, 2);
       }
       fx.puff(player.x, y() + 0.2, player.z, 1.6);
-      for (const m of [...mobs.list]) if (m.alive && Math.hypot(m.x - player.x, m.z - player.z) < 2.8 + m.def.r) spellHit(m, (100 + 12 * lv) / 100, sk.magic);
+      for (const m of [...mobs.list]) if (m.alive && Math.hypot(m.x - player.x, m.z - player.z) < 2.8 + m.def.r) spellHit(m, (100 + 12 * lv) / 100 * k, sk.magic);
     }, null, sk.name);
     return;
   }
@@ -730,18 +948,52 @@ function castSpell(id, lv, pay, sp) {
   const run = (t) => {
     if (!t.alive || !pay()) return;
     say();
+    const k = castMul(sk.magic);
     const from = { x: player.x + player.face.x * 0.4, y: y() + 1.0, z: player.z + player.face.z * 0.4 };
+    // the Wizard's area spells: everything within 3 paces of the target
+    const around = (cx, cz, mult, then) => {
+      for (const m of [...mobs.list]) if (m.alive && Math.hypot(m.x - cx, m.z - cz) < 3 + m.def.r) { const r = spellHit(m, mult * k, sk.magic); if (r) then?.(m); }
+    };
+    const burst = (cx, cz, n = 18) => {
+      const gy = world.heightAt(cx, cz);
+      for (let i = 0; i < n; i++) { const a = (i / n) * Math.PI * 2, r = 1 + Math.random() * 2; fx.sparkle(cx + Math.cos(a) * r, gy + 0.3, cz + Math.sin(a) * r, SPELL_COL[id], 2); }
+      fx.puff(cx, gy + 0.2, cz, 1.4);
+    };
+    if (id === 'quake') {
+      cam.shake = 0.35;
+      burst(t.x, t.z, 24);
+      around(t.x, t.z, (100 + 15 * lv) / 100, (m) => { if (m.alive && !m.def.mvp && Math.random() < 0.25) { m.stunT = 1.5; } });
+      return;
+    }
+    if (id === 'stormgust') {
+      burst(t.x, t.z, 26);
+      around(t.x, t.z, (90 + 12 * lv) / 100, (m) => { if (m.alive && !m.def.mvp && Math.random() < 0.03 * lv) { m.stunT = 2.5; fx.number(m.x, overHead(m, m.sprite.scale.y * 0.8 + 0.3), m.z, 'Frozen', 'miss'); } });
+      return;
+    }
+    if (id === 'thunder') {
+      const at = (m) => ({ x: m.x, y: world.heightAt(m.x, m.z) + 0.5, z: m.z });
+      for (const m of mobs.list) if (m.alive && Math.hypot(m.x - t.x, m.z - t.z) < 3 + m.def.r) fx.zap({ x: m.x, y: world.heightAt(m.x, m.z) + 4, z: m.z }, at(m), SPELL_COL.thunder);
+      around(t.x, t.z, (100 + 15 * lv) / 100);
+      return;
+    }
+    if (id === 'meteor') { // three falls, a beat apart, around where the target stood
+      const cx = t.x, cz = t.z;
+      for (let i = 0; i < 3; i++) setTimeout(() => { burst(cx + (Math.random() - 0.5) * 2, cz + (Math.random() - 0.5) * 2, 14); cam.shake = 0.2; around(cx, cz, (70 + 10 * lv) / 100); }, i * 350);
+      return;
+    }
     if (id === 'arc') { // strikes at once, then leaps to two more
       const at = (m) => ({ x: m.x, y: world.heightAt(m.x, m.z) + 0.5, z: m.z });
       fx.zap(from, at(t), SPELL_COL.arc);
-      spellHit(t, (80 + 10 * lv) / 100, sk.magic);
+      spellHit(t, (80 + 10 * lv) / 100 * k, sk.magic);
       const near = mobs.list.filter((m) => m.alive && m !== t && Math.hypot(m.x - t.x, m.z - t.z) < 3.2)
         .sort((a, b) => Math.hypot(a.x - t.x, a.z - t.z) - Math.hypot(b.x - t.x, b.z - t.z)).slice(0, 2);
-      for (const m of near) { fx.zap(at(t), at(m), SPELL_COL.arc); spellHit(m, (80 + 10 * lv) / 200, sk.magic); }
+      for (const m of near) { fx.zap(at(t), at(m), SPELL_COL.arc); spellHit(m, (80 + 10 * lv) / 200 * k, sk.magic); }
       return;
     }
     fx.bolt(from.x, from.y, from.z, t, SPELL_COL[id], () => {
-      const res = spellHit(t, id === 'spark' ? (100 + 20 * lv) / 100 : (90 + 10 * lv) / 100, sk.magic);
+      const base = id === 'spark' ? (100 + 20 * lv) / 100 : id === 'stonespike' ? (130 + 20 * lv) / 100 : (90 + 10 * lv) / 100;
+      const res = spellHit(t, base * k, sk.magic);
+      if (res && id === 'stonespike' && t.alive) { t.shatterT = skillClock + 6; fx.number(t.x, overHead(t, t.sprite.scale.y * 0.8 + 0.3), t.z, 'Shattered', 'miss'); }
       const ty = world.heightAt(t.x, t.z) + 0.5;
       fx.sparkle(t.x, ty, t.z, SPELL_COL[id], 8);
       if (res && id === 'frost' && t.alive && !t.def.mvp && Math.random() < 0.04 * lv) {
@@ -769,17 +1021,21 @@ player.on('interrupt', () => menus.message('Your spell was interrupted!'));
 // skill cooldowns, buffs and the damage bonuses that depend on HP, every frame
 let rhythm = 0;
 function tickSkills(dt) {
+  skillClock += dt;
   for (const k in skillCd) skillCd[k] -= dt;
   for (const k in buffs) {
     if (buffs[k] <= 0) continue;
     buffs[k] -= dt;
     if (buffs[k] <= 0 && k === 'aspd') { applyStats(); menus.message('The Speed Potion wears off'); }
+    if (buffs[k] <= 0 && k === 'momentum') momentum = 0;
+    if (buffs[k] <= 0 && k === 'aegis') { player.barrier = 0; applyStats(); }
   }
+  if (buffs.aegis > 0 && player.barrier <= 0) { buffs.aegis = 0; applyStats(); menus.message('Stone Aegis breaks'); }
   if (player.endureT <= 0) endureGuard = 0;
   player.guard = Math.max(endureGuard, buffs.ward > 0 ? wardLv * 0.02 : 0);
   player.steady = buffs.ward > 0;
   const low = player.hp < player.maxHp * 0.25 && skillLv(prog, 'laststand');
-  player.atkMul = (buffs.warcry > 0 ? 1 + warcryLv / 100 : 1) * (low ? 1.15 : 1);
+  player.atkMul = (buffs.warcry > 0 ? 1 + warcryLv / 100 : 1) * (low ? 1.15 : 1) * (1 + momentum * skillLv(prog, 'momentum') / 100);
 }
 
 // ---------- tap to walk, attack, pick up, talk ----------
@@ -806,6 +1062,7 @@ function pick(cx, cy) {
 }
 function tap(cx, cy) {
   if (player.state === 'down') return;
+  stopNav(); // taking the reins again
   const hit = pick(cx, cy);
   if (hit?.mob) player.command({ mob: hit.mob });
   else if (hit?.item) {
@@ -833,6 +1090,7 @@ let holdT = 0;
 function holdWalk(dt) {
   const h = input.held();
   if (!h || player.state === 'down') { holdT = 0; return; }
+  stopNav();
   holdT -= dt;
   if (holdT > 0) return;
   holdT = 0.16;
@@ -898,7 +1156,51 @@ let questZone = null, questT = 0;
 let resetting = false;
 function persist() {
   if (!started || resetting) return;
-  writeSave({ story: story.toJSON(), look: player.look, visited: [...visited], map: world.id, mvpAt: mobs.mvpAt, x: player.x, z: player.z, yaw: cam.yaw, dist: cam.dist, hp: player.hp, sp: player.sp, inv: inv.toJSON(), prog: prog.toJSON(), quests: quests.toJSON(), hotbar: hotbar.toJSON(), time: dayNight.t });
+  writeSave({ story: story.toJSON(), look: player.look, visited: [...visited], keepers: [...keepers], savePoint, map: world.id, mvpAt: mobs.mvpAt, x: player.x, z: player.z, yaw: cam.yaw, dist: cam.dist, hp: player.hp, sp: player.sp, inv: inv.toJSON(), prog: prog.toJSON(), quests: quests.toJSON(), hotbar: hotbar.toJSON(), time: dayNight.t });
+}
+
+// second jobs glow: a soft aura behind the hero and a ring at their feet, in the job's colour
+const AURA = { blademaster: '#ff7a4a', wizard: '#b48aff', magicknight: '#6ad8ff' };
+const aura = (() => {
+  const c = document.createElement('canvas');
+  c.width = c.height = 64;
+  const g = c.getContext('2d'), gr = g.createRadialGradient(32, 32, 2, 32, 32, 31);
+  gr.addColorStop(0, 'rgba(255,255,255,.55)'); gr.addColorStop(0.45, 'rgba(255,255,255,.22)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
+  g.fillStyle = gr; g.fillRect(0, 0, 64, 64);
+  const tex = new THREE.CanvasTexture(c);
+  const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false }));
+  s.renderOrder = 1;
+  s.visible = false;
+  scene.add(s);
+  // and a glowing ring on the ground at the hero's feet
+  const r = document.createElement('canvas');
+  r.width = r.height = 64;
+  const rg = r.getContext('2d'), ring = rg.createRadialGradient(32, 32, 10, 32, 32, 31);
+  ring.addColorStop(0, 'rgba(255,255,255,0)'); ring.addColorStop(0.55, 'rgba(255,255,255,.18)'); ring.addColorStop(0.8, 'rgba(255,255,255,.75)'); ring.addColorStop(1, 'rgba(255,255,255,0)');
+  rg.fillStyle = ring; rg.fillRect(0, 0, 64, 64);
+  const geo = new THREE.PlaneGeometry(1.5, 1.5);
+  geo.rotateX(-Math.PI / 2);
+  s.userData.ring = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(r), transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -3 }));
+  s.userData.ring.visible = false;
+  scene.add(s.userData.ring);
+  return s;
+})();
+function tickAura(dt, t, b) {
+  const col = AURA[prog.job];
+  const ring = aura.userData.ring;
+  aura.visible = ring.visible = !!col && player.state !== 'down' && started;
+  if (!aura.visible) return;
+  aura.material.color.set(col);
+  ring.material.color.set(col);
+  const y = world.heightAt(player.x, player.z);
+  aura.position.set(player.x - b.fx * 0.35, y + 0.62, player.z - b.fz * 0.35); // just behind the hero
+  const k = 1.45 + Math.sin(t * 2.6) * 0.07;
+  aura.scale.set(k, k * 1.25, 1);
+  aura.material.opacity = 0.55 + Math.sin(t * 2.6) * 0.12;
+  ring.position.set(player.x, y + 0.04, player.z);
+  ring.scale.setScalar(1 + Math.sin(t * 2.6) * 0.05);
+  ring.material.opacity = 0.7 + Math.sin(t * 2.6) * 0.15;
+  ring.rotation.y = t * 0.6;
 }
 
 const clock = new THREE.Clock();
@@ -935,7 +1237,8 @@ function frame() {
   world.update(dt, t);
   villagers.update(dt, player, b);
   if (live) fx.update(dt);
-  if (live) { naturalRegen(dt); tickSkills(dt); checkPortals(); }
+  if (live) { naturalRegen(dt); tickSkills(dt); checkPortals(); tickNav(); }
+  tickAura(dt, t, b);
   updateCastBar();
   hotbar.update();
   world.updateOcclusion(player.x, player.z, b);

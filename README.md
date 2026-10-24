@@ -183,6 +183,68 @@ A new Sorcerer is handed an Wooden Staff.
 | Blink | Job 10 | reappear 4 paces ahead |
 | Swift Chant | Job 10, passive | spells cast 15% faster |
 
+### Walking both paths
+
+A Blader can also take the Sorcerer's trial with Archmage Vigdis (and a Sorcerer the Blader's with
+Captain Ulfr). Both first jobs then share **one Job Level and one pool of skill points**: at Job 40
+you have the same points whichever you are, and could put 20 into each tree. Switch between them
+at any **Keeper** you have signed with. Points only go into the **active job's** trees; to train
+the other path, switch to it first.
+
+Every skill you have learnt keeps working, whatever job you wear. Passives always apply; actives
+need the right weapon in hand. Gear follows every job you have earned, so a Blader who passed the
+Sorcerer's trial may hold a staff to cast.
+
+| Needs a sword (any weapon but a staff) | Needs a staff |
+|---|---|
+| Cleave, Heavy Strike, Ground Slash (Blader) | Ember Bolt, Frost Shard, Arc Lightning, Flame Ring (Sorcerer) |
+| Twin Fang, Piercing Edge, Final Blade (BladeMaster) | Stone Spike, Earthquake, Meteor Storm, Storm Gust, Thunderstorm (Wizard) |
+| Flame Edge, Frost Edge, Thunder Edge (Magic Knight) | |
+
+No weapon needed: Mend, Thrust, Guard, Rest, War Cry, Stand Firm, Rune Ward, Blink, Stone Aegis.
+
+### Second jobs
+
+From **Job Level 40** of a first job (it goes to 50), a three-step trial opens a second job. Job
+Level starts again at 1 (up to 50, on Ragnarok's second-job table); your first-job skills and
+points stay. Second jobs wear their first job's outfit in new colours and glow with a small aura
+(the Magic Knight has its own sprite).
+
+- **BladeMaster** (Captain Ulfr): 30 Goblins, 20 Kobold Assassins, the Giant Beetle.
+- **Wizard** (Archmage Vigdis): 10 Fire Dust and 10 Dark Crystals, 25 Goblin Archers, the Giant Mushroom.
+- **Magic Knight** (Sir Eirik the Runeblade, Steinborg, beside Ulfr): 30 Kobolds, 10 Dark Crystals and
+  15 Glow Dust, the King Crab. Only for heroes who walked both paths with **at least 20 skill
+  points in each tree**. Without that, a hero of both paths may only take the second job of the
+  first job they put the most points into.
+
+| BladeMaster: one target, cut down fast | |
+|---|---|
+| Blade Mastery | passive, 10: +3 ATK and +1 HIT per level with swords |
+| Combo Edge | passive, 10: Thrust, Cleave, Heavy Strike, Twin Fang and Piercing Edge have 4% per level to Combo, a free extra strike |
+| Momentum | passive, 5: each Combo adds a stack (up to 5, 8 s), +1% ATK per level per stack |
+| Twin Fang | 10: two cuts of 100–190%, each can Combo |
+| Piercing Edge | 10, needs Twin Fang 3: 225–450%, ignoring half the monster's DEF |
+| Final Blade | 5, needs Piercing Edge 5 and Momentum 1: spends every Momentum stack, 360–600% +50% per stack |
+
+| Wizard: the elements, over an area | |
+|---|---|
+| Elemental Attunement | passive, 10: spells +3% per level |
+| Resonance | passive, 5: a spell of a different element from the last (within 8 s) +6% per level |
+| Stone Spike | 10: 150–330% MATK, Earth (new element for spells); Shatters the monster: the next spell of another element on it +30% |
+| Earthquake | 10, needs Stone Spike 3: 115–250% MATK Earth within 3 paces of the target, may stun |
+| Meteor Storm | 10, needs Ember Bolt 5: three falls of 80–170% MATK Fire around the target |
+| Storm Gust | 10, needs Frost Shard 5: 102–210% MATK Water around the target, may freeze |
+| Thunderstorm | 10, needs Arc Lightning 5: 115–250% MATK Wind around the target |
+
+| Magic Knight: ATK and MATK together | |
+|---|---|
+| Spellblade | passive, 10: sword hits add 3% of your MATK per level |
+| Elemental Chain | passive, 5: an Edge of a different element from your last (within 6 s) +6% per level and 3 SP back |
+| Flame Edge | 10: 120–210% ATK plus 70–160% MATK, Fire |
+| Frost Edge | 10: 110–200% ATK plus 80–170% MATK, Water; may freeze |
+| Thunder Edge | 10, needs Flame and Frost Edge 3: 100–190% ATK plus 70–160% MATK, Wind; half to monsters beside |
+| Stone Aegis | 10: 20 s barrier soaking 60–150% of your ATK plus as much of your MATK, +1 DEF per level |
+
 **Elements.** Every monster has an element, as in Ragnarok, and so do spells and some weapons.
 Ember Bolt and Flame Ring are Fire, Frost Shard is Water, Arc Lightning is Wind; normal attacks
 are Neutral unless the weapon has one (Fire Sword, Flame Sword, Lava Sword and the Giant Sword
@@ -221,7 +283,7 @@ the Equipment window to take it off.
 | Green Herb | cures spore sickness, a little HP | Sprouts, Mushrooms |
 | Speed Potion | +10% attack speed for 3 minutes | Ragna |
 | Teleport Feather | random spot on this map | Hild's shop, Ragna; Wisps |
-| Return Feather | back to camp | Hild's shop, Ragna |
+| Return Feather | back to your save point (the camp until you save with a Keeper) | Hild's shop, Ragna |
 
 **Rare drops.** Like Ragnarok, each monster has a rare equip it drops very seldom. A rare find
 bursts gold on the ground and shows in gold in your bag.
@@ -371,6 +433,8 @@ A few big jobs instead of many errands: one each in the camp, and a handful in S
 | Astrid the Cook | camp | A Feast for Eldrun (10): 20 Slime Gel, 10 Crab Legs, 10 Spores |
 | Sigrun the Scout | camp | Lights in the Dark (10): 15 Wisps |
 | Gyda the Healer | camp | heals HP and SP for free |
+| Keeper Tova, Bera, Asa | camp, Steinborg, Galdrheim | sign the ledger, then: storage, healing, Save here (where you wake after fainting, and where Return Feathers go), switch first jobs, and teleport to any other Keeper you signed with (300–500 perz) |
+| Sir Eirik the Runeblade | Steinborg | the Magic Knight's trial |
 | Hild the Trader | Steinborg | shop · Pearls of Saltvik (24): 5 Pearls |
 | Gunnar the Gear Crafter | Steinborg | shop, forge · Stone for the Forge (34): 30 Stone, 15 Burnt Shells |
 | Holger the Refiner | Steinborg | refines gear up to +10; sells Iron and Steel Ore |
@@ -391,6 +455,13 @@ A few big jobs instead of many errands: one each in the camp, and a handful in S
 | Runa the Gatewarden | Galdrheim | the rune-gate: to any land you have walked, 300–3,000 perz |
 
 Gyda, Ivar, Liv, Bjorn, Holger and the people of Galdrheim borrow other people's sprites until their own are drawn. People with tales to tell have a **Tell me more** button.
+
+**Quest list.** Tap a quest under the clock (or the story step) for its **Quest View**: who gave
+it, the goal, your progress, the reward and where to go. **Go there** walks you to it by itself,
+portal by portal: to the nearest map with the monster, or for a gathering quest the nearest map
+where an item you still need drops, or back to whoever is waiting for you. Tap the ground to stop.
+Job quests show in green, and the steps of a series (the job trials) start on their own when the
+step before is handed in.
 
 ## Day and night
 

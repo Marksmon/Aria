@@ -543,3 +543,12 @@ button.eq:active { background: var(--w-sel); }
 .smithdetail b.ok { color: #5fae45; }
 .smithdetail b.risk { color: #e0703a; }
 .rbtn.danger { background: #a83a2a; color: #fff4dc; }
+/* the quest list: tap a quest for its Quest View; job quests are green */
+#quests .qlist [data-q] { cursor: pointer; pointer-events: auto; }
+#quests .qlist [data-q]:hover { background: rgba(60, 44, 30, .75); }
+#quests .qlist .job b, .qbox b.jobq, .qview.job > b { color: #7fe08a; }
+#quests .qlist em { display: block; font-style: normal; font-size: 12px; color: #9fd4ff; }
+.qview > b { display: block; font-size: 17px; color: #ffe6a8; }
+.qview > small { display: block; opacity: .75; margin-bottom: 4px; }
+.qview p { margin: 4px 0 6px; line-height: 1.35; }
+.qview .rnote { color: #9fd4ff; }

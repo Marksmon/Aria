@@ -7,9 +7,9 @@ import { BAG_SLOTS, CHEST_SLOTS } from './inventory.js';
 import { STATS, STAT_KEYS, JOBS, RATES } from './progress.js';
 import { statCost } from './ro-tables.js';
 import { HAIRSTYLES, DYES, hairstyles, lookPortrait } from './hair.js';
-import { NPCS } from './quests.js';
+import { NPCS, QUESTS, giverOf } from './quests.js';
 import { ZONE_NAMES } from './world.js';
-import { SKILLS, skillList, skillLv, learnBlock, spCost } from './skills.js';
+import { SKILLS, skillList, skillLv, learnBlock, spCost, WEAPON_NAMES } from './skills.js';
 
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const icon = (id, cls = '') => `<img class="ico ${cls}" src="${iconURL(id)}" alt="">`;
@@ -27,6 +27,7 @@ const WINDOWS = {
   story:  { title: '',           at: [0.50, 0.20], w: 391 },
   look:   { title: 'Your Look',  at: [0.50, 0.16], w: 299 },
   smith:  { title: '',           at: [0.50, 0.12], w: 368 },
+  quest:  { title: 'Quest',      at: [0.50, 0.16], w: 368 },
 };
 // the smith window's three jobs: Holger's refining, Seyla's slots, pressing in a card
 const SMITHS = {
@@ -35,6 +36,15 @@ const SMITHS = {
   insert: { title: 'Insert Card' },
 };
 const POS_KEY = 'aria.windows';
+
+// what each job is about, for the job change
+const JOB_PITCH = {
+  swordman: 'Sturdy sword fighters with more HP: Cleave, Heavy Strike, War Cry, Stand Firm and Ground Slash.',
+  mage: 'Casters who strike from afar with KNL: Ember Bolt, Frost Shard, Arc Lightning, Flame Ring, Rune Ward and Blink. Low HP, lots of SP.',
+  blademaster: 'One target, cut down fast: Twin Fang, Piercing Edge and Final Blade. Blade skills may Combo, and Combos build Momentum.',
+  wizard: 'The elements over an area: Stone Spike, Earthquake, Meteor Storm, Storm Gust and Thunderstorm. Changing element builds Resonance.',
+  magicknight: 'Sword and spell as one: Flame, Frost and Thunder Edge hit with ATK and MATK together; Stone Aegis is a barrier of both.',
+};
 
 // the crafters: Gunnar's forge (gear), Ragna's herbs (usables), Orm's workshop (sorcerers' gear)
 const CRAFTERS = {
@@ -146,6 +156,31 @@ export class Menus {
     this.sellSel = null;
     this.show('shop');
     this.wins.shop.querySelector('.rw-title').textContent = `${NPCS[id].name.split(' ')[0]}'s Shop`;
+  }
+
+  // the Quest View: one quest (or 'story') in full, with a Go button that walks you there
+  openQuest(id) {
+    this.questId = id;
+    this.show('quest');
+    this.render('quest');
+  }
+
+  quest() {
+    const id = this.questId, inv = this.inv, t = this.hooks.questTarget?.(id);
+    const go = (label) => `<div class="btnrow"><button class="rbtn soft" data-act="close">Close</button><button class="rbtn" data-act="qgo" ${t ? '' : 'disabled'}>${label}</button></div>`;
+    const where = t ? `<div class="rnote">➜ ${esc(ZONE_NAMES[t.map])}: ${esc(t.why)}</div>` : '';
+    if (id === 'story') {
+      const s = this.hooks.storyStep?.();
+      if (!s) return '<div class="rnote">The story is over, for now.</div>';
+      this.wins.quest.querySelector('.rw-title').textContent = 'Story';
+      return `<div class="qview story"><small>${esc(s.ch)}</small><b>★ ${esc(s.title)}</b><p>${esc(s.goal)}${esc(this.hooks.storyProgress?.() || '')}</p>${where}${go('Go there')}</div>`;
+    }
+    const q = QUESTS[id], st = this.quests, active = id in st.active, ready = active && st.ready(id, inv), giver = NPCS[giverOf(id)];
+    this.wins.quest.querySelector('.rw-title').textContent = q.job ? 'Job Quest' : 'Quest';
+    return `<div class="qview ${q.job ? 'job' : ''}"><b>${esc(q.title)}</b><small>From ${esc(giver.name)} · ${esc(ZONE_NAMES[giver.map || 'camp'])}</small>
+      <p>${esc(q.intro)}</p>
+      <div class="qbox"><b>${ready ? 'Done: return to ' + esc(giver.name) : 'Goal'}</b><small>${esc(st.goal(q))}</small>${active ? `<small>Progress: ${esc(st.progress(id, inv))}</small>` : ''}${this.reward(q.reward)}</div>
+      ${where}${go(ready ? 'Go back' : 'Go there')}</div>`;
   }
 
   // mode: refine | enchant | insert (card: the card being pressed in)
@@ -260,7 +295,7 @@ export class Menus {
     const sel = this.selected && inv.bag.count(this.selected) ? ITEMS[this.selected] : null;
     let act = '';
     if (sel?.usable) act = '<button class="rbtn" data-act="use">Use</button>';
-    if (sel?.type === 'equip') act = canWear(this.selected, this.prog.job) ? '<button class="rbtn" data-act="equip">Equip</button>' : `<span class="rtag">${esc(jobLine(sel))}</span>`;
+    if (sel?.type === 'equip') act = canWear(this.selected, this.prog.wearJobs) ? '<button class="rbtn" data-act="equip">Equip</button>' : `<span class="rtag">${esc(jobLine(sel))}</span>`;
     if (sel?.card) act = '<button class="rbtn" data-act="insertcard">Insert</button>';
     const up = sel?.type === 'equip' ? upgradeLine(sel) : '';
     const line = sel?.type === 'equip' ? `<span class="rstat">${esc(SLOTS[sel.slot])}${equipLine(sel) ? ' · ' + equipLine(sel) : ''} · ${esc(jobLine(sel))}${up ? ' · ' + esc(up) : ''}</span>` : '';
@@ -291,7 +326,7 @@ export class Menus {
   skills() {
     const p = this.prog;
     let h = '', group = null;
-    for (const id of skillList(p.job)) {
+    for (const id of skillList(p)) {
       const sk = SKILLS[id], lv = skillLv(p, id), block = learnBlock(p, id);
       if (sk.job !== group) { group = sk.job; h += `<div class="rsub">${esc(JOBS[group].name)}</div>`; }
       const active = sk.kind === 'active';
@@ -299,8 +334,10 @@ export class Menus {
       if (sk.free && !lv) tag = `Job Lv ${sk.free.jobLv}`;
       else if (sk.granted && !lv) tag = Object.entries(sk.needs).map(([k, n]) => `${SKILLS[k].name} ${n}`).join(', ');
       else if (active && lv) tag = this.hotbar?.has('skill', id) ? 'On hotbar' : 'Drag to hotbar';
-      else if (block && block !== 'points' && block !== 'max' && block !== 'job' && block !== 'free') tag = block;
-      const cost = active && spCost(id, Math.max(1, lv)) ? ` · SP ${spCost(id, Math.max(1, lv))}` : '';
+      else if (block === 'job' && !lv) tag = `Switch to ${JOBS[sk.job]?.name || 'that job'} at a Keeper to train`;
+      else if (block === 'job') tag = `Train as a ${JOBS[sk.job]?.name || 'that job'} (switch at a Keeper)`;
+      else if (block && block !== 'points' && block !== 'max' && block !== 'free') tag = block;
+      const cost = (active && spCost(id, Math.max(1, lv)) ? ` · SP ${spCost(id, Math.max(1, lv))}` : '') + (sk.weapon ? ` · needs ${WEAPON_NAMES[sk.weapon]}` : '');
       const lvTxt = sk.max > 1 ? `Lv ${lv} / ${sk.max}` : lv ? 'Learnt' : '';
       h += `<div class="ritem skill ${lv ? '' : 'off'}"${active && lv ? ` data-drag="skill:${id}"` : ''}>${icon(sk.icon, 'sm')}
         <div><b>${esc(sk.name)} <span class="lvl">${lvTxt}</span></b><small>${esc(sk.desc(Math.max(1, lv)))}${sk.kind === 'passive' ? ' (passive)' : ''}${cost}</small>${tag ? `<span class="rtag">${esc(tag)}</span>` : ''}</div>
@@ -456,7 +493,18 @@ export class Menus {
       + (n.craft ? `<button class="rbtn" data-act="craftwin" data-id="${n.craft}">${CRAFTERS[n.craft].button}</button>` : '')
       + (n.smith ? `<button class="rbtn" data-act="smithwin" data-id="${n.smith}">${SMITHS[n.smith].button}</button>` : '')
       + (n.heal ? '<button class="rbtn" data-act="heal">Heal me</button>' : '')
-      + (n.warp ? '<button class="rbtn" data-act="ferrylist">Travel</button>' : '');
+      + (n.warp ? '<button class="rbtn" data-act="ferrylist">Travel</button>' : '')
+      + (n.keeper && this.hooks.keeperKnown?.(this.npc) ? '<button class="rbtn" data-act="chestwin">Storage</button><button class="rbtn" data-act="heal">Heal me</button>'
+        + `<button class="rbtn" data-act="keepsave" ${this.hooks.savedAt?.() === this.npc ? 'disabled' : ''}>Save here</button><button class="rbtn" data-act="keeplist">Teleport</button>` : '')
+      + (n.keeper && !this.hooks.keeperKnown?.(this.npc) ? '<button class="rbtn" data-act="keepreg">Sign the ledger</button>' : '');
+    if (n.keeper && this.ferrying) { // the Keepers' road: towns where you have signed, and the fare
+      const list = this.hooks.keeperList?.(this.npc) || [];
+      const rows = list.map(([k, fare]) => `<button class="rbtn" data-act="keepgo" data-id="${k}" ${this.inv.perz < fare ? 'disabled' : ''}>${esc(ZONE_NAMES[NPCS[k].map || 'camp'])} · ${fare.toLocaleString()} perz</button>`).join('');
+      this.wins.talk.querySelector('.rw-title').textContent = n.name;
+      return `<div class="talkwrap"><img class="portrait" src="${this.portrait(this.npc)}" alt="">
+        <div class="say"><p>Which town? You have ${this.inv.perz.toLocaleString()} perz.</p><div class="btnrow wrap">${rows || '<span>You have not signed any other Keeper\'s ledger yet.</span>'}</div>
+        <div class="btnrow"><button class="rbtn soft" data-act="close">Bye</button></div></div></div>`;
+    }
     if (n.warp && this.ferrying) { // the lands you have walked, and the fare to each
       const list = this.hooks.ferryList?.() || [];
       const rows = list.map(([m, fare]) => `<button class="rbtn" data-act="ferry" data-id="${m}" ${this.inv.perz < fare ? 'disabled' : ''}>${esc(ZONE_NAMES[m])} · ${fare.toLocaleString()} perz</button>`).join('');
@@ -466,28 +514,34 @@ export class Menus {
         <div class="btnrow"><button class="rbtn soft" data-act="close">Bye</button></div></div></div>`;
     }
     if (st.state === 'job') { // the trial is done: the job change
-      text = `You passed. Will you walk the path of the ${JOBS[n.job].name}?`;
-      box = n.job === 'mage'
-        ? '<b>Job change: Sorcerer</b><small>Casters who strike from afar with KNL: Ember Bolt, Frost Shard, Arc Lightning, Flame Ring, Rune Ward and Blink. Low HP, lots of SP. Job Level starts again at 1.</small>'
-        : '<b>Job change: Blader</b><small>Sturdy sword fighters with more HP: Cleave, Heavy Strike, War Cry, Stand Firm and Ground Slash. Job Level starts again at 1.</small>';
-      btns = `<button class="rbtn soft" data-act="close">Not yet</button><button class="rbtn" data-act="jobchange" data-id="${n.job}">Become a ${JOBS[n.job].name}</button>`;
+      text = `You passed. Will you walk the path of the ${JOBS[st.job].name}?`;
+      const second = JOBS[st.job].tier === 2, keep = p.tier === 1 && !second;
+      box = `<b>Job change: ${esc(JOBS[st.job].name)}</b><small>${esc(JOB_PITCH[st.job])} ${second
+        ? 'Job Level starts again at 1; your first-job skills and points stay with you.'
+        : keep ? 'You keep your Job Level and skill points: both first jobs share them. You can switch back here any time.' : 'Job Level starts again at 1.'}</small>`;
+      btns = `<button class="rbtn soft" data-act="close">Not yet</button><button class="rbtn" data-act="jobchange" data-id="${st.job}">Become a ${JOBS[st.job].name}</button>`;
     } else if (st.state === 'offer') {
-      const first = st.id === n.quests[0] || st.id === n.trial?.[0];
+      const first = st.id === n.quests[0] || st.id === n.trial?.[0] || st.id === n.trial2?.[0];
       text = (first ? n.hello + ' ' : '') + st.q.intro;
-      box = `<b>${esc(st.q.title)}</b><small>${esc(this.quests.goal(st.q))}</small>${this.reward(st.q.reward)}`;
+      box = `<b class="${st.q.job ? 'jobq' : ''}">${esc(st.q.title)}</b><small>${esc(this.quests.goal(st.q))}</small>${this.reward(st.q.reward)}`;
       btns = `<button class="rbtn soft" data-act="close">Not now</button><button class="rbtn" data-act="accept" data-id="${st.id}">Accept</button>`;
     } else if (st.state === 'active') {
       text = `Any luck? ${this.quests.goal(st.q)}.`;
-      box = `<b>${esc(st.q.title)}</b><small>${esc(this.quests.progress(st.id, this.inv))}</small>${this.reward(st.q.reward)}`;
+      box = `<b class="${st.q.job ? 'jobq' : ''}">${esc(st.q.title)}</b><small>${esc(this.quests.progress(st.id, this.inv))}</small>${this.reward(st.q.reward)}`;
     } else if (st.state === 'ready') {
       text = st.q.thanks;
-      box = `<b>${esc(st.q.title)} ✓</b>${this.reward(st.q.reward)}`;
+      box = `<b class="${st.q.job ? 'jobq' : ''}">${esc(st.q.title)} ✓</b>${this.reward(st.q.reward)}`;
       btns = `<button class="rbtn" data-act="handin" data-id="${st.id}">Hand in</button>`;
     } else if (st.state === 'locked') text = n.later(st.q.lv);
     else text = n.quests.length || n.trial ? n.bye : n.hello; // people with no quests just say hello
     // a Trainee not yet ready for a trial hears what it takes; the Elder points ready Trainees to the city
     if (p.job === 'novice' && n.trialHint && (st.state === 'finished' || st.state === 'locked')) text = n.trialHint;
     if (p.job === 'novice' && n.ready && p.jobLv >= 10 && skillLv(p, 'basics') >= 9 && ['finished', 'locked', 'active'].includes(st.state)) text = n.ready;
+    // both first jobs walked: a Keeper switches you between them
+    if (n.keeper && this.hooks.keeperKnown?.(this.npc) && p.tier === 1) {
+      for (const j of p.unlocked) if (JOBS[j].tier === 1 && j !== p.job) btns = `<button class="rbtn" data-act="jobchange" data-id="${j}">Switch to ${JOBS[j].name}</button>` + btns;
+    }
+    if (n.job2 && p.tier === 1 && !p.unlocked.includes(n.job2) && st.state === 'finished') text = n.trial2Hint || n.trialHint;
     if (extra && st.state !== 'job' && st.state !== 'offer' && st.state !== 'ready') btns = extra + btns;
     // people with tales to tell: each 'Tell me more' is the next one
     if (n.lore && st.state !== 'job' && st.state !== 'offer' && st.state !== 'ready') {
@@ -570,7 +624,12 @@ export class Menus {
       this.render();
     }
     if (act === 'heal') { this.hooks.heal?.(); this.close('talk'); }
-    if (act === 'ferrylist') { this.ferrying = true; this.render('talk'); }
+    if (act === 'ferrylist' || act === 'keeplist') { this.ferrying = true; this.render('talk'); }
+    if (act === 'keepreg') { this.hooks.keeperRegister?.(this.npc); this.render('talk'); }
+    if (act === 'keepsave') { this.hooks.keeperSave?.(this.npc); this.render('talk'); }
+    if (act === 'keepgo') this.hooks.keeperGo?.(t.dataset.id);
+    if (act === 'qgo') this.hooks.questGo?.(this.questId);
+    if (act === 'chestwin') { this.close('talk'); this.show('chest'); }
     if (act === 'lore') { this.loreAt++; this.render('talk'); }
     if (act === 'ferry') this.hooks.ferry?.(t.dataset.id);
     if (act === 'shoptab') { this.shopTab = t.dataset.id; this.sellSel = null; this.render(id); }

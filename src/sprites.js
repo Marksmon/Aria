@@ -424,6 +424,43 @@ function tex(canvas, opts = {}) {
   return t;
 }
 
+// Second-job outfits: the first job's clothes recoloured, band by band of hue. Skin, hair, steel and
+// the staff's crystal are left alone (too pale, too grey, or skin-toned).
+function rgb2hsl(r, g, b) {
+  r /= 255; g /= 255; b /= 255;
+  const mx = Math.max(r, g, b), mn = Math.min(r, g, b), l = (mx + mn) / 2, d = mx - mn;
+  if (!d) return [0, 0, l];
+  const s = l > 0.5 ? d / (2 - mx - mn) : d / (mx + mn);
+  const h = mx === r ? ((g - b) / d + (g < b ? 6 : 0)) : mx === g ? (b - r) / d + 2 : (r - g) / d + 4;
+  return [h * 60, s, l];
+}
+function hsl2rgb(h, s, l) {
+  const k = (n) => (n + h / 30) % 12, a = s * Math.min(l, 1 - l);
+  const f = (n) => l - a * Math.max(-1, Math.min(k(n) - 3, 9 - k(n), 1));
+  return [f(0) * 255, f(8) * 255, f(4) * 255];
+}
+// bands: [test(h, s, l), to(h, s, l) -> [h, s, l]]
+const recolorer = (bands) => (px) => {
+  for (let i = 0; i < px.length; i += 4) {
+    if (px[i + 3] < 8) continue;
+    const [h, s, l] = rgb2hsl(px[i], px[i + 1], px[i + 2]);
+    for (const [test, to] of bands) {
+      if (!test(h, s, l)) continue;
+      const [r, g, b] = hsl2rgb(...to(h, s, l));
+      px[i] = r; px[i + 1] = g; px[i + 2] = b;
+      break;
+    }
+  }
+};
+const navy = (h, s, l) => h > 195 && h < 265 && s > 0.12 && l < 0.8; // the navy gambeson / the blue robe
+const crimson = (h, s) => (h > 325 || h < 8) && s > 0.45;              // the Blader's sash
+const silver = (h, s, l) => s < 0.15 && l > 0.5 && l < 0.8;             // the Sorcerer's trims
+const ATTIRE = {
+  blademaster: recolorer([[navy, (h, s, l) => [352, Math.min(0.8, s + 0.25), l * 1.05]], [crimson, (h, s, l) => [44, 0.8, Math.min(0.62, l + 0.18)]]]),
+  wizard: recolorer([[navy, (h, s, l) => [276, Math.min(0.75, s + 0.15), l * 1.15]], [silver, (h, s, l) => [44, 0.6, l * 0.85]]]),
+  magicknight: recolorer([[navy, (h, s, l) => [268, Math.min(0.7, s + 0.1), l * 1.1]], [crimson, (h, s, l) => [190, 0.7, Math.min(0.6, l + 0.15)]]]),
+};
+
 // A packed PixelLab sheet cut into textures: anims[dir][anim] = [tex], flash = white copies
 // for the hit flash. Frames start blank and fill in once the sheet image has loaded.
 // body = [w, h] in pixels of the standing character, used to size it in the world.
@@ -432,7 +469,7 @@ function tex(canvas, opts = {}) {
 // PixelLab draws some animations lower in the canvas than the standing pose, so each one gets
 // its own anchor: the median of its frames' feet. Planting every frame separately would make
 // the character jump by a few pixels per frame; the median keeps the animation's own bob.
-function pixelSet(url, { fw, fh, body, foot = 0, hair = [], anims, bald = false }) {
+function pixelSet(url, { fw, fh, body, foot = 0, hair = [], anims, bald = false, recolor = null }) {
   const at = (px) => px / fh;
   const blank = () => {
     const t = tex(mk(fw, fh).c);
@@ -471,6 +508,7 @@ function pixelSet(url, { fw, fh, body, foot = 0, hair = [], anims, bald = false 
       const b = t.image.getContext('2d');
       b.clearRect(0, 0, fw, fh);
       b.drawImage(img, x, y, fw, fh, 0, 0, fw, fh);
+      if (recolor) { const d = b.getImageData(0, 0, fw, fh); recolor(d.data); b.putImageData(d, 0, 0); } // a second job's colours
       if (paint) paint(b, t.userData, dir);
       const g = f.image.getContext('2d');
       g.globalCompositeOperation = 'source-over';
@@ -559,7 +597,7 @@ export function createSprites() {
   const fireFrames = [0, 1, 2].map((f) => tex(campfire(f)));
   const fireAspect = 112 / 96;
 
-  const sheet = (name) => pixelSet(SHEETS[`./art/${name}.png`], LAYOUTS[`./art/${name}.json`]);
+  const sheet = (name, opts = {}) => pixelSet(SHEETS[`./art/${name}.png`], { ...LAYOUTS[`./art/${name}.json`], ...opts });
   const mobs = {
     slime: sheet('slime'),
     slimeBlue: sheet('blueslime'),
@@ -589,6 +627,10 @@ export function createSprites() {
     player: SHEETS['./art/blader.png'] ? sheet('blader') : sheet('player'), // the Blader (the standard one once made)
     novice: SHEETS['./art/trainee.png'] ? sheet('trainee') : SHEETS['./art/novice.png'] ? sheet('novice') : null, // the standard Trainee once made
     sorcerer: SHEETS['./art/sorc.png'] ? sheet('sorc') : SHEETS['./art/sorcerer.png'] ? sheet('sorcerer') : null, // the standard Sorcerer once made
+    // second jobs: for now the first job's outfit in new colours (see ATTIRE); the Magic Knight has its own
+    blademaster: SHEETS['./art/blader.png'] ? sheet('blader', { recolor: ATTIRE.blademaster }) : null,
+    wizard: SHEETS['./art/sorc.png'] ? sheet('sorc', { recolor: ATTIRE.wizard }) : null,
+    magicknight: SHEETS['./art/mknight.png'] ? sheet('mknight') : SHEETS['./art/blader.png'] ? sheet('blader', { recolor: ATTIRE.magicknight }) : null,
     ground: tex(groundDetail(), { repeat: 28 }),
     shadow: tex(blobShadow()),
     water: tex(waterTex(), { repeat: 4 }),

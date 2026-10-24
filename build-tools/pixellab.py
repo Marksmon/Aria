@@ -108,6 +108,16 @@ CHARACTERS = [
         [("walk", {"template": "walking-8-frames", "mode": "skeleton-v3"}),
          ("attack", "casting a spell: raising the staff and thrusting it forward as magic bursts from the crystal")],
         size=(64, 96), ref=None, dirs=DIRS8),
+    # the Magic Knight: the second job for a hero who walked both paths (Blader and Sorcerer):
+    # steel and runes, sword and spell
+    pro("mknight", "young magic knight, completely bald head, face with two large dark eyes and small brows, no mouth, "
+        "no nose; a polished silver breastplate engraved with softly glowing blue rune lines over a deep violet tunic, "
+        "one steel pauldron with a rune engraving on the left shoulder, a short violet cape with silver trim, steel "
+        "gauntlets with faint glowing runes on the knuckles, a dark belt with a round rune-etched buckle, violet tasset "
+        "skirt, steel greaves over dark boots, holding a straight longsword whose blade glows with pale blue runes",
+        [("walk", {"template": "walking-8-frames", "mode": "skeleton-v3"}),
+         ("attack", "quick forward sword slash attack, the rune blade flaring with blue light")],
+        size=(64, 96), ref=None, dirs=DIRS8),
     # the Sorcerer: the Trainee's other path, a caster with a staff
     pro("sorcerer", "young sorcerer apprentice with shaggy dark blue hair, deep blue hooded mantle with silver "
         "rune trim over a grey tunic, brown belt with a small spellbook, brown boots, holding a gnarled wooden staff "

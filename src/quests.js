@@ -11,7 +11,7 @@
 import { ITEMS } from './items.js';
 import { MOB_DEFS } from './mobs.js';
 import { ZONE_NAMES } from './world.js';
-import { skillLv } from './skills.js';
+import { skillLv, secondJobOpen } from './skills.js';
 
 export const NPCS = {
   bram: {
@@ -69,11 +69,45 @@ export const NPCS = {
   },
   ulfr: {
     name: 'Captain Ulfr', map: 'city', x: 36.4, z: 51.4, trial: ['blader_trial', 'blader_trial2', 'blader_trial3'], job: 'swordman',
+    trial2: ['blademaster_trial', 'blademaster_trial2', 'blademaster_trial3'], job2: 'blademaster',
+    trial2Hint: 'At Job Level 40 a Blader may take the BladeMaster\'s trial with me. If you walk the Sorcerer\'s path too, the sword must have more of your skill points than the staff.',
     hello: 'The Watch keeps the roads clear. Strong arms are always welcome.',
     later: (lv) => `Nothing for you yet. Report back at Base Level ${lv}.`,
     bye: 'The roads are safer for your blade. Well fought.',
     trialHint: 'Trainees who have learnt all their basics can take the Blader\'s Trial with me: Trainee Job Level 10 and Basic Training 9.',
     quests: ['kingcrab', 'giantbeetle'],
+  },
+  // the Keepers: one in the camp and in each city. Register with one to save there (where you wake
+  // after fainting, and where a Return Feather takes you) and to be teleported to it by any other
+  // Keeper you have registered with; each also keeps the storage chest and heals.
+  keeper_camp: {
+    name: 'Keeper Tova', x: 37.6, z: 30.8, look: 'wren', keeper: true,
+    hello: 'I keep the fire\'s ledger. Sign it, and the fire remembers you: wake here after a fall, store your things, and walk the Keepers\' road to any town where you have signed.',
+    later: () => '', bye: 'The fire remembers.', quests: [],
+  },
+  keeper_city: {
+    name: 'Keeper Bera', map: 'city', x: 23.8, z: 32.4, look: 'ragna', keeper: true,
+    hello: 'Steinborg\'s Keeper. Sign the ledger and Steinborg remembers you: rest here, store your things, and take the Keepers\' road between towns where you have signed.',
+    later: () => '', bye: 'Steinborg remembers.', quests: [],
+  },
+  keeper_magic: {
+    name: 'Keeper Asa', map: 'magic', x: 22.2, z: 46.0, look: 'embla', keeper: true,
+    hello: 'Galdrheim\'s Keeper. The ledger here is written in runes, but your name will do. Sign, and the city remembers you.',
+    later: () => '', bye: 'Galdrheim remembers.', quests: [],
+  },
+  // the Magic Knight's trainer: for heroes who have walked both the Blader's and the Sorcerer's path
+  eirik: {
+    name: 'Sir Eirik the Runeblade', map: 'city', x: 40.6, z: 50.2, look: 'ulfr',
+    trial2: ['mknight_trial', 'mknight_trial2', 'mknight_trial3'], job2: 'magicknight',
+    hello: 'Steel or song, they ask you, as if a hand could hold only one. I hold both. So could you.',
+    later: () => '', bye: 'Keep your edge sharp and your runes sharper.',
+    trialHint: 'The Magic Knight walks both paths. Pass the Blader\'s trial with Captain Ulfr and the Sorcerer\'s with Archmage Vigdis in Galdrheim, put at least 20 skill points into each, reach Job Level 40, and come back to me.',
+    quests: [],
+    lore: [
+      'A Blader trusts the sword, a Sorcerer the song. A Magic Knight sings through the sword. Fire in the cut, frost in the thrust, thunder in the sweep.',
+      'Switch from one element to the next and the runes keep pace: the chain grows hotter with every change.',
+      'My aegis is half steel, half spell. The harder I hit and the louder I sing, the more it holds.',
+    ],
   },
   embla: {
     name: 'Embla the Stylist', map: 'city', x: 37.4, z: 36.2, stylist: true,
@@ -123,6 +157,8 @@ export const NPCS = {
   // ---------- Galdrheim, the city of sorcerers ----------
   vigdis: {
     name: 'Archmage Vigdis', map: 'magic', x: 32, z: 20.8, look: 'saeunn', trial: ['sorcerer_trial', 'sorcerer_trial2', 'sorcerer_trial3'], job: 'mage',
+    trial2: ['wizard_trial', 'wizard_trial2', 'wizard_trial3'], job2: 'wizard',
+    trial2Hint: 'At Job Level 40 a Sorcerer may take the Wizard\'s trial with me. If you walk the Blader\'s path too, the staff must have more of your skill points than the sword.',
     hello: 'Welcome to Galdrheim, child. Here we sing the world into shape; we call it galdr, the song-craft.',
     later: (lv) => `You are not ready for what I would ask. Come back at Base Level ${lv}.`,
     bye: 'Sing true, and the runes will answer.',
@@ -252,40 +288,95 @@ export const QUESTS = {
   },
   // ---------- the job trials: three short steps each, easy for a Trainee of Base Level ~10 ----------
   blader_trial: {
-    title: "Blader's Trial 1: Steel and Sweat", kind: 'kill', mob: 'slime', n: 10, lv: 1,
+    title: "Blader's Trial 1: Steel and Sweat", job: true, kind: 'kill', mob: 'slime', n: 10, lv: 1,
     intro: 'A Blader proves their sword first. Three tasks, all small, all honest. First: go to Mosvangr and beat ten Slimes. Mind your footing.',
     thanks: 'Ten Slimes and not one ran off with your sword. Good. Next task.',
     reward: { xp: 120, perz: 100 },
   },
   blader_trial2: {
-    title: "Blader's Trial 2: Quick Feet", kind: 'kill', mob: 'sprout', n: 8, lv: 1,
+    title: "Blader's Trial 2: Quick Feet", job: true, kind: 'kill', mob: 'sprout', n: 8, lv: 1,
     intro: 'A sword is no use if you cannot catch what you swing at. Sprouts run from anyone with a blade. Corner eight of them.',
     thanks: 'You can chase. Now let us see you stand your ground.',
     reward: { xp: 150, perz: 150 },
   },
   blader_trial3: {
-    title: "Blader's Trial 3: The Fen Patrol", kind: 'kill', mob: 'crab', n: 5, lv: 1,
+    title: "Blader's Trial 3: The Fen Patrol", job: true, kind: 'kill', mob: 'crab', n: 5, lv: 1,
     intro: 'Last task. The Crabs of Fenstrand, west of the camp, charge in a straight line and pinch hard. Beat five of them and come back standing.',
     thanks: 'Not a scratch you could not live with. You have a Blader\'s arm.',
     reward: { xp: 250, perz: 300 },
   },
   sorcerer_trial: {
-    title: 'Rune Trial 1: Water and Life', kind: 'fetch', items: { dew: 4, seed: 3 }, lv: 1,
+    title: 'Rune Trial 1: Water and Life', job: true, kind: 'fetch', items: { dew: 4, seed: 3 }, lv: 1,
     intro: 'Magic gathers in small things. First bring me four Water Drops from the Blue Slimes of Fenstrand, and three Seeds from the Sprouts.',
     thanks: 'Water and life. They hum in your hands; I can hear it from here. Next.',
     reward: { xp: 120, perz: 100 },
   },
   sorcerer_trial2: {
-    title: 'Rune Trial 2: The Twice-Born', kind: 'kill', mob: 'blueSlime', n: 6, lv: 1,
+    title: 'Rune Trial 2: The Twice-Born', job: true, kind: 'kill', mob: 'blueSlime', n: 6, lv: 1,
     intro: 'A sorcerer must keep a cool head when one foe becomes two. The Blue Slimes of Fenstrand split when struck. Beat six of them.',
     thanks: 'You did not panic when they split. Most do. One more.',
     reward: { xp: 150, perz: 150 },
   },
   sorcerer_trial3: {
-    title: 'Rune Trial 3: Light in the Dark', kind: 'fetch', items: { glow: 3 }, lv: 1,
+    title: 'Rune Trial 3: Light in the Dark', job: true, kind: 'fetch', items: { glow: 3 }, lv: 1,
     intro: 'Last, light. Wisps drift over the fields near the camp, most of all at night. Bring me three pinches of their Glow Dust.',
     thanks: 'Light, water and life... and they all answer you. The runes have spoken.',
     reward: { xp: 250, perz: 300 },
+  },
+  // ---------- the second jobs: three harder steps each, from Job Level 40 of a first job ----------
+  blademaster_trial: {
+    title: 'BladeMaster Trial 1: The Goblin Line', job: true, kind: 'kill', mob: 'goblinWarrior', n: 30, lv: 1,
+    intro: 'A BladeMaster ends a fight before it begins. Thirty Goblins hold the burnt wood of Brennholt, east of Askheid. Cut through them.',
+    thanks: 'Thirty, and you are still standing straight. Next, speed.',
+    reward: { xp: 15000, perz: 3000 },
+  },
+  blademaster_trial2: {
+    title: 'BladeMaster Trial 2: Faster than Knives', job: true, kind: 'kill', mob: 'koboldAssassin', n: 20, lv: 1,
+    intro: 'The Kobold Assassins of Grjotvangr and Kolgrof dart in and out like wasps. Twenty of them. If you can catch those, you can catch anything.',
+    thanks: 'Quick hands. Quicker than mine, these days. One last test.',
+    reward: { xp: 20000, perz: 4000 },
+  },
+  blademaster_trial3: {
+    title: 'BladeMaster Trial 3: The Burning Shell', job: true, kind: 'kill', mob: 'cinderLord', n: 1, lv: 1,
+    intro: 'The Giant Beetle of Askheid. Alone. One target, one blade, until it falls.',
+    thanks: 'You did not flinch once. Kneel; rise a BladeMaster.',
+    reward: { xp: 30000, perz: 6000 },
+  },
+  wizard_trial: {
+    title: 'Wizard Trial 1: Fire and Shadow', job: true, kind: 'fetch', items: { ember_dust: 10, shade: 10 }, lv: 1,
+    intro: 'A Wizard commands every element, not just a favourite. Bring me ten pinches of Fire Dust from the Fire Wisps of Askheid and ten Dark Crystals from the Dark Wisps of Svartskog.',
+    thanks: 'Fire and shadow in one pouch, and you did not burn yourself. Next.',
+    reward: { xp: 15000, perz: 3000 },
+  },
+  wizard_trial2: {
+    title: 'Wizard Trial 2: Arrows in the Wind', job: true, kind: 'kill', mob: 'goblinArcher', n: 25, lv: 1,
+    intro: 'The Goblin Archers of Brennholt shoot from range, as we do. Out-cast twenty-five of them.',
+    thanks: 'They never came close. That is the point. One more.',
+    reward: { xp: 20000, perz: 4000 },
+  },
+  wizard_trial3: {
+    title: 'Wizard Trial 3: The Rotting Well', job: true, kind: 'kill', mob: 'gloomMother', n: 1, lv: 1,
+    intro: 'The Giant Mushroom of Svartskog chokes a rune-well. Burn it, freeze it, break it: any element you like, as long as it falls.',
+    thanks: 'The well sings again. So, Wizard, do you.',
+    reward: { xp: 30000, perz: 6000 },
+  },
+  mknight_trial: {
+    title: 'Magic Knight Trial 1: Steel', job: true, kind: 'kill', mob: 'koboldWarrior', n: 30, lv: 1,
+    intro: 'First, steel. Thirty Kobolds in the hills of Grjotvangr, south of Saltvik. Sword in hand.',
+    thanks: 'Your sword arm is sound. Now the other half.',
+    reward: { xp: 15000, perz: 3000 },
+  },
+  mknight_trial2: {
+    title: 'Magic Knight Trial 2: Song', job: true, kind: 'fetch', items: { shade: 10, glow: 15 }, lv: 1,
+    intro: 'Then, song. Ten Dark Crystals and fifteen pinches of Glow Dust: I etch the runes of your blade with them.',
+    thanks: 'They hum when they touch. Good. Last, both at once.',
+    reward: { xp: 20000, perz: 4000 },
+  },
+  mknight_trial3: {
+    title: 'Magic Knight Trial 3: Steel and Song', job: true, kind: 'kill', mob: 'tideKing', n: 1, lv: 1,
+    intro: 'The King Crab of Saltvik: a shell no sword cuts and no spell burns. Both together will. Bring it down.',
+    thanks: 'Steel and song, as one. Rise, Magic Knight.',
+    reward: { xp: 30000, perz: 6000 },
   },
   // ---------- Steinborg ----------
   pearls: {
@@ -345,6 +436,12 @@ export const QUESTS = {
   },
 };
 
+// quests that come in a series (the job trials): each step's next one, accepted as soon as it is handed in
+export const NEXT = {};
+for (const n of Object.values(NPCS)) for (const list of [n.trial, n.trial2]) list?.forEach((id, i) => { if (list[i + 1]) NEXT[id] = list[i + 1]; });
+// who gives a quest
+export const giverOf = (id) => Object.keys(NPCS).find((n) => NPCS[n].quests.includes(id) || NPCS[n].trial?.includes(id) || NPCS[n].trial2?.includes(id));
+
 export class Quests {
   constructor() {
     this.active = {}; // id -> kills so far, or list of zones visited
@@ -356,13 +453,22 @@ export class Quests {
   //   offer | locked (needs level) | active | ready | finished | job (trial done: the job change)
   status(npc, prog, inv) {
     const n = NPCS[npc];
-    // a job trial comes first for a Trainee who is ready for it
-    if (n.trial && prog.job === 'novice') {
-      const series = n.trial, id = series.find((k) => !this.done.includes(k));
-      if (!id) return { id: series.at(-1), q: QUESTS[series.at(-1)], state: 'job' }; // every step done
+    const series = (list, done) => {
+      const id = list.find((k) => !this.done.includes(k));
+      if (!id) return done;
       const q = QUESTS[id];
       if (id in this.active) return { id, q, state: this.ready(id, inv) ? 'ready' : 'active' };
-      if (prog.jobLv >= 10 && skillLv(prog, 'basics') >= 9) return { id, q, state: 'offer' };
+      return { id, q, state: 'offer' };
+    };
+    // a first job's trial: for a Trainee ready for it, or a hero of the other first job walking this path too
+    if (n.trial && !prog.unlocked.includes(n.job)
+      && (prog.job === 'novice' ? prog.jobLv >= 10 && skillLv(prog, 'basics') >= 9 : prog.tier === 1)) {
+      const st = series(n.trial, { id: n.trial.at(-1), q: QUESTS[n.trial.at(-1)], state: 'job', job: n.job });
+      return { ...st, job: n.job };
+    }
+    // a second job's trial: from Job Level 40, by the rules in skills.js (secondJobOpen)
+    if (n.trial2 && secondJobOpen(prog, n.job2)) {
+      return { ...series(n.trial2, { id: n.trial2.at(-1), q: QUESTS[n.trial2.at(-1)], state: 'job' }), job: n.job2 };
     }
     const id = n.quests.find((k) => !this.done.includes(k));
     if (!id) return { state: 'finished' };

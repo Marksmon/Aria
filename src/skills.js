@@ -4,10 +4,17 @@
 // A Blader is plain sword craft; a Sorcerer casts spells from range (cast times shorten with FNS,
 // magic never misses). Each buys from their own tree and gets two free passives at Job 10.
 //
+// A hero who has walked several paths (see progress.js) keeps every tree they earned: passives work
+// whatever job they wear, and actives too, as long as the right weapon is in hand (weapon: 'sword'
+// = any weapon but a staff, 'staff' = a staff). Skill points only go into the active job's trees:
+// to train the other path, switch to it at a Keeper.
+//
 // kind: active (goes on the hotbar) | passive
 // target: 'mob' for skills aimed at a monster; range = how close you must be (world units)
 // cast: seconds to cast (spells), before FNS shortens it; magic: the spell's element (damage from MATK)
 // free: { jobLv } learnt automatically; granted: learnt once its needs are met; else bought with points
+import { TREES, JOBS, SECOND_AT } from './progress.js';
+
 export const SKILLS = {
   // ---------- Novice ----------
   basics: {
@@ -45,12 +52,12 @@ export const SKILLS = {
     desc: (lv) => `+${lv} DEF and +${lv}% Max HP.`,
   },
   cleave: {
-    name: 'Cleave', job: 'swordman', kind: 'active', max: 10, target: 'mob', range: 1.35, icon: 'skill_cleave',
+    name: 'Cleave', job: 'swordman', kind: 'active', max: 10, target: 'mob', range: 1.35, weapon: 'sword', icon: 'skill_cleave',
     sp: (lv) => 5 + Math.floor(lv / 2),
     desc: (lv) => `A wide sweep: ${100 + 10 * lv}% damage to your target, half that to any monster beside it.`,
   },
   heavy: {
-    name: 'Heavy Strike', job: 'swordman', kind: 'active', max: 10, needs: { cleave: 3 }, target: 'mob', range: 1.35, icon: 'skill_rend',
+    name: 'Heavy Strike', job: 'swordman', kind: 'active', max: 10, needs: { cleave: 3 }, target: 'mob', range: 1.35, weapon: 'sword', icon: 'skill_rend',
     sp: () => 8,
     desc: (lv) => `A two-handed blow: ${130 + 15 * lv}% damage, +${3 * lv}% hit chance.`,
   },
@@ -65,7 +72,7 @@ export const SKILLS = {
     desc: (lv) => `Plant your feet for ${6 + Math.floor(lv / 2)} s: no flinching, ${lv}% less damage taken.`,
   },
   earthsplit: {
-    name: 'Ground Slash', job: 'swordman', kind: 'active', max: 10, needs: { heavy: 5 }, cd: 3, icon: 'skill_earthsplit',
+    name: 'Ground Slash', job: 'swordman', kind: 'active', max: 10, needs: { heavy: 5 }, cd: 3, weapon: 'sword', icon: 'skill_earthsplit',
     sp: () => 20,
     desc: (lv) => `Sweep the blade low all around you: ${100 + 10 * lv}% damage to everything close, pushing it back a little.`,
   },
@@ -84,22 +91,22 @@ export const SKILLS = {
     desc: (lv) => `+${2 * lv}% Max SP, and +${lv} SP each time SP recovers.`,
   },
   spark: {
-    name: 'Ember Bolt', job: 'mage', kind: 'active', max: 10, target: 'mob', range: 7, magic: 'fire', icon: 'skill_spark',
+    name: 'Ember Bolt', job: 'mage', kind: 'active', max: 10, target: 'mob', range: 7, magic: 'fire', weapon: 'staff', icon: 'skill_spark',
     sp: (lv) => 6 + lv, cast: (lv) => 0.5 + 0.1 * lv, cd: 0.6,
     desc: (lv) => `Hurl a bolt of fire: ${100 + 20 * lv}% MATK. Fire: strong against Earth, weak against Water.`,
   },
   frost: {
-    name: 'Frost Shard', job: 'mage', kind: 'active', max: 10, target: 'mob', range: 7, magic: 'water', icon: 'skill_frost',
+    name: 'Frost Shard', job: 'mage', kind: 'active', max: 10, target: 'mob', range: 7, magic: 'water', weapon: 'staff', icon: 'skill_frost',
     sp: (lv) => 8 + lv, cast: (lv) => 0.6 + 0.08 * lv, cd: 0.6,
     desc: (lv) => `A shard of ice: ${90 + 10 * lv}% MATK, ${4 * lv}% chance to freeze the monster for 2.5 s. Water: strong against Fire, weak against Wind.`,
   },
   arc: {
-    name: 'Arc Lightning', job: 'mage', kind: 'active', max: 10, needs: { spark: 4 }, target: 'mob', range: 7, magic: 'wind', icon: 'skill_arc',
+    name: 'Arc Lightning', job: 'mage', kind: 'active', max: 10, needs: { spark: 4 }, target: 'mob', range: 7, magic: 'wind', weapon: 'staff', icon: 'skill_arc',
     sp: (lv) => 12 + lv, cast: (lv) => 1 + 0.1 * lv, cd: 1,
     desc: (lv) => `Lightning strikes your target for ${80 + 10 * lv}% MATK and leaps to 2 monsters nearby for half that. Wind: strong against Water, weak against Earth.`,
   },
   flamering: {
-    name: 'Flame Ring', job: 'mage', kind: 'active', max: 10, needs: { spark: 5 }, magic: 'fire', icon: 'skill_flamering',
+    name: 'Flame Ring', job: 'mage', kind: 'active', max: 10, needs: { spark: 5 }, magic: 'fire', weapon: 'staff', icon: 'skill_flamering',
     sp: (lv) => 20 + lv, cast: () => 1.5, cd: 3,
     desc: (lv) => `A ring of fire bursts around you: ${100 + 12 * lv}% MATK (Fire) to every monster close by.`,
   },
@@ -117,33 +124,132 @@ export const SKILLS = {
     name: 'Swift Chant', job: 'mage', kind: 'passive', max: 1, free: { jobLv: 10 }, icon: 'skill_swiftchant',
     desc: () => 'Spells cast 15% faster.',
   },
+
+  // ---------- BladeMaster (from the Blader): one target, cut down fast. Blade skills may Combo
+  // (a free extra strike); each Combo adds a Momentum stack; Final Blade spends the stacks ----------
+  blademastery: {
+    name: 'Blade Mastery', job: 'blademaster', kind: 'passive', max: 10, icon: 'skill_discipline',
+    desc: (lv) => `+${3 * lv} ATK and +${lv} HIT with swords.`,
+  },
+  comboedge: {
+    name: 'Combo Edge', job: 'blademaster', kind: 'passive', max: 10, icon: 'skill_rhythm',
+    desc: (lv) => `Thrust, Cleave, Heavy Strike, Twin Fang and Piercing Edge have a ${4 * lv}% chance to Combo: a free extra strike for 100% damage.`,
+  },
+  momentum: {
+    name: 'Momentum', job: 'blademaster', kind: 'passive', max: 5, needs: { comboedge: 3 }, icon: 'skill_warcry',
+    desc: (lv) => `Each Combo adds a Momentum stack (up to 5, 8 s): +${lv}% ATK per stack. Final Blade spends them all.`,
+  },
+  twinfang: {
+    name: 'Twin Fang', job: 'blademaster', kind: 'active', max: 10, target: 'mob', range: 1.35, weapon: 'sword', icon: 'skill_cleave',
+    sp: (lv) => 8 + Math.floor(lv / 2), cd: 0.8,
+    desc: (lv) => `Two quick cuts, ${90 + 10 * lv}% damage each. Each cut can Combo.`,
+  },
+  pierce: {
+    name: 'Piercing Edge', job: 'blademaster', kind: 'active', max: 10, needs: { twinfang: 3 }, target: 'mob', range: 1.35, weapon: 'sword', icon: 'skill_thrust',
+    sp: (lv) => 12 + lv, cd: 1.5,
+    desc: (lv) => `A thrust that finds the gaps: ${200 + 25 * lv}% damage, ignoring half the monster's DEF.`,
+  },
+  finalblade: {
+    name: 'Final Blade', job: 'blademaster', kind: 'active', max: 5, needs: { pierce: 5, momentum: 1 }, target: 'mob', range: 1.35, weapon: 'sword', icon: 'skill_laststand',
+    sp: (lv) => 25 + 3 * lv, cd: 6,
+    desc: (lv) => `Spend every Momentum stack on one blow: ${300 + 60 * lv}% damage, +50% for each stack.`,
+  },
+
+  // ---------- Wizard (from the Sorcerer): elements, over an area. Changing element from one spell
+  // to the next builds Resonance; Stone Spike shatters a monster for the next spell ----------
+  attune: {
+    name: 'Elemental Attunement', job: 'wizard', kind: 'passive', max: 10, icon: 'skill_manawell',
+    desc: (lv) => `Spells deal ${3 * lv}% more damage.`,
+  },
+  resonance: {
+    name: 'Resonance', job: 'wizard', kind: 'passive', max: 5, needs: { attune: 3 }, icon: 'skill_swiftchant',
+    desc: (lv) => `A spell of a different element from your last one (within 8 s) deals ${6 * lv}% more damage.`,
+  },
+  stonespike: {
+    name: 'Stone Spike', job: 'wizard', kind: 'active', max: 10, target: 'mob', range: 7, magic: 'earth', weapon: 'staff', icon: 'skill_stone',
+    sp: (lv) => 10 + lv, cast: (lv) => 0.8 + 0.05 * lv, cd: 0.6,
+    desc: (lv) => `A spike of rock bursts under the monster: ${130 + 20 * lv}% MATK (Earth), and it is Shattered for 6 s: the next spell of another element on it deals 30% more. Earth: strong against Wind, weak against Fire.`,
+  },
+  quake: {
+    name: 'Earthquake', job: 'wizard', kind: 'active', max: 10, needs: { stonespike: 3 }, target: 'mob', range: 7, magic: 'earth', weapon: 'staff', icon: 'skill_earthsplit',
+    sp: (lv) => 30 + 2 * lv, cast: () => 1.6, cd: 3,
+    desc: (lv) => `The ground heaves around your target: ${100 + 15 * lv}% MATK (Earth) to every monster within 3 paces of it; 25% of them are stunned for 1.5 s.`,
+  },
+  meteor: {
+    name: 'Meteor Storm', job: 'wizard', kind: 'active', max: 10, needs: { spark: 5 }, target: 'mob', range: 7, magic: 'fire', weapon: 'staff', icon: 'skill_flamering',
+    sp: (lv) => 40 + 2 * lv, cast: (lv) => 2.2 + 0.05 * lv, cd: 4,
+    desc: (lv) => `Three meteors fall around your target: ${70 + 10 * lv}% MATK (Fire) each to every monster within 3 paces.`,
+  },
+  stormgust: {
+    name: 'Storm Gust', job: 'wizard', kind: 'active', max: 10, needs: { frost: 5 }, target: 'mob', range: 7, magic: 'water', weapon: 'staff', icon: 'skill_frost',
+    sp: (lv) => 36 + 2 * lv, cast: () => 2.0, cd: 4,
+    desc: (lv) => `A freezing storm around your target: ${90 + 12 * lv}% MATK (Water) to every monster within 3 paces, ${3 * lv}% chance each to freeze for 2.5 s.`,
+  },
+  thunder: {
+    name: 'Thunderstorm', job: 'wizard', kind: 'active', max: 10, needs: { arc: 5 }, target: 'mob', range: 7, magic: 'wind', weapon: 'staff', icon: 'skill_arc',
+    sp: (lv) => 32 + 2 * lv, cast: () => 1.7, cd: 3,
+    desc: (lv) => `Lightning rains around your target: ${100 + 15 * lv}% MATK (Wind) to every monster within 3 paces.`,
+  },
+
+  // ---------- Magic Knight (Blader and Sorcerer both walked): elemental sword skills that hit with
+  // ATK and MATK together, and a rune barrier made of both. Changing element builds an Elemental Chain ----------
+  spellblade: {
+    name: 'Spellblade', job: 'magicknight', kind: 'passive', max: 10, icon: 'skill_ward',
+    desc: (lv) => `Your sword attacks add ${3 * lv}% of your MATK.`,
+  },
+  elemchain: {
+    name: 'Elemental Chain', job: 'magicknight', kind: 'passive', max: 5, needs: { spellblade: 3 }, icon: 'skill_rhythm',
+    desc: (lv) => `An Edge of a different element from your last one (within 6 s) deals ${6 * lv}% more damage and gives back 3 SP.`,
+  },
+  flameedge: {
+    name: 'Flame Edge', job: 'magicknight', kind: 'active', max: 10, target: 'mob', range: 1.35, weapon: 'sword', magic: 'fire', edge: true, icon: 'skill_spark',
+    sp: (lv) => 10 + lv, cd: 0.8,
+    desc: (lv) => `A burning cut: ${110 + 10 * lv}% ATK and ${60 + 10 * lv}% MATK, as Fire.`,
+  },
+  frostedge: {
+    name: 'Frost Edge', job: 'magicknight', kind: 'active', max: 10, target: 'mob', range: 1.35, weapon: 'sword', magic: 'water', edge: true, icon: 'skill_frost',
+    sp: (lv) => 10 + lv, cd: 0.8,
+    desc: (lv) => `A freezing thrust: ${100 + 10 * lv}% ATK and ${70 + 10 * lv}% MATK, as Water; ${3 * lv}% chance to freeze for 2 s.`,
+  },
+  thunderedge: {
+    name: 'Thunder Edge', job: 'magicknight', kind: 'active', max: 10, needs: { flameedge: 3, frostedge: 3 }, target: 'mob', range: 1.35, weapon: 'sword', magic: 'wind', edge: true, icon: 'skill_arc',
+    sp: (lv) => 16 + lv, cd: 1.2,
+    desc: (lv) => `A crackling sweep: ${90 + 10 * lv}% ATK and ${60 + 10 * lv}% MATK, as Wind, and half that to monsters beside your target.`,
+  },
+  aegis: {
+    name: 'Stone Aegis', job: 'magicknight', kind: 'active', max: 10, needs: { spellblade: 1 }, cd: 25, icon: 'skill_ironhide',
+    sp: (lv) => 20 + 2 * lv,
+    desc: (lv) => `Runes of stone close round you for 20 s: a barrier that soaks ${50 + 10 * lv}% of your ATK plus ${50 + 10 * lv}% of your MATK in damage, and +${lv} DEF while it holds.`,
+  },
 };
 
-// the job a job came from: both first jobs come from the Trainee
-const PARENT = { swordman: 'novice', mage: 'novice' };
-// a job knows its own skills and those of the jobs before it
-export const jobHas = (job, skillJob) => skillJob === job || PARENT[job] === skillJob;
-
-// skills shown in the Skills window for a job, current job first
-export function skillList(job) {
-  return Object.keys(SKILLS).filter((id) => jobHas(job, SKILLS[id].job))
-    .sort((a, b) => (SKILLS[a].job === job ? -1 : 0) - (SKILLS[b].job === job ? -1 : 0));
+// skills shown in the Skills window: every tree the hero has earned, the current job's first,
+// then the jobs it stands on (prog: Progress)
+export function skillList(prog) {
+  const trees = prog.trees, order = [...TREES[prog.job], ...[...trees].filter((t) => !TREES[prog.job].includes(t))];
+  return Object.keys(SKILLS).filter((id) => trees.has(SKILLS[id].job))
+    .sort((a, b) => order.indexOf(SKILLS[a].job) - order.indexOf(SKILLS[b].job));
 }
 
 // level the player has in a skill (0 = not learnt). prog: Progress
 export function skillLv(prog, id) {
   const s = SKILLS[id];
-  if (!s || !jobHas(prog.job, s.job)) return 0;
-  if (s.free) return prog.job !== s.job || prog.jobLv >= s.free.jobLv ? 1 : 0;
+  if (!s || !prog.trees.has(s.job)) return 0;
+  if (s.free) return prog.levelOf(s.job) >= s.free.jobLv ? 1 : 0;
   if (s.granted) return Object.entries(s.needs).every(([k, n]) => skillLv(prog, k) >= n) ? 1 : 0;
   return prog.skills[id] || 0;
 }
+
+// the weapon an active skill needs in hand, and whether it is there ('sword' = any weapon but a
+// staff; bare hands count as a sword for this)
+export const WEAPON_NAMES = { sword: 'a sword', staff: 'a staff' };
+export const weaponOk = (id, weaponKind) => !SKILLS[id].weapon || SKILLS[id].weapon === weaponKind;
 
 // why a skill can't be raised right now, or null if it can
 export function learnBlock(prog, id) {
   const s = SKILLS[id];
   if (s.free || s.granted) return 'free';
-  if (prog.job !== s.job) return 'job';
+  if (!TREES[prog.job].includes(s.job)) return 'job'; // points only go to the active job's trees (switch at a Keeper)
   if (skillLv(prog, id) >= s.max) return 'max';
   for (const [k, n] of Object.entries(s.needs || {})) if (skillLv(prog, k) < n) return `Needs ${SKILLS[k].name} ${n}`;
   if (prog.skillPoints <= 0) return 'points';
@@ -154,6 +260,22 @@ export function learn(prog, id) {
   if (learnBlock(prog, id)) return false;
   prog.skills[id] = (prog.skills[id] || 0) + 1;
   return true;
+}
+
+// skill points spent in one job's tree
+export const pointsIn = (prog, job) => Object.entries(prog.skills).reduce((a, [id, n]) => a + (SKILLS[id]?.job === job ? n : 0), 0);
+export const MK_POINTS = 20; // the Magic Knight wants this many points in both the Blader's and the Sorcerer's tree
+// may this hero take a second job's trial? From Job Level 40 of a first job. The Magic Knight needs
+// 20 points in each first job's tree; short of that, a hero who walked both first paths may only
+// take the second job of the one they put the most points into.
+export function secondJobOpen(prog, job2) {
+  const from = JOBS[job2].from;
+  if (prog.tier !== 1 || prog.jobLv < SECOND_AT || !from.every((j) => prog.unlocked.includes(j))) return false;
+  const pts = { swordman: pointsIn(prog, 'swordman'), mage: pointsIn(prog, 'mage') };
+  const both = pts.swordman >= MK_POINTS && pts.mage >= MK_POINTS;
+  if (from.length > 1) return both;
+  const other = from[0] === 'swordman' ? 'mage' : 'swordman';
+  return both || !prog.unlocked.includes(other) || pts[from[0]] >= pts[other];
 }
 
 // what a skill costs to use at a level

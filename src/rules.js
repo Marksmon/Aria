@@ -30,6 +30,10 @@ export const JOB_RULES = {
   novice:   { hpFactor: 0,  hpIncrease: 500, spIncrease: 100, delay: { fist: 500, sword: 700 }, weight: 2000 },
   swordman: { hpFactor: 70, hpIncrease: 500, spIncrease: 200, delay: { fist: 400, sword: 550 }, weight: 2800 },
   mage:     { hpFactor: 30, hpIncrease: 500, spIncrease: 600, delay: { fist: 500, sword: 650 }, weight: 2200 },
+  // second jobs, modelled on Ragnarok's Knight, Wizard and Crusader
+  blademaster: { hpFactor: 150, hpIncrease: 500, spIncrease: 300, delay: { fist: 380, sword: 480 }, weight: 3200 },
+  wizard:      { hpFactor: 55, hpIncrease: 500, spIncrease: 900, delay: { fist: 500, sword: 620 }, weight: 2400 },
+  magicknight: { hpFactor: 110, hpIncrease: 700, spIncrease: 600, delay: { fist: 420, sword: 520 }, weight: 3000 },
 };
 
 function baseHp(lv, j) {

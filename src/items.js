@@ -49,7 +49,7 @@ const BASE_ITEMS = {
   herb:    { type: 'use', usable: true, name: 'Green Herb', use: { hp: [5, 8], cure: true }, desc: 'A bitter green herb that clears the head. Cures spore sickness and restores a little HP.', from: 'Sprouts and Mushrooms' },
   quick:   { type: 'use', usable: true, name: 'Speed Potion', use: { buff: 'aspd', t: 180 }, desc: 'A fizzing potion that makes your hands faster than your thoughts. +10% attack speed for 3 minutes.' },
   wander:  { type: 'use', usable: true, name: 'Teleport Feather', use: { warp: 'random' }, desc: 'A feather a Wisp left behind. Throw it up and the wind whisks you to a random spot on this map.', from: 'Wisps' },
-  homeward: { type: 'use', usable: true, name: 'Return Feather', use: { warp: 'camp' }, desc: 'A feather that remembers the fire at Eldrun. Hold it tight and it carries you back to camp.' },
+  homeward: { type: 'use', usable: true, name: 'Return Feather', use: { warp: 'camp' }, desc: 'A feather that remembers where you saved. Hold it tight and it carries you back to your save point (the camp, until you save with a Keeper).' },
 
   // one-handed swords (Ragnarok rules, see rules.js)
   twig_sword:   { type: 'equip', slot: 'weapon', jobs: ['novice', 'swordman'], name: 'Wooden Sword',  atk: 15, wlv: 1, icon: 'weapon0', desc: 'A practice sword whittled from a branch. A stick with ambitions; every Trainee starts with one.' },
@@ -266,7 +266,13 @@ export const recipeKind = (r) => {
 
 // equipment slots, in the Equipment window's order
 export const JOB_NAMES = { novice: 'Trainee', swordman: 'Blader', mage: 'Sorcerer' };
-export const canWear = (id, job) => !ITEMS[id]?.jobs || ITEMS[id].jobs.includes(job);
+// job: one job id, or the list of jobs a hero has earned (any of them will do); second jobs wear
+// what the jobs before them wear
+const WEARS_AS = { blademaster: ['swordman'], wizard: ['mage'], magicknight: ['swordman', 'mage'] };
+export const canWear = (id, job) => {
+  const it = ITEMS[id], jobs = [job].flat().flatMap((j) => [j, ...(WEARS_AS[j] || [])]);
+  return !it?.jobs || jobs.some((j) => it.jobs.includes(j));
+};
 // who can wear it, for item descriptions
 export const jobLine = (it) => (it.jobs ? it.jobs.map((j) => JOB_NAMES[j]).join(', ') + ' only' : 'All jobs');
 
