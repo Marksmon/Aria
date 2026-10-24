@@ -39,7 +39,10 @@ CHARS['player'] = {'eight': True, 'use': {'walk': 'walking'}, 'prefer': {'walkin
 CHARS.update({name: {'eight': True} for name in ['bram', 'tilly', 'wren', 'hild', 'gunnar', 'ragna', 'ulfr', 'saeunn']})
 CHARS['novice'] = {'eight': True, 'use': {'walk': 'walking'}, 'skip': {'dodge'}, 'strip': True,  # skeleton walk in all eight directions
                    'eyes': {'down': [-5, 19, 6, 19], 'right': [6, 18]}}
-CHARS['sorcerer'] = {'eight': True, 'use': {'walk': 'walking'}, 'skip': {'dodge'}, 'strip': True}  # the Sorcerer, made like the Trainee
+CHARS['sorcerer'] = {'eight': True, 'use': {'walk': 'walking'}, 'skip': {'dodge'}, 'strip': True}
+# the character standard (docs/character-standard.md): the new Trainee, bald, walk and attack only
+CHARS['trainee'] = {'eight': True, 'use': {'walk': 'walking'}, 'strip': True}
+CHARS['embla'] = {'eight': True}  # the Sorcerer, made like the Trainee
 
 
 def islands(f):

@@ -79,6 +79,17 @@ CHARACTERS = [
          ("attack", "quick forward sword slash attack"),
          ("dodge", "quick dodge roll forward, tucking into a somersault and landing on his feet")],
         size=(64, 96), ref=None, dirs=DIRS8),
+    # The character standard (docs/character-standard.md): bodies are bald with the standard face
+    # (eyes only, no mouth); the game cuts the head off and draws the shared head and hair layers.
+    # Walk and attack only (no dodge). The Trainee: light armour a beginner would wear.
+    pro("trainee", "young trainee adventurer, completely bald head, face with two large dark eyes and small brows, no mouth, "
+        "no nose; a cream padded linen tunic under a light brown leather chest guard with brass studs and a stitched green "
+        "sprout emblem on the chest, one small round leather shoulder pad on the left shoulder, leather bracers, a teal-trimmed "
+        "collar, a brown belt with a brass buckle and a coin pouch, knee-length brown trousers, wrapped leather ankle boots, "
+        "a short red neckerchief with a small white knot pattern, holding a wooden practice sword",
+        [("walk", {"template": "walking-8-frames", "mode": "skeleton-v3"}),
+         ("attack", "quick forward sword slash attack")],
+        size=(64, 96), ref=None, dirs=DIRS8),
     # the Sorcerer: the Trainee's other path, a caster with a staff
     pro("sorcerer", "young sorcerer apprentice with shaggy dark blue hair, deep blue hooded mantle with silver "
         "rune trim over a grey tunic, brown belt with a small spellbook, brown boots, holding a gnarled wooden staff "
@@ -121,6 +132,9 @@ CHARACTERS = [
         "blue tabard with a white tower emblem over chainmail, red cloak, spear in hand", size=(64, 96)),
     pro("ragna", "calm young herbalist woman with long black hair, round spectacles, mossy green robe with "
         "many small pouches, a basket of herbs on her arm", size=(64, 96)),
+    pro("embla", "friendly young stylist woman with copper-red hair in a high bun held by a comb, face with two large dark "
+        "eyes and small brows, no mouth, no nose; a lavender apron with many small pockets over a white blouse, a dark "
+        "skirt, holding a pair of silver scissors", size=(64, 96)),
     pro("saeunn", "mysterious old seeress with long silver hair under a dark hooded cloak of midnight blue, "
         "necklace of glass beads and small bones, grey fur collar, holding a tall iron distaff staff with a glowing "
         "rune stone", size=(64, 96)),

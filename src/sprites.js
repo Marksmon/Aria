@@ -545,7 +545,7 @@ export function createSprites() {
     props,
     fire: { frames: fireFrames, aspect: fireAspect, w: 1.2 },
     player: sheet('player'), // the Swordsman
-    novice: SHEETS['./art/novice.png'] ? sheet('novice') : null,
+    novice: SHEETS['./art/trainee.png'] ? sheet('trainee') : SHEETS['./art/novice.png'] ? sheet('novice') : null, // the standard Trainee once made
     sorcerer: SHEETS['./art/sorcerer.png'] ? sheet('sorcerer') : null,
     ground: tex(groundDetail(), { repeat: 28 }),
     shadow: tex(blobShadow()),

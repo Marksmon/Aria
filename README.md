@@ -207,13 +207,17 @@ swords: Blader only. Staves: Sorcerer only (the Apprentice Staff also Trainees).
 Blader and Sorcerer. Bucklers and round shields: Trainee and Blader. Everything else: any job.
 A job change puts away what the new job can't use.
 
-**Headgear you can see.** Hats are drawn on your character, pinned to the head in every frame,
-for any job's sprite, and hide the hair they cover: Horned Helm, Woven Cap, Flower Wreath, Jarl's
-Ember Crown, and the animated **Flame Circlet** (crafted from the MVP's Ember Heart). Face pieces
-are made but left out for now.
+**Headgear you can see.** Two slots, Head and Face. Hats hide the hair they cover: Horned Helm,
+Woven Cap, Flower Wreath, Jarl's Ember Crown, and the animated **Flame Circlet** (crafted from the
+MVP's Ember Heart).
 
-**Looks by job.** Trainees wear plain linen with a wooden practice sword; the Blader and Sorcerer
-looks come with the job change.
+**Your look, Ragnarok style.** A character is layers: the job's body, then one shared head (the
+standard face: eyes only, no mouth), then your hairstyle, then headgear. You choose a hairstyle
+(Tousled or Long) and a hair dye (8 colours) when you start a new game; **Embla the Stylist** by
+Steinborg's fountain changes them for 1,000 perz. Your hair stays the same through job changes,
+and the job changes your outfit. Headgear snaps to the head layer, so hats sit on the crown and
+glasses and masks sit on the eyes, in every direction and every frame. See
+`docs/character-standard.md`.
 
 **Perz and shops.** Perz is Aria's coin (Ragnarok's zeny). Monsters don't drop perz, as in Ragnarok: sell your loot. In Steinborg,
 **Hild the Trader** sells draughts, tonics, herbs, feathers and torches, and **Gunnar** sells

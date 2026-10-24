@@ -93,8 +93,10 @@ export const ITEMS = {
   ember_charm:  { type: 'equip', slot: 'acc', rare: true, name: 'Ember Charm', stats: { pow: 1, knl: 1 }, mhp: 30, icon: 'r_ember', desc: 'An Ember Wisp curled up asleep. POW +1, KNL +1, Max HP +30.', from: 'Ember Wisps (0.3%)' },
   shiny_gel:    { type: 'misc', rare: true, name: 'Shimmering Gel', desc: 'Slime gel that glows with every colour. Prized by collectors.', from: 'any slime (1%)' },
 
-  // headgear: worn on the head and seen on your character (see headgear.js). Face pieces (Round
-  // Glasses, Raven Mask) are made and fitted but left out of the game for now.
+  // headgear: worn on the head and seen on your character (see headgear.js): Head pieces on the
+  // crown, Face pieces on the eyes of the head layer
+  round_glasses: { type: 'equip', slot: 'face', name: 'Round Glasses', hit: 3, desc: 'Polished dew-glass lenses. +3 HIT.' },
+  raven_mask:   { type: 'equip', slot: 'face', name: 'Raven Mask', flee: 2, desc: 'Black feathers and a short beak: you look like trouble. +2 FLEE.' },
   ember_crown:  { type: 'equip', slot: 'head', rare: true, name: "Jarl's Ember Crown", def: 4, stats: { pow: 2, end: 1 }, desc: 'A horned iron crown, still warm.', from: 'the Ember Jarl' },
   flame_circlet: { type: 'equip', slot: 'head', rare: true, name: 'Flame Circlet', def: 2, stats: { pow: 1, ftn: 1 }, desc: 'An iron circlet crowned with living flame, forged around an Ember Heart. POW +1, FTN +1.' },
   woven_cap:    { type: 'equip', slot: 'head', name: 'Woven Cap', def: 1, desc: 'Leaves woven tight, with a sturdy band.' },
@@ -127,7 +129,7 @@ export const PRICES = {
   twig_sword: 50, stone_blade: 500, ember_edge: 2400, iron_sword: 3800, oak_staff: 400, rune_staff: 4200, emberbrand: 40000,
   gooey_ring: 4000, tide_pendant: 5000, seedling_band: 5000, mud_buckler: 6000, spore_cloak: 7000, horn_blade: 15000, pebble_ring: 5000,
   wisp_lantern: 6000, bramble_ring: 6000, coral_shield: 8000, gloom_hood: 9000, cinder_mail: 14000, ember_charm: 9000,
-  ember_crown: 30000, flame_circlet: 20000, woven_cap: 300, flower_wreath: 200, horned_helm: 1800,
+  ember_crown: 30000, flame_circlet: 20000, round_glasses: 600, raven_mask: 400, woven_cap: 300, flower_wreath: 200, horned_helm: 1800,
   clothes: 10, leaf_tunic: 300, shell_mail: 1100, beetle_plate: 2800, chain_mail: 3200, mage_robe: 2600,
   round_shield: 1200, wool_cape: 700, leather_boots: 500, swift_boots: 1000, torch: 100,
   sprout_charm: 700, spore_charm: 1000, shell_charm: 1000, glow_charm: 1200,
@@ -149,8 +151,8 @@ export const canWear = (id, job) => !ITEMS[id]?.jobs || ITEMS[id].jobs.includes(
 // who can wear it, for item descriptions
 export const jobLine = (it) => (it.jobs ? it.jobs.map((j) => JOB_NAMES[j]).join(', ') + ' only' : 'All jobs');
 
-// headgear has Ragnarok's three positions: Upper (head), Middle (face: eyes) and Lower (low: mouth)
-export const SLOTS = { head: 'Upper', face: 'Middle', low: 'Lower', weapon: 'Weapon', shield: 'Shield', garment: 'Garment', armor: 'Armor', shoes: 'Shoes', light: 'Light', acc: 'Accessory', acc2: 'Accessory' };
+// headgear: Head (hats, on the crown) and Face (glasses and masks, on the eyes)
+export const SLOTS = { head: 'Head', face: 'Face', weapon: 'Weapon', shield: 'Shield', garment: 'Garment', armor: 'Armor', shoes: 'Shoes', light: 'Light', acc: 'Accessory', acc2: 'Accessory' };
 
 // one line on what a piece of equipment does
 export function equipLine(it) {
@@ -188,6 +190,8 @@ export const RECIPES = [
   { item: 'flower_wreath', cost: { leaf: 3, seed: 2 } },
   { item: 'woven_cap', lv: 2, cost: { leaf: 5, seed: 2 } },
   { item: 'flame_circlet', lv: 12, cost: { ember_heart: 1, glow: 6, stone: 6 } },
+  { item: 'raven_mask', lv: 3, cost: { wander: 2, gel: 2 } },
+  { item: 'round_glasses', lv: 5, cost: { dew: 3, stone: 2 } },
   { item: 'horned_helm', lv: 8, cost: { stone: 6, shell: 4, glow: 1 } },
   { item: 'rune_staff', lv: 12, cost: { shade: 4, glow: 6, thorn: 4 } },
   { item: 'mage_robe', lv: 8, cost: { salt: 3, glow: 4, leaf: 6 } },

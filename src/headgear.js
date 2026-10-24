@@ -22,18 +22,19 @@ const LAYOUTS = import.meta.glob('./art/hg_*.json', { eager: true, import: 'defa
 // instead of its rim (a ring's widest row is its middle). sy: squash it vertically. dirs: { dir: { at, w, dx, dy } } tunes
 // one direction on its own (left mirrors right, so give the facing's own direction).
 const ANIM_FPS = 9;
-const FIT = { head: { w: 0.86, at: 0.47, dx: 0, dy: 0, hair: 0 }, face: { w: 0.78, at: 0.82, dx: 0, dy: 0, hair: 0 } };
+// (head = the bald head layer: crown is the top of the scalp, neck its chin; hair sits above it)
+const FIT = { head: { w: 1.0, at: 0.4, dx: 0, dy: 0, hair: 0 }, face: { w: 0.78, at: 0.62, dx: 0, dy: 0, hair: 0 } };
 export const TUNE = {
-  horned_helm: { hair: 0.44 },          // a full helm: the hair above the rim goes
-  woven_cap: { hair: 0.4 },
-  ember_crown: { at: 0.36, hair: 0.2, swap: { right: 'downright', left: 'downleft' } }, // sits on the hair; its side views are poor
-  flower_wreath: { at: 0.33, w: 0.9, hair: 0 }, // rests on top of the hair
+  horned_helm: { w: 1.02, at: 0.42, hair: 0.4 },   // a full helm: the hair above the rim goes
+  woven_cap: { w: 1.08, at: 0.36, hair: 0.34 },
+  ember_crown: { at: 0.12, w: 0.92, hair: 0.06, swap: { right: 'downright', left: 'downleft' } }, // sits on the hair; its side views are poor
+  flower_wreath: { at: 0.1, w: 1.0, hair: 0 }, // rests on top of the hair
   // face pieces: their views come from the front (see pack-headgear.py); turning moves them toward
   // the front of the face
   round_glasses: { w: 0.62, at: 0.74 }, // on the eyes when the packer found them; this is the fallback
   raven_mask: { w: 0.78, at: 0.74 },
   // built on the Ember Crown's shape, so it sits the same way
-  flame_circlet: { at: 0.36, hair: 0.2, swap: { right: 'downright', left: 'downleft' } },
+  flame_circlet: { at: 0.12, w: 0.92, hair: 0.06, swap: { right: 'downright', left: 'downleft' } },
 };
 const fitOf = (id) => ({ ...FIT[HEADGEAR[id].slot], ...TUNE[id] });
 

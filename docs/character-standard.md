@@ -15,8 +15,8 @@ Back to front, in every frame:
 3. **Hair.** The hairstyle, its own layer on the head (`heads.png`, one row per style), recoloured
    by a dye. Like Ragnarok, the hairstyle stays the same through job changes; Embla the Stylist
    in Steinborg changes it.
-4. **Headgear.** Lower (mouth), Middle (eyes: glasses, masks) and Upper (hats), each snapped to
-   the head layer's own measured points: crown, width and eye centres in all 8 directions.
+4. **Headgear.** Face (glasses, masks: on the eyes) and Head (hats: on the crown), each snapped
+   to the head layer's own measured points: crown, width and eye centres in all 8 directions.
 
 ## The face
 

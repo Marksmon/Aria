@@ -90,8 +90,11 @@ def eyes(im, pts, crown, bottom, d):
     return [v for g in two for v in centre(g)] if len(two) == 2 else (centre(two[0]) if two else [])
 
 
-def hair_of(styled, bald):
-    """the hair layer: pixels where the styled head differs from the bald one"""
+def hair_of(styled, bald, d, geo):
+    """the hair layer: pixels where the styled head differs from the bald one. Hair that hangs
+    below the chin in front of the neck (the shadow behind a long-haired head) would cover the
+    body's chest, so below the chin only the strands at the sides stay (all of it, seen from
+    behind)."""
     out = Image.new('RGBA', styled.size)
     a, b, o = styled.load(), bald.load(), out.load()
     for y in range(styled.height):
@@ -101,6 +104,15 @@ def hair_of(styled, bald):
                 continue
             if t[3] < 128 or sum(abs(s[i] - t[i]) for i in range(3)) > 60:
                 o[x, y] = s
+    if not d.startswith('up'):
+        cx, cy = geo['chin']
+        half = geo['w'] * 0.34
+        for y in range(int(cy) - 1, styled.height):
+            for x in range(styled.width):
+                dx = x + 0.5 - cx
+                front = abs(dx) < half if d not in ('right', 'left') else (dx > -half * 0.4 if d == 'right' else dx < half * 0.4)
+                if front:
+                    o[x, y] = (0, 0, 0, 0)
     # drop specks: the face may come back a pixel off here and there
     pts = solid(out)
     for p in list(pts):
@@ -110,11 +122,12 @@ def hair_of(styled, bald):
 
 
 bald = load('bald')
+geo = {d: measure(bald[d], d) for d in bald}
 layers = {'bald': bald}
 for s in STYLES:
     styled = load(s)
     if styled:
-        layers[s] = {d: hair_of(styled[d], bald[d]) for d in bald}
+        layers[s] = {d: hair_of(styled[d], bald[d], d, geo[d]) for d in bald}
 order = list(DIRS.values())
 cw, ch = bald['down'].size
 sheet = Image.new('RGBA', (cw * len(order), ch * len(layers)))
