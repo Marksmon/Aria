@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { dirFor, dirFor8 } from './noise.js';
 import { playerAttack } from './rules.js';
-import { HeadLayer } from './headgear.js';
+import { HeadLayer, GEAR_FPS, gearCut, gearFrames, headgearReady, paintGear } from './headgear.js';
 import { HEADS, headTexture, headsReady, paintHead } from './hair.js';
 
 const BASE_SPEED = 4.2;  // world units per second
@@ -80,23 +80,17 @@ export class Player {
       return s;
     };
     this.headSpr = layer(2.3);
-    // a hat hides the hair above the line it sets (uCut: texture v; hair above it is dropped)
-    this.hairCut = { uCut: { value: 2 } };
-    const hairMat = new THREE.SpriteMaterial({ alphaTest: 0.5 });
-    hairMat.onBeforeCompile = (sh) => {
-      Object.assign(sh.uniforms, this.hairCut);
-      sh.fragmentShader = sh.fragmentShader
-        .replace('void main() {', 'uniform float uCut;\nvoid main() {')
-        .replace('#include <map_fragment>', '#include <map_fragment>\n        if (vMapUv.y > uCut) discard;');
-    };
-    this.hairSpr = layer(2.6, hairMat);
+    this.hairSpr = layer(2.6);
     this.headScale = 1;
     this.setHeadScale(art);
-    // worn headgear: Upper (hats) and Middle (glasses, masks) sit on the head layer's own geometry
+    // worn headgear (head, face): painted into a standard body's frames with the head; the painted
+    // fallback layers for an older body
+    this.gear = { top: null, face: null };
+    this.gearFrame = 0;
     this.heads = [new HeadLayer(scene), new HeadLayer(scene)];
   }
 
-  setHeadgear(top, face) { this.heads[0].set(top); this.heads[1].set(face); }
+  setHeadgear(top, face) { this.heads[0].set(top); this.heads[1].set(face); this.gear = { top, face }; }
   setLook(look) { this.look = { ...this.look, ...look }; }
 
   // an older, headless body: body pixels per head pixel, from the head it was drawn with
@@ -105,16 +99,30 @@ export class Player {
     if (h && d) this.headScale = (h.neck - h.crown) / (d.chin[1] - d.crown);
   }
 
-  // a body made bald gets the head and hair painted into its frames (sprites.js dress), again when
-  // the look, the hair a hat hides, or the body changes
+  // a body made bald gets the head, hair and headgear painted into its frames (sprites.js dress), on
+  // the head's spot: back to front, head, hair (less what a hat hides), face piece, head piece.
+  // Again when the look, the headgear or the body changes
   dressHead() {
-    const art = this.art;
-    if (!art.bald || !art.dress || !headsReady()) return;
-    const look = { ...this.look }, hide = Math.max(...this.heads.map((l) => l.hair()));
-    const key = `${look.hair}|${look.dye}|${hide}`;
-    if (art.dressed === key) return;
-    art.dressed = key;
-    art.dress((g, ud, dir) => paintHead(g, ud.head?.at, dir, look, hide));
+    const art = this.art, { top, face } = this.gear;
+    if (!art.bald || !art.dress || !headsReady() || !headgearReady(top) || !headgearReady(face)) return;
+    const look = { ...this.look }, key = `${look.hair}|${look.dye}|${top}|${face}`;
+    if (art.dressed !== key) {
+      art.dressed = key;
+      art.dress((g, ud, dir) => {
+        const at = ud.head?.at;
+        if (!at) return;
+        paintHead(g, at, dir, look, gearCut(top, dir), top);
+        paintGear(g, at, dir, face, this.gearFrame);
+        paintGear(g, at, dir, top, this.gearFrame);
+        ud.gearFrame = this.gearFrame;
+      });
+    }
+    // an animated piece: the frame showing is repainted as its animation moves on
+    const n = Math.max(gearFrames(top), gearFrames(face));
+    if (n > 1) {
+      this.gearFrame = Math.floor((performance.now() / 1000) * GEAR_FPS) % n;
+      if (this.tex.userData.gearFrame !== this.gearFrame) art.repaint(this.tex);
+    }
   }
 
   // a different sprite set (the Novice and the Swordsman look different)
@@ -314,24 +322,24 @@ export class Player {
     this.sprite.visible = !(this.iframes > 0 && this.state === 'normal' && Math.floor(this.iframes * 14) % 2 === 0);
     this.sync();
     const upright = this.state !== 'down' && this.state !== 'feign';
-    const geo = this.placeHead();
-    for (const l of this.heads) l.update(this.sprite, this.tex, this.dir, this.art.fw, this.art.fh, upright, geo);
-    // a hat hides the hair above the line it sets (a share of the head's crown → chin)
-    const hide = Math.max(...this.heads.map((l) => l.hair())), hd = HEADS?.dirs?.[this.dir];
-    this.hairCut.uCut.value = hide > 0 && hd ? 1 - (hd.crown + (hd.chin[1] - hd.crown) * hide) / HEADS.ch : 2;
+    this.placeHead();
+    for (const l of this.heads) {
+      if (this.art.bald) l.hide(); // painted into the frame instead
+      else l.update(this.sprite, this.tex, this.dir, this.art.fw, this.art.fh, upright);
+    }
   }
 
-  // put the head and hair layers on this frame's neck anchor; returns the head's geometry in body
-  // frame pixels for the headgear ({ x, crown, neck, w, eyes, sprite }), or null
+  // a standard body: its head is painted into the frames (dressHead). An older, headless one: the
+  // head and hair layers go on this frame's neck anchor
   placeHead() {
     const h = this.tex.userData.head, hd = HEADS?.dirs?.[this.dir], body = this.sprite;
-    if (this.art.bald) { // painted into the frame: the headgear goes on where it was painted
+    if (this.art.bald) {
       this.headSpr.visible = this.hairSpr.visible = false;
       this.dressHead();
-      return h ? { x: h.x, crown: h.crown, neck: h.neck, w: h.w, eyes: h.eyes, sprite: body } : null;
+      return;
     }
     const head = headTexture('bald', this.dir), hair = headTexture(this.look.hair, this.dir, this.look.dye);
-    if (!h || !hd || !head) { this.headSpr.visible = this.hairSpr.visible = false; return null; }
+    if (!h || !hd || !head) { this.headSpr.visible = this.hairSpr.visible = false; return; }
     const { fw, fh } = this.art, { cw, ch } = HEADS, S = this.headScale, upp = body.scale.x / fw;
     const [ax, ay] = hd.chin;
     const HW = cw * S * upp, HH = ch * S * upp;
@@ -347,10 +355,6 @@ export class Player {
       spr.material.rotation = this.mat.rotation; // lying down (fainted, Play Dead) turns the head with the body
       spr.visible = body.visible;
     }
-    const at = (x, y) => [cx + (x - ax) * S, cy + (y - ay) * S];
-    const eyes = [];
-    for (let i = 0; i < hd.eyes.length; i += 2) eyes.push(...at(hd.eyes[i], hd.eyes[i + 1]));
-    return { x: cx, crown: cy - (ay - hd.crown) * S, neck: cy, w: hd.w * S, eyes, sprite: this.headSpr };
   }
 
   // carry out the current order: walk the path, swing at a target in reach, or arrive somewhere

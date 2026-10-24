@@ -1,0 +1,47 @@
+{
+ "id": "3421a2c4-b569-4ab6-b609-ea794b74a3a9",
+ "name": "a chibi character's head only,",
+ "state_name": "ember_crown",
+ "prompt": "a chibi character's head only, completely bald with a smooth round scalp, pale peach skin, two large dark brown eyes with white highlights and small thin eyebrows, no mouth, no nose, small ears, soft dark outline, Ragnarok Online sprite style, no neck, no body, no hat",
+ "size": {
+  "width": 48,
+  "height": 48
+ },
+ "directions": 8,
+ "created_at": "2026-10-24T06:53:40.377769+00:00",
+ "view": "low top-down",
+ "rotation_urls": {
+  "south": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/5457cd81-4a1e-4383-9a16-5a765d8933b0/3421a2c4-b569-4ab6-b609-ea794b74a3a9/rotations/south.png",
+  "west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/5457cd81-4a1e-4383-9a16-5a765d8933b0/3421a2c4-b569-4ab6-b609-ea794b74a3a9/rotations/west.png",
+  "east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/5457cd81-4a1e-4383-9a16-5a765d8933b0/3421a2c4-b569-4ab6-b609-ea794b74a3a9/rotations/east.png",
+  "north": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/5457cd81-4a1e-4383-9a16-5a765d8933b0/3421a2c4-b569-4ab6-b609-ea794b74a3a9/rotations/north.png",
+  "south-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/5457cd81-4a1e-4383-9a16-5a765d8933b0/3421a2c4-b569-4ab6-b609-ea794b74a3a9/rotations/south-east.png",
+  "south-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/5457cd81-4a1e-4383-9a16-5a765d8933b0/3421a2c4-b569-4ab6-b609-ea794b74a3a9/rotations/south-west.png",
+  "north-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/5457cd81-4a1e-4383-9a16-5a765d8933b0/3421a2c4-b569-4ab6-b609-ea794b74a3a9/rotations/north-east.png",
+  "north-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/5457cd81-4a1e-4383-9a16-5a765d8933b0/3421a2c4-b569-4ab6-b609-ea794b74a3a9/rotations/north-west.png"
+ },
+ "storage_urls": {
+  "east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/5457cd81-4a1e-4383-9a16-5a765d8933b0/3421a2c4-b569-4ab6-b609-ea794b74a3a9/rotations/east.png",
+  "west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/5457cd81-4a1e-4383-9a16-5a765d8933b0/3421a2c4-b569-4ab6-b609-ea794b74a3a9/rotations/west.png",
+  "north": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/5457cd81-4a1e-4383-9a16-5a765d8933b0/3421a2c4-b569-4ab6-b609-ea794b74a3a9/rotations/north.png",
+  "south": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/5457cd81-4a1e-4383-9a16-5a765d8933b0/3421a2c4-b569-4ab6-b609-ea794b74a3a9/rotations/south.png",
+  "north-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/5457cd81-4a1e-4383-9a16-5a765d8933b0/3421a2c4-b569-4ab6-b609-ea794b74a3a9/rotations/north-east.png",
+  "north-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/5457cd81-4a1e-4383-9a16-5a765d8933b0/3421a2c4-b569-4ab6-b609-ea794b74a3a9/rotations/north-west.png",
+  "south-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/5457cd81-4a1e-4383-9a16-5a765d8933b0/3421a2c4-b569-4ab6-b609-ea794b74a3a9/rotations/south-east.png",
+  "south-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/5457cd81-4a1e-4383-9a16-5a765d8933b0/3421a2c4-b569-4ab6-b609-ea794b74a3a9/rotations/south-west.png"
+ },
+ "frame_urls": null,
+ "style_settings": {
+  "state_source": {
+   "id": "8c940ead-d4eb-43f3-9b64-2ea12ffee407",
+   "edit_description": "put a small dark iron crown with three points, glowing orange ember gems and two small curved horns on the top of the same head; keep the face, eyes, ears and head shape exactly the same, and add nothing else"
+  },
+  "no_background": true
+ },
+ "tags": [],
+ "status": "completed",
+ "group_id": "501431de-b306-4659-b0fa-91740a9e7ac7",
+ "progress_percent": null,
+ "eta_seconds": null,
+ "animations": []
+}

@@ -19,8 +19,20 @@ where that hairstyle's head differs from the bald one, so a hair layer always li
 face under it.
 
   python3 build-tools/pack-heads.py
+
+Headgear is made the same way, as states of the bald head (pixellab-heads.py gear): each piece is
+what its state adds to the bald head, so it sits on the head and face as drawn, and is shrunk the
+same way. Each goes to src/art/hg_<id>.png (a column per direction, a row per animation frame)
+and hg_<id>.json:
+
+  { cw, ch, frames, slot, dirs: { down: col, ... }, box: { down: [x0, y0, x1, y1], ... },
+    cut: { down: [row per column], ... } | null }
+
+cut hides the wearer's hair above a row in each column of the cell, so it doesn't poke through:
+a helmet or cap hides the hair above its brim, a crown the spikes above it; a wreath rests in the
+hair and face pieces leave it alone.
 """
-import json, os
+import json, os, re
 import numpy as np
 from PIL import Image
 
@@ -31,6 +43,11 @@ DIRS = {'south': 'down', 'south-east': 'downright', 'east': 'right', 'north-east
         'north': 'up', 'north-west': 'upleft', 'west': 'left', 'south-west': 'downleft'}
 STYLES = ['messy', 'mane', 'long']  # 'long' is kept for a female look later
 SCALE = 0.9  # head pixels to body pixels
+# headgear: slot, and how it hides the hair (see above)
+GEAR = {'horned_helm': ('head', 'brim'), 'woven_cap': ('head', 'brim'), 'flower_wreath': ('head', None),
+        'ember_crown': ('head', 'top'), 'flame_circlet': ('head', 'top'),
+        'round_glasses': ('face', None), 'raven_mask': ('face', None)}
+GLASS = {'round_glasses'}  # its lenses are see-through: the eyes show behind them, tinted
 
 
 def shrink(im, s=SCALE):
@@ -60,14 +77,18 @@ def shrink(im, s=SCALE):
 
 
 def load(name):
-    """a head (the bald one, or a hairstyle drawn on it) in all 8 directions, shrunk"""
+    """a head (the bald one, or a hairstyle or headgear drawn on it) in all 8 directions, shrunk;
+    an animated one: a list of frames per direction"""
     base = os.path.join(SRC, name)
     if not os.path.isdir(base):
         return None
     ims = {}
     for d, ours in DIRS.items():
-        im = Image.open(os.path.join(base, f'{d}.png')).convert('RGBA')
-        ims[ours] = shrink(im)
+        frames = sorted((f for f in os.listdir(base) if re.fullmatch(rf'{d}_\d+\.png', f)), key=lambda f: int(f.rsplit('_', 1)[1][:-4]))
+        if frames:
+            ims[ours] = [shrink(Image.open(os.path.join(base, f)).convert('RGBA')) for f in frames]
+        else:
+            ims[ours] = shrink(Image.open(os.path.join(base, f'{d}.png')).convert('RGBA'))
     return ims
 
 
@@ -128,6 +149,40 @@ def eyes(im, pts, crown, bottom, d):
     return [v for g in two for v in centre(g)] if len(two) == 2 else (centre(two[0]) if two else [])
 
 
+def added(styled, bald):
+    """what a state adds to the bald head: the pixels where it differs, without specks"""
+    out = Image.new('RGBA', styled.size)
+    a, b, o = styled.load(), bald.load(), out.load()
+    for y in range(styled.height):
+        for x in range(styled.width):
+            s, t = a[x, y], b[x, y]
+            if s[3] >= 128 and (t[3] < 128 or sum(abs(s[i] - t[i]) for i in range(3)) > 60):
+                o[x, y] = s
+    pts = solid(out)
+    for p in list(pts):
+        if sum((p[0] + i, p[1] + j) in pts for i in (-1, 0, 1) for j in (-1, 0, 1)) < 3:
+            o[p] = (0, 0, 0, 0)
+    return out
+
+
+def cut_of(piece, how, geo):
+    """the hair-hiding rows per column (see above), or None"""
+    if not how:
+        return None
+    a = piece.getchannel('A').load()
+    cols = {x: [y for y in range(piece.height) if a[x, y] >= 128] for x in range(piece.width)}
+    cols = {x: ys for x, ys in cols.items() if ys}
+    if not cols:
+        return None
+    if how == 'top':  # the hair above the piece, where it is
+        return [min(cols[x]) if x in cols else 0 for x in range(piece.width)]
+    # the brim: where the piece comes down to over the middle of the head; no hair above it
+    cx, half = geo['chin'][0], geo['w'] / 2
+    mid = sorted(max(ys) for x, ys in cols.items() if abs(x + 0.5 - cx) <= half * 0.7) or sorted(max(ys) for ys in cols.values())
+    brim = mid[len(mid) // 2]
+    return [brim] * piece.width
+
+
 def hair_of(styled, bald, d, geo):
     """the hair layer: pixels where the styled head differs from the bald one. Hair that hangs
     below the chin in front of the neck (the shadow behind a long-haired head) would cover the
@@ -181,3 +236,32 @@ json.dump({'cw': cw, 'ch': ch, 'rows': rows, 'dirs': dirs}, open(os.path.join(OU
 print('heads', list(rows), 'cell', cw, 'x', ch)
 for d, v in dirs.items():
     print(' ', d, v)
+
+for gid, (slot, how) in GEAR.items():
+    worn = load(gid)
+    if not worn:
+        continue
+    frames = {d: (v if isinstance(v, list) else [v]) for d, v in worn.items()}
+    n = max(len(v) for v in frames.values())
+    pieces = {d: [added(f, bald[d]) for f in v] for d, v in frames.items()}
+    if gid in GLASS:
+        for v in pieces.values():
+            for im in v:
+                px = im.load()
+                for y in range(im.height):
+                    for x in range(im.width):
+                        r, g, b, a = px[x, y]
+                        if a and b >= r + 15 and 0.3 * r + 0.59 * g + 0.11 * b >= 140:
+                            px[x, y] = (r, g, b, 110)
+    sheet = Image.new('RGBA', (cw * len(order), ch * n))
+    box = {}
+    for c, d in enumerate(order):
+        for f in range(n):
+            sheet.paste(pieces[d][f % len(pieces[d])], (c * cw, f * ch))
+        b = pieces[d][0].getbbox()
+        box[d] = list(b) if b else None
+    cut = {d: cut_of(pieces[d][0], how, geo[d]) for d in order} if how else None
+    sheet.save(os.path.join(OUT, f'hg_{gid}.png'), optimize=True)
+    json.dump({'cw': cw, 'ch': ch, 'frames': n, 'slot': slot, 'dirs': {d: c for c, d in enumerate(order)}, 'box': box, 'cut': cut},
+              open(os.path.join(OUT, f'hg_{gid}.json'), 'w'))
+    print('headgear', gid, slot, 'frames', n)

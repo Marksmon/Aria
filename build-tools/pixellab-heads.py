@@ -5,6 +5,7 @@ every hair lines up with the face exactly.
 
   python3 build-tools/pixellab-heads.py base                 (needs PIXELLAB_API_KEY)
   python3 build-tools/pixellab-heads.py hair spiky long ...  (states of the base head)
+  python3 build-tools/pixellab-heads.py gear horned_helm ... (headgear: states of the base head too)
 
 Results go to art/pixellab/heads/<name>/<direction>.png.
 """
@@ -29,6 +30,19 @@ HAIR = {
     'ponytail': 'give the same head medium-brown hair tied in a high ponytail with side bangs; keep the face, eyes and head shape exactly the same',
     # a man's long hair: rugged, layered, to the shoulders (the straight 'long' is kept for a female look later)
     'mane': 'give the same head rugged shoulder-length layered medium-brown hair swept back from the forehead with a few loose strands, a masculine warrior style; keep the face, eyes and head shape exactly the same',
+}
+
+# headgear, worn by the same bald head: the packer keeps only what the piece adds, so it sits on
+# the head (and the face) exactly as drawn
+KEEP = '; keep the face, eyes, ears and head shape exactly the same, and add nothing else'
+GEAR = {
+    'horned_helm': 'put an iron viking helmet with a brass rim and two curved ivory horns on the same head, covering the top of the head down to just above the eyebrows' + KEEP,
+    'woven_cap': 'put a small rounded cap woven from green leaves with a tan cloth band on the same head, sitting on the top of the head above the eyebrows' + KEEP,
+    'flower_wreath': 'put a thin wreath of green leaves with small pink, white and yellow flowers around the top of the same head, resting on it like a crown' + KEEP,
+    'ember_crown': 'put a small dark iron crown with three points, glowing orange ember gems and two small curved horns on the top of the same head' + KEEP,
+    'flame_circlet': 'put a crown band of dark blackened iron with molten gold edges and small ember gems on the top of the same head, its five points are tall flames of orange, gold and white-hot yellow' + KEEP,
+    'round_glasses': 'put small round wire-rimmed glasses with pale blue see-through lenses on the eyes of the same head, the eyes showing through the lenses' + KEEP,
+    'raven_mask': 'put a black feathered raven half-mask with a short dark beak and gold-rimmed eye holes over the eyes of the same head, the eyes showing through the holes' + KEEP,
 }
 
 
@@ -57,12 +71,12 @@ if __name__ == '__main__':
         j = hg.wait(res['object_id'], limit=3600)
         if j and j.get('status') == 'completed':
             save_obj('bald', j)
-    if task == 'hair':
+    if task in ('hair', 'gear'):
         base = json.load(open(os.path.join(OUT, 'bald.json')))
         bid = base.get('id') or base.get('object', {}).get('id')
         queued = {}
         for n in names:
-            res = hg.post(f'/objects/{bid}/states', {'edit_description': HAIR[n], 'state_name': n})
+            res = hg.post(f'/objects/{bid}/states', {'edit_description': (HAIR if task == 'hair' else GEAR)[n], 'state_name': n})
             queued[n] = res.get('object_id')
         for n, oid in queued.items():
             j = hg.wait(oid, limit=3600)

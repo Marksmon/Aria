@@ -1,0 +1,45 @@
+{
+ "object": {
+  "id": "3421a2c4-b569-4ab6-b609-ea794b74a3a9",
+  "name": "ember_crown",
+  "prompt": "a chibi character's head only, completely bald with a smooth round scalp, pale peach skin, two large dark brown eyes with white highlights and small thin eyebrows, no mouth, no nose, small ears, soft dark outline, Ragnarok Online sprite style, no neck, no body, no hat",
+  "size": {
+   "width": 48,
+   "height": 48
+  },
+  "directions": 8,
+  "view": "low top-down"
+ },
+ "spritesheet": {
+  "path": "a_chibi_character_s_head_only.png",
+  "cell_size": {
+   "width": 48,
+   "height": 48
+  },
+  "sheet_size": {
+   "width": 384,
+   "height": 48
+  },
+  "columns": 8,
+  "pivot": "cell-center",
+  "rows": [
+   {
+    "row": 0,
+    "type": "rotations",
+    "frame_count": 8,
+    "directions": [
+     "south",
+     "south-east",
+     "east",
+     "north-east",
+     "north",
+     "north-west",
+     "west",
+     "south-west"
+    ]
+   }
+  ]
+ },
+ "export_version": "1.0",
+ "export_date": "2026-10-24T06:55:26.398099+00:00"
+}

@@ -73,16 +73,29 @@ export function headTexture(row, dir, dyeId = 'brown') {
 }
 
 // paint a look's head and hair into a body frame (ctx), the head cell's top-left corner at at = [x, y]:
-// one head pixel is one body pixel, so it sits on the body's pixel grid. A hat hides the hair above
-// its line (hide: a share of the head's crown → chin)
-export function paintHead(g, at, dir, look, hide = 0) {
+// one head pixel is one body pixel, so it sits on the body's pixel grid. A hat hides the hair it
+// covers: cut gives, per column of the cell, the row above which the hair is left out (cutBy names
+// the hat, for the cache)
+const trimmed = {};
+export function paintHead(g, at, dir, look, cut = null, cutBy = '') {
   const head = headTexture('bald', dir), hair = headTexture(look.hair, dir, look.dye);
   if (!head || !at) return;
   g.drawImage(head.image, at[0], at[1]);
   if (!hair) return;
-  const { cw, ch } = HEADS, d = HEADS.dirs[dir];
-  const cut = hide > 0 ? Math.round(d.crown + (d.chin[1] - d.crown) * hide) : 0;
-  if (cut < ch) g.drawImage(hair.image, 0, cut, cw, ch - cut, at[0], at[1] + cut, cw, ch - cut);
+  let img = hair.image;
+  if (cut) {
+    const key = `${look.hair}|${dir}|${look.dye}|${cutBy}`;
+    if (!trimmed[key]) {
+      const c = document.createElement('canvas');
+      c.width = HEADS.cw; c.height = HEADS.ch;
+      const t = c.getContext('2d');
+      t.drawImage(img, 0, 0);
+      cut.forEach((row, x) => { if (row > 0) t.clearRect(x, 0, 1, row); });
+      trimmed[key] = c;
+    }
+    img = trimmed[key];
+  }
+  g.drawImage(img, at[0], at[1]);
 }
 
 // a small portrait of a look (for the character creator and the stylist): front view, scaled up

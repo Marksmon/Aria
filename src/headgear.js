@@ -1,75 +1,45 @@
-// Headgear you can see on the player, Ragnarok style: a separate layer drawn over the body
-// sprite and pinned to the head of whatever frame is showing. The sprite packer records each
-// frame's head (centre, crown, neck, width), so one set of headgear art fits every job's sprite
-// without new sprites per job: it follows the head through walking, attacking and rolling and
-// scales to the head's width.
+// Headgear you can see on the player, Ragnarok style, in two slots: 'head' (hats, crowns) and
+// 'face' (glasses, masks).
 //
-// Pieces made with PixelLab (build-tools/pixellab-headgear.py, packed by pack-headgear.py into
-// src/art/hg_<id>.png) come in all eight directions in the sprites' own style; a hat is sized a
-// little wider than the head and sits down over the hair, glasses sit on the eye line. Pieces not
-// made yet fall back to the small painted versions below (front, side and back views).
-// slot: 'head' (on the crown) or 'face' (on the eyes; hidden when you face away).
+// Pieces made to the character standard (docs/character-standard.md) were drawn on the standard
+// bald head itself, as states of it (build-tools/pixellab-heads.py gear), and packed by
+// pack-heads.py into src/art/hg_<id>.png: one cell per direction (a row per frame if animated),
+// the same cell as the head's. So a piece is painted into the body frames at the head's own spot
+// (paintGear, from Player.dressHead) and sits on the head and face exactly as drawn, on the body's
+// pixel grid. A hat also says how much hair it hides (cut).
+//
+// Older bodies, drawn with their heads, get the small painted versions below instead, as a layer
+// pinned to each frame's head (HeadLayer).
 import * as THREE from 'three';
 
 const SHEETS = import.meta.glob('./art/hg_*.png', { eager: true, import: 'default' });
 const LAYOUTS = import.meta.glob('./art/hg_*.json', { eager: true, import: 'default' });
-// a piece's rim (see pack-headgear.py) is sized to `w` times the head's width and put on the line
-// `at` of the way from crown to neck: a hat's brim just above the brows, glasses on the eyes.
-// A piece can tune its own fit (see TUNE): w and at as above, dx / dy to nudge it (in head
-// widths / head heights), and hair: hide the wearer's hair above that line (same scale as at),
-// so spikes don't poke through a helmet. 0 leaves the hair alone. swap: { dir: other dir } shows
-// another direction's art where PixelLab drew one badly. base: sit the piece on its bottom edge
-// instead of its rim (a ring's widest row is its middle). sy: squash it vertically. dirs: { dir: { at, w, dx, dy } } tunes
-// one direction on its own (left mirrors right, so give the facing's own direction).
-const ANIM_FPS = 9;
-// (head = the bald head layer: crown is the top of the scalp, neck its chin; hair sits above it)
-const FIT = { head: { w: 1.0, at: 0.4, dx: 0, dy: 0, hair: 0 }, face: { w: 0.78, at: 0.62, dx: 0, dy: 0, hair: 0 } };
-export const TUNE = {
-  horned_helm: { w: 1.02, at: 0.42, hair: 0.4 },   // a full helm: the hair above the rim goes
-  woven_cap: { w: 1.08, at: 0.36, hair: 0.34 },
-  ember_crown: { at: 0.12, w: 0.92, hair: 0.06, swap: { right: 'downright', left: 'downleft' } }, // sits on the hair; its side views are poor
-  flower_wreath: { at: 0.3, w: 1.0, hair: 0 }, // rests on top of the hair
-  // face pieces: their views come from the front (see pack-headgear.py); turning moves them toward
-  // the front of the face
-  round_glasses: { w: 0.62, at: 0.74 }, // on the eyes when the packer found them; this is the fallback
-  raven_mask: { w: 0.78, at: 0.74 },
-  // built on the Ember Crown's shape, so it sits the same way
-  flame_circlet: { at: 0.12, w: 0.92, hair: 0.06, swap: { right: 'downright', left: 'downleft' } },
-};
-const fitOf = (id) => ({ ...FIT[HEADGEAR[id].slot], ...TUNE[id] });
+export const GEAR_FPS = 9; // animated pieces
 
-// a PixelLab piece: one texture per direction, cut from its sheet once the image loads
-const images = {};
-function imagePiece(id) {
-  if (id in images) return images[id];
+// a standard piece: its sheet and layout ({ cw, ch, frames, slot, dirs, box, cut }), or null
+const pieces = {};
+export function gearPiece(id) {
+  if (!id) return null;
+  if (id in pieces) return pieces[id];
   const url = SHEETS[`./art/hg_${id}.png`], L = LAYOUTS[`./art/hg_${id}.json`];
-  if (!url || !L) return (images[id] = null);
-  // tex[dir] = one texture per animation frame (just one for a still piece)
-  const piece = { L, tex: {}, loaded: false, img: new Image() };
-  for (const [dir, cell] of Object.entries(L.dirs)) {
-    piece.tex[dir] = Array.from({ length: cell[8] || 1 }, () => {
-      const c = document.createElement('canvas');
-      c.width = L.cw; c.height = L.ch;
-      const t = new THREE.CanvasTexture(c);
-      t.colorSpace = THREE.SRGBColorSpace;
-      t.magFilter = t.minFilter = THREE.NearestFilter;
-      t.generateMipmaps = false;
-      return t;
-    });
-  }
-  piece.img.onload = () => {
-    for (const [dir, [i]] of Object.entries(L.dirs)) {
-      piece.tex[dir].forEach((t, f) => {
-        t.image.getContext('2d').drawImage(piece.img, i * L.cw, f * L.ch, L.cw, L.ch, 0, 0, L.cw, L.ch);
-        t.needsUpdate = true;
-      });
-    }
-    piece.loaded = true;
-  };
-  piece.img.src = url;
-  return (images[id] = piece);
+  if (!url || !L?.dirs) return (pieces[id] = null);
+  const pc = { L, img: new Image(), loaded: false };
+  pc.img.onload = () => { pc.loaded = true; };
+  pc.img.src = url;
+  return (pieces[id] = pc);
 }
-export const headgearReady = (id) => !imagePiece(id) || imagePiece(id).loaded;
+export const headgearReady = (id) => !gearPiece(id) || gearPiece(id).loaded;
+export const gearFrames = (id) => gearPiece(id)?.L.frames || 1;
+// the hair a piece hides: per column of the head cell, the row above which hair is left out
+export const gearCut = (id, dir) => gearPiece(id)?.L.cut?.[dir] || null;
+
+// paint a piece into a body frame (ctx), its cell's top-left corner at at = [x, y] (the head's)
+export function paintGear(g, at, dir, id, frame = 0) {
+  const pc = gearPiece(id);
+  if (!pc?.loaded || !at || pc.L.dirs[dir] === undefined) return;
+  const { cw, ch } = pc.L;
+  g.drawImage(pc.img, pc.L.dirs[dir] * cw, (frame % pc.L.frames) * ch, cw, ch, at[0], at[1], cw, ch);
+}
 
 const REF_W = 34;   // head width the art is drawn for
 const OUT = '#2e2118';
@@ -166,7 +136,7 @@ export const HEADGEAR = {
       for (const s of [-1, 1]) fill(g, '#d8d0bc', () => { g.moveTo(23 + s * 15, 18); g.quadraticCurveTo(23 + s * 22, 12, 23 + s * 21, 2); g.quadraticCurveTo(23 + s * 17, 10, 23 + s * 14, 14); g.closePath(); });
     },
   },
-  flame_circlet: { slot: 'head' }, // PixelLab only, animated
+  flame_circlet: { slot: 'head' }, // standard piece only, animated
   round_glasses: {
     slot: 'face', size: [34, 12], anchor: [17, 6],
     front: (g) => {
@@ -184,14 +154,14 @@ export const HEADGEAR = {
     },
     back: null, // not seen from behind
   },
-  raven_mask: { slot: 'face' }, // PixelLab only
+  raven_mask: { slot: 'face' }, // standard piece only
 };
 
 // the views of one piece as nearest-filtered textures: { front, side, sideL, back } (null = hidden)
 const cache = {};
 export function headgearViews(id) {
   const def = HEADGEAR[id];
-  if (!def?.front) return null; // made only with PixelLab
+  if (!def?.front) return null; // a standard piece only
   if (cache[id]) return cache[id];
   const [w, h] = def.size;
   const make = (paint, mirror) => {
@@ -211,15 +181,17 @@ export function headgearViews(id) {
 
 // a 64x64 icon from the front view
 export function headgearIcon(g, id) {
-  const pc = imagePiece(id);
+  const pc = gearPiece(id);
   if (pc) {
-    const [i, x0, y0, x1, y1] = pc.L.dirs.down || Object.values(pc.L.dirs)[0];
-    const w = x1 - x0, h = y1 - y0, k = Math.min(56 / w, 52 / h);
+    const box = pc.L.box.down || Object.values(pc.L.box).find(Boolean);
+    if (!box || !pc.loaded) return;
+    const [x0, y0, x1, y1] = box, w = x1 - x0, h = y1 - y0, k = Math.floor(Math.min(56 / w, 52 / h)) || 1;
     g.imageSmoothingEnabled = false;
-    if (pc.loaded) g.drawImage(pc.img, i * pc.L.cw + x0, y0, w, h, 32 - (w * k) / 2, 32 - (h * k) / 2, w * k, h * k);
+    g.drawImage(pc.img, pc.L.dirs.down * pc.L.cw + x0, y0, w, h, 32 - (w * k) / 2, 32 - (h * k) / 2, w * k, h * k);
     return;
   }
   const def = HEADGEAR[id];
+  if (!def?.front) return;
   const [w, h] = def.size;
   const { c, g: hg } = canvas(w, h);
   def.front(hg, w, h);
@@ -231,27 +203,11 @@ export function headgearIcon(g, id) {
 // which view a sprite direction shows
 const VIEW = { down: 'front', downleft: 'front', downright: 'front', right: 'side', left: 'sideL', up: 'back', upleft: 'back', upright: 'back' };
 
-// One headgear layer over a character. Call update() after the head layer is placed: Ragnarok
-// style, a piece snaps to the head, not the body. geo is the head's geometry in body-frame pixels
-// ({ x, crown, neck, w, eyes, sprite }, from Player.placeHead); without it (an older sprite with
-// its head drawn in) the packer's per-frame head is used. A face piece's arms and hinges are hidden
-// where they would leave the head's outline, the way they tuck behind the head; the lenses always
-// show, on the head's measured eyes.
+// One painted headgear layer over an older body, drawn with its head: pinned to the head of
+// whatever frame is showing (the packer's per-frame head: centre, crown, neck, width).
 export class HeadLayer {
   constructor(scene) {
     this.mat = new THREE.SpriteMaterial({ alphaTest: 0.5 });
-    this.mask = { uBody: { value: null }, uXf: { value: new THREE.Vector4() }, uMask: { value: 0 } };
-    this.mat.onBeforeCompile = (sh) => {
-      Object.assign(sh.uniforms, this.mask);
-      sh.fragmentShader = sh.fragmentShader
-        .replace('void main() {', 'uniform sampler2D uBody;\nuniform vec4 uXf;\nuniform float uMask;\nvoid main() {')
-        .replace('#include <map_fragment>', `#include <map_fragment>
-        if (uMask > 0.5 && sampledDiffuseColor.a < 0.995) { // an arm or hinge (pack-headgear marks them)
-          vec2 bu = vec2(vMapUv.x * uXf.x + uXf.y, vMapUv.y * uXf.z + uXf.w);
-          vec4 b = texture2D(uBody, bu);
-          if (b.a < 0.5 || bu.x < 0.0 || bu.x > 1.0 || bu.y < 0.0 || bu.y > 1.0) discard; // off the head
-        }`);
-    };
     this.sprite = new THREE.Sprite(this.mat);
     this.sprite.renderOrder = 3; // over the body
     this.sprite.visible = false;
@@ -260,64 +216,11 @@ export class HeadLayer {
   }
 
   set(id) { this.id = HEADGEAR[id] ? id : null; }
+  hide() { this.sprite.visible = false; }
 
-  // how much of the wearer's hair this piece hides (share of crown → neck; 0 = none)
-  hair() { return this.id && this.sprite.visible ? fitOf(this.id).hair : 0; }
-  // where its rim sits this frame, in the body frame's pixels: { cx, half, y } (null if none)
-  rim() { return this.id && this.sprite.visible ? this.cover : null; }
-
-  // a PixelLab piece: scaled from its front view to the head's width, then sat on the head
-  updateImage(pc, body, tex, dir, fw, fh) {
-    const h = this.geo, slot = HEADGEAR[this.id].slot, fit = fitOf(this.id);
-    if (fit.dirs?.[dir]) Object.assign(fit, fit.dirs[dir]); // fitOf() returns a fresh copy
-    if (fit.swap?.[dir]) dir = fit.swap[dir];
-    const cell = pc.L.dirs[dir], front = pc.L.dirs.down;
-    if (!cell || !front || (slot === 'face' && dir.startsWith('up'))) { this.sprite.visible = false; return; }
-    const [, , , , , rx, , ry, , lens] = cell, { cw, ch } = pc.L;
-    const upp = body.scale.x / fw;
-    let sx = h.w * fit.w / front[6], sy = sx; // body pixels per headgear pixel: front rim = head width
-    let ax = rx, ay = fit.base ? cell[4] : ry + 0.5; // the rim's middle (or its bottom) goes on the attach line...
-    let px = h.x + fit.dx * (dir.includes('left') ? -1 : 1) * h.w;
-    let py = h.crown + (h.neck - h.crown) * (fit.at + fit.dy);
-    const eyes = h.eyes || [];
-    if (slot === 'face' && lens?.length === 4 && eyes.length === 4) {
-      // ...or, for a face piece, its lenses on the eyes: width from the eye spacing (squashed when
-      // turned), height from the head
-      const k = (eyes[2] - eyes[0]) / (lens[2] - lens[0]);
-      if (k > sx * 0.5 && k < sx * 1.8) sx = k;
-      ax = (lens[0] + lens[2]) / 2; ay = (lens[1] + lens[3]) / 2;
-      px = (eyes[0] + eyes[2]) / 2; py = (eyes[1] + eyes[3]) / 2;
-    } else if (slot === 'face' && lens?.length === 2 && eyes.length === 2) { // a side view: one lens, one eye
-      ax = lens[0]; ay = lens[1]; px = eyes[0]; py = eyes[1];
-    }
-    const k = sx * upp, HW = cw * k, HH = ch * sy * (fit.sy || 1) * upp;
-    const dx = (px / fw - 0.5) * body.scale.x, dy = (1 - py / fh - body.center.y) * body.scale.y;
-    const fr = pc.tex[dir], t = fr[Math.floor(performance.now() / 1000 * ANIM_FPS) % fr.length]; // animated pieces loop
-    if (this.mat.map !== t) { if (!this.mat.map) this.mat.needsUpdate = true; this.mat.map = t; }
-    this.sprite.scale.set(HW, HH, 1);
-    this.sprite.center.set(ax / cw - dx / HW, (1 - ay / ch) - dy / HH);
-    this.sprite.position.copy(body.position);
-    this.mat.color.copy(body.material.color);
-    this.sprite.visible = true;
-    this.cover = { cx: px, half: (cell[6] * k) / upp / 2, y: py };
-    // face pieces: map this layer's texture coordinates onto the head layer's (or the body
-    // frame's), for the mask
-    const under = h.sprite || body;
-    this.mask.uMask.value = slot === 'face' && under.material.map ? 1 : 0;
-    if (this.mask.uMask.value) {
-      const W = under.scale.x, Hb = under.scale.y, c = this.sprite.center, uc = under.center;
-      this.mask.uBody.value = under.material.map;
-      this.mask.uXf.value.set(HW / W, uc.x - (c.x * HW) / W, HH / Hb, uc.y - (c.y * HH) / Hb);
-    }
-  }
-
-  // body: the character's sprite; tex: its current frame; dir: sprite direction; fw, fh: frame size;
-  // geo: the head layer's geometry (see the class comment)
-  update(body, tex, dir, fw, fh, show, geo) {
-    this.geo = geo || tex.userData.head;
-    const pc = this.id && imagePiece(this.id);
-    if (pc && show && this.geo && body.visible) { this.updateImage(pc, body, tex, dir, fw, fh); return; }
-    const h = this.geo, v = !pc && this.id && headgearViews(this.id);
+  // body: the character's sprite; tex: its current frame; dir: sprite direction; fw, fh: frame size
+  update(body, tex, dir, fw, fh, show) {
+    const h = tex.userData.head, v = this.id && headgearViews(this.id);
     const view = v && v[VIEW[dir] || 'front'];
     if (!show || !h || !view || !body.visible) { this.sprite.visible = false; return; }
     const def = v.def, [cw, ch] = def.size, [ax, ay] = def.anchor;

@@ -1,13 +1,10 @@
-"""PixelLab headgear: each piece as an 8-direction object in the player's own style and pixel size.
+"""PixelLab helpers (post, wait, save) used by pixellab-heads.py, which makes the headgear now: as
+states of the standard bald head (pixellab-heads.py gear), packed by pack-heads.py.
 
-The style reference is a crop of the player's head (south view), so the output canvas matches the
-sprites' pixel density and the art matches their shading. The game pins the result to each frame's
-head (see src/headgear.js), so one piece fits every job's sprite.
+Run on its own, this makes the older kind of piece: an 8-direction object of the piece alone,
+styled on the player's head.
 
   python3 build-tools/pixellab-headgear.py art/pixellab/headgear horned_helm   (needs PIXELLAB_API_KEY)
-
-Results: <out>/<id>/<direction>.png for the eight directions (and <direction>_<frame>.png for an
-animated piece), plus the layout and object info.
 """
 import base64, io, json, os, sys, time, zipfile
 import requests

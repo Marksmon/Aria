@@ -464,8 +464,9 @@ function pixelSet(url, { fw, fh, body, foot = 0, hair = [], anims, bald = false 
   // and hair, on its pixel grid), and the white copy for the hit flash
   let paint = null;
   const img = new Image();
-  const draw = () => {
-    for (const [t, f, x, y, dir] of cuts) {
+  const of = new Map(cuts.map((c) => [c[0], c]));
+  const draw = (list = cuts) => {
+    for (const [t, f, x, y, dir] of list) {
       const b = t.image.getContext('2d');
       b.clearRect(0, 0, fw, fh);
       b.drawImage(img, x, y, fw, fh, 0, 0, fw, fh);
@@ -481,6 +482,7 @@ function pixelSet(url, { fw, fh, body, foot = 0, hair = [], anims, bald = false 
     }
   };
   set.dress = (fn) => { paint = fn; if (set.loaded) draw(); };
+  set.repaint = (t) => { if (set.loaded && of.has(t)) draw([of.get(t)]); }; // one frame (an animated hat)
   img.onload = () => { set.loaded = true; draw(); };
   img.src = url;
   return set;

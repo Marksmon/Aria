@@ -59,8 +59,14 @@ it.
 
 ## Headgear
 
-Made with `build-tools/pixellab-headgear.py`, packed by `pack-headgear.py`, fitted in
-`src/headgear.js`:
-- hats size their brim to the head layer's width and sit on its crown line (`FIT`, `TUNE`);
-- face pieces put their lenses on the head layer's eye points;
-- a hat hides the hair above its line, never the face.
+Two slots, like Ragnarok's: **Head** (hats, helmets, crowns) and **Face** (glasses, masks).
+
+- `build-tools/pixellab-heads.py gear <id>` makes a piece as a **state** of the bald head: the
+  same head wearing it. So it sits on the skull and the eyes exactly as drawn, in all 8
+  directions, with no fitting.
+- `build-tools/pack-heads.py` keeps only what the piece adds to the bald head, shrinks it like
+  the heads, and writes `src/art/hg_<id>.png` (a row per frame for an animated piece, like the
+  Flame Circlet) and `hg_<id>.json`.
+- The game paints it into each body frame at the head's spot, after the hair: face piece, then
+  head piece. A helmet or cap hides the hair above its brim, a crown the spikes above it; a wreath
+  rests in the hair. Glasses have see-through lenses.
