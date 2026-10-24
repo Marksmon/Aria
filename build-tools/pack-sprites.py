@@ -7,6 +7,7 @@ with the frame size and where each animation lives. Frames are cropped to one sh
 character, kept horizontally centered on the body so the sprite anchor stays under the feet.
 """
 import json, os, re, sys
+import numpy as np
 from PIL import Image, ImageFilter, ImageOps
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -156,8 +157,7 @@ def strip_head(f, h, keep, hair):
 def strip_bald(f, h, keep, hair):
     """strip_head for a body made bald, which has nothing but its head above the neck: also what's
     left of the head's outline and eyes (pixels within two of the removed skin, above the neck) and
-    small specks around it. Returns the frame and its seat: the top of the collar under the head,
-    where the head's chin goes."""
+    small specks around it."""
     cx, crown, neck, w = h[:4]
     out = strip_head(f, h, keep, hair)
     a, px = f.getchannel('A').load(), out.load()
@@ -192,10 +192,87 @@ def strip_bald(f, h, keep, hair):
         if not edge and len(g) < 8 and all(region(*q) for q in g):
             for q in g:
                 px[q] = (0, 0, 0, 0)
-    # the seat: the highest body pixel under the middle of the head
-    tops = [next((y for y in range(neck - 1, min(f.height, neck + 9)) if px[x, y][3] > 128), None) for x in range(int(cx) - 2, int(cx) + 3)]
-    tops = [t for t in tops if t is not None]
-    return out, (min(tops) if tops else neck)
+    return out
+
+
+
+# Fitting the standard bald head (src/art/heads.png, from pack-heads.py) onto a body made bald:
+# the head goes where the body's own head was drawn. At a size, and for each frame a chin point,
+# chosen so the standard head covers the frame's own head best (overlap over union).
+HEAD_GROW = 1.06  # then drawn this much bigger, about the chin: a little big, like Ragnarok's heads
+
+
+def head_masks():
+    meta = json.load(open(os.path.join(OUT, 'heads.json')))
+    sheet = Image.open(os.path.join(OUT, 'heads.png')).convert('RGBA')
+    cw, ch = meta['cw'], meta['ch']
+    masks = {}
+    for d, g in meta['dirs'].items():
+        a = np.array(sheet.crop((g['col'] * cw, 0, (g['col'] + 1) * cw, ch)).getchannel('A')) >= 128
+        masks[d] = (a, g['chin'])
+    return masks
+
+
+def own_head(f, lim):
+    """the frame's own head as a mask: its biggest patch of skin (the eyes filled in) and the outline
+    around it"""
+    a = np.array(f)
+    r, g, b, al = (a[..., i].astype(int) for i in range(4))
+    lum = 0.3 * r + 0.59 * g + 0.11 * b
+    skin = (al > 128) & (r > 150) & (r >= g) & (g >= b - 10) & (lum >= 110)
+    skin[lim:] = False
+    pts = set(zip(*np.nonzero(skin)))
+    best, seen = [], set()
+    for p in pts:
+        if p in seen:
+            continue
+        grp, stack = [], [p]
+        seen.add(p)
+        while stack:
+            q = stack.pop()
+            grp.append(q)
+            for n in ((q[0] + 1, q[1]), (q[0] - 1, q[1]), (q[0], q[1] + 1), (q[0], q[1] - 1)):
+                if n in pts and n not in seen:
+                    seen.add(n)
+                    stack.append(n)
+        if len(grp) > len(best):
+            best = grp
+    m = np.zeros(skin.shape, bool)
+    rows = {}
+    for y, x in best:
+        lo, hi = rows.get(y, (x, x))
+        rows[y] = (min(lo, x), max(hi, x))
+    for y, (lo, hi) in rows.items():
+        m[y, lo:hi + 1] = True
+    m[1:] |= m[:-1].copy(); m[:-1] |= m[1:].copy(); m[:, 1:] |= m[:, :-1].copy(); m[:, :-1] |= m[:, 1:].copy()
+    return m if len(best) > 20 else None
+
+
+def head_fit(m, mask, sc, guess, reach, step):
+    """the chin point (frame pixels) where the standard head at scale sc best covers mask m"""
+    hm, (ax, ay) = mask
+    ys, xs = np.nonzero(m)
+    y0, y1, x0, x1 = max(0, ys.min() - 12), min(m.shape[0], ys.max() + 12), max(0, xs.min() - 12), min(m.shape[1], xs.max() + 12)
+    win = m[y0:y1, x0:x1]
+    gy, gx = np.mgrid[y0:y1, x0:x1] + 0.5
+    best = (-1.0, guess)
+    n = int(round(reach / step))
+    for i in range(-n, n + 1):
+        for j in range(-n, n + 1):
+            X, Y = guess[0] + i * step, guess[1] + j * step
+            u, v = ((gx - X) / sc + ax).astype(int), ((gy - Y) / sc + ay).astype(int)
+            ok = (u >= 0) & (u < hm.shape[1]) & (v >= 0) & (v < hm.shape[0])
+            c = np.zeros(win.shape, bool)
+            c[ok] = hm[v[ok], u[ok]]
+            iou = (c & win).sum() / max(1, (c | win).sum())
+            if iou > best[0]:
+                best = (iou, (X, Y))
+    return best
+
+
+def guess_of(m):
+    ys, xs = np.nonzero(m)
+    return (xs.mean() + 0.5, ys.max() + 0.5)
 
 
 def load(name, eight=False, prefer=(), skip=()):
@@ -439,14 +516,45 @@ def pack(name, opts):
         if n < total * 0.02:
             break
         hair.append(list(c))
+    if opts.get('bald'):  # the standard head's size for this body: the best fit over its standing poses
+        masks = head_masks()
+        lim = int(bh * 0.6) + 8
+        idle = {d: own_head(rows[layout[d]['idle'][0]][0], lim) for d in layout}
+        def score(sc):
+            fits = [head_fit(m, masks[d], sc, guess_of(m), 5, 1) for d, m in idle.items() if m is not None]
+            return sum(f[0] for f in fits) / len(fits)
+        fit_sc = max((0.66 + 0.02 * i for i in range(20)), key=score)
+        # each direction's standing fit, as an offset from the rough guess, starts every frame's search
+        start = {}
+        for d, m in idle.items():
+            if m is not None:
+                _, (X, Y) = head_fit(m, masks[d], fit_sc, guess_of(m), 5, 1)
+                gx, gy = guess_of(m)
+                start[d] = (X - gx, Y - gy)
+        def chins(d, frames):
+            out = []
+            for f in frames:
+                m = own_head(f, lim)
+                if m is None:
+                    out.append(None)
+                    continue
+                gx, gy = guess_of(m)
+                ox, oy = start.get(d, (0, 0))
+                iou, (X, Y) = head_fit(m, masks[d], fit_sc, (gx + ox, gy + oy), 3, 0.5)
+                out.append([round(X, 2), round(Y, 2)] if iou > 0.5 else None)
+            # a frame whose head can't be seen well borrows the nearest one's
+            for i, c in enumerate(out):
+                if c is None:
+                    near = [j for j in range(len(out)) if out[j] is not None]
+                    out[i] = out[min(near, key=lambda j: abs(j - i))] if near else None
+            return out
     if opts.get('strip'):  # Ragnarok-style body: the head comes off, its anchors stay
         keep = body_colours(art, box, layout) - {tuple(c) for c in hair}
         for d in layout:
             for anim, (r, n, _, hs, *_) in layout[d].items():
-                if opts.get('bald'):  # each frame also records its seat, for the head's chin
-                    done = [strip_bald(f, h, keep, hair) for f, h in zip(rows[r], hs)]
-                    rows[r] = [f for f, _ in done]
-                    layout[d][anim].append([s for _, s in done])
+                if opts.get('bald'):  # each frame also records where the standard head's chin goes
+                    layout[d][anim].append(chins(d, rows[r]))
+                    rows[r] = [strip_bald(f, h, keep, hair) for f, h in zip(rows[r], hs)]
                 else:
                     rows[r] = [strip_head(f, h, keep, hair) for f, h in zip(rows[r], hs)]
     cols = max(len(r) for r in rows)
@@ -481,7 +589,7 @@ def pack(name, opts):
             for anim, entry in layout[d].items():
                 entry[3] = [h[:4] + [round((h[0] if i % 2 == 0 else h[1]) + v, 1) for i, v in enumerate(o)] for h in entry[3]]
 
-    json.dump({'fw': fw, 'fh': fh, 'body': body, 'foot': foot, 'hair': hair, 'bald': bool(opts.get('bald')), 'anims': layout}, open(os.path.join(OUT, name + '.json'), 'w'))
+    json.dump({'fw': fw, 'fh': fh, 'body': body, 'foot': foot, 'hair': hair, 'bald': bool(opts.get('bald')), 'headScale': round(fit_sc * HEAD_GROW, 3) if opts.get('bald') else None, 'anims': layout}, open(os.path.join(OUT, name + '.json'), 'w'))
     print(name, 'frame', fw, 'x', fh, 'body', body, 'foot', foot, 'sheet', sheet.size, os.path.getsize(os.path.join(OUT, name + '.png')), 'bytes')
 
 

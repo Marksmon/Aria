@@ -11,9 +11,10 @@ Back to front, in every frame:
    `strip`) cuts the head off every frame and keeps its anchor: the neck point, plus the head's
    size in that frame.
 2. **Head.** One bald head with the standard face, shared by every job (`src/art/heads.png`, row
-   `bald`), the same size on every standard body. Its chin sits on the body's seat: the top of the
-   collar under the old head, recorded per frame. The packer finds a bald body's head as its
-   biggest patch of skin, so a staff, sword or spell beside the head isn't mistaken for it.
+   `bald`). It goes where the body's own head was drawn: when packing, the standard head is fitted
+   over each frame's own head (its biggest patch of skin, so a staff or spell beside it doesn't
+   count), at the size that covers that body's heads best, then drawn 6% bigger about the chin.
+   Each frame stores the fitted chin point; the job stores the size (`headScale`).
 3. **Hair.** The hairstyle, its own layer on the head (`heads.png`, one row per style), recoloured
    by a dye. Like Ragnarok, the hairstyle stays the same through job changes; Embla the Stylist
    in Steinborg changes it.

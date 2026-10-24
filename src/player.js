@@ -4,8 +4,6 @@ import { playerAttack } from './rules.js';
 import { HeadLayer } from './headgear.js';
 import { HEADS, headTexture } from './hair.js';
 
-const HEAD_SCALE = 0.78; // the standard head on a standard body (94 pixels tall): body pixels per head pixel
-
 const BASE_SPEED = 4.2;  // world units per second
 const RADIUS = 0.3;      // collision radius
 const HEIGHT = 1.38;     // standing height in world units
@@ -100,12 +98,11 @@ export class Player {
   setHeadgear(top, face) { this.heads[0].set(top); this.heads[1].set(face); }
   setLook(look) { this.look = { ...this.look, ...look }; }
 
-  // body pixels per head pixel. Bodies made to the character standard are all the same height, so
-  // the head is the same size on every job (a little big, like Ragnarok's); an older body sizes it
-  // to the head it was drawn with
+  // body pixels per head pixel: a body made bald was fitted with the standard head when packed (the
+  // size of its own head, a little bigger); an older body sizes it to the head it was drawn with
   setHeadScale(art) {
     const h = art.anims.down.idle[0].userData.head, d = HEADS?.dirs?.down;
-    if (art.bald) this.headScale = HEAD_SCALE * (art.body[1] / 94);
+    if (art.headScale) this.headScale = art.headScale;
     else if (h && d) this.headScale = (h.neck - h.crown) / (d.chin[1] - d.crown);
   }
 
@@ -322,8 +319,8 @@ export class Player {
     const { fw, fh } = this.art, { cw, ch } = HEADS, S = this.headScale, upp = body.scale.x / fw;
     const [ax, ay] = hd.chin;
     const HW = cw * S * upp, HH = ch * S * upp;
-    const seat = h.seat + 1; // the chin overlaps the collar a pixel
-    const dx = ((h.x + 0.5) / fw - 0.5) * body.scale.x, dy = (1 - seat / fh - body.center.y) * body.scale.y;
+    const [cx, cy] = h.chin || [h.x + 0.5, h.neck]; // where the chin goes, in frame pixels
+    const dx = (cx / fw - 0.5) * body.scale.x, dy = (1 - cy / fh - body.center.y) * body.scale.y;
     for (const [spr, tex] of [[this.headSpr, head], [this.hairSpr, hair]]) {
       if (!tex) { spr.visible = false; continue; }
       if (spr.material.map !== tex) { if (!spr.material.map) spr.material.needsUpdate = true; spr.material.map = tex; }
@@ -334,10 +331,10 @@ export class Player {
       spr.material.rotation = this.mat.rotation; // lying down (fainted, Play Dead) turns the head with the body
       spr.visible = body.visible;
     }
-    const at = (x, y) => [h.x + 0.5 + (x - ax) * S, seat + (y - ay) * S];
+    const at = (x, y) => [cx + (x - ax) * S, cy + (y - ay) * S];
     const eyes = [];
     for (let i = 0; i < hd.eyes.length; i += 2) eyes.push(...at(hd.eyes[i], hd.eyes[i + 1]));
-    return { x: h.x + 0.5, crown: seat - (ay - hd.crown) * S, neck: seat, w: hd.w * S, eyes, sprite: this.headSpr };
+    return { x: cx, crown: cy - (ay - hd.crown) * S, neck: cy, w: hd.w * S, eyes, sprite: this.headSpr };
   }
 
   // carry out the current order: walk the path, swing at a target in reach, or arrive somewhere
