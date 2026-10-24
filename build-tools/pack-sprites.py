@@ -47,7 +47,11 @@ CHARS['sorcerer'] = {'eight': True, 'use': {'walk': 'walking'}, 'skip': {'dodge'
 CHARS['trainee'] = {'eight': True, 'use': {'walk': 'walking'}, 'bald': True,
                     'mirror': {('idle', 'downright'), ('walk', 'downright'), ('attack', 'downright')}}
 CHARS['embla'] = {'eight': True}
-CHARS.update({name: {'eight': True, 'use': {'walk': 'walking'}, 'bald': True} for name in ['blader', 'sorc', 'mknight']})  # the Sorcerer and the Magic Knight, made like the Trainee
+CHARS.update({name: {'eight': True, 'use': {'walk': 'walking'}, 'bald': True} for name in ['blader', 'sorc']})  # the Sorcerer, made like the Trainee
+# the Magic Knight came out at half the cast's pixel scale and was doubled (art/pixellab/mknight):
+# its outlines are two pixels thick, and its ears stand apart from the skull; its head is centred
+# on the body in front and back, and its neck wrapped in a violet scarf
+CHARS['mknight'] = {'eight': True, 'use': {'walk': 'walking'}, 'bald': True, 'ring': 3, 'islands': 80, 'center': True, 'scarf': True, 'wipe': True}
 
 
 def islands(f):
@@ -170,9 +174,9 @@ def head_masks():
             for d, g in meta['dirs'].items()}
 
 
-def own_head(f, lim):
+def own_head(f, lim, ring=1):
     """the frame's own head: its biggest patch of skin, the eyes filled in (head), and that with the
-    dark outline around it (whole); or None"""
+    dark outline around it (whole; ring = the outline's thickness in pixels); or None"""
     a = np.array(f).astype(int)
     r, g, b, al = (a[..., i] for i in range(4))
     lum = 0.3 * r + 0.59 * g + 0.11 * b
@@ -203,9 +207,12 @@ def own_head(f, lim):
         rows[y] = (min(lo, x), max(hi, x))
     for y, (lo, hi) in rows.items():
         head[y, lo:hi + 1] = True
-    near = head.copy()
-    near[1:] |= head[:-1]; near[:-1] |= head[1:]; near[:, 1:] |= head[:, :-1]; near[:, :-1] |= head[:, 1:]
-    whole = head | (near & (al > 128) & (lum < 110))
+    whole = head.copy()
+    for _ in range(ring):  # the outline, ring by ring: dark pixels touching what is already in
+        near = whole.copy()
+        near[1:] |= whole[:-1]; near[:-1] |= whole[1:]; near[:, 1:] |= whole[:, :-1]; near[:, :-1] |= whole[:, 1:]
+        # (ring > 1, for doubled art: the ears, little islands of skin beside the head, come along too)
+        whole = whole | (near & (al > 128) & ((lum < 110) | (skin if ring > 1 else False)))
     return head, whole, rows
 
 
@@ -247,13 +254,63 @@ def first_guess(head, rows, mask):
     return (round(xs.mean() + 0.5 - g['chin'][0]), jaw_of(rows) + 1 - g['chin'][1])
 
 
-def clear_old_head(f, whole, cover, bottom):
+def neck_scarf(f, ox, oy, g, hw):
+    """wrap the neck in a scarf: skin showing between the chin and the shoulders is repainted in the
+    outfit's own violet (its most common purple), light to dark as the skin was"""
+    a = np.array(f).astype(int)
+    r, gg, b, al = (a[..., i] for i in range(4))
+    lum = 0.3 * r + 0.59 * gg + 0.11 * b
+    skin = (al > 128) & (r > 150) & (r >= gg) & (gg >= b - 10) & (lum >= 110)
+    purple = (al > 128) & (b > r) & (r > gg + 15) & (b > 70)
+    if purple.sum() < 10:
+        return f
+    cols = a[purple][:, :3]
+    base = np.median(cols, axis=0)
+    y0, y1 = int(oy + g['chin'][1]) - 2, int(oy + g['chin'][1]) + 12
+    x0, x1 = max(0, int(ox)), min(a.shape[1], int(ox + hw))
+    out = a.copy()
+    sk = skin[y0:y1, x0:x1]
+    if not sk.any():
+        return f
+    mean = lum[y0:y1, x0:x1][sk].mean()
+    for y in range(y0, y1):
+        for x in range(x0, x1):
+            if skin[y, x]:
+                k = max(0.55, min(1.5, lum[y, x] / mean))  # keep the skin's light and shade
+                out[y, x, :3] = np.clip(base * k, 0, 255)
+    return Image.fromarray(out.astype(np.uint8))
+
+
+def centre_x(f, ox, oy, g):
+    """the head's left edge that puts its chin over the middle of the body below it: the middle of
+    the run of solid pixels under the chin, row by row over the shoulders (a sword held out to the
+    side is a run of its own and doesn't count)"""
+    a = np.array(f)[..., 3] > 128
+    H, W = a.shape
+    cx, top = int(round(ox + g['chin'][0])), int(round(oy + g['chin'][1])) + 3
+    mids = []
+    for y in range(top, min(H, top + 12)):
+        if not a[y, min(W - 1, max(0, cx))]:
+            continue
+        lo = hi = min(W - 1, max(0, cx))
+        while lo > 0 and a[y, lo - 1]:
+            lo -= 1
+        while hi < W - 1 and a[y, hi + 1]:
+            hi += 1
+        mids.append((lo + hi) / 2)
+    if len(mids) < 4:
+        return None
+    mids.sort()
+    return int(round(mids[len(mids) // 2] - g['chin'][0]))
+
+
+def clear_old_head(f, whole, cover, bottom, islands_above=0, wipe=False):
     """take away what still shows of the body's own head above the new head's chin: off where it
     meets the empty space around the character, filled from the clothes next to it where it's
     closed in (between the new head and a collar), so no hole opens around the neck"""
     a = np.array(f)
     op = a[..., 3] > 128
-    left = whole & ~cover & op
+    left = whole & op if wipe else whole & ~cover & op  # wipe: all of the old head, even where the new one will be
     left[bottom + 1:] = False
     pts = set(zip(*np.nonzero(left)))
     H, W = op.shape
@@ -281,6 +338,26 @@ def clear_old_head(f, whole, cover, bottom):
             if fill is not None:
                 break
         out[y, x] = fill if fill is not None else 0
+    if islands_above:  # bits of the old head left floating beside the new one: small pieces above
+        # the chin that touch nothing else (a raised sword is long, and stays)
+        op2 = out[..., 3] > 128
+        seen = np.zeros_like(op2)
+        for y0 in range(0, bottom + 1):
+            for x0 in range(W):
+                if not op2[y0, x0] or seen[y0, x0]:
+                    continue
+                grp, stack = [], [(y0, x0)]
+                seen[y0, x0] = True
+                while stack:
+                    y, x = stack.pop()
+                    grp.append((y, x))
+                    for yy, xx in ((y + 1, x), (y - 1, x), (y, x + 1), (y, x - 1), (y + 1, x + 1), (y - 1, x - 1), (y + 1, x - 1), (y - 1, x + 1)):
+                        if 0 <= yy < H and 0 <= xx < W and op2[yy, xx] and not seen[yy, xx]:
+                            seen[yy, xx] = True
+                            stack.append((yy, xx))
+                if len(grp) < islands_above and max(y for y, _ in grp) <= bottom + 2 and not any(cover[y, x] for y, x in grp):
+                    for y, x in grp:
+                        out[y, x] = 0
     return Image.fromarray(out)
 
 
@@ -532,7 +609,7 @@ def pack(name, opts):
         # each direction's standing fit, as an offset from the rough guess, starts every frame's search
         start = {}
         for d in layout:
-            own = own_head(rows[layout[d]['idle'][0]][0], lim)
+            own = own_head(rows[layout[d]['idle'][0]][0], lim, opts.get('ring', 1))
             if own:
                 head, whole, hrows = own
                 g0 = first_guess(head, hrows, masks[d])
@@ -544,7 +621,7 @@ def pack(name, opts):
                 r = entry[0]
                 spots = []
                 for f in rows[r]:
-                    own = own_head(f, lim)
+                    own = own_head(f, lim, opts.get('ring', 1))
                     if not own:
                         spots.append(None)
                         continue
@@ -557,13 +634,16 @@ def pack(name, opts):
                     if sp is None:
                         near = [j for j in range(len(spots)) if spots[j] is not None]
                         spots[i] = spots[min(near, key=lambda j: abs(j - i))] if near else (fw // 2 - hm.shape[1] // 2, 0)
+                if opts.get('center') and d in ('down', 'up'):  # front and back: the head sits square on the body
+                    spots = [(centre_x(f, ox, oy, g) or ox, oy) for f, (ox, oy) in zip(rows[r], spots)]
                 frames = []
                 for f, (ox, oy) in zip(rows[r], spots):
                     if oy < 0 or ox < 0 or ox + hm.shape[1] > fw:
                         print('  warning: the head leaves the frame', name, d, anim, ox, oy)
-                    own = own_head(f, lim)
+                    own = own_head(f, lim, opts.get('ring', 1))
                     cover = head_cover((fh, fw), hm, ox, oy)
-                    frames.append(clear_old_head(f, own[1], cover, oy + g['chin'][1] - 1) if own else f)
+                    f2 = clear_old_head(f, own[1], cover, oy + g['chin'][1] - 1, opts.get('islands', 0), opts.get('wipe')) if own else f
+                    frames.append(neck_scarf(f2, ox, oy, g, hm.shape[1]) if opts.get('scarf') else f2)
                 rows[r] = frames
                 # the head's geometry in frame pixels, for headgear: [x, crown, neck, w, eyes...]
                 entry[3] = [[ox + g['chin'][0], oy + g['crown'], oy + g['chin'][1], g['w'],
