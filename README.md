@@ -45,11 +45,15 @@ reached by travelling on. Place names are Old Norse in style.
 ```
   Galdrheim  Steinborg - Birkilund
      |           |           |
-     |       Mosvangr  -  Myrkdal  -  Svartskog
-     |           |           |           |
- Fenstrand - Eldrun Camp   Glodberg  -  Askheid
+     |       Mosvangr  -  Myrkdal  -  Svartskog  -  Ormholt
+     |           |           |           |            |
+ Fenstrand - Eldrun Camp   Glodberg  -  Askheid  -  Brennholt
      |
   Saltvik
+     |
+ Grjotvangr
+     |
+  Kolgrof
 ```
 
 | Map | Level | Monsters | Boss |
@@ -62,16 +66,25 @@ reached by travelling on. Place names are Old Norse in style.
 | Glodberg (ember-hill) | 28–36 | Beetle (30) | **Fire Giant (60, MVP)** |
 | Svartskog (black wood) | 32–42 | Dark Mushroom (34), Dark Wisp (38), Mushroom | Giant Mushroom (40) |
 | Askheid (ash heath) | 40–50 | Fire Beetle (42), Fire Wisp (45), Beetle | Giant Beetle (48) |
+| Grjotvangr (stone-field) | 28–34 | Kobold (28), Kobold Archer (30), Kobold Assassin (33) | |
+| Kolgrof (coal pit) | 30–50 | Kobold Assassin, Kobold, Kobold Archer | **Kobold King (50, MVP)** |
+| Brennholt (burnt wood) | 38–44 | Goblin (38), Goblin Archer (41), Goblin Assassin (44) | |
+| Ormholt (serpent wood) | 40–55 | Goblin Assassin, Goblin, Goblin Archer | **Goblin King (55, MVP)** |
 | Any field in the valley, more at night | | Wisp (11) | |
 
 **Passive monsters.** Like most of Ragnarok's field monsters, they leave you alone until you hit
 them; then they fight back for a while. Only the Dark Wisps, the fire beasts of Askheid, the
-mini-bosses and the Fire Giant attack on sight. A Sprout runs away, and fights only when
+kobolds and goblins, the mini-bosses and the MVPs attack on sight. A Sprout runs away, and fights only when
 cornered.
 
 The new lands' monsters are palette swaps of the valley's, like Ragnarok's slime family. No
 health bars: monsters flash white when hit and wobble when nearly beaten. They respawn 60 s
 after they fall, twice as fast at night.
+
+**Kobolds and goblins** (hand-drawn in code for now, `src/painted.js`) come in three kinds:
+warriors close in and hit hard, **archers** keep about five paces away and shoot arrows (step in
+and they back off), and **assassins** are quick, dart the last few steps and sometimes strike twice.
+They drop Kobold Fur and Goblin Teeth, ores for refining, and now and then Hard Ore or Armor Ore.
 
 **Bosses.** Each new field has a mini-boss: big, slow, stomping the ground around it, back 5–8
 minutes after it falls. They drop a rare material (30%) that forges the best gear, and a rare
@@ -85,6 +98,14 @@ minutes and a bag of potions (a Blader drinks around 50 White Potions; a Sorcere
 moving needs far fewer, but Blue Potions too). Whoever brings it down gets **MVP** over their
 head, bonus Base EXP and MVP items straight to the bag, plus its drops (its horn, crown, cape or
 sword). It comes back 15 minutes later, even if you leave the map or close the game.
+
+Two more MVPs rule the new lands: the **Kobold King** (Lv 50, 18,000 HP, Earth) holds court in the
+south of Kolgrof, and the **Goblin King** (Lv 55, 21,000 HP, Wind) in the north of Ormholt. Both
+stomp like the Fire Giant, and each MVP keeps its own timer (20 and 30 minutes). **Every MVP calls
+guards** when it first falls below 60% HP and again below 30%: the Fire Giant 2 Fire Wisps and 3
+Fire Beetles, each king 4 of his own (2 warriors, an archer and an assassin). Guards are ordinary
+monsters: they follow their MVP, fight whoever it fights, and vanish when it falls (no EXP, no
+drops). The kings drop ores, a rare accessory (5%) and their **card** (1%), as does the Fire Giant.
 
 **Steinborg.** A walled market city north of Mosvangr: stone walls with towers and two gates
 (south to Mosvangr, east to Birkilund), timber houses round a fountain square, a forge, market
@@ -174,7 +195,8 @@ A strong hit (150%) shows in gold, a weak one (25–50%) in grey.
 | Earth | 100% | 25% | 50% | **150%** | 100% |
 
 Water: the slimes, crabs, King Crab · Earth: Sprouts, Mushrooms, beetles, Giant Sprout ·
-Fire: Fire Beetles, Fire Wisps, Giant Beetle, Fire Giant · Wind: Wisps · Shadow:
+Fire: Fire Beetles, Fire Wisps, Giant Beetle, Fire Giant · Wind: Wisps, goblins, Goblin King ·
+Earth also: kobolds, Kobold King · Shadow:
 Dark Mushrooms, Dark Wisps, Giant Mushroom.
 
 **Staves** raise MATK: Wooden (+15%, given on the job change), Birch (+20%, Orm), Rune (+25%),
@@ -213,12 +235,55 @@ bursts gold on the ground and shows in gold in your bag.
 | Lantern | Light | lights the night, KNL +1, FNS +1 | Wisp, 0.4% |
 | Shiny Gel | Misc | a collector's prize | Green and Blue Slimes, 1% |
 | Horned Crown | Head | DEF 4, POW +2, END +1 | Fire Giant, 5% |
-| Flame Sword | Weapon | ATK 110, weapon Lv 3 | Fire Giant, 1% |
+| Flame Sword | Weapon | ATK 110, weapon Lv 4 | Fire Giant, 1% |
+| King's Ring | Accessory | POW +2, END +1, Max HP +50 | Kobold King, 5% |
+| Tooth Necklace | Accessory | QKN +2, FNS +1, HIT +5 | Goblin King, 5% |
 | Giant Cape | Garment | DEF 4, Max HP +100, END +2 | Fire Giant, 3% |
 | Thorn Ring · Coral Shield · Dark Hood · Fire Armor · Fire Charm | | | the new lands' monsters, 0.2–0.3% |
 | Thorn Cape · Sea Sword · Mushroom Staff · Fire Boots | | | the mini-bosses, 2–3% |
 
 Two accessory slots, a shield and a garment slot join head, face, armor, weapon, shoes and light.
+
+**Weapon levels.** Lv 4 weapons are the best there are: the Giant Sword, Flame Sword, Lava Sword
+and Sea Sword, and the Great, Flame, Fire and Mushroom Staves. They refine for the most ATK
+(+7 a level) and are the only gear that can take a card slot.
+
+## Refining, slots and cards
+
+**Holger the Refiner** (Steinborg, beside Gunnar's forge) refines weapons, armor, shields,
+capes, boots and head gear, worn or in the bag, one level at a time up to **+10**, at
+Hollgrehenn's rates from Ragnarok. Each level adds ATK to a weapon (+2 / +3 / +5 / +7 by weapon
+level) or 1 DEF to anything else. Up to the safe level a try always works; past it, a failed try
+**breaks the piece** (any card in it comes back to you). The window shows the chance and asks
+twice before a risky try.
+
+| | Safe to | Then, per level | Each try |
+|---|---|---|---|
+| Weapon Lv 1 | +7 | 60 / 40 / 19% | Iron Ore + 50 perz |
+| Weapon Lv 2 | +6 | 60 / 40 / 20 / 19% | Steel Ore + 200 perz |
+| Weapon Lv 3 | +5 | 60 / 50 / 20 / 20 / 19% | Hard Ore + 5,000 perz |
+| Weapon Lv 4 | +4 | 60 / 40 / 40 / 20 / 20 / 9% | Hard Ore + 20,000 perz |
+| Armor, shield, cape, boots, head | +4 | 60 / 40 / 40 / 20 / 20 / 9% | Armor Ore + 2,000 perz |
+
+Holger sells Iron and Steel Ore; Hard Ore and Armor Ore only drop, from the kobolds, goblins and
+their kings.
+
+**Seyla the Enchanter** (Galdrheim, east of the square) opens **card slots** in Lv 4 weapons, up
+to two: "+7 Giant Sword [1]", then "[2]". The first slot works half the time; each try costs 5
+Hard Ore, 5 Dark Crystals, one boss material (a Giant Root, Big Pearl, Mushroom Heart or Fire
+Core) and 50,000 perz. The second works a quarter of the time and costs twice as much (10, 10, 2
+boss materials in any mix, 100,000 perz). A failed try breaks the weapon; any card in it comes
+back to you.
+
+**Cards.** Each MVP drops its card (1%), and like Ragnarok's MVP cards they are overpowered.
+Select a card in the Miscs tab and tap **Insert** to press it into a weapon with a
+free slot. It stays there for good, unless the weapon later breaks at Holger's.
+
+| Card | Goes in | Effect | From |
+|---|---|---|---|
+| Kobold King Card | Weapon | Max HP +40%, DEF +10, FLEE +10, END +10 | Kobold King, 1% |
+| Goblin King Card | Weapon | ATK +100, POW +10, QKN +10, attacks 15% faster | Goblin King, 1% |
+| Fire Giant Card | Weapon | ATK +80, MATK +30%, Max HP +25%, POW +6, KNL +6, weapon turns Fire | Fire Giant, 1% |
 
 **Who can wear what.** Swords up to the Iron Sword: Trainee and Blader; rare and elemental
 swords: Blader only. Staves: Sorcerer only (the Wooden Staff also Trainees). Heavy armor
@@ -256,7 +321,7 @@ gear comes from boss materials:
 | Root Staff (MATK +30%, KNL +2, FNS +2) | Giant Root (Giant Sprout) |
 | Pearl Armor (DEF 7, Max HP +40, Max SP +30) | Big Pearl (King Crab) |
 | Dark Robe (DEF 4, Max SP +60, KNL +2) | Mushroom Heart (Giant Mushroom) |
-| Lava Sword (ATK 95, POW +2) | Fire Core (Giant Beetle) |
+| Lava Sword (ATK 95, weapon Lv 4, POW +2) | Fire Core (Giant Beetle) |
 | Giant Sword (ATK 120, weapon Lv 4, POW +3, END +1) | Giant Horn + Fire Heart + Fire Core |
 | Rainbow Ring (every stat +1) | Shiny Gel |
 | Slime Band (FTN +2, KNL +2, Max HP +30, Max SP +20) | Slime Ring + Water Necklace |
@@ -299,22 +364,24 @@ A few big jobs instead of many errands: one each in the camp, and a handful in S
 | Gyda the Healer | camp | heals HP and SP for free |
 | Hild the Trader | Steinborg | shop · Pearls of Saltvik (24): 5 Pearls |
 | Gunnar the Gear Crafter | Steinborg | shop, forge · Stone for the Forge (34): 30 Stone, 15 Burnt Shells |
+| Holger the Refiner | Steinborg | refines gear up to +10; sells Iron and Steel Ore |
 | Ragna the Herbalist | Steinborg | brewing · The Great Remedy (38): 12 Dark Spores, 12 Fire Dust |
 | Captain Ulfr | Steinborg | The Blader's Trial · The King of the Shore (30): the King Crab · The Beetle of Askheid (46): the Giant Beetle |
 | Saeunn the Seeress | Steinborg | the story; lore of the Fire Giant and Galdrheim |
 | Embla the Stylist | Steinborg | hairstyle and dye, 1,000 perz |
-| Ivar the Ferryman | Steinborg | carts to any land you have walked, 300–1,800 perz |
+| Ivar the Ferryman | Steinborg | carts to any land you have walked, 300–3,000 perz |
 | Liv the Guide | Steinborg | who does what in the city |
 | Bjorn the Gate Guard | Steinborg | which monsters attack on sight |
 | Archmage Vigdis | Galdrheim | The Rune Trial · The Mother of Spores (40): the Giant Mushroom |
 | Orm the Staffwright | Galdrheim | shop, crafts sorcerers' gear (staves, robes) · The Living Wood (26): a Giant Root, 8 Thorns |
+| Seyla the Enchanter | Galdrheim | opens a card slot in a Lv 4 weapon (50%) |
 | Kari the Curio Seller | Galdrheim | shop: potions, feathers, torches, Speed Potions |
 | Brynja the Lorekeeper | Galdrheim | The Drowned Tomes (20): 15 Salt, 10 Water Drops |
 | Torvald the Runecarver | Galdrheim | Shadows in Svartskog (38): 10 Dark Crystals |
 | Hrafn the Stargazer, Signy the Apprentice | Galdrheim | tales of the city, the stars and the jotnar |
-| Runa the Gatewarden | Galdrheim | the rune-gate: to any land you have walked, 300–1,800 perz |
+| Runa the Gatewarden | Galdrheim | the rune-gate: to any land you have walked, 300–3,000 perz |
 
-Gyda, Ivar, Liv, Bjorn and the people of Galdrheim borrow other people's sprites until their own are drawn. People with tales to tell have a **Tell me more** button.
+Gyda, Ivar, Liv, Bjorn, Holger and the people of Galdrheim borrow other people's sprites until their own are drawn. People with tales to tell have a **Tell me more** button.
 
 ## Day and night
 

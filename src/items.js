@@ -7,7 +7,7 @@ import { headgearIcon, headgearReady } from './headgear.js';
 // el: a weapon's element: its normal attacks hit with it, and a staff's adds 15% to spells of it.
 // Equipment: slot (weapon, armor, shoes, light, acc), atk + wlv for weapons, def, and fx for a
 // special effect. icon names the painted icon when it isn't the item's own id.
-export const ITEMS = {
+const BASE_ITEMS = {
   gel:    { type: 'misc', name: 'Slime Gel',  desc: 'A wobbly blob left behind by a Slime. Sticky enough to glue a boot. Cooks, crafters and potion-makers all want it.', from: 'Slimes' },
   dew:    { type: 'misc', name: 'Water Drop',   desc: 'Cool water that never quite spills, gathered from Blue Slimes. Brewers swear by it for clean potions.', from: 'Blue Slimes' },
   seed:   { type: 'misc', name: 'Seed', desc: 'A Sprout\'s seed. It wiggles when you hold it, as if it still wants to run. Used in charms and teas.', from: 'Sprouts' },
@@ -61,14 +61,14 @@ export const ITEMS = {
   birch_staff:  { type: 'equip', slot: 'weapon', jobs: ['mage'], kind: 'staff', name: 'Birch Staff', atk: 22, wlv: 1, matk: 20, stats: { knl: 1 }, icon: 'staff_birch', desc: 'White birch from Birkilund with a pale crystal. Light, and it hums when you chant.' },
   frost_staff:  { type: 'equip', slot: 'weapon', el: 'water', jobs: ['mage'], kind: 'staff', name: 'Ice Staff', atk: 28, wlv: 2, matk: 28, stats: { fns: 2 }, icon: 'staff_frost', desc: 'Frost never melts on its tip. Water spells run through it like a river.' },
   tide_staff:   { type: 'equip', slot: 'weapon', el: 'water', jobs: ['mage'], kind: 'staff', name: 'Water Staff', atk: 30, wlv: 3, matk: 32, stats: { knl: 2 }, msp: 40, icon: 'staff_tide', desc: 'A Big Pearl set in driftwood from the Saltvik shore. It smells of the sea when you cast.' },
-  ember_staff:  { type: 'equip', slot: 'weapon', el: 'fire', jobs: ['mage'], kind: 'staff', name: 'Fire Staff', atk: 45, wlv: 3, matk: 38, stats: { knl: 2, ftn: 1 }, icon: 'staff_ember', desc: 'Built round a Fire Core. Its coal heart glows brighter the longer you chant.' },
+  ember_staff:  { type: 'equip', slot: 'weapon', el: 'fire', jobs: ['mage'], kind: 'staff', name: 'Fire Staff', atk: 45, wlv: 4, matk: 38, stats: { knl: 2, ftn: 1 }, icon: 'staff_ember', desc: 'Built round a Fire Core. Its coal heart glows brighter the longer you chant.' },
   shade_staff:  { type: 'equip', slot: 'weapon', el: 'shadow', jobs: ['mage'], kind: 'staff', rare: true, name: 'Dark Staff', atk: 34, wlv: 3, matk: 34, stats: { knl: 2, fns: 1 }, icon: 'staff_shade', desc: 'A Dark Wisp is bound in its crystal. On quiet nights you can hear it whisper.', from: 'Dark Wisps (0.2%)' },
   jarl_staff:   { type: 'equip', slot: 'weapon', el: 'fire', jobs: ['mage'], kind: 'staff', rare: true, name: 'Flame Staff', atk: 60, wlv: 4, matk: 50, stats: { knl: 4, fns: 2 }, icon: 'staff_jarl', desc: 'Black stone from the Fire Giant\'s lair, shot through with living fire.', from: 'the Fire Giant (2%)' },
   runeking_staff: { type: 'equip', slot: 'weapon', jobs: ['mage'], kind: 'staff', name: "Great Staff", atk: 55, wlv: 4, matk: 55, stats: { knl: 4, fns: 3 }, msp: 50, icon: 'staff_runeking', desc: 'Three boss hearts bound with Orm\'s best runes: the greatest staff in Aria.' },
   rune_staff:   { type: 'equip', slot: 'weapon', jobs: ['mage'], kind: 'staff', name: 'Rune Staff', atk: 30, wlv: 2, matk: 25, stats: { knl: 2 }, icon: 'staff1', desc: 'Carved all over with runes that glow when spells are sung through it.' },
   frostbite:    { type: 'equip', slot: 'weapon', jobs: ['swordman'], el: 'water', name: 'Ice Sword', atk: 62, wlv: 2, icon: 'weapon_frost', desc: 'Forged cold with salt and dew; rime creeps along the blade even in summer. Fire beasts hate it.' },
   gale_blade:   { type: 'equip', slot: 'weapon', jobs: ['swordman'], el: 'wind', name: 'Wind Sword', atk: 72, wlv: 3, stats: { qkn: 1 }, icon: 'weapon_gale', desc: 'Thin and quick, with a pearl in the hilt. It whistles as it cuts.' },
-  emberbrand:   { type: 'equip', slot: 'weapon', jobs: ['swordman'], el: 'fire', rare: true, name: 'Flame Sword', atk: 110, wlv: 3, icon: 'weapon3', desc: 'The Fire Giant\'s own blade, still burning. Few have held it and fewer have kept it.', from: 'the Fire Giant' },
+  emberbrand:   { type: 'equip', slot: 'weapon', jobs: ['swordman'], el: 'fire', rare: true, name: 'Flame Sword', atk: 110, wlv: 4, icon: 'weapon3', desc: 'The Fire Giant\'s own blade, still burning. Few have held it and fewer have kept it.', from: 'the Fire Giant' },
   // rare drops, Ragnarok style: each from one kind of monster at a fraction of a percent.
   // stats: bonus points to POW, QKN, END, KNL, FNS, FTN; mhp / msp: extra Max HP / SP
   gooey_ring:   { type: 'equip', slot: 'acc', rare: true, name: 'Slime Ring', stats: { ftn: 2 }, mhp: 20, icon: 'r_gooey', desc: 'A ring of hardened slime that never quite dries. Lucky, they say.', from: 'Slimes (0.5%)' },
@@ -81,15 +81,15 @@ export const ITEMS = {
   wisp_lantern: { type: 'equip', slot: 'light', rare: true, name: 'Lantern', fx: 'light', stats: { knl: 1, fns: 1 }, icon: 'r_lantern', desc: 'A Wisp sleeps inside, glowing softly. Lights the night, and clears the mind.', from: 'Wisps (0.4%)' },
   // boss drops
   thorn_mantle: { type: 'equip', slot: 'garment', rare: true, name: 'Thorn Cape', def: 3, flee: 2, stats: { pow: 1 }, icon: 'r_thorncloak', desc: 'Briars from the Giant Sprout, woven tight as mail. Hug it at your peril.', from: 'the Giant Sprout (3%)' },
-  tidebreaker:  { type: 'equip', slot: 'weapon', jobs: ['swordman'], el: 'water', rare: true, name: 'Sea Sword', atk: 85, wlv: 3, stats: { qkn: 2 }, icon: 'weapon_tide', desc: 'A blade from the King Crab\'s claw, curved like a breaking wave. It feels lighter than it is.', from: 'the King Crab (2%)' },
-  gloom_staff:  { type: 'equip', slot: 'weapon', el: 'shadow', jobs: ['mage'], kind: 'staff', rare: true, name: 'Mushroom Staff', atk: 40, wlv: 3, matk: 40, stats: { knl: 3 }, icon: 'staff2', desc: 'A staff grown, not carved, from the Giant Mushroom\'s stalk. It drinks shadow and breathes out spells.', from: 'the Giant Mushroom (2%)' },
+  tidebreaker:  { type: 'equip', slot: 'weapon', jobs: ['swordman'], el: 'water', rare: true, name: 'Sea Sword', atk: 85, wlv: 4, stats: { qkn: 2 }, icon: 'weapon_tide', desc: 'A blade from the King Crab\'s claw, curved like a breaking wave. It feels lighter than it is.', from: 'the King Crab (2%)' },
+  gloom_staff:  { type: 'equip', slot: 'weapon', el: 'shadow', jobs: ['mage'], kind: 'staff', rare: true, name: 'Mushroom Staff', atk: 40, wlv: 4, matk: 40, stats: { knl: 3 }, icon: 'staff2', desc: 'A staff grown, not carved, from the Giant Mushroom\'s stalk. It drinks shadow and breathes out spells.', from: 'the Giant Mushroom (2%)' },
   cinder_greaves: { type: 'equip', slot: 'shoes', rare: true, name: 'Fire Boots', def: 3, mhp: 60, icon: 'boots_cinder', desc: 'Black shell boots from the Giant Beetle that never cool. Lava is merely rude to them.', from: 'the Giant Beetle (3%)' },
   jarl_mantle:  { type: 'equip', slot: 'garment', rare: true, name: "Giant Cape", def: 4, mhp: 100, stats: { end: 2 }, icon: 'r_jarlcloak', desc: 'Smouldering hide from the Fire Giant. It is warm, heavy, and slightly terrifying.', from: 'the Fire Giant (3%)' },
   // forged from boss materials (Gunnar)
   heartwood_staff: { type: 'equip', slot: 'weapon', el: 'earth', jobs: ['mage'], kind: 'staff', name: 'Root Staff', atk: 35, wlv: 3, matk: 30, stats: { knl: 2, fns: 2 }, icon: 'staff3', desc: 'Carved from the Giant Sprout\'s living root. The wood still grows, slowly, in your hands.' },
   pearl_mail:   { type: 'equip', slot: 'armor', jobs: ['swordman', 'mage'], name: 'Pearl Armor', def: 7, mhp: 40, msp: 30, icon: 'armor_pearl', desc: 'Crab shell scales set with pearls from the King Crab. It shimmers like wet sand.' },
   gloom_robe:   { type: 'equip', slot: 'armor', jobs: ['mage'], name: 'Dark Robe', def: 4, msp: 60, stats: { knl: 2 }, icon: 'armor_gloom', desc: 'Spore silk spun round a Mushroom Heart. It drinks the light around you.' },
-  cinderfang:   { type: 'equip', slot: 'weapon', jobs: ['swordman'], el: 'fire', name: 'Lava Sword', atk: 95, wlv: 3, stats: { pow: 2 }, icon: 'weapon_cinder', desc: 'A blade quenched in a Fire Core. Its edge glows red when it is angry, which is always.' },
+  cinderfang:   { type: 'equip', slot: 'weapon', jobs: ['swordman'], el: 'fire', name: 'Lava Sword', atk: 95, wlv: 4, stats: { pow: 2 }, icon: 'weapon_cinder', desc: 'A blade quenched in a Fire Core. Its edge glows red when it is angry, which is always.' },
   hornblade:    { type: 'equip', slot: 'weapon', jobs: ['swordman'], el: 'fire', name: 'Giant Sword', atk: 120, wlv: 4, stats: { pow: 3, end: 1 }, icon: 'weapon_jarl', desc: 'Ground from the Fire Giant\'s own horn and quenched in its heart. The finest sword in Aria.' },
   prism_ring:   { type: 'equip', slot: 'acc', name: 'Rainbow Ring', stats: { pow: 1, qkn: 1, end: 1, knl: 1, fns: 1, ftn: 1 }, icon: 'r_prism', desc: 'Shimmering gel set in pearl. It catches every colour, and a little of every strength.' },
   slime_band:   { type: 'equip', slot: 'acc', name: 'Slime Band', stats: { ftn: 2, knl: 2 }, mhp: 30, msp: 20, icon: 'r_twin', desc: 'A green ring and a blue pendant, melted into one. Two slimes\' worth of luck.' },
@@ -100,10 +100,13 @@ export const ITEMS = {
   ember_charm:  { type: 'equip', slot: 'acc', rare: true, name: 'Fire Charm', stats: { pow: 1, knl: 1 }, mhp: 30, icon: 'r_ember', desc: 'A Fire Wisp curled up asleep in a glass bead. Warm and strangely cheerful.', from: 'Fire Wisps (0.3%)' },
   kobold_ring:  { type: 'equip', slot: 'acc', rare: true, name: 'King\'s Ring', stats: { pow: 2, end: 1 }, mhp: 50, icon: 'r_kobold', desc: 'A heavy gold ring from the Kobold King\'s paw, much too big for a person. It feels like a fist.', from: 'the Kobold King (5%)' },
   goblin_charm: { type: 'equip', slot: 'acc', rare: true, name: 'Tooth Necklace', stats: { qkn: 2, fns: 1 }, hit: 5, icon: 'r_goblin', desc: 'The Goblin King\'s necklace of teeth. It rattles when you move, and you move faster.', from: 'the Goblin King (5%)' },
-  // cards (Ragnarok's monster cards): pressed into a slotted piece of gear for good, see Seyla
-  // and the Insert button. card: where it goes and what it adds (mhpRate: Max HP %)
-  kobold_card:  { type: 'misc', rare: true, name: 'Kobold King Card', icon: 'card_kobold', card: { on: 'armor', mhpRate: 15, stats: { end: 3 } }, desc: 'The Kobold King on a gilded card. Pressed into armor with a slot: Max HP +15%, END +3.', from: 'the Kobold King (1%)' },
-  goblin_card:  { type: 'misc', rare: true, name: 'Goblin King Card', icon: 'card_goblin', card: { on: 'weapon', atk: 25, stats: { pow: 3 } }, desc: 'The Goblin King on a gilded card. Pressed into a weapon with a slot: ATK +25, POW +3.', from: 'the Goblin King (1%)' },
+  // MVP cards (Ragnarok's monster cards, and like its MVP cards, overpowered): pressed into a
+  // slotted weapon for good (a weapon that breaks at Holger's gives its cards back), see Seyla and
+  // the Insert button. card: where it goes and what it adds: atk, def, matk (% MATK), hit, flee,
+  // mhpRate (% Max HP), aspd (% faster attacks), el (the weapon's element) and stats
+  kobold_card:  { type: 'misc', rare: true, name: 'Kobold King Card', icon: 'card_kobold', card: { on: 'weapon', mhpRate: 40, def: 10, flee: 10, stats: { end: 10 } }, desc: 'The Kobold King on a gilded card, too stubborn to fall. In a weapon with a slot: Max HP +40%, DEF +10, FLEE +10, END +10.', from: 'the Kobold King (1%)' },
+  goblin_card:  { type: 'misc', rare: true, name: 'Goblin King Card', icon: 'card_goblin', card: { on: 'weapon', atk: 100, aspd: 15, stats: { pow: 10, qkn: 10 } }, desc: 'The Goblin King on a gilded card, grinning. In a weapon with a slot: ATK +100, POW +10, QKN +10, attacks 15% faster.', from: 'the Goblin King (1%)' },
+  jarl_card:    { type: 'misc', rare: true, name: 'Fire Giant Card', icon: 'card_jarl', card: { on: 'weapon', atk: 80, matk: 30, mhpRate: 25, el: 'fire', stats: { pow: 6, knl: 6 } }, desc: 'The Fire Giant on a scorched card, still warm. In a weapon with a slot: ATK +80, MATK +30%, Max HP +25%, POW +6, KNL +6, and the weapon turns to Fire.', from: 'the Fire Giant (1%)' },
   shiny_gel:    { type: 'misc', rare: true, name: 'Shiny Gel', desc: 'Slime gel that shimmers with every colour, found once in a hundred slimes. Collectors and ring-makers prize it.', from: 'any slime (1%)' },
 
   // headgear: worn on the head and seen on your character (see headgear.js): Head pieces on the
@@ -134,11 +137,97 @@ export const ITEMS = {
   glow_charm:   { type: 'equip', slot: 'acc', name: 'Glow Charm',   fx: 'exp',   icon: 'charm_glow', desc: 'A pinch of glow dust in a glass vial. Every lesson seems brighter. +25% experience.' },
 };
 
+// ---------- upgraded gear: refine level, card slots and cards ----------
+// A refined, slotted or carded piece is kept under a key: 'iron_sword|r7|s1|cgoblin_card' (its base
+// item, then r = refine level, s = slots, c = the cards in them). ITEMS[key] is the base item with
+// the upgrades worked in (name '+7 Iron Sword [1]', more ATK or DEF, the cards' bonuses), so
+// everything that reads ITEMS works on upgraded gear too. A plain item stays its plain id.
+export const baseOf = (key) => String(key).split('|')[0];
+export function parseKey(key) {
+  const [base, ...parts] = String(key).split('|'), u = { base, refine: 0, slots: 0, cards: [] };
+  for (const p of parts) {
+    if (p[0] === 'r') u.refine = p.slice(1) | 0;
+    else if (p[0] === 's') u.slots = p.slice(1) | 0;
+    else if (p[0] === 'c') u.cards = p.slice(1).split(',').filter(Boolean);
+  }
+  return u;
+}
+export function makeKey(base, { refine = 0, slots = 0, cards = [] } = {}) {
+  return [base, refine ? `r${refine}` : '', slots ? `s${slots}` : '', cards.length ? `c${cards.join(',')}` : ''].filter(Boolean).join('|');
+}
+// Ragnarok's refine bonus: weapon ATK per level by weapon level; other gear +1 DEF per level
+const REFINE_ATK = { 1: 2, 2: 3, 3: 5, 4: 7 };
+const upgraded = new Map();
+function upgradedItem(key) {
+  if (upgraded.has(key)) return upgraded.get(key);
+  const u = parseKey(key), b = BASE_ITEMS[u.base];
+  if (!b) return undefined;
+  const it = { ...b, base: u.base, refine: u.refine, slots: u.slots, cards: u.cards, icon: b.icon || u.base, stats: { ...(b.stats || {}) } };
+  if (u.refine) {
+    if (b.slot === 'weapon') it.atk = (b.atk || 0) + u.refine * REFINE_ATK[b.wlv || 1];
+    else it.def = (b.def || 0) + u.refine;
+  }
+  for (const c of u.cards) {
+    const cd = BASE_ITEMS[c]?.card;
+    if (!cd) continue;
+    for (const k of ['atk', 'def', 'matk', 'hit', 'flee', 'mhpRate', 'aspd']) if (cd[k]) it[k] = (it[k] || 0) + cd[k];
+    if (cd.el) it.el = cd.el;
+    for (const [k, v] of Object.entries(cd.stats || {})) it.stats[k] = (it.stats[k] || 0) + v;
+  }
+  it.name = `${u.refine ? `+${u.refine} ` : ''}${b.name}${u.slots ? ` [${u.slots}]` : ''}`;
+  upgraded.set(key, it);
+  return it;
+}
+export const ITEMS = new Proxy(BASE_ITEMS, {
+  get: (t, k) => (typeof k === 'string' && k.includes('|') ? upgradedItem(k) : t[k]),
+  has: (t, k) => (typeof k === 'string' && k.includes('|') ? !!upgradedItem(k) : k in t),
+});
+// what an upgraded piece has had done to it, for the item details
+export function upgradeLine(it) {
+  const p = [];
+  if (it.refine) p.push(`Refined +${it.refine}`);
+  if (it.slots) p.push(`Slots ${it.cards?.length || 0}/${it.slots}${it.cards?.length ? ': ' + it.cards.map((c) => BASE_ITEMS[c]?.name || c).join(', ') : ''}`);
+  return p.join(' · ');
+}
+
+// Holger's refining, at Hollgrehenn's rates (Ragnarok classic, normal ores): safe up to a level
+// by weapon level (armor: +4), then each try has a chance, and a failure breaks the piece.
+export const REFINABLE = ['weapon', 'armor', 'shield', 'garment', 'shoes', 'head'];
+export const MAX_REFINE = 10;
+const SAFE = { 1: 7, 2: 6, 3: 5, 4: 4, armor: 4 };
+const REFINE_RATES = { 1: [60, 40, 19], 2: [60, 40, 20, 19], 3: [60, 50, 20, 20, 19], 4: [60, 40, 40, 20, 20, 9], armor: [60, 40, 40, 20, 20, 9] };
+const REFINE_COST = { 1: ['iron_ore', 50], 2: ['steel_ore', 200], 3: ['hard_ore', 5000], 4: ['hard_ore', 20000], armor: ['armor_ore', 2000] };
+// the next refine of a piece: { level (now), next, chance %, safe, ore, fee }, or null if it can't be refined
+export function refineInfo(key) {
+  const it = ITEMS[key];
+  if (!it || it.type !== 'equip' || !REFINABLE.includes(it.slot)) return null;
+  const k = it.slot === 'weapon' ? it.wlv || 1 : 'armor', level = it.refine || 0, next = level + 1;
+  if (level >= MAX_REFINE) return { level, max: true };
+  const safe = next <= SAFE[k];
+  const [ore, fee] = REFINE_COST[k];
+  return { level, next, safe, chance: safe ? 100 : REFINE_RATES[k][next - SAFE[k] - 1], ore, fee, safeTo: SAFE[k] };
+}
+
+// Seyla's enchanting: a card slot at a time, up to two. The first works half the time; the second
+// a quarter of the time, for twice the materials. A failure breaks the piece (its card comes back).
+// For now only Lv 4 weapons take slots (and every card is a weapon card).
+export const SLOTTABLE = ['weapon'];
+export const MAX_SLOTS = 2;
+export const ENCHANT = { chance: [50, 25], perz: 50000, items: { hard_ore: 5, shade: 5 }, boss: ['heartwood', 'king_pearl', 'gloom_heart', 'cinder_core'] };
+// the next enchant of a piece: { slots (after it), chance %, mult (x the materials) }
+export const enchantStep = (key) => { const n = ITEMS[key]?.slots || 0; return { slots: n + 1, chance: ENCHANT.chance[n], mult: n + 1 }; };
+export const canEnchant = (key) => { const it = ITEMS[key]; return !!it && it.type === 'equip' && SLOTTABLE.includes(it.slot) && it.wlv === 4 && (it.slots || 0) < MAX_SLOTS; };
+// a card fits a piece of its kind with a free slot
+export const canInsert = (card, key) => {
+  const cd = ITEMS[card]?.card, it = ITEMS[key];
+  return !!cd && !!it && it.type === 'equip' && it.slot === cd.on && (it.slots || 0) > (it.cards?.length || 0);
+};
+
 // Prices in perz (Aria's coin, like Ragnarok's zeny): what a shop asks; any shop buys for half. 0 = can't be sold.
 export const PRICES = {
   gel: 6, dew: 10, seed: 8, leaf: 8, shell: 24, spore: 40, stone: 60, glow: 50, ember_heart: 4000,
   kobold_fur: 260, goblin_tooth: 380, iron_ore: 50, steel_ore: 200, hard_ore: 4000, armor_ore: 4000,
-  kobold_ring: 20000, goblin_charm: 24000, kobold_card: 40000, goblin_card: 40000,
+  kobold_ring: 20000, goblin_charm: 24000, kobold_card: 40000, goblin_card: 40000, jarl_card: 60000,
   thorn: 70, salt: 90, pearl: 600, gloom: 150, shade: 180, cinder: 240, ember_dust: 220, shiny_gel: 1200,
   potion: 50, potion2: 180, potion3: 550, tonic: 300, berry: 20, crableg: 60, herb: 30, quick: 600, wander: 120, homeward: 300,
   twig_sword: 50, stone_blade: 500, ember_edge: 2400, iron_sword: 3800, oak_staff: 400, rune_staff: 4200, emberbrand: 40000,
@@ -152,11 +241,12 @@ export const PRICES = {
   thorn_mantle: 12000, tidebreaker: 20000, gloom_staff: 22000, cinder_greaves: 16000, jarl_mantle: 30000,
   heartwood_staff: 14000, frostbite: 5200, gale_blade: 9000, birch_staff: 1800, frost_staff: 3600, tide_staff: 12000, ember_staff: 20000, shade_staff: 16000, jarl_staff: 42000, runeking_staff: 50000, pearl_mail: 12000, gloom_robe: 14000, cinderfang: 24000, hornblade: 45000, prism_ring: 8000, slime_band: 12000,
 };
-export const sellPrice = (id) => Math.floor((PRICES[id] || 0) / 2);
+export const sellPrice = (id) => Math.floor((PRICES[baseOf(id)] || 0) / 2); // upgraded gear sells at its base price
 
 // what each Steinborg shop sells
 export const SHOPS = {
   hild: ['potion', 'potion2', 'tonic', 'herb', 'berry', 'wander', 'homeward', 'torch'],
+  holger: ['iron_ore', 'steel_ore'], // the refiner's ores (Hard and Armor Ore only drop)
   gunnar: ['twig_sword', 'stone_blade', 'iron_sword', 'clothes', 'chain_mail', 'round_shield', 'wool_cape', 'leather_boots'],
   // Galdrheim: Kari's curios (like Hild's, and Speed Potions), Orm's staves and robes
   kari: ['potion', 'potion2', 'tonic', 'herb', 'berry', 'quick', 'wander', 'homeward', 'torch'],
@@ -188,6 +278,8 @@ export function equipLine(it) {
   if (it.matk) p.push(`MATK +${it.matk}%`);
   for (const [k, v] of Object.entries(it.stats || {})) p.push(`${k.toUpperCase()} +${v}`);
   if (it.mhp) p.push(`Max HP +${it.mhp}`);
+  if (it.mhpRate) p.push(`Max HP +${it.mhpRate}%`);
+  if (it.aspd) p.push(`attacks ${it.aspd}% faster`);
   if (it.msp) p.push(`Max SP +${it.msp}`);
   if (it.flee) p.push(`FLEE +${it.flee}`);
   return p.join(' · ');
@@ -522,6 +614,7 @@ const PAINT = {
   },
   card_kobold: (g) => cardIcon(g, '#8a5a32', '#f2c040'),
   card_goblin: (g) => cardIcon(g, '#5f9a45', '#efe6cc'),
+  card_jarl: (g) => cardIcon(g, '#c8502a', '#3a3a42'),
   kobold_fur: (g) => {
     for (const [x, y, a] of [[24, 40, -0.5], [32, 36, 0], [40, 40, 0.5]]) shape(g, () => g.ellipse(x, y, 7, 18, a, 0, Math.PI * 2), '#9a6a3c', 3);
     for (const [x, y] of [[26, 30], [34, 26]]) { g.beginPath(); g.moveTo(x, y); g.lineTo(x + 3, y + 14); g.strokeStyle = '#c49260'; g.lineWidth = 2; g.stroke(); }
@@ -625,7 +718,7 @@ const cache = {};
 export function iconCanvas(id) {
   if (!cache[id] || cache[id].pending) {
     const { c, g } = mk();
-    if (ITEMS[id]?.slot === 'head' || ITEMS[id]?.slot === 'face') { headgearIcon(g, id); c.pending = !headgearReady(id); }
+    if (ITEMS[id]?.slot === 'head' || ITEMS[id]?.slot === 'face') { headgearIcon(g, baseOf(id)); c.pending = !headgearReady(baseOf(id)); }
     else (PAINT[ITEMS[id]?.icon || id] || PAINT.gel)(g);
     cache[id] = c;
   }

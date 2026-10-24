@@ -2,7 +2,7 @@
 // Ragna's herbs), the chest (camp and Steinborg storage), shops and dialogue. Each is a small window you drag by its title bar; several can be open
 // at once and the game keeps running behind them. Positions are remembered per device.
 // Pickup toasts and messages live here too. Plain DOM over the canvas.
-import { ITEMS, RECIPES, SLOTS, SHOPS, PRICES, sellPrice, equipLine, iconURL, canWear, jobLine, recipeKind } from './items.js';
+import { ITEMS, RECIPES, SLOTS, SHOPS, PRICES, sellPrice, equipLine, iconURL, canWear, jobLine, recipeKind, upgradeLine, refineInfo, canEnchant, canInsert, ENCHANT, MAX_REFINE, enchantStep } from './items.js';
 import { BAG_SLOTS, CHEST_SLOTS } from './inventory.js';
 import { STATS, STAT_KEYS, JOBS } from './progress.js';
 import { statCost } from './ro-tables.js';
@@ -26,6 +26,13 @@ const WINDOWS = {
   talk:   { title: '',           at: [0.50, 0.22], w: 368 },
   story:  { title: '',           at: [0.50, 0.20], w: 391 },
   look:   { title: 'Your Look',  at: [0.50, 0.16], w: 299 },
+  smith:  { title: '',           at: [0.50, 0.12], w: 368 },
+};
+// the smith window's three jobs: Holger's refining, Seyla's slots, pressing in a card
+const SMITHS = {
+  refine: { title: "Holger's Anvil", button: 'Refine gear' },
+  enchant: { title: "Seyla's Circle", button: 'Add a card slot' },
+  insert: { title: 'Insert Card' },
 };
 const POS_KEY = 'aria.windows';
 
@@ -141,6 +148,17 @@ export class Menus {
     this.wins.shop.querySelector('.rw-title').textContent = `${NPCS[id].name.split(' ')[0]}'s Shop`;
   }
 
+  // mode: refine | enchant | insert (card: the card being pressed in)
+  openSmith(mode, card = null) {
+    this.smithMode = mode;
+    this.smithCard = card;
+    this.smithSel = null;
+    this.smithSure = false;
+    this.show('smith');
+    this.wins.smith.querySelector('.rw-title').textContent = SMITHS[mode].title;
+    this.render('smith');
+  }
+
   openCraft(kind) {
     this.craftKind = kind;
     this.show('craft');
@@ -243,7 +261,9 @@ export class Menus {
     let act = '';
     if (sel?.usable) act = '<button class="rbtn" data-act="use">Use</button>';
     if (sel?.type === 'equip') act = canWear(this.selected, this.prog.job) ? '<button class="rbtn" data-act="equip">Equip</button>' : `<span class="rtag">${esc(jobLine(sel))}</span>`;
-    const line = sel?.type === 'equip' ? `<span class="rstat">${esc(SLOTS[sel.slot])}${equipLine(sel) ? ' · ' + equipLine(sel) : ''} · ${esc(jobLine(sel))}</span>` : '';
+    if (sel?.card) act = '<button class="rbtn" data-act="insertcard">Insert</button>';
+    const up = sel?.type === 'equip' ? upgradeLine(sel) : '';
+    const line = sel?.type === 'equip' ? `<span class="rstat">${esc(SLOTS[sel.slot])}${equipLine(sel) ? ' · ' + equipLine(sel) : ''} · ${esc(jobLine(sel))}${up ? ' · ' + esc(up) : ''}</span>` : '';
     return `<div class="rtabs">${Object.entries(tabs).map(([k, n]) => `<button class="rtab${this.tab === k ? ' on' : ''}" data-act="tab" data-id="${k}">${n}</button>`).join('')}</div>
       ${this.grid(inv.bag.ofType(this.tab), 'bag')}
       <div class="rdetail">${sel
@@ -323,6 +343,56 @@ export class Menus {
       <table class="stt battle"><tbody>${battle.map((r) => `<tr>${r[0]}<td class="gap"></td>${r[1]}</tr>`).join('')}</tbody></table>`;
   }
 
+  // Holger's refining, Seyla's slots and card inserting: pick a piece (worn or in the bag), see the
+  // odds and the cost, and try. A try that can break the piece asks twice.
+  smith() {
+    const inv = this.inv, mode = this.smithMode, card = this.smithCard;
+    const test = mode === 'refine' ? (k) => refineInfo(k) && !refineInfo(k).max : mode === 'enchant' ? canEnchant : (k) => canInsert(card, k);
+    const list = inv.pieces(test);
+    if (this.smithSel && !list.some((p) => p.where === this.smithSel.where && p.key === this.smithSel.key)) this.smithSel = null;
+    const note = mode === 'refine'
+      ? 'Holger refines weapons, armor, shields, capes, boots and head gear, one level at a time up to +10. Safe up to a point; past it, a failed try breaks the piece.'
+      : mode === 'enchant'
+        ? `Seyla opens card slots in Lv 4 weapons, up to two. The first works ${ENCHANT.chance[0]}% of the time; the second ${ENCHANT.chance[1]}%, for twice the materials. A failure breaks the weapon (its card comes back).`
+        : `Press the ${ITEMS[card].name} into a free slot of a ${SLOTS[ITEMS[card].card.on].toLowerCase()}. It stays there for good.`;
+    let h = `<div class="rnote">${esc(note)}</div><div class="rlist">`;
+    for (const p of list) {
+      const it = ITEMS[p.key], on = this.smithSel?.where === p.where && this.smithSel?.key === p.key;
+      h += `<div class="ritem smithrow${on ? ' sel' : ''}">${icon(p.key, 'sm')}<div><b>${esc(it.name)}</b><small>${esc(SLOTS[it.slot])} · ${p.where === 'bag' ? 'in your bag' : 'worn'}${upgradeLine(it) ? ' · ' + esc(upgradeLine(it)) : ''}</small></div>
+        <button class="rbtn soft" data-act="smithpick" data-where="${p.where}" data-id="${esc(p.key)}">${on ? 'Picked' : 'Pick'}</button></div>`;
+    }
+    if (!list.length) h += `<div class="rnote">${mode === 'insert' ? 'Nothing you have has a free slot of the right kind. Seyla in Galdrheim can open one.' : 'Nothing you have can be worked on here.'}</div>`;
+    h += '</div>';
+    const sel = this.smithSel, it = sel && ITEMS[sel.key];
+    if (it) {
+      const costRow = (id, n) => `<span class="cost ${inv.have(id) >= n ? 'ok' : ''}" title="${esc(ITEMS[id].name)}">${icon(id, 'xs')}${esc(ITEMS[id].name)} ${Math.min(inv.have(id), 99)}/${n}</span>`;
+      const perzRow = (n) => `<span class="cost ${inv.perz >= n ? 'ok' : ''}">${n.toLocaleString()} perz</span>`;
+      let what = '', costs = '', risky = false, can = false, label = '';
+      if (mode === 'refine') {
+        const r = refineInfo(sel.key);
+        what = `${esc(it.name)} → +${r.next} · <b class="${r.safe ? 'ok' : 'risk'}">${r.chance}% chance</b>${r.safe ? ' (safe)' : ''}`;
+        costs = costRow(r.ore, 1) + perzRow(r.fee);
+        risky = !r.safe; can = inv.have(r.ore) >= 1 && inv.perz >= r.fee; label = `Refine to +${r.next}`;
+        if (!r.safe) what += `<small>Safe up to +${r.safeTo}. If this fails, the ${esc(it.name)} breaks and is gone${it.cards?.length ? ' (its card comes back to you)' : ''}.</small>`;
+      } else if (mode === 'enchant') {
+        const c = inv.enchantCost(sel.key), step = enchantStep(sel.key);
+        what = `${esc(it.name)} → [${step.slots}] · <b class="risk">${step.chance}% chance</b><small>If it fails, the ${esc(it.name)} breaks and is gone${it.cards?.length ? ' (its card comes back to you)' : ''}.</small>`;
+        const bossTip = 'Giant Root, Big Pearl, Mushroom Heart or Fire Core, in any mix';
+        const bossName = [...new Set(c.boss)].map((b) => ITEMS[b].name).join(' + ') || 'Boss material (Giant Root, Big Pearl, Mushroom Heart or Fire Core)';
+        const bossRow = `<span class="cost ${c.boss.length >= c.bossNeed ? 'ok' : ''}" title="${bossTip}">${c.boss.length ? icon(c.boss[0], 'xs') : ''}${esc(bossName)} ${c.boss.length}/${c.bossNeed}</span>`;
+        costs = Object.entries(c.items).map(([id, n]) => costRow(id, n)).join('') + bossRow + perzRow(c.perz);
+        risky = true; can = c.ok; label = 'Enchant';
+      } else {
+        what = `${esc(ITEMS[card].name)} → ${esc(it.name)}<small>${esc(ITEMS[card].desc)}</small>`;
+        can = inv.bag.count(card) > 0; label = 'Insert';
+      }
+      const sure = risky && this.smithSure;
+      h += `<div class="rdetail smithdetail"><span>${what}</span><div class="costs">${costs}</div>
+        <div class="btnrow">${sure ? '<button class="rbtn soft" data-act="smithcancel">Cancel</button>' : ''}<button class="rbtn${sure ? ' danger' : ''}" data-act="smithgo" ${can ? '' : 'disabled'}>${sure ? 'Yes, risk it' : label}</button></div></div>`;
+    } else if (list.length) h += '<div class="rdetail"><span>Pick a piece above.</span></div>';
+    return h + `<div class="rfoot"><span>Bag ${inv.bag.slots.length}/${BAG_SLOTS}</span><span class="perz">${inv.perz.toLocaleString()} perz</span></div>`;
+  }
+
   craft() {
     const inv = this.inv;
     let h = `<div class="rnote">${CRAFTERS[this.craftKind].note} Uses items from your bag and storage; what is made goes in your bag.</div><div class="rlist recipes">`;
@@ -331,7 +401,7 @@ export class Menus {
       const st = inv.recipeState(r), it = ITEMS[r.item];
       const cost = Object.entries(r.cost).map(([id, n]) => {
         const have = inv.have(id);
-        return `<span class="cost ${have >= n ? 'ok' : ''}" title="${esc(ITEMS[id].name)}">${icon(id, 'xs')}${Math.min(have, 99)}/${n}</span>`;
+        return `<span class="cost ${have >= n ? 'ok' : ''}" title="${esc(ITEMS[id].name)}">${icon(id, 'xs')}${esc(ITEMS[id].name)} ${Math.min(have, 99)}/${n}</span>`;
       }).join('');
       const btn = st === 'level' ? `<span class="rtag">Base Lv ${r.lv}</span>`
         : `<button class="rbtn" data-act="craft" data-id="${r.item}" ${st === 'ready' ? '' : 'disabled'}>Craft</button>`;
@@ -384,6 +454,7 @@ export class Menus {
     const extra = (n.stylist ? '<button class="rbtn" data-act="stylist">Change my look</button>' : '')
       + (n.shop ? '<button class="rbtn" data-act="shop">Buy / Sell</button>' : '')
       + (n.craft ? `<button class="rbtn" data-act="craftwin" data-id="${n.craft}">${CRAFTERS[n.craft].button}</button>` : '')
+      + (n.smith ? `<button class="rbtn" data-act="smithwin" data-id="${n.smith}">${SMITHS[n.smith].button}</button>` : '')
       + (n.heal ? '<button class="rbtn" data-act="heal">Heal me</button>' : '')
       + (n.warp ? '<button class="rbtn" data-act="ferrylist">Travel</button>' : '');
     if (n.warp && this.ferrying) { // the lands you have walked, and the fare to each
@@ -480,6 +551,24 @@ export class Menus {
     if (act === 'jobchange') { this.hooks.jobChange?.(t.dataset.id); this.close('talk'); }
     if (act === 'shop') { this.close('talk'); this.openShop(this.npc); }
     if (act === 'craftwin') { this.close('talk'); this.openCraft(t.dataset.id); }
+    if (act === 'smithwin') { this.close('talk'); this.openSmith(t.dataset.id); }
+    if (act === 'insertcard' && this.selected) this.openSmith('insert', this.selected);
+    if (act === 'smithpick') { this.smithSel = { where: t.dataset.where, key: t.dataset.id }; this.smithSure = false; this.render(id); }
+    if (act === 'smithcancel') { this.smithSure = false; this.render(id); }
+    if (act === 'smithgo' && this.smithSel) {
+      const mode = this.smithMode, { where, key } = this.smithSel, name = ITEMS[key].name;
+      const risky = mode === 'enchant' || (mode === 'refine' && !refineInfo(key).safe);
+      if (risky && !this.smithSure) { this.smithSure = true; this.render(id); return; }
+      this.smithSure = false;
+      const res = mode === 'refine' ? inv.refine(where, key) : mode === 'enchant' ? inv.enchant(where, key) : inv.insert(this.smithCard, where, key);
+      if (res.error) { this.message(res.error); return; }
+      this.smithSel = res.key ? { where, key: res.key } : null;
+      if (mode === 'insert') { this.message(`The card sinks into the ${name}.`); this.close('smith'); this.selected = null; }
+      else if (res.ok) this.message(mode === 'refine' ? `Success! ${ITEMS[res.key].name}` : `The song holds! ${ITEMS[res.key].name}`);
+      else this.message(`The ${name} breaks apart…${res.cards?.length ? ` You pick the ${res.cards.map((c) => ITEMS[c].name).join(' and the ')} out of the pieces.` : ''}`);
+      this.hooks.upgraded?.(mode, res);
+      this.render();
+    }
     if (act === 'heal') { this.hooks.heal?.(); this.close('talk'); }
     if (act === 'ferrylist') { this.ferrying = true; this.render('talk'); }
     if (act === 'lore') { this.loreAt++; this.render('talk'); }

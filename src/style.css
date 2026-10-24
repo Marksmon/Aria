@@ -537,3 +537,9 @@ button.eq:active { background: var(--w-sel); }
 .hb-page { width: 30px; height: 50px; padding: 0; border-radius: 8px; border: 2px solid rgba(255, 230, 180, .35); background: rgba(60, 42, 28, .6);
   color: #ffe6a8; display: grid; place-content: center; touch-action: none; font: 700 19px system-ui, sans-serif; line-height: 1; }
 .hb-page small { font-size: 13px; color: rgba(255, 244, 220, .7); }
+/* the smith window (Holger, Seyla, inserting cards) */
+.ritem.smithrow.sel { background: rgba(227, 179, 65, .18); }
+.smithdetail small { display: block; margin-top: 2px; color: #c8463c; }
+.smithdetail b.ok { color: #5fae45; }
+.smithdetail b.risk { color: #e0703a; }
+.rbtn.danger { background: #a83a2a; color: #fff4dc; }

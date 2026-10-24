@@ -1,6 +1,6 @@
 // Bag, camp chest and equipment. Materials and usables stack to 99 in one slot; each piece of
 // equipment is its own item and takes a slot of its own. Worn equipment leaves the bag.
-import { ITEMS, RECIPES, SLOTS, PRICES, sellPrice, canWear } from './items.js';
+import { ITEMS, RECIPES, SLOTS, PRICES, sellPrice, canWear, parseKey, makeKey, refineInfo, canEnchant, canInsert, ENCHANT, MAX_SLOTS, enchantStep } from './items.js';
 
 export const BAG_SLOTS = 48;
 export const CHEST_SLOTS = 48;
@@ -157,21 +157,89 @@ export class Inventory {
     return off;
   }
 
+  // ---------- upgrades: Holger's refining, Seyla's slots, cards ----------
+  // every piece of equipment you have, in the bag or worn: [{ where: 'bag' or the gear slot, key }]
+  pieces(test = () => true) {
+    const out = [];
+    for (const [slot, key] of Object.entries(this.gear)) if (key && test(key)) out.push({ where: slot, key });
+    for (const s of this.bag.slots) if (ITEMS[s.id].type === 'equip' && test(s.id)) out.push({ where: 'bag', key: s.id });
+    return out;
+  }
+  // swap a piece for its upgraded self, or destroy it (newKey null)
+  replace(where, key, newKey) {
+    if (where === 'bag') {
+      if (!this.bag.remove(key, 1)) return false;
+      if (newKey) this.bag.add(newKey, 1);
+    } else {
+      if (this.gear[where] !== key) return false;
+      this.gear[where] = newKey;
+    }
+    return true;
+  }
+  // one refine try: { ok, broke } or { error }
+  refine(where, key, roll = Math.random() * 100) {
+    const r = refineInfo(key);
+    if (!r || r.max) return { error: 'This cannot be refined any further.' };
+    if (this.have(r.ore) < 1) return { error: `You need ${ITEMS[r.ore].name}.` };
+    if (this.perz < r.fee) return { error: 'Not enough perz.' };
+    this.spend(r.ore, 1);
+    this.perz -= r.fee;
+    const u = parseKey(key), ok = roll < r.chance;
+    this.replace(where, key, ok ? makeKey(u.base, { ...u, refine: r.next }) : null);
+    // a broken piece gives back the cards that were in it (to the bag, or storage if it is full)
+    const saved = ok ? [] : u.cards;
+    for (const c of saved) if (!this.bag.add(c, 1)) this.chest.add(c, 1);
+    this.changed();
+    return { ok, broke: !ok, key: ok ? makeKey(u.base, { ...u, refine: r.next }) : null, cards: saved };
+  }
+  // what one enchant of this piece costs, and whether you have it. boss: the boss materials it
+  // would use, from whichever you have (any mix of the four)
+  enchantCost(key) {
+    const { mult } = enchantStep(key), boss = [];
+    for (const id of ENCHANT.boss) for (let i = 0; i < this.have(id) && boss.length < mult; i++) boss.push(id);
+    const items = Object.fromEntries(Object.entries(ENCHANT.items).map(([id, n]) => [id, n * mult]));
+    const ok = this.perz >= ENCHANT.perz * mult && boss.length >= mult && Object.entries(items).every(([id, n]) => this.have(id) >= n);
+    return { items, boss, bossNeed: mult, perz: ENCHANT.perz * mult, ok };
+  }
+  enchant(where, key, roll = Math.random() * 100) {
+    if (!canEnchant(key)) return { error: (ITEMS[key]?.slots || 0) >= MAX_SLOTS ? 'This already has two slots.' : 'Only a Lv 4 weapon can take a slot.' };
+    const c = this.enchantCost(key), step = enchantStep(key);
+    if (!c.ok) return { error: 'You are missing some of the materials.' };
+    for (const [id, n] of Object.entries(c.items)) this.spend(id, n);
+    for (const id of c.boss) this.spend(id, 1);
+    this.perz -= c.perz;
+    const u = parseKey(key), ok = roll < step.chance, nk = ok ? makeKey(u.base, { ...u, slots: step.slots }) : null;
+    this.replace(where, key, nk);
+    // a broken piece gives back its cards, as at Holger's
+    const saved = ok ? [] : u.cards;
+    for (const c2 of saved) if (!this.bag.add(c2, 1)) this.chest.add(c2, 1);
+    this.changed();
+    return { ok, broke: !ok, key: nk, cards: saved };
+  }
+  // press a card into a free slot, for good
+  insert(card, where, key) {
+    if (!canInsert(card, key) || !this.bag.remove(card, 1)) return { error: 'That card does not fit there.' };
+    const u = parseKey(key), nk = makeKey(u.base, { ...u, cards: [...u.cards, card] });
+    this.replace(where, key, nk);
+    this.changed();
+    return { ok: true, key: nk };
+  }
+
   // is a worn item giving this effect (speed, light, regen, aspd, block, exp)?
   wearing(fx) { return Object.values(this.gear).some((id) => id && ITEMS[id].fx === fx); }
 
   // equipment as the battle rules see it (rules.js derive)
   gearStats() {
     const w = ITEMS[this.gear.weapon];
-    let def = 0, hit = 0, flee = 0, mhp = 0, msp = 0;
+    let def = 0, hit = 0, flee = 0, mhp = 0, msp = 0, mhpRate = 0;
     const stats = {};
     for (const id of Object.values(this.gear)) {
       if (!id) continue;
       const it = ITEMS[id];
-      def += it.def || 0; hit += it.hit || 0; flee += it.flee || 0; mhp += it.mhp || 0; msp += it.msp || 0;
+      def += it.def || 0; hit += it.hit || 0; flee += it.flee || 0; mhp += it.mhp || 0; msp += it.msp || 0; mhpRate += it.mhpRate || 0;
       for (const [k, v] of Object.entries(it.stats || {})) stats[k] = (stats[k] || 0) + v;
     }
-    return { atk: w?.atk || 0, wlv: w?.wlv || 0, matk: w?.matk || 0, el: w?.el, def, hit, flee, mhp, msp, stats, mastery: 0, aspdRate: this.wearing('aspd') ? 0.9 : 1 };
+    return { atk: w?.atk || 0, wlv: w?.wlv || 0, matk: w?.matk || 0, el: w?.el, def, hit, flee, mhp, msp, mhpRate, stats, mastery: 0, aspdRate: (this.wearing('aspd') ? 0.9 : 1) * (1 - (w?.aspd || 0) / 100) };
   }
 
   toJSON() { return { v: 2, perz: this.perz, bag: this.bag.toJSON(), chest: this.chest.toJSON(), gear: this.gear }; }

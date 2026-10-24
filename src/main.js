@@ -19,7 +19,7 @@ import { Hotbar } from './hotbar.js';
 import { derive, playerAttack, mobAttack, magicAttack } from './rules.js';
 import { SKILLS, skillLv, spCost, castTime, learn, skillList } from './skills.js';
 import { Menus } from './menus.js';
-import { iconTexture, iconURL, ITEMS } from './items.js';
+import { iconTexture, iconURL, ITEMS, baseOf } from './items.js';
 import { DayNight } from './daynight.js';
 import { Audio } from './audio.js';
 import { clearSave } from './save.js';
@@ -111,7 +111,7 @@ function applyStats() {
   player.hp = Math.min(player.hp, ps.maxHp);
   player.sp = Math.min(player.sp, ps.maxSp);
   player.speedMul = inv.wearing('speed') ? 1.2 : 1;
-  player.setHeadgear(inv.gear.head, inv.gear.face);
+  player.setHeadgear(inv.gear.head && baseOf(inv.gear.head), inv.gear.face && baseOf(inv.gear.face)); // refined headgear looks like the plain piece
   player.blockChance = inv.wearing('block') ? 0.2 : 0;
 }
 applyStats();
@@ -490,6 +490,12 @@ const menus = new Menus(inv, prog, player, {
   crafted() { audio.play('craft'); persist(); },
   traded(kind) { audio.play('pickup'); if (kind === 'sell') story.flag('sold'); persist(); },
   equipped() { audio.play('ui'); persist(); },
+  // Holger, Seyla or a card: a bright chime when it works, a crash when the piece breaks
+  upgraded(mode, res) {
+    if (res.ok) { audio.play('levelup'); fx.sparkle(player.x, world.heightAt(player.x, player.z) + 1, player.z, '#ffd23a', 18); }
+    else { audio.play('hit'); fx.puff(player.x, world.heightAt(player.x, player.z) + 0.8, player.z, 0.8); }
+    persist();
+  },
   raised() { applyStats(); audio.play('craft'); persist(); },
   accept(id) {
     quests.accept(id);

@@ -102,9 +102,21 @@ export const NPCS = {
     later: () => '', bye: 'Safe roads.',
     quests: [],
   },
+  // smith: what they do to your gear (menus.js smith window): refine (Holger) or enchant (Seyla)
+  holger: {
+    name: 'Holger the Refiner', map: 'city', x: 47.2, z: 31.4, look: 'gunnar', smith: 'refine', shop: 'holger',
+    hello: 'Gunnar makes gear; I make it better. Bring ore and perz and I hammer a piece up a level, up to +10. Up to a point it is safe. Past that, the metal decides, and sometimes it shatters.',
+    later: () => '', bye: 'Strike while it is hot. And not before.',
+    quests: [],
+    lore: [
+      'Iron Ore for the plain blades, Steel Ore for the better ones. I sell both. Hard Ore and Armor Ore you must take from the kobolds and goblins, and they do not give it up gladly.',
+      'A Lv 1 blade is safe to +7, a Lv 4 only to +4, armor to +4. After that, think twice. I have swept up more broken swords than you have swung.',
+      'My grandfather refined the Watch\'s blades for forty years. He said the trick is to stop one try before you want to. He never managed it either.',
+    ],
+  },
   liv: {
     name: 'Liv the Guide', map: 'city', x: 28.6, z: 52.8, look: 'hild',
-    hello: 'New to Steinborg? Hild trades in the square, Gunnar forges in the east, Ragna brews in the north-west, the Seeress keeps her tower in the north-east, and Ivar\'s carts wait by the square.',
+    hello: 'New to Steinborg? Hild trades in the square, Gunnar forges in the east and Holger refines gear beside him, Ragna brews in the north-west, the Seeress keeps her tower in the north-east, and Ivar\'s carts wait by the square.',
     later: () => '', bye: 'The walls are strong and the beer is cold. Welcome.',
     quests: [],
   },
@@ -132,6 +144,17 @@ export const NPCS = {
     lore: [
       'A staff is not a stick. The wood must still remember being alive, or the song runs straight through it.',
       'Gunnar in Steinborg makes fine swords. He told me once a staff was a sword for people who are afraid of swords. I have not forgiven him.',
+    ],
+  },
+  seyla: {
+    name: 'Seyla the Enchanter', map: 'magic', x: 49.4, z: 36.2, look: 'saeunn', smith: 'enchant',
+    hello: 'I open a hollow in a great weapon, a slot, where a monster card can sleep. Only Lv 4 weapons are strong enough to hold one. Half the time the weapon takes the song; the other half it cracks apart.',
+    later: () => '', bye: 'Bring me something worth the risk.',
+    quests: [],
+    lore: [
+      'The price is steep: five Hard Ore, five Dark Crystals, the heart of a great beast, and fifty thousand perz. The song takes all of it, whether it holds or not.',
+      'A card is a monster\'s strength pressed flat. The Kobold King\'s and the Goblin King\'s both sleep in a weapon. Once in, it never comes out, unless the weapon breaks; then you can pick the card out of the pieces.',
+      'Vigdis thinks enchanting is a waste of good crystal. Vigdis has never seen a slotted sword cut through a Goblin King.',
     ],
   },
   kari: {
