@@ -7,7 +7,7 @@ import { BAG_SLOTS, CHEST_SLOTS } from './inventory.js';
 import { STATS, STAT_KEYS, JOBS, RATES } from './progress.js';
 import { statCost } from './ro-tables.js';
 import { HAIRSTYLES, DYES, hairstyles, lookPortrait } from './hair.js';
-import { NPCS, QUESTS, giverOf } from './quests.js';
+import { NPCS, QUESTS, giverOf, rewardOf, SERIES } from './quests.js';
 import { ZONE_NAMES } from './world.js';
 import { SKILLS, skillList, skillLv, learnBlock, spCost, WEAPON_NAMES } from './skills.js';
 
@@ -161,6 +161,7 @@ export class Menus {
   // the Quest View: one quest (or 'story') in full, with a Go button that walks you there
   openQuest(id) {
     this.questId = id;
+    this.quitSure = false;
     this.show('quest');
     this.render('quest');
   }
@@ -179,8 +180,9 @@ export class Menus {
     this.wins.quest.querySelector('.rw-title').textContent = q.job ? 'Job Quest' : 'Quest';
     return `<div class="qview ${q.job ? 'job' : ''}"><b>${esc(q.title)}</b><small>From ${esc(giver.name)} · ${esc(ZONE_NAMES[giver.map || 'camp'])}</small>
       <p>${esc(q.intro)}</p>
-      <div class="qbox"><b>${ready ? 'Done: return to ' + esc(giver.name) : 'Goal'}</b><small>${esc(st.goal(q))}</small>${active ? `<small>Progress: ${esc(st.progress(id, inv))}</small>` : ''}${this.reward(q.reward)}</div>
-      ${where}${go(ready ? 'Go back' : 'Go there')}</div>`;
+      <div class="qbox"><b>${ready ? 'Done: return to ' + esc(giver.name) : 'Goal'}</b><small>${esc(st.goal(q))}</small>${active ? `<small>Progress: ${esc(st.progress(id, inv))}</small>` : ''}${this.questReward(id)}</div>
+      ${where}${go(ready ? 'Go back' : 'Go there')}
+      ${active ? `<div class="btnrow"><button class="rbtn ${this.quitSure ? 'danger' : 'soft'}" data-act="qquit">${this.quitSure ? (SERIES[id] ? 'Yes: start the trial over' : 'Yes, give it up') : 'Quit quest'}</button></div>` : ''}</div>`;
   }
 
   // mode: refine | enchant | insert (card: the card being pressed in)
@@ -455,6 +457,14 @@ export class Menus {
       <div><div class="rsub">Chest ${inv.chest.slots.length}/${CHEST_SLOTS}</div>${this.grid(inv.chest.slots, 'chest', 18)}</div></div>`;
   }
 
+  // a quest's reward line; a job trial's steps on the way pay nothing, its last step the lot
+  questReward(id) {
+    const r = rewardOf(id);
+    if (r) return (SERIES[id] ? '<small>For completing the whole trial:</small>' : '') + this.reward(r);
+    const last = SERIES[id].at(-1);
+    return `<small>No reward for this step: the whole trial pays when ${esc(QUESTS[last].title)} is done.</small>${this.reward(rewardOf(last))}`;
+  }
+
   reward(r) {
     const items = Object.entries(r.items || {}).map(([id, n]) => `<span class="cost ok">${icon(id, 'xs')}${n} ${esc(ITEMS[id].name)}</span>`).join('');
     return `<div class="costs"><span class="cost ok">${(r.xp * RATES.base).toLocaleString()} Base EXP · ${(Math.round((r.job ?? r.xp * 0.7)) * RATES.job).toLocaleString()} Job EXP</span>${r.perz ? `<span class="cost ok">${r.perz.toLocaleString()} perz</span>` : ''}${items}</div>`;
@@ -523,14 +533,14 @@ export class Menus {
     } else if (st.state === 'offer') {
       const first = st.id === n.quests[0] || st.id === n.trial?.[0] || st.id === n.trial2?.[0];
       text = (first ? n.hello + ' ' : '') + st.q.intro;
-      box = `<b class="${st.q.job ? 'jobq' : ''}">${esc(st.q.title)}</b><small>${esc(this.quests.goal(st.q))}</small>${this.reward(st.q.reward)}`;
+      box = `<b class="${st.q.job ? 'jobq' : ''}">${esc(st.q.title)}</b><small>${esc(this.quests.goal(st.q))}</small>${this.questReward(st.id)}`;
       btns = `<button class="rbtn soft" data-act="close">Not now</button><button class="rbtn" data-act="accept" data-id="${st.id}">Accept</button>`;
     } else if (st.state === 'active') {
       text = `Any luck? ${this.quests.goal(st.q)}.`;
-      box = `<b class="${st.q.job ? 'jobq' : ''}">${esc(st.q.title)}</b><small>${esc(this.quests.progress(st.id, this.inv))}</small>${this.reward(st.q.reward)}`;
+      box = `<b class="${st.q.job ? 'jobq' : ''}">${esc(st.q.title)}</b><small>${esc(this.quests.progress(st.id, this.inv))}</small>${this.questReward(st.id)}`;
     } else if (st.state === 'ready') {
       text = st.q.thanks;
-      box = `<b class="${st.q.job ? 'jobq' : ''}">${esc(st.q.title)} ✓</b>${this.reward(st.q.reward)}`;
+      box = `<b class="${st.q.job ? 'jobq' : ''}">${esc(st.q.title)} ✓</b>${this.questReward(st.id)}`;
       btns = `<button class="rbtn" data-act="handin" data-id="${st.id}">Hand in</button>`;
     } else if (st.state === 'locked') text = n.later(st.q.lv);
     else text = n.quests.length || n.trial ? n.bye : n.hello; // people with no quests just say hello
@@ -629,6 +639,12 @@ export class Menus {
     if (act === 'keepsave') { this.hooks.keeperSave?.(this.npc); this.render('talk'); }
     if (act === 'keepgo') this.hooks.keeperGo?.(t.dataset.id);
     if (act === 'qgo') this.hooks.questGo?.(this.questId);
+    if (act === 'qquit') {
+      if (!this.quitSure) { this.quitSure = true; this.render(id); return; } // asks twice
+      this.quitSure = false;
+      this.hooks.questQuit?.(this.questId);
+      this.close('quest');
+    }
     if (act === 'chestwin') { this.close('talk'); this.show('chest'); }
     if (act === 'lore') { this.loreAt++; this.render('talk'); }
     if (act === 'ferry') this.hooks.ferry?.(t.dataset.id);

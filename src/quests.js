@@ -436,9 +436,25 @@ export const QUESTS = {
   },
 };
 
-// quests that come in a series (the job trials): each step's next one, accepted as soon as it is handed in
-export const NEXT = {};
-for (const n of Object.values(NPCS)) for (const list of [n.trial, n.trial2]) list?.forEach((id, i) => { if (list[i + 1]) NEXT[id] = list[i + 1]; });
+// quests that come in a series (the job trials): each step's next one, accepted as soon as it is
+// handed in. The steps on the way give nothing; the last one pays the whole series' reward.
+export const NEXT = {}, SERIES = {};
+for (const n of Object.values(NPCS)) {
+  for (const list of [n.trial, n.trial2]) list?.forEach((id, i) => { SERIES[id] = list; if (list[i + 1]) NEXT[id] = list[i + 1]; });
+}
+// what handing a quest in pays: null for a step on the way, the series' total for its last step
+export function rewardOf(id) {
+  const list = SERIES[id];
+  if (!list) return QUESTS[id].reward;
+  if (NEXT[id]) return null;
+  const sum = { xp: 0, perz: 0, items: {} };
+  for (const k of list) {
+    const r = QUESTS[k].reward;
+    sum.xp += r.xp || 0; sum.perz += r.perz || 0;
+    for (const [item, n] of Object.entries(r.items || {})) sum.items[item] = (sum.items[item] || 0) + n;
+  }
+  return sum;
+}
 // who gives a quest
 export const giverOf = (id) => Object.keys(NPCS).find((n) => NPCS[n].quests.includes(id) || NPCS[n].trial?.includes(id) || NPCS[n].trial2?.includes(id));
 
@@ -522,7 +538,16 @@ export class Quests {
     if (q.kind === 'fetch') for (const [item, n] of Object.entries(q.items)) inv.spend(item, n);
     delete this.active[id];
     this.done.push(id);
-    return q.reward;
+    return rewardOf(id) || {}; // a trial's steps on the way pay nothing
+  }
+
+  // give a quest up. A job trial starts over from its first step, and its choice is undone: with
+  // no second-job trial under way, any trial the hero qualifies for can be picked again
+  quit(id) {
+    if (!(id in this.active)) return false;
+    delete this.active[id];
+    if (SERIES[id]) this.done = this.done.filter((k) => !SERIES[id].includes(k));
+    return true;
   }
 
   // short progress text for the tracker and dialogue

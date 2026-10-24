@@ -60,6 +60,9 @@ No weapon needed: Mend, Thrust, Guard, Rest, War Cry, Stand Firm, Rune Ward, Bli
 - The current job does not matter; only the points do.
 - **Only one second job can be taken.** Once a step of one second-job trial is accepted, the other
   trials close.
+- **Quitting a trial** (Quit quest in the Quest View) before it is finished starts that trial over
+  from its first step and lifts the choice. The hero may then pick any second-job trial they
+  qualify for, again, by going to its quest giver.
 
 ### Examples (Job 50, points spent as Blader / as Sorcerer)
 
@@ -76,6 +79,8 @@ No weapon needed: Mend, Thrust, Guard, Rest, War Cry, Stand Firm, Rune Ward, Bli
 
 - Each trial is a **three-step series**. Each step accepts itself as soon as the step before is
   handed in. Job quests show in **green**.
+- **No reward for the steps on the way:** only completing the whole series pays, and the last step
+  pays the total of all its steps (`rewardOf` in `quests.js`).
 - First-job trials are for a Trainee of Base ~10. Second-job trials are harder: Base 40–50
   monsters and a mini-boss.
 - Trainers:

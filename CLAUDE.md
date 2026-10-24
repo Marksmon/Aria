@@ -12,7 +12,8 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   - Learnt skills stay usable with the right weapon (sword or staff).
   - Second jobs open at Job 40. The Magic Knight needs 20+ points in both the Blader and
     Sorcerer trees. BladeMaster/Wizard open only for the first job with the most points (a tie
-    opens both). Only one second job can be taken.
+    opens both). Only one second job can be taken; quitting a trial midway starts it over and
+    lets the hero pick again. Job trials pay only when the whole series is done.
 - **Character art:** bodies are bald to the standard in `docs/character-standard.md`; the game
   paints the shared head, hair and headgear.
 - **Names:** plain common names in game; the cooler Old Norse names wait in `docs/names-later.md`.

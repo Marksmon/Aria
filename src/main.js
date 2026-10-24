@@ -11,7 +11,7 @@ import { MobManager, MOB_DEFS } from './mobs.js';
 import { loadSave, writeSave } from './save.js';
 import { Inventory } from './inventory.js';
 import { Progress, JOBS, RATES } from './progress.js';
-import { Quests, QUESTS, NPCS, FARES, NEXT, giverOf } from './quests.js';
+import { Quests, QUESTS, NPCS, FARES, NEXT, SERIES, giverOf } from './quests.js';
 import { Story, INTRO, route } from './story.js';
 import { Villagers } from './villagers.js';
 import { Tiles } from './tiles.js';
@@ -366,7 +366,7 @@ function giveReward(r) {
     if (got < n) inv.chest.add(id, n - got); // bag full: it goes to the chest
     menus.toast(id, n);
   }
-  gainExp(r.xp, r.job ?? Math.round(r.xp * 0.7));
+  if (r.xp) gainExp(r.xp, r.job ?? Math.round(r.xp * 0.7)); // (a job trial's steps on the way pay nothing)
 }
 // '!' / '?' bubbles over villagers, and the quest list under the clock: the story step first,
 // then the active quests. It collapses to its title bar and scrolls when it gets long.
@@ -542,6 +542,14 @@ const menus = new Menus(inv, prog, player, {
   // the Quest View: where a quest is, and walking there
   questTarget: (id) => questTarget(id),
   questGo: (id) => startNav(id),
+  questQuit(id) {
+    if (!quests.quit(id)) return;
+    if (nav?.quest === id) nav = null;
+    audio.play('ui');
+    menus.message(SERIES[id] ? `${QUESTS[id].title.split(':')[0]} given up. Its trainer will start you over, or you may pick another trial.` : `${QUESTS[id].title} given up.`);
+    refreshQuests();
+    persist();
+  },
   storyStep: () => (storyLive() ? story.step : null),
   storyProgress: () => story.progress(),
   // the Keepers: sign their ledger, save there, and teleport between the ones you have signed
@@ -635,7 +643,7 @@ const menus = new Menus(inv, prog, player, {
     audio.play('craft');
     giveReward(r);
     // a series (the job trials) carries straight on to its next step
-    if (NEXT[id]) { quests.accept(NEXT[id]); menus.message(`Next: ${QUESTS[NEXT[id]].title}`); }
+    if (NEXT[id]) { quests.accept(NEXT[id]); menus.message(`Step done. Next: ${QUESTS[NEXT[id]].title}`); }
     refreshQuests();
     menus.render();
     persist();
