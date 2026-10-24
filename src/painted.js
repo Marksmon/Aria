@@ -17,9 +17,10 @@ const dark = (c) => mix(c, '#000000', 0.32);
 
 // ---------- a frame: a grid of colours ----------
 class Frame {
-  constructor() { this.px = new Array(FW * FH).fill(null); }
+  constructor(w = FW, h = FH) { this.w = w; this.h = h; this.px = new Array(w * h).fill(null); }
   // draw one part: shape(set) marks its pixels; it is shaded and outlined, then laid over what's there
   part(shape, col, { outline = true, flat = false } = {}) {
+    const FW = this.w, FH = this.h;
     const m = new Uint8Array(FW * FH);
     const set = (x, y) => { x = Math.round(x); y = Math.round(y); if (x >= 0 && y >= 0 && x < FW && y < FH) m[y * FW + x] = 1; };
     shape(set);
@@ -39,9 +40,10 @@ class Frame {
       if (at(x + 1, y) || at(x - 1, y) || at(x, y + 1) || at(x, y - 1)) this.px[y * FW + x] = OUT;
     }
   }
-  dot(x, y, c) { x = Math.round(x); y = Math.round(y); if (x >= 0 && y >= 0 && x < FW && y < FH) this.px[y * FW + x] = c; }
-  mirror() { const f = new Frame(); for (let y = 0; y < FH; y++) for (let x = 0; x < FW; x++) f.px[y * FW + x] = this.px[y * FW + (FW - 1 - x)]; return f; }
+  dot(x, y, c) { const FW = this.w; x = Math.round(x); y = Math.round(y); if (x >= 0 && y >= 0 && x < FW && y < this.h) this.px[y * FW + x] = c; }
+  mirror() { const FW = this.w, FH = this.h, f = new Frame(FW, FH); for (let y = 0; y < FH; y++) for (let x = 0; x < FW; x++) f.px[y * FW + x] = this.px[y * FW + (FW - 1 - x)]; return f; }
   toCanvas() {
+    const FW = this.w, FH = this.h;
     const c = document.createElement('canvas');
     c.width = FW; c.height = FH;
     const g = c.getContext('2d');
@@ -90,11 +92,17 @@ export const PAINTED = {
   goblinWarrior: { race: 'goblin', kind: 'warrior', skin: '#6aa84f', cloth: '#7a5232', strap: '#4e3420', mask: '#b48a5a', wood: '#7a5232', metal: '#a8acb4', eye: '#ffd23a' },
   goblinArcher: { race: 'goblin', kind: 'archer', skin: '#7cb85a', cloth: '#4a6a8a', strap: '#5a3a22', cap: '#8a3a2a', feather: '#e8e0c8', wood: '#7a4a24', metal: '#c8ccd2', eye: '#ffd23a' },
   goblinAssassin: { race: 'goblin', kind: 'assassin', skin: '#5a9446', cloth: '#2a2a32', strap: '#1e1e26', mask: '#1c1c22', sash: '#a8323a', metal: '#dcdfe6', wood: '#3a2a22', eye: '#ff6a3a' },
+  // the MVPs: bigger frames (KW x KH), a crown, a cape and a two-handed weapon
+  koboldKing: { race: 'kobold', king: true, fur: '#8a5a32', muzzle: '#e6cfa2', collar: '#f2ece0', cape: '#b02a2a', metal: '#9aa0aa', gold: '#f2c040', wood: '#4a2e1a', boot: '#4a3020', strap: '#4a3020', eye: '#ffd23a' },
+  goblinKing: { race: 'goblin', king: true, skin: '#5f9a45', collar: '#4a3a30', cape: '#6a3a8a', cloth: '#6a4a2a', bone: '#efe6cc', metal: '#b4b8c0', wood: '#5a3a22', boot: '#3a2a1e', strap: '#3a2a1e', eye: '#ff5a2a' },
 };
+export const KW = 64, KH = 68;  // a king's frame
+export const frameSize = (id) => (PAINTED[id].king ? [KW, KH] : [FW, FH]);
 
 // one frame. dir: down | up | right | left; anim: idle | walk | attack; f: frame index
 export function paintFrame(id, dir, anim, f) {
   if (dir === 'left') return paintFrame(id, 'right', anim, f).mirror();
+  if (PAINTED[id].king) return paintKing(id, dir, anim, f);
   const P = PAINTED[id], gob = P.race === 'goblin', kind = P.kind;
   const F = new Frame();
   const skin = gob ? P.skin : P.fur;
@@ -302,6 +310,192 @@ function paintGoblinHead(F, P, kind, cx, hy, dir, atk) {
     else for (const s of [-1, 1]) { F.dot(cx + s * 3, hy - 2, P.eye); F.dot(cx + s * 3 + (s < 0 ? 1 : -1), hy - 2, '#140c08'); }
   }
   void atk;
+}
+
+// ---------- the kings (MVPs) ----------
+// Built like the others but half again as big: a heavy body, a fur collar and shoulder plates, a cape
+// (behind them from the front and side, over the back from behind), a crown, and a two-handed
+// weapon (the Kobold King's great hammer, the Goblin King's cleaver) that comes down in a slam.
+const KG = 65; // the ground row in a king's frame
+// a box along a direction: u from u0 to u1 along (c, s), v from v0 to v1 across it
+const obox = (ax, ay, c, s, u0, u1, v0, v1) => poly([[ax + c * u0 - s * v0, ay + s * u0 + c * v0], [ax + c * u1 - s * v0, ay + s * u1 + c * v0], [ax + c * u1 - s * v1, ay + s * u1 + c * v1], [ax + c * u0 - s * v1, ay + s * u0 + c * v1]]);
+
+function paintKing(id, dir, anim, f) {
+  const P = PAINTED[id], gob = P.race === 'goblin', skin = gob ? P.skin : P.fur;
+  const F = new Frame(KW, KH);
+  const step = anim === 'walk' ? [1, 0, -1, 0][f] : 0;
+  const bob = anim === 'walk' && (f === 1 || f === 3) ? -1 : 0;
+  const atk = anim === 'attack' ? f : -1;
+  const sink = atk === 2 ? 2 : atk === 1 ? 1 : 0; // he drops his weight into the slam
+  const top = KG - 46 + bob + sink;
+  const side = dir === 'right', back = dir === 'up';
+  const cx = side ? 28 : 32;
+  const hy = top + 11, by = top + 19, legTop = top + 36;
+  const shoulderY = by + 3, handY = by + 13;
+  const weapon = (hx, hy2, ang, near) => kingWeapon(F, P, hx, hy2, ang, near);
+
+  if (side) {
+    // the cape trails behind and flaps as he walks
+    const flap = anim === 'walk' ? [1, 2, 1, 0][f] : atk >= 0 ? 2 : 0;
+    F.part(poly([[cx - 2, by], [cx - 8, by + 2], [cx - 14 - flap, KG - 3 + Math.min(0, -sink)], [cx - 9 - flap, KG - 1], [cx - 2, legTop]]), P.cape);
+    // legs: the far one darker
+    const fx = 3 * step, bx = -3 * step;
+    F.part(both(rect(cx - 4 + bx, legTop, cx - 1 + bx, KG - 2), rect(cx - 5 + bx, KG - 2, cx + 1 + bx, KG)), dark(skin));
+    F.part(rect(cx - 5 + bx, KG - 3, cx + 1 + bx, KG), dark(P.boot));
+    F.part(rect(cx + 1 + fx, legTop, cx + 4 + fx, KG - 2), skin);
+    F.part(rect(cx + fx, KG - 3, cx + 6 + fx, KG), P.boot);
+    // the far arm reaches for the haft
+    const swing = [-2.3, 0.4, 1.15, -0.6][atk] ?? -1.35;
+    const hx = cx + 6 + (atk === 1 ? 3 : atk === 2 ? 4 : 0), hy2 = atk === 0 ? by - 2 : atk === 1 ? by + 6 : handY;
+    F.part(line(cx - 1, shoulderY, hx - 1, hy2 + 1, 3), dark(skin));
+    // body
+    F.part(poly([[cx - 7, by + 1], [cx + 6, by + 1], [cx + 8, legTop + 1], [cx - 8, legTop + 1]]), gob ? P.cloth : P.metal);
+    if (gob) F.part(ellipse(cx + 4, by + 10, 5, 7.5), skin); // the belly
+    else { F.part(rect(cx - 7, by + 6, cx + 7, by + 7), P.gold, { flat: true, outline: false }); F.part(poly([[cx + 1, legTop], [cx + 6, legTop], [cx + 5, legTop + 8], [cx + 1, legTop + 8]]), P.cape); }
+    F.part(rect(cx - 8, legTop - 3, cx + 8, legTop - 1), P.strap, { flat: true });
+    F.part(rect(cx + 4, legTop - 3, cx + 6, legTop - 1), gob ? P.bone : P.gold, { flat: true, outline: false });
+    // collar and the near shoulder plate
+    F.part(ellipse(cx - 1, by + 1, 8, 3), P.collar);
+    paintKingHead(F, P, cx, hy, dir);
+    F.part(ellipse(cx, shoulderY + 1, 4.5, 4), gob ? P.bone : P.metal);
+    if (gob) F.part(poly([[cx - 1, shoulderY - 2], [cx + 1, shoulderY - 8], [cx + 2, shoulderY - 2]]), P.bone);
+    else F.part(rect(cx - 4, shoulderY + 3, cx + 4, shoulderY + 3), P.gold, { flat: true, outline: false });
+    // the weapon, then the near arm over its haft
+    weapon(hx, hy2, swing, true);
+    F.part(line(cx + 1, shoulderY + 1, hx, hy2, 3), skin);
+    return F;
+  }
+
+  // ---- front and back ----
+  const lu = step > 0 ? 2 : 0, ru = step < 0 ? 2 : 0;
+  const sway = anim === 'walk' ? step : 0;
+  // the weapon: held in both hands at screen left (front) or right (back), raised overhead to slam
+  const ang = [-2.0, 0.55, 1.25, -1.5][atk] ?? -1.85;
+  const wx = back ? cx + 13 : cx - 13;
+  const wy = atk === 0 ? by - 4 : atk === 1 ? by + 7 : atk === 2 ? handY + 2 : handY;
+  const wang = back ? Math.PI - ang : ang;
+  if (!back) F.part(poly([[cx - 10, by + 1], [cx + 10, by + 1], [cx + 15 + sway, KG - 2], [cx - 15 + sway, KG - 2]]), dark(P.cape)); // the cape's lining
+  // legs and boots
+  F.part(rect(cx - 8, legTop, cx - 4, KG - 2 - lu), skin);
+  F.part(rect(cx - 9, KG - 3 - lu, cx - 3, KG - lu), P.boot);
+  F.part(rect(cx + 4, legTop, cx + 8, KG - 2 - ru), skin);
+  F.part(rect(cx + 3, KG - 3 - ru, cx + 9, KG - ru), P.boot);
+  // body
+  F.part(poly([[cx - 10, by + 1], [cx + 10, by + 1], [cx + 12, legTop + 1], [cx - 12, legTop + 1]]), gob ? P.cloth : P.metal);
+  if (!back) {
+    if (gob) F.part(ellipse(cx, by + 11, 7, 8), skin); // the belly between the vest's edges
+    else { // a breastplate: gold trim down the middle and across
+      F.part(rect(cx - 1, by + 3, cx + 1, legTop - 4), P.gold, { flat: true, outline: false });
+      F.part(rect(cx - 9, by + 8, cx + 9, by + 8), P.gold, { flat: true, outline: false });
+      F.part(poly([[cx - 4, legTop], [cx + 4, legTop], [cx + 3, legTop + 8], [cx - 3, legTop + 8]]), P.cape); // the tabard
+    }
+  }
+  F.part(rect(cx - 12, legTop - 3, cx + 12, legTop - 1), P.strap, { flat: true });
+  if (!back) F.part(rect(cx - 2, legTop - 3, cx + 2, legTop - 1), gob ? P.bone : P.gold, { flat: true });
+  if (gob && !back) for (let i = -3; i <= 3; i += 2) F.dot(cx + i * 2, by + 3 + Math.abs(i), P.bone); // a necklace of teeth
+  // arms: the weapon in one hand, the other at his side; both on the haft to attack
+  const armL = back ? cx + 10 : cx - 10, armR = back ? cx - 10 : cx + 10;
+  const freeHand = atk >= 0 ? [wx + (back ? -4 : 4), wy + 2] : [back ? cx - 14 : cx + 14, handY];
+  if (back) { // the cape covers the back, flaring to the ankles
+    F.part(line(armL, shoulderY, wx, wy, 3), skin);
+    F.part(line(armR, shoulderY, ...freeHand, 3), skin);
+    F.part(poly([[cx - 11, by], [cx + 11, by], [cx + 15 + sway, KG - 3], [cx - 15 + sway, KG - 3]]), P.cape);
+    for (const x of [-6, 0, 6]) F.part(line(cx + x * 0.7, by + 4, cx + x * 1.3 + sway, KG - 5, 1), dark(P.cape), { flat: true, outline: false }); // its folds
+    weapon(wx, wy, wang, false); // held at his side, beside the cape
+  }
+  // collar and shoulder plates
+  F.part(ellipse(cx, by + 1, 12, 3.5), P.collar);
+  if (!gob) for (let i = -10; i <= 10; i += 5) F.dot(cx + i, by + 1, '#2a2226'); // ermine spots
+  for (const sx of [-1, 1]) {
+    F.part(ellipse(cx + sx * 12, shoulderY, 4, 3.5), gob ? P.bone : P.metal);
+    if (gob) F.part(poly([[cx + sx * 11, shoulderY - 2], [cx + sx * 14, shoulderY - 9], [cx + sx * 14, shoulderY - 2]]), P.bone);
+    else F.part(rect(cx + sx * 12 - 3, shoulderY + 3, cx + sx * 12 + 3, shoulderY + 3), P.gold, { flat: true, outline: false });
+  }
+  paintKingHead(F, P, cx, hy, dir);
+  if (!back) {
+    F.part(line(armR, shoulderY + 1, ...freeHand, 3), skin); // the other hand: at his side, or across to the haft
+    weapon(wx, wy, wang, true);
+    F.part(line(armL, shoulderY + 1, wx, wy, 3), skin);
+  }
+  return F;
+}
+
+// the great hammer (kobold) or cleaver (goblin), its grip at (hx, hy), pointing at ang
+function kingWeapon(F, P, hx, hy, ang, near) {
+  const c = Math.cos(ang), s = Math.sin(ang), col = (x) => (near ? x : dark(x));
+  if (P.race === 'kobold') {
+    F.part(line(hx - c * 5, hy - s * 5, hx + c * 17, hy + s * 17, 2), col(P.wood));
+    F.part(obox(hx, hy, c, s, 15, 22, -5, 5), col(P.metal));      // the head
+    F.part(obox(hx, hy, c, s, 17.5, 19.5, -5, 5), col(P.gold), { outline: false, flat: true }); // a gold band
+  } else {
+    F.part(line(hx - c * 4, hy - s * 4, hx + c * 6, hy + s * 6, 2), col(P.wood));
+    F.part(obox(hx, hy, c, s, 6, 21, -1, 7), col(P.metal));       // the blade, wide on one side
+    F.part(obox(hx, hy, c, s, 6, 21, -1, 0), col(dark(P.metal)), { outline: false, flat: true }); // its spine
+    F.dot(hx + c * 18 - s * 2, hy + s * 18 + c * 2, '#23170f');   // a hole near the tip
+  }
+}
+
+function paintKingHead(F, P, cx, hy, dir) {
+  const side = dir === 'right', back = dir === 'up', gob = P.race === 'goblin';
+  const skin = gob ? P.skin : P.fur, crown = gob ? P.bone : P.gold;
+  // ears: tall and pointed (kobold), long and out to the sides (goblin)
+  if (gob) {
+    if (side) F.part(poly([[cx - 5, hy - 2], [cx - 17, hy - 8], [cx - 5, hy + 3]]), skin);
+    else for (const sx of [-1, 1]) F.part(poly([[cx + sx * 8, hy - 2], [cx + sx * 21, hy - 8], [cx + sx * 8, hy + 3]]), skin);
+  } else {
+    if (side) F.part(poly([[cx - 8, hy - 4], [cx - 10, hy - 16], [cx - 3, hy - 8]]), skin);
+    else for (const sx of [-1, 1]) F.part(poly([[cx + sx * 10, hy - 2], [cx + sx * 15, hy - 15], [cx + sx * 6, hy - 8]]), skin);
+  }
+  F.part(ellipse(cx + (side ? -1 : 0), hy, side ? 8.5 : 10, 9.5), skin);
+  // the crown: a band and points; gems on gold, a little skull on bone
+  const crownY = hy - 9;
+  if (side) {
+    F.part(rect(cx - 9, crownY - 1, cx + 5, crownY + 2), crown);
+    for (const x of [-7, -3, 1, 4]) F.part(poly([[x + cx - 1.5, crownY - 1], [x + cx, crownY - (gob ? 7 : 5)], [x + cx + 1.5, crownY - 1]]), crown);
+    if (!gob) F.dot(cx, crownY, '#d02a3a');
+  } else {
+    F.part(rect(cx - 9, crownY - 1, cx + 9, crownY + 2), crown);
+    for (const x of [-8, -4, 0, 4, 8]) {
+      const h = gob ? (x === 0 ? 0 : Math.abs(x) === 4 ? 8 : 6) : x === 0 ? 7 : 5;
+      if (h) F.part(poly([[cx + x - 1.5, crownY - 1], [cx + x, crownY - 1 - h], [cx + x + 1.5, crownY - 1]]), crown);
+    }
+    if (!back) {
+      if (gob) { F.part(ellipse(cx, crownY - 2, 2.5, 2.5), P.bone); F.dot(cx - 1, crownY - 2, '#23170f'); F.dot(cx + 1, crownY - 2, '#23170f'); }
+      else { F.dot(cx, crownY, '#d02a3a'); F.dot(cx, crownY + 1, '#d02a3a'); F.dot(cx - 5, crownY + 1, '#3a7ad0'); F.dot(cx + 5, crownY + 1, '#3a7ad0'); }
+    }
+  }
+  if (back) return;
+  const eye = (x, y) => { F.dot(x, y, P.eye); F.dot(x + 1, y, P.eye); F.dot(x + (side ? 1 : x < cx ? 1 : 0), y, '#140c08'); };
+  if (gob) {
+    if (side) {
+      F.part(poly([[cx + 5, hy - 1], [cx + 12, hy + 3], [cx + 5, hy + 4]]), skin); // the nose
+      eye(cx + 2, hy - 3); F.dot(cx + 1, hy - 5, '#23170f'); F.dot(cx + 3, hy - 4, '#23170f');
+      F.part(rect(cx + 1, hy + 6, cx + 6, hy + 6), '#2a1610', { outline: false, flat: true });
+      F.dot(cx + 5, hy + 5, P.bone); F.dot(cx + 5, hy + 4, P.bone); // a tusk
+    } else {
+      F.part(ellipse(cx, hy + 2, 3, 3.5), skin);
+      eye(cx - 5, hy - 2); eye(cx + 4, hy - 2);
+      for (const sx of [-1, 1]) { F.dot(cx + sx * 6, hy - 4, '#23170f'); F.dot(cx + sx * 5, hy - 4, '#23170f'); F.dot(cx + sx * 4, hy - 3, '#23170f'); } // angry brows
+      F.part(rect(cx - 6, hy + 6, cx + 6, hy + 6), '#2a1610', { outline: false, flat: true });
+      for (const sx of [-1, 1]) { F.dot(cx + sx * 4, hy + 5, P.bone); F.dot(cx + sx * 4, hy + 4, P.bone); } // tusks
+      F.dot(cx + 6, hy + 2, dark(skin)); F.dot(cx - 7, hy - 6 + 6, dark(skin)); // warts
+    }
+  } else {
+    if (side) {
+      F.part(poly([[cx + 3, hy - 1], [cx + 13, hy + 1], [cx + 13, hy + 6], [cx + 3, hy + 7]]), P.muzzle);
+      F.part(rect(cx + 12, hy, cx + 13, hy + 2), '#1e1410', { outline: false, flat: true });
+      F.part(rect(cx + 6, hy + 5, cx + 12, hy + 5), '#5a2a22', { outline: false, flat: true });
+      F.dot(cx + 9, hy + 6, '#f0e8d0');
+      eye(cx + 1, hy - 3); F.dot(cx, hy - 5, '#23170f'); F.dot(cx + 2, hy - 4, '#23170f');
+    } else {
+      F.part(ellipse(cx, hy + 4, 5.5, 3.5), P.muzzle);
+      F.part(rect(cx - 2, hy + 1, cx + 2, hy + 2), '#1e1410', { outline: false, flat: true });
+      F.part(rect(cx - 3, hy + 6, cx + 3, hy + 6), '#5a2a22', { outline: false, flat: true });
+      F.dot(cx - 2, hy + 7, '#f0e8d0'); F.dot(cx + 2, hy + 7, '#f0e8d0'); // fangs
+      eye(cx - 5, hy - 2); eye(cx + 4, hy - 2);
+      for (const sx of [-1, 1]) { F.dot(cx + sx * 6, hy - 4, '#23170f'); F.dot(cx + sx * 5, hy - 4, '#23170f'); F.dot(cx + sx * 4, hy - 3, '#23170f'); }
+    }
+  }
 }
 
 // every frame of a monster: { down: { idle: [canvas], walk: [4], attack: [4] }, up, right, left }
