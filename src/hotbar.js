@@ -1,11 +1,13 @@
-// Skill and item hotbar, like Ragnarok's F-key bar: six slots along the bottom of the screen.
-// Tap a slot (or press 1-6) to use it. Skills show their cooldown; items show how many you have.
-// It starts empty: drag active skills (Skills window) and usable items (Items window) onto a
-// slot; drag slots to swap them, or off the bar to clear them.
+// Skill and item hotbar, like Ragnarok's F-key bar: six slots along the bottom of the screen, on
+// three pages (the button at its end, or Tab, flips to the next). Tap a slot (or press 1-6) to use
+// it. Skills show their cooldown; items show how many you have. It starts empty: drag active skills
+// (Skills window) and usable items (Items window) onto a slot; drag slots to swap them, or off the
+// bar to clear them.
 import { ITEMS, iconURL } from './items.js';
 import { SKILLS } from './skills.js';
 
 export const SLOTS = 6;
+export const PAGES = 3;
 
 export class Hotbar {
   constructor(el, inv, hooks) {
@@ -13,7 +15,8 @@ export class Hotbar {
     this.inv = inv;
     this.hooks = hooks; // { use(entry), cooldown(entry) -> 0..1 left, changed() }
     el.classList.add('ui-click');
-    this.slots = Array(SLOTS).fill(null);
+    this.pages = Array.from({ length: PAGES }, () => Array(SLOTS).fill(null));
+    this.page = 0;
     this.cells = [];
     for (let i = 0; i < SLOTS; i++) {
       const b = document.createElement('button');
@@ -27,12 +30,28 @@ export class Hotbar {
       el.appendChild(b);
       this.cells.push(b);
     }
+    // the page button: flips to the next page of slots
+    this.flip = document.createElement('button');
+    this.flip.className = 'hb-page';
+    this.flip.addEventListener('pointerdown', (e) => { e.preventDefault(); e.stopPropagation(); this.turn(); });
+    el.appendChild(this.flip);
     window.addEventListener('keydown', (e) => {
       const n = +e.key;
       if (!e.repeat && n >= 1 && n <= SLOTS) this.use(n - 1);
+      if (!e.repeat && e.key === 'Tab') { e.preventDefault(); this.turn(); }
     });
     inv.onChange(() => this.render());
     this.render();
+  }
+
+  // the slots of the page showing
+  get slots() { return this.pages[this.page]; }
+  set slots(v) { this.pages[this.page] = v; }
+
+  turn() {
+    this.page = (this.page + 1) % PAGES;
+    this.render();
+    this.hooks.changed?.();
   }
 
   use(i) {
@@ -43,7 +62,7 @@ export class Hotbar {
     this.hooks.use(s);
   }
 
-  has(kind, id) { return this.slots.some((s) => s?.kind === kind && s.id === id); }
+  has(kind, id) { return this.pages.some((pg) => pg.some((s) => s?.kind === kind && s.id === id)); }
 
   cellAt(x, y) {
     const hit = document.elementFromPoint(x, y)?.closest?.('.hb');
@@ -107,6 +126,8 @@ export class Hotbar {
       c.classList.toggle('out', n === 0);
       c.title = s ? (s.kind === 'skill' ? SKILLS[s.id].name : ITEMS[s.id].name) : 'Empty slot';
     });
+    this.flip.innerHTML = `<b>${this.page + 1}</b><small>/${PAGES}</small>`;
+    this.flip.title = `Hotbar page ${this.page + 1} of ${PAGES} (Tab: next)`;
   }
 
   // cooldown sweep over skill slots, every frame
@@ -119,13 +140,14 @@ export class Hotbar {
     });
   }
 
-  toJSON() { return this.slots; }
+  toJSON() { return { pages: this.pages, page: this.page }; }
   load(d) {
-    if (!Array.isArray(d)) return;
-    this.slots = Array.from({ length: SLOTS }, (_, i) => {
-      const s = d[i];
-      return s && ((s.kind === 'skill' && SKILLS[s.id]?.kind === 'active') || (s.kind === 'item' && ITEMS[s.id]?.usable)) ? { kind: s.kind, id: s.id } : null;
-    });
+    // older saves kept one row of slots
+    const pages = Array.isArray(d) ? [d] : Array.isArray(d?.pages) ? d.pages : null;
+    if (!pages) return;
+    const ok = (s) => s && ((s.kind === 'skill' && SKILLS[s.id]?.kind === 'active') || (s.kind === 'item' && ITEMS[s.id]?.usable));
+    this.pages = Array.from({ length: PAGES }, (_, p) => Array.from({ length: SLOTS }, (_, i) => (ok(pages[p]?.[i]) ? { kind: pages[p][i].kind, id: pages[p][i].id } : null)));
+    this.page = Math.min(PAGES - 1, Math.max(0, d?.page | 0));
     this.render();
   }
 }

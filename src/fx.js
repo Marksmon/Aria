@@ -25,6 +25,7 @@ export class FX {
     s.material.alphaTest = 0;
     s.material.transparent = true;
     s.material.color.set('#ffffff');
+    s.material.blending = THREE.NormalBlending;
     s.material.needsUpdate = true;
     s.center.set(0.5, opts.bottom ? 0.05 : 0.5);
     s.renderOrder = opts.renderOrder ?? 3;
@@ -161,17 +162,31 @@ export class FX {
     const i = this.pickups.indexOf(p);
     if (i < 0) return;
     this.release(p.s);
+    if (p.glow) this.release(p.glow);
     this.pickups.splice(i, 1);
   }
 
   // leaving a map: whatever lay on the ground is gone
   clearPickups() {
-    for (const p of this.pickups) this.release(p.s);
+    for (const p of this.pickups) { this.release(p.s); if (p.glow) this.release(p.glow); }
     this.pickups = [];
   }
 
-  // item: id, tex: texture. Pickups stay on the ground until tapped (see take)
-  drop(x, z, item, count, tex) {
+  // a soft gold halo, for rare drops
+  glowTex() {
+    if (this._glow) return this._glow;
+    const c = document.createElement('canvas');
+    c.width = c.height = 64;
+    const g = c.getContext('2d'), gr = g.createRadialGradient(32, 32, 2, 32, 32, 31);
+    gr.addColorStop(0, 'rgba(255,240,170,1)'); gr.addColorStop(0.35, 'rgba(255,214,90,.75)'); gr.addColorStop(1, 'rgba(255,190,40,0)');
+    g.fillStyle = gr; g.fillRect(0, 0, 64, 64);
+    this._glow = new THREE.CanvasTexture(c);
+    this._glow.colorSpace = THREE.SRGBColorSpace;
+    return this._glow;
+  }
+
+  // item: id, tex: texture, rare: it glows on the ground. Pickups stay until tapped (see take)
+  drop(x, z, item, count, tex, rare = false) {
     const s = this.sprite(tex, { bottom: true, renderOrder: 2 });
     s.material.depthTest = true;
     s.material.alphaTest = 0.5;
@@ -185,6 +200,13 @@ export class FX {
       tx: x + Math.cos(a) * r, tz: z + Math.sin(a) * r,
       t: 0, life: 45, size,
     };
+    if (rare) { // a pulsing halo behind it, and a burst of sparkles as it lands
+      p.glow = this.sprite(this.glowTex(), { bottom: true, renderOrder: 1 });
+      p.glow.material.blending = THREE.AdditiveBlending;
+      p.glow.material.needsUpdate = true;
+      this.sparkle(x, this.world.heightAt(x, z) + 0.4, z, '#ffd23a', 16);
+      p.life = 90; // rare finds wait longer
+    }
     this.pickups.push(p);
     return p;
   }
@@ -250,8 +272,16 @@ export class FX {
       p.s.position.set(p.x, y + hop, p.z);
       const fade = p.life - p.t;
       p.s.visible = fade > 5 || Math.floor(p.t * 6) % 2 === 0;
+      if (p.glow) {
+        const k = 1.05 + Math.sin(p.t * 4) * 0.18;
+        p.glow.position.set(p.x, y + hop - 0.3, p.z);
+        p.glow.scale.set(k, k, 1);
+        p.glow.material.opacity = 0.65 + Math.sin(p.t * 4) * 0.25;
+        p.glow.visible = p.s.visible;
+      }
       if (fade <= 0) {
         this.release(p.s);
+        if (p.glow) this.release(p.glow);
         this.pickups.splice(i, 1);
       }
     }

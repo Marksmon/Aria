@@ -22,17 +22,19 @@ Ragnarok-style: no on-screen controller. Landscape.
 | Touch | Desktop |
 |---|---|
 | Tap the ground: walk there (tile by tile) | Click |
+| Hold a finger on the ground: keep walking towards it; move the finger to steer | Hold the mouse button |
 | Tap a monster: walk up and keep attacking it | Click |
 | Tap an item on the ground: pick it up | Click |
 | Tap a person, the chest (camp or Steinborg storage) or the tent: talk / open / rest | Click |
 | Step onto a glowing portal: go to the next map | |
-| Hotbar (bottom): tap a slot to use a skill or item | 1–6 |
+| Hotbar (bottom): tap a slot to use a skill or item; the button at its end flips between 3 pages | 1–6 · Tab: next page |
 | Drag active skills (Skills window) and usable items (Items window) onto the hotbar; drag a slot off to clear it | Drag |
 | Drag one finger: turn the camera · pinch: zoom | Drag or Q / E · mouse wheel |
 | Window buttons under the HP / SP box: Status, Equip, Items, Skills | Alt+A, Alt+Q, Alt+E (or I / B), Alt+S · Esc closes |
 
 The hotbar starts empty. Windows are small, can be dragged anywhere by their title bar, and the
-game keeps running while they are open.
+game keeps running while they are open. A monster's name shows over it when the mouse is on it,
+and in gold over the one you are fighting. Rare drops glow gold on the ground.
 
 ## Maps
 
@@ -60,7 +62,7 @@ reached by travelling on. Place names are Old Norse in style.
 | Glodberg (ember-hill) | 28–36 | Beetle (30) | **Fire Giant (60, MVP)** |
 | Svartskog (black wood) | 32–42 | Dark Mushroom (34), Dark Wisp (38), Mushroom | Giant Mushroom (40) |
 | Askheid (ash heath) | 40–50 | Fire Beetle (42), Fire Wisp (45), Beetle | Giant Beetle (48) |
-| Any field, at night | | Wisp (11) | |
+| Any field in the valley, more at night | | Wisp (11) | |
 
 **Passive monsters.** Like most of Ragnarok's field monsters, they leave you alone until you hit
 them; then they fight back for a while. Only the Dark Wisps, the fire beasts of Askheid, the
@@ -116,7 +118,7 @@ Aria's own jobs and skills, kept modest. A **Trainee** puts points into **Basic 
 other Trainee skills come free with Job Levels. At Trainee Job 10 with Basic Training 9, a job
 trial opens: three short steps a Trainee of Base Level ~10 can do. **Captain Ulfr** in Steinborg
 tests Bladers (10 Slimes, 8 Sprouts, 5 Crabs); **Archmage Vigdis** in Galdrheim tests Sorcerers
-(Water Drops and Seeds, 6 Blue Slimes, then Glow Dust from the night Wisps). Pass, and
+(Water Drops and Seeds, 6 Blue Slimes, then Glow Dust from the Wisps). Pass, and
 they change your job. Elder Halvard sends ready Trainees on to the city.
 
 | Trainee | | |
@@ -293,7 +295,7 @@ A few big jobs instead of many errands: one each in the camp, and a handful in S
 |---|---|---|
 | Elder Halvard | camp | The Mushroom Wood (12): 25 Mushrooms |
 | Astrid the Cook | camp | A Feast for Eldrun (10): 20 Slime Gel, 10 Crab Legs, 10 Spores |
-| Sigrun the Scout | camp | Lights in the Dark (10): 15 Wisps, at night |
+| Sigrun the Scout | camp | Lights in the Dark (10): 15 Wisps |
 | Gyda the Healer | camp | heals HP and SP for free |
 | Hild the Trader | Steinborg | shop · Pearls of Saltvik (24): 5 Pearls |
 | Gunnar the Gear Crafter | Steinborg | shop, forge · Stone for the Forge (34): 30 Stone, 15 Burnt Shells |

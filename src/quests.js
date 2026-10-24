@@ -223,7 +223,7 @@ export const QUESTS = {
   },
   lights: {
     title: 'Lights in the Dark', kind: 'kill', mob: 'wisp', n: 15, lv: 10,
-    intro: 'At night, Wisps drift all over the valley. I need to know where they nest. Catch fifteen of them for me, out there in the dark.',
+    intro: 'Wisps drift all over the valley, and at night there are twice as many. I need to know where they nest. Catch fifteen of them for me.',
     thanks: 'A map of lights! It is beautiful. Keep these.',
     reward: { xp: 2000, perz: 800, items: { glow: 5, wander: 3 } },
   },
@@ -260,7 +260,7 @@ export const QUESTS = {
   },
   sorcerer_trial3: {
     title: 'Rune Trial 3: Light in the Dark', kind: 'fetch', items: { glow: 3 }, lv: 1,
-    intro: 'Last, light. At night, Wisps drift over the fields near the camp. Bring me three pinches of their Glow Dust.',
+    intro: 'Last, light. Wisps drift over the fields near the camp, most of all at night. Bring me three pinches of their Glow Dust.',
     thanks: 'Light, water and life... and they all answer you. The runes have spoken.',
     reward: { xp: 250, perz: 300 },
   },

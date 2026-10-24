@@ -1,10 +1,12 @@
-// Ragnarok-style controls: tap (or click) the world to walk, attack, pick up or talk.
-// Touch: drag one finger to rotate the camera, pinch to zoom. Desktop: click, drag or Q/E to
+// Ragnarok-style controls: tap (or click) the world to walk, attack, pick up or talk; hold a finger
+// (or the mouse button) still on the ground and the character keeps walking towards it, steered as
+// it moves. Touch: drag one finger to rotate the camera, pinch to zoom. Desktop: click, drag or Q/E to
 // rotate, mouse wheel to zoom. Windows like Ragnarok: Alt+E (or I / B)
 // items, Alt+Q equipment, Alt+S skills, Alt+A status, Esc closes them.
 
 const TAP_MOVE = 12;   // px a press may wander and still count as a tap
 const TAP_TIME = 450;  // ms
+const HOLD_TIME = 260; // ms a press must stay put to become a hold (walk there and keep walking)
 
 export class Input {
   constructor() {
@@ -16,12 +18,14 @@ export class Input {
     this.enabled = false;
     this.taps = new Set();   // one-shot presses: windows (items, equip, skills, status, close)
     this.clicks = [];        // world taps: { x, y } in CSS pixels
+    this.hover = null;       // where the mouse is, when no button is down: { x, y }
 
     const opts = { passive: false };
     window.addEventListener('pointerdown', (e) => this.down(e), opts);
     window.addEventListener('pointermove', (e) => this.moveEvt(e), opts);
     window.addEventListener('pointerup', (e) => this.up(e), opts);
     window.addEventListener('pointercancel', (e) => this.ptrs.delete(e.pointerId), opts);
+    window.addEventListener('pointerout', (e) => { if (!e.relatedTarget) this.hover = null; });
     window.addEventListener('keydown', (e) => {
       const k = e.key.toLowerCase();
       if (!e.repeat) {
@@ -58,8 +62,12 @@ export class Input {
 
   moveEvt(e) {
     const p = this.ptrs.get(e.pointerId);
-    if (!p) return;
+    if (!p) {
+      if (e.pointerType === 'mouse') this.hover = e.target.closest?.('.panel, .ui-click, [data-btn]') ? null : { x: e.clientX, y: e.clientY };
+      return;
+    }
     e.preventDefault();
+    if (p.hold) { p.x = e.clientX; p.y = e.clientY; return; } // a hold steers the walk, it doesn't turn the camera
     if (Math.hypot(e.clientX - p.sx, e.clientY - p.sy) > TAP_MOVE) p.drag = true;
     if (this.ptrs.size === 1 && p.drag) this.yawDelta -= (e.clientX - p.x) * 0.008;
     p.x = e.clientX;
@@ -75,7 +83,16 @@ export class Input {
     const p = this.ptrs.get(e.pointerId);
     if (!p) return;
     this.ptrs.delete(e.pointerId);
-    if (!p.drag && performance.now() - p.t < TAP_TIME && this.ptrs.size === 0) this.clicks.push({ x: e.clientX, y: e.clientY });
+    if (!p.drag && !p.hold && performance.now() - p.t < TAP_TIME && this.ptrs.size === 0) this.clicks.push({ x: e.clientX, y: e.clientY });
+  }
+
+  // a press held still on the world: { x, y } while it lasts (it can move once it is a hold)
+  held() {
+    if (this.ptrs.size !== 1) return null;
+    const p = this.ptrs.values().next().value;
+    if (!p.hold && (p.drag || performance.now() - p.t < HOLD_TIME)) return null;
+    p.hold = true;
+    return { x: p.x, y: p.y };
   }
 
   pinchDist() {

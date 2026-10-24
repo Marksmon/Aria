@@ -16,16 +16,16 @@ const icon = (id, cls = '') => `<img class="ico ${cls}" src="${iconURL(id)}" alt
 
 // window id -> title, default spot (fraction of the screen: centre x, top y) and width
 const WINDOWS = {
-  items:  { title: 'Items',      at: [0.80, 0.30], w: 236 },
-  equip:  { title: 'Equipment',  at: [0.50, 0.16], w: 260 },
-  skills: { title: 'Skills',     at: [0.80, 0.18], w: 290 },
-  status: { title: 'Status',     at: [0.19, 0.30], w: 300 },
-  craft:  { title: 'Crafting',   at: [0.50, 0.14], w: 300 },
-  chest:  { title: 'Storage',    at: [0.50, 0.16], w: 320 },
-  shop:   { title: 'Shop',       at: [0.50, 0.14], w: 300 },
-  talk:   { title: '',           at: [0.50, 0.22], w: 320 },
-  story:  { title: '',           at: [0.50, 0.20], w: 340 },
-  look:   { title: 'Your Look',  at: [0.50, 0.16], w: 260 },
+  items:  { title: 'Items',      at: [0.80, 0.30], w: 271 },
+  equip:  { title: 'Equipment',  at: [0.50, 0.16], w: 299 },
+  skills: { title: 'Skills',     at: [0.80, 0.18], w: 334 },
+  status: { title: 'Status',     at: [0.19, 0.30], w: 345 },
+  craft:  { title: 'Crafting',   at: [0.50, 0.14], w: 345 },
+  chest:  { title: 'Storage',    at: [0.50, 0.16], w: 368 },
+  shop:   { title: 'Shop',       at: [0.50, 0.14], w: 345 },
+  talk:   { title: '',           at: [0.50, 0.22], w: 368 },
+  story:  { title: '',           at: [0.50, 0.20], w: 391 },
+  look:   { title: 'Your Look',  at: [0.50, 0.16], w: 299 },
 };
 const POS_KEY = 'aria.windows';
 
@@ -230,7 +230,7 @@ export class Menus {
     for (let i = 0; i < cells; i++) {
       const s = slots[i], it = s && ITEMS[s.id];
       h += s
-        ? `<button class="rslot${this.selected === s.id && side === 'bag' ? ' sel' : ''}${it.rare ? ' rare' : ''}" data-act="slot" data-side="${side}" data-id="${s.id}"${side === 'bag' && it.usable ? ` data-drag="item:${s.id}"` : ''} title="${esc(it.name)}">${icon(s.id)}${it.type === 'equip' ? '' : `<b>${s.n}</b>`}</button>`
+        ? `<button class="rslot${this.selected === s.id && side === 'bag' ? ' sel' : ''}" data-act="slot" data-side="${side}" data-id="${s.id}"${side === 'bag' && it.usable ? ` data-drag="item:${s.id}"` : ''} title="${esc(it.name)}">${icon(s.id)}${it.type === 'equip' ? '' : `<b>${s.n}</b>`}</button>`
         : '<div class="rslot empty"></div>';
     }
     return h + '</div>';

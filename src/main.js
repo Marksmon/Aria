@@ -45,17 +45,17 @@ const lib = createSprites();
 const world = buildWorld(scene, lib);
 const fx = new FX(scene, world, lib);
 const mobs = new MobManager(scene, world, lib, fx);
-// monsters per map: [type, count, nightOnly]. Night brings Firefly Wisps and ~20% more of the rest
+// monsters per map: [type, count, nightOnly]. Wisps drift about by day too; night brings more of them and ~20% more of the rest
 const SPAWNS = {
   camp: [],
-  grove: [['slime', 12], ['sprout', 9], ['wisp', 5, true], ['slime', 3, true], ['sprout', 2, true]],
-  fen: [['blueSlime', 9], ['crab', 7], ['wisp', 5, true], ['blueSlime', 2, true], ['crab', 1, true]],
-  hollow: [['mushling', 12], ['wisp', 5, true], ['mushling', 2, true]],
-  ridge: [['beetle', 10], ['jarl', 1], ['wisp', 5, true], ['beetle', 2, true]],
+  grove: [['slime', 12], ['sprout', 9], ['wisp', 3], ['wisp', 3, true], ['slime', 3, true], ['sprout', 2, true]],
+  fen: [['blueSlime', 9], ['crab', 7], ['wisp', 3], ['wisp', 3, true], ['blueSlime', 2, true], ['crab', 1, true]],
+  hollow: [['mushling', 12], ['wisp', 3], ['wisp', 3, true], ['mushling', 2, true]],
+  ridge: [['beetle', 10], ['jarl', 1], ['wisp', 3], ['wisp', 3, true], ['beetle', 2, true]],
   city: [],
-  birch: [['russet', 10], ['sprout', 5], ['slime', 4], ['matron', 1], ['wisp', 4, true], ['russet', 2, true]],
+  birch: [['russet', 10], ['sprout', 5], ['slime', 4], ['matron', 1], ['wisp', 2], ['wisp', 3, true], ['russet', 2, true]],
   magic: [],
-  coast: [['brine', 9], ['tidecrab', 8], ['crab', 3], ['tideKing', 1], ['wisp', 4, true], ['brine', 2, true]],
+  coast: [['brine', 9], ['tidecrab', 8], ['crab', 3], ['tideKing', 1], ['wisp', 2], ['wisp', 3, true], ['brine', 2, true]],
   deep: [['gloomcap', 10], ['mushling', 4], ['shadeWisp', 6], ['gloomMother', 1], ['gloomcap', 2, true]],
   heath: [['cinderBeetle', 9], ['emberWisp', 6], ['beetle', 3], ['cinderLord', 1], ['cinderBeetle', 2, true]],
 };
@@ -218,7 +218,7 @@ mobs.on('death', (m, drops) => {
   for (const id of quests.onKill(m.type)) questComplete(id);
   story.onKill(m.type);
   for (const [item, count] of drops) {
-    fx.drop(m.x, m.z, item, count, iconTexture(item));
+    fx.drop(m.x, m.z, item, count, iconTexture(item), !!ITEMS[item]?.rare);
     if (ITEMS[item].rare) { // a rare find: a golden burst and a word, like Ragnarok's drop glow
       fx.sparkle(m.x, world.heightAt(m.x, m.z) + 0.5, m.z, '#ffd23a', 20);
       audio.play('heart');
@@ -782,16 +782,29 @@ function tap(cx, cy) {
   } else if (hit?.spot) {
     const sp = hit.spot;
     player.command({ x: sp.x, z: sp.z, reach: 1.7, arrive: sp.run });
-  } else {
-    ndc.set((cx / window.innerWidth) * 2 - 1, -(cy / window.innerHeight) * 2 + 1);
-    ray.setFromCamera(ndc, camera);
-    const at = ray.intersectObject(world.terrain)[0]?.point;
-    if (!at) return;
-    const [i, j] = player.tiles.nearestFree(...player.tiles.tileAt(at.x, at.z)) || [];
-    if (i === undefined) return;
-    fx.tileMark(i, j);
-    player.command({ x: i + 0.5, z: j + 0.5, reach: 0.05 });
-  }
+  } else walkTo(cx, cy, true);
+}
+// walk to the ground under a screen point (mark: show the tile marker)
+function walkTo(cx, cy, mark) {
+  ndc.set((cx / window.innerWidth) * 2 - 1, -(cy / window.innerHeight) * 2 + 1);
+  ray.setFromCamera(ndc, camera);
+  const at = ray.intersectObject(world.terrain)[0]?.point;
+  if (!at) return;
+  const [i, j] = player.tiles.nearestFree(...player.tiles.tileAt(at.x, at.z)) || [];
+  if (i === undefined) return;
+  if (mark) fx.tileMark(i, j);
+  if (player.goal && !player.goal.mob && Math.hypot(player.goal.x - (i + 0.5), player.goal.z - (j + 0.5)) < 0.01) return; // already going there
+  player.command({ x: i + 0.5, z: j + 0.5, reach: 0.05 });
+}
+// holding a finger (or the mouse button) on the ground: keep walking towards it
+let holdT = 0;
+function holdWalk(dt) {
+  const h = input.held();
+  if (!h || player.state === 'down') { holdT = 0; return; }
+  holdT -= dt;
+  if (holdT > 0) return;
+  holdT = 0.16;
+  walkTo(h.x, h.y, false);
 }
 function rest() {
   player.heal(player.maxHp);
@@ -875,6 +888,7 @@ function frame() {
   const live = started;
   const clicks = input.takeClicks();
   if (live) for (const c of clicks) tap(c.x, c.y);
+  if (live) holdWalk(dt);
 
   player.update(live ? dt : 0, b, mobs);
   if (live && player.moving && player.state === 'normal') {
@@ -919,8 +933,26 @@ function frame() {
   saveT += dt;
   if (saveT > 3) { saveT = 0; persist(); }
 
+  if (live) mobLabels();
   renderer.render(scene, camera);
   requestAnimationFrame(frame);
+}
+
+// monster names, like Ragnarok: over the one the mouse is on, and over the one you are fighting
+const labelEls = { hover: document.querySelector('#moblabels .hover'), target: document.querySelector('#moblabels .target') };
+function mobLabels() {
+  const target = player.goal?.mob?.alive ? player.goal.mob : null;
+  const over = input.hover ? pick(input.hover.x, input.hover.y)?.mob : null;
+  for (const [k, m] of [['target', target], ['hover', over !== target ? over : null]]) {
+    const el = labelEls[k];
+    if (!m || !m.alive || !m.sprite.visible) { el.style.display = 'none'; continue; }
+    const s = m.sprite, top = s.position.y + s.scale.y * (1 - s.center.y) * 0.92;
+    projV.set(m.x, top, m.z).project(camera);
+    if (projV.z > 1) { el.style.display = 'none'; continue; }
+    el.style.display = 'block';
+    el.textContent = m.def.name + (m.def.mvp ? ' ✦ MVP' : m.def.boss ? ' ✦' : '');
+    el.style.transform = `translate(${(projV.x + 1) / 2 * window.innerWidth}px, ${(1 - projV.y) / 2 * window.innerHeight}px) translate(-50%, -100%)`;
+  }
 }
 requestAnimationFrame(frame);
 
