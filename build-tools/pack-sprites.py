@@ -14,7 +14,7 @@ SRC = os.path.join(ROOT, 'art', 'pixellab')
 OUT = os.path.join(ROOT, 'src', 'art')
 DIRS = {'south': 'down', 'east': 'right', 'north': 'up', 'west': 'left'}
 DIAGONALS = {'south-east': 'downright', 'north-east': 'upright', 'north-west': 'upleft', 'south-west': 'downleft'}
-MIRROR = {'right': 'left', 'left': 'right'}
+MIRROR = {'right': 'left', 'left': 'right', 'downright': 'downleft', 'downleft': 'downright', 'upright': 'upleft', 'upleft': 'upright'}
 
 # name -> options.
 #   eight:   also pack the four diagonal directions
@@ -42,7 +42,9 @@ CHARS['novice'] = {'eight': True, 'use': {'walk': 'walking'}, 'skip': {'dodge'},
                    'eyes': {'down': [-5, 19, 6, 19], 'right': [6, 18]}}
 CHARS['sorcerer'] = {'eight': True, 'use': {'walk': 'walking'}, 'skip': {'dodge'}, 'strip': True}
 # the character standard (docs/character-standard.md): the new Trainee, bald, walk and attack only
-CHARS['trainee'] = {'eight': True, 'use': {'walk': 'walking'}, 'strip': True, 'bald': True}
+# its south-east views came out facing away: they are the south-west ones mirrored
+CHARS['trainee'] = {'eight': True, 'use': {'walk': 'walking'}, 'strip': True, 'bald': True,
+                    'mirror': {('idle', 'downright'), ('walk', 'downright'), ('attack', 'downright')}}
 CHARS['embla'] = {'eight': True}
 CHARS.update({name: {'eight': True, 'use': {'walk': 'walking'}, 'strip': True, 'bald': True} for name in ['blader', 'sorc']})  # the Sorcerer, made like the Trainee
 

@@ -102,7 +102,7 @@ export class Player {
   // an older one measured its hair, so the bald head fills a little less of it
   setHeadScale(art) {
     const h = art.anims.down.idle[0].userData.head, d = HEADS?.dirs?.down;
-    if (h && d) this.headScale = ((h.neck - h.crown) / (d.chin[1] - d.crown)) * (art.bald ? 1.04 : 0.92);
+    if (h && d) this.headScale = ((h.neck - h.crown) / (d.chin[1] - d.crown)) * (art.bald ? 1.12 : 1.0); // a little big, like Ragnarok's heads
   }
 
   // a different sprite set (the Novice and the Swordsman look different)
