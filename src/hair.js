@@ -72,6 +72,19 @@ export function headTexture(row, dir, dyeId = 'brown') {
   return (cache[key] = t);
 }
 
+// paint a look's head and hair into a body frame (ctx), the head cell's top-left corner at at = [x, y]:
+// one head pixel is one body pixel, so it sits on the body's pixel grid. A hat hides the hair above
+// its line (hide: a share of the head's crown → chin)
+export function paintHead(g, at, dir, look, hide = 0) {
+  const head = headTexture('bald', dir), hair = headTexture(look.hair, dir, look.dye);
+  if (!head || !at) return;
+  g.drawImage(head.image, at[0], at[1]);
+  if (!hair) return;
+  const { cw, ch } = HEADS, d = HEADS.dirs[dir];
+  const cut = hide > 0 ? Math.round(d.crown + (d.chin[1] - d.crown) * hide) : 0;
+  if (cut < ch) g.drawImage(hair.image, 0, cut, cw, ch - cut, at[0], at[1] + cut, cw, ch - cut);
+}
+
 // a small portrait of a look (for the character creator and the stylist): front view, scaled up
 export function lookPortrait(look, size = 96) {
   const c = document.createElement('canvas');

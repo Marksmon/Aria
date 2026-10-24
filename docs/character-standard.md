@@ -7,16 +7,17 @@ Online builds its characters: stacked layers that snap to each other.
 
 Back to front, in every frame:
 
-1. **Body.** The job's outfit, with no head. The packer (`build-tools/pack-sprites.py`, option
-   `strip`) cuts the head off every frame and keeps its anchor: the neck point, plus the head's
-   size in that frame.
+1. **Body.** The job's outfit, generated bald, kept whole: neck, collar and shoulders exactly as
+   drawn.
 2. **Head.** One bald head with the standard face, shared by every job (`src/art/heads.png`, row
-   `bald`). It goes where the body's own head was drawn: when packing, the standard head is fitted
-   over each frame's own head (its biggest patch of skin, so a staff or spell beside it doesn't
-   count), at the size that covers that body's heads best, then drawn 6% bigger about the chin.
-   Each frame stores the fitted chin point; the job stores the size (`headScale`).
+   `bald`), shrunk to the bodies' pixel size so one head pixel is one body pixel. The packer
+   (`build-tools/pack-sprites.py`, option `bald`) places it over each frame's own head at a
+   whole-pixel spot where it covers that head best, its chin no higher than the old jaw, and
+   cleans away whatever of the old head would still show (filling from the clothes where that
+   would open a hole). The game paints the head into each frame at that spot, so it sits on the
+   body's pixel grid as if drawn with it.
 3. **Hair.** The hairstyle, its own layer on the head (`heads.png`, one row per style), recoloured
-   by a dye. Like Ragnarok, the hairstyle stays the same through job changes; Embla the Stylist
+   by a dye and painted into the frames with the head. Like Ragnarok, the hairstyle stays the same through job changes; Embla the Stylist
    in Steinborg changes it.
 4. **Headgear.** Face (glasses, masks: on the eyes) and Head (hats: on the crown), each snapped
    to the head layer's own measured points: crown, width and eye centres in all 8 directions.
@@ -50,7 +51,8 @@ it.
 - `build-tools/pixellab-heads.py base` makes the bald head: an 8-direction object, 48 × 48.
 - `build-tools/pixellab-heads.py hair <style>` makes a hairstyle as a **state** of the bald head
   (the same head with hair), so the face never changes.
-- `build-tools/pack-heads.py` writes `src/art/heads.png` and `heads.json`:
+- `build-tools/pack-heads.py` shrinks them to the bodies' pixel size (keeping outlines whole) and
+  writes `src/art/heads.png` and `heads.json`:
   - the bald head's geometry per direction: `chin` (the anchor), `crown`, `w` and `eyes`;
   - each hairstyle's layer: the pixels where it differs from the bald head.
 - Dyes (`src/hair.js`, `DYES`) map the hair's shading onto a colour ramp, like a palette swap.

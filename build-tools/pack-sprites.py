@@ -44,10 +44,10 @@ CHARS['novice'] = {'eight': True, 'use': {'walk': 'walking'}, 'skip': {'dodge'},
 CHARS['sorcerer'] = {'eight': True, 'use': {'walk': 'walking'}, 'skip': {'dodge'}, 'strip': True}
 # the character standard (docs/character-standard.md): the new Trainee, bald, walk and attack only
 # its south-east views came out facing away: they are the south-west ones mirrored
-CHARS['trainee'] = {'eight': True, 'use': {'walk': 'walking'}, 'strip': True, 'bald': True,
+CHARS['trainee'] = {'eight': True, 'use': {'walk': 'walking'}, 'bald': True,
                     'mirror': {('idle', 'downright'), ('walk', 'downright'), ('attack', 'downright')}}
 CHARS['embla'] = {'eight': True}
-CHARS.update({name: {'eight': True, 'use': {'walk': 'walking'}, 'strip': True, 'bald': True} for name in ['blader', 'sorc']})  # the Sorcerer, made like the Trainee
+CHARS.update({name: {'eight': True, 'use': {'walk': 'walking'}, 'bald': True} for name in ['blader', 'sorc']})  # the Sorcerer, made like the Trainee
 
 
 def islands(f):
@@ -154,70 +154,27 @@ def strip_head(f, h, keep, hair):
     return f
 
 
-def strip_bald(f, h, keep, hair):
-    """strip_head for a body made bald, which has nothing but its head above the neck: also what's
-    left of the head's outline and eyes (pixels within two of the removed skin, above the neck) and
-    small specks around it."""
-    cx, crown, neck, w = h[:4]
-    out = strip_head(f, h, keep, hair)
-    a, px = f.getchannel('A').load(), out.load()
-    gone = {(x, y) for y in range(f.height) for x in range(f.width) if a[x, y] > 128 and px[x, y][3] <= 128}
-    ex, ey, rx, ry = cx + 0.5, (crown + neck) / 2 - 1, w / 2 + 5, (neck - crown) / 2 + 7
-    region = lambda x, y: ((x - ex) / rx) ** 2 + ((y - ey) / ry) ** 2 <= 1
-    for _ in range(2):
-        drop = [(x, y) for y in range(max(0, crown - 12), neck) for x in range(max(0, int(cx - w)), min(f.width, int(cx + w + 1)))
-                if px[x, y][3] > 128 and region(x, y) and any((x + i, y + j) in gone for i in (-1, 0, 1) for j in (-1, 0, 1))]
-        for p in drop:
-            px[p] = (0, 0, 0, 0)
-            gone.add(p)
-    # specks: little islands left inside the head's region
-    solid = {(x, y) for y in range(max(0, crown - 12), min(f.height, neck + 3)) for x in range(max(0, int(cx - w)), min(f.width, int(cx + w + 1))) if px[x, y][3] > 128}
-    seen = set()
-    for p in solid:
-        if p in seen:
-            continue
-        g, stack, edge = [], [p], False
-        seen.add(p)
-        while stack:
-            q = stack.pop()
-            g.append(q)
-            for i in (-1, 0, 1):
-                for j in (-1, 0, 1):
-                    n = (q[0] + i, q[1] + j)
-                    if n in solid and n not in seen:
-                        seen.add(n)
-                        stack.append(n)
-                    elif n not in solid and 0 <= n[0] < f.width and 0 <= n[1] < f.height and px[n][3] > 128:
-                        edge = True  # joined to the body outside the region looked at
-        if not edge and len(g) < 8 and all(region(*q) for q in g):
-            for q in g:
-                px[q] = (0, 0, 0, 0)
-    return out
 
-
-
-# Fitting the standard bald head (src/art/heads.png, from pack-heads.py) onto a body made bald:
-# the head goes where the body's own head was drawn. At a size, and for each frame a chin point,
-# chosen so the standard head covers the frame's own head best (overlap over union).
-HEAD_GROW = 1.06  # then drawn this much bigger, about the chin: a little big, like Ragnarok's heads
+# Ragnarok-style heads on a body made bald. The game paints the standard bald head (heads.png,
+# already at the bodies' pixel size, see pack-heads.py) and the hair over the body's own head, at
+# a whole-pixel spot per frame, so it sits on the body's pixel grid as if drawn with it. The body
+# keeps everything it was drawn with (neck, collar, shoulders); only what would still show of its
+# own head around the new one is cleaned away.
 
 
 def head_masks():
     meta = json.load(open(os.path.join(OUT, 'heads.json')))
     sheet = Image.open(os.path.join(OUT, 'heads.png')).convert('RGBA')
     cw, ch = meta['cw'], meta['ch']
-    masks = {}
-    for d, g in meta['dirs'].items():
-        a = np.array(sheet.crop((g['col'] * cw, 0, (g['col'] + 1) * cw, ch)).getchannel('A')) >= 128
-        masks[d] = (a, g['chin'])
-    return masks
+    return {d: (np.array(sheet.crop((g['col'] * cw, 0, (g['col'] + 1) * cw, ch)).getchannel('A')) >= 128, g)
+            for d, g in meta['dirs'].items()}
 
 
 def own_head(f, lim):
-    """the frame's own head as a mask: its biggest patch of skin (the eyes filled in) and the outline
-    around it"""
-    a = np.array(f)
-    r, g, b, al = (a[..., i].astype(int) for i in range(4))
+    """the frame's own head: its biggest patch of skin, the eyes filled in (head), and that with the
+    dark outline around it (whole); or None"""
+    a = np.array(f).astype(int)
+    r, g, b, al = (a[..., i] for i in range(4))
     lum = 0.3 * r + 0.59 * g + 0.11 * b
     skin = (al > 128) & (r > 150) & (r >= g) & (g >= b - 10) & (lum >= 110)
     skin[lim:] = False
@@ -237,42 +194,94 @@ def own_head(f, lim):
                     stack.append(n)
         if len(grp) > len(best):
             best = grp
-    m = np.zeros(skin.shape, bool)
+    if len(best) <= 20:
+        return None
+    head = np.zeros(skin.shape, bool)
     rows = {}
     for y, x in best:
         lo, hi = rows.get(y, (x, x))
         rows[y] = (min(lo, x), max(hi, x))
     for y, (lo, hi) in rows.items():
-        m[y, lo:hi + 1] = True
-    m[1:] |= m[:-1].copy(); m[:-1] |= m[1:].copy(); m[:, 1:] |= m[:, :-1].copy(); m[:, :-1] |= m[:, 1:].copy()
-    return m if len(best) > 20 else None
+        head[y, lo:hi + 1] = True
+    near = head.copy()
+    near[1:] |= head[:-1]; near[:-1] |= head[1:]; near[:, 1:] |= head[:, :-1]; near[:, :-1] |= head[:, 1:]
+    whole = head | (near & (al > 128) & (lum < 110))
+    return head, whole, rows
 
 
-def head_fit(m, mask, sc, guess, reach, step):
-    """the chin point (frame pixels) where the standard head at scale sc best covers mask m"""
-    hm, (ax, ay) = mask
-    ys, xs = np.nonzero(m)
-    y0, y1, x0, x1 = max(0, ys.min() - 12), min(m.shape[0], ys.max() + 12), max(0, xs.min() - 12), min(m.shape[1], xs.max() + 12)
-    win = m[y0:y1, x0:x1]
-    gy, gx = np.mgrid[y0:y1, x0:x1] + 0.5
+def jaw_of(rows):
+    """the bottom row of the head proper: under it the skin narrows to the neck"""
+    mw = max(hi - lo + 1 for lo, hi in rows.values())
+    return max(y for y, (lo, hi) in rows.items() if hi - lo + 1 >= mw * 0.45)
+
+
+def head_cover(shape, hm, ox, oy):
+    c = np.zeros(shape, bool)
+    h, w = hm.shape
+    y0, y1, x0, x1 = max(0, oy), min(shape[0], oy + h), max(0, ox), min(shape[1], ox + w)
+    if y0 < y1 and x0 < x1:
+        c[y0:y1, x0:x1] = hm[y0 - oy:y1 - oy, x0 - ox:x1 - ox]
+    return c
+
+
+def place_head(whole, jaw, mask, guess, reach):
+    """the head's top-left corner (whole pixels) where it covers the body's own head best, its chin
+    no higher than the old jaw (so no old chin shows under it)"""
+    hm, g = mask
+    bottom = g['chin'][1] - 1  # the head's last row, in the cell
     best = (-1.0, guess)
-    n = int(round(reach / step))
-    for i in range(-n, n + 1):
-        for j in range(-n, n + 1):
-            X, Y = guess[0] + i * step, guess[1] + j * step
-            u, v = ((gx - X) / sc + ax).astype(int), ((gy - Y) / sc + ay).astype(int)
-            ok = (u >= 0) & (u < hm.shape[1]) & (v >= 0) & (v < hm.shape[0])
-            c = np.zeros(win.shape, bool)
-            c[ok] = hm[v[ok], u[ok]]
-            iou = (c & win).sum() / max(1, (c | win).sum())
+    for ox in range(guess[0] - reach, guess[0] + reach + 1):
+        for oy in range(guess[1] - reach, guess[1] + reach + 1):
+            if oy + bottom < jaw:
+                continue
+            c = head_cover(whole.shape, hm, ox, oy)
+            iou = (c & whole).sum() / max(1, (c | whole).sum())
             if iou > best[0]:
-                best = (iou, (X, Y))
+                best = (iou, (ox, oy))
     return best
 
 
-def guess_of(m):
-    ys, xs = np.nonzero(m)
-    return (xs.mean() + 0.5, ys.max() + 0.5)
+def first_guess(head, rows, mask):
+    _, g = mask
+    xs = np.nonzero(head)[1]
+    return (round(xs.mean() + 0.5 - g['chin'][0]), jaw_of(rows) + 1 - g['chin'][1])
+
+
+def clear_old_head(f, whole, cover, bottom):
+    """take away what still shows of the body's own head above the new head's chin: off where it
+    meets the empty space around the character, filled from the clothes next to it where it's
+    closed in (between the new head and a collar), so no hole opens around the neck"""
+    a = np.array(f)
+    op = a[..., 3] > 128
+    left = whole & ~cover & op
+    left[bottom + 1:] = False
+    pts = set(zip(*np.nonzero(left)))
+    H, W = op.shape
+    outside = set()
+    stack = [p for p in pts if any(0 <= p[0] + j < H and 0 <= p[1] + i < W and not op[p[0] + j, p[1] + i]
+                                   for i, j in ((1, 0), (-1, 0), (0, 1), (0, -1)))]
+    outside.update(stack)
+    while stack:
+        y, x = stack.pop()
+        for n in ((y + 1, x), (y - 1, x), (y, x + 1), (y, x - 1)):
+            if n in pts and n not in outside:
+                outside.add(n)
+                stack.append(n)
+    out = a.copy()
+    for y, x in pts:
+        if (y, x) in outside:
+            out[y, x] = 0
+            continue
+        fill = None
+        for k in range(1, 6):  # the nearest piece of the body: below first, then to the sides
+            for yy, xx in ((y + k, x), (y, x - k), (y, x + k), (y + k, x - 1), (y + k, x + 1)):
+                if 0 <= yy < H and 0 <= xx < W and op[yy, xx] and not left[yy, xx] and not cover[yy, xx]:
+                    fill = a[yy, xx]
+                    break
+            if fill is not None:
+                break
+        out[y, x] = fill if fill is not None else 0
+    return Image.fromarray(out)
 
 
 def load(name, eight=False, prefer=(), skip=()):
@@ -326,7 +335,8 @@ def pack(name, opts):
         if b:
             x0, y0, x1, y1 = min(x0, b[0]), min(y0, b[1]), max(x1, b[2]), max(y1, b[3])
     half = max(W / 2 - x0, x1 - W / 2)
-    box = (int(W / 2 - half), y0, int(W / 2 + half + 0.5), y1)
+    pad = (4, 10) if opts.get('bald') else (0, 0)  # room for the new head and its hair
+    box = (int(W / 2 - half) - pad[0], y0 - pad[1], int(W / 2 + half + 0.5) + pad[0], y1)
     fw, fh = box[2] - box[0], box[3] - box[1]
 
     # each frame also records its feet (bottom of the body, effects ignored) as pixels up from
@@ -516,47 +526,54 @@ def pack(name, opts):
         if n < total * 0.02:
             break
         hair.append(list(c))
-    if opts.get('bald'):  # the standard head's size for this body: the best fit over its standing poses
+    if opts.get('bald'):  # where the standard head goes in every frame, and the body cleaned under it
         masks = head_masks()
-        lim = int(bh * 0.6) + 8
-        idle = {d: own_head(rows[layout[d]['idle'][0]][0], lim) for d in layout}
-        def score(sc):
-            fits = [head_fit(m, masks[d], sc, guess_of(m), 5, 1) for d, m in idle.items() if m is not None]
-            return sum(f[0] for f in fits) / len(fits)
-        fit_sc = max((0.66 + 0.02 * i for i in range(20)), key=score)
+        lim = int(bh * 0.6) + 10
         # each direction's standing fit, as an offset from the rough guess, starts every frame's search
         start = {}
-        for d, m in idle.items():
-            if m is not None:
-                _, (X, Y) = head_fit(m, masks[d], fit_sc, guess_of(m), 5, 1)
-                gx, gy = guess_of(m)
-                start[d] = (X - gx, Y - gy)
-        def chins(d, frames):
-            out = []
-            for f in frames:
-                m = own_head(f, lim)
-                if m is None:
-                    out.append(None)
-                    continue
-                gx, gy = guess_of(m)
-                ox, oy = start.get(d, (0, 0))
-                iou, (X, Y) = head_fit(m, masks[d], fit_sc, (gx + ox, gy + oy), 3, 0.5)
-                out.append([round(X, 2), round(Y, 2)] if iou > 0.5 else None)
-            # a frame whose head can't be seen well borrows the nearest one's
-            for i, c in enumerate(out):
-                if c is None:
-                    near = [j for j in range(len(out)) if out[j] is not None]
-                    out[i] = out[min(near, key=lambda j: abs(j - i))] if near else None
-            return out
-    if opts.get('strip'):  # Ragnarok-style body: the head comes off, its anchors stay
+        for d in layout:
+            own = own_head(rows[layout[d]['idle'][0]][0], lim)
+            if own:
+                head, whole, hrows = own
+                g0 = first_guess(head, hrows, masks[d])
+                _, (ox, oy) = place_head(whole, jaw_of(hrows), masks[d], g0, 6)
+                start[d] = (ox - g0[0], oy - g0[1])
+        for d in layout:
+            hm, g = masks[d]
+            for anim, entry in layout[d].items():
+                r = entry[0]
+                spots = []
+                for f in rows[r]:
+                    own = own_head(f, lim)
+                    if not own:
+                        spots.append(None)
+                        continue
+                    head, whole, hrows = own
+                    g0 = first_guess(head, hrows, masks[d])
+                    sx, sy = start.get(d, (0, 0))
+                    iou, spot = place_head(whole, jaw_of(hrows), masks[d], (g0[0] + sx, g0[1] + sy), 3)
+                    spots.append(spot if iou > 0.5 else None)
+                for i, sp in enumerate(spots):  # a frame whose head can't be seen well borrows the nearest one's
+                    if sp is None:
+                        near = [j for j in range(len(spots)) if spots[j] is not None]
+                        spots[i] = spots[min(near, key=lambda j: abs(j - i))] if near else (fw // 2 - hm.shape[1] // 2, 0)
+                frames = []
+                for f, (ox, oy) in zip(rows[r], spots):
+                    if oy < 0 or ox < 0 or ox + hm.shape[1] > fw:
+                        print('  warning: the head leaves the frame', name, d, anim, ox, oy)
+                    own = own_head(f, lim)
+                    cover = head_cover((fh, fw), hm, ox, oy)
+                    frames.append(clear_old_head(f, own[1], cover, oy + g['chin'][1] - 1) if own else f)
+                rows[r] = frames
+                # the head's geometry in frame pixels, for headgear: [x, crown, neck, w, eyes...]
+                entry[3] = [[ox + g['chin'][0], oy + g['crown'], oy + g['chin'][1], g['w'],
+                             *[v + (ox if k % 2 == 0 else oy) for k, v in enumerate(g['eyes'])]] for ox, oy in spots]
+                entry.append([list(sp) for sp in spots])
+    if opts.get('strip') and not opts.get('bald'):  # Ragnarok-style body: the head comes off, its anchors stay
         keep = body_colours(art, box, layout) - {tuple(c) for c in hair}
         for d in layout:
             for anim, (r, n, _, hs, *_) in layout[d].items():
-                if opts.get('bald'):  # each frame also records where the standard head's chin goes
-                    layout[d][anim].append(chins(d, rows[r]))
-                    rows[r] = [strip_bald(f, h, keep, hair) for f, h in zip(rows[r], hs)]
-                else:
-                    rows[r] = [strip_head(f, h, keep, hair) for f, h in zip(rows[r], hs)]
+                rows[r] = [strip_head(f, h, keep, hair) for f, h in zip(rows[r], hs)]
     cols = max(len(r) for r in rows)
     sheet = Image.new('RGBA', (cols * fw, len(rows) * fh))
     for y, r in enumerate(rows):
@@ -576,7 +593,7 @@ def pack(name, opts):
     if 'eyes' in opts:  # measured by hand
         e = opts['eyes']
         front, side = [(e['down'][0], e['down'][1]), (e['down'][2], e['down'][3])], [(e['right'][0], e['right'][1])]
-    if len(front) == 2 and len(side) == 1:
+    if len(front) == 2 and len(side) == 1 and not opts.get('bald'):  # (a bald body's eyes are the standard head's)
         (fl, fy1), (fr, fy2) = front
         fy, mid, gap = (fy1 + fy2) / 2, (fl + fr) / 2, fr - fl
         sx = side[0][0]
@@ -589,7 +606,7 @@ def pack(name, opts):
             for anim, entry in layout[d].items():
                 entry[3] = [h[:4] + [round((h[0] if i % 2 == 0 else h[1]) + v, 1) for i, v in enumerate(o)] for h in entry[3]]
 
-    json.dump({'fw': fw, 'fh': fh, 'body': body, 'foot': foot, 'hair': hair, 'bald': bool(opts.get('bald')), 'headScale': round(fit_sc * HEAD_GROW, 3) if opts.get('bald') else None, 'anims': layout}, open(os.path.join(OUT, name + '.json'), 'w'))
+    json.dump({'fw': fw, 'fh': fh, 'body': body, 'foot': foot, 'hair': hair, 'bald': bool(opts.get('bald')), 'anims': layout}, open(os.path.join(OUT, name + '.json'), 'w'))
     print(name, 'frame', fw, 'x', fh, 'body', body, 'foot', foot, 'sheet', sheet.size, os.path.getsize(os.path.join(OUT, name + '.png')), 'bytes')
 
 

@@ -431,7 +431,7 @@ function tex(canvas, opts = {}) {
 // PixelLab draws some animations lower in the canvas than the standing pose, so each one gets
 // its own anchor: the median of its frames' feet. Planting every frame separately would make
 // the character jump by a few pixels per frame; the median keeps the animation's own bob.
-function pixelSet(url, { fw, fh, body, foot = 0, hair = [], anims, bald = false, headScale = null }) {
+function pixelSet(url, { fw, fh, body, foot = 0, hair = [], anims, bald = false }) {
   const at = (px) => px / fh;
   const blank = () => {
     const t = tex(mk(fw, fh).c);
@@ -439,12 +439,12 @@ function pixelSet(url, { fw, fh, body, foot = 0, hair = [], anims, bald = false,
     t.generateMipmaps = false;
     return t;
   };
-  const set = { pixel: true, fw, fh, body, bald, headScale, anchor: at(foot), hair: hair.map((c) => c.map((v) => v / 255)), anims: {}, flash: {} };
+  const set = { pixel: true, fw, fh, body, bald, loaded: false, anchor: at(foot), hair: hair.map((c) => c.map((v) => v / 255)), anims: {}, flash: {} };
   const cuts = [];
   for (const [dir, list] of Object.entries(anims)) {
     set.anims[dir] = {};
     set.flash[dir] = {};
-    for (const [anim, [row, n, feet, heads, chins]] of Object.entries(list)) {
+    for (const [anim, [row, n, feet, heads, spots]] of Object.entries(list)) {
       set.anims[dir][anim] = [];
       set.flash[dir][anim] = [];
       const anchor = feet ? at([...feet].sort((a, b) => a - b)[feet.length >> 1]) : set.anchor;
@@ -452,19 +452,27 @@ function pixelSet(url, { fw, fh, body, foot = 0, hair = [], anims, bald = false,
         const t = blank(), f = blank();
         t.userData.anchor = f.userData.anchor = anchor;
         // where the head is in this frame (frame pixels), for headgear: { x, crown, neck, w, eyes: [x, y, ...] }
-        // and, on a body made bald, where the standard head's chin goes (fitted over the body's own head)
-        if (heads?.[i]) t.userData.head = f.userData.head = { x: heads[i][0], crown: heads[i][1], neck: heads[i][2], w: heads[i][3], eyes: heads[i].slice(4), chin: chins?.[i] || null };
+        // and, on a body made bald, where the standard head is painted: its cell's top-left corner
+        if (heads?.[i]) t.userData.head = f.userData.head = { x: heads[i][0], crown: heads[i][1], neck: heads[i][2], w: heads[i][3], eyes: heads[i].slice(4), at: spots?.[i] || null };
         set.anims[dir][anim].push(t);
         set.flash[dir][anim].push(f);
-        cuts.push([t, f, i * fw, row * fh]);
+        cuts.push([t, f, i * fw, row * fh, dir]);
       }
     }
   }
+  // draw every frame: the body, then paint(ctx, frame's userData, dir) over it (a bald body's head
+  // and hair, on its pixel grid), and the white copy for the hit flash
+  let paint = null;
   const img = new Image();
-  img.onload = () => {
-    for (const [t, f, x, y] of cuts) {
-      t.image.getContext('2d').drawImage(img, x, y, fw, fh, 0, 0, fw, fh);
+  const draw = () => {
+    for (const [t, f, x, y, dir] of cuts) {
+      const b = t.image.getContext('2d');
+      b.clearRect(0, 0, fw, fh);
+      b.drawImage(img, x, y, fw, fh, 0, 0, fw, fh);
+      if (paint) paint(b, t.userData, dir);
       const g = f.image.getContext('2d');
+      g.globalCompositeOperation = 'source-over';
+      g.clearRect(0, 0, fw, fh);
       g.drawImage(t.image, 0, 0);
       g.globalCompositeOperation = 'source-in';
       g.fillStyle = '#ffffff';
@@ -472,6 +480,8 @@ function pixelSet(url, { fw, fh, body, foot = 0, hair = [], anims, bald = false,
       t.needsUpdate = f.needsUpdate = true;
     }
   };
+  set.dress = (fn) => { paint = fn; if (set.loaded) draw(); };
+  img.onload = () => { set.loaded = true; draw(); };
   img.src = url;
   return set;
 }

@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { dirFor, dirFor8 } from './noise.js';
 import { playerAttack } from './rules.js';
 import { HeadLayer } from './headgear.js';
-import { HEADS, headTexture } from './hair.js';
+import { HEADS, headTexture, headsReady, paintHead } from './hair.js';
 
 const BASE_SPEED = 4.2;  // world units per second
 const RADIUS = 0.3;      // collision radius
@@ -68,8 +68,9 @@ export class Player {
       map: shadowTex, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2,
     }));
     scene.add(this.shadow);
-    // Ragnarok-style layers over the headless job body: the bald head (the standard face), the
-    // hairstyle, then headgear (hair.js, headgear.js). All of them follow the body frame's neck anchor.
+    // Ragnarok-style layers: the standard bald head and the hairstyle, painted into the frames of a
+    // body made bald (dressHead), then headgear (hair.js, headgear.js). An older headless body gets
+    // the head and hair as sprites on its neck anchor instead.
     this.look = { hair: 'messy', dye: 'brown' };
     const layer = (order, mat = new THREE.SpriteMaterial({ alphaTest: 0.5 })) => {
       const s = new THREE.Sprite(mat);
@@ -98,12 +99,22 @@ export class Player {
   setHeadgear(top, face) { this.heads[0].set(top); this.heads[1].set(face); }
   setLook(look) { this.look = { ...this.look, ...look }; }
 
-  // body pixels per head pixel: a body made bald was fitted with the standard head when packed (the
-  // size of its own head, a little bigger); an older body sizes it to the head it was drawn with
+  // an older, headless body: body pixels per head pixel, from the head it was drawn with
   setHeadScale(art) {
     const h = art.anims.down.idle[0].userData.head, d = HEADS?.dirs?.down;
-    if (art.headScale) this.headScale = art.headScale;
-    else if (h && d) this.headScale = (h.neck - h.crown) / (d.chin[1] - d.crown);
+    if (h && d) this.headScale = (h.neck - h.crown) / (d.chin[1] - d.crown);
+  }
+
+  // a body made bald gets the head and hair painted into its frames (sprites.js dress), again when
+  // the look, the hair a hat hides, or the body changes
+  dressHead() {
+    const art = this.art;
+    if (!art.bald || !art.dress || !headsReady()) return;
+    const look = { ...this.look }, hide = Math.max(...this.heads.map((l) => l.hair()));
+    const key = `${look.hair}|${look.dye}|${hide}`;
+    if (art.dressed === key) return;
+    art.dressed = key;
+    art.dress((g, ud, dir) => paintHead(g, ud.head?.at, dir, look, hide));
   }
 
   // a different sprite set (the Novice and the Swordsman look different)
@@ -314,12 +325,17 @@ export class Player {
   // frame pixels for the headgear ({ x, crown, neck, w, eyes, sprite }), or null
   placeHead() {
     const h = this.tex.userData.head, hd = HEADS?.dirs?.[this.dir], body = this.sprite;
+    if (this.art.bald) { // painted into the frame: the headgear goes on where it was painted
+      this.headSpr.visible = this.hairSpr.visible = false;
+      this.dressHead();
+      return h ? { x: h.x, crown: h.crown, neck: h.neck, w: h.w, eyes: h.eyes, sprite: body } : null;
+    }
     const head = headTexture('bald', this.dir), hair = headTexture(this.look.hair, this.dir, this.look.dye);
     if (!h || !hd || !head) { this.headSpr.visible = this.hairSpr.visible = false; return null; }
     const { fw, fh } = this.art, { cw, ch } = HEADS, S = this.headScale, upp = body.scale.x / fw;
     const [ax, ay] = hd.chin;
     const HW = cw * S * upp, HH = ch * S * upp;
-    const [cx, cy] = h.chin || [h.x + 0.5, h.neck]; // where the chin goes, in frame pixels
+    const [cx, cy] = [h.x, h.neck];
     const dx = (cx / fw - 0.5) * body.scale.x, dy = (1 - cy / fh - body.center.y) * body.scale.y;
     for (const [spr, tex] of [[this.headSpr, head], [this.hairSpr, hair]]) {
       if (!tex) { spr.visible = false; continue; }

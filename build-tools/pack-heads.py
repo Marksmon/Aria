@@ -7,6 +7,11 @@ direction) and src/art/heads.json:
 
 chin is the anchor: under the middle of the skull, at the bottom of the head.
 
+The heads are shrunk to the job bodies' pixel size (SCALE), so in the game one head pixel is one
+body pixel and the head is painted straight into each body frame, on its pixel grid. The shrink
+keeps pixel art crisp: each new pixel takes the colour covering most of its footprint, and on the
+silhouette's edge the outline wins, so it stays an unbroken line.
+
 Geometry is measured on the bald head, in cell pixels: chin = bottom middle of the head (it goes
 on the body's neck anchor), crown = top of the scalp, w = widest row, eyes = the centres of the
 dark eye shapes (face headgear sits on them). A hairstyle's row holds only its hair: the pixels
@@ -16,6 +21,7 @@ face under it.
   python3 build-tools/pack-heads.py
 """
 import json, os
+import numpy as np
 from PIL import Image
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
@@ -24,13 +30,45 @@ OUT = os.path.join(ROOT, 'src', 'art')
 DIRS = {'south': 'down', 'south-east': 'downright', 'east': 'right', 'north-east': 'upright',
         'north': 'up', 'north-west': 'upleft', 'west': 'left', 'south-west': 'downleft'}
 STYLES = ['messy', 'mane', 'long']  # 'long' is kept for a female look later
+SCALE = 0.9  # head pixels to body pixels
+
+
+def shrink(im, s=SCALE):
+    a = np.array(im).astype(int)
+    h0, w0 = a.shape[:2]
+    w1, h1 = round(w0 * s), round(h0 * s)
+    out = np.zeros((h1, w1, 4), np.uint8)
+    lum = lambda c: 0.3 * c[0] + 0.59 * c[1] + 0.11 * c[2]
+    for y in range(h1):
+        for x in range(w1):
+            y0, y1, x0, x1 = y / s, (y + 1) / s, x / s, (x + 1) / s
+            wts = {}
+            for sy in range(int(y0), min(h0, int(np.ceil(y1)))):
+                for sx in range(int(x0), min(w0, int(np.ceil(x1)))):
+                    w = (min(y1, sy + 1) - max(y0, sy)) * (min(x1, sx + 1) - max(x0, sx))
+                    c = tuple(a[sy, sx]) if a[sy, sx, 3] >= 128 else (0, 0, 0, 0)
+                    wts[c] = wts.get(c, 0) + w
+            tot = sum(wts.values())
+            dark = {c: w for c, w in wts.items() if c[3] and lum(c) < 70}
+            edge = (0, 0, 0, 0) in wts
+            if edge and dark and sum(dark.values()) >= tot * 0.34:
+                c = max(dark, key=dark.get)
+            else:
+                c = max(wts, key=wts.get)
+            out[y, x] = c
+    return Image.fromarray(out)
 
 
 def load(name):
+    """a head (the bald one, or a hairstyle drawn on it) in all 8 directions, shrunk"""
     base = os.path.join(SRC, name)
     if not os.path.isdir(base):
         return None
-    return {ours: Image.open(os.path.join(base, f'{d}.png')).convert('RGBA') for d, ours in DIRS.items()}
+    ims = {}
+    for d, ours in DIRS.items():
+        im = Image.open(os.path.join(base, f'{d}.png')).convert('RGBA')
+        ims[ours] = shrink(im)
+    return ims
 
 
 def solid(im):
@@ -107,7 +145,7 @@ def hair_of(styled, bald, d, geo):
     if not d.startswith('up'):
         cx, cy = geo['chin']
         half = geo['w'] * 0.34
-        for y in range(int(cy) - 1, styled.height):
+        for y in range(round(cy) - 1, styled.height):
             for x in range(styled.width):
                 dx = x + 0.5 - cx
                 front = abs(dx) < half if d not in ('right', 'left') else (dx > -half * 0.4 if d == 'right' else dx < half * 0.4)

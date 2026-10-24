@@ -484,7 +484,7 @@ const menus = new Menus(inv, prog, player, {
 });
 menus.quests = quests;
 const portraits = {};
-menus.portrait = (id) => (id === 'player' ? (portraits[jobArt() === lib.player ? 'sword' : 'novice'] ||= jobArt().anims.down.idle[0].image.toDataURL())
+menus.portrait = (id) => (id === 'player' ? (portraits[`${prog.job}|${jobArt().dressed}`] ||= jobArt().anims.down.idle[0].image.toDataURL())
   : (portraits[id] ||= lib.villagers[id].anims.down.idle[0].image.toDataURL()));
 // things in camp and town you tap to use: the player walks over, then it opens. h = height on screen
 const SPOTS = [
