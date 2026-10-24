@@ -285,7 +285,7 @@ free slot. It stays there for good, unless the weapon later breaks at Holger's.
 |---|---|---|---|
 | Kobold King Card | Weapon | Max HP +40%, DEF +10, FLEE +10, END +10 | Kobold King, 1% |
 | Goblin King Card | Weapon | ATK +100, POW +10, QKN +10, attacks 15% faster | Goblin King, 1% |
-| Fire Giant Card | Weapon | ATK +80, MATK +30%, Max HP +25%, POW +6, KNL +6, weapon turns Fire | Fire Giant, 1% |
+| Fire Giant Card | Weapon (a sorcerer's card) | MATK +60%, KNL +12, FNS +8, Max SP +30%, Max HP +15%, weapon turns Fire (+15% Fire spells with a staff) | Fire Giant, 1% |
 
 **Who can wear what.** Swords up to the Iron Sword: Trainee and Blader; rare and elemental
 swords: Blader only. Staves: Sorcerer only (the Wooden Staff also Trainees). Heavy armor

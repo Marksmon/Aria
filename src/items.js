@@ -103,10 +103,10 @@ const BASE_ITEMS = {
   // MVP cards (Ragnarok's monster cards, and like its MVP cards, overpowered): pressed into a
   // slotted weapon for good (a weapon that breaks at Holger's gives its cards back), see Seyla and
   // the Insert button. card: where it goes and what it adds: atk, def, matk (% MATK), hit, flee,
-  // mhpRate (% Max HP), aspd (% faster attacks), el (the weapon's element) and stats
+  // mhpRate / mspRate (% Max HP / SP), aspd (% faster attacks), el (the weapon's element) and stats
   kobold_card:  { type: 'misc', rare: true, name: 'Kobold King Card', icon: 'card_kobold', card: { on: 'weapon', mhpRate: 40, def: 10, flee: 10, stats: { end: 10 } }, desc: 'The Kobold King on a gilded card, too stubborn to fall. In a weapon with a slot: Max HP +40%, DEF +10, FLEE +10, END +10.', from: 'the Kobold King (1%)' },
   goblin_card:  { type: 'misc', rare: true, name: 'Goblin King Card', icon: 'card_goblin', card: { on: 'weapon', atk: 100, aspd: 15, stats: { pow: 10, qkn: 10 } }, desc: 'The Goblin King on a gilded card, grinning. In a weapon with a slot: ATK +100, POW +10, QKN +10, attacks 15% faster.', from: 'the Goblin King (1%)' },
-  jarl_card:    { type: 'misc', rare: true, name: 'Fire Giant Card', icon: 'card_jarl', card: { on: 'weapon', atk: 80, matk: 30, mhpRate: 25, el: 'fire', stats: { pow: 6, knl: 6 } }, desc: 'The Fire Giant on a scorched card, still warm. In a weapon with a slot: ATK +80, MATK +30%, Max HP +25%, POW +6, KNL +6, and the weapon turns to Fire.', from: 'the Fire Giant (1%)' },
+  jarl_card:    { type: 'misc', rare: true, name: 'Fire Giant Card', icon: 'card_jarl', card: { on: 'weapon', matk: 60, mspRate: 30, mhpRate: 15, el: 'fire', stats: { knl: 12, fns: 8 } }, desc: 'The Fire Giant on a scorched card, still warm: a sorcerer\'s treasure. In a weapon with a slot: MATK +60%, KNL +12, FNS +8 (quicker casting), Max SP +30%, Max HP +15%, and the weapon turns to Fire (a staff then adds 15% to Fire spells).', from: 'the Fire Giant (1%)' },
   shiny_gel:    { type: 'misc', rare: true, name: 'Shiny Gel', desc: 'Slime gel that shimmers with every colour, found once in a hundred slimes. Collectors and ring-makers prize it.', from: 'any slime (1%)' },
 
   // headgear: worn on the head and seen on your character (see headgear.js): Head pieces on the
@@ -170,7 +170,7 @@ function upgradedItem(key) {
   for (const c of u.cards) {
     const cd = BASE_ITEMS[c]?.card;
     if (!cd) continue;
-    for (const k of ['atk', 'def', 'matk', 'hit', 'flee', 'mhpRate', 'aspd']) if (cd[k]) it[k] = (it[k] || 0) + cd[k];
+    for (const k of ['atk', 'def', 'matk', 'hit', 'flee', 'mhpRate', 'mspRate', 'aspd']) if (cd[k]) it[k] = (it[k] || 0) + cd[k];
     if (cd.el) it.el = cd.el;
     for (const [k, v] of Object.entries(cd.stats || {})) it.stats[k] = (it.stats[k] || 0) + v;
   }
@@ -279,6 +279,7 @@ export function equipLine(it) {
   for (const [k, v] of Object.entries(it.stats || {})) p.push(`${k.toUpperCase()} +${v}`);
   if (it.mhp) p.push(`Max HP +${it.mhp}`);
   if (it.mhpRate) p.push(`Max HP +${it.mhpRate}%`);
+  if (it.mspRate) p.push(`Max SP +${it.mspRate}%`);
   if (it.aspd) p.push(`attacks ${it.aspd}% faster`);
   if (it.msp) p.push(`Max SP +${it.msp}`);
   if (it.flee) p.push(`FLEE +${it.flee}`);
