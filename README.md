@@ -132,8 +132,8 @@ not recover while you walk; resting doubles it.
 are pending); **Confirm** locks them in and **Reset** takes back any not yet locked in. Closing
 the window also takes back unconfirmed points.
 
-**Rates.** 1x, like an official Ragnarok server: Base and Job EXP are what the monsters and quests
-give (`RATES` in `src/main.js`).
+**Rates.** 4x, for a quicker climb: every Base and Job EXP gain from monsters, MVPs and quests is
+four times Ragnarok's own (`RATES` in `src/progress.js`). Quest windows show the EXP you will get.
 
 ## Jobs and skills
 

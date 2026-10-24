@@ -10,7 +10,7 @@ import { FX } from './fx.js';
 import { MobManager, MOB_DEFS } from './mobs.js';
 import { loadSave, writeSave } from './save.js';
 import { Inventory } from './inventory.js';
-import { Progress, JOBS } from './progress.js';
+import { Progress, JOBS, RATES } from './progress.js';
 import { Quests, QUESTS, NPCS, FARES } from './quests.js';
 import { Story, INTRO, route } from './story.js';
 import { Villagers } from './villagers.js';
@@ -302,9 +302,6 @@ mobs.on('mvp', (m) => {
 });
 
 // ---------- experience: Base and Job EXP, like Ragnarok ----------
-// server rates, like a Ragnarok server's "x1 / x1": every Base and Job EXP gain is multiplied.
-// 1x: Ragnarok's own pace; the Fire Giant is for Base 50.
-const RATES = { base: 1, job: 1 };
 const knownSkills = () => new Set(skillList(prog.job).filter((id) => skillLv(prog, id)));
 function announceSkills(before) {
   for (const id of knownSkills()) if (!before.has(id) && (SKILLS[id].free || SKILLS[id].granted)) menus.message(`New skill: ${SKILLS[id].name}! See the Skills window.`);
