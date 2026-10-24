@@ -106,6 +106,11 @@ const BASE_ITEMS = {
   // mhpRate / mspRate (% Max HP / SP), aspd (% faster attacks), el (the weapon's element) and stats
   kobold_card:  { type: 'misc', rare: true, name: 'Kobold King Card', icon: 'card_kobold', card: { on: 'weapon', mhpRate: 40, def: 10, flee: 10, stats: { end: 10 } }, desc: 'The Kobold King on a gilded card, too stubborn to fall. In a weapon with a slot: Max HP +40%, DEF +10, FLEE +10, END +10.', from: 'the Kobold King (1%)' },
   goblin_card:  { type: 'misc', rare: true, name: 'Goblin King Card', icon: 'card_goblin', card: { on: 'weapon', atk: 100, aspd: 15, stats: { pow: 10, qkn: 10 } }, desc: 'The Goblin King on a gilded card, grinning. In a weapon with a slot: ATK +100, POW +10, QKN +10, attacks 15% faster.', from: 'the Goblin King (1%)' },
+  // mini-boss cards: a step above an ordinary piece of gear, well below an MVP's
+  sprout_card:  { type: 'misc', rare: true, name: 'Giant Sprout Card', icon: 'card_sprout', card: { on: 'weapon', mhpRate: 10, stats: { end: 4 } }, desc: 'The Giant Sprout on a leafy card. In a weapon with a slot: Max HP +10%, END +4.', from: 'the Giant Sprout (1%)' },
+  crab_card:    { type: 'misc', rare: true, name: 'King Crab Card', icon: 'card_crab', card: { on: 'weapon', flee: 8, aspd: 5, stats: { qkn: 4 } }, desc: 'The King Crab on a sea-stained card. In a weapon with a slot: QKN +4, FLEE +8, attacks 5% faster.', from: 'the King Crab (1%)' },
+  mushroom_card: { type: 'misc', rare: true, name: 'Giant Mushroom Card', icon: 'card_mushroom', card: { on: 'weapon', matk: 15, mspRate: 10, stats: { knl: 4 } }, desc: 'The Giant Mushroom on a violet card that smells of rain. In a weapon with a slot: MATK +15%, KNL +4, Max SP +10%.', from: 'the Giant Mushroom (1%)' },
+  beetle_card:  { type: 'misc', rare: true, name: 'Giant Beetle Card', icon: 'card_beetle', card: { on: 'weapon', atk: 25, stats: { pow: 4 } }, desc: 'The Giant Beetle on a scorched card. In a weapon with a slot: ATK +25, POW +4.', from: 'the Giant Beetle (1%)' },
   jarl_card:    { type: 'misc', rare: true, name: 'Fire Giant Card', icon: 'card_jarl', card: { on: 'weapon', matk: 60, mspRate: 30, mhpRate: 15, el: 'fire', stats: { knl: 12, fns: 8 } }, desc: 'The Fire Giant on a scorched card, still warm: a sorcerer\'s treasure. In a weapon with a slot: MATK +60%, KNL +12, FNS +8 (quicker casting), Max SP +30%, Max HP +15%, and the weapon turns to Fire (a staff then adds 15% to Fire spells).', from: 'the Fire Giant (1%)' },
   shiny_gel:    { type: 'misc', rare: true, name: 'Shiny Gel', desc: 'Slime gel that shimmers with every colour, found once in a hundred slimes. Collectors and ring-makers prize it.', from: 'any slime (1%)' },
 
@@ -227,7 +232,7 @@ export const canInsert = (card, key) => {
 export const PRICES = {
   gel: 6, dew: 10, seed: 8, leaf: 8, shell: 24, spore: 40, stone: 60, glow: 50, ember_heart: 4000,
   kobold_fur: 260, goblin_tooth: 380, iron_ore: 50, steel_ore: 200, hard_ore: 4000, armor_ore: 4000,
-  kobold_ring: 20000, goblin_charm: 24000, kobold_card: 40000, goblin_card: 40000, jarl_card: 60000,
+  kobold_ring: 20000, goblin_charm: 24000, kobold_card: 40000, goblin_card: 40000, jarl_card: 60000, sprout_card: 16000, crab_card: 18000, mushroom_card: 20000, beetle_card: 22000,
   thorn: 70, salt: 90, pearl: 600, gloom: 150, shade: 180, cinder: 240, ember_dust: 220, shiny_gel: 1200,
   potion: 50, potion2: 180, potion3: 550, tonic: 300, berry: 20, crableg: 60, herb: 30, quick: 600, wander: 120, homeward: 300,
   twig_sword: 50, stone_blade: 500, ember_edge: 2400, iron_sword: 3800, oak_staff: 400, rune_staff: 4200, emberbrand: 40000,
@@ -616,6 +621,10 @@ const PAINT = {
   card_kobold: (g) => cardIcon(g, '#8a5a32', '#f2c040'),
   card_goblin: (g) => cardIcon(g, '#5f9a45', '#efe6cc'),
   card_jarl: (g) => cardIcon(g, '#c8502a', '#3a3a42'),
+  card_sprout: (g) => cardIcon(g, '#ff9a6a', '#5fae45'),
+  card_crab: (g) => cardIcon(g, '#8ab8ff', '#f2a8a0'),
+  card_mushroom: (g) => cardIcon(g, '#9a7cff', '#efe2c4'),
+  card_beetle: (g) => cardIcon(g, '#ff7a4a', '#6a6a72'),
   kobold_fur: (g) => {
     for (const [x, y, a] of [[24, 40, -0.5], [32, 36, 0], [40, 40, 0.5]]) shape(g, () => g.ellipse(x, y, 7, 18, a, 0, Math.PI * 2), '#9a6a3c', 3);
     for (const [x, y] of [[26, 30], [34, 26]]) { g.beginPath(); g.moveTo(x, y); g.lineTo(x + 3, y + 14); g.strokeStyle = '#c49260'; g.lineWidth = 2; g.stroke(); }

@@ -278,6 +278,7 @@ boss materials in any mix, 100,000 perz). A failed try breaks the weapon; any ca
 back to you.
 
 **Cards.** Each MVP drops its card (1%), and like Ragnarok's MVP cards they are overpowered.
+Each mini-boss drops one too (1%): a good step up, but nothing like an MVP's.
 Select a card in the Miscs tab and tap **Insert** to press it into a weapon with a
 free slot. It stays there for good, unless the weapon later breaks at Holger's.
 
@@ -285,6 +286,10 @@ free slot. It stays there for good, unless the weapon later breaks at Holger's.
 |---|---|---|---|
 | Kobold King Card | Weapon | Max HP +40%, DEF +10, FLEE +10, END +10 | Kobold King, 1% |
 | Goblin King Card | Weapon | ATK +100, POW +10, QKN +10, attacks 15% faster | Goblin King, 1% |
+| Giant Sprout Card | Weapon | Max HP +10%, END +4 | Giant Sprout, 1% |
+| King Crab Card | Weapon | QKN +4, FLEE +8, attacks 5% faster | King Crab, 1% |
+| Giant Mushroom Card | Weapon | MATK +15%, KNL +4, Max SP +10% | Giant Mushroom, 1% |
+| Giant Beetle Card | Weapon | ATK +25, POW +4 | Giant Beetle, 1% |
 | Fire Giant Card | Weapon (a sorcerer's card) | MATK +60%, KNL +12, FNS +8, Max SP +30%, Max HP +15%, weapon turns Fire (+15% Fire spells with a staff) | Fire Giant, 1% |
 
 **Who can wear what.** Swords up to the Iron Sword: Trainee and Blader; rare and elemental
