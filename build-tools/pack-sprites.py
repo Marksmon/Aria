@@ -50,8 +50,9 @@ CHARS['embla'] = {'eight': True}
 CHARS.update({name: {'eight': True, 'use': {'walk': 'walking'}, 'bald': True} for name in ['blader', 'sorc']})  # the Sorcerer, made like the Trainee
 # the Magic Knight came out at half the cast's pixel scale and was doubled (art/pixellab/mknight):
 # its outlines are two pixels thick, and its ears stand apart from the skull; its head is centred
-# on the body in front and back, and its neck wrapped in a violet scarf
-CHARS['mknight'] = {'eight': True, 'use': {'walk': 'walking'}, 'bald': True, 'ring': 3, 'islands': 80, 'center': True, 'scarf': True, 'wipe': True}
+# on the body in front and back, set lower from behind (drop) and its neck wrapped in a violet scarf
+CHARS['mknight'] = {'eight': True, 'use': {'walk': 'walking'}, 'bald': True, 'ring': 3, 'islands': 80, 'center': True, 'scarf': True, 'wipe': True,
+                    'drop': {'up': 5, 'upleft': 5, 'upright': 5, 'right': 4, 'left': 4, 'downright': 2, 'downleft': 2}}
 
 
 def islands(f):
@@ -634,6 +635,8 @@ def pack(name, opts):
                     if sp is None:
                         near = [j for j in range(len(spots)) if spots[j] is not None]
                         spots[i] = spots[min(near, key=lambda j: abs(j - i))] if near else (fw // 2 - hm.shape[1] // 2, 0)
+                if opts.get('drop', {}).get(d):  # the head set lower than the fit, into the collar
+                    spots = [(ox, oy + opts['drop'][d]) for ox, oy in spots]
                 if opts.get('center') and d in ('down', 'up'):  # front and back: the head sits square on the body
                     spots = [(centre_x(f, ox, oy, g) or ox, oy) for f, (ox, oy) in zip(rows[r], spots)]
                 frames = []
