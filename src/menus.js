@@ -8,6 +8,7 @@ import { STATS, STAT_KEYS, JOBS } from './progress.js';
 import { statCost } from './ro-tables.js';
 import { HAIRSTYLES, DYES, hairstyles, lookPortrait } from './hair.js';
 import { NPCS } from './quests.js';
+import { ZONE_NAMES } from './world.js';
 import { SKILLS, skillList, skillLv, learnBlock, spCost } from './skills.js';
 
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -89,6 +90,7 @@ export class Menus {
 
   talkTo(npc) {
     this.npc = npc;
+    this.ferrying = false; // the Ferryman's list of lands, once asked for
     this.show('talk');
   }
 
@@ -315,7 +317,7 @@ export class Menus {
 
   craft() {
     const inv = this.inv, gear = this.craftKind === 'gear';
-    let h = `<div class="rnote">${gear ? 'Gunnar forges weapons, armor and charms.' : 'Ragna brews draughts, tonics and feathers.'} Uses items from your bag and storage; what is made goes in your bag.</div><div class="rlist recipes">`;
+    let h = `<div class="rnote">${gear ? 'Gunnar forges weapons, armor and charms.' : 'Ragna brews potions and feathers.'} Uses items from your bag and storage; what is made goes in your bag.</div><div class="rlist recipes">`;
     for (const r of RECIPES) {
       if ((ITEMS[r.item].type === 'equip') !== gear) continue;
       const st = inv.recipeState(r), it = ITEMS[r.item];
@@ -373,7 +375,17 @@ export class Menus {
     // what else they do: trade and craft
     const extra = (n.stylist ? '<button class="rbtn" data-act="stylist">Change my look</button>' : '')
       + (n.shop ? '<button class="rbtn" data-act="shop">Buy / Sell</button>' : '')
-      + (n.craft ? `<button class="rbtn" data-act="craftwin" data-id="${n.craft}">${n.craft === 'gear' ? 'Forge gear' : 'Brew usables'}</button>` : '');
+      + (n.craft ? `<button class="rbtn" data-act="craftwin" data-id="${n.craft}">${n.craft === 'gear' ? 'Forge gear' : 'Brew usables'}</button>` : '')
+      + (n.heal ? '<button class="rbtn" data-act="heal">Heal me</button>' : '')
+      + (n.warp ? '<button class="rbtn" data-act="ferrylist">Travel</button>' : '');
+    if (n.warp && this.ferrying) { // the lands you have walked, and the fare to each
+      const list = this.hooks.ferryList?.() || [];
+      const rows = list.map(([m, fare]) => `<button class="rbtn" data-act="ferry" data-id="${m}" ${this.inv.perz < fare ? 'disabled' : ''}>${esc(ZONE_NAMES[m])} · ${fare.toLocaleString()} perz</button>`).join('');
+      this.wins.talk.querySelector('.rw-title').textContent = n.name;
+      return `<div class="talkwrap"><img class="portrait" src="${this.portrait(this.npc)}" alt="">
+        <div class="say"><p>Where to? You have ${this.inv.perz.toLocaleString()} perz.</p><div class="btnrow wrap">${rows || '<span>You have not walked any other land yet.</span>'}</div>
+        <div class="btnrow"><button class="rbtn soft" data-act="close">Bye</button></div></div></div>`;
+    }
     if (st.state === 'job') { // the trial is done: the job change
       text = `You passed. Will you walk the path of the ${JOBS[n.job].name}?`;
       box = n.job === 'mage'
@@ -393,7 +405,7 @@ export class Menus {
       box = `<b>${esc(st.q.title)} ✓</b>${this.reward(st.q.reward)}`;
       btns = `<button class="rbtn" data-act="handin" data-id="${st.id}">Hand in</button>`;
     } else if (st.state === 'locked') text = n.later(st.q.lv);
-    else text = n.bye;
+    else text = n.quests.length || n.trial ? n.bye : n.hello; // people with no quests just say hello
     // a Trainee not yet ready for a trial hears what it takes; the Elder points ready Trainees to the city
     if (p.job === 'novice' && n.trialHint && (st.state === 'finished' || st.state === 'locked')) text = n.trialHint;
     if (p.job === 'novice' && n.ready && p.jobLv >= 10 && skillLv(p, 'basics') >= 9 && ['finished', 'locked', 'active'].includes(st.state)) text = n.ready;
@@ -455,6 +467,9 @@ export class Menus {
     if (act === 'jobchange') { this.hooks.jobChange?.(t.dataset.id); this.close('talk'); }
     if (act === 'shop') { this.close('talk'); this.openShop(this.npc); }
     if (act === 'craftwin') { this.close('talk'); this.openCraft(t.dataset.id); }
+    if (act === 'heal') { this.hooks.heal?.(); this.close('talk'); }
+    if (act === 'ferrylist') { this.ferrying = true; this.render('talk'); }
+    if (act === 'ferry') this.hooks.ferry?.(t.dataset.id);
     if (act === 'shoptab') { this.shopTab = t.dataset.id; this.sellSel = null; this.render(id); }
     if (act === 'buy') {
       const n = +t.dataset.n;

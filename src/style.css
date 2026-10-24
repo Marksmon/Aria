@@ -491,6 +491,7 @@ button.eq:active { background: var(--w-sel); }
 .qbox { display: flex; flex-direction: column; gap: 2px; padding: 4px 6px; border: 1px solid var(--w-line2); border-radius: 2px; background: var(--w-cell); }
 .qbox small { font-size: 10px; color: var(--w-dim); }
 .btnrow { display: flex; justify-content: flex-end; gap: 4px; }
+.btnrow.wrap { flex-wrap: wrap; justify-content: flex-start; margin-bottom: 6px; }
 .ritem.skill.off { opacity: .55; }
 .ritem .lvl { font-weight: 400; font-size: 10px; color: var(--w-dim); margin-left: 4px; }
 .ritem .rtag { display: block; color: var(--w-gold); }

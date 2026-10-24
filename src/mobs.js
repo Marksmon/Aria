@@ -9,34 +9,36 @@ import { mobAttack } from './rules.js';
 // vit (soft DEF), agi (FLEE = lv + agi), dex (HIT = lv + dex), exp [base, job], adelay = ms
 // between attacks. Each is modelled on a classic monster of the same level.
 // el: element (rules.js ELEMENTS). drops: [itemId, min, max, chance]. Rare finds are Ragnarok-rare: 0.15-0.5% (15-50 in 10 000)
+// passive: like most of Ragnarok's field monsters, it minds its own business until you hit it.
+// Levels climb map by map, from the valley (1-14) through the new lands (18-45) to the Fire Giant (60).
 export const MOB_DEFS = {
-  slime:     { name: 'Green Slime', ai: 'hopper', art: 'slime', el: 'water', lv: 1,  hp: 50,  atk: [7, 10],  def: 0,  vit: 1,  agi: 1,  dex: 6,  exp: [2, 1],   adelay: 1872, speed: 1.7, aggro: 4.5, chase: 4, reach: 0.8, w: 0.9, r: 0.35, drops: [['gel', 1, 2, 1], ['berry', 1, 1, 0.12], ['shiny_gel', 1, 1, 0.01], ['gooey_ring', 1, 1, 0.005]] },
-  blueSlime: { name: 'Blue Slime', ai: 'hopper', art: 'slimeBlue', el: 'water', lv: 5,  hp: 120, atk: [11, 14], def: 0,  vit: 5,  agi: 5,  dex: 10, exp: [6, 5],   adelay: 1600, speed: 1.8, aggro: 4.5, chase: 4.5, reach: 0.8, w: 1.0, r: 0.38, split: 'miniSlime', drops: [['gel', 1, 1, 1], ['dew', 1, 1, 0.6], ['tonic', 1, 1, 0.04], ['shiny_gel', 1, 1, 0.01], ['tide_pendant', 1, 1, 0.003]] },
-  miniSlime: { name: 'Mini Slime', ai: 'hopper', art: 'slimeBlue', el: 'water', lv: 3,  hp: 40,  atk: [8, 11],  def: 0,  vit: 3,  agi: 3,  dex: 8,  exp: [2, 2],   adelay: 1400, speed: 2.3, aggro: 6, chase: 5, reach: 0.6, w: 0.55, r: 0.22, noRespawn: true, drops: [['dew', 1, 1, 0.5]] },
-  sprout:    { name: 'Sproutling', ai: 'skittish', art: 'sprout', el: 'earth', lv: 3,  hp: 60,  atk: [9, 12],  def: 0,  vit: 3,  agi: 3,  dex: 8,  exp: [6, 2],   adelay: 1456, speed: 1.5, flee: 2.9, fear: 3.5, angry: 6, reach: 0.8, w: 0.95, r: 0.35, drops: [['seed', 1, 1, 1], ['leaf', 1, 1, 0.6], ['berry', 1, 1, 0.2], ['herb', 1, 1, 0.25], ['seedling_band', 1, 1, 0.004], ['flower_wreath', 1, 1, 0.005]] },
-  crab:      { name: 'Mudcrab', ai: 'crab', art: 'crab', el: 'water', lv: 7,  hp: 150, atk: [18, 24], def: 5,  vit: 8,  agi: 6,  dex: 11, exp: [15, 9],  adelay: 1300, speed: 1.6, aggro: 5, reach: 0.85, w: 1.1, r: 0.42, drops: [['shell', 1, 2, 1], ['crableg', 1, 1, 0.25], ['mud_buckler', 1, 1, 0.003]] },
-  mushling:  { name: 'Mushling', ai: 'puffer', art: 'mushling', el: 'earth', lv: 12, hp: 405, atk: [26, 35], def: 0,  vit: 24, agi: 12, dex: 36, exp: [45, 32], adelay: 1768, speed: 1.2, aggro: 4, chase: 6, reach: 0.8, w: 0.95, r: 0.36, drops: [['spore', 1, 2, 1], ['herb', 1, 1, 0.2], ['potion', 1, 1, 0.08], ['spore_cloak', 1, 1, 0.0025]] },
-  beetle:    { name: 'Pebble Beetle', ai: 'tank', art: 'beetle', el: 'earth', lv: 16, hp: 620, atk: [50, 62], def: 10, vit: 24, agi: 17, dex: 26, exp: [90, 60], adelay: 1500, speed: 1.15, aggro: 4, chase: 8, reach: 0.9, w: 1.15, r: 0.45, heavy: true, drops: [['stone', 1, 2, 1], ['potion2', 1, 1, 0.06], ['pebble_ring', 1, 1, 0.003], ['horn_blade', 1, 1, 0.0015]] },
-  wisp:      { name: 'Firefly Wisp', ai: 'wisp', art: 'wisp', el: 'wind', lv: 8,  hp: 169, atk: [22, 27], def: 5,  vit: 8,  agi: 20, dex: 17, exp: [19, 15], adelay: 1292, speed: 2.4, aggro: 6, reach: 0.75, w: 0.7, r: 0.3, fly: true, night: true, drops: [['glow', 1, 1, 1], ['wander', 1, 1, 0.15], ['wisp_lantern', 1, 1, 0.004]] },
+  slime: { name: 'Slime', ai: 'hopper', art: 'slime', el: 'water', lv: 1, hp: 50, atk: [7, 10], def: 0, vit: 1, agi: 1, dex: 6, exp: [2, 1], adelay: 1872, passive: true, speed: 1.7, aggro: 4.5, chase: 4, reach: 0.8, w: 0.9, r: 0.35, drops: [['gel', 1, 2, 1], ['berry', 1, 1, 0.12], ['shiny_gel', 1, 1, 0.01], ['gooey_ring', 1, 1, 0.005]] },
+  blueSlime: { name: 'Blue Slime', ai: 'hopper', art: 'slimeBlue', el: 'water', lv: 6, hp: 150, atk: [13, 17], def: 0, vit: 5, agi: 5, dex: 11, exp: [9, 6], adelay: 1600, passive: true, speed: 1.8, aggro: 4.5, chase: 4.5, reach: 0.8, w: 1.0, r: 0.38, split: 'miniSlime', drops: [['gel', 1, 1, 1], ['dew', 1, 1, 0.6], ['tonic', 1, 1, 0.04], ['shiny_gel', 1, 1, 0.01], ['tide_pendant', 1, 1, 0.003]] },
+  miniSlime: { name: 'Little Slime', ai: 'hopper', art: 'slimeBlue', el: 'water', lv: 4, hp: 50, atk: [10, 13], def: 0, vit: 3, agi: 4, dex: 9, exp: [3, 2], adelay: 1400, speed: 2.3, aggro: 6, chase: 5, reach: 0.6, w: 0.55, r: 0.22, noRespawn: true, drops: [['dew', 1, 1, 0.5]] },
+  sprout: { name: 'Sprout', ai: 'skittish', art: 'sprout', el: 'earth', lv: 3, hp: 70, atk: [9, 12], def: 0, vit: 3, agi: 3, dex: 8, exp: [4, 3], adelay: 1456, passive: true, speed: 1.5, flee: 2.9, fear: 3.5, angry: 6, reach: 0.8, w: 0.95, r: 0.35, drops: [['seed', 1, 1, 1], ['leaf', 1, 1, 0.6], ['berry', 1, 1, 0.2], ['herb', 1, 1, 0.25], ['seedling_band', 1, 1, 0.004], ['flower_wreath', 1, 1, 0.005]] },
+  crab: { name: 'Crab', ai: 'crab', art: 'crab', el: 'water', lv: 9, hp: 280, atk: [22, 28], def: 6, vit: 9, agi: 8, dex: 14, exp: [20, 14], adelay: 1300, passive: true, speed: 1.6, aggro: 5, reach: 0.85, w: 1.1, r: 0.42, drops: [['shell', 1, 2, 1], ['crableg', 1, 1, 0.25], ['mud_buckler', 1, 1, 0.003]] },
+  mushling: { name: 'Mushroom', ai: 'puffer', art: 'mushling', el: 'earth', lv: 14, hp: 520, atk: [32, 44], def: 2, vit: 18, agi: 14, dex: 30, exp: [45, 32], adelay: 1768, passive: true, speed: 1.2, aggro: 4, chase: 6, reach: 0.8, w: 0.95, r: 0.36, drops: [['spore', 1, 2, 1], ['herb', 1, 1, 0.2], ['potion', 1, 1, 0.08], ['spore_cloak', 1, 1, 0.0025]] },
+  beetle: { name: 'Beetle', ai: 'tank', art: 'beetle', el: 'earth', lv: 30, hp: 1500, atk: [88, 110], def: 22, vit: 30, agi: 20, dex: 46, exp: [330, 230], adelay: 1500, passive: true, speed: 1.15, aggro: 4, chase: 8, reach: 0.9, w: 1.15, r: 0.45, heavy: true, drops: [['stone', 1, 2, 1], ['potion2', 1, 1, 0.06], ['pebble_ring', 1, 1, 0.003], ['horn_blade', 1, 1, 0.0015]] },
+  wisp: { name: 'Wisp', ai: 'wisp', art: 'wisp', el: 'wind', lv: 11, hp: 290, atk: [26, 33], def: 4, vit: 8, agi: 24, dex: 22, exp: [26, 19], adelay: 1292, passive: true, speed: 2.4, aggro: 6, reach: 0.75, w: 0.7, r: 0.3, fly: true, night: true, drops: [['glow', 1, 1, 1], ['wander', 1, 1, 0.15], ['wisp_lantern', 1, 1, 0.004]] },
   // ---------- the new lands: palette swaps of the valley's monsters, Ragnarok style (tint) ----------
-  russet:    { name: 'Russet Sproutling', ai: 'tank', art: 'sprout', el: 'earth', tint: '#ffb47a', lv: 9,  hp: 230, atk: [24, 30], def: 3, vit: 9,  agi: 9,  dex: 18, exp: [24, 16], adelay: 1500, speed: 1.4, aggro: 4.5, chase: 6, reach: 0.8, w: 1.0, r: 0.36, drops: [['thorn', 1, 1, 0.55], ['seed', 1, 1, 0.6], ['leaf', 1, 1, 0.4], ['berry', 1, 1, 0.2], ['bramble_ring', 1, 1, 0.003]] },
-  brine:     { name: 'Brine Slime', ai: 'hopper', art: 'slimeBlue', el: 'water', tint: '#a8ffd8', lv: 10, hp: 280, atk: [26, 32], def: 2, vit: 10, agi: 8,  dex: 18, exp: [30, 20], adelay: 1500, speed: 1.8, aggro: 5, chase: 5, reach: 0.8, w: 1.1, r: 0.4, drops: [['salt', 1, 1, 0.55], ['gel', 1, 1, 0.8], ['tonic', 1, 1, 0.05], ['shiny_gel', 1, 1, 0.01]] },
-  tidecrab:  { name: 'Tidecrab', ai: 'crab', art: 'crab', el: 'water', tint: '#a8c8ff', lv: 11, hp: 330, atk: [30, 38], def: 8, vit: 12, agi: 10, dex: 20, exp: [36, 24], adelay: 1300, speed: 1.7, aggro: 5.5, reach: 0.9, w: 1.25, r: 0.48, drops: [['shell', 1, 2, 1], ['crableg', 1, 1, 0.3], ['pearl', 1, 1, 0.06], ['coral_shield', 1, 1, 0.0025]] },
-  gloomcap:  { name: 'Gloomcap', ai: 'puffer', art: 'mushling', el: 'shadow', tint: '#a89cff', lv: 18, hp: 900, atk: [48, 60], def: 5, vit: 28, agi: 18, dex: 40, exp: [130, 90], adelay: 1700, speed: 1.25, aggro: 4.5, chase: 7, reach: 0.85, w: 1.15, r: 0.42, mdef: 10, drops: [['gloom', 1, 1, 0.5], ['spore', 1, 2, 0.8], ['potion2', 1, 1, 0.08], ['gloom_hood', 1, 1, 0.0025]] },
-  shadeWisp: { name: 'Shade Wisp', ai: 'wisp', art: 'wisp', el: 'shadow', tint: '#b8a0ff', glow: true, lv: 19, hp: 700, atk: [52, 64], def: 8, vit: 15, agi: 35, dex: 40, exp: [140, 100], adelay: 1250, speed: 2.5, aggro: 6, reach: 0.75, w: 0.85, r: 0.32, fly: true, mdef: 20, drops: [['shade', 1, 1, 0.45], ['glow', 1, 1, 0.8], ['wander', 1, 1, 0.1], ['wisp_lantern', 1, 1, 0.005], ['shade_staff', 1, 1, 0.002]] },
-  cinderBeetle: { name: 'Cinder Beetle', ai: 'tank', art: 'beetle', el: 'fire', tint: '#ff9a72', lv: 23, hp: 1500, atk: [70, 88], def: 18, vit: 30, agi: 20, dex: 38, exp: [260, 170], adelay: 1500, speed: 1.2, aggro: 4.5, chase: 9, reach: 1.0, w: 1.35, r: 0.52, heavy: true, drops: [['cinder', 1, 1, 0.5], ['stone', 1, 2, 1], ['potion2', 1, 1, 0.1], ['potion3', 1, 1, 0.03], ['cinder_mail', 1, 1, 0.002], ['horn_blade', 1, 1, 0.002]] },
-  emberWisp: { name: 'Ember Wisp', ai: 'wisp', art: 'wisp', el: 'fire', tint: '#ff9a5a', glow: true, lv: 21, hp: 820, atk: [58, 72], def: 6, vit: 15, agi: 40, dex: 45, exp: [180, 120], adelay: 1200, speed: 2.5, aggro: 6, reach: 0.75, w: 0.85, r: 0.32, fly: true, drops: [['ember_dust', 1, 1, 0.5], ['glow', 1, 1, 0.6], ['cinder', 1, 1, 0.15], ['ember_charm', 1, 1, 0.003]] },
+  russet: { name: 'Red Sprout', ai: 'tank', art: 'sprout', el: 'earth', tint: '#ffb47a', lv: 18, hp: 650, atk: [44, 58], def: 5, vit: 18, agi: 18, dex: 34, exp: [80, 56], adelay: 1500, passive: true, speed: 1.4, aggro: 4.5, chase: 6, reach: 0.8, w: 1.0, r: 0.36, drops: [['thorn', 1, 1, 0.55], ['seed', 1, 1, 0.6], ['leaf', 1, 1, 0.4], ['berry', 1, 1, 0.2], ['bramble_ring', 1, 1, 0.003]] },
+  brine: { name: 'Sea Slime', ai: 'hopper', art: 'slimeBlue', el: 'water', tint: '#a8ffd8', lv: 22, hp: 880, atk: [56, 72], def: 4, vit: 22, agi: 20, dex: 40, exp: [125, 88], adelay: 1500, passive: true, speed: 1.8, aggro: 5, chase: 5, reach: 0.8, w: 1.1, r: 0.4, drops: [['salt', 1, 1, 0.55], ['gel', 1, 1, 0.8], ['tonic', 1, 1, 0.05], ['shiny_gel', 1, 1, 0.01]] },
+  tidecrab: { name: 'Blue Crab', ai: 'crab', art: 'crab', el: 'water', tint: '#a8c8ff', lv: 26, hp: 1150, atk: [70, 88], def: 14, vit: 26, agi: 22, dex: 44, exp: [180, 126], adelay: 1300, passive: true, speed: 1.7, aggro: 5.5, reach: 0.9, w: 1.25, r: 0.48, drops: [['shell', 1, 2, 1], ['crableg', 1, 1, 0.3], ['pearl', 1, 1, 0.06], ['coral_shield', 1, 1, 0.0025]] },
+  gloomcap: { name: 'Dark Mushroom', ai: 'puffer', art: 'mushling', el: 'shadow', tint: '#a89cff', lv: 34, hp: 1800, atk: [104, 130], def: 12, vit: 36, agi: 30, dex: 56, exp: [450, 315], adelay: 1700, passive: true, speed: 1.25, aggro: 4.5, chase: 7, reach: 0.85, w: 1.15, r: 0.42, mdef: 10, drops: [['gloom', 1, 1, 0.5], ['spore', 1, 2, 0.8], ['potion2', 1, 1, 0.08], ['gloom_hood', 1, 1, 0.0025]] },
+  shadeWisp: { name: 'Dark Wisp', ai: 'wisp', art: 'wisp', el: 'shadow', tint: '#b8a0ff', glow: true, lv: 38, hp: 1700, atk: [120, 150], def: 10, vit: 25, agi: 60, dex: 66, exp: [560, 390], adelay: 1250, speed: 2.5, aggro: 6, reach: 0.75, w: 0.85, r: 0.32, fly: true, mdef: 20, drops: [['shade', 1, 1, 0.45], ['glow', 1, 1, 0.8], ['wander', 1, 1, 0.1], ['wisp_lantern', 1, 1, 0.005], ['shade_staff', 1, 1, 0.002]] },
+  cinderBeetle: { name: 'Fire Beetle', ai: 'tank', art: 'beetle', el: 'fire', tint: '#ff9a72', lv: 42, hp: 2500, atk: [140, 176], def: 28, vit: 42, agi: 34, dex: 64, exp: [760, 530], adelay: 1500, speed: 1.2, aggro: 4.5, chase: 9, reach: 1.0, w: 1.35, r: 0.52, heavy: true, drops: [['cinder', 1, 1, 0.5], ['stone', 1, 2, 1], ['potion2', 1, 1, 0.1], ['potion3', 1, 1, 0.03], ['cinder_mail', 1, 1, 0.002], ['horn_blade', 1, 1, 0.002]] },
+  emberWisp: { name: 'Fire Wisp', ai: 'wisp', art: 'wisp', el: 'fire', tint: '#ff9a5a', glow: true, lv: 45, hp: 2200, atk: [152, 190], def: 12, vit: 30, agi: 70, dex: 74, exp: [880, 615], adelay: 1200, speed: 2.5, aggro: 6, reach: 0.75, w: 0.85, r: 0.32, fly: true, drops: [['ember_dust', 1, 1, 0.5], ['glow', 1, 1, 0.6], ['cinder', 1, 1, 0.15], ['ember_charm', 1, 1, 0.003]] },
   // mini-bosses: one on each new field, big and slow, they stomp like the Jarl and come back after
   // `respawn` seconds. Their rare materials craft the best gear (Gunnar, in Steinborg).
-  matron:    { name: 'Bramble Matron', ai: 'boss', art: 'sprout', el: 'earth', tint: '#ff9a6a', boss: true, lv: 14, hp: 1400, atk: [36, 46], def: 8, vit: 18, agi: 10, dex: 26, exp: [320, 220], adelay: 1800, speed: 1.2, aggro: 5.5, chase: 12, reach: 1.3, w: 2.0, r: 0.75, heavy: true, respawn: 300, drops: [['heartwood', 1, 1, 0.3], ['thorn', 3, 5, 1], ['potion2', 1, 2, 0.5], ['thorn_mantle', 1, 1, 0.03], ['bramble_ring', 1, 1, 0.05]] },
-  tideKing:  { name: 'Tide King', ai: 'boss', art: 'crab', el: 'water', tint: '#8ab8ff', boss: true, lv: 17, hp: 2000, atk: [44, 56], def: 16, vit: 22, agi: 12, dex: 30, exp: [450, 300], adelay: 1700, speed: 1.3, aggro: 5.5, chase: 12, reach: 1.4, w: 2.3, r: 0.85, heavy: true, respawn: 300, drops: [['king_pearl', 1, 1, 0.3], ['pearl', 1, 2, 0.6], ['crableg', 2, 3, 1], ['tidebreaker', 1, 1, 0.02], ['coral_shield', 1, 1, 0.05]] },
-  gloomMother: { name: 'Gloom Mother', ai: 'boss', art: 'mushling', el: 'shadow', tint: '#9a7cff', boss: true, lv: 22, hp: 3000, atk: [58, 72], def: 10, vit: 30, agi: 16, dex: 40, exp: [800, 540], adelay: 1800, speed: 1.15, aggro: 5.5, chase: 12, reach: 1.4, w: 2.2, r: 0.8, heavy: true, mdef: 15, respawn: 420, drops: [['gloom_heart', 1, 1, 0.3], ['gloom', 2, 4, 1], ['potion3', 1, 2, 0.4], ['gloom_staff', 1, 1, 0.02], ['gloom_hood', 1, 1, 0.05]] },
-  cinderLord: { name: 'Cinder Lord', ai: 'boss', art: 'beetle', el: 'fire', tint: '#ff7a4a', boss: true, lv: 26, hp: 4200, atk: [80, 100], def: 25, vit: 35, agi: 18, dex: 45, exp: [1200, 800], adelay: 1800, speed: 1.15, aggro: 5.5, chase: 12, reach: 1.5, w: 2.4, r: 0.9, heavy: true, respawn: 480, drops: [['cinder_core', 1, 1, 0.3], ['cinder', 2, 4, 1], ['potion3', 1, 2, 0.5], ['cinder_greaves', 1, 1, 0.03], ['cinder_mail', 1, 1, 0.04]] },
+  matron: { name: 'Giant Sprout', ai: 'boss', art: 'sprout', el: 'earth', tint: '#ff9a6a', boss: true, lv: 25, hp: 6000, atk: [70, 95], def: 10, vit: 25, agi: 18, dex: 40, exp: [3000, 2100], adelay: 1700, speed: 1.2, aggro: 5.5, chase: 12, reach: 1.3, w: 2.0, r: 0.75, heavy: true, respawn: 300, drops: [['heartwood', 1, 1, 0.3], ['thorn', 3, 5, 1], ['potion2', 1, 2, 0.5], ['thorn_mantle', 1, 1, 0.03], ['bramble_ring', 1, 1, 0.05]] },
+  tideKing: { name: 'King Crab', ai: 'boss', art: 'crab', el: 'water', tint: '#8ab8ff', boss: true, lv: 32, hp: 7000, atk: [80, 105], def: 18, vit: 32, agi: 22, dex: 48, exp: [6000, 4200], adelay: 1600, speed: 1.3, aggro: 5.5, chase: 12, reach: 1.4, w: 2.3, r: 0.85, heavy: true, respawn: 300, drops: [['king_pearl', 1, 1, 0.3], ['pearl', 1, 2, 0.6], ['crableg', 2, 3, 1], ['tidebreaker', 1, 1, 0.02], ['coral_shield', 1, 1, 0.05]] },
+  gloomMother: { name: 'Giant Mushroom', ai: 'boss', art: 'mushling', el: 'shadow', tint: '#9a7cff', boss: true, lv: 40, hp: 9000, atk: [100, 130], def: 14, vit: 40, agi: 28, dex: 60, exp: [12000, 8400], adelay: 1700, speed: 1.15, aggro: 5.5, chase: 12, reach: 1.4, w: 2.2, r: 0.8, heavy: true, mdef: 30, respawn: 420, drops: [['gloom_heart', 1, 1, 0.3], ['gloom', 2, 4, 1], ['potion3', 1, 2, 0.4], ['gloom_staff', 1, 1, 0.02], ['gloom_hood', 1, 1, 0.05]] },
+  cinderLord: { name: 'Giant Beetle', ai: 'boss', art: 'beetle', el: 'fire', tint: '#ff7a4a', boss: true, lv: 48, hp: 12000, atk: [115, 150], def: 22, vit: 48, agi: 32, dex: 70, exp: [20000, 14000], adelay: 1600, speed: 1.15, aggro: 5.5, chase: 12, reach: 1.5, w: 2.4, r: 0.9, heavy: true, respawn: 480, drops: [['cinder_core', 1, 1, 0.3], ['cinder', 2, 4, 1], ['potion3', 1, 2, 0.5], ['cinder_greaves', 1, 1, 0.03], ['cinder_mail', 1, 1, 0.04]] },
   // MVP boss of Glodberg: one at a time, back 15 minutes after it falls. Its slayer gets the MVP
-  // reward on top of the drops. Stomps the ground around it every few seconds.
-  // (softened for now, for a Base ~25 Swordsman: it would need a party at Ragnarok strength)
-  jarl:      { name: 'Ember Jarl', ai: 'boss', art: 'jarl', el: 'fire', lv: 25, hp: 3200, atk: [45, 65], def: 15, vit: 25, agi: 15, dex: 35, exp: [2600, 1800], adelay: 2000, speed: 1.35, aggro: 7, chase: 25, reach: 1.9, w: 3.1, r: 1.15, heavy: true,
-    mvp: true, respawn: 900, lair: { x: 32, z: 48 }, mvpExp: 1300, mvpDrops: [['potion3', 3], ['ember_heart', 1]],
+  // reward on top of the drops. Stomps the ground around it every few seconds (stomp: x its ATK).
+  // Made for a Base 50 character in the best gear, alone: about 3 minutes and a bag of potions.
+  jarl: { name: 'Fire Giant', ai: 'boss', art: 'jarl', el: 'fire', lv: 60, hp: 24000, atk: [150, 200], def: 20, vit: 40, agi: 30, dex: 70, mdef: 40, exp: [60000, 42000], adelay: 1600, speed: 1.35, aggro: 7, chase: 25, reach: 1.9, w: 3.1, r: 1.15, heavy: true,
+    mvp: true, respawn: 900, lair: { x: 32, z: 48 }, mvpExp: 30000, stomp: 1.8, mvpDrops: [['potion3', 3], ['ember_heart', 1]],
     drops: [['potion2', 2, 3, 0.8], ['potion3', 1, 2, 0.5], ['stone', 4, 6, 1], ['jarl_horn', 1, 1, 0.25], ['ember_crown', 1, 1, 0.05], ['jarl_mantle', 1, 1, 0.03], ['jarl_staff', 1, 1, 0.02], ['emberbrand', 1, 1, 0.01]] },
 };
 
@@ -132,6 +134,7 @@ class Mob {
     this.knock.x = fx * k;
     this.knock.z = fz * k;
     if (this.def.ai === 'skittish') this.angry = this.def.angry;
+    else if (this.def.passive) this.angry = Math.max(this.angry, 30); // hit a passive monster and it fights back for a while
     if (this.def.boss) this.knock.x = this.knock.z = 0; // bosses stand their ground
     if (this.def.ai === 'hopper' || this.def.ai === 'tank' || this.def.ai === 'puffer' || this.def.ai === 'boss') {
       this.state = 'chase';
@@ -167,6 +170,7 @@ class Mob {
     // Play Dead and safe ground (camp) make monsters lose interest
     const available = p.state !== 'down' && p.state !== 'feign' && !this.mgr.world.isSafe(p.x, p.z);
     const aggro = this.provokeT > 0 ? 14 : d.aggro;
+    const hostile = !d.passive || this.angry > 0 || this.provokeT > 0; // a passive monster only fights back
     const homeD = Math.hypot(this.x - this.home.x, this.z - this.home.z);
     let moving = false;
 
@@ -206,7 +210,7 @@ class Mob {
       case 'hopper':
       case 'tank':
       case 'boss': {
-        if (this.state === 'wander' && available && this.tired <= 0 && dist < aggro) {
+        if (this.state === 'wander' && available && hostile && this.tired <= 0 && dist < aggro) {
           this.state = 'chase';
           this.chaseT = d.chase;
         }
@@ -252,7 +256,7 @@ class Mob {
           moving = this.tryMove(this.heading.x * 6.2 * dt, this.heading.z * 6.2 * dt);
           if (!moving) this.special = 0;
           contact();
-        } else if (available && dist < aggro) {
+        } else if (available && hostile && dist < aggro) {
           const sx = -dz / (dist || 1), sz = dx / (dist || 1);
           const side = Math.sin(this.t * 0.9) > 0 ? 1 : -1;
           const keep = dist > 3 ? 0.6 : dist < 2 ? -0.5 : 0;
@@ -269,7 +273,7 @@ class Mob {
         break;
       }
       case 'puffer': {
-        if (this.state === 'wander' && available && dist < aggro && this.tired <= 0) { this.state = 'chase'; this.chaseT = d.chase; }
+        if (this.state === 'wander' && available && hostile && dist < aggro && this.tired <= 0) { this.state = 'chase'; this.chaseT = d.chase; }
         if (this.state === 'chase') {
           this.chaseT -= dt;
           if (this.chaseT <= 0 || !available || dist > aggro * 2.2) { this.state = 'wander'; this.tired = 3; }
@@ -289,7 +293,7 @@ class Mob {
       }
       case 'wisp': {
         const jitter = { x: Math.sin(this.t * 3.1) * 1.6, z: Math.cos(this.t * 2.3) * 1.6 };
-        if (available && dist < aggro) {
+        if (available && hostile && dist < aggro) {
           moving = this.moveToward(p.x + jitter.x * 0.6, p.z + jitter.z * 0.6, speed, dt) > 0;
           contact();
         } else {

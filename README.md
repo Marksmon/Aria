@@ -50,15 +50,20 @@ reached by travelling on. Place names are Old Norse in style.
 
 | Map | Level | Monsters | Boss |
 |---|---|---|---|
-| Mosvangr (moss-field) | 1–6 | Green Slime (Lv 1), Sproutling (3) | |
-| Fenstrand (fen-shore) | 4–8 | Blue Slime (5, splits), Mudcrab (7) | |
-| Birkilund (birch grove) | 6–12 | Russet Sproutling (9), Sproutling, Green Slime | Bramble Matron (14) |
-| Saltvik (salt bay) | 9–15 | Brine Slime (10), Tidecrab (11), Mudcrab | Tide King (17) |
-| Myrkdal (dark dale) | 10–16 | Mushling (12, slowing spores) | |
-| Glodberg (ember-hill) | 14–25 | Pebble Beetle (16) | **Ember Jarl (25, MVP)** |
-| Svartskog (black wood) | 16–22 | Gloomcap (18), Shade Wisp (19), Mushling | Gloom Mother (22) |
-| Askheid (ash heath) | 20–28 | Cinder Beetle (23), Ember Wisp (21), Pebble Beetle | Cinder Lord (26) |
-| Any field, at night | | Firefly Wisp (8) | |
+| Mosvangr (moss-field) | 1–6 | Slime (Lv 1), Sprout (3) | |
+| Fenstrand (fen-shore) | 5–12 | Blue Slime (6, splits), Crab (9) | |
+| Myrkdal (dark dale) | 12–18 | Mushroom (14, slowing spores) | |
+| Birkilund (birch grove) | 16–26 | Red Sprout (18), Sprout, Slime | Giant Sprout (25) |
+| Saltvik (salt bay) | 20–32 | Sea Slime (22), Blue Crab (26), Crab | King Crab (32) |
+| Glodberg (ember-hill) | 28–36 | Beetle (30) | **Fire Giant (60, MVP)** |
+| Svartskog (black wood) | 32–42 | Dark Mushroom (34), Dark Wisp (38), Mushroom | Giant Mushroom (40) |
+| Askheid (ash heath) | 40–50 | Fire Beetle (42), Fire Wisp (45), Beetle | Giant Beetle (48) |
+| Any field, at night | | Wisp (11) | |
+
+**Passive monsters.** Like most of Ragnarok's field monsters, they leave you alone until you hit
+them; then they fight back for a while. Only the Dark Wisps, the fire beasts of Askheid, the
+mini-bosses and the Fire Giant attack on sight. A Sprout runs away, and fights only when
+cornered.
 
 The new lands' monsters are palette swaps of the valley's, like Ragnarok's slime family. No
 health bars: monsters flash white when hit and wobble when nearly beaten. They respawn 60 s
@@ -66,13 +71,15 @@ after they fall, twice as fast at night.
 
 **Bosses.** Each new field has a mini-boss: big, slow, stomping the ground around it, back 5–8
 minutes after it falls. They drop a rare material (30%) that forges the best gear, and a rare
-equip of their own (2–3%).
+equip of their own (2–3%). Each is a 1½–2½ minute fight for a character of its level, with a
+stack of potions.
 
-**MVP.** The Ember Jarl waits in the south of Glodberg. It stomps the ground around it every few
-seconds. Whoever brings it down gets **MVP** over their head, bonus Base EXP and MVP items
-straight to the bag, plus its drops (its horn, crown, mantle or sword). It comes back 15
-minutes later, even if you leave the map or close the game. For now it is softened (Lv 25,
-3,200 HP) so a Base ~25 Blader or Sorcerer can take it alone with a few Strong Draughts.
+**MVP.** The Fire Giant (Lv 60, 24,000 HP, Fire) waits in the south of Glodberg and stomps the
+ground around it every few seconds. It is made for one Base 50 hero in the best gear: about three
+minutes and a bag of potions (a Blader drinks around 50 White Potions; a Sorcerer who keeps
+moving needs far fewer, but Blue Potions too). Whoever brings it down gets **MVP** over their
+head, bonus Base EXP and MVP items straight to the bag, plus its drops (its horn, crown, cape or
+sword). It comes back 15 minutes later, even if you leave the map or close the game.
 
 **Steinborg.** A walled market city north of Mosvangr: stone walls with towers and two gates
 (south to Mosvangr, east to Birkilund), timber houses round a fountain square, a forge, market
@@ -90,15 +97,15 @@ not recover while you walk; resting doubles it.
 are pending); **Confirm** locks them in and **Reset** takes back any not yet locked in. Closing
 the window also takes back unconfirmed points.
 
-**Rates.** Like a Ragnarok server's "x8 / x12", every Base EXP gain is ×8 and every Job EXP
-gain ×12 (`RATES` in `src/main.js`), so you can reach the Ember Jarl in about half an hour.
+**Rates.** 1x, like an official Ragnarok server: Base and Job EXP are what the monsters and quests
+give (`RATES` in `src/main.js`).
 
 ## Jobs and skills
 
 Aria's own jobs and skills, kept modest. A **Trainee** puts points into **Basic Training**; the
 other Trainee skills come free with Job Levels. At Trainee Job 10 with Basic Training 9, a job
-trial opens in Steinborg: **Captain Ulfr** tests Bladers (defeat 8 Russet Sproutlings),
-**Saeunn the Seeress** tests Sorcerers (bring Glow Dust, Dew Drops and Sprout Seeds). Pass, and
+trial opens in Steinborg: **Captain Ulfr** tests Bladers (defeat 10 Crabs in Fenstrand),
+**Saeunn the Seeress** tests Sorcerers (bring Glow Dust, Water Drops and Seeds). Pass, and
 they change your job. Elder Halvard sends ready Trainees on to the city.
 
 | Trainee | | |
@@ -125,7 +132,7 @@ they change your job. Elder Halvard sends ready Trainees on to the city.
 **Sorcerers** cast from range. A spell walks you into range, then you stand and chant (the cast
 bar over the hotbar); getting hit breaks the chant. Magic never misses: damage comes from MATK
 (KNL, plus a staff's MATK %), softened by the monster's MDEF and VIT. FNS shortens cast times.
-A new Sorcerer is handed an Apprentice Staff.
+A new Sorcerer is handed an Wooden Staff.
 
 | Sorcerer | | |
 |---|---|---|
@@ -140,10 +147,10 @@ A new Sorcerer is handed an Apprentice Staff.
 
 **Elements.** Every monster has an element, as in Ragnarok, and so do spells and some weapons.
 Ember Bolt and Flame Ring are Fire, Frost Shard is Water, Arc Lightning is Wind; normal attacks
-are Neutral unless the weapon has one (Ember Edge, Emberbrand, Cinderfang and the Jarl Hornblade
-are Fire, Tidebreaker and Frostbite Water, Galeblade Wind, Stone Blade and Beetlehorn Blade
+are Neutral unless the weapon has one (Fire Sword, Flame Sword, Lava Sword and the Giant Sword
+are Fire, Sea Sword and Ice Sword Water, Wind Sword Wind, Stone Sword and Horn Sword
 Earth). An elemental staff also adds 15% to spells of its own element (Frostwood and Tidecaller
-Water, Emberheart and the Jarl's staff Fire, Heartwood Earth, Nightshade and Mothercap Shadow).
+Water, Emberheart and the Giant's staff Fire, Giant Root Earth, Nightshade and Mothercap Shadow).
 A strong hit (150%) shows in gold, a weak one (25–50%) in grey.
 
 | Attack \ Monster | Water | Earth | Fire | Wind | Shadow |
@@ -153,14 +160,14 @@ A strong hit (150%) shows in gold, a weak one (25–50%) in grey.
 | Wind | **150%** | 50% | 100% | 25% | 100% |
 | Earth | 100% | 25% | 50% | **150%** | 100% |
 
-Water: the slimes, crabs, Tide King · Earth: Sproutlings, Mushlings, beetles, Bramble Matron ·
-Fire: Cinder Beetles, Ember Wisps, Cinder Lord, Ember Jarl · Wind: Firefly Wisps · Shadow:
-Gloomcaps, Shade Wisps, Gloom Mother.
+Water: the slimes, crabs, King Crab · Earth: Sprouts, Mushrooms, beetles, Giant Sprout ·
+Fire: Fire Beetles, Fire Wisps, Giant Beetle, Fire Giant · Wind: Wisps · Shadow:
+Dark Mushrooms, Dark Wisps, Giant Mushroom.
 
 **Staves** raise MATK: Apprentice (+15%, given on the job change), Birchwood (+20%, Gunnar),
-Rune (+25%), Frostwood (+28%), Heartwood (+30%), Tidecaller (+32%), Nightshade (+34%, Shade Wisp
-0.2%), Emberheart (+38%), Mothercap (+40%, Gloom Mother 2%), Staff of the Ember Jarl (+50%, MVP
-2%) and Runeking's Staff (+55%, forged from three boss materials).
+Rune (+25%), Frostwood (+28%), Giant Root (+30%), Tidecaller (+32%), Nightshade (+34%, Dark Wisp
+0.2%), Emberheart (+38%), Mothercap (+40%, Giant Mushroom 2%), Flame Staff (+50%, MVP
+2%) and Great Staff (+55%, forged from three boss materials).
 
 ## Items
 
@@ -170,46 +177,46 @@ the Equipment window to take it off.
 
 | Usable | Effect | Where |
 |---|---|---|
-| Healing / Strong / Greater Draught | 45–65 / 105–145 / 175–235 HP | Hild's shop, Ragna; drops |
-| Mana Tonic | 40–60 SP | Hild's shop, Ragna; Blue and Brine Slimes |
-| Wild Berry · Crab Leg | 16–22 · 70–100 HP | Slimes, Sproutlings · Mudcrabs |
-| Green Herb | cures spore sickness, a little HP | Sproutlings, Mushlings |
-| Quickening Draught | +10% attack speed for 3 minutes | Ragna |
-| Wander Feather | random spot on this map | Hild's shop, Ragna; Wisps |
-| Homeward Feather | back to camp | Hild's shop, Ragna |
+| Healing / Strong / White Potion | 45–65 / 105–145 / 175–235 HP | Hild's shop, Ragna; drops |
+| Blue Potion | 40–60 SP | Hild's shop, Ragna; Blue and Sea Slimes |
+| Berry · Crab Leg | 16–22 · 70–100 HP | Slimes, Sprouts · Crabs |
+| Green Herb | cures spore sickness, a little HP | Sprouts, Mushrooms |
+| Speed Potion | +10% attack speed for 3 minutes | Ragna |
+| Teleport Feather | random spot on this map | Hild's shop, Ragna; Wisps |
+| Return Feather | back to camp | Hild's shop, Ragna |
 
 **Rare drops.** Like Ragnarok, each monster has a rare equip it drops very seldom. A rare find
 bursts gold on the ground and shows in gold in your bag.
 
 | Rare item | Slot | Effect | From |
 |---|---|---|---|
-| Gooey Ring | Accessory | FTN +2, Max HP +20 | Green Slime, 0.5% |
-| Tidewater Pendant | Accessory | KNL +2, Max SP +15 | Blue Slime, 0.3% |
-| Seedling Band | Accessory | END +1, QKN +1, HP recovers twice as fast | Sproutling, 0.4% |
-| Flower Wreath | Head | FLEE +1 | Sproutling, 0.5% (also crafted) |
-| Mudshell Buckler | Shield | DEF 3, Max HP +40 | Mudcrab, 0.3% |
-| Sporeweave Cloak | Garment | DEF 1, FLEE +4 | Mushling, 0.25% |
-| Pebble Ring | Accessory | END +2, DEF 1 | Pebble Beetle, 0.3% |
-| Beetlehorn Blade | Weapon | ATK 68, weapon Lv 3, POW +1 | Pebble Beetle, 0.15% |
-| Wisp Lantern | Light | lights the night, KNL +1, FNS +1 | Firefly Wisp, 0.4% |
-| Shimmering Gel | Misc | a collector's prize | Green and Blue Slimes, 1% |
-| Jarl's Ember Crown | Head | DEF 4, POW +2, END +1 | Ember Jarl, 5% |
-| Emberbrand | Weapon | ATK 110, weapon Lv 3 | Ember Jarl, 1% |
-| Jarl's Mantle | Garment | DEF 4, Max HP +100, END +2 | Ember Jarl, 3% |
-| Bramble Ring · Coral Shield · Gloom Hood · Cinder Mail · Ember Charm | | | the new lands' monsters, 0.2–0.3% |
-| Thornweave Mantle · Tidebreaker · Mothercap Staff · Cinder Greaves | | | the mini-bosses, 2–3% |
+| Slime Ring | Accessory | FTN +2, Max HP +20 | Slime, 0.5% |
+| Water Necklace | Accessory | KNL +2, Max SP +15 | Blue Slime, 0.3% |
+| Leaf Bracelet | Accessory | END +1, QKN +1, HP recovers twice as fast | Sprout, 0.4% |
+| Flower Crown | Head | FLEE +1 | Sprout, 0.5% (also crafted) |
+| Shell Buckler | Shield | DEF 3, Max HP +40 | Crab, 0.3% |
+| Mushroom Cloak | Garment | DEF 1, FLEE +4 | Mushroom, 0.25% |
+| Stone Ring | Accessory | END +2, DEF 1 | Beetle, 0.3% |
+| Horn Sword | Weapon | ATK 68, weapon Lv 3, POW +1 | Beetle, 0.15% |
+| Lantern | Light | lights the night, KNL +1, FNS +1 | Wisp, 0.4% |
+| Shiny Gel | Misc | a collector's prize | Green and Blue Slimes, 1% |
+| Horned Crown | Head | DEF 4, POW +2, END +1 | Fire Giant, 5% |
+| Flame Sword | Weapon | ATK 110, weapon Lv 3 | Fire Giant, 1% |
+| Giant Cape | Garment | DEF 4, Max HP +100, END +2 | Fire Giant, 3% |
+| Thorn Ring · Coral Shield · Dark Hood · Fire Armor · Fire Charm | | | the new lands' monsters, 0.2–0.3% |
+| Thorn Cape · Sea Sword · Mushroom Staff · Fire Boots | | | the mini-bosses, 2–3% |
 
 Two accessory slots, a shield and a garment slot join head, face, armor, weapon, shoes and light.
 
 **Who can wear what.** Swords up to the Iron Sword: Trainee and Blader; rare and elemental
-swords: Blader only. Staves: Sorcerer only (the Apprentice Staff also Trainees). Heavy armor
-(Beetle Plate, Chain Mail, Cinder Mail): Blader only; robes: Sorcerer only; Pearlscale Mail:
+swords: Blader only. Staves: Sorcerer only (the Wooden Staff also Trainees). Heavy armor
+(Beetle Armor, Chain Mail, Fire Armor): Blader only; robes: Sorcerer only; Pearl Armor:
 Blader and Sorcerer. Bucklers and round shields: Trainee and Blader. Everything else: any job.
 A job change puts away what the new job can't use.
 
 **Headgear you can see.** Two slots, Head and Face. Hats hide the hair they cover: Horned Helm,
-Woven Cap, Flower Wreath, Jarl's Ember Crown, and the animated **Flame Circlet** (crafted from the
-MVP's Ember Heart).
+Leaf Cap, Flower Crown, Horned Crown, and the animated **Fire Crown** (crafted from the
+MVP's Fire Heart).
 
 **Your look, Ragnarok style.** A character is layers: the job's body, then one shared head (the
 standard face: eyes only, no mouth), then your hairstyle, then headgear. You choose a hairstyle
@@ -220,30 +227,30 @@ glasses and masks sit on the eyes, in every direction and every frame. See
 `docs/character-standard.md`.
 
 **Perz and shops.** Perz is Aria's coin (Ragnarok's zeny). Monsters don't drop perz, as in Ragnarok: sell your loot. In Steinborg,
-**Hild the Trader** sells draughts, tonics, herbs, feathers and torches, and **Gunnar** sells
+**Hild the Trader** sells potions, tonics, herbs, feathers and torches, and **Gunnar** sells
 swords, staves, armor, shields, capes and boots. Any shop buys anything for half its price.
 Quests pay perz too. Your perz shows in the Items window.
 
 **Crafting** is done in Steinborg (the campfire is just a fire now): **Gunnar the Gear Crafter**
-forges weapons, staves, armor, headgear and charms, and **Ragna the Herbalist** brews draughts,
+forges weapons, staves, armor, headgear and charms, and **Ragna the Herbalist** brews potions,
 tonics and feathers, from materials in your bag and storage. Recipes need a Base Level. The best
 gear comes from boss materials:
 
 | Forged | Made from |
 |---|---|
-| Heartwood Staff (MATK +30%, KNL +2, FNS +2) | Heartwood (Bramble Matron) |
-| Pearlscale Mail (DEF 7, Max HP +40, Max SP +30) | King's Pearl (Tide King) |
-| Gloomweave Robe (DEF 4, Max SP +60, KNL +2) | Gloom Heart (Gloom Mother) |
-| Cinderfang (ATK 95, POW +2) | Cinder Core (Cinder Lord) |
-| Jarl Hornblade (ATK 120, weapon Lv 4, POW +3, END +1) | Jarl's Horn + Ember Heart + Cinder Core |
-| Prism Ring (every stat +1) | Shimmering Gel |
-| Twin Slime Band (FTN +2, KNL +2, Max HP +30, Max SP +20) | Gooey Ring + Tidewater Pendant |
+| Root Staff (MATK +30%, KNL +2, FNS +2) | Giant Root (Giant Sprout) |
+| Pearl Armor (DEF 7, Max HP +40, Max SP +30) | Big Pearl (King Crab) |
+| Dark Robe (DEF 4, Max SP +60, KNL +2) | Mushroom Heart (Giant Mushroom) |
+| Lava Sword (ATK 95, POW +2) | Fire Core (Giant Beetle) |
+| Giant Sword (ATK 120, weapon Lv 4, POW +3, END +1) | Giant Horn + Fire Heart + Fire Core |
+| Rainbow Ring (every stat +1) | Shiny Gel |
+| Slime Band (FTN +2, KNL +2, Max HP +30, Max SP +20) | Slime Ring + Water Necklace |
 
 ## Story
 
 **The Last Fire-Ring.** Long ago the fire-jotnar slept beneath the hills of Aria, and the first
 settlers lit a ring of fires to keep them dreaming: Eldrun, the fire-ring. Now the fires burn low,
-the ground of Glodberg shakes, and the Ember Jarl is waking. You arrive as a stranger with a
+the ground of Glodberg shakes, and the Fire Giant is waking. You arrive as a stranger with a
 practice sword, asleep by the camp's last fire.
 
 The story runs beside the other quests, in chapters. Its current step sits at the top of the
@@ -252,11 +259,11 @@ rings the portal to take, or the person to talk to. A purple **!** marks who the
 
 | Chapter | Steps |
 |---|---|
-| Prologue (the tutorial) | Talk to the Elder · raise a stat · defeat 3 Green Slimes in Mosvangr · learn Basic Training · put a draught on the hotbar · back to the Elder |
+| Prologue (the tutorial) | Talk to the Elder · raise a stat · defeat 3 Slimes in Mosvangr · learn Basic Training · put a potion on the hotbar · back to the Elder |
 | 1: The Stone-Fort | Travel to Steinborg · tell Captain Ulfr the fires are failing · meet Saeunn the Seeress · sell something for perz |
 | 2: Blade or Rune | Pass a job trial and become a Blader or a Sorcerer |
-| 3: Embers in the Wilds | Saeunn's warning · defeat the Bramble Matron in Birkilund · travel to Glodberg · reach Base Level 22 |
-| 4: The Ember Jarl | The Elder's last gifts · defeat the Ember Jarl · the fire-ring rekindled |
+| 3: Embers in the Wilds | Saeunn's warning · defeat the Giant Sprout in Birkilund · travel to Glodberg · reach Base Level 50 |
+| 4: The Fire Giant | The Elder's last gifts · defeat the Fire Giant · the fire-ring rekindled |
 
 The quest list folds away with a tap on its title bar and scrolls when it is long.
 
@@ -265,20 +272,29 @@ The quest list folds away with a tap on its title bar and scrolls when it is lon
 Tap someone to talk. A **!** bubble means they have a quest (or a job change) for you, a **?**
 means you can hand one in. Active quests show under the clock.
 
+A few big jobs instead of many errands: one each in the camp, and a handful in Steinborg.
+
 | Who | Where | Quests (Base Level) |
 |---|---|---|
-| Elder Halvard | camp | The Green Blight (1), Claws of the Fen (5), The Rot of Myrkvid (10), Wrath of the Stone-Backs (14) |
-| Astrid the Cook | camp | Jelly for the Mead-Hall (1), Water from Urd's Well (4), Sól's Lantern Soup (6), The Jarl's Stew (8) |
-| Sigrun the Scout | camp | The Four Realms (1), Seeds of Yggdrasil (2), Twin-Born of the Fen (4), Lights of the Álfar (7) |
-| Hild the Trader | Steinborg | shop · Roads for Trade (5), Pearls of Saltvik (10) |
-| Gunnar the Gear Crafter | Steinborg | shop, forge · Stone for the Forge (10) |
-| Ragna the Herbalist | Steinborg | brewing · Bramble Tea (6), Salt of the Sea (9), Spores of Svartskog (16), Embers of Askheid (20) |
-| Captain Ulfr | Steinborg | The Blader's Trial · Briars on the Road (7), The Saltvik Shore (10), Into the Black Wood (16), Fire on the Heath (20) |
-| Saeunn the Seeress | Steinborg | The Rune Trial · Shadows in Svartskog (16) |
+| Elder Halvard | camp | The Mushroom Wood (12): 25 Mushrooms |
+| Astrid the Cook | camp | A Feast for Eldrun (10): 20 Slime Gel, 10 Crab Legs, 10 Spores |
+| Sigrun the Scout | camp | Lights in the Dark (10): 15 Wisps, at night |
+| Gyda the Healer | camp | heals HP and SP for free |
+| Hild the Trader | Steinborg | shop · Pearls of Saltvik (24): 5 Pearls |
+| Gunnar the Gear Crafter | Steinborg | shop, forge · Stone for the Forge (34): 30 Stone, 15 Burnt Shells |
+| Ragna the Herbalist | Steinborg | brewing · The Great Remedy (38): 12 Dark Spores, 12 Fire Dust |
+| Captain Ulfr | Steinborg | The Blader's Trial · The King of the Shore (30): the King Crab · The Beetle of Askheid (46): the Giant Beetle |
+| Saeunn the Seeress | Steinborg | The Rune Trial · Shadows in Svartskog (38): 10 Dark Crystals |
+| Embla the Stylist | Steinborg | hairstyle and dye, 1,000 perz |
+| Ivar the Ferryman | Steinborg | carts to any land you have walked, 300–1,800 perz |
+| Liv the Guide | Steinborg | who does what in the city |
+| Bjorn the Gate Guard | Steinborg | which monsters attack on sight |
+
+Gyda, Ivar, Liv and Bjorn borrow other people's sprites until their own are drawn.
 
 ## Day and night
 
-A full day lasts 10 minutes. Night brings Firefly Wisps and extra monsters. Rest in the tent
+A full day lasts 10 minutes. Night brings Wisps and extra monsters. Rest in the tent
 to restore HP, save, and sleep until morning.
 
 ## Roadmap

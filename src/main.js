@@ -11,7 +11,7 @@ import { MobManager } from './mobs.js';
 import { loadSave, writeSave } from './save.js';
 import { Inventory } from './inventory.js';
 import { Progress, JOBS } from './progress.js';
-import { Quests, QUESTS, NPCS } from './quests.js';
+import { Quests, QUESTS, NPCS, FARES } from './quests.js';
 import { Story, INTRO, route } from './story.js';
 import { Villagers } from './villagers.js';
 import { Tiles } from './tiles.js';
@@ -72,6 +72,8 @@ const quests = new Quests();
 quests.load(save?.quests);
 const story = new Story();
 if (!story.load(save?.story) && save) story.catchUp(prog); // a save from before the story
+// people without a sprite of their own yet borrow someone's (NPCS look)
+for (const [id, n] of Object.entries(NPCS)) lib.villagers[id] ||= lib.villagers[n.look] || lib.villagers.bram;
 const villagers = new Villagers(scene, world, lib);
 player.tiles = new Tiles(world); // after the villagers: they block their tiles
 const inv = new Inventory();
@@ -121,8 +123,10 @@ const cam = { yaw: save?.yaw ?? 0, dist: save?.dist ?? 12, target: new THREE.Vec
 
 // ---------- maps and warp portals ----------
 // go to a map: its monsters, tiles and ground; at = where to stand (else beside the portal back)
+const visited = new Set(save?.visited || ['camp']); // lands walked, for the Ferryman
 function enterMap(id, from, at) {
   const arrive = world.go(id, from);
+  visited.add(id);
   const pos = at || arrive;
   mobs.setMap(SPAWNS[world.id], 11 + world.id.length);
   villagers.show(world.id);
@@ -245,12 +249,12 @@ mobs.on('stomp', (m) => { // the ground bursts around the boss
   if (Math.hypot(player.x - m.x, player.z - m.z) > 3.2) return;
   cam.shake = 0.35;
   if (!player.canBeHit()) return;
-  const res = mobAttack(m.def, player.ps, 1.5);
+  const res = mobAttack(m.def, player.ps, m.def.stomp || 1.5);
   if (res.miss) fx.number(player.x, overHead(player, 1.3), player.z, 'Miss', 'miss');
   else player.takeDamage(res.dmg, m.x, m.z);
 });
 mobs.on('mvpSpawn', () => {
-  menus.message('The ground trembles… the Ember Jarl has woken in Glodberg!');
+  menus.message('The ground trembles… the Fire Giant has woken in Glodberg!');
   audio.play('night');
 });
 // Ragnarok's MVP: the announcement over the slayer's head, MVP EXP and items straight to the bag
@@ -272,9 +276,9 @@ mobs.on('mvp', (m) => {
 });
 
 // ---------- experience: Base and Job EXP, like Ragnarok ----------
-// server rates, like a Ragnarok server's "x8 / x12": every Base and Job EXP gain is multiplied.
-// Set high for now so the Ember Jarl is in reach after about half an hour of play.
-const RATES = { base: 8, job: 12 };
+// server rates, like a Ragnarok server's "x1 / x1": every Base and Job EXP gain is multiplied.
+// 1x: Ragnarok's own pace; the Fire Giant is for Base 50.
+const RATES = { base: 1, job: 1 };
 const knownSkills = () => new Set(skillList(prog.job).filter((id) => skillLv(prog, id)));
 function announceSkills(before) {
   for (const id of knownSkills()) if (!before.has(id) && (SKILLS[id].free || SKILLS[id].granted)) menus.message(`New skill: ${SKILLS[id].name}! See the Skills window.`);
@@ -408,6 +412,23 @@ function collect(p) {
 // ---------- menus + camp interactions ----------
 const menus = new Menus(inv, prog, player, {
   useItem: (id) => useItem(id),
+  // Gyda the Healer: HP and SP back to full, for nothing
+  heal() {
+    player.heal(player.maxHp);
+    player.healSp(player.maxSp);
+    audio.play('craft');
+    fx.sparkle(player.x, world.heightAt(player.x, player.z) + 0.8, player.z, '#9fffb0', 18);
+    menus.message('Gyda mends your wounds. HP and SP are full.');
+  },
+  // Ivar the Ferryman: the lands you have walked, and his fares
+  ferryList: () => Object.entries(FARES).filter(([m]) => visited.has(m)),
+  ferry(map) {
+    const fare = FARES[map];
+    if (!visited.has(map) || inv.perz < fare) return;
+    inv.perz -= fare;
+    menus.close('talk');
+    warpTo(map);
+  },
   learn(id) {
     const known = knownSkills();
     if (!learn(prog, id)) return;
@@ -718,7 +739,7 @@ function tickSkills(dt) {
   for (const k in buffs) {
     if (buffs[k] <= 0) continue;
     buffs[k] -= dt;
-    if (buffs[k] <= 0 && k === 'aspd') { applyStats(); menus.message('The Quickening Draught wears off'); }
+    if (buffs[k] <= 0 && k === 'aspd') { applyStats(); menus.message('The Speed Potion wears off'); }
   }
   if (player.endureT <= 0) endureGuard = 0;
   player.guard = Math.max(endureGuard, buffs.ward > 0 ? wardLv * 0.02 : 0);
@@ -830,7 +851,7 @@ let questZone = null, questT = 0;
 let resetting = false;
 function persist() {
   if (!started || resetting) return;
-  writeSave({ story: story.toJSON(), look: player.look, map: world.id, mvpAt: mobs.mvpAt, x: player.x, z: player.z, yaw: cam.yaw, dist: cam.dist, hp: player.hp, sp: player.sp, inv: inv.toJSON(), prog: prog.toJSON(), quests: quests.toJSON(), hotbar: hotbar.toJSON(), time: dayNight.t });
+  writeSave({ story: story.toJSON(), look: player.look, visited: [...visited], map: world.id, mvpAt: mobs.mvpAt, x: player.x, z: player.z, yaw: cam.yaw, dist: cam.dist, hp: player.hp, sp: player.sp, inv: inv.toJSON(), prog: prog.toJSON(), quests: quests.toJSON(), hotbar: hotbar.toJSON(), time: dayNight.t });
 }
 
 const clock = new THREE.Clock();
