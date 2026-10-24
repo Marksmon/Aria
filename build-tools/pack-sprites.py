@@ -43,7 +43,8 @@ CHARS['novice'] = {'eight': True, 'use': {'walk': 'walking'}, 'skip': {'dodge'},
 CHARS['sorcerer'] = {'eight': True, 'use': {'walk': 'walking'}, 'skip': {'dodge'}, 'strip': True}
 # the character standard (docs/character-standard.md): the new Trainee, bald, walk and attack only
 CHARS['trainee'] = {'eight': True, 'use': {'walk': 'walking'}, 'strip': True, 'bald': True}
-CHARS['embla'] = {'eight': True}  # the Sorcerer, made like the Trainee
+CHARS['embla'] = {'eight': True}
+CHARS.update({name: {'eight': True, 'use': {'walk': 'walking'}, 'strip': True, 'bald': True} for name in ['blader', 'sorc']})  # the Sorcerer, made like the Trainee
 
 
 def islands(f):

@@ -90,6 +90,24 @@ CHARACTERS = [
         [("walk", {"template": "walking-8-frames", "mode": "skeleton-v3"}),
          ("attack", "quick forward sword slash attack")],
         size=(64, 96), ref=None, dirs=DIRS8),
+    # the first jobs, to the same standard: modest but cooler than the Trainee (their second jobs
+    # will add the plate, capes and gold)
+    pro("blader", "young swordsman, completely bald head, face with two large dark eyes and small brows, no mouth, no nose; "
+        "a navy-blue quilted gambeson under a dark steel-studded leather jerkin with a bold white crossed-swords emblem on "
+        "the chest, one steel-rimmed leather pauldron on the left shoulder, a crimson sash tied at the waist with long "
+        "trailing ends, fingerless leather gloves and bracers, a belt with a scabbard, grey trousers tucked into tall boots "
+        "with steel toecaps, holding a straight steel shortsword",
+        [("walk", {"template": "walking-8-frames", "mode": "skeleton-v3"}),
+         ("attack", "quick forward sword slash attack")],
+        size=(64, 96), ref=None, dirs=DIRS8),
+    pro("sorc", "young sorcerer, completely bald head, face with two large dark eyes and small brows, no mouth, no nose; a "
+        "dark-blue robe to the knees with silver-trimmed hems and a softly glowing rune circle emblem on the chest, a short "
+        "shoulder mantle with silver rune stitching along its edge and a small brass clasp, rolled sleeves over a white "
+        "under-tunic, a rope sash with a rune pouch and two hanging talismans, soft knee boots, holding a wooden staff "
+        "topped with a softly glowing blue crystal",
+        [("walk", {"template": "walking-8-frames", "mode": "skeleton-v3"}),
+         ("attack", "casting a spell: raising the staff and thrusting it forward as magic bursts from the crystal")],
+        size=(64, 96), ref=None, dirs=DIRS8),
     # the Sorcerer: the Trainee's other path, a caster with a staff
     pro("sorcerer", "young sorcerer apprentice with shaggy dark blue hair, deep blue hooded mantle with silver "
         "rune trim over a grey tunic, brown belt with a small spellbook, brown boots, holding a gnarled wooden staff "

@@ -544,9 +544,9 @@ export function createSprites() {
     fx: { slash: tex(slashArc()), puff: tex(puff()) },
     props,
     fire: { frames: fireFrames, aspect: fireAspect, w: 1.2 },
-    player: sheet('player'), // the Swordsman
+    player: SHEETS['./art/blader.png'] ? sheet('blader') : sheet('player'), // the Blader (the standard one once made)
     novice: SHEETS['./art/trainee.png'] ? sheet('trainee') : SHEETS['./art/novice.png'] ? sheet('novice') : null, // the standard Trainee once made
-    sorcerer: SHEETS['./art/sorcerer.png'] ? sheet('sorcerer') : null,
+    sorcerer: SHEETS['./art/sorc.png'] ? sheet('sorc') : SHEETS['./art/sorcerer.png'] ? sheet('sorcerer') : null, // the standard Sorcerer once made
     ground: tex(groundDetail(), { repeat: 28 }),
     shadow: tex(blobShadow()),
     water: tex(waterTex(), { repeat: 4 }),
