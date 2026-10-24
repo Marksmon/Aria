@@ -98,10 +98,11 @@ export class Player {
   setHeadgear(top, face) { this.heads[0].set(top); this.heads[1].set(face); }
   setLook(look) { this.look = { ...this.look, ...look }; }
 
-  // body pixels per head pixel: the bald head fills a little less than the old head (hair on top)
+  // body pixels per head pixel: a body made bald (the character standard) measures its own skull,
+  // an older one measured its hair, so the bald head fills a little less of it
   setHeadScale(art) {
     const h = art.anims.down.idle[0].userData.head, d = HEADS?.dirs?.down;
-    if (h && d) this.headScale = ((h.neck - h.crown) / (d.chin[1] - d.crown)) * 0.92;
+    if (h && d) this.headScale = ((h.neck - h.crown) / (d.chin[1] - d.crown)) * (art.bald ? 1.04 : 0.92);
   }
 
   // a different sprite set (the Novice and the Swordsman look different)

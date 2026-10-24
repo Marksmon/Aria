@@ -24,6 +24,7 @@ MIRROR = {'right': 'left', 'left': 'right'}
 #            x, crown): {'down': [x1, y1, x2, y2], 'right': [x, y]}. Without it they are detected.
 #   skip:    export animations left out of the sheet (tries that weren't used)
 #   mirror:  (anim, direction) pairs drawn as the mirror of the opposite side
+#   bald:    made to the character standard: generated bald, so its measured head is the skull
 #   strip:   cut the head off every frame (Ragnarok-style bodies: the game draws the head and hair
 #            as their own layers at the neck; see pack-heads.py). The head data stays as anchors.
 #   outline: (pixels, colour) border traced around the silhouette. colour 'shade' tints each
@@ -41,7 +42,7 @@ CHARS['novice'] = {'eight': True, 'use': {'walk': 'walking'}, 'skip': {'dodge'},
                    'eyes': {'down': [-5, 19, 6, 19], 'right': [6, 18]}}
 CHARS['sorcerer'] = {'eight': True, 'use': {'walk': 'walking'}, 'skip': {'dodge'}, 'strip': True}
 # the character standard (docs/character-standard.md): the new Trainee, bald, walk and attack only
-CHARS['trainee'] = {'eight': True, 'use': {'walk': 'walking'}, 'strip': True}
+CHARS['trainee'] = {'eight': True, 'use': {'walk': 'walking'}, 'strip': True, 'bald': True}
 CHARS['embla'] = {'eight': True}  # the Sorcerer, made like the Trainee
 
 
@@ -136,8 +137,8 @@ def strip_head(f, h, keep, hair):
     px = f.load()
     lum = lambda c: 0.3 * c[0] + 0.59 * c[1] + 0.11 * c[2]
     near_hair = lambda c: any(abs(c[0] - q[0]) + abs(c[1] - q[1]) + abs(c[2] - q[2]) < 30 for q in hair)
-    ex, ey = cx + 0.5, (crown + neck) / 2
-    rx, ry = w / 2 + 3, (neck - crown) / 2 + 3
+    ex, ey = cx + 0.5, (crown + neck) / 2 - 1
+    rx, ry = w / 2 + 3, (neck - crown) / 2 + 5
     for y in range(max(0, int(crown - 10)), min(f.height, int(neck + 2))):
         for x in range(max(0, int(cx - w)), min(f.width, int(cx + w + 1))):
             c = px[x, y]
@@ -163,7 +164,17 @@ def load(name, eight=False, prefer=(), skip=()):
             base_name = re.sub(r'-[0-9a-f]{8}$', '', anim)
             if d in per_dir and base_name not in skip:
                 out[ours][base_name] = [img(p) for p in per_dir[d]]
-    return out
+    # PixelLab draws each kind on its own canvas (standing 96, attacks 132, walks 144), each with the
+    # character in the middle: centre them all on one canvas so frames line up when they change
+    W = max(f.width for d in out.values() for fs in d.values() for f in fs)
+    H = max(f.height for d in out.values() for fs in d.values() for f in fs)
+    def pad(f):
+        if f.size == (W, H):
+            return f
+        c = Image.new('RGBA', (W, H))
+        c.paste(f, ((W - f.width) // 2, (H - f.height) // 2))
+        return c
+    return {d: {a: [pad(f) for f in fs] for a, fs in v.items()} for d, v in out.items()}
 
 
 def pack(name, opts):
@@ -230,9 +241,14 @@ def pack(name, opts):
         width = lambda y: runs[y][1] - runs[y][0] + 1 if y in runs else 0
         # chibi heads keep their proportions, so the bottom of the head ("neck") is a fixed share of
         # the body's height below the crown; that holds facing any way, unlike narrowing rows
-        mw = max(width(y) for y in runs if y < top + bh * 0.3)
-        crown = next(y for y in sorted(runs) if width(y) >= mw * 0.6)
-        neck = crown + round(bh * 0.3)
+        if opts.get('bald'):  # a bare skull: its top is the crown, the narrowest row under it the neck
+            crown = top
+            band = [y for y in runs if top + bh * 0.2 <= y <= top + bh * 0.36]
+            neck = min(band, key=lambda y: (width(y), -y)) if band else top + round(bh * 0.3)
+        else:
+            mw = max(width(y) for y in runs if y < top + bh * 0.3)
+            crown = next(y for y in sorted(runs) if width(y) >= mw * 0.6)
+            neck = crown + round(bh * 0.3)
         mw = max(width(y) for y in runs if crown <= y < neck)
         # centre: the middle of the rows just under the crown
         top_rows = [y for y in range(crown, crown + max(3, int(bh * 0.18))) if y in runs and y < neck]
@@ -362,7 +378,7 @@ def pack(name, opts):
             for anim, entry in layout[d].items():
                 entry[3] = [h[:4] + [round((h[0] if i % 2 == 0 else h[1]) + v, 1) for i, v in enumerate(o)] for h in entry[3]]
 
-    json.dump({'fw': fw, 'fh': fh, 'body': body, 'foot': foot, 'hair': hair, 'anims': layout}, open(os.path.join(OUT, name + '.json'), 'w'))
+    json.dump({'fw': fw, 'fh': fh, 'body': body, 'foot': foot, 'hair': hair, 'bald': bool(opts.get('bald')), 'anims': layout}, open(os.path.join(OUT, name + '.json'), 'w'))
     print(name, 'frame', fw, 'x', fh, 'body', body, 'foot', foot, 'sheet', sheet.size, os.path.getsize(os.path.join(OUT, name + '.png')), 'bytes')
 
 
