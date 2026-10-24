@@ -52,7 +52,7 @@ CHARS.update({name: {'eight': True, 'use': {'walk': 'walking'}, 'bald': True} fo
 # the Magic Knight came out at half the cast's pixel scale and was doubled (art/pixellab/mknight):
 # its outlines are two pixels thick, and its ears stand apart from the skull; its head is centred
 # on the body in front and back, set lower from behind (drop) and its neck wrapped in a violet scarf
-CHARS['mknight'] = {'eight': True, 'use': {'walk': 'walking'}, 'bald': True, 'ring': 3, 'islands': 80, 'center': True, 'scarf': True, 'wipe': True,
+CHARS['mknight'] = {'eight': True, 'use': {'walk': 'walking'}, 'bald': True, 'ring': 3, 'islands': 80, 'center': True, 'scarf': True, 'wipe': True, 'scrub': 3,
                     'drop': {'up': 5, 'upleft': 5, 'upright': 5, 'right': 4, 'left': 4, 'downright': 2, 'downleft': 2},
                     # its west-side attacks spin the body round mid-swing (the head would face backwards):
                     # they are the east side's, mirrored; east keeps its wind-up and strike, and back
@@ -352,13 +352,27 @@ def centre_x(f, ox, oy, g):
     return int(round(mids[len(mids) // 2] - g['chin'][0]))
 
 
-def clear_old_head(f, whole, cover, bottom, islands_above=0, wipe=False):
+def clear_old_head(f, whole, cover, bottom, islands_above=0, wipe=False, scrub=0):
     """take away what still shows of the body's own head above the new head's chin: off where it
     meets the empty space around the character, filled from the clothes next to it where it's
     closed in (between the new head and a collar), so no hole opens around the neck"""
     a = np.array(f)
     op = a[..., 3] > 128
     left = whole & op if wipe else whole & ~cover & op  # wipe: all of the old head, even where the new one will be
+    if scrub and whole.any():  # and, inside the old head's outline (a few pixels wider) above the chin,
+        # the shaded ear edges that are too dark to read as skin. Armour and the blade stay
+        ys, xs = np.nonzero(whole)
+        y0, x0, x1 = max(0, ys.min() - scrub), max(0, xs.min() - scrub), min(op.shape[1], xs.max() + 1 + scrub)
+        rgb = np.array(f)[..., :3].astype(int)
+        warm = (rgb[..., 0] > rgb[..., 2] + 15) & (rgb[..., 0] >= rgb[..., 1])  # skin and its shading, not steel
+        box = np.zeros_like(op)
+        box[y0:bottom + 1, x0:x1] = True
+        gone = box & op & warm
+        for _ in range(2):  # and the dark outline around those bits
+            near = gone.copy()
+            near[1:] |= gone[:-1]; near[:-1] |= gone[1:]; near[:, 1:] |= gone[:, :-1]; near[:, :-1] |= gone[:, 1:]
+            gone = gone | (near & box & op & (rgb.sum(-1) < 150))
+        left = left | gone
     left[bottom + 1:] = False
     pts = set(zip(*np.nonzero(left)))
     H, W = op.shape
@@ -694,7 +708,7 @@ def pack(name, opts):
                         print('  warning: the head leaves the frame', name, d, anim, ox, oy)
                     own = own_head(f, lim, opts.get('ring', 1))
                     cover = head_cover((fh, fw), hm, ox, oy)
-                    f2 = clear_old_head(f, own[1], cover, oy + g['chin'][1] - 1, opts.get('islands', 0), opts.get('wipe')) if own else f
+                    f2 = clear_old_head(f, own[1], cover, oy + g['chin'][1] - 1, opts.get('islands', 0), opts.get('wipe'), opts.get('scrub', 0)) if own else f
                     if opts.get('scarf'):
                         f2 = neck_fill(neck_scarf(f2, ox, oy, g, hm.shape[1]), cover, ox, oy, g, hm.shape[1])
                     frames.append(f2)
