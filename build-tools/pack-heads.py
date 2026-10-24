@@ -32,7 +32,7 @@ cut hides the wearer's hair above a row in each column of the cell, so it doesn'
 a helmet or cap hides the hair above its brim, a crown the spikes above it; a wreath rests in the
 hair and face pieces leave it alone.
 """
-import json, os, re
+import json, math, os, re
 import numpy as np
 from PIL import Image
 
@@ -48,6 +48,27 @@ GEAR = {'horned_helm': ('head', 'brim'), 'woven_cap': ('head', 'brim'), 'flower_
         'ember_crown': ('head', 'top'), 'flame_circlet': ('head', 'top'),
         'round_glasses': ('face', None), 'raven_mask': ('face', None)}
 GLASS = {'round_glasses'}  # its lenses are see-through: the eyes show behind them, tinted
+FLAME = {'flame_circlet': 8}  # its fire flickers: this many frames, made from the still piece
+
+
+def flicker(piece, f, n):
+    """one frame of a burning piece: its fire colours, ranked dark to bright, ride a wave that rises
+    through the flames, so they flicker and climb; everything else stays still"""
+    out = piece.copy()
+    px = out.load()
+    lum = lambda c: 0.3 * c[0] + 0.59 * c[1] + 0.11 * c[2]
+    fire = lambda c: c[3] >= 128 and c[0] >= 170 and c[0] >= c[1] >= c[2] and c[0] - c[2] >= 80
+    pts = [(x, y) for y in range(out.height) for x in range(out.width) if fire(px[x, y])]
+    ramp = sorted({px[p][:3] for p in pts}, key=lum)
+    if len(ramp) < 3:
+        return out
+    rank = {c: i / (len(ramp) - 1) for i, c in enumerate(ramp)}
+    for x, y in pts:
+        c = px[x, y]
+        t = rank[c[:3]] + 0.22 * math.sin(2 * math.pi * f / n + y * 0.7 + x * 0.45)
+        c2 = ramp[round(min(1, max(0, t)) * (len(ramp) - 1))]
+        px[x, y] = (*c2, c[3])
+    return out
 
 
 def shrink(im, s=SCALE):
@@ -244,6 +265,9 @@ for gid, (slot, how) in GEAR.items():
     frames = {d: (v if isinstance(v, list) else [v]) for d, v in worn.items()}
     n = max(len(v) for v in frames.values())
     pieces = {d: [added(f, bald[d]) for f in v] for d, v in frames.items()}
+    if gid in FLAME:
+        pieces = {d: [flicker(v[0], f, FLAME[gid]) for f in range(FLAME[gid])] for d, v in pieces.items()}
+        n = FLAME[gid]
     if gid in GLASS:
         for v in pieces.values():
             for im in v:
