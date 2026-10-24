@@ -505,7 +505,7 @@ function storyDone() {
 }
 function checkStory() {
   if (!storyLive() || menus.isOpen('story')) return;
-  if (story.met({ prog, hotbar, skillLv })) storyDone();
+  if (story.met({ prog, hotbar, skillLv, keepers })) storyDone();
 }
 function startStory() {
   if (story.flags.intro) return;

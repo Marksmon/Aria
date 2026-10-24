@@ -13,10 +13,13 @@
 //   stat  - raise any stat once            skill - learn a skill (skill, lv)
 //   hotbar - put an item or skill on the hotbar   sell - sell something in a shop
 //   job   - change job                     level - reach a Base Level (lv)
+//   job2  - take a second job              keeper - sign a second Keeper's ledger
+// kill steps may name one monster (mob) or several (mobs: any of them counts).
 // say: [[speaker npc id, or null for the narrator, line], ...] shown when the step completes.
 // map: where it happens, for the directions (talk steps use the speaker's map).
 import { NPCS } from './quests.js';
 import { MAPS, ZONE_NAMES } from './world.js';
+import { JOBS } from './progress.js';
 
 export const INTRO = [
   [null, 'Long ago, the fire-jotnar slept beneath the hills of Aria. The first settlers lit a ring of fires around their camp to keep them dreaming, and named it Eldrun: the fire-ring.'],
@@ -100,8 +103,92 @@ export const STORY = [
     say: [['bram', 'Sing it, then, there by the fire... Look! It has not burnt this bright since I was a boy.'],
       ['bram', 'The Giant sleeps on under Glodberg, and the ground is quiet. Saeunn says the runes speak of older names beyond the mountains: lands the songs still remember. The road goes on, as roads do.'],
       ['bram', 'Rest now, hero of Eldrun. Aria will need you again.'],
-      [null, 'The Last Fire-Ring: the end of the first saga. The Fire Giant still waits in the south of Glodberg, for anyone strong enough to wake him. More of Aria is coming.']],
+      [null, 'The Last Fire-Ring: the end of the first saga. The Fire Giant still waits in the south of Glodberg, for anyone strong enough to wake him.']],
     reward: { xp: 40000, perz: 20000, items: { glow_charm: 1 } } },
+
+  // ---------- Chapter 5: the salt road (the kobolds of Grjotvangr and Kolgrof) ----------
+  { id: 'saltroad', ch: 'Chapter 5: The Salt Road', title: 'Trouble on the Salt Road', kind: 'talk', npc: 'ulfr', goal: 'Captain Ulfr has sent for you (by the south gate of Steinborg)',
+    say: [['ulfr', 'There you are. The Giant sleeps, but the valley does not. The salt carts from Saltvik have stopped coming, and the last carter who made it here was half dead.'],
+      ['ulfr', 'He swore kobolds did it. Kobolds! They keep to their stone hills and bark at anyone who comes near. They do not rob carts.'],
+      ['ulfr', 'Before you go: sign Keeper Bera\'s ledger by the west houses. Then a Keeper anywhere can send you back to Steinborg, and you will need to come back often.']],
+    reward: { xp: 3000, perz: 1000 } },
+  { id: 'ledger', ch: 'Chapter 5: The Salt Road', title: 'The Keepers\' Ledger', kind: 'keeper', map: 'city', goal: 'Sign a Keeper\'s ledger (Keeper Bera, by the west houses of Steinborg)',
+    hint: 'Talk to a Keeper and choose Register. Keepers also save your place, mend you and keep your chest.',
+    say: [[null, 'Your name is in the Keepers\' ledger. From any Keeper, for a fee, you can now travel to every Keeper you have signed.'],
+      ['ulfr', 'Good. Now go west through Fenstrand to Saltvik. Hakon the carter is waiting by the south road.']],
+    reward: { xp: 2000 } },
+  { id: 'carter', ch: 'Chapter 5: The Salt Road', title: 'The Carter\'s Tale', kind: 'talk', npc: 'hakon', goal: 'Find Hakon the Carter by the south road of Saltvik',
+    say: [['hakon', 'Kobolds, I tell you, a dozen of them, out of Grjotvangr with axes and bows. Took my horse and my cart.'],
+      ['hakon', 'And here is the strange thing: they left the salt. They took the lamp oil, the pitch, the tinder. Every kobold I ever met runs from a torch. Why would they steal fire?'],
+      ['hakon', 'The road goes south into their hills. If you go, go armed.']],
+    reward: { xp: 4000 } },
+  { id: 'stonefield', ch: 'Chapter 5: The Salt Road', title: 'The Stone-Field', kind: 'kill', mobs: ['koboldWarrior', 'koboldArcher', 'koboldAssassin'], n: 12, map: 'stones', goal: 'Defeat 12 kobolds in Grjotvangr (south of Saltvik)',
+    hint: 'Kobolds of level 28 to 33, and every one of them attacks on sight. Base Level 32 or so is a fair start.',
+    say: [[null, 'The kobolds fight like cornered dogs. Each pack carries a lump of coal that glows a dull red, warm in the hand though no fire touched it.']],
+    reward: { xp: 9000, perz: 2500, items: { potion2: 10 } } },
+  { id: 'redcoal', ch: 'Chapter 5: The Salt Road', title: 'Coal Without Fire', kind: 'talk', npc: 'saeunn', goal: 'Show the glowing coal to Saeunn the Seeress (Steinborg)',
+    say: [['saeunn', 'Coal that burns without a flame... This is the Giant\'s heat, seeping up through the stone. We sang him back to sleep, but he still breathes, and his breath warms the earth.'],
+      ['saeunn', 'Kolgrof, the kobolds\' coal pit south of Grjotvangr, lies right above one of his veins. The kobolds are not raiding for fun. Something drives them.'],
+      ['saeunn', 'Go down into Kolgrof and see what it is.']],
+    reward: { xp: 5000 } },
+  { id: 'coalpit', ch: 'Chapter 5: The Salt Road', title: 'Down into Kolgrof', kind: 'visit', map: 'coalpit', goal: 'Travel south through Grjotvangr to Kolgrof',
+    say: [[null, 'Kolgrof glows. Red light seeps from every seam of the quarry, and the air shimmers with heat.'],
+      [null, 'By the north road a man in a miner\'s hood waves to you from behind a rock.']],
+    reward: { xp: 6000 } },
+  { id: 'miner', ch: 'Chapter 5: The Salt Road', title: 'The Escaped Miner', kind: 'talk', npc: 'dag', goal: 'Talk to Dag the Miner by the north road of Kolgrof',
+    say: [['dag', 'Quiet! They will hear you. I was a miner here before the kobolds took the pit, and their prisoner after. I got loose three nights ago.'],
+      ['dag', 'It is not the kobolds\' doing. Goblins came over the hills from Brennholt last winter, with whips. The Kobold King bowed to them. Now the kobolds dig the red coal day and night, steal fire to light the tunnels, and the goblins cart the coal away east.'],
+      ['dag', 'Where to, I could not say. But I heard the word their drivers use for it: the Waking Fire.']],
+    reward: { xp: 12000, perz: 4000, items: { hard_ore: 2 } } },
+
+  // ---------- Chapter 6: the goblin war-band ----------
+  { id: 'wakingfire', ch: 'Chapter 6: The Goblin War-Band', title: 'The Waking Fire', kind: 'talk', npc: 'ulfr', goal: 'Bring Dag\'s news to Captain Ulfr (Steinborg)',
+    say: [['ulfr', 'Goblins with whips, and a Waking Fire. I do not like the sound of either.'],
+      ['ulfr', 'Brennholt lies east of Askheid. It was a green wood once; the goblins burnt it bare when they came. If the coal goes east, it goes through Brennholt. Break their coal-train.']],
+    reward: { xp: 6000 } },
+  { id: 'coaltrain', ch: 'Chapter 6: The Goblin War-Band', title: 'Break the Coal-Train', kind: 'kill', mobs: ['goblinWarrior', 'goblinArcher', 'goblinAssassin'], n: 15, map: 'burnt', goal: 'Defeat 15 goblins in Brennholt (east of Askheid)',
+    hint: 'Goblins of level 38 to 44. They hunt in packs, so fight at the edge of a group, not in the middle of it.',
+    say: [[null, 'Among the burnt stumps lie split sacks of red coal. A trail of black dust runs north, towards Ormholt, and a second one west, back to Askheid.']],
+    reward: { xp: 20000, perz: 6000, items: { potion3: 10 } } },
+  { id: 'trails', ch: 'Chapter 6: The Goblin War-Band', title: 'Two Trails', kind: 'talk', npc: 'vigdis', goal: 'Ask Archmage Vigdis in Galdrheim about the coal',
+    say: [['vigdis', 'Red coal, the Giant\'s own heat. Burnt, it is only warm. Fed to something alive, it makes that thing a furnace.'],
+      ['vigdis', 'The trail to Askheid: the goblins have been feeding the coal to the Giant Beetle there. Every lump it eats, the Giant feels in his sleep. And the trail to Ormholt... I fear that is where the Waking Fire burns.'],
+      ['vigdis', 'Neither is a fight for you yet. You must grow beyond your first path first.']],
+    reward: { xp: 8000 } },
+
+  // ---------- Chapter 7: the second path ----------
+  { id: 'secondpath', ch: 'Chapter 7: The Second Path', title: 'Beyond the First Path', kind: 'job2', goal: 'Take a second job: BladeMaster (Captain Ulfr), Wizard (Archmage Vigdis) or Magic Knight (Sir Eirik, Steinborg)',
+    hint: 'A second-job trial opens at Job Level 40. Which trials you may take depends on where your skill points went.',
+    say: [[null, 'Your power has taken a new shape. The aura around you is faint, but every monster in Aria can feel it.'],
+      ['vigdis', 'Now you are ready. Go to Askheid and put out the Giant Beetle\'s furnace.']],
+    reward: { xp: 15000, perz: 10000 } },
+
+  // ---------- Chapter 8: the Waking Fire ----------
+  { id: 'furnace', ch: 'Chapter 8: The Waking Fire', title: 'The Living Furnace', kind: 'kill', mob: 'cinderLord', n: 1, map: 'heath', goal: 'Defeat the Giant Beetle in Askheid (east of Glodberg)',
+    hint: 'A level 48 mini-boss that calls Fire Beetles to its side. Base Level 50 or so, with water on your side, makes it fair.',
+    say: [[null, 'The Giant Beetle crashes down, and the red glow drains out of its shell. Far to the west, Glodberg falls quiet.'],
+      [null, 'Only one trail is left: north from Brennholt, into Ormholt.']],
+    reward: { xp: 30000, perz: 10000, items: { potion3: 10 } } },
+  { id: 'ormholt', ch: 'Chapter 8: The Waking Fire', title: 'The Serpent Wood', kind: 'visit', map: 'serpent', goal: 'Travel north from Brennholt to Ormholt',
+    say: [[null, 'Ormholt. In the north clearing, a ring of stones has been raised around a pit of red coal, so like Eldrun\'s fire-ring that it chills you.'],
+      [null, 'But these runes are cut backwards. Eldrun\'s ring sings the Giant to sleep. This one is built to wake him.']],
+    reward: { xp: 12000 } },
+  { id: 'firekeepers', ch: 'Chapter 8: The Waking Fire', title: 'The Fire-Keepers', kind: 'kill', mobs: ['goblinWarrior', 'goblinArcher', 'goblinAssassin'], n: 20, map: 'serpent', goal: 'Defeat 20 goblins in Ormholt, the keepers of the Waking Fire',
+    hint: 'Ormholt\'s goblins are the strongest of their kind, and the Goblin King\'s guard. Stay out of his clearing in the north unless you mean to fight him.',
+    say: [[null, 'With no one left to feed it, the Waking Fire gutters and goes out. From his clearing the Goblin King howls at a cold pit.'],
+      [null, 'One rune-stone of the ring, cut backwards, is small enough to carry. Archmage Vigdis will want to see it.']],
+    reward: { xp: 40000, perz: 12000 } },
+  { id: 'runestone', ch: 'Chapter 8: The Waking Fire', title: 'The Backward Rune', kind: 'talk', npc: 'vigdis', goal: 'Bring the backward rune-stone to Archmage Vigdis (Galdrheim)',
+    say: [['vigdis', 'Cut backwards, and by a hand that knew Hallveig\'s runes as well as I do. No goblin learnt this alone.'],
+      ['vigdis', 'Someone taught them. Someone who wants the Giant awake. I will set every sorcerer in Galdrheim on this stone; it will tell us who, in time.'],
+      ['vigdis', 'Take the news home to Eldrun. The Elder has earned a quiet night.']],
+    reward: { xp: 20000 } },
+  { id: 'twofires', ch: 'Chapter 8: The Waking Fire', title: 'Two Fire-Rings', kind: 'talk', npc: 'bram', goal: 'Return to Elder Halvard at Eldrun Camp',
+    say: [['bram', 'Two fire-rings: one to keep him dreaming, and one to wake him. Ours burns bright, and theirs is cold. Let it stay that way.'],
+      ['bram', 'The kobolds of Kolgrof can lay down their picks, and the salt carts will roll again. Hakon will be glad of his horse.'],
+      ['bram', 'But a hand that cuts runes backwards is still out there. Rest while you can, hero of Eldrun.'],
+      [null, 'The Waking Fire: the end of the second saga. The Kobold King in Kolgrof and the Goblin King in Ormholt still hold their courts, for anyone strong enough to face them.']],
+    reward: { xp: 60000, perz: 50000, items: { hard_ore: 5, armor_ore: 5 } } },
 ];
 
 // the steps as they were before the Fire Giant left the story, and where those steps went
@@ -166,7 +253,7 @@ export class Story {
   // talking to someone completes a talk step for them
   talkStep(npc) { return this.step?.kind === 'talk' && this.step.npc === npc ? this.step : null; }
 
-  onKill(type) { if (this.step?.kind === 'kill' && this.step.mob === type) this.count++; }
+  onKill(type) { const s = this.step; if (s?.kind === 'kill' && (s.mobs || [s.mob]).includes(type)) this.count++; }
   onZone(zone) { if (this.step?.kind === 'visit' && this.step.map === zone) this.flags.visit = zone; }
   flag(name) { this.flags[name] = true; }
 
@@ -182,6 +269,8 @@ export class Story {
       case 'hotbar': return state.hotbar.has('item', s.item);
       case 'sell': return !!this.flags.sold;
       case 'job': return state.prog.job !== 'novice';
+      case 'job2': return JOBS[state.prog.job]?.tier === 2;
+      case 'keeper': return (state.keepers?.size || 0) >= 2;
       case 'level': return state.prog.baseLv >= s.lv;
       default: return false;
     }
@@ -196,13 +285,15 @@ export class Story {
     return s;
   }
 
-  toJSON() { return { i: this.i, id: this.step?.id || 'done', count: this.count, flags: this.flags }; }
+  // a finished story saves its last step: when chapters are added, the hero picks up after it
+  toJSON() { return { i: this.i, id: this.step?.id || 'done', last: STORY.at(-1).id, count: this.count, flags: this.flags }; }
   load(d) {
     if (!d) return false;
     // the step is saved by id; older saves only kept its place in the old order of steps
     const id = d.id || OLD_ORDER[d.i | 0] || 'done';
     const at = STORY.findIndex((s) => s.id === (RENAMED[id] || id));
-    this.i = id === 'done' || at < 0 ? STORY.length : at;
+    const last = STORY.findIndex((s) => s.id === (d.last || 'rekindled'));
+    this.i = id === 'done' ? (last < 0 ? STORY.length : last + 1) : at < 0 ? STORY.length : at;
     this.count = Math.max(0, d.count | 0);
     this.flags = { ...(d.flags || {}) };
     return true;

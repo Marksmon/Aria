@@ -422,8 +422,14 @@ rings the portal to take, or the person to talk to. A purple **!** marks who the
 | 2: Blade or Rune | Pass a job trial and become a Blader or a Sorcerer |
 | 3: Embers in the Wilds | Saeunn's warning · defeat the Giant Sprout in Birkilund · travel to Glodberg |
 | 4: The Fire-Ring | Archmage Vigdis sings the fire-ring's runes anew · bring the song home: the fire-ring rekindled |
+| 5: The Salt Road | Captain Ulfr: kobolds rob the salt carts · sign a Keeper's ledger · Hakon the Carter in Saltvik · defeat 12 kobolds in Grjotvangr · Saeunn and the glowing red coal · go down into Kolgrof · Dag the Miner: the goblins drive the kobolds to dig for a "Waking Fire" |
+| 6: The Goblin War-Band | tell Ulfr · defeat 15 goblins in Brennholt · Archmage Vigdis reads the two coal trails |
+| 7: The Second Path | take a second job (BladeMaster, Wizard or Magic Knight) |
+| 8: The Waking Fire | defeat the Giant Beetle in Askheid · travel to Ormholt · defeat 20 goblins, the keepers of the goblins' backward fire-ring · the backward rune-stone to Vigdis · home to the Elder |
 
-The Fire Giant is no part of the story: it waits in Glodberg as an optional MVP for the strongest.
+The second saga (chapters 5–8) runs from about Base 32 to Base 55. A hero who finished the first saga
+picks up at Chapter 5. No MVP is part of the story: the Fire Giant, the Kobold King and the Goblin
+King wait as optional fights for the strongest.
 
 The quest list folds away with a tap on its title bar and scrolls when it is long.
 
@@ -452,6 +458,8 @@ A few big jobs instead of many errands: one each in the camp, and a handful in S
 | Ivar the Ferryman | Steinborg | carts to any land you have walked, 300–3,000 perz |
 | Liv the Guide | Steinborg | who does what in the city |
 | Bjorn the Gate Guard | Steinborg | which monsters attack on sight |
+| Hakon the Carter | Saltvik, by the south road | the story (Chapter 5) |
+| Dag the Miner | Kolgrof, by the north road | the story (Chapter 5) |
 | Archmage Vigdis | Galdrheim | The Rune Trial · The Mother of Spores (40): the Giant Mushroom |
 | Orm the Staffwright | Galdrheim | shop, crafts sorcerers' gear (staves, robes) · The Living Wood (26): a Giant Root, 8 Thorns |
 | Seyla the Enchanter | Galdrheim | opens a card slot in a Lv 4 weapon (50%) |
@@ -461,7 +469,7 @@ A few big jobs instead of many errands: one each in the camp, and a handful in S
 | Hrafn the Stargazer, Signy the Apprentice | Galdrheim | tales of the city, the stars and the jotnar |
 | Runa the Gatewarden | Galdrheim | the rune-gate: to any land you have walked, 300–3,000 perz |
 
-Gyda, Ivar, Liv, Bjorn, Holger and the people of Galdrheim borrow other people's sprites until their own are drawn. People with tales to tell have a **Tell me more** button.
+Gyda, Ivar, Liv, Bjorn, Holger, Hakon, Dag and the people of Galdrheim borrow other people's sprites until their own are drawn. People with tales to tell have a **Tell me more** button.
 
 **Quest list.** Tap a quest under the clock (or the story step) for its **Quest View**: who gave
 it, the goal, your progress, the reward and where to go. **Go there** walks you to it by itself,

@@ -148,6 +148,19 @@ export const NPCS = {
       'My grandfather refined the Watch\'s blades for forty years. He said the trick is to stop one try before you want to. He never managed it either.',
     ],
   },
+  // ---------- out in the fields (the story) ----------
+  hakon: {
+    name: 'Hakon the Carter', map: 'coast', x: 36.4, z: 52.6, look: 'gunnar',
+    hello: 'Lost my cart, lost my horse, and I am not going back down that road alone.',
+    later: () => '', bye: 'Mind the kobolds. They bite.',
+    quests: [],
+  },
+  dag: {
+    name: 'Dag the Miner', map: 'coalpit', x: 35.2, z: 10.4, look: 'gunnar',
+    hello: 'Keep your voice down. The whole pit has ears.',
+    later: () => '', bye: 'When the kobolds are free of the goblins, I will dig here again. Honest coal, the black kind.',
+    quests: [],
+  },
   liv: {
     name: 'Liv the Guide', map: 'city', x: 28.6, z: 52.8, look: 'hild',
     hello: 'New to Steinborg? Hild trades in the square, Gunnar forges in the east and Holger refines gear beside him, Ragna brews in the north-west, the Seeress keeps her tower in the north-east, and Ivar\'s carts wait by the square.',
