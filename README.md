@@ -86,6 +86,10 @@ POW (STR), QKN (AGI), END (VIT), KNL (INT), FNS (DEX), FTN (LUK). Base Level and
 gain EXP separately; stat points come from Base Levels, skill points from Job Levels. HP does
 not recover while you walk; resting doubles it.
 
+**Placing stat points.** In the Status window, ▲ places a point (shown in green, with how many
+are pending); **Confirm** locks them in and **Reset** takes back any not yet locked in. Closing
+the window also takes back unconfirmed points.
+
 **Rates.** Like a Ragnarok server's "x8 / x12", every Base EXP gain is ×8 and every Job EXP
 gain ×12 (`RATES` in `src/main.js`), so you can reach the Ember Jarl in about half an hour.
 

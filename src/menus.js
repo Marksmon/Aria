@@ -5,6 +5,7 @@
 import { ITEMS, RECIPES, SLOTS, SHOPS, PRICES, sellPrice, equipLine, iconURL, canWear, jobLine } from './items.js';
 import { BAG_SLOTS, CHEST_SLOTS } from './inventory.js';
 import { STATS, STAT_KEYS, JOBS } from './progress.js';
+import { statCost } from './ro-tables.js';
 import { NPCS } from './quests.js';
 import { SKILLS, skillList, skillLv, learnBlock, spCost } from './skills.js';
 
@@ -41,6 +42,7 @@ export class Menus {
     this.shopId = null;     // the shop open in the Shop window
     this.shopTab = 'buy';
     this.sellSel = null;
+    this.pend = {};         // stat points placed with ▲ but not yet confirmed: stat -> how many
     this.wins = {};         // id -> element, while open
     this.layer = document.getElementById('windows');
     this.toasts = document.getElementById('toasts');
@@ -74,6 +76,7 @@ export class Menus {
     let story = false;
     for (const k of id ? [id] : Object.keys(this.wins)) {
       if (k === 'story' && this.wins[k]) story = true;
+      if (k === 'status') this.pend = {}; // points not confirmed are taken back
       this.wins[k]?.remove();
       delete this.wins[k];
     }
@@ -254,11 +257,19 @@ export class Menus {
 
   // The status window, top to bottom: who you are (job and levels), the six stats with their
   // job bonus, ▲ and cost under the points left to spend, then the battle numbers in pairs.
+  // stat points placed but not locked in yet, and what they cost
+  pendCost() {
+    let c = 0;
+    for (const [k, n] of Object.entries(this.pend)) for (let i = 0; i < n; i++) c += statCost(this.prog.stats[k] + i);
+    return c;
+  }
+  pendCount() { return Object.values(this.pend).reduce((a, b) => a + b, 0); }
+
   status() {
-    const p = this.prog, ps = this.player.ps, pts = p.statPoints, knl = p.total('knl');
+    const p = this.prog, ps = this.player.ps, pts = p.statPoints - this.pendCost(), knl = p.total('knl');
     const stat = (k) => {
-      const st = STATS[k], cost = p.costOf(k), bonus = p.bonus(k), can = cost <= pts && p.stats[k] < 99;
-      return `<tr><th title="${esc(st.full)}: ${esc(st.desc)}">${st.name}<small>${esc(st.full)}</small></th><td class="sv">${p.stats[k]}${bonus ? `<em>+${bonus}</em>` : ''}</td>
+      const st = STATS[k], add = this.pend[k] || 0, v = p.stats[k] + add, cost = statCost(v), bonus = p.bonus(k), can = cost <= pts && v < 99;
+      return `<tr class="${add ? 'pending' : ''}"><th title="${esc(st.full)}: ${esc(st.desc)}">${st.name}<small>${esc(st.full)}</small></th><td class="sv">${v}${bonus ? `<em>+${bonus}</em>` : ''}${add ? `<i>(+${add})</i>` : ''}</td>
         <td class="sc"><button class="splus" data-act="raise" data-stat="${k}" ${can ? '' : 'disabled'} aria-label="Raise ${st.full}">▲</button>${cost}</td></tr>`;
     };
     const d = (label, v) => `<th>${label}</th><td>${v}</td>`;
@@ -268,9 +279,12 @@ export class Menus {
       [d('Hit', ps.hit), d('Flee', `${ps.flee} + ${Math.floor(ps.dodge)}`)],
       [d('Critical', Math.floor(ps.crit)), d('Aspd', ps.aspd)],
     ];
+    const n = this.pendCount();
     return `<div class="sthead"><b>${esc(JOBS[p.job].name)}</b><span>Base Lv <b>${p.baseLv}</b></span><span>Job Lv <b>${p.jobLv}</b></span></div>
       <div class="rsub stsub"><span>Stats</span><span>Status Point <b>${pts}</b></span></div>
       <table class="stt stats"><tbody>${STAT_KEYS.map(stat).join('')}</tbody></table>
+      <div class="strow"><span class="rtag">${n ? `${n} point${n === 1 ? '' : 's'} placed, not locked in yet` : 'Tap ▲ to place points, then Confirm'}</span>
+        <button class="rbtn soft" data-act="statreset" ${n ? '' : 'disabled'}>Reset</button><button class="rbtn" data-act="statconfirm" ${n ? '' : 'disabled'}>Confirm</button></div>
       <div class="rsub stsub"><span>Battle</span></div>
       <table class="stt battle"><tbody>${battle.map((r) => `<tr>${r[0]}<td class="gap"></td>${r[1]}</tr>`).join('')}</tbody></table>`;
   }
@@ -387,7 +401,18 @@ export class Menus {
     if (act === 'storynext') {
       if (this.storyAt < this.storyPages.length - 1) { this.storyAt++; this.render('story'); this.hooks.ui?.(); } else this.close('story');
     }
-    if (act === 'raise' && this.prog.raise(t.dataset.stat)) { this.hooks.raised?.(t.dataset.stat); this.render(); }
+    // ▲ only places a point; Confirm locks them all in, Reset takes back what isn't locked in
+    if (act === 'raise') {
+      const k = t.dataset.stat, v = this.prog.stats[k] + (this.pend[k] || 0);
+      if (v < 99 && statCost(v) <= this.prog.statPoints - this.pendCost()) { this.pend[k] = (this.pend[k] || 0) + 1; this.hooks.ui?.(); this.render(id); }
+    }
+    if (act === 'statreset') { this.pend = {}; this.hooks.ui?.(); this.render(id); }
+    if (act === 'statconfirm') {
+      for (const [k, n] of Object.entries(this.pend)) for (let i = 0; i < n; i++) this.prog.raise(k);
+      this.pend = {};
+      this.hooks.raised?.();
+      this.render();
+    }
     if (act === 'learn') this.hooks.learn?.(t.dataset.id);
     if (act === 'jobchange') { this.hooks.jobChange?.(t.dataset.id); this.close('talk'); }
     if (act === 'shop') { this.close('talk'); this.openShop(this.npc); }

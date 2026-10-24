@@ -29,9 +29,9 @@ export const STORY = [
   // ---------- Prologue: the tutorial ----------
   { id: 'wake', ch: 'Prologue', title: 'Awake by the Fire', kind: 'talk', npc: 'bram', goal: 'Talk to Elder Halvard by the campfire',
     say: [['bram', 'Welcome to Eldrun, the last fire-ring of Aria. If you mean to stay, you must learn to stand on your own two feet.'],
-      ['bram', 'First, know your strength. Open the Status window (the button under your HP) and raise a stat with ▲. POW for a strong arm, KNL for a sharp mind.']],
+      ['bram', 'First, know your strength. Open the Status window (the button under your HP), place points with ▲ and press Confirm to lock them in. POW for a strong arm, KNL for a sharp mind.']],
     reward: { xp: 4, items: { potion: 3 } } },
-  { id: 'stats', ch: 'Prologue', title: 'Know Your Strength', kind: 'stat', goal: 'Open the Status window and raise a stat with ▲',
+  { id: 'stats', ch: 'Prologue', title: 'Know Your Strength', kind: 'stat', goal: 'Open the Status window, place a point with ▲ and press Confirm',
     say: [['bram', 'Good. Now, the slimes have been at our stores again. Go through the north portal to Mosvangr and chase off three Green Slimes. Tap a monster to fight it, and tap what it drops to pick it up.']],
     reward: { xp: 4 } },
   { id: 'slimes', ch: 'Prologue', title: 'Into Mosvangr', kind: 'kill', mob: 'slime', n: 3, map: 'grove', goal: 'Defeat 3 Green Slimes in Mosvangr (north portal)',

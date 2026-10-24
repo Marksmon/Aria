@@ -460,6 +460,10 @@ button.eq:active { background: var(--w-sel); }
 .stt.stats th small { margin-left: 6px; font-weight: 400; color: var(--w-dim); font-size: 10px; }
 .stt.stats .sv em { font-style: normal; color: var(--w-gold); margin-left: 2px; }
 .stt.battle td { text-align: right; }
+.stt.stats tr.pending td.sv { color: #8fd060; font-weight: 700; }
+.stt.stats .sv i { font-style: normal; font-size: 10px; color: #8fd060; margin-left: 3px; }
+.strow { display: flex; gap: 4px; align-items: center; padding: 4px 6px; border-bottom: 1px solid var(--w-line2); }
+.strow .rtag { margin-right: auto; white-space: normal; }
 .splus { width: 13px; height: 12px; padding: 0; margin-right: 2px; border: 1px solid var(--w-line); border-radius: 2px; background: var(--w-btn); color: var(--w-gold); font: 7px/9px sans-serif; vertical-align: middle; }
 .splus:disabled { visibility: hidden; }
 
