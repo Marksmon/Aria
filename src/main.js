@@ -60,9 +60,12 @@ const SPAWNS = {
 };
 
 const save = loadSave();
+let lookBefore = null; // the look kept, while one is being tried on
 mobs.mvpAt = save?.mvpAt || 0;
 const player = new Player(scene, world, lib.player, lib.shadow, fx);
 player.setPos(save?.x ?? world.spawn.x, save?.z ?? world.spawn.z);
+if (save?.look) player.setLook(save.look);
+lookBefore = { ...player.look };
 const prog = new Progress();
 prog.load(save?.prog);
 const quests = new Quests();
@@ -462,6 +465,22 @@ const menus = new Menus(inv, prog, player, {
   soundOn: () => audio.enabled,
   toggleSound() { audio.setEnabled(!audio.enabled); },
   closed() { persist(); },
+  // the hair picker tries looks on as you choose; lookDone keeps one (the stylist charges for it)
+  look(l) { player.setLook(l); },
+  currentLook: () => ({ ...player.look }),
+  lookDone(l, mode) {
+    if (mode === 'stylist') {
+      if (inv.perz < 1000) { player.setLook(lookBefore); menus.message('Not enough perz'); return; }
+      inv.perz -= 1000;
+      inv.changed();
+      menus.message('Embla steps back, pleased: "Like a hero of the songs!"');
+    }
+    player.setLook(l);
+    lookBefore = { ...player.look };
+    audio.play('craft');
+    persist();
+    if (mode === 'new') startStory();
+  },
 });
 menus.quests = quests;
 const portraits = {};
@@ -481,14 +500,12 @@ const hotbar = new Hotbar(document.getElementById('hotbar'), inv, {
   use(s) { if (s.kind === 'skill') useSkill(s.id); else useItem(s.id); },
   cooldown(s) {
     if (s.kind !== 'skill') return 0;
-    if (s.id === 'dodge') return Math.max(0, player.rollCd / 0.75);
     return SKILLS[s.id].cd ? Math.max(0, (skillCd[s.id] || 0) / SKILLS[s.id].cd) : 0;
   },
   changed() { if (menus.open) menus.render(); persist(); },
 });
 hotbar.load(save?.hotbar);
 menus.hotbar = hotbar;
-let wantDodge = false;
 
 // ---------- items and skills in use ----------
 const roll = ([a, b]) => a + Math.floor(Math.random() * (b - a + 1));
@@ -525,7 +542,6 @@ function useSkill(id) {
   };
   const say = (text) => fx.number(player.x, overHead(player, 1.6), player.z, text, 'skill');
   const y = world.heightAt(player.x, player.z);
-  if (id === 'dodge') { wantDodge = true; return; }
   if (id === 'rest') { if (player.state === 'sit') player.standUp(); else player.sit('sit'); return; }
   if (id === 'guard') {
     if (player.state === 'normal' && pay()) { player.endureT = 4; endureGuard = 0.15; say('Guard'); audio.play('block'); }
@@ -814,7 +830,7 @@ let questZone = null, questT = 0;
 let resetting = false;
 function persist() {
   if (!started || resetting) return;
-  writeSave({ story: story.toJSON(), map: world.id, mvpAt: mobs.mvpAt, x: player.x, z: player.z, yaw: cam.yaw, dist: cam.dist, hp: player.hp, sp: player.sp, inv: inv.toJSON(), prog: prog.toJSON(), quests: quests.toJSON(), hotbar: hotbar.toJSON(), time: dayNight.t });
+  writeSave({ story: story.toJSON(), look: player.look, map: world.id, mvpAt: mobs.mvpAt, x: player.x, z: player.z, yaw: cam.yaw, dist: cam.dist, hp: player.hp, sp: player.sp, inv: inv.toJSON(), prog: prog.toJSON(), quests: quests.toJSON(), hotbar: hotbar.toJSON(), time: dayNight.t });
 }
 
 const clock = new THREE.Clock();
@@ -836,13 +852,8 @@ function frame() {
   const live = started;
   const clicks = input.takeClicks();
   if (live) for (const c of clicks) tap(c.x, c.y);
-  const ctl = { dodge: live && (input.tapped('dodge') || wantDodge) };
-  wantDodge = false;
-  if (!live) input.tapped('dodge');
 
-  const wasRoll = player.state === 'roll';
-  player.update(live ? dt : 0, b, ctl, mobs);
-  if (!wasRoll && player.state === 'roll') audio.play('dodge');
+  player.update(live ? dt : 0, b, mobs);
   if (live && player.moving && player.state === 'normal') {
     stepT -= dt;
     if (stepT <= 0) { stepT = 0.33 / player.speedMul; audio.play('step'); }
@@ -925,7 +936,8 @@ tContinue.addEventListener('click', () => {
   setTimeout(() => {
     title.remove();
     ui.showZone(world.id);
-    startStory();
+    if (!save) menus.openLook('new', player.look); // a new character: choose your hair first
+    else startStory();
     const hint = document.getElementById('hint');
     hint.classList.add('show');
     setTimeout(() => hint.classList.remove('show'), 6000);

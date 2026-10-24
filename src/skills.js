@@ -22,10 +22,6 @@ export const SKILLS = {
     name: 'Mend', job: 'novice', kind: 'active', max: 1, free: { jobLv: 1 }, sp: () => 4, cd: 2, icon: 'skill_mend',
     desc: () => 'Bind a wound: heals 5 HP plus 3% of your Max HP.',
   },
-  dodge: {
-    name: 'Dodge Roll', job: 'novice', kind: 'active', max: 1, free: { jobLv: 1 }, cd: 0.75, icon: 'skill_dodge',
-    desc: () => 'Dive out of the way, briefly untouchable.',
-  },
   thrust: {
     name: 'Thrust', job: 'novice', kind: 'active', max: 1, free: { jobLv: 3 }, target: 'mob', range: 1.35, sp: () => 3, icon: 'skill_thrust',
     desc: () => 'A quick stab with the point: 125% damage.',

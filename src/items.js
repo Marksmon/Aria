@@ -149,7 +149,8 @@ export const canWear = (id, job) => !ITEMS[id]?.jobs || ITEMS[id].jobs.includes(
 // who can wear it, for item descriptions
 export const jobLine = (it) => (it.jobs ? it.jobs.map((j) => JOB_NAMES[j]).join(', ') + ' only' : 'All jobs');
 
-export const SLOTS = { head: 'Head', face: 'Face', weapon: 'Weapon', shield: 'Shield', garment: 'Garment', armor: 'Armor', shoes: 'Shoes', light: 'Light', acc: 'Accessory', acc2: 'Accessory' };
+// headgear has Ragnarok's three positions: Upper (head), Middle (face: eyes) and Lower (low: mouth)
+export const SLOTS = { head: 'Upper', face: 'Middle', low: 'Lower', weapon: 'Weapon', shield: 'Shield', garment: 'Garment', armor: 'Armor', shoes: 'Shoes', light: 'Light', acc: 'Accessory', acc2: 'Accessory' };
 
 // one line on what a piece of equipment does
 export function equipLine(it) {
@@ -511,13 +512,6 @@ const PAINT = {
     shape(g, () => { g.moveTo(26, 30); g.lineTo(38, 30); g.lineTo(35, 58); g.lineTo(29, 58); g.closePath(); }, '#8a5a33');
     shape(g, () => { g.moveTo(22, 30); g.quadraticCurveTo(20, 16, 32, 4); g.quadraticCurveTo(44, 16, 42, 30); g.closePath(); }, '#f59a2b');
     g.beginPath(); g.moveTo(27, 28); g.quadraticCurveTo(27, 18, 32, 12); g.quadraticCurveTo(37, 18, 37, 28); g.fillStyle = '#ffe27a'; g.fill();
-  },
-  // Dodge Roll: a curved dash arrow with speed lines
-  skill_dodge: (g) => {
-    shape(g, () => g.arc(32, 32, 26, 0, Math.PI * 2), '#4a78b5');
-    g.beginPath(); g.arc(30, 36, 14, Math.PI * 0.95, Math.PI * 2.1); g.strokeStyle = '#fff4dc'; g.lineWidth = 6; g.stroke();
-    shape(g, () => { g.moveTo(44, 28); g.lineTo(52, 42); g.lineTo(37, 41); g.closePath(); }, '#fff4dc', 2.5);
-    for (const [y, w] of [[22, 10], [30, 14], [38, 8]]) { g.beginPath(); g.moveTo(10, y); g.lineTo(10 + w, y); g.strokeStyle = 'rgba(255,244,220,.7)'; g.lineWidth = 3; g.stroke(); }
   },
   skill_lore: (g) => skillIcon(g, '#7a8a9a', () => { g.beginPath(); g.moveTo(32, 14); g.lineTo(40, 32); g.lineTo(32, 50); g.lineTo(24, 32); g.closePath(); g.stroke(); g.beginPath(); g.arc(32, 32, 3, 0, 7); g.fill(); }),
   skill_rest: (g) => skillIcon(g, '#6b8a5a', () => { g.beginPath(); g.arc(28, 20, 6, 0, 7); g.fill(); g.beginPath(); g.moveTo(28, 27); g.lineTo(30, 40); g.lineTo(44, 40); g.lineTo(44, 50); g.stroke(); }),

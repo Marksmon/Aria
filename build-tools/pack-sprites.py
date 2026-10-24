@@ -24,6 +24,8 @@ MIRROR = {'right': 'left', 'left': 'right'}
 #            x, crown): {'down': [x1, y1, x2, y2], 'right': [x, y]}. Without it they are detected.
 #   skip:    export animations left out of the sheet (tries that weren't used)
 #   mirror:  (anim, direction) pairs drawn as the mirror of the opposite side
+#   strip:   cut the head off every frame (Ragnarok-style bodies: the game draws the head and hair
+#            as their own layers at the neck; see pack-heads.py). The head data stays as anchors.
 #   outline: (pixels, colour) border traced around the silhouette. colour 'shade' tints each
 #            border pixel a dark shade of the colour beside it, like Ragnarok Online sprites
 # (the first player, art/pixellab/player_v1, needed 'mirror': {('attack', 'right')}: its east
@@ -32,12 +34,12 @@ MIRROR = {'right': 'left', 'left': 'right'}
 CHARS = {name: {} for name in ['slime', 'blueslime', 'sprout', 'crab', 'mushling', 'beetle', 'wisp', 'jarl']}
 # even 8-frame template walk (the first one limped); front and back redone as a skeleton walk,
 # where the template's legs barely moved
-CHARS['player'] = {'eight': True, 'use': {'walk': 'walking'}, 'prefer': {'walking-e8b5c561'}, 'skip': {'stepv3'},
+CHARS['player'] = {'eight': True, 'use': {'walk': 'walking'}, 'prefer': {'walking-e8b5c561'}, 'skip': {'stepv3', 'dodge'}, 'strip': True,
                    'eyes': {'down': [-4.5, 20, 5.5, 20], 'right': [4.5, 19.5]}}
 CHARS.update({name: {'eight': True} for name in ['bram', 'tilly', 'wren', 'hild', 'gunnar', 'ragna', 'ulfr', 'saeunn']})
-CHARS['novice'] = {'eight': True, 'use': {'walk': 'walking'},  # skeleton walk in all eight directions
+CHARS['novice'] = {'eight': True, 'use': {'walk': 'walking'}, 'skip': {'dodge'}, 'strip': True,  # skeleton walk in all eight directions
                    'eyes': {'down': [-5, 19, 6, 19], 'right': [6, 18]}}
-CHARS['sorcerer'] = {'eight': True, 'use': {'walk': 'walking'}}  # the Sorcerer, made like the Trainee
+CHARS['sorcerer'] = {'eight': True, 'use': {'walk': 'walking'}, 'skip': {'dodge'}, 'strip': True}  # the Sorcerer, made like the Trainee
 
 
 def islands(f):
@@ -101,6 +103,47 @@ def outline(f, width, colour):
                 r, g, b = (sum(p[k] for p in near) / len(near) for k in range(3))
                 px[x, y] = (int(r * 0.38), int(g * 0.32), int(b * 0.3), 255)
     return out
+
+
+def body_colours(art, box, layout):
+    """Colours that belong to the body (clothes, weapon), not the head: common below the neck in the
+    standing poses and rare inside the head."""
+    head, body = {}, {}
+    for d in art:
+        f = art[d]['idle'][0].crop(box)
+        cx, crown, neck, w = layout[d]['idle'][3][0][:4]
+        px = f.load()
+        for y in range(f.height):
+            for x in range(f.width):
+                c = px[x, y]
+                if c[3] <= 128:
+                    continue
+                inside = crown <= y < neck and abs(x - cx) <= w / 2
+                bucket = head if inside else body if y >= neck + 4 else None
+                if bucket is not None:
+                    bucket[c[:3]] = bucket.get(c[:3], 0) + 1
+    return {c for c, n in body.items() if n > 6 and n > head.get(c, 0) * 2}
+
+
+def strip_head(f, h, keep, hair):
+    """Remove the head from one frame: everything in the head's ellipse that isn't a body colour,
+    dark outline pixels in it too (the head's outline), and hair-coloured spikes reaching past it."""
+    cx, crown, neck, w = h[:4]
+    f = f.copy()
+    px = f.load()
+    lum = lambda c: 0.3 * c[0] + 0.59 * c[1] + 0.11 * c[2]
+    near_hair = lambda c: any(abs(c[0] - q[0]) + abs(c[1] - q[1]) + abs(c[2] - q[2]) < 30 for q in hair)
+    ex, ey = cx + 0.5, (crown + neck) / 2
+    rx, ry = w / 2 + 3, (neck - crown) / 2 + 3
+    for y in range(max(0, int(crown - 10)), min(f.height, int(neck + 2))):
+        for x in range(max(0, int(cx - w)), min(f.width, int(cx + w + 1))):
+            c = px[x, y]
+            if not c[3]:
+                continue
+            inside = ((x - ex) / rx) ** 2 + ((y - ey) / ry) ** 2 <= 1
+            if (inside and (c[:3] not in keep or lum(c) < 60)) or (y < neck - (neck - crown) * 0.3 and near_hair(c)):
+                px[x, y] = (0, 0, 0, 0)
+    return f
 
 
 def load(name, eight=False, prefer=(), skip=()):
@@ -261,6 +304,29 @@ def pack(name, opts):
     body = [max(b[2] - b[0] for b in idle), max(b[3] - b[1] for b in idle)]
     # foot: pixels from the frame's bottom edge up to where it stands (effects can reach lower)
     foot = fh - max(b[3] for b in idle)
+    # hair colours: the commonest colours at the top of the head in the standing poses, so headgear
+    # can hide the hair it covers (and only hair, not a sword raised over the head)
+    from collections import Counter
+    tally = Counter()
+    for d in art:
+        f = art[d]['idle'][0].crop(box)
+        hd = layout[d]['idle'][3][0]
+        px = f.load()
+        for y in range(hd[1], hd[1] + max(2, int(bh * 0.09))):
+            for x in range(max(0, hd[0] - hd[3] // 2), min(fw, hd[0] + hd[3] // 2)):
+                r, g, b, a = px[x, y]
+                if a > 128:
+                    tally[(r // 8 * 8 + 4, g // 8 * 8 + 4, b // 8 * 8 + 4)] += 1
+    total, hair = sum(tally.values()), []
+    for c, n in tally.most_common(12):
+        if n < total * 0.02:
+            break
+        hair.append(list(c))
+    if opts.get('strip'):  # Ragnarok-style body: the head comes off, its anchors stay
+        keep = body_colours(art, box, layout) - {tuple(c) for c in hair}
+        for d in layout:
+            for anim, (r, n, _, hs) in layout[d].items():
+                rows[r] = [strip_head(f, h, keep, hair) for f, h in zip(rows[r], hs)]
     cols = max(len(r) for r in rows)
     sheet = Image.new('RGBA', (cols * fw, len(rows) * fh))
     for y, r in enumerate(rows):
@@ -293,24 +359,6 @@ def pack(name, opts):
             for anim, entry in layout[d].items():
                 entry[3] = [h[:4] + [round((h[0] if i % 2 == 0 else h[1]) + v, 1) for i, v in enumerate(o)] for h in entry[3]]
 
-    # hair colours: the commonest colours at the top of the head in the standing poses, so headgear
-    # can hide the hair it covers (and only hair, not a sword raised over the head)
-    from collections import Counter
-    tally = Counter()
-    for d in art:
-        f = art[d]['idle'][0].crop(box)
-        hd = layout[d]['idle'][3][0]
-        px = f.load()
-        for y in range(hd[1], hd[1] + max(2, int(bh * 0.09))):
-            for x in range(max(0, hd[0] - hd[3] // 2), min(fw, hd[0] + hd[3] // 2)):
-                r, g, b, a = px[x, y]
-                if a > 128:
-                    tally[(r // 8 * 8 + 4, g // 8 * 8 + 4, b // 8 * 8 + 4)] += 1
-    total, hair = sum(tally.values()), []
-    for c, n in tally.most_common(12):
-        if n < total * 0.02:
-            break
-        hair.append(list(c))
     json.dump({'fw': fw, 'fh': fh, 'body': body, 'foot': foot, 'hair': hair, 'anims': layout}, open(os.path.join(OUT, name + '.json'), 'w'))
     print(name, 'frame', fw, 'x', fh, 'body', body, 'foot', foot, 'sheet', sheet.size, os.path.getsize(os.path.join(OUT, name + '.png')), 'bytes')
 

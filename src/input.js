@@ -1,6 +1,6 @@
 // Ragnarok-style controls: tap (or click) the world to walk, attack, pick up or talk.
 // Touch: drag one finger to rotate the camera, pinch to zoom. Desktop: click, drag or Q/E to
-// rotate, mouse wheel to zoom. Keys: K / Shift dodge roll; windows like Ragnarok: Alt+E (or I / B)
+// rotate, mouse wheel to zoom. Windows like Ragnarok: Alt+E (or I / B)
 // items, Alt+Q equipment, Alt+S skills, Alt+A status, Esc closes them.
 
 const TAP_MOVE = 12;   // px a press may wander and still count as a tap
@@ -14,7 +14,7 @@ export class Input {
     this.keys = new Set();
     this.lastPinch = 0;
     this.enabled = false;
-    this.taps = new Set();   // one-shot presses: dodge, windows (items, equip, skills, status, close)
+    this.taps = new Set();   // one-shot presses: windows (items, equip, skills, status, close)
     this.clicks = [];        // world taps: { x, y } in CSS pixels
 
     const opts = { passive: false };
@@ -25,7 +25,6 @@ export class Input {
     window.addEventListener('keydown', (e) => {
       const k = e.key.toLowerCase();
       if (!e.repeat) {
-        if (k === 'k' || k === 'shift') this.taps.add('dodge');
         const win = e.altKey ? { e: 'items', q: 'equip', s: 'skills', a: 'status' }[k] : { i: 'items', b: 'items', escape: 'close' }[k];
         if (win) { e.preventDefault(); this.taps.add(win); }
       }

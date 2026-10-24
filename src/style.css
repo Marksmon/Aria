@@ -517,3 +517,14 @@ button.eq:active { background: var(--w-sel); }
 #castbar.show { opacity: 1; }
 #castbar i { display: block; height: 7px; margin-top: 2px; border: 1px solid #2e2118; border-radius: 4px; background: rgba(20, 26, 40, .75); overflow: hidden; }
 #castbar b { display: block; height: 100%; width: 0; background: linear-gradient(#bfe0ff, #5a8ce8); }
+
+/* the hair picker */
+.lookwrap { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 8px; }
+.lookpic { width: 96px; height: 96px; image-rendering: pixelated; background: rgba(255, 255, 255, .06); border-radius: 8px; }
+.lookrow { display: flex; align-items: center; gap: 10px; }
+.lookrow b { min-width: 70px; text-align: center; color: var(--w-gold); }
+.swatches { display: flex; gap: 5px; flex-wrap: wrap; justify-content: center; }
+.swatch { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--w-line); padding: 0; }
+.swatch.on { border-color: #fff; box-shadow: 0 0 0 2px var(--w-gold); }
+.lookwrap small { color: var(--w-dim); }
+.lookwrap .btnrow { display: flex; gap: 6px; }

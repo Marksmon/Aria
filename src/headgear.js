@@ -230,29 +230,25 @@ export function headgearIcon(g, id) {
 // which view a sprite direction shows
 const VIEW = { down: 'front', downleft: 'front', downright: 'front', right: 'side', left: 'sideL', up: 'back', upleft: 'back', upright: 'back' };
 
-// One headgear layer over a character sprite. Call update() after the body's frame is set.
-// hair: the wearer's hair colours as shared uniforms ({ uHair, uHairN }). A face piece is masked by
-// the body under it: where it would cross the wearer's hair or leave the head's outline (a pair of
-// glasses' arms going back over the hair) its arms are hidden, the way they tuck under real hair;
-// the lenses themselves always show. Face pieces sit on the eyes the sprite packer found.
+// One headgear layer over a character. Call update() after the head layer is placed: Ragnarok
+// style, a piece snaps to the head, not the body. geo is the head's geometry in body-frame pixels
+// ({ x, crown, neck, w, eyes, sprite }, from Player.placeHead); without it (an older sprite with
+// its head drawn in) the packer's per-frame head is used. A face piece's arms and hinges are hidden
+// where they would leave the head's outline, the way they tuck behind the head; the lenses always
+// show, on the head's measured eyes.
 export class HeadLayer {
-  constructor(scene, hair) {
+  constructor(scene) {
     this.mat = new THREE.SpriteMaterial({ alphaTest: 0.5 });
-    this.mask = { uBody: { value: null }, uXf: { value: new THREE.Vector4() }, uMask: { value: 0 }, ...hair };
+    this.mask = { uBody: { value: null }, uXf: { value: new THREE.Vector4() }, uMask: { value: 0 } };
     this.mat.onBeforeCompile = (sh) => {
       Object.assign(sh.uniforms, this.mask);
       sh.fragmentShader = sh.fragmentShader
-        .replace('void main() {', 'uniform sampler2D uBody;\nuniform vec4 uXf;\nuniform float uMask;\nuniform vec3 uHair[12];\nuniform int uHairN;\nvoid main() {')
+        .replace('void main() {', 'uniform sampler2D uBody;\nuniform vec4 uXf;\nuniform float uMask;\nvoid main() {')
         .replace('#include <map_fragment>', `#include <map_fragment>
         if (uMask > 0.5 && sampledDiffuseColor.a < 0.995) { // an arm or hinge (pack-headgear marks them)
           vec2 bu = vec2(vMapUv.x * uXf.x + uXf.y, vMapUv.y * uXf.z + uXf.w);
           vec4 b = texture2D(uBody, bu);
-          if (b.a < 0.5 || bu.x < 0.0 || bu.x > 1.0 || bu.y < 0.0 || bu.y > 1.0) discard;
-          vec3 c = pow(max(b.rgb, vec3(0.0)), vec3(1.0 / 2.2));
-          for (int i = 0; i < 12; i++) {
-            if (i >= uHairN) break;
-            if (dot(uHair[i], vec3(0.3, 0.59, 0.11)) > 0.2 && distance(c, uHair[i]) < 0.08) discard; // under the hair
-          }
+          if (b.a < 0.5 || bu.x < 0.0 || bu.x > 1.0 || bu.y < 0.0 || bu.y > 1.0) discard; // off the head
         }`);
     };
     this.sprite = new THREE.Sprite(this.mat);
@@ -271,7 +267,7 @@ export class HeadLayer {
 
   // a PixelLab piece: scaled from its front view to the head's width, then sat on the head
   updateImage(pc, body, tex, dir, fw, fh) {
-    const h = tex.userData.head, slot = HEADGEAR[this.id].slot, fit = fitOf(this.id);
+    const h = this.geo, slot = HEADGEAR[this.id].slot, fit = fitOf(this.id);
     if (fit.dirs?.[dir]) Object.assign(fit, fit.dirs[dir]); // fitOf() returns a fresh copy
     if (fit.swap?.[dir]) dir = fit.swap[dir];
     const cell = pc.L.dirs[dir], front = pc.L.dirs.down;
@@ -303,20 +299,24 @@ export class HeadLayer {
     this.mat.color.copy(body.material.color);
     this.sprite.visible = true;
     this.cover = { cx: px, half: (cell[6] * k) / upp / 2, y: py };
-    // face pieces: map this layer's texture coordinates onto the body frame's, for the mask
-    this.mask.uMask.value = slot === 'face' ? 1 : 0;
-    if (slot === 'face') {
-      const W = body.scale.x, Hb = body.scale.y, c = this.sprite.center;
-      this.mask.uBody.value = tex;
-      this.mask.uXf.value.set(HW / W, 0.5 - (c.x * HW) / W, HH / Hb, body.center.y - (c.y * HH) / Hb);
+    // face pieces: map this layer's texture coordinates onto the head layer's (or the body
+    // frame's), for the mask
+    const under = h.sprite || body;
+    this.mask.uMask.value = slot === 'face' && under.material.map ? 1 : 0;
+    if (this.mask.uMask.value) {
+      const W = under.scale.x, Hb = under.scale.y, c = this.sprite.center, uc = under.center;
+      this.mask.uBody.value = under.material.map;
+      this.mask.uXf.value.set(HW / W, uc.x - (c.x * HW) / W, HH / Hb, uc.y - (c.y * HH) / Hb);
     }
   }
 
-  // body: the character's sprite; tex: its current frame; dir: sprite direction; fw, fh: frame size
-  update(body, tex, dir, fw, fh, show) {
+  // body: the character's sprite; tex: its current frame; dir: sprite direction; fw, fh: frame size;
+  // geo: the head layer's geometry (see the class comment)
+  update(body, tex, dir, fw, fh, show, geo) {
+    this.geo = geo || tex.userData.head;
     const pc = this.id && imagePiece(this.id);
-    if (pc && show && tex.userData.head && body.visible) { this.updateImage(pc, body, tex, dir, fw, fh); return; }
-    const h = tex.userData.head, v = !pc && this.id && headgearViews(this.id);
+    if (pc && show && this.geo && body.visible) { this.updateImage(pc, body, tex, dir, fw, fh); return; }
+    const h = this.geo, v = !pc && this.id && headgearViews(this.id);
     const view = v && v[VIEW[dir] || 'front'];
     if (!show || !h || !view || !body.visible) { this.sprite.visible = false; return; }
     const def = v.def, [cw, ch] = def.size, [ax, ay] = def.anchor;

@@ -533,7 +533,8 @@ export function createSprites() {
   };
   // the camp's and Steinborg's people (one still being drawn borrows the Elder's look)
   const villagers = {};
-  for (const id of ['bram', 'tilly', 'wren', 'hild', 'gunnar', 'ragna', 'ulfr', 'saeunn']) villagers[id] = SHEETS[`./art/${id}.png`] ? sheet(id) : null;
+  for (const id of ['bram', 'tilly', 'wren', 'hild', 'gunnar', 'ragna', 'ulfr', 'saeunn', 'embla']) villagers[id] = SHEETS[`./art/${id}.png`] ? sheet(id) : null;
+  villagers.embla ||= villagers.hild; // the stylist borrows the trader's look until her own is drawn
   for (const id in villagers) villagers[id] ||= villagers.bram;
 
   return {

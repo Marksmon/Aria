@@ -6,6 +6,7 @@ import { ITEMS, RECIPES, SLOTS, SHOPS, PRICES, sellPrice, equipLine, iconURL, ca
 import { BAG_SLOTS, CHEST_SLOTS } from './inventory.js';
 import { STATS, STAT_KEYS, JOBS } from './progress.js';
 import { statCost } from './ro-tables.js';
+import { HAIRSTYLES, DYES, hairstyles, lookPortrait } from './hair.js';
 import { NPCS } from './quests.js';
 import { SKILLS, skillList, skillLv, learnBlock, spCost } from './skills.js';
 
@@ -23,6 +24,7 @@ const WINDOWS = {
   shop:   { title: 'Shop',       at: [0.50, 0.14], w: 300 },
   talk:   { title: '',           at: [0.50, 0.22], w: 320 },
   story:  { title: '',           at: [0.50, 0.20], w: 340 },
+  look:   { title: 'Your Look',  at: [0.50, 0.16], w: 260 },
 };
 const POS_KEY = 'aria.windows';
 
@@ -77,6 +79,7 @@ export class Menus {
     for (const k of id ? [id] : Object.keys(this.wins)) {
       if (k === 'story' && this.wins[k]) story = true;
       if (k === 'status') this.pend = {}; // points not confirmed are taken back
+      if (k === 'look' && this.wins[k]) this.hooks.look?.(this.lookFrom); // trying on: the old look back
       this.wins[k]?.remove();
       delete this.wins[k];
     }
@@ -97,6 +100,27 @@ export class Menus {
     this.close('talk');
     this.show('story');
     this.wins.story.querySelector('.rw-title').textContent = title;
+  }
+
+  // the hair picker: a new character's look, or the Stylist's chair (mode 'new' | 'stylist')
+  openLook(mode, look) {
+    this.lookMode = mode;
+    this.lookFrom = { ...look };
+    this.lookDraft = { ...look };
+    this.close('talk');
+    this.show('look');
+    this.wins.look.querySelector('.rw-title').textContent = mode === 'new' ? 'Your Look' : "Embla's Chair";
+  }
+
+  look() {
+    const d = this.lookDraft, styles = hairstyles(), changed = d.hair !== this.lookFrom.hair || d.dye !== this.lookFrom.dye;
+    const price = this.lookMode === 'stylist' ? 1000 : 0;
+    return `<div class="lookwrap"><img class="lookpic" src="${lookPortrait(d, 96)}" alt="">
+      <div class="lookrow"><button class="rbtn soft" data-act="lookhair" data-id="-1">◀</button><b>${esc(HAIRSTYLES[d.hair] || d.hair)}</b><button class="rbtn soft" data-act="lookhair" data-id="1">▶</button></div>
+      <div class="swatches">${Object.entries(DYES).map(([k, v]) => `<button class="swatch${d.dye === k ? ' on' : ''}" data-act="lookdye" data-id="${k}" title="${esc(v.name)}" style="background:${v.swatch}"></button>`).join('')}</div>
+      <small>${esc(DYES[d.dye].name)} · ${styles.length} hairstyles</small>
+      <div class="btnrow">${this.lookMode === 'new' ? '' : '<button class="rbtn soft" data-act="close">Cancel</button>'}
+        <button class="rbtn" data-act="lookok" ${this.lookMode === 'stylist' && (!changed || this.inv.perz < price) ? 'disabled' : ''}>${this.lookMode === 'new' ? 'Begin' : `Change · ${price.toLocaleString()} perz`}</button></div></div>`;
   }
 
   openShop(id) {
@@ -227,7 +251,7 @@ export class Menus {
       if (!it) return `<div class="eq ${side} off"><i></i><span>${label}</span></div>`;
       return `<button class="eq ${side}" data-act="unequip" data-id="${key}" title="${esc(it.name)}${equipLine(it) ? ' · ' + equipLine(it) : ''} (tap to take off)">${icon(id, 'eqi')}<span>${esc(it.name)}</span></button>`;
     };
-    const left = [slot('head', 'head', 'l'), slot('face', 'face', 'l'), slot('armor', 'armor', 'l'), slot('weapon', 'weapon', 'l'), slot('accessory', 'acc', 'l')];
+    const left = [slot('upper', 'head', 'l'), slot('middle', 'face', 'l'), slot('lower', 'low', 'l'), slot('armor', 'armor', 'l'), slot('weapon', 'weapon', 'l'), slot('accessory', 'acc', 'l')];
     const right = [slot('garment', 'garment', 'r'), slot('shield', 'shield', 'r'), slot('shoes', 'shoes', 'r'), slot('accessory', 'acc2', 'r'), slot('light', 'light', 'r')];
     return `<div class="equipwrap"><div class="ecol">${left.join('')}</div><div class="eme"><img src="${this.portrait?.('player') || ''}" alt=""></div><div class="ecol">${right.join('')}</div></div>
       <div class="rfoot"><span>Tap a piece to take it off</span></div>`;
@@ -347,7 +371,8 @@ export class Menus {
     const n = NPCS[this.npc], st = this.quests.status(this.npc, this.prog, this.inv), p = this.prog;
     let text, box = '', btns = '<button class="rbtn soft" data-act="close">Bye</button>';
     // what else they do: trade and craft
-    const extra = (n.shop ? '<button class="rbtn" data-act="shop">Buy / Sell</button>' : '')
+    const extra = (n.stylist ? '<button class="rbtn" data-act="stylist">Change my look</button>' : '')
+      + (n.shop ? '<button class="rbtn" data-act="shop">Buy / Sell</button>' : '')
       + (n.craft ? `<button class="rbtn" data-act="craftwin" data-id="${n.craft}">${n.craft === 'gear' ? 'Forge gear' : 'Brew usables'}</button>` : '');
     if (st.state === 'job') { // the trial is done: the job change
       text = `You passed. Will you walk the path of the ${JOBS[n.job].name}?`;
@@ -398,6 +423,19 @@ export class Menus {
     if (!t) return;
     const act = t.dataset.act, inv = this.inv;
     if (act === 'close') this.close(id);
+    if (act === 'lookhair') {
+      const st = hairstyles(), i = st.indexOf(this.lookDraft.hair);
+      this.lookDraft.hair = st[(i + +t.dataset.id + st.length) % st.length];
+      this.hooks.look?.(this.lookDraft); this.hooks.ui?.(); this.render(id);
+    }
+    if (act === 'lookdye') { this.lookDraft.dye = t.dataset.id; this.hooks.look?.(this.lookDraft); this.hooks.ui?.(); this.render(id); }
+    if (act === 'lookok') {
+      const mode = this.lookMode;
+      this.lookFrom = { ...this.lookDraft }; // kept: closing won't put the old look back
+      this.close('look');
+      this.hooks.lookDone?.(this.lookDraft, mode);
+    }
+    if (act === 'stylist') this.openLook('stylist', this.hooks.currentLook());
     if (act === 'storynext') {
       if (this.storyAt < this.storyPages.length - 1) { this.storyAt++; this.render('story'); this.hooks.ui?.(); } else this.close('story');
     }

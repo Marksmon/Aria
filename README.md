@@ -106,7 +106,6 @@ they change your job. Elder Halvard sends ready Trainees on to the city.
 | Basic Training | passive, 9 | +1 ATK per level; Lv 3 Rest; Lv 9 opens the job trials |
 | Rest | from Basic Training 3 | HP and SP recover twice as fast |
 | Mend | Job 1, 4 SP | heals 5 HP + 3% Max HP |
-| Dodge Roll | Job 1 | dive away, briefly untouchable |
 | Thrust | Job 3, 3 SP | a quick stab for 125% damage |
 | Guard | Job 5, 4 SP | 4 s: 15% less damage, no flinching |
 | Footwork | Job 7, passive | +3 FLEE |

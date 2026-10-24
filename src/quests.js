@@ -66,6 +66,13 @@ export const NPCS = {
     trialHint: 'Trainees who have learnt all their basics can take the Blader\'s Trial with me: Trainee Job Level 10 and Basic Training 9.',
     quests: ['russets', 'tidecrabs', 'gloomcaps', 'cinders'],
   },
+  embla: {
+    name: 'Embla the Stylist', map: 'city', x: 37.4, z: 36.2, stylist: true,
+    hello: 'A new cut? A new colour? Sit, sit. For 1,000 perz I make you look like a hero of the songs.',
+    later: (lv) => `Come back at Base Level ${lv}.`,
+    bye: 'You look wonderful. Truly.',
+    quests: [],
+  },
   saeunn: {
     name: 'Saeunn the Seeress', map: 'city', x: 45.6, z: 19.8, trial: 'sorcerer_trial', job: 'mage',
     hello: 'The runes whisper of you. Few hear them.',

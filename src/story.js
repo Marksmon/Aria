@@ -79,7 +79,7 @@ export const STORY = [
       ['saeunn', 'Cut it down. Its roots drink from Glodberg; while it lives, it feeds him.']],
     reward: { xp: 20 } },
   { id: 'matron', ch: 'Chapter 3: Embers in the Wilds', title: 'The Bramble Matron', kind: 'kill', mob: 'matron', n: 1, map: 'birch', goal: 'Defeat the Bramble Matron in Birkilund (east gate)',
-    hint: 'It is a mini-boss: bring draughts, and roll away when it raises itself to stomp.',
+    hint: 'It is a mini-boss: bring draughts, and step out of reach when it rears up to stomp.',
     say: [[null, 'The Matron crumbles into ash and thorns. Deep in its roots, something glows like a coal.']],
     reward: { xp: 120, perz: 400 } },
   { id: 'roots', ch: 'Chapter 3: Embers in the Wilds', title: 'What the Roots Knew', kind: 'talk', npc: 'saeunn', goal: 'Tell Saeunn what you found',

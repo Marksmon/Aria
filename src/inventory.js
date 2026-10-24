@@ -60,7 +60,7 @@ export class Inventory {
   constructor() {
     this.bag = new Store(BAG_SLOTS);
     this.chest = new Store(CHEST_SLOTS);
-    this.gear = { head: null, face: null, shield: null, garment: null, weapon: 'twig_sword', armor: 'clothes', shoes: null, light: null, acc: null, acc2: null }; // slot -> item id (two accessories, like Ragnarok)
+    this.gear = { head: null, face: null, low: null, shield: null, garment: null, weapon: 'twig_sword', armor: 'clothes', shoes: null, light: null, acc: null, acc2: null }; // slot -> item id (two accessories, like Ragnarok)
     this.perz = 0;
     this.listeners = [];
     this.level = () => 1; // set by the game: current Base Level, for recipe requirements

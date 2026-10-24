@@ -2,15 +2,12 @@ import * as THREE from 'three';
 import { dirFor, dirFor8 } from './noise.js';
 import { playerAttack } from './rules.js';
 import { HeadLayer } from './headgear.js';
+import { HEADS, headTexture } from './hair.js';
 
 const BASE_SPEED = 4.2;  // world units per second
 const RADIUS = 0.3;      // collision radius
 const HEIGHT = 1.38;     // standing height in world units
 const STRIDE = 2.6;       // world units covered by one walk cycle, so feet keep pace with the ground
-const ROLL_TIME = 0.4, ROLL_SPEED = 8.4, ROLL_CD = 0.75; // 3.4 units, fast then easing out
-// dodge frames played as dive-and-recover: some directions end lying down (frame 6), so the
-// roll goes into the dive and back out through the earlier frames instead
-const DODGE_SEQ = [1, 2, 3, 4, 5, 3, 1];
 const REACH_MOB = 1.35; // how close (beyond the monster's own radius) before swinging at it
 
 export class Player {
@@ -34,7 +31,7 @@ export class Player {
     this.speedMul = 1;
     this.blockChance = 0;
 
-    this.state = 'normal'; // normal | roll | down (fainted) | sit | feign (Play Dead)
+    this.state = 'normal'; // normal | down (fainted) | sit | feign (Play Dead)
     this.endureT = 0;      // Stand Firm: no flinching
     this.guard = 0;        // share of damage shrugged off (Stand Firm, Last Stand)
     this.atkMul = 1;       // damage bonus from buffs (Magnum Break's fire, Auto Berserk), set by the game
@@ -43,9 +40,6 @@ export class Player {
     this.atkTimer = 0;
     this.atkAnim = 0;
     this.atkDur = 1;
-    this.rollT = 0;
-    this.rollCd = 0;
-    this.rollDir = { x: 0, z: 1 };
     this.iframes = 0;
     this.slowT = 0;
     this.knock = { x: 0, z: 0 };
@@ -60,24 +54,6 @@ export class Player {
     this.stuckT = 0;
 
     this.mat = new THREE.SpriteMaterial({ map: art.anims.down.idle[0], alphaTest: 0.5 });
-    // headgear hides the hair it covers: hair-coloured pixels inside uClip (texture uv: x0, y0, x1,
-    // y1) are dropped. The art's hair colours come from the sprite packer.
-    // uSide: at rim height (y0, y1), hair poking out past the rim's edges (x0, x1) goes too
-    this.clip = { uClip: { value: new THREE.Vector4() }, uSide: { value: new THREE.Vector4() }, uHair: { value: Array.from({ length: 12 }, () => new THREE.Vector3()) }, uHairN: { value: 0 } };
-    this.mat.onBeforeCompile = (sh) => {
-      Object.assign(sh.uniforms, this.clip);
-      sh.fragmentShader = sh.fragmentShader
-        .replace('void main() {', 'uniform vec4 uClip;\nuniform vec4 uSide;\nuniform vec3 uHair[12];\nuniform int uHairN;\nvoid main() {')
-        .replace('#include <map_fragment>', `#include <map_fragment>
-        bool inTop = vMapUv.x > uClip.x && vMapUv.x < uClip.z && vMapUv.y > uClip.y && vMapUv.y < uClip.w;
-        bool inSide = vMapUv.y > uSide.x && vMapUv.y < uSide.y && vMapUv.x > uClip.x && vMapUv.x < uClip.z && (vMapUv.x < uSide.z || vMapUv.x > uSide.w);
-        if (uClip.z > uClip.x && (inTop || inSide)) {
-          vec3 c = pow(max(sampledDiffuseColor.rgb, vec3(0.0)), vec3(1.0 / 2.2));
-          for (int i = 0; i < 12; i++) { if (i >= uHairN) break; if (distance(c, uHair[i]) < 0.06) discard; }
-        }`);
-    };
-    this.hairU = { uHair: this.clip.uHair, uHairN: this.clip.uHairN }; // shared with the headgear
-    this.setHair(art);
     this.sprite = new THREE.Sprite(this.mat);
     const upp = HEIGHT / art.body[1]; // world units per pixel
     this.size = { w: art.fw * upp, h: art.fh * upp };
@@ -92,24 +68,47 @@ export class Player {
       map: shadowTex, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2,
     }));
     scene.add(this.shadow);
-    // worn headgear, drawn over the head of whatever frame shows: top (hats) and face (glasses)
-    this.heads = [new HeadLayer(scene, this.hairU), new HeadLayer(scene, this.hairU)];
+    // Ragnarok-style layers over the headless job body: the bald head (the standard face), the
+    // hairstyle, then headgear (hair.js, headgear.js). All of them follow the body frame's neck anchor.
+    this.look = { hair: 'messy', dye: 'brown' };
+    const layer = (order, mat = new THREE.SpriteMaterial({ alphaTest: 0.5 })) => {
+      const s = new THREE.Sprite(mat);
+      s.renderOrder = order;
+      s.visible = false;
+      scene.add(s);
+      return s;
+    };
+    this.headSpr = layer(2.3);
+    // a hat hides the hair above the line it sets (uCut: texture v; hair above it is dropped)
+    this.hairCut = { uCut: { value: 2 } };
+    const hairMat = new THREE.SpriteMaterial({ alphaTest: 0.5 });
+    hairMat.onBeforeCompile = (sh) => {
+      Object.assign(sh.uniforms, this.hairCut);
+      sh.fragmentShader = sh.fragmentShader
+        .replace('void main() {', 'uniform float uCut;\nvoid main() {')
+        .replace('#include <map_fragment>', '#include <map_fragment>\n        if (vMapUv.y > uCut) discard;');
+    };
+    this.hairSpr = layer(2.6, hairMat);
+    this.headScale = 1;
+    this.setHeadScale(art);
+    // worn headgear: Upper (hats) and Middle (glasses, masks) sit on the head layer's own geometry
+    this.heads = [new HeadLayer(scene), new HeadLayer(scene)];
   }
 
   setHeadgear(top, face) { this.heads[0].set(top); this.heads[1].set(face); }
+  setLook(look) { this.look = { ...this.look, ...look }; }
 
-  setHair(art) {
-    const hair = art.hair || [];
-    this.clip.uHairN.value = Math.min(12, hair.length);
-    hair.slice(0, 12).forEach((c, i) => this.clip.uHair.value[i].set(c[0], c[1], c[2]));
+  // body pixels per head pixel: the bald head fills a little less than the old head (hair on top)
+  setHeadScale(art) {
+    const h = art.anims.down.idle[0].userData.head, d = HEADS?.dirs?.down;
+    if (h && d) this.headScale = ((h.neck - h.crown) / (d.chin[1] - d.crown)) * 0.92;
   }
 
   // a different sprite set (the Novice and the Swordsman look different)
   setArt(art) {
     if (!art || art === this.art) return;
     this.art = art;
-    this.hairU = { uHair: this.clip.uHair, uHairN: this.clip.uHairN }; // shared with the headgear
-    this.setHair(art);
+    this.setHeadScale(art);
     const upp = HEIGHT / art.body[1];
     this.size = { w: art.fw * upp, h: art.fh * upp };
     this.sprite.scale.set(this.size.w, this.size.h, 1);
@@ -139,7 +138,7 @@ export class Player {
     return Math.hypot(this.x - ox, this.z - oz);
   }
 
-  // monsters may attack: not while down or mid-roll
+  // monsters may attack: not while down (or Playing Dead), nor just after reviving
   canBeHit() { return this.state !== 'down' && this.state !== 'feign' && this.iframes <= 0; }
 
   takeDamage(amount, fromX, fromZ) {
@@ -241,17 +240,17 @@ export class Player {
     this.setPos(x, z);
   }
 
-  // cam: camera basis. ctl: { dodge }. mobs: MobManager
-  update(dt, cam, ctl, mobs) {
+  // cam: camera basis. mobs: MobManager
+  update(dt, cam, mobs) {
     this.atkTimer -= dt;
     this.atkAnim -= dt;
-    this.rollCd -= dt;
     this.iframes -= dt;
     this.slowT -= dt;
     this.endureT -= dt;
 
     if (this.state === 'down') {
       this.sync();
+      this.placeHead(); // lies down with the body
       for (const l of this.heads) l.sprite.visible = false;
       return;
     }
@@ -264,7 +263,6 @@ export class Player {
       this.knock.z *= k;
     }
 
-    if (ctl.dodge) { this.standUp(); this.cast = null; }
     if (this.cast) { // standing still, chanting
       const c = this.cast;
       c.t += dt;
@@ -274,23 +272,7 @@ export class Player {
         if (c.t >= c.total) { this.cast = null; this.release(c.run, c.target); }
       }
     }
-    if (ctl.dodge && this.state === 'normal' && this.rollCd <= 0) {
-      this.state = 'roll';
-      this.rollT = ROLL_TIME;
-      this.rollCd = ROLL_CD;
-      this.iframes = Math.max(this.iframes, ROLL_TIME + 0.08);
-      this.rollDir = { ...this.face };
-      const y = this.world.heightAt(this.x, this.z);
-      this.fx.puff(this.x - this.rollDir.x * 0.2, y + 0.1, this.z - this.rollDir.z * 0.2, 0.55);
-    }
-
-    if (this.state === 'roll') {
-      this.rollT -= dt;
-      const sp = ROLL_SPEED * (1.35 - 0.7 * (1 - this.rollT / ROLL_TIME));
-      this.tryMove(this.rollDir.x * sp * dt, this.rollDir.z * sp * dt);
-      this.moving = true;
-      if (this.rollT <= 0) { this.state = 'normal'; this.repath(); }
-    } else if (this.state === 'normal' && !this.cast) this.follow(dt, cam, mobs);
+    if (this.state === 'normal' && !this.cast) this.follow(dt, cam, mobs);
     else if (this.cast) { this.moving = false; this.animT = 0; }
     else { this.moving = false; this.animT = 0; }
 
@@ -299,18 +281,13 @@ export class Player {
     const eight = 'downright' in this.art.anims;
     this.dir = eight ? dirFor8(this.face.x, this.face.z, cam, this.dir) : dirFor(this.face.x, this.face.z, cam);
     const D = this.art.anims[this.dir], S = this.art.anims[dirFor(this.face.x, this.face.z, cam)];
-    const A = { idle: D.idle, walk: D.walk || S.walk, attack: D.attack || S.attack || D.idle, dodge: D.dodge || S.dodge || D.walk || S.walk };
+    const A = { idle: D.idle, walk: D.walk || S.walk, attack: D.attack || S.attack || D.idle };
     let tex = A.idle[0];
-    if (this.state === 'roll') {
-      const k = 1 - this.rollT / ROLL_TIME;
-      tex = A.dodge[DODGE_SEQ[Math.min(DODGE_SEQ.length - 1, Math.floor(k * DODGE_SEQ.length))]];
-    } else if (this.atkAnim > 0) {
+    if (this.atkAnim > 0) {
       const k = 1 - this.atkAnim / this.atkDur;
       tex = A.attack[Math.min(A.attack.length - 1, Math.floor(k * A.attack.length))];
     } else if (this.cast) {
       tex = A.attack[Math.min(1, A.attack.length - 1)]; // staff raised while chanting
-    } else if (this.state === 'sit') {
-      tex = A.dodge[1]; // crouched down
     } else if (this.moving && this.state === 'normal') {
       tex = A.walk[Math.floor(this.animT * A.walk.length) % A.walk.length]; // every frame is part of the cycle
     }
@@ -320,22 +297,41 @@ export class Player {
     this.mat.color.set(this.slowT > 0 ? '#c8e6a0' : '#ffffff');
     if (this.tint) this.mat.color.multiply(this.tint);
     const breathe = this.moving ? 1 : 1 + Math.sin(performance.now() / 420) * 0.015;
-    this.sprite.scale.y = this.size.h * breathe;
+    this.sprite.scale.y = this.size.h * breathe * (this.state === 'sit' ? 0.8 : 1); // resting: settled down low
     this.sprite.visible = !(this.iframes > 0 && this.state === 'normal' && Math.floor(this.iframes * 14) % 2 === 0);
     this.sync();
     const upright = this.state !== 'down' && this.state !== 'feign';
-    for (const l of this.heads) l.update(this.sprite, this.tex, this.dir, this.art.fw, this.art.fh, upright);
-    // hide the hair under the headgear: above the line it sets, across the head and its spikes
-    const hide = Math.max(...this.heads.map((l) => l.hair())), h = this.tex.userData.head;
-    if (hide > 0 && h) {
-      const { fw, fh } = this.art, y = h.crown + (h.neck - h.crown) * hide;
-      this.clip.uClip.value.set((h.x - h.w * 0.8) / fw, 1 - y / fh, (h.x + h.w * 0.8) / fw, 1);
-      const rim = this.heads[0].rim();
-      if (rim) { // a band from the hide line to a little under the rim, outside the rim's width
-        const y1 = rim.y + (h.neck - h.crown) * 0.12;
-        this.clip.uSide.value.set(1 - y1 / fh, 1 - y / fh, (rim.cx - rim.half) / fw, (rim.cx + rim.half) / fw);
-      } else this.clip.uSide.value.set(0, 0, 0, 0);
-    } else this.clip.uClip.value.set(0, 0, 0, 0);
+    const geo = this.placeHead();
+    for (const l of this.heads) l.update(this.sprite, this.tex, this.dir, this.art.fw, this.art.fh, upright, geo);
+    // a hat hides the hair above the line it sets (a share of the head's crown → chin)
+    const hide = Math.max(...this.heads.map((l) => l.hair())), hd = HEADS?.dirs?.[this.dir];
+    this.hairCut.uCut.value = hide > 0 && hd ? 1 - (hd.crown + (hd.chin[1] - hd.crown) * hide) / HEADS.ch : 2;
+  }
+
+  // put the head and hair layers on this frame's neck anchor; returns the head's geometry in body
+  // frame pixels for the headgear ({ x, crown, neck, w, eyes, sprite }), or null
+  placeHead() {
+    const h = this.tex.userData.head, hd = HEADS?.dirs?.[this.dir], body = this.sprite;
+    const head = headTexture('bald', this.dir), hair = headTexture(this.look.hair, this.dir, this.look.dye);
+    if (!h || !hd || !head) { this.headSpr.visible = this.hairSpr.visible = false; return null; }
+    const { fw, fh } = this.art, { cw, ch } = HEADS, S = this.headScale, upp = body.scale.x / fw;
+    const [ax, ay] = hd.chin;
+    const HW = cw * S * upp, HH = ch * S * upp;
+    const dx = (h.x / fw - 0.5) * body.scale.x, dy = (1 - h.neck / fh - body.center.y) * body.scale.y;
+    for (const [spr, tex] of [[this.headSpr, head], [this.hairSpr, hair]]) {
+      if (!tex) { spr.visible = false; continue; }
+      if (spr.material.map !== tex) { if (!spr.material.map) spr.material.needsUpdate = true; spr.material.map = tex; }
+      spr.scale.set(HW, HH, 1);
+      spr.center.set(ax / cw - dx / HW, (1 - ay / ch) - dy / HH);
+      spr.position.copy(body.position);
+      spr.material.color.copy(this.mat.color);
+      spr.material.rotation = this.mat.rotation; // lying down (fainted, Play Dead) turns the head with the body
+      spr.visible = body.visible;
+    }
+    const at = (x, y) => [h.x + (x - ax) * S, h.neck + (y - ay) * S];
+    const eyes = [];
+    for (let i = 0; i < hd.eyes.length; i += 2) eyes.push(...at(hd.eyes[i], hd.eyes[i + 1]));
+    return { x: h.x, crown: h.neck - (ay - hd.crown) * S, neck: h.neck, w: hd.w * S, eyes, sprite: this.headSpr };
   }
 
   // carry out the current order: walk the path, swing at a target in reach, or arrive somewhere
