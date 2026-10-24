@@ -79,7 +79,7 @@ export const STORY = [
       ['saeunn', 'Cut it down. Its roots drink from Glodberg; while it lives, it feeds him.']],
     reward: { xp: 400 } },
   { id: 'matron', ch: 'Chapter 3: Embers in the Wilds', title: 'The Giant Sprout', kind: 'kill', mob: 'matron', n: 1, map: 'birch', goal: 'Defeat the Giant Sprout in Birkilund (east gate)',
-    hint: 'A level 25 mini-boss: train to about Base Level 25 first, bring potions, and step out of reach when it rears up to stomp.',
+    hint: 'A level 25 mini-boss, and a hard one: train to Base Level 28 or so first, bring plenty of potions, and step out of reach when it rears up to stomp.',
     say: [[null, 'The Giant Sprout crumbles into ash and thorns. Deep in its roots, something glows like a coal.']],
     reward: { xp: 5000, perz: 1500 } },
   { id: 'roots', ch: 'Chapter 3: Embers in the Wilds', title: 'What the Roots Knew', kind: 'talk', npc: 'saeunn', goal: 'Tell Saeunn what you found',
@@ -89,26 +89,24 @@ export const STORY = [
   { id: 'emberhill', ch: 'Chapter 3: Embers in the Wilds', title: 'The Ember-Hill', kind: 'visit', map: 'ridge', goal: 'Travel through Myrkdal to Glodberg',
     say: [[null, 'The hill is warm under your feet. In the south of Glodberg, something vast breathes in its sleep.']],
     reward: { xp: 4000 } },
-  { id: 'ready', ch: 'Chapter 3: Embers in the Wilds', title: 'Grow Stronger', kind: 'level', lv: 50, goal: 'Reach Base Level 50',
-    hint: 'The Fire Giant is level 60: it takes a Base 50 hero in the best gear. Saltvik, Svartskog and Askheid have tougher monsters and the mini-bosses whose rare materials forge the best gear at Gunnar\'s.',
-    say: [[null, 'You feel ready. It is time to go home to Eldrun before the end.']],
-    reward: { xp: 8000 } },
-
-  // ---------- Chapter 4: the Ember Jarl ----------
-  { id: 'lastfire', ch: 'Chapter 4: The Fire Giant', title: 'The Last Fire', kind: 'talk', npc: 'bram', goal: 'Return to Elder Halvard at camp',
-    say: [['bram', 'Look at you. The stranger by the fire, come home a hero.'],
-      ['bram', 'When the Giant falls, the fire-ring will burn again. Take these, and come back to us.']],
+  // ---------- Chapter 4: the fire-ring ----------
+  // (the Fire Giant itself is no part of the story: it waits in Glodberg as an MVP, for the strongest)
+  { id: 'runesong', ch: 'Chapter 4: The Fire-Ring', title: 'The Song of the Ring', kind: 'talk', npc: 'vigdis', goal: 'Go to Archmage Vigdis in Galdrheim (north of Fenstrand)',
+    say: [['vigdis', 'You have seen him sleeping, then. Good. Most who see the Giant awake do not come back to tell of it.'],
+      ['vigdis', 'Hallveig cut the fire-ring\'s runes; I can sing them again. Listen, and carry the song home to Eldrun in your head. It will hold him in his dream for a long while yet.'],
+      ['vigdis', 'One day he may wake anyway. If you grow strong enough (I would say Base Level 50, and the best gear in Aria), you could end it for good. That fight is yours to choose.']],
     reward: { xp: 8000, items: { potion3: 10, potion2: 10 } } },
-  { id: 'jarl', ch: 'Chapter 4: The Fire Giant', title: 'The Fire Giant', kind: 'kill', mob: 'jarl', n: 1, map: 'ridge', goal: 'Defeat the Fire Giant in the south of Glodberg',
-    say: [[null, 'The Fire Giant falls with a sound like a mountain settling. The heat leaves the ground. Far away, in Eldrun, a fire leaps up tall and bright.']],
-    reward: { xp: 50000, perz: 30000 } },
-  { id: 'rekindled', ch: 'Chapter 4: The Fire Giant', title: 'The Fire-Ring Rekindled', kind: 'talk', npc: 'bram', goal: 'Return to Elder Halvard at camp',
-    say: [['bram', 'The ground is still. Look at the fire: it has not burnt this bright since I was a boy.'],
-      ['bram', 'But Saeunn says the runes speak of older names beyond the mountains: lands the songs still remember. The road goes on, as roads do.'],
+  { id: 'rekindled', ch: 'Chapter 4: The Fire-Ring', title: 'The Fire-Ring Rekindled', kind: 'talk', npc: 'bram', goal: 'Bring the song home to Elder Halvard at camp',
+    say: [['bram', 'Sing it, then, there by the fire... Look! It has not burnt this bright since I was a boy.'],
+      ['bram', 'The Giant sleeps on under Glodberg, and the ground is quiet. Saeunn says the runes speak of older names beyond the mountains: lands the songs still remember. The road goes on, as roads do.'],
       ['bram', 'Rest now, hero of Eldrun. Aria will need you again.'],
-      [null, 'The Last Fire-Ring: the end of the first saga. More of Aria is coming.']],
+      [null, 'The Last Fire-Ring: the end of the first saga. The Fire Giant still waits in the south of Glodberg, for anyone strong enough to wake him. More of Aria is coming.']],
     reward: { xp: 40000, perz: 20000, items: { glow_charm: 1 } } },
 ];
+
+// the steps as they were before the Fire Giant left the story, and where those steps went
+const OLD_ORDER = ['wake', 'stats', 'slimes', 'training', 'hotbar', 'report', 'north', 'captain', 'seeress', 'trade', 'path', 'heralds', 'matron', 'roots', 'emberhill', 'ready', 'lastfire', 'jarl', 'rekindled'];
+const RENAMED = { ready: 'runesong', lastfire: 'runesong', jarl: 'rekindled' };
 
 // directions: which way to walk from one map to reach another, through which portal
 export function route(from, to) {
@@ -198,10 +196,13 @@ export class Story {
     return s;
   }
 
-  toJSON() { return { i: this.i, count: this.count, flags: this.flags }; }
+  toJSON() { return { i: this.i, id: this.step?.id || 'done', count: this.count, flags: this.flags }; }
   load(d) {
     if (!d) return false;
-    this.i = Math.max(0, Math.min(STORY.length, d.i | 0));
+    // the step is saved by id; older saves only kept its place in the old order of steps
+    const id = d.id || OLD_ORDER[d.i | 0] || 'done';
+    const at = STORY.findIndex((s) => s.id === (RENAMED[id] || id));
+    this.i = id === 'done' || at < 0 ? STORY.length : at;
     this.count = Math.max(0, d.count | 0);
     this.flags = { ...(d.flags || {}) };
     return true;

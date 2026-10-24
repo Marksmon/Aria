@@ -152,7 +152,7 @@ export const NPCS = {
     lore: [
       'The fire-jotnar were born when the world was young, from the fire under the mountains. They did not hate us. They simply burnt, the way fire does.',
       'There were nine great jotnar. Eight were sung into the stone long ago. The ninth, the one the settlers called the Ember Jarl, slept under Glodberg. You know him as the Fire Giant.',
-      'Our books say the fire-ring can be renewed only when the Giant is beaten in the waking world. Sleeping, he cannot be harmed. Awake, he can.',
+      'Our books say the fire-ring can be sung anew to keep him dreaming. But only beating the Giant in the waking world ends the danger for good. Sleeping, he cannot be harmed. Awake, he can.',
     ],
   },
   torvald: {

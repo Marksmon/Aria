@@ -73,10 +73,11 @@ after they fall, twice as fast at night.
 
 **Bosses.** Each new field has a mini-boss: big, slow, stomping the ground around it, back 5–8
 minutes after it falls. They drop a rare material (30%) that forges the best gear, and a rare
-equip of their own (2–3%). Each is a 1½–2½ minute fight for a character of its level, with a
-stack of potions.
+equip of their own (2–3%). They hit hard: at their own level each is a 3–4 minute fight and a
+bag of potions, so most players come a few levels above them (Giant Sprout 25, King Crab 32,
+Giant Mushroom 40, Giant Beetle 48).
 
-**MVP.** The Fire Giant (Lv 60, 24,000 HP, Fire) waits in the south of Glodberg and stomps the
+**MVP.** The Fire Giant (Lv 60, 24,000 HP, Fire), optional and not part of the story, waits in the south of Glodberg and stomps the
 ground around it every few seconds. It is made for one Base 50 hero in the best gear: about three
 minutes and a bag of potions (a Blader drinks around 50 White Potions; a Sorcerer who keeps
 moving needs far fewer, but Blue Potions too). Whoever brings it down gets **MVP** over their
@@ -273,8 +274,10 @@ rings the portal to take, or the person to talk to. A purple **!** marks who the
 | Prologue (the tutorial) | Talk to the Elder · raise a stat · defeat 3 Slimes in Mosvangr · learn Basic Training · put a potion on the hotbar · back to the Elder |
 | 1: The Stone-Fort | Travel to Steinborg · tell Captain Ulfr the fires are failing · meet Saeunn the Seeress · sell something for perz |
 | 2: Blade or Rune | Pass a job trial and become a Blader or a Sorcerer |
-| 3: Embers in the Wilds | Saeunn's warning · defeat the Giant Sprout in Birkilund · travel to Glodberg · reach Base Level 50 |
-| 4: The Fire Giant | The Elder's last gifts · defeat the Fire Giant · the fire-ring rekindled |
+| 3: Embers in the Wilds | Saeunn's warning · defeat the Giant Sprout in Birkilund · travel to Glodberg |
+| 4: The Fire-Ring | Archmage Vigdis sings the fire-ring's runes anew · bring the song home: the fire-ring rekindled |
+
+The Fire Giant is no part of the story: it waits in Glodberg as an optional MVP for the strongest.
 
 The quest list folds away with a tap on its title bar and scrolls when it is long.
 
