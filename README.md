@@ -87,7 +87,8 @@ and they back off), and **assassins** are quick, dart the last few steps and som
 They drop Kobold Fur and Goblin Teeth, ores for refining, and now and then Hard Ore or Armor Ore.
 
 **Bosses.** Each new field has a mini-boss: big, slow, stomping the ground around it, back 5–8
-minutes after it falls. They drop a rare material (30%) that forges the best gear, and a rare
+minutes after it falls. Like the MVPs, each calls 2 guards of its own kind below 60% HP (Red
+Sprouts, Blue Crabs, Dark Mushrooms, Fire Beetles), and again 2 minutes after the last one falls. They drop a rare material (30%) that forges the best gear, and a rare
 equip of their own (2–3%). They hit hard: at their own level each is a 3–4 minute fight and a
 bag of potions, so most players come a few levels above them (Giant Sprout 25, King Crab 32,
 Giant Mushroom 40, Giant Beetle 48).

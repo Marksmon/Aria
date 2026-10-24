@@ -28,13 +28,13 @@ export const MOB_DEFS = {
   shadeWisp: { name: 'Dark Wisp', ai: 'wisp', art: 'wisp', el: 'shadow', tint: '#b8a0ff', glow: true, lv: 38, hp: 1700, atk: [120, 150], def: 10, vit: 25, agi: 60, dex: 66, exp: [560, 390], adelay: 1250, speed: 2.5, aggro: 6, reach: 0.75, w: 0.85, r: 0.32, fly: true, mdef: 20, drops: [['shade', 1, 1, 0.45], ['glow', 1, 1, 0.8], ['wander', 1, 1, 0.1], ['wisp_lantern', 1, 1, 0.005], ['shade_staff', 1, 1, 0.002]] },
   cinderBeetle: { name: 'Fire Beetle', ai: 'tank', art: 'beetle', el: 'fire', tint: '#ff9a72', lv: 42, hp: 2500, atk: [140, 176], def: 28, vit: 42, agi: 34, dex: 64, exp: [760, 530], adelay: 1500, speed: 1.2, aggro: 4.5, chase: 9, reach: 1.0, w: 1.35, r: 0.52, heavy: true, drops: [['cinder', 1, 1, 0.5], ['stone', 1, 2, 1], ['potion2', 1, 1, 0.1], ['potion3', 1, 1, 0.03], ['cinder_mail', 1, 1, 0.002], ['horn_blade', 1, 1, 0.002]] },
   emberWisp: { name: 'Fire Wisp', ai: 'wisp', art: 'wisp', el: 'fire', tint: '#ff9a5a', glow: true, lv: 45, hp: 2200, atk: [152, 190], def: 12, vit: 30, agi: 70, dex: 74, exp: [880, 615], adelay: 1200, speed: 2.5, aggro: 6, reach: 0.75, w: 0.85, r: 0.32, fly: true, drops: [['ember_dust', 1, 1, 0.5], ['glow', 1, 1, 0.6], ['cinder', 1, 1, 0.15], ['ember_charm', 1, 1, 0.003]] },
-  // mini-bosses: one on each new field, big and slow, they stomp like the Fire Giant and come back
-  // after `respawn` seconds. A hard fight for their own level: 2-4 minutes and a bag of potions
+  // mini-bosses: one on each new field, big and slow, they stomp like the Fire Giant, call two of
+  // their own kind as guards (summon: see SUMMON_CD) and come back after `respawn` seconds. A hard fight for their own level: 2-4 minutes and a bag of potions
   // (a few levels above them is wiser). Their rare materials craft the best gear.
-  matron: { name: 'Giant Sprout', ai: 'boss', art: 'sprout', el: 'earth', tint: '#ff9a6a', boss: true, lv: 25, hp: 9000, atk: [80, 108], def: 10, vit: 25, agi: 18, dex: 40, exp: [4200, 2940], adelay: 1700, speed: 1.2, aggro: 5.5, chase: 12, reach: 1.3, w: 2.0, r: 0.75, heavy: true, respawn: 300, drops: [['heartwood', 1, 1, 0.3], ['thorn', 3, 5, 1], ['potion2', 1, 2, 0.5], ['thorn_mantle', 1, 1, 0.03], ['bramble_ring', 1, 1, 0.05]] },
-  tideKing: { name: 'King Crab', ai: 'boss', art: 'crab', el: 'water', tint: '#8ab8ff', boss: true, lv: 32, hp: 11000, atk: [92, 120], def: 18, vit: 32, agi: 22, dex: 48, exp: [8400, 5880], adelay: 1600, speed: 1.3, aggro: 5.5, chase: 12, reach: 1.4, w: 2.3, r: 0.85, heavy: true, respawn: 300, drops: [['king_pearl', 1, 1, 0.3], ['pearl', 1, 2, 0.6], ['crableg', 2, 3, 1], ['tidebreaker', 1, 1, 0.02], ['coral_shield', 1, 1, 0.05]] },
-  gloomMother: { name: 'Giant Mushroom', ai: 'boss', art: 'mushling', el: 'shadow', tint: '#9a7cff', boss: true, lv: 40, hp: 14000, atk: [122, 158], def: 14, vit: 40, agi: 28, dex: 60, exp: [17000, 11900], adelay: 1700, speed: 1.15, aggro: 5.5, chase: 12, reach: 1.4, w: 2.2, r: 0.8, heavy: true, mdef: 30, respawn: 420, drops: [['gloom_heart', 1, 1, 0.3], ['gloom', 2, 4, 1], ['potion3', 1, 2, 0.4], ['gloom_staff', 1, 1, 0.02], ['gloom_hood', 1, 1, 0.05]] },
-  cinderLord: { name: 'Giant Beetle', ai: 'boss', art: 'beetle', el: 'fire', tint: '#ff7a4a', boss: true, lv: 48, hp: 16000, atk: [125, 162], def: 22, vit: 48, agi: 32, dex: 70, exp: [28000, 19600], adelay: 1600, speed: 1.15, aggro: 5.5, chase: 12, reach: 1.5, w: 2.4, r: 0.9, heavy: true, respawn: 480, drops: [['cinder_core', 1, 1, 0.3], ['cinder', 2, 4, 1], ['potion3', 1, 2, 0.5], ['cinder_greaves', 1, 1, 0.03], ['cinder_mail', 1, 1, 0.04]] },
+  matron: { name: 'Giant Sprout', ai: 'boss', art: 'sprout', el: 'earth', tint: '#ff9a6a', boss: true, lv: 25, hp: 9000, atk: [80, 108], def: 10, vit: 25, agi: 18, dex: 40, exp: [4200, 2940], adelay: 1700, speed: 1.2, aggro: 5.5, chase: 12, reach: 1.3, w: 2.0, r: 0.75, heavy: true, summon: ['russet', 'russet'], summonText: 'The Giant Sprout shakes its leaves, and Red Sprouts come running!', respawn: 300, drops: [['heartwood', 1, 1, 0.3], ['thorn', 3, 5, 1], ['potion2', 1, 2, 0.5], ['thorn_mantle', 1, 1, 0.03], ['bramble_ring', 1, 1, 0.05]] },
+  tideKing: { name: 'King Crab', ai: 'boss', art: 'crab', el: 'water', tint: '#8ab8ff', boss: true, lv: 32, hp: 11000, atk: [92, 120], def: 18, vit: 32, agi: 22, dex: 48, exp: [8400, 5880], adelay: 1600, speed: 1.3, aggro: 5.5, chase: 12, reach: 1.4, w: 2.3, r: 0.85, heavy: true, summon: ['tidecrab', 'tidecrab'], summonText: 'The King Crab clacks its claws, and Blue Crabs scuttle in!', respawn: 300, drops: [['king_pearl', 1, 1, 0.3], ['pearl', 1, 2, 0.6], ['crableg', 2, 3, 1], ['tidebreaker', 1, 1, 0.02], ['coral_shield', 1, 1, 0.05]] },
+  gloomMother: { name: 'Giant Mushroom', ai: 'boss', art: 'mushling', el: 'shadow', tint: '#9a7cff', boss: true, lv: 40, hp: 14000, atk: [122, 158], def: 14, vit: 40, agi: 28, dex: 60, exp: [17000, 11900], adelay: 1700, speed: 1.15, aggro: 5.5, chase: 12, reach: 1.4, w: 2.2, r: 0.8, heavy: true, mdef: 30, summon: ['gloomcap', 'gloomcap'], summonText: 'The Giant Mushroom puffs, and Dark Mushrooms sprout around it!', respawn: 420, drops: [['gloom_heart', 1, 1, 0.3], ['gloom', 2, 4, 1], ['potion3', 1, 2, 0.4], ['gloom_staff', 1, 1, 0.02], ['gloom_hood', 1, 1, 0.05]] },
+  cinderLord: { name: 'Giant Beetle', ai: 'boss', art: 'beetle', el: 'fire', tint: '#ff7a4a', boss: true, lv: 48, hp: 16000, atk: [125, 162], def: 22, vit: 48, agi: 32, dex: 70, exp: [28000, 19600], adelay: 1600, speed: 1.15, aggro: 5.5, chase: 12, reach: 1.5, w: 2.4, r: 0.9, heavy: true, summon: ['cinderBeetle', 'cinderBeetle'], summonText: 'The Giant Beetle roars, and Fire Beetles answer!', respawn: 480, drops: [['cinder_core', 1, 1, 0.3], ['cinder', 2, 4, 1], ['potion3', 1, 2, 0.5], ['cinder_greaves', 1, 1, 0.03], ['cinder_mail', 1, 1, 0.04]] },
   // MVP boss of Glodberg: one at a time, back 15 minutes after it falls. Its slayer gets the MVP
   // reward on top of the drops. Stomps the ground around it every few seconds (stomp: x its ATK),
   // and calls 2 Fire Wisps and 3 Fire Beetles (summon: see SUMMON_CD).
@@ -67,8 +67,8 @@ export const MOB_DEFS = {
 };
 
 const RESPAWN = 60;
-// An MVP first calls its guards when it falls below 60% HP. It calls again only once every guard
-// is gone, and not until 2 minutes after the last one fell, while it is still fighting.
+// A boss (MVP or mini-boss) first calls its guards when it falls below 60% HP. It calls again only
+// once every guard is gone, and not until 2 minutes after the last one fell, while it still fights.
 const SUMMON_AT = 0.6, SUMMON_CD = 120;
 const ATTACK_ANIM = 0.5; // PixelLab monsters play their attack animation for this long
 const STRIDE = 1.5;      // walk cycle length in body widths: legs keep pace with the ground
@@ -118,7 +118,7 @@ class Mob {
     this.walked = 0; // distance walked, drives the walk cycle
     this.provokeT = 0; // taunted: it comes for you
     this.stunT = 0;
-    this.calls = 0;          // times it has called its guards (MVPs)
+    this.calls = 0;          // times it has called its guards (bosses)
     this.guardsGoneT = -1e9; // when (its own clock, this.t) its last guard fell
     this.sprite.visible = this.shadow.visible = true;
     const upp = d.w / this.art.body[0]; // def.w is the body width
@@ -165,7 +165,7 @@ class Mob {
     if (this.def.ai === 'skittish') this.angry = this.def.angry;
     else if (this.def.passive || this.def.ai === 'archer') this.angry = Math.max(this.angry, 30); // hit a passive monster and it fights back for a while
     if (this.def.boss) this.knock.x = this.knock.z = 0; // bosses stand their ground
-    // an MVP first calls its guards when it falls below 60% HP (later calls: see update)
+    // a boss first calls its guards when it falls below 60% HP (later calls: see update)
     if (this.def.summon && !this.calls && this.hp > 0 && this.hp / this.def.hp < SUMMON_AT) { this.calls++; this.mgr.summon(this); }
     if (['hopper', 'tank', 'puffer', 'boss', 'assassin'].includes(this.def.ai)) {
       this.state = 'chase';
@@ -194,7 +194,7 @@ class Mob {
       this.knock.z *= k;
     }
 
-    // an MVP calls again once all its guards are gone and the cooldown has passed, while it fights
+    // a boss calls again once all its guards are gone and the cooldown has passed, while it fights
     if (d.summon && this.calls && this.state === 'chase' && this.t - this.guardsGoneT >= SUMMON_CD && !this.mgr.guardsOf(this).length) {
       this.calls++;
       this.mgr.summon(this);
@@ -533,12 +533,12 @@ export class MobManager {
         c.atkCd = 0.6;
       }
     }
-    // a leader's guards go with it, as in Ragnarok (no EXP, no drops)
+    // a boss's guards go with it, as in Ragnarok (no EXP, no drops)
     for (const s of this.list.filter((o) => o.leader === m && o.alive)) {
       this.fx.puff(s.x, this.world.heightAt(s.x, s.z) + 0.3, s.z, s.def.w);
       this.remove(s);
     }
-    // the last of an MVP's guards falls: its summoning cooldown starts
+    // the last of a boss's guards falls: its summoning cooldown starts
     if (m.leader?.alive && !this.guardsOf(m.leader).some((o) => o !== m)) m.leader.guardsGoneT = m.leader.t;
     if (m.def.noRespawn || m.temp) { this.remove(m); return; }
     if (m.def.mvp) { // gone until its respawn time comes round (the game saves mvpAt)
