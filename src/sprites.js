@@ -439,25 +439,57 @@ function hsl2rgb(h, s, l) {
   const f = (n) => l - a * Math.max(-1, Math.min(k(n) - 3, 9 - k(n), 1));
   return [f(0) * 255, f(8) * 255, f(4) * 255];
 }
-// bands: [test(h, s, l), to(h, s, l) -> [h, s, l]]
-const recolorer = (bands) => (px) => {
+// bands: [test(h, s, l), to(h, s, l) -> [h, s, l]]. details (optional), drawn after, by band:
+//   trim: { band, to: [h, s, l] }: the band's lower edge (where the pixel below is something else) in a new colour
+//   dots: { band, to, every }: a sprinkle of single pixels inside the band (rivets, runes)
+const recolorer = (bands, details = []) => (px, w) => {
+  const which = new Int8Array(px.length / 4).fill(-1);
   for (let i = 0; i < px.length; i += 4) {
     if (px[i + 3] < 8) continue;
     const [h, s, l] = rgb2hsl(px[i], px[i + 1], px[i + 2]);
-    for (const [test, to] of bands) {
+    for (let b = 0; b < bands.length; b++) {
+      const [test, to] = bands[b];
       if (!test(h, s, l)) continue;
-      const [r, g, b] = hsl2rgb(...to(h, s, l));
-      px[i] = r; px[i + 1] = g; px[i + 2] = b;
+      const [r, g, bl] = hsl2rgb(...to(h, s, l));
+      px[i] = r; px[i + 1] = g; px[i + 2] = bl;
+      which[i / 4] = b;
       break;
+    }
+  }
+  if (!w) return;
+  const n = which.length, set = (k, [h, s, l]) => { const [r, g, b] = hsl2rgb(h, s, l); px[k * 4] = r; px[k * 4 + 1] = g; px[k * 4 + 2] = b; };
+  for (const d of details) {
+    for (let k = 0; k < n; k++) {
+      if (which[k] !== d.band) continue;
+      const x = k % w, y = (k / w) | 0;
+      if (d.trim && k + w < n && which[k + w] !== d.band && px[(k + w) * 4 + 3] > 8) set(k, d.trim);
+      else if (d.dots && x % d.every === (y * 3) % d.every && which[k - 1] === d.band && which[k + 1] === d.band && which[k - w] === d.band && which[k + w] === d.band) set(k, d.dots);
     }
   }
 };
 const navy = (h, s, l) => h > 195 && h < 265 && s > 0.12 && l < 0.8; // the navy gambeson / the blue robe
 const crimson = (h, s) => (h > 325 || h < 8) && s > 0.45;              // the Blader's sash
 const silver = (h, s, l) => s < 0.15 && l > 0.5 && l < 0.8;             // the Sorcerer's trims
+const steel = (h, s, l) => s < 0.14 && l > 0.22 && l < 0.82;            // armour, buckles, the blade
+const white = (h, s, l) => s < 0.2 && l >= 0.82;                         // the emblem, the under-tunic
+const leather = (h, s, l) => (h < 45 || h > 330) && s > 0.06 && s < 0.5 && l > 0.08 && l < 0.42; // belts, boots, gloves (skin is paler)
+const crystal = (h, s, l) => h > 175 && h < 215 && l > 0.6;             // the staff's glowing crystal
 const ATTIRE = {
-  blademaster: recolorer([[navy, (h, s, l) => [352, Math.min(0.8, s + 0.25), l * 1.05]], [crimson, (h, s, l) => [44, 0.8, Math.min(0.62, l + 0.18)]]]),
-  wizard: recolorer([[navy, (h, s, l) => [276, Math.min(0.75, s + 0.15), l * 1.15]], [silver, (h, s, l) => [44, 0.6, l * 0.85]]]),
+  // the BladeMaster: crimson and black, gilded steel, a gold sash and emblem
+  blademaster: recolorer([
+    [navy, (h, s, l) => [354, Math.min(0.85, s + 0.35), l * 1.1]],
+    [crimson, (h, s, l) => [44, 0.85, Math.min(0.62, l + 0.2)]],
+    [white, (h, s, l) => [46, 0.85, 0.66]],
+    [leather, (h, s, l) => [350, s * 0.45, l * 0.6]],
+    [steel, (h, s, l) => [40, 0.3, l * 1.05]],
+  ], [{ band: 0, trim: [44, 0.85, 0.55] }, { band: 3, trim: [42, 0.75, 0.45] }]), // gold edges on the coat and the leather
+  // the Wizard: deep violet with gold trims, plum leather, a rose crystal
+  wizard: recolorer([
+    [navy, (h, s, l) => [278, Math.min(0.8, s + 0.25), l * 1.15]],
+    [silver, (h, s, l) => [44, 0.7, l * 0.85]],
+    [crystal, (h, s, l) => [325, 0.85, l]],
+    [leather, (h, s, l) => [300, 0.3, l * 0.85]],
+  ], [{ band: 0, trim: [46, 0.8, 0.56] }, { band: 0, dots: [282, 0.85, 0.62], every: 13 }]), // gold hems, a few glowing rune dots
   magicknight: recolorer([[navy, (h, s, l) => [268, Math.min(0.7, s + 0.1), l * 1.1]], [crimson, (h, s, l) => [190, 0.7, Math.min(0.6, l + 0.15)]]]),
 };
 
@@ -508,7 +540,7 @@ function pixelSet(url, { fw, fh, body, foot = 0, hair = [], anims, bald = false,
       const b = t.image.getContext('2d');
       b.clearRect(0, 0, fw, fh);
       b.drawImage(img, x, y, fw, fh, 0, 0, fw, fh);
-      if (recolor) { const d = b.getImageData(0, 0, fw, fh); recolor(d.data); b.putImageData(d, 0, 0); } // a second job's colours
+      if (recolor) { const d = b.getImageData(0, 0, fw, fh); recolor(d.data, fw); b.putImageData(d, 0, 0); } // a second job's colours
       if (paint) paint(b, t.userData, dir);
       const g = f.image.getContext('2d');
       g.globalCompositeOperation = 'source-over';
