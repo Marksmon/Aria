@@ -530,9 +530,9 @@ button.eq:active { background: var(--w-sel); }
 .lookwrap .btnrow { display: flex; gap: 6px; }
 
 /* monster names: over the one under the mouse, and over the one you are fighting (gold) */
-#moblabels span { position: absolute; left: 0; top: 0; display: none; padding: 1px 7px; border-radius: 4px; white-space: nowrap; pointer-events: none;
-  font: 700 16px system-ui, sans-serif; color: #fff; background: rgba(20, 14, 10, .55); text-shadow: 0 1px 2px #000; }
-#moblabels .target { color: #ffd23a; font-size: 17px; box-shadow: 0 0 0 1px rgba(255, 210, 58, .55); }
+#moblabels span { position: absolute; left: 0; top: 0; display: none; white-space: nowrap; pointer-events: none;
+  font: 700 12px system-ui, sans-serif; color: #fff; text-shadow: -1px 0 #000, 1px 0 #000, 0 -1px #000, 0 1px #000; }
+#moblabels .target { color: #ffd23a; }
 /* the hotbar's page button */
 .hb-page { width: 30px; height: 50px; padding: 0; border-radius: 8px; border: 2px solid rgba(255, 230, 180, .35); background: rgba(60, 42, 28, .6);
   color: #ffe6a8; display: grid; place-content: center; touch-action: none; font: 700 19px system-ui, sans-serif; line-height: 1; }

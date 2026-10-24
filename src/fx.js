@@ -172,13 +172,13 @@ export class FX {
     this.pickups = [];
   }
 
-  // a soft gold halo, for rare drops
+  // a faint gold halo, for rare drops
   glowTex() {
     if (this._glow) return this._glow;
     const c = document.createElement('canvas');
     c.width = c.height = 64;
     const g = c.getContext('2d'), gr = g.createRadialGradient(32, 32, 2, 32, 32, 31);
-    gr.addColorStop(0, 'rgba(255,240,170,1)'); gr.addColorStop(0.35, 'rgba(255,214,90,.75)'); gr.addColorStop(1, 'rgba(255,190,40,0)');
+    gr.addColorStop(0, 'rgba(255,240,170,.6)'); gr.addColorStop(0.35, 'rgba(255,214,90,.35)'); gr.addColorStop(1, 'rgba(255,190,40,0)');
     g.fillStyle = gr; g.fillRect(0, 0, 64, 64);
     this._glow = new THREE.CanvasTexture(c);
     this._glow.colorSpace = THREE.SRGBColorSpace;
@@ -200,11 +200,11 @@ export class FX {
       tx: x + Math.cos(a) * r, tz: z + Math.sin(a) * r,
       t: 0, life: 45, size,
     };
-    if (rare) { // a pulsing halo behind it, and a burst of sparkles as it lands
+    if (rare) { // a soft halo behind it, and a few sparkles as it lands
       p.glow = this.sprite(this.glowTex(), { bottom: true, renderOrder: 1 });
       p.glow.material.blending = THREE.AdditiveBlending;
       p.glow.material.needsUpdate = true;
-      this.sparkle(x, this.world.heightAt(x, z) + 0.4, z, '#ffd23a', 16);
+      this.sparkle(x, this.world.heightAt(x, z) + 0.4, z, '#ffd23a', 6);
       p.life = 90; // rare finds wait longer
     }
     this.pickups.push(p);
@@ -273,10 +273,10 @@ export class FX {
       const fade = p.life - p.t;
       p.s.visible = fade > 5 || Math.floor(p.t * 6) % 2 === 0;
       if (p.glow) {
-        const k = 1.05 + Math.sin(p.t * 4) * 0.18;
+        const k = 0.8 + Math.sin(p.t * 3) * 0.06;
         p.glow.position.set(p.x, y + hop - 0.3, p.z);
         p.glow.scale.set(k, k, 1);
-        p.glow.material.opacity = 0.65 + Math.sin(p.t * 4) * 0.25;
+        p.glow.material.opacity = 0.4 + Math.sin(p.t * 3) * 0.1;
         p.glow.visible = p.s.visible;
       }
       if (fade <= 0) {
