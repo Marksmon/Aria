@@ -25,6 +25,7 @@ MIRROR = {'right': 'left', 'left': 'right', 'downright': 'downleft', 'downleft':
 #            x, crown): {'down': [x1, y1, x2, y2], 'right': [x, y]}. Without it they are detected.
 #   skip:    export animations left out of the sheet (tries that weren't used)
 #   mirror:  (anim, direction) pairs drawn as the mirror of the opposite side
+#   pick:    {(anim, direction): [frame indices]}: play only these frames, in this order (before mirror)
 #   bald:    made to the character standard: generated bald, so its measured head is the skull
 #   strip:   cut the head off every frame (Ragnarok-style bodies: the game draws the head and hair
 #            as their own layers at the neck; see pack-heads.py). The head data stays as anchors.
@@ -52,7 +53,11 @@ CHARS.update({name: {'eight': True, 'use': {'walk': 'walking'}, 'bald': True} fo
 # its outlines are two pixels thick, and its ears stand apart from the skull; its head is centred
 # on the body in front and back, set lower from behind (drop) and its neck wrapped in a violet scarf
 CHARS['mknight'] = {'eight': True, 'use': {'walk': 'walking'}, 'bald': True, 'ring': 3, 'islands': 80, 'center': True, 'scarf': True, 'wipe': True,
-                    'drop': {'up': 5, 'upleft': 5, 'upright': 5, 'right': 4, 'left': 4, 'downright': 2, 'downleft': 2}}
+                    'drop': {'up': 5, 'upleft': 5, 'upright': 5, 'right': 4, 'left': 4, 'downright': 2, 'downleft': 2},
+                    # its west-side attacks spin the body round mid-swing (the head would face backwards):
+                    # they are the east side's, mirrored; east keeps its wind-up and strike, and back
+                    'pick': {('attack', 'right'): [0, 1, 2, 3, 3, 2, 1]},
+                    'mirror': {('attack', 'left'), ('attack', 'downleft'), ('attack', 'upleft')}}
 
 
 def islands(f):
@@ -282,6 +287,48 @@ def neck_scarf(f, ox, oy, g, hw):
     return Image.fromarray(out.astype(np.uint8))
 
 
+def neck_fill(f, cover, ox, oy, g, hw):
+    """fill the pockets of empty space where a smaller new head leaves a notch between the jaw and the
+    shoulders (or the cape): any empty pixel near the neck with head or body close on both sides and
+    body close below becomes scarf, and the new edge gets a dark outline"""
+    a = np.array(f).astype(int)
+    H, W = a.shape[:2]
+    op = a[..., 3] > 128
+    solid = op | cover
+    purple = op & (a[..., 2] > a[..., 0]) & (a[..., 0] > a[..., 1] + 15) & (a[..., 2] > 70)
+    if purple.sum() < 10:
+        return f
+    base = np.median(a[purple][:, :3], axis=0)
+    chin = int(oy + g['chin'][1])
+    y0, y1 = max(0, chin - 10), min(H, chin + 6)
+    x0, x1 = max(0, int(ox) - 4), min(W, int(ox + hw) + 4)
+    R = 7
+    fill = np.zeros_like(op)
+    for _ in range(3):  # a few passes: a pocket fills from its closed-in end outwards
+        grown = solid | fill
+        for y in range(y0, y1):
+            for x in range(x0, x1):
+                if grown[y, x]:
+                    continue
+                left = grown[y, max(0, x - R):x].any()
+                right = grown[y, x + 1:min(W, x + 1 + R)].any()
+                below = op[y + 1:min(H, y + 1 + R), x].any()
+                above = grown[max(0, y - R):y, x].any()
+                if left and right and below and above:
+                    fill[y, x] = True
+    if not fill.any():
+        return f
+    out = a.copy()
+    out[fill, :3] = np.clip(base * 0.85, 0, 255)
+    out[fill, 3] = 255
+    # outline the filled patch where it meets the empty space around the character
+    done = op | cover | fill
+    for y, x in zip(*np.nonzero(fill)):
+        if any(0 <= y + j < H and 0 <= x + i < W and not done[y + j, x + i] for i, j in ((1, 0), (-1, 0), (0, 1), (0, -1))):
+            out[y, x, :3] = (35, 20, 40)
+    return Image.fromarray(out.astype(np.uint8))
+
+
 def centre_x(f, ox, oy, g):
     """the head's left edge that puts its chin over the middle of the body below it: the middle of
     the run of solid pixels under the chin, row by row over the shoulders (a sword held out to the
@@ -398,6 +445,8 @@ def pack(name, opts):
     for d in art.values():
         for anim, fs in d.items():
             d[anim] = [clean(f, anim == 'idle') for f in fs]
+    for (anim, d), keep in opts.get('pick', {}).items():  # only these frames, in this order
+        art[d][anim] = [art[d][anim][i] for i in keep]
     for anim, d in opts.get('mirror', ()):
         art[d][anim] = [ImageOps.mirror(f) for f in art[MIRROR[d]][anim]]
     if 'outline' in opts:
@@ -646,7 +695,9 @@ def pack(name, opts):
                     own = own_head(f, lim, opts.get('ring', 1))
                     cover = head_cover((fh, fw), hm, ox, oy)
                     f2 = clear_old_head(f, own[1], cover, oy + g['chin'][1] - 1, opts.get('islands', 0), opts.get('wipe')) if own else f
-                    frames.append(neck_scarf(f2, ox, oy, g, hm.shape[1]) if opts.get('scarf') else f2)
+                    if opts.get('scarf'):
+                        f2 = neck_fill(neck_scarf(f2, ox, oy, g, hm.shape[1]), cover, ox, oy, g, hm.shape[1])
+                    frames.append(f2)
                 rows[r] = frames
                 # the head's geometry in frame pixels, for headgear: [x, crown, neck, w, eyes...]
                 entry[3] = [[ox + g['chin'][0], oy + g['crown'], oy + g['chin'][1], g['w'],
