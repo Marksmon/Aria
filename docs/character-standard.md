@@ -69,4 +69,4 @@ Two slots, like Ragnarok's: **Head** (hats, helmets, crowns) and **Face** (glass
   Flame Circlet) and `hg_<id>.json`.
 - The game paints it into each body frame at the head's spot, after the hair: face piece, then
   head piece. A helmet or cap hides the hair above its brim, a crown the spikes above it; a wreath
-  rests in the hair. Glasses have see-through lenses.
+  rests in the hair.

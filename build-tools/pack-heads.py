@@ -47,7 +47,6 @@ SCALE = 0.9  # head pixels to body pixels
 GEAR = {'horned_helm': ('head', 'brim'), 'woven_cap': ('head', 'brim'), 'flower_wreath': ('head', None),
         'ember_crown': ('head', 'top'), 'flame_circlet': ('head', 'top'),
         'round_glasses': ('face', None), 'raven_mask': ('face', None)}
-GLASS = {'round_glasses'}  # its lenses are see-through: the eyes show behind them, tinted
 FLAME = {'flame_circlet': 8}  # its fire flickers: this many frames, made from the still piece
 
 
@@ -268,15 +267,6 @@ for gid, (slot, how) in GEAR.items():
     if gid in FLAME:
         pieces = {d: [flicker(v[0], f, FLAME[gid]) for f in range(FLAME[gid])] for d, v in pieces.items()}
         n = FLAME[gid]
-    if gid in GLASS:
-        for v in pieces.values():
-            for im in v:
-                px = im.load()
-                for y in range(im.height):
-                    for x in range(im.width):
-                        r, g, b, a = px[x, y]
-                        if a and b >= r + 15 and 0.3 * r + 0.59 * g + 0.11 * b >= 140:
-                            px[x, y] = (r, g, b, 110)
     sheet = Image.new('RGBA', (cw * len(order), ch * n))
     box = {}
     for c, d in enumerate(order):
