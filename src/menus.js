@@ -174,7 +174,7 @@ export class Menus {
       const s = this.hooks.storyStep?.();
       if (!s) return '<div class="rnote">The story is over, for now.</div>';
       this.wins.quest.querySelector('.rw-title').textContent = 'Story';
-      return `<div class="qview story"><small>${esc(s.ch)}</small><b>★ ${esc(s.title)}</b><p>${esc(s.goal)}${esc(this.hooks.storyProgress?.() || '')}</p>${where}${go('Go there')}</div>`;
+      return `<div class="qview story"><small>${esc(s.ch)}</small><b>★ ${esc(s.title)}</b><p>${esc(s.goal)}${esc(this.hooks.storyProgress?.() || '')}</p>${where}<div class="rnote">The main story can't be given up.</div>${go('Go there')}</div>`;
     }
     const q = QUESTS[id], st = this.quests, active = id in st.active, ready = active && st.ready(id, inv), giver = NPCS[giverOf(id)];
     this.wins.quest.querySelector('.rw-title').textContent = q.job ? 'Job Quest' : 'Quest';

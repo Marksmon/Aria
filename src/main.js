@@ -543,7 +543,7 @@ const menus = new Menus(inv, prog, player, {
   questTarget: (id) => questTarget(id),
   questGo: (id) => startNav(id),
   questQuit(id) {
-    if (!quests.quit(id)) return;
+    if (id === 'story' || !quests.quit(id)) return; // the main story can never be given up
     if (nav?.quest === id) nav = null;
     audio.play('ui');
     menus.message(SERIES[id] ? `${QUESTS[id].title.split(':')[0]} given up. Its trainer will start you over, or you may pick another trial.` : `${QUESTS[id].title} given up.`);
