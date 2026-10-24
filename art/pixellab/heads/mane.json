@@ -1,0 +1,47 @@
+{
+ "id": "40f884ff-8654-4276-b471-f0d278909f58",
+ "name": "a chibi character's head only,",
+ "state_name": "mane",
+ "prompt": "a chibi character's head only, completely bald with a smooth round scalp, pale peach skin, two large dark brown eyes with white highlights and small thin eyebrows, no mouth, no nose, small ears, soft dark outline, Ragnarok Online sprite style, no neck, no body, no hat",
+ "size": {
+  "width": 48,
+  "height": 48
+ },
+ "directions": 8,
+ "created_at": "2026-10-24T05:23:38.064127+00:00",
+ "view": "low top-down",
+ "rotation_urls": {
+  "south": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/5457cd81-4a1e-4383-9a16-5a765d8933b0/40f884ff-8654-4276-b471-f0d278909f58/rotations/south.png",
+  "west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/5457cd81-4a1e-4383-9a16-5a765d8933b0/40f884ff-8654-4276-b471-f0d278909f58/rotations/west.png",
+  "east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/5457cd81-4a1e-4383-9a16-5a765d8933b0/40f884ff-8654-4276-b471-f0d278909f58/rotations/east.png",
+  "north": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/5457cd81-4a1e-4383-9a16-5a765d8933b0/40f884ff-8654-4276-b471-f0d278909f58/rotations/north.png",
+  "south-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/5457cd81-4a1e-4383-9a16-5a765d8933b0/40f884ff-8654-4276-b471-f0d278909f58/rotations/south-east.png",
+  "south-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/5457cd81-4a1e-4383-9a16-5a765d8933b0/40f884ff-8654-4276-b471-f0d278909f58/rotations/south-west.png",
+  "north-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/5457cd81-4a1e-4383-9a16-5a765d8933b0/40f884ff-8654-4276-b471-f0d278909f58/rotations/north-east.png",
+  "north-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/5457cd81-4a1e-4383-9a16-5a765d8933b0/40f884ff-8654-4276-b471-f0d278909f58/rotations/north-west.png"
+ },
+ "storage_urls": {
+  "east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/5457cd81-4a1e-4383-9a16-5a765d8933b0/40f884ff-8654-4276-b471-f0d278909f58/rotations/east.png",
+  "west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/5457cd81-4a1e-4383-9a16-5a765d8933b0/40f884ff-8654-4276-b471-f0d278909f58/rotations/west.png",
+  "north": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/5457cd81-4a1e-4383-9a16-5a765d8933b0/40f884ff-8654-4276-b471-f0d278909f58/rotations/north.png",
+  "south": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/5457cd81-4a1e-4383-9a16-5a765d8933b0/40f884ff-8654-4276-b471-f0d278909f58/rotations/south.png",
+  "north-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/5457cd81-4a1e-4383-9a16-5a765d8933b0/40f884ff-8654-4276-b471-f0d278909f58/rotations/north-east.png",
+  "north-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/5457cd81-4a1e-4383-9a16-5a765d8933b0/40f884ff-8654-4276-b471-f0d278909f58/rotations/north-west.png",
+  "south-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/5457cd81-4a1e-4383-9a16-5a765d8933b0/40f884ff-8654-4276-b471-f0d278909f58/rotations/south-east.png",
+  "south-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/5457cd81-4a1e-4383-9a16-5a765d8933b0/40f884ff-8654-4276-b471-f0d278909f58/rotations/south-west.png"
+ },
+ "frame_urls": null,
+ "style_settings": {
+  "state_source": {
+   "id": "8c940ead-d4eb-43f3-9b64-2ea12ffee407",
+   "edit_description": "give the same head rugged shoulder-length layered medium-brown hair swept back from the forehead with a few loose strands, a masculine warrior style; keep the face, eyes and head shape exactly the same"
+  },
+  "no_background": true
+ },
+ "tags": [],
+ "status": "completed",
+ "group_id": "501431de-b306-4659-b0fa-91740a9e7ac7",
+ "progress_percent": null,
+ "eta_seconds": null,
+ "animations": []
+}

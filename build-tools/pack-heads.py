@@ -23,7 +23,7 @@ SRC = os.path.join(ROOT, 'art', 'pixellab', 'heads')
 OUT = os.path.join(ROOT, 'src', 'art')
 DIRS = {'south': 'down', 'south-east': 'downright', 'east': 'right', 'north-east': 'upright',
         'north': 'up', 'north-west': 'upleft', 'west': 'left', 'south-west': 'downleft'}
-STYLES = ['messy', 'long']
+STYLES = ['messy', 'mane', 'long']  # 'long' is kept for a female look later
 
 
 def load(name):

@@ -27,6 +27,8 @@ HAIR = {
     'spiky': 'give the same head bold upswept spiky medium-brown hair like an anime hero; keep the face, eyes and head shape exactly the same',
     'long': 'give the same head long straight medium-brown hair falling past the shoulders with a straight fringe; keep the face, eyes and head shape exactly the same',
     'ponytail': 'give the same head medium-brown hair tied in a high ponytail with side bangs; keep the face, eyes and head shape exactly the same',
+    # a man's long hair: rugged, layered, to the shoulders (the straight 'long' is kept for a female look later)
+    'mane': 'give the same head rugged shoulder-length layered medium-brown hair swept back from the forehead with a few loose strands, a masculine warrior style; keep the face, eyes and head shape exactly the same',
 }
 
 

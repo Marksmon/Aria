@@ -64,7 +64,7 @@ let lookBefore = null; // the look kept, while one is being tried on
 mobs.mvpAt = save?.mvpAt || 0;
 const player = new Player(scene, world, lib.player, lib.shadow, fx);
 player.setPos(save?.x ?? world.spawn.x, save?.z ?? world.spawn.z);
-if (save?.look) player.setLook(save.look);
+if (save?.look) player.setLook(save.look.hair === 'long' ? { ...save.look, hair: 'mane' } : save.look); // the straight long hair waits for a female look
 lookBefore = { ...player.look };
 const prog = new Progress();
 prog.load(save?.prog);
