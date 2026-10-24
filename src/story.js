@@ -61,14 +61,14 @@ export const STORY = [
   { id: 'seeress', ch: 'Chapter 1: The Stone-Fort', title: 'The Seeress', kind: 'talk', npc: 'saeunn', goal: 'Find Saeunn the Seeress at her tower (north-east of the city)',
     say: [['saeunn', 'So. You are the one the runes showed me: a stranger by a dying fire.'],
       ['saeunn', 'Beneath Glodberg sleeps the Fire Giant, the last of the fire-jotnar. The fire-ring kept him dreaming. When the ring goes out, he wakes, and all of Aria burns.'],
-      ['saeunn', 'You cannot face him as you are. Train. Choose a path: the blade, with Captain Ulfr, or the runes, with me. Hild in the square will buy what you find; Gunnar forges gear.']],
+      ['saeunn', 'You cannot face him as you are. Train. Choose a path: the blade, with Captain Ulfr, or the runes, in Galdrheim north of Fenstrand, where Archmage Vigdis taught me. Hild in the square will buy what you find; Gunnar forges gear.']],
     reward: { xp: 60 } },
   { id: 'trade', ch: 'Chapter 1: The Stone-Fort', title: 'Coin for the Road', kind: 'sell', goal: 'Sell something to Hild the Trader (or Gunnar)',
     say: [[null, 'Perz is the coin of Aria. Monsters don\'t carry any: you earn it by selling what they drop, and from quests.']],
     reward: { xp: 40, perz: 150 } },
 
   // ---------- Chapter 2: the blade or the rune ----------
-  { id: 'path', ch: 'Chapter 2: Blade or Rune', title: 'Choose Your Path', kind: 'job', goal: 'Reach Trainee Job 10 with Basic Training 9, then pass a job trial: Captain Ulfr (Blader) or Saeunn (Sorcerer)',
+  { id: 'path', ch: 'Chapter 2: Blade or Rune', title: 'Choose Your Path', kind: 'job', goal: 'Reach Trainee Job 10 with Basic Training 9, then pass a job trial: Captain Ulfr in Steinborg (Blader) or Archmage Vigdis in Galdrheim, north of Fenstrand (Sorcerer)',
     hint: 'Fight in Mosvangr, Fenstrand or Myrkdal to gain Job Levels.',
     say: [[null, 'The path is chosen. Your new skills are waiting in the Skills window.']],
     reward: { xp: 500, perz: 300 } },

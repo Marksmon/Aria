@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import './style.css';
 import { createSprites } from './sprites.js';
 import { buildWorld, ZONE_NAMES } from './world.js';
-import { CITY } from './city.js';
+import { CITY, MAGIC } from './city.js';
 import { Player } from './player.js';
 import { Input } from './input.js';
 import { UI } from './ui.js';
@@ -54,6 +54,7 @@ const SPAWNS = {
   ridge: [['beetle', 10], ['jarl', 1], ['wisp', 5, true], ['beetle', 2, true]],
   city: [],
   birch: [['russet', 10], ['sprout', 5], ['slime', 4], ['matron', 1], ['wisp', 4, true], ['russet', 2, true]],
+  magic: [],
   coast: [['brine', 9], ['tidecrab', 8], ['crab', 3], ['tideKing', 1], ['wisp', 4, true], ['brine', 2, true]],
   deep: [['gloomcap', 10], ['mushling', 4], ['shadeWisp', 6], ['gloomMother', 1], ['gloomcap', 2, true]],
   heath: [['cinderBeetle', 9], ['emberWisp', 6], ['beetle', 3], ['cinderLord', 1], ['cinderBeetle', 2, true]],
@@ -421,7 +422,7 @@ const menus = new Menus(inv, prog, player, {
     menus.message('Gyda mends your wounds. HP and SP are full.');
   },
   // Ivar the Ferryman: the lands you have walked, and his fares
-  ferryList: () => Object.entries(FARES).filter(([m]) => visited.has(m)),
+  ferryList: () => Object.entries(FARES).filter(([m]) => visited.has(m) && m !== world.id),
   ferry(map) {
     const fare = FARES[map];
     if (!visited.has(map) || inv.perz < fare) return;
@@ -513,6 +514,7 @@ const SPOTS = [
   { map: 'camp', ...world.camp.chest, h: 0.8, run: () => menus.show('chest') },
   { map: 'camp', ...world.camp.tent, h: 2.2, run: () => rest() },
   { map: 'city', ...CITY.chest, h: 0.8, run: () => menus.show('chest') }, // Steinborg's storehouse: the same chest
+  { map: 'magic', ...MAGIC.chest, h: 0.8, run: () => menus.show('chest') }, // and Galdrheim's
   ...villagers.list.map((v) => ({ map: v.map, x: v.x, z: v.z, h: v.top, run: () => { if (menus.isOpen('story')) return; if (story.talkStep(v.id) && storyLive()) storyDone(); else menus.talkTo(v.id); } })),
 ];
 

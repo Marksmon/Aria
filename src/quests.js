@@ -20,7 +20,7 @@ export const NPCS = {
     bye: 'You have done this valley a great kindness. Sit by the fire whenever you like.',
     quests: ['warden'],
     // a Trainee ready for a job is sent on to Steinborg
-    ready: 'You have learnt all a Trainee can. Go north through Mosvangr to Steinborg: Captain Ulfr trains Bladers, and Saeunn the Seeress teaches sorcery.',
+    ready: 'You have learnt all a Trainee can. For the blade, go north through Mosvangr to Steinborg: Captain Ulfr trains Bladers. For sorcery, go west to Fenstrand and north to Galdrheim, the city of sorcerers.',
   },
   tilly: {
     name: 'Astrid the Cook', x: 36.2, z: 33.2,
@@ -82,12 +82,17 @@ export const NPCS = {
     quests: [],
   },
   saeunn: {
-    name: 'Saeunn the Seeress', map: 'city', x: 45.6, z: 19.8, trial: 'sorcerer_trial', job: 'mage',
+    name: 'Saeunn the Seeress', map: 'city', x: 45.6, z: 19.8,
     hello: 'The runes whisper of you. Few hear them.',
     later: (lv) => `The runes are quiet. Come to me again at Base Level ${lv}.`,
     bye: 'Walk softly. The runes are listening.',
-    trialHint: 'When your training is done (Trainee Job Level 10, Basic Training 9), come to me and I will test whether the runes answer you.',
-    quests: ['shades'],
+    trialHint: 'Sorcery is taught in Galdrheim, north of Fenstrand. When your training is done (Trainee Job Level 10, Basic Training 9), go to Archmage Vigdis there. She was my teacher.',
+    quests: [],
+    lore: [
+      'I learnt the runes in Galdrheim, at Vigdis\'s feet. I came to Steinborg because stone-folk need a seer more than sorcerers do.',
+      'The Fire Giant is the last of the fire-jotnar. His kin burnt half the world before the first settlers sang them to sleep.',
+      'Every rune on Eldrun\'s fire-ring was cut by a Galdrheim hand. When the fires fail, the runes fail with them.',
+    ],
   },
   // the ferryman's carts take you to any land you have walked before, for perz (warp: the fare per map)
   ivar: {
@@ -102,6 +107,92 @@ export const NPCS = {
     later: () => '', bye: 'The walls are strong and the beer is cold. Welcome.',
     quests: [],
   },
+  // ---------- Galdrheim, the city of sorcerers ----------
+  vigdis: {
+    name: 'Archmage Vigdis', map: 'magic', x: 32, z: 20.8, look: 'saeunn', trial: 'sorcerer_trial', job: 'mage',
+    hello: 'Welcome to Galdrheim, child. Here we sing the world into shape; we call it galdr, the song-craft.',
+    later: (lv) => `You are not ready for what I would ask. Come back at Base Level ${lv}.`,
+    bye: 'Sing true, and the runes will answer.',
+    trialHint: 'When your training is done (Trainee Job Level 10, Basic Training 9), come to me and I will test whether the runes answer you.',
+    quests: ['giantmother'],
+    lore: [
+      'Galdrheim was founded by Hallveig, the first Archmage, on a rune-well: a place where the old songs rise out of the ground. The circle in our square sits on top of it.',
+      'When the settlers crossed the mountains, it was Hallveig who cut the runes of Eldrun\'s fire-ring. A ring of fire alone would not hold a jotunn; a ring of fire that sings does.',
+      'Steinborg trusts its walls. We trust the song. Both are right, and both are not enough alone.',
+      'Saeunn was my best student. She left to look after the stone-folk. I still miss her arguing with me.',
+    ],
+  },
+  orm: {
+    name: 'Orm the Staffwright', map: 'magic', x: 46.6, z: 34.6, look: 'gunnar', shop: 'orm', craft: 'magic',
+    hello: 'Staves, robes, rings and charms for the song-folk. Bring me the makings and I carve and stitch them, or buy from the rack.',
+    later: (lv) => `I may need your help with the wood at Base Level ${lv}.`,
+    bye: 'Hold your staff by the grain, not against it.',
+    quests: ['livingwood'],
+    lore: [
+      'A staff is not a stick. The wood must still remember being alive, or the song runs straight through it.',
+      'Gunnar in Steinborg makes fine swords. He told me once a staff was a sword for people who are afraid of swords. I have not forgiven him.',
+    ],
+  },
+  kari: {
+    name: 'Kari the Curio Seller', map: 'magic', x: 25.8, z: 28.2, look: 'hild', shop: 'kari',
+    hello: 'Potions, feathers, torches, and a little quickening for the impatient. Galdrheim prices, which is to say fair ones!',
+    later: () => '', bye: 'Come back before your potions run dry!',
+    quests: [],
+    lore: [
+      'Everything here is brewed in Galdrheim. The blue potions taste like cold rain. That is how you know they are real.',
+      'Teleport Feathers come from the Wisps. Do not ask me how. The Lorekeeper asked once and she still has the hiccups.',
+    ],
+  },
+  brynja: {
+    name: 'Brynja the Lorekeeper', map: 'magic', x: 15.4, z: 37.4, look: 'ragna',
+    hello: 'Quiet, please. This is the oldest library north of the mountains.',
+    later: (lv) => `I have a task for you, but not yet. Come back at Base Level ${lv}.`,
+    bye: 'Return your books on time. All of them.',
+    quests: ['tomes'],
+    lore: [
+      'The fire-jotnar were born when the world was young, from the fire under the mountains. They did not hate us. They simply burnt, the way fire does.',
+      'There were nine great jotnar. Eight were sung into the stone long ago. The ninth, the one the settlers called the Ember Jarl, slept under Glodberg. You know him as the Fire Giant.',
+      'Our books say the fire-ring can be renewed only when the Giant is beaten in the waking world. Sleeping, he cannot be harmed. Awake, he can.',
+    ],
+  },
+  torvald: {
+    name: 'Torvald the Runecarver', map: 'magic', x: 41.2, z: 46.8, look: 'ulfr',
+    hello: 'Every rune is a word, and every word is a promise. I carve them so the promises last.',
+    later: (lv) => `My chisel needs something you cannot fetch yet. Come back at Base Level ${lv}.`,
+    bye: 'Mind the stones. They are older than they look.',
+    quests: ['shades'],
+    lore: [
+      'These three stones are the Watchers. They have stood here since before the walls. When the jotnar stir, their runes glow brighter.',
+      'They have been glowing for a month now.',
+    ],
+  },
+  hrafn: {
+    name: 'Hrafn the Stargazer', map: 'magic', x: 45.6, z: 52.2, look: 'bram',
+    hello: 'Ah, a visitor. Have you looked up lately? Nobody looks up.',
+    later: () => '', bye: 'Clear skies to you.',
+    quests: [],
+    lore: [
+      'That red star low in the south is the Wolf\'s Eye. It burns brightest when the jotnar dream. It has never been as bright as it is this year.',
+      'The night Wisps follow the stars, you know. They drift wherever the sky is clearest. Sigrun at Eldrun thinks they follow the wind. She is wrong, but kindly.',
+    ],
+  },
+  signy: {
+    name: 'Signy the Apprentice', map: 'magic', x: 36.6, z: 37.2, look: 'tilly',
+    hello: 'Are you a sorcerer? I am going to be one! I can already make a spark. Mostly on purpose.',
+    later: () => '', bye: 'Bye! Do not tell the Archmage about the scorch on the library door.',
+    quests: [],
+    lore: [
+      'The crystal over the circle floats because the rune-well pushes it up. I tried to sit on it once. It does not hold people.',
+      'Lorekeeper Brynja says there were nine giants. Torvald says nine is a lucky number. I think he only likes it because it is a rune.',
+      'When I am Archmage I will make the Wisps glow in colours. Purple ones. And green ones.',
+    ],
+  },
+  runa: {
+    name: 'Runa the Gatewarden', map: 'magic', x: 28, z: 53, look: 'wren', warp: true,
+    hello: 'Galdrheim\'s rune-gate can send you to any land you have walked, for a fee. The song is free; the upkeep is not.',
+    later: () => '', bye: 'Step lightly through the gate.',
+    quests: [],
+  },
   bjorn: {
     name: 'Bjorn the Gate Guard', map: 'city', x: 55.2, z: 29.4, look: 'ulfr',
     hello: 'Most beasts out there leave you be until you strike first. Not in Svartskog and Askheid: the dark wisps and the fire beasts come for you on sight.',
@@ -111,7 +202,7 @@ export const NPCS = {
 };
 
 // the Ferryman's fares, by map (only lands you have already walked)
-export const FARES = { camp: 300, grove: 300, fen: 400, hollow: 600, birch: 700, coast: 900, ridge: 1200, deep: 1500, heath: 1800 };
+export const FARES = { camp: 300, city: 500, magic: 500, grove: 300, fen: 400, hollow: 600, birch: 700, coast: 900, ridge: 1200, deep: 1500, heath: 1800 };
 
 // reward: { xp (Base EXP; Job EXP is 70% of it), perz, items: { id: n } }. Levels and EXP follow
 // the Ragnarok curve at 1x: a quest is a big job, worth a fair share of a level.
@@ -173,6 +264,25 @@ export const QUESTS = {
     thanks: 'The King Crab, dead? The fishers will feast for a week. Well fought.',
     reward: { xp: 20000, perz: 6000, items: { potion2: 10 } },
   },
+  // ---------- Galdrheim ----------
+  tomes: {
+    title: 'The Drowned Tomes', kind: 'fetch', items: { salt: 15, dew: 10 }, lv: 20,
+    intro: 'A ship carrying our oldest books sank off Saltvik. The tomes have washed ashore, crusted with salt. To clean them I need fifteen handfuls of Salt from the Sea Slimes and ten Water Drops.',
+    thanks: 'The ink is still there. Hallveig\'s own hand! Thank you.',
+    reward: { xp: 7000, perz: 4000, items: { tonic: 5 } },
+  },
+  livingwood: {
+    title: 'The Living Wood', kind: 'fetch', items: { heartwood: 1, thorn: 8 }, lv: 26,
+    intro: 'The best staves are carved from wood that still lives. The Giant Sprout of Birkilund carries a root like that in its heart. Bring me a Giant Root, and eight Thorns to bind it.',
+    thanks: 'It is still warm. I will make something good of this, and so will you.',
+    reward: { xp: 14000, perz: 6000, items: { potion2: 8 } },
+  },
+  giantmother: {
+    title: 'The Mother of Spores', kind: 'kill', mob: 'gloomMother', n: 1, lv: 40,
+    intro: 'The Giant Mushroom of Svartskog has rooted itself on a rune-well. It drinks the song and breathes out rot. Destroy it, and the well will run clean.',
+    thanks: 'I felt the well clear from here. You sing louder than you know.',
+    reward: { xp: 60000, perz: 10000, items: { tonic: 10 } },
+  },
   giantbeetle: {
     title: 'The Beetle of Askheid', kind: 'kill', mob: 'cinderLord', n: 1, lv: 46,
     intro: 'In Askheid a Giant Beetle burns the heath wherever it walks. It is the worst thing the Watch has seen. Kill it.',
@@ -181,8 +291,8 @@ export const QUESTS = {
   },
   shades: {
     title: 'Shadows in Svartskog', kind: 'fetch', items: { shade: 10 }, lv: 38,
-    intro: 'Dark Wisps drift between the black trees of Svartskog. Bring me ten of their crystals; the runes want them. Mind: they come for you on sight.',
-    thanks: 'Cold, and singing. Thank you.',
+    intro: 'Dark Wisps drift between the black trees of Svartskog. Bring me ten of their crystals; I carve their light into the Watchers. Mind: they come for you on sight.',
+    thanks: 'Cold, and singing. The Watchers will be glad of them.',
     reward: { xp: 45000, perz: 6000, items: { tonic: 8 } },
   },
 };

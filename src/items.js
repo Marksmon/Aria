@@ -142,7 +142,16 @@ export const sellPrice = (id) => Math.floor((PRICES[id] || 0) / 2);
 // what each Steinborg shop sells
 export const SHOPS = {
   hild: ['potion', 'potion2', 'tonic', 'herb', 'berry', 'wander', 'homeward', 'torch'],
-  gunnar: ['twig_sword', 'stone_blade', 'iron_sword', 'oak_staff', 'birch_staff', 'rune_staff', 'clothes', 'chain_mail', 'mage_robe', 'round_shield', 'wool_cape', 'leather_boots'],
+  gunnar: ['twig_sword', 'stone_blade', 'iron_sword', 'clothes', 'chain_mail', 'round_shield', 'wool_cape', 'leather_boots'],
+  // Galdrheim: Kari's curios (like Hild's, and Speed Potions), Orm's staves and robes
+  kari: ['potion', 'potion2', 'tonic', 'herb', 'berry', 'quick', 'wander', 'homeward', 'torch'],
+  orm: ['oak_staff', 'birch_staff', 'frost_staff', 'rune_staff', 'mage_robe', 'wool_cape', 'leather_boots'],
+};
+// who crafts a recipe: 'use' (Ragna's brews), 'magic' (Orm's staves and sorcerers' gear), 'gear' (Gunnar's forge)
+export const recipeKind = (r) => {
+  const it = ITEMS[r.item];
+  if (it.type !== 'equip') return 'use';
+  return it.kind === 'staff' || (it.jobs && it.jobs.every((j) => j === 'mage')) ? 'magic' : 'gear';
 };
 
 // equipment slots, in the Equipment window's order

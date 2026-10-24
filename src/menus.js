@@ -2,7 +2,7 @@
 // Ragna's herbs), the chest (camp and Steinborg storage), shops and dialogue. Each is a small window you drag by its title bar; several can be open
 // at once and the game keeps running behind them. Positions are remembered per device.
 // Pickup toasts and messages live here too. Plain DOM over the canvas.
-import { ITEMS, RECIPES, SLOTS, SHOPS, PRICES, sellPrice, equipLine, iconURL, canWear, jobLine } from './items.js';
+import { ITEMS, RECIPES, SLOTS, SHOPS, PRICES, sellPrice, equipLine, iconURL, canWear, jobLine, recipeKind } from './items.js';
 import { BAG_SLOTS, CHEST_SLOTS } from './inventory.js';
 import { STATS, STAT_KEYS, JOBS } from './progress.js';
 import { statCost } from './ro-tables.js';
@@ -28,6 +28,13 @@ const WINDOWS = {
   look:   { title: 'Your Look',  at: [0.50, 0.16], w: 260 },
 };
 const POS_KEY = 'aria.windows';
+
+// the crafters: Gunnar's forge (gear), Ragna's herbs (usables), Orm's workshop (sorcerers' gear)
+const CRAFTERS = {
+  gear: { title: "Gunnar's Forge", note: 'Gunnar forges weapons, armor and charms.', button: 'Forge gear' },
+  use: { title: "Ragna's Herbs", note: 'Ragna brews potions and feathers.', button: 'Brew usables' },
+  magic: { title: "Orm's Workshop", note: 'Orm carves staves and stitches robes for sorcerers.', button: 'Craft sorcerer gear' },
+};
 
 export class Menus {
   constructor(inv, prog, player, hooks) {
@@ -91,6 +98,7 @@ export class Menus {
   talkTo(npc) {
     this.npc = npc;
     this.ferrying = false; // the Ferryman's list of lands, once asked for
+    this.loreAt = 0;       // how far into their tales (NPCS lore) they are
     this.show('talk');
   }
 
@@ -136,7 +144,7 @@ export class Menus {
   openCraft(kind) {
     this.craftKind = kind;
     this.show('craft');
-    this.wins.craft.querySelector('.rw-title').textContent = kind === 'gear' ? "Gunnar's Forge" : "Ragna's Herbs";
+    this.wins.craft.querySelector('.rw-title').textContent = CRAFTERS[kind].title;
     this.render('craft');
   }
 
@@ -316,10 +324,10 @@ export class Menus {
   }
 
   craft() {
-    const inv = this.inv, gear = this.craftKind === 'gear';
-    let h = `<div class="rnote">${gear ? 'Gunnar forges weapons, armor and charms.' : 'Ragna brews potions and feathers.'} Uses items from your bag and storage; what is made goes in your bag.</div><div class="rlist recipes">`;
+    const inv = this.inv;
+    let h = `<div class="rnote">${CRAFTERS[this.craftKind].note} Uses items from your bag and storage; what is made goes in your bag.</div><div class="rlist recipes">`;
     for (const r of RECIPES) {
-      if ((ITEMS[r.item].type === 'equip') !== gear) continue;
+      if (recipeKind(r) !== this.craftKind) continue;
       const st = inv.recipeState(r), it = ITEMS[r.item];
       const cost = Object.entries(r.cost).map(([id, n]) => {
         const have = inv.have(id);
@@ -375,7 +383,7 @@ export class Menus {
     // what else they do: trade and craft
     const extra = (n.stylist ? '<button class="rbtn" data-act="stylist">Change my look</button>' : '')
       + (n.shop ? '<button class="rbtn" data-act="shop">Buy / Sell</button>' : '')
-      + (n.craft ? `<button class="rbtn" data-act="craftwin" data-id="${n.craft}">${n.craft === 'gear' ? 'Forge gear' : 'Brew usables'}</button>` : '')
+      + (n.craft ? `<button class="rbtn" data-act="craftwin" data-id="${n.craft}">${CRAFTERS[n.craft].button}</button>` : '')
       + (n.heal ? '<button class="rbtn" data-act="heal">Heal me</button>' : '')
       + (n.warp ? '<button class="rbtn" data-act="ferrylist">Travel</button>' : '');
     if (n.warp && this.ferrying) { // the lands you have walked, and the fare to each
@@ -410,6 +418,11 @@ export class Menus {
     if (p.job === 'novice' && n.trialHint && (st.state === 'finished' || st.state === 'locked')) text = n.trialHint;
     if (p.job === 'novice' && n.ready && p.jobLv >= 10 && skillLv(p, 'basics') >= 9 && ['finished', 'locked', 'active'].includes(st.state)) text = n.ready;
     if (extra && st.state !== 'job' && st.state !== 'offer' && st.state !== 'ready') btns = extra + btns;
+    // people with tales to tell: each 'Tell me more' is the next one
+    if (n.lore && st.state !== 'job' && st.state !== 'offer' && st.state !== 'ready') {
+      if (this.loreAt > 0) text = n.lore[(this.loreAt - 1) % n.lore.length];
+      btns = '<button class="rbtn soft" data-act="lore">Tell me more</button>' + btns;
+    }
     this.wins.talk.querySelector('.rw-title').textContent = n.name;
     return `<div class="talkwrap"><img class="portrait" src="${this.portrait(this.npc)}" alt="">
       <div class="say"><p>${esc(text)}</p>${box ? `<div class="qbox">${box}</div>` : ''}<div class="btnrow">${btns}</div></div></div>`;
@@ -469,6 +482,7 @@ export class Menus {
     if (act === 'craftwin') { this.close('talk'); this.openCraft(t.dataset.id); }
     if (act === 'heal') { this.hooks.heal?.(); this.close('talk'); }
     if (act === 'ferrylist') { this.ferrying = true; this.render('talk'); }
+    if (act === 'lore') { this.loreAt++; this.render('talk'); }
     if (act === 'ferry') this.hooks.ferry?.(t.dataset.id);
     if (act === 'shoptab') { this.shopTab = t.dataset.id; this.sellSel = null; this.render(id); }
     if (act === 'buy') {

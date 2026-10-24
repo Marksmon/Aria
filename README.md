@@ -41,11 +41,13 @@ portals leave the camp (Mosvangr to the north, Fenstrand to the west); every oth
 reached by travelling on. Place names are Old Norse in style.
 
 ```
-             Steinborg - Birkilund
-                 |           |
-  Saltvik    Mosvangr  -  Myrkdal  -  Svartskog
+  Galdrheim  Steinborg - Birkilund
+     |           |           |
+     |       Mosvangr  -  Myrkdal  -  Svartskog
      |           |           |           |
  Fenstrand - Eldrun Camp   Glodberg  -  Askheid
+     |
+  Saltvik
 ```
 
 | Map | Level | Monsters | Boss |
@@ -86,6 +88,13 @@ sword). It comes back 15 minutes later, even if you leave the map or close the g
 stalls and the seeress's tower. The buildings are 3D, like Ragnarok's towns, and fade when they
 stand between you and the camera. Its storehouse opens the same chest as the camp's.
 
+**Galdrheim.** The city of sorcerers, north of Fenstrand: pale lavender stone, violet and teal
+roofs, star banners over the gate and crystals glowing on every tower. In its square a circle of
+runes glows over the rune-well, with a crystal floating above it; the Archmage's three-tiered
+tower stands to the north, the library to the west, the Staffwright's workshop to the east, the
+Watcher runestones and the stargazer's observatory to the south. Sorcerers take their job trial
+here, and their gear is made here. It has a storehouse too (the same chest).
+
 ## Character
 
 Ragnarok's classic rules with Aria's own stat names (see `docs/ragnarok-mechanics.md`):
@@ -105,7 +114,7 @@ give (`RATES` in `src/main.js`).
 Aria's own jobs and skills, kept modest. A **Trainee** puts points into **Basic Training**; the
 other Trainee skills come free with Job Levels. At Trainee Job 10 with Basic Training 9, a job
 trial opens in Steinborg: **Captain Ulfr** tests Bladers (defeat 10 Crabs in Fenstrand),
-**Saeunn the Seeress** tests Sorcerers (bring Glow Dust, Water Drops and Seeds). Pass, and
+**Archmage Vigdis** in Galdrheim tests Sorcerers (bring Glow Dust, Water Drops and Seeds). Pass, and
 they change your job. Elder Halvard sends ready Trainees on to the city.
 
 | Trainee | | |
@@ -164,10 +173,9 @@ Water: the slimes, crabs, King Crab · Earth: Sprouts, Mushrooms, beetles, Giant
 Fire: Fire Beetles, Fire Wisps, Giant Beetle, Fire Giant · Wind: Wisps · Shadow:
 Dark Mushrooms, Dark Wisps, Giant Mushroom.
 
-**Staves** raise MATK: Apprentice (+15%, given on the job change), Birchwood (+20%, Gunnar),
-Rune (+25%), Frostwood (+28%), Giant Root (+30%), Tidecaller (+32%), Nightshade (+34%, Dark Wisp
-0.2%), Emberheart (+38%), Mothercap (+40%, Giant Mushroom 2%), Flame Staff (+50%, MVP
-2%) and Great Staff (+55%, forged from three boss materials).
+**Staves** raise MATK: Wooden (+15%, given on the job change), Birch (+20%, Orm), Rune (+25%),
+Ice (+28%), Root (+30%), Water (+32%), Dark (+34%, Dark Wisp 0.2%), Fire (+38%), Mushroom (+40%,
+Giant Mushroom 2%), Flame (+50%, MVP 2%) and Great Staff (+55%, from three boss materials).
 
 ## Items
 
@@ -227,13 +235,16 @@ glasses and masks sit on the eyes, in every direction and every frame. See
 `docs/character-standard.md`.
 
 **Perz and shops.** Perz is Aria's coin (Ragnarok's zeny). Monsters don't drop perz, as in Ragnarok: sell your loot. In Steinborg,
-**Hild the Trader** sells potions, tonics, herbs, feathers and torches, and **Gunnar** sells
-swords, staves, armor, shields, capes and boots. Any shop buys anything for half its price.
+**Hild the Trader** sells potions, herbs, feathers and torches, and **Gunnar** sells swords,
+armor, shields, capes and boots. In Galdrheim, **Kari** sells the same goods as Hild (and Speed
+Potions), and **Orm the Staffwright** sells staves and robes. Any shop buys anything for half its
+price.
 Quests pay perz too. Your perz shows in the Items window.
 
-**Crafting** is done in Steinborg (the campfire is just a fire now): **Gunnar the Gear Crafter**
-forges weapons, staves, armor, headgear and charms, and **Ragna the Herbalist** brews potions,
-tonics and feathers, from materials in your bag and storage. Recipes need a Base Level. The best
+**Crafting** is done in the cities (the campfire is just a fire now): in Steinborg, **Gunnar the
+Gear Crafter** forges weapons, armor, headgear and charms, and **Ragna the Herbalist** brews
+potions and feathers; in Galdrheim, **Orm the Staffwright** makes the sorcerers' gear (staves,
+robes), all from materials in your bag and storage. Recipes need a Base Level. The best
 gear comes from boss materials:
 
 | Forged | Made from |
@@ -284,13 +295,20 @@ A few big jobs instead of many errands: one each in the camp, and a handful in S
 | Gunnar the Gear Crafter | Steinborg | shop, forge · Stone for the Forge (34): 30 Stone, 15 Burnt Shells |
 | Ragna the Herbalist | Steinborg | brewing · The Great Remedy (38): 12 Dark Spores, 12 Fire Dust |
 | Captain Ulfr | Steinborg | The Blader's Trial · The King of the Shore (30): the King Crab · The Beetle of Askheid (46): the Giant Beetle |
-| Saeunn the Seeress | Steinborg | The Rune Trial · Shadows in Svartskog (38): 10 Dark Crystals |
+| Saeunn the Seeress | Steinborg | the story; lore of the Fire Giant and Galdrheim |
 | Embla the Stylist | Steinborg | hairstyle and dye, 1,000 perz |
 | Ivar the Ferryman | Steinborg | carts to any land you have walked, 300–1,800 perz |
 | Liv the Guide | Steinborg | who does what in the city |
 | Bjorn the Gate Guard | Steinborg | which monsters attack on sight |
+| Archmage Vigdis | Galdrheim | The Rune Trial · The Mother of Spores (40): the Giant Mushroom |
+| Orm the Staffwright | Galdrheim | shop, crafts sorcerers' gear (staves, robes) · The Living Wood (26): a Giant Root, 8 Thorns |
+| Kari the Curio Seller | Galdrheim | shop: potions, feathers, torches, Speed Potions |
+| Brynja the Lorekeeper | Galdrheim | The Drowned Tomes (20): 15 Salt, 10 Water Drops |
+| Torvald the Runecarver | Galdrheim | Shadows in Svartskog (38): 10 Dark Crystals |
+| Hrafn the Stargazer, Signy the Apprentice | Galdrheim | tales of the city, the stars and the jotnar |
+| Runa the Gatewarden | Galdrheim | the rune-gate: to any land you have walked, 300–1,800 perz |
 
-Gyda, Ivar, Liv and Bjorn borrow other people's sprites until their own are drawn.
+Gyda, Ivar, Liv, Bjorn and the people of Galdrheim borrow other people's sprites until their own are drawn. People with tales to tell have a **Tell me more** button.
 
 ## Day and night
 

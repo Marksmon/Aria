@@ -28,6 +28,7 @@ export const ZONE_NAMES = {
   coast: 'Saltvik',     // "salt bay"
   deep: 'Svartskog',    // "black wood"
   heath: 'Askheid',     // "ash heath"
+  magic: 'Galdrheim',   // "spell-home": the city of sorcerers
 };
 
 const CAMP_R = 17;   // the camp clearing's walkable radius
@@ -39,8 +40,9 @@ const N = { x: 32, z: 6 }, S = { x: 32, z: 58 }, E = { x: 58, z: 32 }, W = { x: 
 export const MAPS = {
   camp:   { portals: [{ to: 'grove', x: 32, z: 16.5 }, { to: 'fen', x: 16.5, z: 32 }] },
   grove:  { portals: [{ to: 'camp', ...S }, { to: 'city', ...N }, { to: 'hollow', ...E }] },
-  fen:    { portals: [{ to: 'camp', ...E }, { to: 'coast', ...W }], lake: { x: 30, z: 37, rx: 8, rz: 6 } },
-  city:   { portals: [{ to: 'grove', x: 32, z: 59 }, { to: 'birch', x: 59, z: 32 }], city: true },
+  fen:    { portals: [{ to: 'camp', ...E }, { to: 'coast', ...W }, { to: 'magic', ...N }], lake: { x: 30, z: 37, rx: 8, rz: 6 } },
+  city:   { portals: [{ to: 'grove', x: 32, z: 59 }, { to: 'birch', x: 59, z: 32 }], city: 'city' },
+  magic:  { portals: [{ to: 'fen', x: 32, z: 59 }], city: 'magic' },
   birch:  { portals: [{ to: 'city', ...W }, { to: 'hollow', ...S }], clear: { x: 40, z: 22, r: 5 } },
   hollow: { portals: [{ to: 'grove', ...W }, { to: 'birch', ...N }, { to: 'deep', ...E }, { to: 'ridge', ...S }], lift: [-0.15, 0] },
   // the Ember Jarl's lair: an open bowl in the south of Glodberg (see mobs.js)
@@ -58,6 +60,7 @@ const GROUND = {
   ridge: ['#b07a4c', '#caa064'],
   fen: ['#6f8048', '#8e9858'],
   city: ['#8a8478', '#9a9488'],
+  magic: ['#6f8a5e', '#86a070'],
   birch: ['#7fae4e', '#9cc45e'],
   coast: ['#c2b07e', '#d4c494'],
   deep: ['#26382a', '#30402f'],
@@ -72,12 +75,13 @@ const TABLE = {
   fen: [['tree_willow', 14], ['reeds', 30], ['grass', 30], ['stump', 6], ['bush', 10]],
   camp: [['grass', 6], ['flowers', 3], ['bush', 1]],
   city: [['grass', 6], ['flowers', 3]],
+  magic: [['grass', 6], ['flowers', 4]],
   birch: [['tree_birch', 28], ['flowers', 24], ['grass', 30], ['bush', 10], ['stump', 3]],
   coast: [['grass_dry', 30], ['rock_grey', 9], ['reeds', 14], ['shrub_dry', 14], ['rock_small', 10], ['tree_willow', 3]],
   deep: [['tree_dark', 42], ['mushroom_big', 14], ['mushrooms', 24], ['grass_dark', 20], ['tree_dead', 4]],
   heath: [['tree_dead', 16], ['rock', 14], ['rock_small', 22], ['shrub_dry', 22], ['grass_dry', 26]],
 };
-const BORDER = { grove: 'tree_grove', hollow: 'tree_dark', ridge: 'rock', fen: 'tree_willow', camp: 'tree_grove', city: 'tree_grove', birch: 'tree_birch', coast: 'rock_grey', deep: 'tree_dark', heath: 'tree_dead' };
+const BORDER = { grove: 'tree_grove', hollow: 'tree_dark', ridge: 'rock', fen: 'tree_willow', camp: 'tree_grove', city: 'tree_grove', magic: 'tree_birch', birch: 'tree_birch', coast: 'rock_grey', deep: 'tree_dark', heath: 'tree_dead' };
 // inside the city walls (and a step beyond them)
 const inWalls = (x, z, m = 0) => x > WALL.x0 - m && x < WALL.x1 + m && z > WALL.z0 - m && z < WALL.z1 + m;
 
@@ -222,9 +226,10 @@ function buildMap(id, scene, lib, shared) {
   if (isCity) {
     city = buildCity({
       group, lib, heightAt: (x, z) => heightAt(x, z), place, boxes,
+      gates: def.portals.map((p) => (p.z > 55 ? 's' : p.x > 55 ? 'e' : p.x < 9 ? 'w' : 'n')),
       addBox: (x0, z0, x1, z1, kind) => boxes.push({ x0, z0, x1, z1, kind }),
       addSolid: (x, z, coll) => solids.push({ x, z, coll }),
-    });
+    }, def.city);
   }
 
   // treeline framing the map (camp: a ring of forest around the clearing; city: outside the walls)
