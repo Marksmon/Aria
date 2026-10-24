@@ -223,17 +223,39 @@ html, body {
   position: absolute;
   top: calc(156px + env(safe-area-inset-top));
   right: calc(12px + env(safe-area-inset-right));
-  width: 170px;
+  width: 178px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 3px;
   font: 600 11px system-ui, sans-serif;
   text-align: right;
+  pointer-events: auto;
 }
-#quests div { padding: 3px 7px; border-radius: 7px; background: rgba(30, 22, 16, .55); }
+#quests[hidden] { display: none; }
+/* the title bar: tap to fold the list away */
+#quests .qhead { align-self: flex-end; display: flex; gap: 6px; align-items: center; padding: 2px 8px; border: 0; border-radius: 7px;
+  background: rgba(30, 22, 16, .7); color: #ffe6a8; font: 700 11px system-ui, sans-serif; }
+#quests .qhead i { font-style: normal; transition: transform .15s; }
+#quests.min .qhead i { transform: rotate(-90deg); }
+#quests.min .qlist { display: none; }
+/* long lists scroll instead of covering the screen */
+#quests .qlist { display: flex; flex-direction: column; gap: 4px; max-height: min(34vh, 230px); overflow-y: auto; overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch; scrollbar-width: thin; touch-action: pan-y; }
+#quests .qlist div { padding: 3px 7px; border-radius: 7px; background: rgba(30, 22, 16, .55); flex: none; }
 #quests b { display: block; font-size: 12px; color: #ffe6a8; }
 #quests span { opacity: .9; }
 #quests .done b { color: #b6ec8e; }
+#quests .story { background: rgba(46, 30, 70, .7) !important; box-shadow: inset 0 0 0 1px rgba(184, 160, 255, .45); }
+#quests .story small { display: block; font-size: 9px; color: #c8b8ff; text-transform: uppercase; letter-spacing: .04em; }
+#quests .story b { color: #e6dcff; }
+#quests .story em { display: block; margin-top: 2px; font-style: normal; color: #ffd23a; }
+
+/* story pages */
+.talkwrap.story .portrait.narr { height: 64px; display: grid; place-items: center; font-size: 28px; color: #c8b8ff; background: rgba(46, 30, 70, .5); border-radius: 6px; }
+.talkwrap.story .who { display: block; color: var(--w-gold); font-size: 11px; margin-bottom: 2px; }
+.talkwrap.story p.narr { font-style: italic; }
+.talkwrap.story .btnrow { align-items: center; }
+.talkwrap.story .btnrow .rtag { margin-right: auto; }
 
 /* ---------- Tap controls: hotbar ---------- */
 #hud { z-index: 25; }
@@ -430,6 +452,14 @@ button.eq:active { background: var(--w-sel); }
 .stt .gap { width: 4px; padding: 0; border-left: 1px solid var(--w-line); border-bottom: 0; }
 .stt .pts { font-weight: 700; }
 .stt .pts b { float: right; }
+.sthead { display: flex; gap: 10px; align-items: baseline; padding: 4px 6px; border-bottom: 1px solid var(--w-line); background: var(--w-soft); font-size: 11px; color: var(--w-dim); }
+.sthead > b { margin-right: auto; color: var(--w-gold); font-size: 12px; }
+.sthead span b { color: var(--w-text); }
+.stsub { display: flex; justify-content: space-between; }
+.stsub b { color: var(--w-gold); }
+.stt.stats th small { margin-left: 6px; font-weight: 400; color: var(--w-dim); font-size: 10px; }
+.stt.stats .sv em { font-style: normal; color: var(--w-gold); margin-left: 2px; }
+.stt.battle td { text-align: right; }
 .splus { width: 13px; height: 12px; padding: 0; margin-right: 2px; border: 1px solid var(--w-line); border-radius: 2px; background: var(--w-btn); color: var(--w-gold); font: 7px/9px sans-serif; vertical-align: middle; }
 .splus:disabled { visibility: hidden; }
 

@@ -21,6 +21,7 @@ const WINDOWS = {
   chest:  { title: 'Storage',    at: [0.50, 0.16], w: 320 },
   shop:   { title: 'Shop',       at: [0.50, 0.14], w: 300 },
   talk:   { title: '',           at: [0.50, 0.22], w: 320 },
+  story:  { title: '',           at: [0.50, 0.20], w: 340 },
 };
 const POS_KEY = 'aria.windows';
 
@@ -60,20 +61,39 @@ export class Menus {
     this.hooks.ui?.();
   }
 
+  finishStory() {
+    const done = this.storyDone;
+    this.storyDone = null;
+    done?.();
+  }
+
   toggle(id) { this.wins[id] ? this.close(id) : this.show(id); }
 
   // close one window, or all of them
   close(id) {
+    let story = false;
     for (const k of id ? [id] : Object.keys(this.wins)) {
+      if (k === 'story' && this.wins[k]) story = true;
       this.wins[k]?.remove();
       delete this.wins[k];
     }
     this.hooks.closed?.();
+    if (story) this.finishStory(); // however the story window closes, the story moves on
   }
 
   talkTo(npc) {
     this.npc = npc;
     this.show('talk');
+  }
+
+  // story pages: [[speaker id or null (the narrator), line], ...], one at a time; done() after the last
+  story(pages, title, done) {
+    this.storyPages = pages.length ? pages : [[null, '…']];
+    this.storyAt = 0;
+    this.storyDone = done;
+    this.close('talk');
+    this.show('story');
+    this.wins.story.querySelector('.rw-title').textContent = title;
   }
 
   openShop(id) {
@@ -232,24 +252,27 @@ export class Menus {
     return `<div class="rlist">${h}</div><div class="rfoot"><span>${esc(JOBS[p.job].name)} · Job Lv ${p.jobLv}</span><span>Skill Points <b>${p.skillPoints}</b></span></div>`;
   }
 
-  // Ragnarok's status window: stats (value + job bonus, raise button, cost) beside the battle numbers
+  // The status window, top to bottom: who you are (job and levels), the six stats with their
+  // job bonus, ▲ and cost under the points left to spend, then the battle numbers in pairs.
   status() {
     const p = this.prog, ps = this.player.ps, pts = p.statPoints, knl = p.total('knl');
     const stat = (k) => {
       const st = STATS[k], cost = p.costOf(k), bonus = p.bonus(k), can = cost <= pts && p.stats[k] < 99;
-      return `<th title="${esc(st.full)}: ${esc(st.desc)}">${st.name[0] + st.name.slice(1).toLowerCase()}</th><td class="sv">${p.stats[k]}${bonus ? `+${bonus}` : ''}</td>
-        <td class="sc"><button class="splus" data-act="raise" data-stat="${k}" ${can ? '' : 'disabled'} aria-label="Raise ${st.full}">▲</button>${cost}</td>`;
+      return `<tr><th title="${esc(st.full)}: ${esc(st.desc)}">${st.name}<small>${esc(st.full)}</small></th><td class="sv">${p.stats[k]}${bonus ? `<em>+${bonus}</em>` : ''}</td>
+        <td class="sc"><button class="splus" data-act="raise" data-stat="${k}" ${can ? '' : 'disabled'} aria-label="Raise ${st.full}">▲</button>${cost}</td></tr>`;
     };
     const d = (label, v) => `<th>${label}</th><td>${v}</td>`;
-    const rows = [
-      [d('Atk', `${ps.batk} + ${ps.watk}`), d('Def', `${ps.def} + ${ps.end}`)],
-      [d('Matk', `${knl + Math.floor(knl / 7) ** 2} ~ ${knl + Math.floor(knl / 5) ** 2}`), d('Mdef', `0 + ${ps.mdef}`)],
+    const battle = [
+      [d('Atk', `${ps.batk} + ${ps.watk}`), d('Matk', `${knl + Math.floor(knl / 7) ** 2} ~ ${knl + Math.floor(knl / 5) ** 2}`)],
+      [d('Def', `${ps.def} + ${ps.end}`), d('Mdef', `0 + ${ps.mdef}`)],
       [d('Hit', ps.hit), d('Flee', `${ps.flee} + ${Math.floor(ps.dodge)}`)],
       [d('Critical', Math.floor(ps.crit)), d('Aspd', ps.aspd)],
-      [`<th colspan="2" class="pts">Status Point <b>${pts}</b></th>`, d('Job', esc(JOBS[p.job].name))],
-      [d('Base Lv', p.baseLv), d('Job Lv', p.jobLv)],
     ];
-    return `<table class="stt"><tbody>${STAT_KEYS.map((k, i) => `<tr>${stat(k)}<td class="gap"></td>${rows[i][0]}${rows[i][1]}</tr>`).join('')}</tbody></table>`;
+    return `<div class="sthead"><b>${esc(JOBS[p.job].name)}</b><span>Base Lv <b>${p.baseLv}</b></span><span>Job Lv <b>${p.jobLv}</b></span></div>
+      <div class="rsub stsub"><span>Stats</span><span>Status Point <b>${pts}</b></span></div>
+      <table class="stt stats"><tbody>${STAT_KEYS.map(stat).join('')}</tbody></table>
+      <div class="rsub stsub"><span>Battle</span></div>
+      <table class="stt battle"><tbody>${battle.map((r) => `<tr>${r[0]}<td class="gap"></td>${r[1]}</tr>`).join('')}</tbody></table>`;
   }
 
   craft() {
@@ -341,11 +364,18 @@ export class Menus {
       <div class="say"><p>${esc(text)}</p>${box ? `<div class="qbox">${box}</div>` : ''}<div class="btnrow">${btns}</div></div></div>`;
   }
 
+  storyPage() {
+    const [who, line] = this.storyPages[this.storyAt], last = this.storyAt >= this.storyPages.length - 1;
+    const pic = who ? `<img class="portrait" src="${this.portrait(who)}" alt="">` : '<div class="portrait narr">✦</div>';
+    return `<div class="talkwrap story">${pic}<div class="say">${who ? `<b class="who">${esc(NPCS[who].name)}</b>` : ''}<p class="${who ? '' : 'narr'}">${esc(line)}</p>
+      <div class="btnrow"><span class="rtag">${this.storyAt + 1} / ${this.storyPages.length}</span><button class="rbtn" data-act="storynext">${last ? 'Continue' : 'Next ▸'}</button></div></div></div>`;
+  }
+
   // redraw one window, or every open one
   render(id) {
     for (const k of id ? [id] : Object.keys(this.wins)) {
       const el = this.wins[k];
-      if (el) el.querySelector('.rw-body').innerHTML = this[k]();
+      if (el) el.querySelector('.rw-body').innerHTML = k === 'story' ? this.storyPage() : this[k]();
     }
   }
 
@@ -354,6 +384,9 @@ export class Menus {
     if (!t) return;
     const act = t.dataset.act, inv = this.inv;
     if (act === 'close') this.close(id);
+    if (act === 'storynext') {
+      if (this.storyAt < this.storyPages.length - 1) { this.storyAt++; this.render('story'); this.hooks.ui?.(); } else this.close('story');
+    }
     if (act === 'raise' && this.prog.raise(t.dataset.stat)) { this.hooks.raised?.(t.dataset.stat); this.render(); }
     if (act === 'learn') this.hooks.learn?.(t.dataset.id);
     if (act === 'jobchange') { this.hooks.jobChange?.(t.dataset.id); this.close('talk'); }
@@ -362,12 +395,12 @@ export class Menus {
     if (act === 'shoptab') { this.shopTab = t.dataset.id; this.sellSel = null; this.render(id); }
     if (act === 'buy') {
       const n = +t.dataset.n;
-      if (inv.buy(t.dataset.id, n)) { this.hooks.traded?.(); this.message(`Bought ${n > 1 ? n + ' ' : ''}${ITEMS[t.dataset.id].name} for ${(PRICES[t.dataset.id] * n).toLocaleString()} perz`); }
+      if (inv.buy(t.dataset.id, n)) { this.hooks.traded?.('buy'); this.message(`Bought ${n > 1 ? n + ' ' : ''}${ITEMS[t.dataset.id].name} for ${(PRICES[t.dataset.id] * n).toLocaleString()} perz`); }
       else this.message(inv.perz < PRICES[t.dataset.id] * n ? 'Not enough perz' : 'Bag is full');
     }
     if (act === 'sell' && this.sellSel) {
       const n = t.dataset.n === 'all' ? inv.bag.count(this.sellSel) : 1, got = sellPrice(this.sellSel) * n;
-      if (inv.sell(this.sellSel, n)) { this.hooks.traded?.(); this.message(`Sold for ${got.toLocaleString()} perz`); }
+      if (inv.sell(this.sellSel, n)) { this.hooks.traded?.('sell'); this.message(`Sold for ${got.toLocaleString()} perz`); }
     }
     if (act === 'accept') this.hooks.accept?.(t.dataset.id);
     if (act === 'handin') this.hooks.handIn?.(t.dataset.id);

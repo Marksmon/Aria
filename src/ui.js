@@ -99,6 +99,13 @@ export class UI {
           g.fillRect(m.x * 2 - 1.5, m.z * 2 - 1.5, 3, 3);
         }
       }
+      if (this.goal) { // where the story leads: a pulsing gold ring
+        const r = 4 + Math.sin(performance.now() / 180) * 1.5;
+        g.strokeStyle = '#3b2a1e'; g.lineWidth = 4;
+        g.beginPath(); g.arc(this.goal.x * 2, this.goal.z * 2, r, 0, Math.PI * 2); g.stroke();
+        g.strokeStyle = '#ffd23a'; g.lineWidth = 2;
+        g.beginPath(); g.arc(this.goal.x * 2, this.goal.z * 2, r, 0, Math.PI * 2); g.stroke();
+      }
       g.fillStyle = '#fff';
       g.strokeStyle = '#c8463c';
       g.lineWidth = 2;

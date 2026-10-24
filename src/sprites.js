@@ -539,7 +539,7 @@ export function createSprites() {
   return {
     mobs,
     villagers,
-    marks: { offer: tex(questMark('!', '#e3a13a')), ready: tex(questMark('?', '#5fae45')) },
+    marks: { offer: tex(questMark('!', '#e3a13a')), ready: tex(questMark('?', '#5fae45')), story: tex(questMark('!', '#8a6af0')) },
     fx: { slash: tex(slashArc()), puff: tex(puff()) },
     props,
     fire: { frames: fireFrames, aspect: fireAspect, w: 1.2 },

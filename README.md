@@ -232,6 +232,27 @@ gear comes from boss materials:
 | Prism Ring (every stat +1) | Shimmering Gel |
 | Twin Slime Band (FTN +2, KNL +2, Max HP +30, Max SP +20) | Gooey Ring + Tidewater Pendant |
 
+## Story
+
+**The Last Fire-Ring.** Long ago the fire-jotnar slept beneath the hills of Aria, and the first
+settlers lit a ring of fires to keep them dreaming: Eldrun, the fire-ring. Now the fires burn low,
+the ground of Glodberg shakes, and the Ember Jarl is waking. You arrive as a stranger with a
+practice sword, asleep by the camp's last fire.
+
+The story runs beside the other quests, in chapters. Its current step sits at the top of the
+quest list (purple), with directions to the next map ("Head north to Steinborg"); the minimap
+rings the portal to take, or the person to talk to. A purple **!** marks who the story wants.
+
+| Chapter | Steps |
+|---|---|
+| Prologue (the tutorial) | Talk to the Elder · raise a stat · defeat 3 Green Slimes in Mosvangr · learn Basic Training · put a draught on the hotbar · back to the Elder |
+| 1: The Stone-Fort | Travel to Steinborg · tell Captain Ulfr the fires are failing · meet Saeunn the Seeress · sell something for perz |
+| 2: Blade or Rune | Pass a job trial and become a Blader or a Sorcerer |
+| 3: Embers in the Wilds | Saeunn's warning · defeat the Bramble Matron in Birkilund · travel to Glodberg · reach Base Level 22 |
+| 4: The Ember Jarl | The Elder's last gifts · defeat the Ember Jarl · the fire-ring rekindled |
+
+The quest list folds away with a tap on its title bar and scrolls when it is long.
+
 ## People and quests
 
 Tap someone to talk. A **!** bubble means they have a quest (or a job change) for you, a **?**
@@ -273,8 +294,8 @@ npm run build    # single-file build in dist/index.html
 
 Code map: `world.js` (maps, portals, props), `city.js` (Steinborg's walls and buildings), `player.js`, `mobs.js` (all monster AI and the MVP),
 `rules.js` (battle rules), `skills.js`, `items.js` + `inventory.js` + `menus.js` (items, crafting,
-gear, windows), `progress.js` (levels and stats), `quests.js` + `villagers.js` (people, shops and
-quests), `hotbar.js`, `daynight.js`, `audio.js`,
+gear, windows), `progress.js` (levels and stats), `story.js` (the main story), `quests.js` + `villagers.js` (people,
+shops and quests), `hotbar.js`, `daynight.js`, `audio.js`,
 `sprites.js` (painted art plus the PixelLab sheets — swap any sprite without touching game logic).
 
 ## PixelLab art

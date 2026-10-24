@@ -12,6 +12,7 @@ import { loadSave, writeSave } from './save.js';
 import { Inventory } from './inventory.js';
 import { Progress, JOBS } from './progress.js';
 import { Quests, QUESTS, NPCS } from './quests.js';
+import { Story, INTRO, route } from './story.js';
 import { Villagers } from './villagers.js';
 import { Tiles } from './tiles.js';
 import { Hotbar } from './hotbar.js';
@@ -66,6 +67,8 @@ const prog = new Progress();
 prog.load(save?.prog);
 const quests = new Quests();
 quests.load(save?.quests);
+const story = new Story();
+if (!story.load(save?.story) && save) story.catchUp(prog); // a save from before the story
 const villagers = new Villagers(scene, world, lib);
 player.tiles = new Tiles(world); // after the villagers: they block their tiles
 const inv = new Inventory();
@@ -205,6 +208,7 @@ mobs.on('death', (m, drops) => {
   audio.play('kill');
   gainExp(...m.def.exp);
   for (const id of quests.onKill(m.type)) questComplete(id);
+  story.onKill(m.type);
   for (const [item, count] of drops) {
     fx.drop(m.x, m.z, item, count, iconTexture(item));
     if (ITEMS[item].rare) { // a rare find: a golden burst and a word, like Ragnarok's drop glow
@@ -314,20 +318,76 @@ function giveReward(r) {
   }
   gainExp(r.xp, r.job ?? Math.round(r.xp * 0.7));
 }
-// '!' / '?' bubbles over villagers and the quest list under the clock
+// '!' / '?' bubbles over villagers, and the quest list under the clock: the story step first,
+// then the active quests. It collapses to its title bar and scrolls when it gets long.
 const tracker = document.getElementById('quests');
+tracker.innerHTML = '<button class="qhead" aria-expanded="true"><span>Quests</span><i>▾</i></button><div class="qlist"></div>';
+const trackerList = tracker.querySelector('.qlist'), trackerHead = tracker.querySelector('.qhead span');
+const MIN_KEY = 'aria.questsMin';
+let trackerMin = false;
+try { trackerMin = localStorage.getItem(MIN_KEY) === '1'; } catch { /* storage unavailable */ }
+const setMin = (v) => {
+  trackerMin = v;
+  tracker.classList.toggle('min', v);
+  tracker.querySelector('.qhead').setAttribute('aria-expanded', String(!v));
+  try { localStorage.setItem(MIN_KEY, v ? '1' : '0'); } catch { /* storage unavailable */ }
+};
+setMin(trackerMin);
+tracker.querySelector('.qhead').addEventListener('click', () => { setMin(!trackerMin); audio.play('ui'); });
 let trackerHTML = '';
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 function refreshQuests() {
   villagers.setMarks((npc) => {
+    if (story.talkStep(npc) && storyLive()) return 'story';
     const st = quests.status(npc, prog, inv).state;
     return st === 'offer' || st === 'job' ? 'offer' : st === 'ready' ? 'ready' : null;
   });
   let h = '';
+  const s = story.step;
+  if (s && storyLive()) {
+    const where = story.directions(world.id);
+    h += `<div class="story"><small>${esc(s.ch)}</small><b>★ ${esc(s.title)}</b><span>${esc(s.goal)}${story.progress()}</span>${where ? `<em>➜ ${esc(where)}</em>` : ''}</div>`;
+  }
   for (const id of Object.keys(quests.active)) {
     const done = quests.ready(id, inv);
     h += `<div class="${done ? 'done' : ''}"><b>${QUESTS[id].title}</b><span>${done ? `Return to ${NPCS[questGiver(id)].name}` : quests.progress(id, inv)}</span></div>`;
   }
-  if (h !== trackerHTML) { trackerHTML = h; tracker.innerHTML = h; }
+  const n = Object.keys(quests.active).length + (s && storyLive() ? 1 : 0);
+  trackerHead.textContent = `Quests${n ? ` (${n})` : ''}`;
+  tracker.hidden = !n;
+  if (h !== trackerHTML) { trackerHTML = h; trackerList.innerHTML = h; }
+  // the minimap rings where to go: the person to talk to, or the portal on the way
+  ui.goal = null;
+  const map = s && storyLive() ? story.map() : null;
+  if (map === world.id && s.kind === 'talk') ui.goal = { x: NPCS[s.npc].x, z: NPCS[s.npc].z };
+  else if (map && map !== world.id) { const p = route(world.id, map); if (p) ui.goal = { x: p.x, z: p.z }; }
+}
+
+// ---------- the story ----------
+const storyLive = () => !!story.flags.intro && !story.done; // after the opening pages
+// a step is done: its lines play, then the reward, then the next step is announced
+function storyDone() {
+  const s = story.advance();
+  menus.story(s.say || [], `${s.ch} · ${s.title}`, () => {
+    if (s.reward) giveReward(s.reward);
+    audio.play('heart');
+    const next = story.step;
+    if (next) menus.message(`Story: ${next.title}. ${next.goal}`);
+    refreshQuests();
+    persist();
+  });
+}
+function checkStory() {
+  if (!storyLive() || menus.isOpen('story')) return;
+  if (story.met({ prog, hotbar, skillLv })) storyDone();
+}
+function startStory() {
+  if (story.flags.intro) return;
+  menus.story(INTRO, 'Prologue · The Last Fire-Ring', () => {
+    story.flag('intro');
+    refreshQuests();
+    persist();
+  });
 }
 
 let bagFullNote = 0;
@@ -378,7 +438,7 @@ const menus = new Menus(inv, prog, player, {
     persist();
   },
   crafted() { audio.play('craft'); persist(); },
-  traded() { audio.play('pickup'); persist(); },
+  traded(kind) { audio.play('pickup'); if (kind === 'sell') story.flag('sold'); persist(); },
   equipped() { audio.play('ui'); persist(); },
   raised() { applyStats(); audio.play('craft'); persist(); },
   accept(id) {
@@ -413,7 +473,7 @@ const SPOTS = [
   { map: 'camp', ...world.camp.chest, h: 0.8, run: () => menus.show('chest') },
   { map: 'camp', ...world.camp.tent, h: 2.2, run: () => rest() },
   { map: 'city', ...CITY.chest, h: 0.8, run: () => menus.show('chest') }, // Steinborg's storehouse: the same chest
-  ...villagers.list.map((v) => ({ map: v.map, x: v.x, z: v.z, h: v.top, run: () => menus.talkTo(v.id) })),
+  ...villagers.list.map((v) => ({ map: v.map, x: v.x, z: v.z, h: v.top, run: () => { if (menus.isOpen('story')) return; if (story.talkStep(v.id) && storyLive()) storyDone(); else menus.talkTo(v.id); } })),
 ];
 
 // ---------- hotbar: skills and items ----------
@@ -754,7 +814,7 @@ let questZone = null, questT = 0;
 let resetting = false;
 function persist() {
   if (!started || resetting) return;
-  writeSave({ map: world.id, mvpAt: mobs.mvpAt, x: player.x, z: player.z, yaw: cam.yaw, dist: cam.dist, hp: player.hp, sp: player.sp, inv: inv.toJSON(), prog: prog.toJSON(), quests: quests.toJSON(), hotbar: hotbar.toJSON(), time: dayNight.t });
+  writeSave({ story: story.toJSON(), map: world.id, mvpAt: mobs.mvpAt, x: player.x, z: player.z, yaw: cam.yaw, dist: cam.dist, hp: player.hp, sp: player.sp, inv: inv.toJSON(), prog: prog.toJSON(), quests: quests.toJSON(), hotbar: hotbar.toJSON(), time: dayNight.t });
 }
 
 const clock = new THREE.Clock();
@@ -817,9 +877,10 @@ function frame() {
   if (live && ui.zone !== questZone) {
     questZone = ui.zone;
     for (const id of quests.onZone(questZone)) questComplete(id);
+    story.onZone(questZone);
   }
   questT -= dt;
-  if (questT <= 0) { questT = 0.5; refreshQuests(); }
+  if (questT <= 0) { questT = 0.5; refreshQuests(); if (live) checkStory(); }
 
   saveT += dt;
   if (saveT > 3) { saveT = 0; persist(); }
@@ -864,10 +925,11 @@ tContinue.addEventListener('click', () => {
   setTimeout(() => {
     title.remove();
     ui.showZone(world.id);
+    startStory();
     const hint = document.getElementById('hint');
     hint.classList.add('show');
     setTimeout(() => hint.classList.remove('show'), 6000);
   }, 450);
 });
 
-window.__aria = { lib, warp, enterMap, useSkill, useItem, player, world, cam, camera, mobs, fx, inv, prog, quests, villagers, menus, hotbar, dayNight, audio, stats: world.stats };
+window.__aria = { lib, warp, enterMap, useSkill, useItem, story, SPOTS, player, world, cam, camera, mobs, fx, inv, prog, quests, villagers, menus, hotbar, dayNight, audio, stats: world.stats };
