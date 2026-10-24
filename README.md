@@ -229,27 +229,27 @@ points stay. Second jobs wear their first job's outfit in new colours and glow w
 | Blade Mastery | passive, 10: +3 ATK and +1 HIT per level with swords |
 | Combo Edge | passive, 10: Thrust, Cleave, Heavy Strike, Twin Fang and Piercing Edge have 4% per level to Combo, a free extra strike |
 | Momentum | passive, 5: each Combo adds a stack (up to 5, 8 s), +1% ATK per level per stack |
-| Twin Fang | 10: two cuts of 100–190%, each can Combo |
-| Piercing Edge | 10, needs Twin Fang 3: 225–450%, ignoring half the monster's DEF |
+| Twin Fang | 10: two cuts of 112–220%, each can Combo |
+| Piercing Edge | 10, needs Twin Fang 3: 250–520%, ignoring half the monster's DEF |
 | Final Blade | 5, needs Piercing Edge 5 and Momentum 1: spends every Momentum stack, 360–600% +50% per stack |
 
 | Wizard: the elements, over an area | |
 |---|---|
 | Elemental Attunement | passive, 10: spells +3% per level |
 | Resonance | passive, 5: a spell of a different element from the last (within 8 s) +6% per level |
-| Stone Spike | 10: 150–330% MATK, Earth (new element for spells); Shatters the monster: the next spell of another element on it +30% |
-| Earthquake | 10, needs Stone Spike 3: 115–250% MATK Earth within 3 paces of the target, may stun |
-| Meteor Storm | 10, needs Ember Bolt 5: three falls of 80–170% MATK Fire around the target |
-| Storm Gust | 10, needs Frost Shard 5: 102–210% MATK Water around the target, may freeze |
-| Thunderstorm | 10, needs Arc Lightning 5: 115–250% MATK Wind around the target |
+| Stone Spike | 10: 125–260% MATK, Earth (new element for spells); Shatters the monster: the next spell of another element on it +30% |
+| Earthquake | 10, needs Stone Spike 3: 51–105% MATK Earth within 3 paces of the target, may stun |
+| Meteor Storm | 10, needs Ember Bolt 5: three falls of 34–70% MATK Fire around the target |
+| Storm Gust | 10, needs Frost Shard 5: 51–105% MATK Water around the target, may freeze |
+| Thunderstorm | 10, needs Arc Lightning 5: 51–105% MATK Wind around the target |
 
 | Magic Knight: ATK and MATK together | |
 |---|---|
 | Spellblade | passive, 10: sword hits add 3% of your MATK per level |
 | Elemental Chain | passive, 5: an Edge of a different element from your last (within 6 s) +6% per level and 3 SP back |
-| Flame Edge | 10: 120–210% ATK plus 70–160% MATK, Fire |
-| Frost Edge | 10: 110–200% ATK plus 80–170% MATK, Water; may freeze |
-| Thunder Edge | 10, needs Flame and Frost Edge 3: 100–190% ATK plus 70–160% MATK, Wind; half to monsters beside |
+| Flame Edge | 10: 110–200% ATK plus 47–110% MATK, Fire |
+| Frost Edge | 10: 100–190% ATK plus 57–120% MATK, Water; may freeze |
+| Thunder Edge | 10, needs Flame and Frost Edge 3: 90–180% ATK plus 47–110% MATK, Wind; half to monsters beside |
 | Stone Aegis | 10: 20 s barrier soaking 60–150% of your ATK plus as much of your MATK, +1 DEF per level |
 
 **Elements.** Every monster has an element, as in Ragnarok, and so do spells and some weapons.

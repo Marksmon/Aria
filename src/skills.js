@@ -141,17 +141,17 @@ export const SKILLS = {
   },
   twinfang: {
     name: 'Twin Fang', job: 'blademaster', kind: 'active', max: 10, target: 'mob', range: 1.35, weapon: 'sword', icon: 'skill_cleave',
-    sp: (lv) => 8 + Math.floor(lv / 2), cd: 0.8,
-    desc: (lv) => `Two quick cuts, ${90 + 10 * lv}% damage each. Each cut can Combo.`,
+    sp: (lv) => 8 + Math.floor(lv / 2), cd: 0.8, power: (lv) => 100 + 12 * lv,
+    desc: (lv) => `Two quick cuts, ${100 + 12 * lv}% damage each. Each cut can Combo.`,
   },
   pierce: {
     name: 'Piercing Edge', job: 'blademaster', kind: 'active', max: 10, needs: { twinfang: 3 }, target: 'mob', range: 1.35, weapon: 'sword', icon: 'skill_thrust',
-    sp: (lv) => 12 + lv, cd: 1.5,
-    desc: (lv) => `A thrust that finds the gaps: ${200 + 25 * lv}% damage, ignoring half the monster's DEF.`,
+    sp: (lv) => 12 + lv, cd: 1.5, power: (lv) => 220 + 30 * lv,
+    desc: (lv) => `A thrust that finds the gaps: ${220 + 30 * lv}% damage, ignoring half the monster's DEF.`,
   },
   finalblade: {
     name: 'Final Blade', job: 'blademaster', kind: 'active', max: 5, needs: { pierce: 5, momentum: 1 }, target: 'mob', range: 1.35, weapon: 'sword', icon: 'skill_laststand',
-    sp: (lv) => 25 + 3 * lv, cd: 6,
+    sp: (lv) => 25 + 3 * lv, cd: 6, power: (lv, stacks = 0) => 300 + 60 * lv + 50 * stacks,
     desc: (lv) => `Spend every Momentum stack on one blow: ${300 + 60 * lv}% damage, +50% for each stack.`,
   },
 
@@ -167,28 +167,28 @@ export const SKILLS = {
   },
   stonespike: {
     name: 'Stone Spike', job: 'wizard', kind: 'active', max: 10, target: 'mob', range: 7, magic: 'earth', weapon: 'staff', icon: 'skill_stone',
-    sp: (lv) => 10 + lv, cast: (lv) => 0.8 + 0.05 * lv, cd: 0.6,
-    desc: (lv) => `A spike of rock bursts under the monster: ${130 + 20 * lv}% MATK (Earth), and it is Shattered for 6 s: the next spell of another element on it deals 30% more. Earth: strong against Wind, weak against Fire.`,
+    sp: (lv) => 10 + lv, cast: (lv) => 0.8 + 0.05 * lv, cd: 0.6, power: (lv) => 110 + 15 * lv,
+    desc: (lv) => `A spike of rock bursts under the monster: ${110 + 15 * lv}% MATK (Earth), and it is Shattered for 6 s: the next spell of another element on it deals 30% more. Earth: strong against Wind, weak against Fire.`,
   },
   quake: {
     name: 'Earthquake', job: 'wizard', kind: 'active', max: 10, needs: { stonespike: 3 }, target: 'mob', range: 7, magic: 'earth', weapon: 'staff', icon: 'skill_earthsplit',
-    sp: (lv) => 30 + 2 * lv, cast: () => 1.6, cd: 3,
-    desc: (lv) => `The ground heaves around your target: ${100 + 15 * lv}% MATK (Earth) to every monster within 3 paces of it; 25% of them are stunned for 1.5 s.`,
+    sp: (lv) => 30 + 2 * lv, cast: () => 1.6, cd: 3, power: (lv) => 45 + 6 * lv,
+    desc: (lv) => `The ground heaves around your target: ${45 + 6 * lv}% MATK (Earth) to every monster within 3 paces of it; 25% of them are stunned for 1.5 s.`,
   },
   meteor: {
     name: 'Meteor Storm', job: 'wizard', kind: 'active', max: 10, needs: { spark: 5 }, target: 'mob', range: 7, magic: 'fire', weapon: 'staff', icon: 'skill_flamering',
-    sp: (lv) => 40 + 2 * lv, cast: (lv) => 2.2 + 0.05 * lv, cd: 4,
-    desc: (lv) => `Three meteors fall around your target: ${70 + 10 * lv}% MATK (Fire) each to every monster within 3 paces.`,
+    sp: (lv) => 40 + 2 * lv, cast: (lv) => 2.2 + 0.05 * lv, cd: 4, power: (lv) => 30 + 4 * lv,
+    desc: (lv) => `Three meteors fall around your target: ${30 + 4 * lv}% MATK (Fire) each to every monster within 3 paces.`,
   },
   stormgust: {
     name: 'Storm Gust', job: 'wizard', kind: 'active', max: 10, needs: { frost: 5 }, target: 'mob', range: 7, magic: 'water', weapon: 'staff', icon: 'skill_frost',
-    sp: (lv) => 36 + 2 * lv, cast: () => 2.0, cd: 4,
-    desc: (lv) => `A freezing storm around your target: ${90 + 12 * lv}% MATK (Water) to every monster within 3 paces, ${3 * lv}% chance each to freeze for 2.5 s.`,
+    sp: (lv) => 36 + 2 * lv, cast: () => 2.0, cd: 4, power: (lv) => 45 + 6 * lv,
+    desc: (lv) => `A freezing storm around your target: ${45 + 6 * lv}% MATK (Water) to every monster within 3 paces, ${3 * lv}% chance each to freeze for 2.5 s.`,
   },
   thunder: {
     name: 'Thunderstorm', job: 'wizard', kind: 'active', max: 10, needs: { arc: 5 }, target: 'mob', range: 7, magic: 'wind', weapon: 'staff', icon: 'skill_arc',
-    sp: (lv) => 32 + 2 * lv, cast: () => 1.7, cd: 3,
-    desc: (lv) => `Lightning rains around your target: ${100 + 15 * lv}% MATK (Wind) to every monster within 3 paces.`,
+    sp: (lv) => 32 + 2 * lv, cast: () => 1.7, cd: 3, power: (lv) => 45 + 6 * lv,
+    desc: (lv) => `Lightning rains around your target: ${45 + 6 * lv}% MATK (Wind) to every monster within 3 paces.`,
   },
 
   // ---------- Magic Knight (Blader and Sorcerer both walked): elemental sword skills that hit with
@@ -203,18 +203,18 @@ export const SKILLS = {
   },
   flameedge: {
     name: 'Flame Edge', job: 'magicknight', kind: 'active', max: 10, target: 'mob', range: 1.35, weapon: 'sword', magic: 'fire', edge: true, icon: 'skill_spark',
-    sp: (lv) => 10 + lv, cd: 0.8,
-    desc: (lv) => `A burning cut: ${110 + 10 * lv}% ATK and ${60 + 10 * lv}% MATK, as Fire.`,
+    sp: (lv) => 6 + lv, cd: 0.8, power: (lv) => 100 + 10 * lv, mpower: (lv) => 40 + 7 * lv,
+    desc: (lv) => `A burning cut: ${100 + 10 * lv}% ATK and ${40 + 7 * lv}% MATK, as Fire.`,
   },
   frostedge: {
     name: 'Frost Edge', job: 'magicknight', kind: 'active', max: 10, target: 'mob', range: 1.35, weapon: 'sword', magic: 'water', edge: true, icon: 'skill_frost',
-    sp: (lv) => 10 + lv, cd: 0.8,
-    desc: (lv) => `A freezing thrust: ${100 + 10 * lv}% ATK and ${70 + 10 * lv}% MATK, as Water; ${3 * lv}% chance to freeze for 2 s.`,
+    sp: (lv) => 6 + lv, cd: 0.8, power: (lv) => 90 + 10 * lv, mpower: (lv) => 50 + 7 * lv,
+    desc: (lv) => `A freezing thrust: ${90 + 10 * lv}% ATK and ${50 + 7 * lv}% MATK, as Water; ${3 * lv}% chance to freeze for 2 s.`,
   },
   thunderedge: {
     name: 'Thunder Edge', job: 'magicknight', kind: 'active', max: 10, needs: { flameedge: 3, frostedge: 3 }, target: 'mob', range: 1.35, weapon: 'sword', magic: 'wind', edge: true, icon: 'skill_arc',
-    sp: (lv) => 16 + lv, cd: 1.2,
-    desc: (lv) => `A crackling sweep: ${90 + 10 * lv}% ATK and ${60 + 10 * lv}% MATK, as Wind, and half that to monsters beside your target.`,
+    sp: (lv) => 12 + lv, cd: 1.2, power: (lv) => 80 + 10 * lv, mpower: (lv) => 40 + 7 * lv,
+    desc: (lv) => `A crackling sweep: ${80 + 10 * lv}% ATK and ${40 + 7 * lv}% MATK, as Wind, and half that to monsters beside your target.`,
   },
   aegis: {
     name: 'Stone Aegis', job: 'magicknight', kind: 'active', max: 10, needs: { spellblade: 1 }, cd: 25, icon: 'skill_ironhide',

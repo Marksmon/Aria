@@ -835,17 +835,17 @@ function useSkill(id) {
   if (id === 'heavy') strike((130 + 15 * lv) / 100, 1 + (3 * lv) / 100, (t) => { say('Heavy Strike'); combo(t); });
   // ---- BladeMaster ----
   if (id === 'twinfang') {
-    const m = (90 + 10 * lv) / 100;
+    const m = sk.power(lv) / 100;
     strike(m, 1, (t) => {
       say('Twin Fang');
       combo(t);
       setTimeout(() => { if (t.alive) { bladeHit(t, m); combo(t); } }, 160); // the second cut
     });
   }
-  if (id === 'pierce') strike((200 + 25 * lv) / 100, 1, (t) => { say('Piercing Edge'); combo(t); }, { defMul: 0.5 });
+  if (id === 'pierce') strike(sk.power(lv) / 100, 1, (t) => { say('Piercing Edge'); combo(t); }, { defMul: 0.5 });
   if (id === 'finalblade') {
     const stacks = momentum;
-    strike((300 + 60 * lv + 50 * stacks) / 100, 1, () => {
+    strike(sk.power(lv, stacks) / 100, 1, () => {
       say(stacks ? `Final Blade ×${stacks}` : 'Final Blade');
       momentum = 0; buffs.momentum = 0;
       cam.shake = 0.25;
@@ -855,14 +855,13 @@ function useSkill(id) {
   if (sk.edge) {
     const chain = skillLv(prog, 'elemchain'), chained = chain && lastEdge.el && lastEdge.el !== sk.magic && skillClock - lastEdge.t < 6;
     const k = chained ? 1 + 0.06 * chain : 1;
-    const [atkPct, matkPct] = { flameedge: [110, 60], frostedge: [100, 70], thunderedge: [90, 60] }[id];
-    strike((atkPct + 10 * lv) / 100 * k, 1, (t, res) => {
+    strike(sk.power(lv) / 100 * k, 1, (t, res) => {
       say(chained ? `${sk.name} · Chain` : sk.name);
       lastEdge.el = sk.magic; lastEdge.t = skillClock;
       if (chained) player.healSp(3);
       const extra = (m, share) => {
         if (!m.alive) return;
-        const r = magicAttack(player.ps, m.effDef(), (matkPct + 10 * lv) / 100 * k * share, sk.magic);
+        const r = magicAttack(player.ps, m.effDef(), sk.mpower(lv) / 100 * k * share, sk.magic);
         fx.number(m.x, overHead(m, m.sprite.scale.y * 0.8 + 0.25), m.z, r.dmg, r.el > 1 ? 'crit' : 'dealt');
         m.hit(r.dmg, 0, 0);
       };
@@ -872,7 +871,7 @@ function useSkill(id) {
       if (id === 'thunderedge') { // half to the monsters beside the target
         for (const m of [...mobs.list]) {
           if (!m.alive || m === t || Math.hypot(m.x - t.x, m.z - t.z) > 1.7 + m.def.r) continue;
-          const r = playerAttack({ ...player.ps, el: 'wind' }, m.effDef(), (atkPct + 10 * lv) / 200 * k * player.atkMul, 1, true);
+          const r = playerAttack({ ...player.ps, el: 'wind' }, m.effDef(), sk.power(lv) / 200 * k * player.atkMul, 1, true);
           if (!r.miss) { fx.number(m.x, overHead(m, m.sprite.scale.y * 0.8), m.z, r.dmg, 'dealt'); m.hit(r.dmg, 0, 0); }
           extra(m, 0.5);
         }
@@ -970,23 +969,23 @@ function castSpell(id, lv, pay, sp) {
     if (id === 'quake') {
       cam.shake = 0.35;
       burst(t.x, t.z, 24);
-      around(t.x, t.z, (100 + 15 * lv) / 100, (m) => { if (m.alive && !m.def.mvp && Math.random() < 0.25) { m.stunT = 1.5; } });
+      around(t.x, t.z, sk.power(lv) / 100, (m) => { if (m.alive && !m.def.mvp && Math.random() < 0.25) { m.stunT = 1.5; } });
       return;
     }
     if (id === 'stormgust') {
       burst(t.x, t.z, 26);
-      around(t.x, t.z, (90 + 12 * lv) / 100, (m) => { if (m.alive && !m.def.mvp && Math.random() < 0.03 * lv) { m.stunT = 2.5; fx.number(m.x, overHead(m, m.sprite.scale.y * 0.8 + 0.3), m.z, 'Frozen', 'miss'); } });
+      around(t.x, t.z, sk.power(lv) / 100, (m) => { if (m.alive && !m.def.mvp && Math.random() < 0.03 * lv) { m.stunT = 2.5; fx.number(m.x, overHead(m, m.sprite.scale.y * 0.8 + 0.3), m.z, 'Frozen', 'miss'); } });
       return;
     }
     if (id === 'thunder') {
       const at = (m) => ({ x: m.x, y: world.heightAt(m.x, m.z) + 0.5, z: m.z });
       for (const m of mobs.list) if (m.alive && Math.hypot(m.x - t.x, m.z - t.z) < 3 + m.def.r) fx.zap({ x: m.x, y: world.heightAt(m.x, m.z) + 4, z: m.z }, at(m), SPELL_COL.thunder);
-      around(t.x, t.z, (100 + 15 * lv) / 100);
+      around(t.x, t.z, sk.power(lv) / 100);
       return;
     }
     if (id === 'meteor') { // three falls, a beat apart, around where the target stood
       const cx = t.x, cz = t.z;
-      for (let i = 0; i < 3; i++) setTimeout(() => { burst(cx + (Math.random() - 0.5) * 2, cz + (Math.random() - 0.5) * 2, 14); cam.shake = 0.2; around(cx, cz, (70 + 10 * lv) / 100); }, i * 350);
+      for (let i = 0; i < 3; i++) setTimeout(() => { burst(cx + (Math.random() - 0.5) * 2, cz + (Math.random() - 0.5) * 2, 14); cam.shake = 0.2; around(cx, cz, sk.power(lv) / 100); }, i * 350);
       return;
     }
     if (id === 'arc') { // strikes at once, then leaps to two more
@@ -999,7 +998,7 @@ function castSpell(id, lv, pay, sp) {
       return;
     }
     fx.bolt(from.x, from.y, from.z, t, SPELL_COL[id], () => {
-      const base = id === 'spark' ? (100 + 20 * lv) / 100 : id === 'stonespike' ? (130 + 20 * lv) / 100 : (90 + 10 * lv) / 100;
+      const base = id === 'spark' ? (100 + 20 * lv) / 100 : id === 'stonespike' ? sk.power(lv) / 100 : (90 + 10 * lv) / 100;
       const res = spellHit(t, base * k, sk.magic);
       if (res && id === 'stonespike' && t.alive) { t.shatterT = skillClock + 6; fx.number(t.x, overHead(t, t.sprite.scale.y * 0.8 + 0.3), t.z, 'Shattered', 'miss'); }
       const ty = world.heightAt(t.x, t.z) + 0.5;
