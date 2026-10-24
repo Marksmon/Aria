@@ -47,7 +47,7 @@ CHARS['sorcerer'] = {'eight': True, 'use': {'walk': 'walking'}, 'skip': {'dodge'
 CHARS['trainee'] = {'eight': True, 'use': {'walk': 'walking'}, 'bald': True,
                     'mirror': {('idle', 'downright'), ('walk', 'downright'), ('attack', 'downright')}}
 CHARS['embla'] = {'eight': True}
-CHARS.update({name: {'eight': True, 'use': {'walk': 'walking'}, 'bald': True} for name in ['blader', 'sorc']})  # the Sorcerer, made like the Trainee
+CHARS.update({name: {'eight': True, 'use': {'walk': 'walking'}, 'bald': True} for name in ['blader', 'sorc', 'mknight']})  # the Sorcerer and the Magic Knight, made like the Trainee
 
 
 def islands(f):

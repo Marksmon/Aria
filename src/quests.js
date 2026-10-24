@@ -466,8 +466,10 @@ export class Quests {
       const st = series(n.trial, { id: n.trial.at(-1), q: QUESTS[n.trial.at(-1)], state: 'job', job: n.job });
       return { ...st, job: n.job };
     }
-    // a second job's trial: from Job Level 40, by the rules in skills.js (secondJobOpen)
-    if (n.trial2 && secondJobOpen(prog, n.job2)) {
+    // a second job's trial: from Job Level 40, by the rules in skills.js (secondJobOpen). Only one
+    // can be taken: once a step of one is accepted, the others close
+    const chosen = Object.values(NPCS).some((o) => o.trial2 && o !== n && o.trial2.some((k) => k in this.active || this.done.includes(k)));
+    if (n.trial2 && !chosen && secondJobOpen(prog, n.job2)) {
       return { ...series(n.trial2, { id: n.trial2.at(-1), q: QUESTS[n.trial2.at(-1)], state: 'job' }), job: n.job2 };
     }
     const id = n.quests.find((k) => !this.done.includes(k));

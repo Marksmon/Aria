@@ -215,7 +215,8 @@ points stay. Second jobs wear their first job's outfit in new colours and glow w
 - **Magic Knight** (Sir Eirik the Runeblade, Steinborg, beside Ulfr): 30 Kobolds, 10 Dark Crystals and
   15 Glow Dust, the King Crab. Only for heroes who walked both paths with **at least 20 skill
   points in each tree**. Without that, a hero of both paths may only take the second job of the
-  first job they put the most points into.
+  first job they put the most points into. Only one second job can be taken: once you accept a
+  step of one trial, the other trials close.
 
 | BladeMaster: one target, cut down fast | |
 |---|---|
