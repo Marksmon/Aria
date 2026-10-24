@@ -28,7 +28,7 @@ export const TUNE = {
   horned_helm: { w: 1.02, at: 0.42, hair: 0.4 },   // a full helm: the hair above the rim goes
   woven_cap: { w: 1.08, at: 0.36, hair: 0.34 },
   ember_crown: { at: 0.12, w: 0.92, hair: 0.06, swap: { right: 'downright', left: 'downleft' } }, // sits on the hair; its side views are poor
-  flower_wreath: { at: 0.1, w: 1.0, hair: 0 }, // rests on top of the hair
+  flower_wreath: { at: 0.3, w: 1.0, hair: 0 }, // rests on top of the hair
   // face pieces: their views come from the front (see pack-headgear.py); turning moves them toward
   // the front of the face
   round_glasses: { w: 0.62, at: 0.74 }, // on the eyes when the packer found them; this is the fallback

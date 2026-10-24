@@ -444,7 +444,7 @@ function pixelSet(url, { fw, fh, body, foot = 0, hair = [], anims, bald = false 
   for (const [dir, list] of Object.entries(anims)) {
     set.anims[dir] = {};
     set.flash[dir] = {};
-    for (const [anim, [row, n, feet, heads]] of Object.entries(list)) {
+    for (const [anim, [row, n, feet, heads, seats]] of Object.entries(list)) {
       set.anims[dir][anim] = [];
       set.flash[dir][anim] = [];
       const anchor = feet ? at([...feet].sort((a, b) => a - b)[feet.length >> 1]) : set.anchor;
@@ -452,7 +452,8 @@ function pixelSet(url, { fw, fh, body, foot = 0, hair = [], anims, bald = false 
         const t = blank(), f = blank();
         t.userData.anchor = f.userData.anchor = anchor;
         // where the head is in this frame (frame pixels), for headgear: { x, crown, neck, w, eyes: [x, y, ...] }
-        if (heads?.[i]) t.userData.head = f.userData.head = { x: heads[i][0], crown: heads[i][1], neck: heads[i][2], w: heads[i][3], eyes: heads[i].slice(4) };
+        // and, on a body made bald, its seat: the top of the collar, where the bald head's chin goes
+        if (heads?.[i]) t.userData.head = f.userData.head = { x: heads[i][0], crown: heads[i][1], neck: heads[i][2], w: heads[i][3], eyes: heads[i].slice(4), seat: seats?.[i] ?? heads[i][2] };
         set.anims[dir][anim].push(t);
         set.flash[dir][anim].push(f);
         cuts.push([t, f, i * fw, row * fh]);

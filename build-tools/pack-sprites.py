@@ -153,6 +153,51 @@ def strip_head(f, h, keep, hair):
     return f
 
 
+def strip_bald(f, h, keep, hair):
+    """strip_head for a body made bald, which has nothing but its head above the neck: also what's
+    left of the head's outline and eyes (pixels within two of the removed skin, above the neck) and
+    small specks around it. Returns the frame and its seat: the top of the collar under the head,
+    where the head's chin goes."""
+    cx, crown, neck, w = h[:4]
+    out = strip_head(f, h, keep, hair)
+    a, px = f.getchannel('A').load(), out.load()
+    gone = {(x, y) for y in range(f.height) for x in range(f.width) if a[x, y] > 128 and px[x, y][3] <= 128}
+    ex, ey, rx, ry = cx + 0.5, (crown + neck) / 2 - 1, w / 2 + 5, (neck - crown) / 2 + 7
+    region = lambda x, y: ((x - ex) / rx) ** 2 + ((y - ey) / ry) ** 2 <= 1
+    for _ in range(2):
+        drop = [(x, y) for y in range(max(0, crown - 12), neck) for x in range(max(0, int(cx - w)), min(f.width, int(cx + w + 1)))
+                if px[x, y][3] > 128 and region(x, y) and any((x + i, y + j) in gone for i in (-1, 0, 1) for j in (-1, 0, 1))]
+        for p in drop:
+            px[p] = (0, 0, 0, 0)
+            gone.add(p)
+    # specks: little islands left inside the head's region
+    solid = {(x, y) for y in range(max(0, crown - 12), min(f.height, neck + 3)) for x in range(max(0, int(cx - w)), min(f.width, int(cx + w + 1))) if px[x, y][3] > 128}
+    seen = set()
+    for p in solid:
+        if p in seen:
+            continue
+        g, stack, edge = [], [p], False
+        seen.add(p)
+        while stack:
+            q = stack.pop()
+            g.append(q)
+            for i in (-1, 0, 1):
+                for j in (-1, 0, 1):
+                    n = (q[0] + i, q[1] + j)
+                    if n in solid and n not in seen:
+                        seen.add(n)
+                        stack.append(n)
+                    elif n not in solid and 0 <= n[0] < f.width and 0 <= n[1] < f.height and px[n][3] > 128:
+                        edge = True  # joined to the body outside the region looked at
+        if not edge and len(g) < 8 and all(region(*q) for q in g):
+            for q in g:
+                px[q] = (0, 0, 0, 0)
+    # the seat: the highest body pixel under the middle of the head
+    tops = [next((y for y in range(neck - 1, min(f.height, neck + 9)) if px[x, y][3] > 128), None) for x in range(int(cx) - 2, int(cx) + 3)]
+    tops = [t for t in tops if t is not None]
+    return out, (min(tops) if tops else neck)
+
+
 def load(name, eight=False, prefer=(), skip=()):
     base = os.path.join(SRC, name)
     meta = json.load(open(os.path.join(base, 'metadata.json')))
@@ -223,6 +268,10 @@ def pack(name, opts):
         gs = islands(f)
         if not gs:
             return [fw // 2, 0, 0, 0]
+        if opts.get('bald'):
+            h = skull(f, d, min(y for _, y in gs[0]))
+            if h:
+                return h
         solid = set(gs[0])
         top = min(y for _, y in solid)
         # follow the head down row by row, keeping only the run of pixels around its centre, so a
@@ -257,6 +306,48 @@ def pack(name, opts):
         top_rows = [y for y in range(crown, crown + max(3, int(bh * 0.18))) if y in runs and y < neck]
         cx = sum(runs[y][0] + runs[y][1] for y in top_rows) / (2 * len(top_rows))
         return [round(cx), crown, neck, mw, *eyes(f, runs, crown, neck, d)]
+
+    # a bald body's head: the biggest patch of skin in the top half of the body (a staff, a sword or
+    # a spell effect beside the head isn't skin). Its outline is a pixel around it; the neck is its
+    # narrowest row under the face.
+    def skull(f, d, top):
+        px = f.load()
+        lum = lambda c: 0.3 * c[0] + 0.59 * c[1] + 0.11 * c[2]
+        skin = lambda c: c[3] > 128 and c[0] > 150 and c[0] >= c[1] >= c[2] - 10 and lum(c) >= 110
+        dark = lambda c: c[3] > 128 and lum(c) < 110
+        lim = min(f.height, top + int(bh * 0.5))
+        pts = {(x, y) for y in range(top, lim) for x in range(fw) if skin(px[x, y])}
+        best, seen = [], set()
+        for p in pts:
+            if p in seen:
+                continue
+            g, stack = [], [p]
+            seen.add(p)
+            while stack:
+                q = stack.pop()
+                g.append(q)
+                for n in ((q[0] + 1, q[1]), (q[0] - 1, q[1]), (q[0], q[1] + 1), (q[0], q[1] - 1)):
+                    # the eyes and brows are inside the face: step over dark pixels to the skin past them
+                    if n in pts and n not in seen:
+                        seen.add(n)
+                        stack.append(n)
+            if len(g) > len(best):
+                best = g
+        if len(best) < bh * 2:
+            return None
+        rows = {}
+        for x, y in best:
+            lo, hi = rows.get(y, (x, x))
+            rows[y] = (min(lo, x), max(hi, x))
+        ys = sorted(rows)
+        crown, bottom = ys[0] - 1, ys[-1]
+        width = lambda y: rows[y][1] - rows[y][0] + 1
+        w = max(width(y) for y in ys) + 2
+        top_rows = ys[:max(3, len(ys) * 2 // 5)]
+        cx = sum(rows[y][0] + rows[y][1] for y in top_rows) / (2 * len(top_rows))
+        low = [y for y in ys if y >= crown + (bottom - crown) * 0.6]
+        neck = min(low, key=lambda y: (width(y), -y)) if low else bottom
+        return [round(cx), crown, neck, w, *eyes(f, {y: rows[y] for y in ys}, crown, neck, d)]
 
     # the eyes: the dark shapes inside the skin of the face, below the fringe (face pieces sit on
     # them). Each row's skin span is found, the dark pixels inside it are collected, and grouped by
@@ -312,7 +403,11 @@ def pack(name, opts):
         hs = [head(f, d) for f in frames]
         mw = mw or sorted(h[3] for h in hs)[len(hs) // 2]
         mid = sorted(hs, key=lambda h: h[1])[len(hs) // 2]
-        return [[h[0], h[1], h[2], mw, *h[4:]] if h[3] <= mw * 1.3 else [mid[0], mid[1], mid[2], mw, *mid[4:]] for h in hs]
+        # a head far from the animation's middle (a spell effect or a staff measured instead) borrows
+        # the nearest frame's that is in place
+        ok = [h[3] <= mw * 1.3 and abs(h[0] - mid[0]) <= mw * 0.5 and abs(h[2] - mid[2]) <= mw * 0.4 for h in hs]
+        near = lambda i: hs[min((j for j in range(len(hs)) if ok[j]), key=lambda j: abs(j - i), default=None)] if any(ok) else mid
+        return [[h[0], h[1], h[2], mw, *h[4:]] if ok[i] else [*near(i)[:3], mw, *near(i)[4:]] for i, h in enumerate(hs)]
 
     rows, layout = [], {}
     for d in art:
@@ -347,8 +442,13 @@ def pack(name, opts):
     if opts.get('strip'):  # Ragnarok-style body: the head comes off, its anchors stay
         keep = body_colours(art, box, layout) - {tuple(c) for c in hair}
         for d in layout:
-            for anim, (r, n, _, hs) in layout[d].items():
-                rows[r] = [strip_head(f, h, keep, hair) for f, h in zip(rows[r], hs)]
+            for anim, (r, n, _, hs, *_) in layout[d].items():
+                if opts.get('bald'):  # each frame also records its seat, for the head's chin
+                    done = [strip_bald(f, h, keep, hair) for f, h in zip(rows[r], hs)]
+                    rows[r] = [f for f, _ in done]
+                    layout[d][anim].append([s for _, s in done])
+                else:
+                    rows[r] = [strip_head(f, h, keep, hair) for f, h in zip(rows[r], hs)]
     cols = max(len(r) for r in rows)
     sheet = Image.new('RGBA', (cols * fw, len(rows) * fh))
     for y, r in enumerate(rows):
