@@ -37,7 +37,7 @@ export const MOB_DEFS = {
   cinderLord: { name: 'Giant Beetle', ai: 'boss', art: 'beetle', el: 'fire', tint: '#ff7a4a', boss: true, lv: 48, hp: 16000, atk: [125, 162], def: 22, vit: 48, agi: 32, dex: 70, exp: [28000, 19600], adelay: 1600, speed: 1.15, aggro: 5.5, chase: 12, reach: 1.5, w: 2.4, r: 0.9, heavy: true, respawn: 480, drops: [['cinder_core', 1, 1, 0.3], ['cinder', 2, 4, 1], ['potion3', 1, 2, 0.5], ['cinder_greaves', 1, 1, 0.03], ['cinder_mail', 1, 1, 0.04]] },
   // MVP boss of Glodberg: one at a time, back 15 minutes after it falls. Its slayer gets the MVP
   // reward on top of the drops. Stomps the ground around it every few seconds (stomp: x its ATK),
-  // and calls 2 Fire Wisps and 3 Fire Beetles below 60% HP and again below 30% (summon).
+  // and calls 2 Fire Wisps and 3 Fire Beetles (summon: see SUMMON_CD).
   // Made for a Base 50 character in the best gear, alone: about 3 minutes and a bag of potions.
   jarl: { name: 'Fire Giant', ai: 'boss', art: 'jarl', el: 'fire', lv: 60, hp: 24000, atk: [150, 200], def: 20, vit: 40, agi: 30, dex: 70, mdef: 40, exp: [60000, 42000], adelay: 1600, speed: 1.35, aggro: 7, chase: 25, reach: 1.9, w: 3.1, r: 1.15, heavy: true,
     mvp: true, respawn: 900, lair: { x: 32, z: 48 }, mvpExp: 30000, stomp: 1.8,
@@ -54,8 +54,8 @@ export const MOB_DEFS = {
   goblinWarrior: { name: 'Goblin', ai: 'tank', art: 'goblinWarrior', el: 'wind', lv: 38, hp: 2000, atk: [118, 148], def: 18, vit: 38, agi: 30, dex: 56, exp: [580, 405], adelay: 1400, speed: 1.7, aggro: 5.5, chase: 9, reach: 0.8, w: 0.7, r: 0.32, drops: [['goblin_tooth', 1, 1, 0.55], ['steel_ore', 1, 1, 0.12], ['potion2', 1, 1, 0.08], ['armor_ore', 1, 1, 0.02], ['hard_ore', 1, 1, 0.01]] },
   goblinArcher: { name: 'Goblin Archer', ai: 'archer', art: 'goblinArcher', el: 'wind', lv: 41, hp: 1700, atk: [120, 150], def: 10, vit: 28, agi: 40, dex: 82, exp: [700, 490], adelay: 1800, speed: 1.6, aggro: 7, chase: 9, range: 5.5, reach: 0.8, w: 0.7, r: 0.32, drops: [['goblin_tooth', 1, 1, 0.5], ['potion3', 1, 1, 0.04], ['wander', 1, 1, 0.1], ['hard_ore', 1, 1, 0.02]] },
   goblinAssassin: { name: 'Goblin Assassin', ai: 'assassin', art: 'goblinAssassin', el: 'wind', lv: 44, hp: 1800, atk: [140, 178], def: 8, vit: 26, agi: 75, dex: 82, exp: [850, 595], adelay: 1100, speed: 2.7, aggro: 6, chase: 10, reach: 0.75, double: 0.25, w: 0.7, r: 0.3, drops: [['goblin_tooth', 1, 2, 0.5], ['quick', 1, 1, 0.04], ['potion3', 1, 1, 0.04], ['hard_ore', 1, 1, 0.025], ['armor_ore', 1, 1, 0.02]] },
-  // the kings: MVPs like the Fire Giant, a step below it. They stomp, and call four guards when
-  // they first fall below 60% HP and again below 30% (summon).
+  // the kings: MVPs like the Fire Giant, a step below it. They stomp, and call four guards
+  // (summon: see SUMMON_CD).
   koboldKing: { name: 'Kobold King', ai: 'boss', art: 'koboldKing', el: 'earth', lv: 50, hp: 18000, atk: [120, 160], def: 22, vit: 45, agi: 30, dex: 70, mdef: 25, exp: [36000, 25200], adelay: 1500, speed: 1.4, aggro: 7, chase: 25, reach: 1.4, w: 1.3, r: 0.6, heavy: true,
     mvp: true, respawn: 1200, lair: { x: 32, z: 46 }, mvpExp: 18000, stomp: 1.6, summon: ['koboldWarrior', 'koboldWarrior', 'koboldArcher', 'koboldAssassin'], mvpDrops: [['potion3', 3], ['hard_ore', 2]],
     wake: 'War drums in the quarry… the Kobold King holds court in Kolgrof!',
@@ -67,6 +67,9 @@ export const MOB_DEFS = {
 };
 
 const RESPAWN = 60;
+// An MVP first calls its guards when it falls below 60% HP. It calls again only once every guard
+// is gone, and not until 2 minutes after the last one fell, while it is still fighting.
+const SUMMON_AT = 0.6, SUMMON_CD = 120;
 const ATTACK_ANIM = 0.5; // PixelLab monsters play their attack animation for this long
 const STRIDE = 1.5;      // walk cycle length in body widths: legs keep pace with the ground
 
@@ -115,7 +118,8 @@ class Mob {
     this.walked = 0; // distance walked, drives the walk cycle
     this.provokeT = 0; // taunted: it comes for you
     this.stunT = 0;
-    this.calls = 0; // guards called (kings)
+    this.calls = 0;          // times it has called its guards (MVPs)
+    this.guardsGoneT = -1e9; // when (its own clock, this.t) its last guard fell
     this.sprite.visible = this.shadow.visible = true;
     const upp = d.w / this.art.body[0]; // def.w is the body width
     this.sprite.scale.set(this.art.fw * upp, this.art.fh * upp, 1);
@@ -161,8 +165,8 @@ class Mob {
     if (this.def.ai === 'skittish') this.angry = this.def.angry;
     else if (this.def.passive || this.def.ai === 'archer') this.angry = Math.max(this.angry, 30); // hit a passive monster and it fights back for a while
     if (this.def.boss) this.knock.x = this.knock.z = 0; // bosses stand their ground
-    // a king calls his guards when he first falls below 60% HP, and again below 30%
-    if (this.def.summon && this.calls < 2 && this.hp > 0 && this.hp / this.def.hp < (this.calls ? 0.3 : 0.6)) { this.calls++; this.mgr.summon(this); }
+    // an MVP first calls its guards when it falls below 60% HP (later calls: see update)
+    if (this.def.summon && !this.calls && this.hp > 0 && this.hp / this.def.hp < SUMMON_AT) { this.calls++; this.mgr.summon(this); }
     if (['hopper', 'tank', 'puffer', 'boss', 'assassin'].includes(this.def.ai)) {
       this.state = 'chase';
       this.chaseT = Math.max(this.chaseT, this.def.chase || 4);
@@ -190,6 +194,11 @@ class Mob {
       this.knock.z *= k;
     }
 
+    // an MVP calls again once all its guards are gone and the cooldown has passed, while it fights
+    if (d.summon && this.calls && this.state === 'chase' && this.t - this.guardsGoneT >= SUMMON_CD && !this.mgr.guardsOf(this).length) {
+      this.calls++;
+      this.mgr.summon(this);
+    }
     // a summoned guard keeps by its leader, and fights when the leader fights
     const lead = this.leader;
     if (lead) {
@@ -472,6 +481,8 @@ export class MobManager {
     }
   }
 
+  guardsOf(boss) { return this.list.filter((o) => o.leader === boss && o.alive); }
+
   // a king's guards: they come running, and don't come back once beaten
   summon(boss) {
     boss.mgr.emit('summon', boss);
@@ -527,6 +538,8 @@ export class MobManager {
       this.fx.puff(s.x, this.world.heightAt(s.x, s.z) + 0.3, s.z, s.def.w);
       this.remove(s);
     }
+    // the last of an MVP's guards falls: its summoning cooldown starts
+    if (m.leader?.alive && !this.guardsOf(m.leader).some((o) => o !== m)) m.leader.guardsGoneT = m.leader.t;
     if (m.def.noRespawn || m.temp) { this.remove(m); return; }
     if (m.def.mvp) { // gone until its respawn time comes round (the game saves mvpAt)
       this.mvpAt[m.type] = Date.now() + m.def.respawn * 1000;

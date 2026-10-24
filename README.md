@@ -102,8 +102,9 @@ sword). It comes back 15 minutes later, even if you leave the map or close the g
 Two more MVPs rule the new lands: the **Kobold King** (Lv 50, 18,000 HP, Earth) holds court in the
 south of Kolgrof, and the **Goblin King** (Lv 55, 21,000 HP, Wind) in the north of Ormholt. Both
 stomp like the Fire Giant, and each MVP keeps its own timer (20 and 30 minutes). **Every MVP calls
-guards** when it first falls below 60% HP and again below 30%: the Fire Giant 2 Fire Wisps and 3
-Fire Beetles, each king 4 of his own (2 warriors, an archer and an assassin). Guards are ordinary
+guards** when it first falls below 60% HP: the Fire Giant 2 Fire Wisps and 3 Fire Beetles, each
+king 4 of his own (2 warriors, an archer and an assassin). It never calls while a guard is still
+standing: once the last one falls, it can call again 2 minutes later, if it is still fighting. Guards are ordinary
 monsters: they follow their MVP, fight whoever it fights, and vanish when it falls (no EXP, no
 drops). The kings drop ores, a rare accessory (5%) and their **card** (1%), as does the Fire Giant.
 
