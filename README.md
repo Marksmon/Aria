@@ -218,8 +218,11 @@ points stay. Second jobs wear their first job's outfit in new colours and glow w
 - A hero of both paths may take the BladeMaster or Wizard trial only for the first job with the most
   points (a tie opens both). A Job 50 hero with 30 points as a Blader and 20 as a Sorcerer may
   become a BladeMaster or a Magic Knight; with 25 and 25, any of the three; with 35 and 15, only a
-  BladeMaster. Only one second job can be taken: once you accept a
-  step of one trial, the other trials close.
+  BladeMaster. Only one second job can be taken: once you accept a step of one trial, the other
+  trials close. Quit a trial midway (Quit quest in the Quest View) and it starts over, and you may
+  pick any trial you qualify for again.
+- Job trials pay nothing for the steps on the way: the whole trial's reward comes with its last
+  step.
 
 | BladeMaster: one target, cut down fast | |
 |---|---|
