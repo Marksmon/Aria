@@ -266,8 +266,8 @@ export function learn(prog, id) {
 export const pointsIn = (prog, job) => Object.entries(prog.skills).reduce((a, [id, n]) => a + (SKILLS[id]?.job === job ? n : 0), 0);
 export const MK_POINTS = 20; // the Magic Knight wants this many points in both the Blader's and the Sorcerer's tree
 // may this hero take a second job's trial? From Job Level 40 of a first job. The Magic Knight needs
-// 20 points in each first job's tree; short of that, a hero who walked both first paths may only
-// take the second job of the one they put the most points into.
+// 20 points in each first job's tree. A hero who walked both first paths may take the BladeMaster
+// or Wizard trial only for the first job they put the most points into (a tie opens both).
 export function secondJobOpen(prog, job2) {
   const from = JOBS[job2].from;
   if (prog.tier !== 1 || prog.jobLv < SECOND_AT || !from.every((j) => prog.unlocked.includes(j))) return false;
@@ -275,7 +275,7 @@ export function secondJobOpen(prog, job2) {
   const both = pts.swordman >= MK_POINTS && pts.mage >= MK_POINTS;
   if (from.length > 1) return both;
   const other = from[0] === 'swordman' ? 'mage' : 'swordman';
-  return both || !prog.unlocked.includes(other) || pts[from[0]] >= pts[other];
+  return !prog.unlocked.includes(other) || pts[from[0]] >= pts[other];
 }
 
 // what a skill costs to use at a level

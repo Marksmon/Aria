@@ -214,8 +214,11 @@ points stay. Second jobs wear their first job's outfit in new colours and glow w
 - **Wizard** (Archmage Vigdis): 10 Fire Dust and 10 Dark Crystals, 25 Goblin Archers, the Giant Mushroom.
 - **Magic Knight** (Sir Eirik the Runeblade, Steinborg, beside Ulfr): 30 Kobolds, 10 Dark Crystals and
   15 Glow Dust, the King Crab. Only for heroes who walked both paths with **at least 20 skill
-  points in each tree**. Without that, a hero of both paths may only take the second job of the
-  first job they put the most points into. Only one second job can be taken: once you accept a
+  points in each tree**.
+- A hero of both paths may take the BladeMaster or Wizard trial only for the first job with the most
+  points (a tie opens both). A Job 50 hero with 30 points as a Blader and 20 as a Sorcerer may
+  become a BladeMaster or a Magic Knight; with 25 and 25, any of the three; with 35 and 15, only a
+  BladeMaster. Only one second job can be taken: once you accept a
   step of one trial, the other trials close.
 
 | BladeMaster: one target, cut down fast | |
