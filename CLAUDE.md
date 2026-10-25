@@ -14,6 +14,9 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
     Sorcerer trees. BladeMaster/Wizard open only for the first job with the most points (a tie
     opens both). Only one second job can be taken; quitting a trial midway starts it over and
     lets the hero pick again. Job trials pay only when the whole series is done.
+- **Damage balance:** second jobs hit about 2–4x their first job; Blader and Sorcerer stay close.
+  Do not even out the BladeMaster and the Wizard: the BladeMaster is not elemental and keeps the
+  higher steady damage, while the Wizard's elements make up the gap (see `docs/job-rules.md`).
 - **Quests:** side quests and job trials can be quit from the Quest View; the main story quest
   can never be quit.
 - **Character art:** bodies are bald to the standard in `docs/character-standard.md`; the game

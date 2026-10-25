@@ -75,6 +75,23 @@ No weapon needed: Mend, Thrust, Guard, Rest, War Cry, Stand Firm, Rune Ward, Bli
 | 5 / 20 | Wizard |
 | any, below Job 40 | none |
 
+## Damage balance between jobs
+
+Checked with the fight simulator (a neutral Lv 55 boss and a pack of six Lv 38 monsters, Base 60 and
+70). Skill numbers live on each skill in `skills.js` (`power`, and `mpower` for the Magic Knight's
+MATK part), used by both the damage and the skill text.
+
+- **Second jobs are much stronger than first jobs:** about 2–4x their own first job.
+- **First jobs are close to each other:** a Blader does about 0.8–0.9x a Sorcerer's single-target
+  damage, clears packs as fast, and takes about as long on the Kobold and Goblin Kings.
+- **BladeMaster vs Wizard: do not even them out.** The BladeMaster is not elemental: its damage is
+  the same on every monster, so it keeps the higher steady single-target damage (about 1.4x the
+  Wizard's on a neutral monster). The Wizard makes up the gap with elements: on a monster weak to
+  its element it out-damages the BladeMaster, and on one that resists it, it falls far behind.
+  It is also the best at packs.
+- **Magic Knight:** between the two on one target, close to the BladeMaster on packs, with the most
+  HP and its Stone Aegis barrier.
+
 ## Trials
 
 - Each trial is a **three-step series**. Each step accepts itself as soon as the step before is
