@@ -447,7 +447,13 @@ function questTarget(id) {
   }
   const q = QUESTS[id], giver = questGiver(id);
   if (!(id in quests.active) || quests.ready(id, inv)) return { map: NPCS[giver].map || 'camp', npc: giver, why: NPCS[giver].name };
-  if (q.kind === 'kill') { const map = nearestMap(mapsOf(q.mob)); return map ? { map, why: `${MOB_DEFS[q.mob].name}s` } : null; }
+  if (q.kind === 'kill') { // for a hunt of several kinds, the first kind still wanted
+    const mob = q.mobs ? Object.keys(q.mobs).find((m) => (quests.active[id][m] || 0) < q.mobs[m]) : q.mob;
+    const map = nearestMap(mapsOf(mob));
+    return map ? { map, why: `${MOB_DEFS[mob].name}s` } : null;
+  }
+  // a quiz is answered to whoever gave it, once anything it needs is in the bag
+  if (q.kind === 'quiz' && quests.hasItems(id, inv)) return { map: NPCS[giver].map || 'camp', npc: giver, why: NPCS[giver].name };
   if (q.kind === 'visit') { const left = q.zones.filter((z) => !quests.active[id].includes(z)); return left.length ? { map: nearestMap(left), why: 'a land to visit' } : null; }
   // a gathering quest: the nearest map where an item still missing drops
   let best = null;
@@ -636,6 +642,12 @@ const menus = new Menus(inv, prog, player, {
     menus.message(`New quest: ${QUESTS[id].title}`);
     menus.close('talk');
     refreshQuests();
+  },
+  // a trainer's question: a chime when right, a thud when not (no penalty, just try again)
+  answered(id, ok) {
+    audio.play(ok ? 'heart' : 'block');
+    refreshQuests();
+    persist();
   },
   handIn(id) {
     const r = quests.turnIn(id, inv);

@@ -141,10 +141,13 @@ four times Ragnarok's own (`RATES` in `src/progress.js`). Quest windows show the
 
 Aria's own jobs and skills, kept modest. A **Trainee** puts points into **Basic Training**; the
 other Trainee skills come free with Job Levels. At Trainee Job 10 with Basic Training 9, a job
-trial opens: three short steps a Trainee of Base Level ~10 can do. **Captain Ulfr** in Steinborg
-tests Bladers (10 Slimes, 8 Sprouts, 5 Crabs); **Archmage Vigdis** in Galdrheim tests Sorcerers
-(Water Drops and Seeds, 6 Blue Slimes, then Glow Dust from the Wisps). Pass, and
-they change your job. Elder Halvard sends ready Trainees on to the city.
+trial opens: three short steps a Trainee of Base Level ~10 can do, each needing one trip to the
+easy field beside the trainer: a hunt, something made from what it dropped, and the trainer's
+questions (tap an answer; a wrong one only earns a hint). **Captain Ulfr** in Steinborg tests
+Bladers (6 Slimes and 4 Sprouts in Mosvangr, 5 Slime Gel and 3 Seeds as proof, three questions
+on fighting); **Archmage Vigdis** in Galdrheim tests Sorcerers (4 Blue Slimes in Fenstrand, brew a
+Blue Draught from 3 Slime Gel and 2 Water Drops, three questions on elements and chanting). Pass,
+and they change your job. Elder Halvard sends ready Trainees on to the city.
 
 | Trainee | | |
 |---|---|---|

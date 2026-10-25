@@ -81,8 +81,11 @@ No weapon needed: Mend, Thrust, Guard, Rest, War Cry, Stand Firm, Rune Ward, Bli
   handed in. Job quests show in **green**.
 - **No reward for the steps on the way:** only completing the whole series pays, and the last step
   pays the total of all its steps (`rewardOf` in `quests.js`).
-- First-job trials are for a Trainee of Base ~10. Second-job trials are harder: Base 40–50
-  monsters and a mini-boss.
+- First-job trials are for a Trainee of Base ~10 and need one trip to the easy field beside the
+  trainer: a hunt (Slimes and Sprouts, or Blue Slimes), a step made from what it dropped (proof,
+  or the Sorcerer's brew), and the trainer's questions (`kind: 'quiz'`). A wrong answer only gets
+  a hint; the question can be tried again. Second-job trials are harder: Base 40–50 monsters and
+  a mini-boss.
 - Trainers:
   - Captain Ulfr (Blader, BladeMaster), Steinborg.
   - Archmage Vigdis (Sorcerer, Wizard), Galdrheim.

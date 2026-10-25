@@ -116,6 +116,7 @@ export class Menus {
     this.npc = npc;
     this.ferrying = false; // the Ferryman's list of lands, once asked for
     this.loreAt = 0;       // how far into their tales (NPCS lore) they are
+    this.quizNote = null;  // what a trainer said about the last answer
     this.show('talk');
   }
 
@@ -496,7 +497,7 @@ export class Menus {
 
   talk() {
     const n = NPCS[this.npc], st = this.quests.status(this.npc, this.prog, this.inv), p = this.prog;
-    let text, box = '', btns = '<button class="rbtn soft" data-act="close">Bye</button>';
+    let text, box = '', btns = '<button class="rbtn soft" data-act="close">Bye</button>', quizzing = false;
     // what else they do: trade and craft
     const extra = (n.stylist ? '<button class="rbtn" data-act="stylist">Change my look</button>' : '')
       + (n.shop ? '<button class="rbtn" data-act="shop">Buy / Sell</button>' : '')
@@ -535,8 +536,18 @@ export class Menus {
       text = (first ? n.hello + ' ' : '') + st.q.intro;
       box = `<b class="${st.q.job ? 'jobq' : ''}">${esc(st.q.title)}</b><small>${esc(this.quests.goal(st.q))}</small>${this.questReward(st.id)}`;
       btns = `<button class="rbtn soft" data-act="close">Not now</button><button class="rbtn" data-act="accept" data-id="${st.id}">Accept</button>`;
+    } else if (st.state === 'active' && st.q.kind === 'quiz' && this.quests.hasItems(st.id, this.inv)) {
+      // a trainer's questions, one at a time: tap an answer
+      const at = this.quests.active[st.id], Q = st.q.questions[at], note = this.quizNote;
+      quizzing = true;
+      text = (note ? '' : at === 0 ? st.q.intro + ' ' : '') + Q.q;
+      box = `<b class="${st.q.job ? 'jobq' : ''}">${esc(st.q.title)}</b><small>Question ${at + 1} of ${st.q.questions.length}</small>`
+        + (note ? `<small class="${note.ok ? 'qright' : 'qwrong'}">${note.ok ? '✓' : '✗'} ${esc(note.note)}</small>` : '');
+      btns = `<div class="answers">${Q.options.map((o, i) => `<button class="rbtn soft" data-act="answer" data-id="${st.id}" data-n="${i}">${esc(o)}</button>`).join('')}</div>`
+        + '<button class="rbtn soft" data-act="close">Not now</button>';
     } else if (st.state === 'active') {
-      text = `Any luck? ${this.quests.goal(st.q)}.`;
+      // a quiz still waiting for its ingredients: say again what to bring and why (the brewing recipe)
+      text = st.q.kind === 'quiz' ? st.q.intro : `Any luck? ${this.quests.goal(st.q)}.`;
       box = `<b class="${st.q.job ? 'jobq' : ''}">${esc(st.q.title)}</b><small>${esc(this.quests.progress(st.id, this.inv))}</small>${this.questReward(st.id)}`;
     } else if (st.state === 'ready') {
       text = st.q.thanks;
@@ -552,9 +563,9 @@ export class Menus {
       for (const j of p.unlocked) if (JOBS[j].tier === 1 && j !== p.job) btns = `<button class="rbtn" data-act="jobchange" data-id="${j}">Switch to ${JOBS[j].name}</button>` + btns;
     }
     if (n.job2 && p.tier === 1 && !p.unlocked.includes(n.job2) && st.state === 'finished') text = n.trial2Hint || n.trialHint;
-    if (extra && st.state !== 'job' && st.state !== 'offer' && st.state !== 'ready') btns = extra + btns;
+    if (extra && !quizzing && st.state !== 'job' && st.state !== 'offer' && st.state !== 'ready') btns = extra + btns;
     // people with tales to tell: each 'Tell me more' is the next one
-    if (n.lore && st.state !== 'job' && st.state !== 'offer' && st.state !== 'ready') {
+    if (n.lore && !quizzing && st.state !== 'job' && st.state !== 'offer' && st.state !== 'ready') {
       if (this.loreAt > 0) text = n.lore[(this.loreAt - 1) % n.lore.length];
       btns = '<button class="rbtn soft" data-act="lore">Tell me more</button>' + btns;
     }
@@ -659,7 +670,11 @@ export class Menus {
       if (inv.sell(this.sellSel, n)) { this.hooks.traded?.('sell'); this.message(`Sold for ${got.toLocaleString()} perz`); }
     }
     if (act === 'accept') this.hooks.accept?.(t.dataset.id);
-    if (act === 'handin') this.hooks.handIn?.(t.dataset.id);
+    if (act === 'handin') { this.quizNote = null; this.hooks.handIn?.(t.dataset.id); }
+    if (act === 'answer') {
+      const r = this.quests.answer(t.dataset.id, +t.dataset.n);
+      if (r) { this.quizNote = r; this.hooks.answered?.(t.dataset.id, r.ok); this.render('talk'); }
+    }
     if (act === 'tab') { this.tab = t.dataset.id; this.selected = null; this.render(id); }
     if (act === 'equip' && inv.equip(this.selected)) { this.selected = null; this.hooks.equipped?.(); }
     if (act === 'unequip') {

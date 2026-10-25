@@ -300,40 +300,85 @@ export const QUESTS = {
     reward: { xp: 2000, perz: 800, items: { glow: 5, wander: 3 } },
   },
   // ---------- the job trials: three short steps each, easy for a Trainee of Base Level ~10 ----------
+  // Each first-job trial needs one trip to the easy field beside its trainer: a hunt, something
+  // made from what the hunt dropped, and the trainer's questions (kind 'quiz', answered in the talk
+  // window: a wrong answer only gets a hint). The questions teach what new players miss.
   blader_trial: {
-    title: "Blader's Trial 1: Steel and Sweat", job: true, kind: 'kill', mob: 'slime', n: 10, lv: 1,
-    intro: 'A Blader proves their sword first. Three tasks, all small, all honest. First: go to Mosvangr and beat ten Slimes. Mind your footing.',
-    thanks: 'Ten Slimes and not one ran off with your sword. Good. Next task.',
+    title: "Blader's Trial 1: Steel and Sweat", job: true, kind: 'kill', mobs: { slime: 6, sprout: 4 }, lv: 1,
+    intro: 'A Blader proves their sword first. Three tasks, all small, all honest. Go out through the south gate into Mosvangr and beat six Slimes and four Sprouts. Sprouts run from a blade, so corner them. And keep what they drop.',
+    thanks: 'Back on your feet, and not a Slime left laughing. Good. Now show me what you brought back.',
     reward: { xp: 120, perz: 100 },
   },
   blader_trial2: {
-    title: "Blader's Trial 2: Quick Feet", job: true, kind: 'kill', mob: 'sprout', n: 8, lv: 1,
-    intro: 'A sword is no use if you cannot catch what you swing at. Sprouts run from anyone with a blade. Corner eight of them.',
-    thanks: 'You can chase. Now let us see you stand your ground.',
-    reward: { xp: 150, perz: 150 },
+    title: "Blader's Trial 2: Proof of the Hunt", job: true, kind: 'fetch', items: { gel: 5, seed: 3 }, lv: 1,
+    intro: 'The Watch takes no one at their word. Bring me five Slime Gel and three Seeds as proof of your hunt. Slimes and Sprouts drop them; if you sold yours, Mosvangr has more.',
+    thanks: 'Gel and seeds. Proof enough. Last task: a few questions, and mind your answers.',
+    reward: { xp: 150, perz: 150, items: { potion: 5 } },
   },
   blader_trial3: {
-    title: "Blader's Trial 3: The Fen Patrol", job: true, kind: 'kill', mob: 'crab', n: 5, lv: 1,
-    intro: 'Last task. The Crabs of Fenstrand, west of the camp, charge in a straight line and pinch hard. Beat five of them and come back standing.',
-    thanks: 'Not a scratch you could not live with. You have a Blader\'s arm.',
+    title: "Blader's Trial 3: The Captain's Questions", job: true, kind: 'quiz', lv: 1, task: "Answer Captain Ulfr's three questions",
+    intro: 'A sword arm is half of a Blader. The other half is a head that knows when to swing.',
+    questions: [
+      { q: 'You strike a monster and it starts to wobble. What does that tell you?',
+        options: ['It is calling its friends', 'It is nearly beaten', 'It is about to grow stronger'], a: 1,
+        why: 'Right. Monsters show no health bars: a wobble means one or two more blows.',
+        hint: 'Not that. Watch it closely next time: a wobbling monster has almost nothing left.' },
+      { q: 'Your HP runs low in the middle of a fight. What do you do?',
+        options: ['Walk away: HP comes back as you walk', 'Open the Status window', 'Tap a potion on the hotbar'], a: 2,
+        why: 'Good. HP does not come back while you walk. Drink, or sit down and Rest once the fight is over.',
+        hint: 'No. Walking heals nothing. What did the Elder have you put on your hotbar?' },
+      { q: 'Which stat puts strength in a sword arm?',
+        options: ['POW', 'KNL', 'FTN'], a: 0,
+        why: 'POW it is. END keeps you standing, QKN and FNS help you land and dodge blows. KNL is for sorcerers.',
+        hint: 'That one serves sorcerers or gamblers. The sword wants Power.' },
+    ],
+    thanks: 'A sword arm and a head on your shoulders. You have a Blader\'s arm.',
     reward: { xp: 250, perz: 300 },
   },
   sorcerer_trial: {
-    title: 'Rune Trial 1: Water and Life', job: true, kind: 'fetch', items: { dew: 4, seed: 3 }, lv: 1,
-    intro: 'Magic gathers in small things. First bring me four Water Drops from the Blue Slimes of Fenstrand, and three Seeds from the Sprouts.',
-    thanks: 'Water and life. They hum in your hands; I can hear it from here. Next.',
+    title: 'Rune Trial 1: The Twice-Born', job: true, kind: 'kill', mob: 'blueSlime', n: 4, lv: 1,
+    intro: 'A sorcerer must keep a cool head when one foe becomes two. The Blue Slimes of Fenstrand, just south of my gate, split when struck. Beat four of them, and gather the Slime Gel and Water Drops they leave.',
+    thanks: 'You did not panic when they split. Most do. Now, what did they leave you?',
     reward: { xp: 120, perz: 100 },
   },
   sorcerer_trial2: {
-    title: 'Rune Trial 2: The Twice-Born', job: true, kind: 'kill', mob: 'blueSlime', n: 6, lv: 1,
-    intro: 'A sorcerer must keep a cool head when one foe becomes two. The Blue Slimes of Fenstrand split when struck. Beat six of them.',
-    thanks: 'You did not panic when they split. Most do. One more.',
-    reward: { xp: 150, perz: 150 },
+    title: 'Rune Trial 2: The Blue Draught', job: true, kind: 'quiz', items: { gel: 3, dew: 2 }, lv: 1, task: 'brew a Blue Draught with Archmage Vigdis',
+    intro: 'Every sorcerer brews before they cast. The Blue Draught: Water Drops in the pot first, then the Slime Gel, then stir it slowly, three times, the way the sun goes. Bring me three Slime Gel and two Water Drops and brew it with me.',
+    questions: [
+      { q: 'The pot is warm. What goes in first?',
+        options: ['The Slime Gel', 'The Water Drops', 'Both at once'], a: 1,
+        why: 'Yes: water first, always. It carries everything else.',
+        hint: 'Too soon. Listen again: water carries everything else, so it goes in first.' },
+      { q: 'The gel is in and the pot hisses. How do you stir?',
+        options: ['Slowly, three times, the way the sun goes', 'Fast, until it foams', 'Not at all'], a: 0,
+        why: 'Slowly, sunwise. See how it turns blue?',
+        hint: 'The pot spits at you. Slowly, three times, the way the sun goes.' },
+      { q: 'The draught glows blue. What will it give back to whoever drinks it?',
+        options: ['HP, the strength to take blows', 'SP, the strength to cast', 'Speed, for running away'], a: 1,
+        why: 'SP. Every spell spends it, and a sorcerer with none is only a person with a stick.',
+        hint: 'Red heals wounds. Blue is for something a sorcerer spends with every spell.' },
+    ],
+    thanks: 'A good draught, and you made it yourself. Keep the bottles: you will need them. One more.',
+    reward: { xp: 150, perz: 150, items: { tonic: 3 } },
   },
   sorcerer_trial3: {
-    title: 'Rune Trial 3: Light in the Dark', job: true, kind: 'fetch', items: { glow: 3 }, lv: 1,
-    intro: 'Last, light. Wisps drift over the fields near the camp, most of all at night. Bring me three pinches of their Glow Dust.',
-    thanks: 'Light, water and life... and they all answer you. The runes have spoken.',
+    title: 'Rune Trial 3: The Rune Questions', job: true, kind: 'quiz', lv: 1, task: "Answer Archmage Vigdis's three questions",
+    intro: 'Last, the runes themselves. Every monster has an element, and so does every spell.',
+    questions: [
+      { q: 'You cast a Fire spell on a Sprout. Sprouts are Earth. How does it land?',
+        options: ['Strong: fire burns earth', 'Weak: earth smothers fire', 'Not at all'], a: 0,
+        why: 'Strong, half again as hard. A strong hit shows in gold.',
+        hint: 'Think of a forest fire. Fire burns earth and everything growing in it.' },
+      { q: 'And Frost, which is Water, on a Crab of the fen, also Water?',
+        options: ['Strong: water drowns it', 'It barely scratches', 'It heals the Crab'], a: 1,
+        why: 'Barely a scratch: like against like. Weak hits show in grey. Pick another element.',
+        hint: 'Can you drown a fish? Like against like barely scratches.' },
+      { q: 'You are chanting a spell and a Slime hits you. What happens?',
+        options: ['The spell casts anyway', 'The chant breaks', 'The Slime is frozen'], a: 1,
+        why: 'The chant breaks. Cast from a distance, and Rune Ward, once you learn it, keeps the chant whole.',
+        hint: 'No. A blow breaks your focus, and the chant with it.' },
+    ],
+    thanks: 'Water and life, fire and earth... and they all answer you. The runes have spoken.',
     reward: { xp: 250, perz: 300 },
   },
   // ---------- the second jobs: three harder steps each, from Job Level 40 of a first job ----------
@@ -471,6 +516,11 @@ export function rewardOf(id) {
 // who gives a quest
 export const giverOf = (id) => Object.keys(NPCS).find((n) => NPCS[n].quests.includes(id) || NPCS[n].trial?.includes(id) || NPCS[n].trial2?.includes(id));
 
+// a fresh quest's progress: zones visited, kills per monster (a hunt of several kinds), or a count
+// (kills, or a quiz's questions answered)
+const fresh = (q) => (q.kind === 'visit' ? [] : q.mobs ? {} : 0);
+const plural = (n, name) => `${n} ${name}${n > 1 && !name.endsWith('s') ? 's' : ''}`;
+
 export class Quests {
   constructor() {
     this.active = {}; // id -> kills so far, or list of zones visited
@@ -510,15 +560,33 @@ export class Quests {
 
   accept(id) {
     if (QUESTS[id] && !(id in this.active) && !this.done.includes(id)) {
-      this.active[id] = QUESTS[id].kind === 'visit' ? [] : 0;
+      this.active[id] = fresh(QUESTS[id]);
     }
+  }
+
+  // every item the quest asks for is in the bag (true when it asks for none)
+  hasItems(id, inv) {
+    const q = QUESTS[id];
+    return !q.items || Object.entries(q.items).every(([item, n]) => inv.have(item) >= n);
   }
 
   ready(id, inv) {
     const q = QUESTS[id], a = this.active[id];
-    if (q.kind === 'kill') return a >= q.n;
+    if (q.kind === 'kill') return q.mobs ? Object.entries(q.mobs).every(([m, n]) => (a[m] || 0) >= n) : a >= q.n;
     if (q.kind === 'visit') return q.zones.every((z) => a.includes(z));
-    return Object.entries(q.items).every(([item, n]) => inv.have(item) >= n);
+    if (q.kind === 'quiz') return a >= q.questions.length && this.hasItems(id, inv);
+    return this.hasItems(id, inv);
+  }
+
+  // a quiz answer: { ok, note }. A right one moves on to the next question; a wrong one only
+  // earns a hint, so the question can be tried again
+  answer(id, choice) {
+    const q = QUESTS[id], a = this.active[id];
+    if (q?.kind !== 'quiz' || !(id in this.active) || a >= q.questions.length) return null;
+    const Q = q.questions[a];
+    if (choice !== Q.a) return { ok: false, note: Q.hint };
+    this.active[id] = a + 1;
+    return { ok: true, note: Q.why };
   }
 
   // returns the ids of quests that just became complete
@@ -526,7 +594,14 @@ export class Quests {
     const out = [];
     for (const [id, a] of Object.entries(this.active)) {
       const q = QUESTS[id];
-      if (q.kind !== 'kill' || q.mob !== type || a >= q.n) continue;
+      if (q.kind !== 'kill') continue;
+      if (q.mobs) { // a hunt of several kinds
+        if (!q.mobs[type] || (a[type] || 0) >= q.mobs[type]) continue;
+        a[type] = (a[type] || 0) + 1;
+        if (this.ready(id)) out.push(id);
+        continue;
+      }
+      if (q.mob !== type || a >= q.n) continue;
       this.active[id] = a + 1;
       if (a + 1 === q.n) out.push(id);
     }
@@ -548,7 +623,7 @@ export class Quests {
   turnIn(id, inv) {
     if (!(id in this.active) || !this.ready(id, inv)) return null;
     const q = QUESTS[id];
-    if (q.kind === 'fetch') for (const [item, n] of Object.entries(q.items)) inv.spend(item, n);
+    if (q.kind !== 'kill' && q.items) for (const [item, n] of Object.entries(q.items)) inv.spend(item, n); // fetch, or a quiz's ingredients
     delete this.active[id];
     this.done.push(id);
     return rewardOf(id) || {}; // a trial's steps on the way pay nothing
@@ -566,24 +641,39 @@ export class Quests {
   // short progress text for the tracker and dialogue
   progress(id, inv) {
     const q = QUESTS[id], a = this.active[id];
+    if (q.kind === 'kill' && q.mobs) return Object.entries(q.mobs).map(([m, n]) => `${MOB_DEFS[m].name} ${Math.min(a[m] || 0, n)}/${n}`).join(' · ');
     if (q.kind === 'kill') return `${MOB_DEFS[q.mob].name} ${Math.min(a, q.n)}/${q.n}`;
     if (q.kind === 'visit') return `Zones ${a.length}/${q.zones.length}`;
+    if (q.kind === 'quiz' && !this.hasItems(id, inv)) return this.itemsLine(q, inv);
+    if (q.kind === 'quiz') return `Questions ${Math.min(a, q.questions.length)}/${q.questions.length}`;
+    return this.itemsLine(q, inv);
+  }
+
+  itemsLine(q, inv) {
     return Object.entries(q.items).map(([item, n]) => `${ITEMS[item].name} ${Math.min(inv.have(item), n)}/${n}`).join(' · ');
   }
 
   goal(q) {
-    if (q.kind === 'kill') return `Defeat ${q.n} ${MOB_DEFS[q.mob].name}${q.n > 1 ? 's' : ''}`;
+    if (q.kind === 'kill' && q.mobs) return 'Defeat ' + Object.entries(q.mobs).map(([m, n]) => plural(n, MOB_DEFS[m].name)).join(' and ');
+    if (q.kind === 'kill') return `Defeat ${plural(q.n, MOB_DEFS[q.mob].name)}`;
     if (q.kind === 'visit') return `Visit ${q.zones.map((z) => ZONE_NAMES[z]).join(', ')}`;
-    return 'Bring ' + Object.entries(q.items).map(([item, n]) => `${n} ${ITEMS[item].name}`).join(', ');
+    const bring = q.items ? 'Bring ' + Object.entries(q.items).map(([item, n]) => `${n} ${ITEMS[item].name}`).join(', ') : '';
+    if (q.kind === 'quiz') return bring ? `${bring}, then ${q.task}` : q.task;
+    return bring;
   }
 
-  toJSON() { return { active: this.active, done: this.done }; }
+  // v2: the first-job trials became hunts and quizzes. An older save's count on a step that is now
+  // a quiz was kills or nothing, so its questions start from the first
+  toJSON() { return { v: 2, active: this.active, done: this.done }; }
   load(d) {
     if (!d) return;
     this.done = (d.done || []).filter((id) => QUESTS[id]);
     for (const [id, a] of Object.entries(d.active || {})) {
       if (!QUESTS[id] || this.done.includes(id)) continue;
-      this.active[id] = QUESTS[id].kind === 'visit' ? (Array.isArray(a) ? a : []) : Math.max(0, a | 0);
+      const q = QUESTS[id];
+      if (q.kind === 'visit') this.active[id] = Array.isArray(a) ? a : [];
+      else if (q.mobs) this.active[id] = a && typeof a === 'object' && !Array.isArray(a) ? a : {};
+      else this.active[id] = q.kind === 'quiz' && (d.v || 1) < 2 ? 0 : Math.max(0, a | 0);
     }
   }
 }
