@@ -149,7 +149,7 @@ function applyStats() {
   player.maxSp = ps.maxSp;
   player.hp = Math.min(player.hp, ps.maxHp);
   player.sp = Math.min(player.sp, ps.maxSp);
-  player.speedMul = inv.wearing('speed') ? 1.2 : 1;
+  player.haste = inv.wearing('speed') ? 20 : 0; // speed boots: 20% off the walk time, like Cart Boost
   player.setHeadgear(inv.gear.head && baseOf(inv.gear.head), inv.gear.face && baseOf(inv.gear.face)); // refined headgear looks like the plain piece
   player.blockChance = inv.wearing('block') ? 0.2 : 0;
   // Spellblade: normal sword hits carry some of the MATK
@@ -1458,7 +1458,7 @@ function frame() {
   player.update(live ? dt : 0, b, mobs);
   if (live && player.moving && player.state === 'normal') {
     stepT -= dt;
-    if (stepT <= 0) { stepT = 0.33 / player.speedMul; audio.play('step'); }
+    if (stepT <= 0) { stepT = 1.4 / player.walkSpeed(); audio.play('step'); } // a footstep every 1.4 tiles
   }
   audio.update(dt, dayNight.night);
   if (!started) cam.yaw += dt * 0.05; // slow orbit behind the title screen

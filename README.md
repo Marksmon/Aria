@@ -111,7 +111,15 @@ standing: once the last one falls, it can call again 2 minutes later, if it is s
 monsters: they follow their MVP, fight whoever it fights, and vanish when it falls (no EXP, no
 drops). The kings drop ores, a rare accessory (5%) and their **card** (1%), as does the Fire Giant.
 
-**Boss moves.** Bosses walk fast (the kings almost as fast as you), don't slow down when wounded,
+**Walking speed** follows Ragnarok's, at half pace for Aria's smaller maps: the hero takes 300 ms a
+tile (Ragnarok's 150 ms, twice as long), and each monster twice its Ragnarok walk time: Slimes 800
+(Poring), Kobolds 400, Goblins 300, Goblin Assassins 200, the Kobold King 300, the Goblin King 240
+and the Fire Giant 260 (Kobold Leader, Goblin Leader, Ifrit). Some monsters are quicker than you,
+as in Ragnarok. Speed changes work like Ragnarok's too: the strongest slow (spores: +50% walk time)
+and the strongest haste (Swift Boots: -20%) count, they don't stack, and the walk time never falls
+under 40%. Monsters keep their pace however hurt they are.
+
+**Boss moves.** Bosses walk at Ragnarok's MVP pace (the Goblin King and the Fire Giant are quicker than you), don't slow down when wounded,
 and have moves beside the stomp. A **red circle** on the ground shows where each will land, and
 fills up until it hits: step out of it.
 

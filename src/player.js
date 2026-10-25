@@ -1,10 +1,14 @@
 import * as THREE from 'three';
 import { dirFor, dirFor8 } from './noise.js';
-import { playerAttack } from './rules.js';
+import { playerAttack, WALK_SCALE } from './rules.js';
 import { HeadLayer, GEAR_FPS, gearCut, gearFrames, headgearReady, paintGear } from './headgear.js';
 import { HEADS, headTexture, headsReady, paintHead } from './hair.js';
 
-const BASE_SPEED = 4.2;  // world units per second
+// Walking, as in Ragnarok (rAthena status_calc_speed): 150 ms a tile (times WALK_SCALE). Changes are
+// a rate on that time: the strongest slow adds to it, the strongest haste takes off it (they don't
+// stack), and it never drops under 40%. A tile is one world unit.
+const WALK_MS = 150 * WALK_SCALE;
+const MIN_RATE = 40;
 const RADIUS = 0.3;      // collision radius
 const HEIGHT = 1.38;     // standing height in world units
 const STRIDE = 2.6;       // world units covered by one walk cycle, so feet keep pace with the ground
@@ -28,7 +32,7 @@ export class Player {
     this.hp = 40;
     this.maxSp = 11;
     this.sp = 11;
-    this.speedMul = 1;
+    this.haste = 0;    // the strongest haste in %, from gear or skills (main.js applyStats)
     this.blockChance = 0;
 
     this.state = 'normal'; // normal | down (fainted) | sit | feign (Play Dead)
@@ -141,6 +145,13 @@ export class Player {
 
   on(name, fn) { this.events[name].push(fn); }
   emit(name, ...a) { for (const fn of this.events[name]) fn(...a); }
+
+  // tiles a second: Ragnarok's walk time per tile, with the slow (spores) and the haste
+  walkSpeed() {
+    const slow = this.slowT > 0 ? 50 : 0; // like Quagmire
+    const rate = Math.max(MIN_RATE, 100 + slow - this.haste);
+    return 1000 / (WALK_MS * rate / 100);
+  }
 
   setPos(x, z) {
     if (!this.world.walkable(x, z)) { x = this.world.spawn.x; z = this.world.spawn.z; }
@@ -401,7 +412,7 @@ export class Player {
     const next = this.path[0];
     if (!next) { this.animT = 0; return; }
     const winding = this.atkAnim > this.atkDur - 0.18; // only the start of a swing slows you
-    const speed = BASE_SPEED * this.speedMul * (winding ? 0.55 : 1) * (this.slowT > 0 ? 0.5 : 1);
+    const speed = this.walkSpeed() * (winding ? 0.55 : 1);
     const dx = next.x - this.x, dz = next.z - this.z, d = Math.hypot(dx, dz), step = speed * dt;
     const moved = d <= step ? this.tryMove(dx, dz) : this.tryMove((dx / d) * step, (dz / d) * step);
     if (d <= step || Math.hypot(next.x - this.x, next.z - this.z) < 0.02) this.path.shift();

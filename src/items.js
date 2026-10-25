@@ -133,7 +133,7 @@ const BASE_ITEMS = {
   round_shield: { type: 'equip', slot: 'shield', jobs: ['novice', 'swordman'], name: 'Round Shield', def: 2, icon: 'shield_round', desc: 'Linden boards with an iron boss. Simple, and it has saved more lives than any sword.' },
   wool_cape:    { type: 'equip', slot: 'garment', name: 'Wool Cape', def: 1, icon: 'cape', desc: 'Warm, grey and hard-wearing. Every traveller in Aria owns one.' },
   leather_boots: { type: 'equip', slot: 'shoes', name: 'Leather Boots', def: 1, icon: 'boots_leather', desc: 'Good leather soles for long roads. Your feet will thank you.' },
-  swift_boots:  { type: 'equip', slot: 'shoes', name: 'Swift Boots', def: 1, fx: 'speed', icon: 'boots', desc: 'Light boots soled with shell and laced with leaf. +20% move speed.' },
+  swift_boots:  { type: 'equip', slot: 'shoes', name: 'Swift Boots', def: 1, fx: 'speed', icon: 'boots', desc: 'Light boots soled with shell and laced with leaf. Walk 20% quicker (a haste, like Increase AGI's: hastes don't stack).' },
   torch:        { type: 'equip', slot: 'light', name: 'Torch', fx: 'light', desc: 'A pine torch dipped in pitch. Lights your way at night.' },
   // accessories: one can be worn at a time
   sprout_charm: { type: 'equip', slot: 'acc', name: 'Sprout Charm', fx: 'regen', icon: 'charm_sprout', desc: 'A Sprout seed in a woven knot. It keeps growing, and so do your wounds close. HP recovers twice as fast.' },

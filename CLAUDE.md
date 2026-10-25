@@ -20,6 +20,9 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
 - **Second-job skills:** the BladeMaster and Magic Knight keep to 3–4 active skills each (add
   passives, not actives). Area and multi-hit skills work Ragnarok style; their freeze, paralyze, stun
   and burn work on bosses too, at a third of the chance for half as long.
+- **Walking speed:** Ragnarok's walk times (ms a tile: hero 150, monsters from Ragnarok's monster
+  database) taken twice as long for Aria's smaller maps (`WALK_SCALE` in `rules.js`). Haste and slow
+  follow Ragnarok's rule: only the strongest of each counts, never under 40%.
 - **Quests:** side quests and job trials can be quit from the Quest View; the main story quest
   can never be quit.
 - **Character art:** bodies are bald to the standard in `docs/character-standard.md`; the game
