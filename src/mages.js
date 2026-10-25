@@ -2,8 +2,8 @@
 // designs (bladers.js) on the bald bodies' frame, so the shared head and hair go on top
 // (docs/character-standard.md). After the owner's two sheets:
 // - Sorcerer: an open purple coat to the knee with gold-edged pointed hems and wide bell sleeves
-//   lined in red, a high collar, a black shirt with a gold and blue gem pendant, red inner panels, a
-//   brown belt with pouches, fingerless gloves, black trousers (black tights on her, with a red blouse and a
+//   lined in white, a high collar, a black shirt with a gold and blue gem pendant, white inner panels,
+//   a brown belt with pouches, fingerless gloves, black trousers (black tights on her, with a white blouse and a
 //   black corset) and black boots edged in gold; a bronze staff holding a blue crystal in a ring.
 // - Wizard, grander than the Sorcerer: a deep navy robe to the ankles over a longer red layer,
 //   every point of its hem hung with a blue crystal, gold filigree down its panels, a tall flared
@@ -19,8 +19,8 @@ export const BW = 106, BH = 108; // the bald bodies' frame (src/art/trainee.json
 const LEGS = 63;                 // chin to ground, in pixels, in every direction
 
 const SORC = {
-  coat: '#4c3888', fold: '#3a2a6c', lining: '#b8262e', liningDk: '#861a22', trim: '#cfa64c', shirt: '#25212d',
-  blouse: '#c8343a', leather: '#6e4529', strap: '#4c2f1e', pants: '#24202b', boot: '#26212c', skin: '#f2c8a2',
+  coat: '#4c3888', fold: '#3a2a6c', lining: '#ebe5d8', liningDk: '#cbc3b2', trim: '#cfa64c', shirt: '#25212d',
+  blouse: '#ede7da', leather: '#6e4529', strap: '#4c2f1e', pants: '#24202b', boot: '#26212c', skin: '#f2c8a2',
   gem: '#5a86f0', shaft: '#7a5530', glove: '#2c2630',
 };
 const WIZ = {
@@ -138,7 +138,7 @@ function frontView(F, o, cx, cy, s, r) {
   const sx = cx - W - 8; // the staff, in the hand on the viewer's left, clear of long hair
 
   staff(F, sx, cy - 10, cy + 60, C, w);
-  // the coat's back half behind the legs: its red lining, its colour at the edges, pointed hem
+  // the coat's back half behind the legs: its lining, its colour at the edges, pointed hem
   const back = [[cx - W - 6, cy + hem - 2], [cx - W - 3, cy + hem - 5], [cx - 4, cy + hem + 1], [R(cx + 4), cy + hem - 2], [R(cx + W + 4), cy + hem + 1], [R(cx + W + 7), cy + hem - 4]];
   F.part(poly([[cx - W, cy + 6], [R(cx + W), cy + 6], ...back.slice().reverse()]), C.coat);
   F.part(poly([[cx - W + 2, cy + 10], [R(cx + W - 2), cy + 10], [R(cx + W + 4), cy + hem - 3], [cx - 4, cy + hem - 1], [cx - W - 3, cy + hem - 6]]), C.fold, soft);
@@ -153,16 +153,16 @@ function frontView(F, o, cx, cy, s, r) {
   }
   legs(F, o, cx, cy, r, s);
 
-  // the body: a black shirt; on her, a red blouse over a black corset
+  // the body: a black shirt; on her, a blouse over a black corset
   F.part(poly([[cx - W, cy + 3], [R(cx + W), cy + 3], [R(cx + W + 1), cy + 8], [R(cx + waist), cy + 22], [R(cx + hip), cy + 30], [cx - hip, cy + 30], [cx - waist, cy + 22], [cx - W - 1, cy + 8]]), C.shirt);
   if (f) {
     F.part(poly([[cx - 7 + s, cy + 4], [cx + 7 + s, cy + 4], [cx + 7 + s, cy + 14], [cx + s, cy + 16], [cx - 7 + s, cy + 14]]), C.blouse);
     F.part(line(cx + s, cy + 17, cx + s, cy + 23, 1), C.trim, flat);
   } else {
-    F.part(poly([[cx - 3 + s, cy + 6], [cx + 3 + s, cy + 6], [cx + 6 + s, cy + 24], [cx - 6 + s, cy + 24]]), C.lining, soft); // the red inner panel
+    F.part(poly([[cx - 3 + s, cy + 6], [cx + 3 + s, cy + 6], [cx + 6 + s, cy + 24], [cx - 6 + s, cy + 24]]), C.lining, soft); // the inner panel
     F.part(line(cx + s, cy + 3, cx + s, cy + 10, 1), C.trim, flat); // the pendant's chain
   }
-  // below the belt: red panels down the front (a skirt on her), open over the legs
+  // below the belt: lining-coloured panels down the front (a skirt on her), open over the legs
   const pl = f ? (w ? 46 : 44) : (w ? 56 : 48);
   if (f) F.part(poly([[cx - hip, cy + 27], [R(cx + hip), cy + 27], [R(cx + hip + 1), cy + 33], [cx - hip - 1, cy + 33]]), C.shirt); // her short black skirt
   F.part(poly([[cx - hip, cy + 27], [cx - 3 + s, cy + 27], [cx - 4 + s, cy + pl - 3], [cx - hip + 1, cy + pl + 1], [cx - hip - 2, cy + pl - 2]]), C.lining);
@@ -239,7 +239,7 @@ function frontView(F, o, cx, cy, s, r) {
   F.part(rect(cx - 3 + s, cy - 1, cx + 3 + s, cy + 2), C.shirt); // the shirt's own high collar
   mark(F, cx + s, f ? cy + 6 : cy + 12, C, w);
 
-  // bell sleeves flaring wide, the red lining showing in the slanted opening, the gloved hands
+  // bell sleeves flaring wide, the lining showing in the slanted opening, the gloved hands
   // under them; the near hand holds the staff. The Wizard's are longer, with a crystal tassel
   for (const side of [-1, 1]) {
     const x0 = side < 0 ? cx - W - 3 : R(cx + W - 1), x1 = side < 0 ? cx - W + 1 : R(cx + W + 3);
