@@ -4,7 +4,7 @@
 //
 // The tale: long ago the fire-jotnar slept under the hills of Aria, and the first settlers lit a
 // ring of fires to keep them dreaming. Their camp was Eldrun, the fire-ring. Now the fires burn low,
-// the ground of Glodberg shakes, and the Ember Jarl is waking.
+// the ground of Ember Hill shakes, and the Ember Jarl is waking.
 //
 // Step kinds:
 //   talk  - talk to someone (npc); their lines play as the step completes
@@ -24,7 +24,7 @@ import { skillLv } from './skills.js';
 
 export const INTRO = [
   [null, 'Long ago, the fire-jotnar slept beneath the hills of Aria. The first settlers lit a ring of fires around their camp to keep them dreaming, and named it Eldrun: the fire-ring.'],
-  [null, 'The fires have burnt low. The ground of Glodberg trembles, monsters roam the fields, and strange lights drift through the night.'],
+  [null, 'The fires have burnt low. The ground of Ember Hill trembles, monsters roam the fields, and strange lights drift through the night.'],
   [null, 'You crossed the mountains with a practice sword and a head full of songs. The old Elder of Eldrun found you asleep beside the camp\'s last fire...'],
   ['bram', 'Awake at last! Come and talk to me, young one. Tap me to walk over.'],
 ];
@@ -36,9 +36,9 @@ export const STORY = [
       ['bram', 'First, know your strength. Open the Status window (the button under your HP), place points with ▲ and press Confirm to lock them in. POW for a strong arm, KNL for a sharp mind.']],
     reward: { xp: 4, items: { potion: 3 } } },
   { id: 'stats', ch: 'Prologue', title: 'Know Your Strength', kind: 'stat', goal: 'Open the Status window, place a point with ▲ and press Confirm',
-    say: [['bram', 'Good. Now, the slimes have been at our stores again. Go through the north portal to Mosvangr and chase off three Slimes. Tap a monster to fight it, and tap what it drops to pick it up.']],
+    say: [['bram', 'Good. Now, the slimes have been at our stores again. Go through the north portal to Moss Field and chase off three Slimes. Tap a monster to fight it, and tap what it drops to pick it up.']],
     reward: { xp: 4 } },
-  { id: 'slimes', ch: 'Prologue', title: 'Into Mosvangr', kind: 'kill', mob: 'slime', n: 3, map: 'grove', goal: 'Defeat 3 Slimes in Mosvangr (north portal)',
+  { id: 'slimes', ch: 'Prologue', title: 'Into Moss Field', kind: 'kill', mob: 'slime', n: 3, map: 'grove', goal: 'Defeat 3 Slimes in Moss Field (north portal)',
     say: [[null, 'Your Job Level rises with every fight, and each Job Level brings a skill point.'],
       ['bram', 'Open the Skills window and raise Basic Training with ▲. Every Trainee starts there.']],
     reward: { xp: 6 } },
@@ -49,13 +49,13 @@ export const STORY = [
     say: [[null, 'Skills go on the hotbar the same way, from the Skills window.']],
     reward: { xp: 4 } },
   { id: 'report', ch: 'Prologue', title: 'The Elder\'s Errand', kind: 'talk', npc: 'bram', goal: 'Return to Elder Halvard at camp',
-    say: [['bram', 'You learn quickly. Listen, then: the fire-ring cannot hold much longer. Each night the flames are lower, and the ground of Glodberg shakes.'],
-      ['bram', 'North past Mosvangr stands Steinborg, the stone-fort. Take word to Captain Ulfr of the Watch that Eldrun\'s fires are failing. He will know what it means.'],
+    say: [['bram', 'You learn quickly. Listen, then: the fire-ring cannot hold much longer. Each night the flames are lower, and the ground of Ember Hill shakes.'],
+      ['bram', 'North past Moss Field stands Steinborg, the stone-fort. Take word to Captain Ulfr of the Watch that Eldrun\'s fires are failing. He will know what it means.'],
       ['bram', 'And whenever you have a quest of your own to finish, look for the ! over people\'s heads. There is always someone who needs help.']],
     reward: { xp: 10, perz: 100 } },
 
   // ---------- Chapter 1: the stone-fort ----------
-  { id: 'north', ch: 'Chapter 1: The Stone-Fort', title: 'The Road North', kind: 'visit', map: 'city', goal: 'Travel north through Mosvangr to Steinborg',
+  { id: 'north', ch: 'Chapter 1: The Stone-Fort', title: 'The Road North', kind: 'visit', map: 'city', goal: 'Travel north through Moss Field to Steinborg',
     say: [[null, 'Steinborg: stone walls, a busy market square and the smell of the forge. The Watch house stands by the south gate.']],
     reward: { xp: 40, perz: 200 } },
   { id: 'captain', ch: 'Chapter 1: The Stone-Fort', title: 'Word for the Captain', kind: 'talk', npc: 'ulfr', goal: 'Tell Captain Ulfr (by the south gate) about the fires',
@@ -71,8 +71,8 @@ export const STORY = [
     reward: { xp: 40, perz: 300 } },
   { id: 'seeress', ch: 'Chapter 1: The Stone-Fort', title: 'The Seeress', kind: 'talk', npc: 'saeunn', goal: 'Find Saeunn the Seeress at her tower (north-east of the city)',
     say: [['saeunn', 'So. You are the one the runes showed me: a stranger by a dying fire.'],
-      ['saeunn', 'Beneath Glodberg sleeps the Fire Giant, the last of the fire-jotnar. The fire-ring kept him dreaming. When the ring goes out, he wakes, and all of Aria burns.'],
-      ['saeunn', 'You cannot face him as you are. Train. Choose a path: the blade, with Captain Ulfr, or the runes, in Galdrheim north of Fenstrand, where Archmage Vigdis taught me. Hild in the square will buy what you find; Gunnar forges gear.']],
+      ['saeunn', 'Beneath Ember Hill sleeps the Fire Giant, the last of the fire-jotnar. The fire-ring kept him dreaming. When the ring goes out, he wakes, and all of Aria burns.'],
+      ['saeunn', 'You cannot face him as you are. Train. Choose a path: the blade, with Captain Ulfr, or the runes, in Galdrheim north of Fen Shore, where Archmage Vigdis taught me. Hild in the square will buy what you find; Gunnar forges gear.']],
     reward: { xp: 60 } },
   { id: 'trade', ch: 'Chapter 1: The Stone-Fort', title: 'Coin for the Road', kind: 'sell', goal: 'Sell something to Hild the Trader (or Gunnar)',
     say: [[null, 'Perz is the coin of Aria. Monsters don\'t carry any: you earn it by selling what they drop, and from quests.']],
@@ -81,86 +81,86 @@ export const STORY = [
   // ---------- Chapter 2: the blade or the rune ----------
   // story EXP (x4 with RATES) is paced so each chapter brings a hero to the next one's hinted level:
   // the Giant Sprout at about Base 28, Chapter 5's kobolds at about 32
-  { id: 'path', ch: 'Chapter 2: Blade or Rune', title: 'Choose Your Path', kind: 'job', goal: 'Reach Trainee Job 10 with Basic Training 9, then pass a job trial: Captain Ulfr in Steinborg (Blader) or Archmage Vigdis in Galdrheim, north of Fenstrand (Sorcerer)',
+  { id: 'path', ch: 'Chapter 2: Blade or Rune', title: 'Choose Your Path', kind: 'job', goal: 'Reach Trainee Job 10 with Basic Training 9, then pass a job trial: Captain Ulfr in Steinborg (Blader) or Archmage Vigdis in Galdrheim, north of Fen Shore (Sorcerer)',
     // a hint may depend on the hero: here, whether the trials are open yet
     hint: (prog) => (prog && prog.jobLv >= 10 && skillLv(prog, 'basics') >= 9
       ? "You're ready: take a trial with Captain Ulfr (Steinborg) or Archmage Vigdis (Galdrheim)."
-      : 'Fight in Mosvangr, Fenstrand or Myrkdal to gain Job Levels, and raise Basic Training to 9.'),
+      : 'Fight in Moss Field, Fen Shore or Dark Dale to gain Job Levels, and raise Basic Training to 9.'),
     say: [[null, 'The path is chosen. Your new skills are waiting in the Skills window.']],
     reward: { xp: 500, perz: 300 } },
 
   // ---------- Chapter 3: embers in the wilds ----------
   { id: 'heralds', ch: 'Chapter 3: Embers in the Wilds', title: 'The Heralds', kind: 'talk', npc: 'saeunn', goal: 'Return to Saeunn the Seeress',
-    say: [['saeunn', 'The Giant sends his heralds ahead of him: beasts swollen with his heat. In Birkilund, east of the city, a Giant Sprout has grown huge on it.'],
-      ['saeunn', 'Cut it down. Its roots drink from Glodberg; while it lives, it feeds him. But it is no Sprout of the fields: grow strong first. Base Level 28 or so, and a bag of Orange Potions.']],
+    say: [['saeunn', 'The Giant sends his heralds ahead of him: beasts swollen with his heat. In Birch Grove, east of the city, a Giant Sprout has grown huge on it.'],
+      ['saeunn', 'Cut it down. Its roots drink from Ember Hill; while it lives, it feeds him. But it is no Sprout of the fields: grow strong first. Base Level 28 or so, and a bag of Orange Potions.']],
     reward: { xp: 400 } },
-  { id: 'matron', ch: 'Chapter 3: Embers in the Wilds', title: 'The Giant Sprout', kind: 'kill', mob: 'matron', n: 1, map: 'birch', goal: 'Defeat the Giant Sprout in Birkilund (east gate)',
+  { id: 'matron', ch: 'Chapter 3: Embers in the Wilds', title: 'The Giant Sprout', kind: 'kill', mob: 'matron', n: 1, map: 'birch', goal: 'Defeat the Giant Sprout in Birch Grove (east gate)',
     hint: 'A level 25 mini-boss: Base Level 28 or so, with about 20 Orange Potions, makes it fair. Step out of reach when it rears up to stomp, and cut down the Red Sprouts it calls before you go back to it.',
     say: [[null, 'The Giant Sprout crumbles into ash and thorns. Deep in its roots, something glows like a coal.']],
     reward: { xp: 5000, perz: 1500 } },
   { id: 'roots', ch: 'Chapter 3: Embers in the Wilds', title: 'What the Roots Knew', kind: 'talk', npc: 'saeunn', goal: 'Tell Saeunn what you found',
     say: [['saeunn', 'A coal in the roots... The Giant is waking faster than I feared.'],
-      ['saeunn', 'Go south through Myrkdal and look upon Glodberg with your own eyes. But do not wake him before you are ready.']],
+      ['saeunn', 'Go south through Dark Dale and look upon Ember Hill with your own eyes. But do not wake him before you are ready.']],
     reward: { xp: 1500 } },
-  { id: 'emberhill', ch: 'Chapter 3: Embers in the Wilds', title: 'The Ember-Hill', kind: 'visit', map: 'ridge', goal: 'Travel through Myrkdal to Glodberg',
-    say: [[null, 'The hill is warm under your feet. In the south of Glodberg, something vast breathes in its sleep.']],
+  { id: 'emberhill', ch: 'Chapter 3: Embers in the Wilds', title: 'The Ember-Hill', kind: 'visit', map: 'ridge', goal: 'Travel through Dark Dale to Ember Hill',
+    say: [[null, 'The hill is warm under your feet. In the south of Ember Hill, something vast breathes in its sleep.']],
     reward: { xp: 2000 } },
   // ---------- Chapter 4: the fire-ring ----------
-  // (the Fire Giant itself is no part of the story: it waits in Glodberg as an MVP, for the strongest)
-  { id: 'runesong', ch: 'Chapter 4: The Fire-Ring', title: 'The Song of the Ring', kind: 'talk', npc: 'vigdis', goal: 'Go to Archmage Vigdis in Galdrheim (north of Fenstrand)',
+  // (the Fire Giant itself is no part of the story: it waits in Ember Hill as an MVP, for the strongest)
+  { id: 'runesong', ch: 'Chapter 4: The Fire-Ring', title: 'The Song of the Ring', kind: 'talk', npc: 'vigdis', goal: 'Go to Archmage Vigdis in Galdrheim (north of Fen Shore)',
     say: [['vigdis', 'You have seen him sleeping, then. Good. Most who see the Giant awake do not come back to tell of it.'],
       ['vigdis', 'Hallveig cut the fire-ring\'s runes; I can sing them again. Listen, and carry the song home to Eldrun in your head. It will hold him in his dream for a long while yet.'],
       ['vigdis', 'One day he may wake anyway. If you grow strong enough (I would say Base Level 50, and the best gear in Aria), you could end it for good. That fight is yours to choose.']],
     reward: { xp: 3000, items: { potion3: 10, potion2: 10 } } },
   { id: 'rekindled', ch: 'Chapter 4: The Fire-Ring', title: 'The Fire-Ring Rekindled', kind: 'talk', npc: 'bram', goal: 'Bring the song home to Elder Halvard at camp',
     say: [['bram', 'Sing it, then, there by the fire... Look! It has not burnt this bright since I was a boy.'],
-      ['bram', 'The Giant sleeps on under Glodberg, and the ground is quiet. Saeunn says the runes speak of older names beyond the mountains: lands the songs still remember. The road goes on, as roads do.'],
+      ['bram', 'The Giant sleeps on under Ember Hill, and the ground is quiet. Saeunn says the runes speak of older names beyond the mountains: lands the songs still remember. The road goes on, as roads do.'],
       ['bram', 'Rest now, hero of Eldrun. Aria will need you again.'],
-      [null, 'The Last Fire-Ring: the end of the first saga. The Fire Giant still waits in the south of Glodberg, for anyone strong enough to wake him.']],
+      [null, 'The Last Fire-Ring: the end of the first saga. The Fire Giant still waits in the south of Ember Hill, for anyone strong enough to wake him.']],
     reward: { xp: 4000, perz: 20000, items: { glow_charm: 1 } } },
 
-  // ---------- Chapter 5: the salt road (the kobolds of Grjotvangr and Kolgrof) ----------
+  // ---------- Chapter 5: the salt road (the kobolds of Stone Field and Coal Pit) ----------
   { id: 'saltroad', ch: 'Chapter 5: The Salt Road', title: 'Trouble on the Salt Road', kind: 'talk', npc: 'ulfr', goal: 'Captain Ulfr has sent for you (by the south gate of Steinborg)',
-    say: [['ulfr', 'There you are. The Giant sleeps, but the valley does not. The salt carts from Saltvik have stopped coming, and the last carter who made it here was half dead.'],
+    say: [['ulfr', 'There you are. The Giant sleeps, but the valley does not. The salt carts from Salt Bay have stopped coming, and the last carter who made it here was half dead.'],
       ['ulfr', 'He swore kobolds did it. Kobolds! They keep to their stone hills and bark at anyone who comes near. They do not rob carts.'],
-      ['ulfr', 'Go west through Fenstrand to Saltvik. Hakon the carter is waiting by the west road. Ivar\'s carts or the Keepers will bring you back quickly.']],
+      ['ulfr', 'Go west through Fen Shore to Salt Bay. Hakon the carter is waiting by the west road. Ivar\'s carts or the Keepers will bring you back quickly.']],
     reward: { xp: 5000, perz: 1000 } },
-  { id: 'carter', ch: 'Chapter 5: The Salt Road', title: 'The Carter\'s Tale', kind: 'talk', npc: 'hakon', goal: 'Find Hakon the Carter by the west road of Saltvik',
-    say: [['hakon', 'Kobolds, I tell you, a dozen of them, out of Grjotvangr with axes and bows. Took my horse and my cart.'],
+  { id: 'carter', ch: 'Chapter 5: The Salt Road', title: 'The Carter\'s Tale', kind: 'talk', npc: 'hakon', goal: 'Find Hakon the Carter by the west road of Salt Bay',
+    say: [['hakon', 'Kobolds, I tell you, a dozen of them, out of Stone Field with axes and bows. Took my horse and my cart.'],
       ['hakon', 'And here is the strange thing: they left the salt. They took the lamp oil, the pitch, the tinder. Every kobold I ever met runs from a torch. Why would they steal fire?'],
       ['hakon', 'The road goes west, round the bay and into their hills. If you go, go armed.']],
     reward: { xp: 4000 } },
-  { id: 'stonefield', ch: 'Chapter 5: The Salt Road', title: 'The Stone-Field', kind: 'kill', mobs: ['koboldWarrior', 'koboldArcher', 'koboldAssassin'], n: 12, map: 'stones', goal: 'Defeat 12 kobolds in Grjotvangr (west of Saltvik)',
+  { id: 'stonefield', ch: 'Chapter 5: The Salt Road', title: 'The Stone-Field', kind: 'kill', mobs: ['koboldWarrior', 'koboldArcher', 'koboldAssassin'], n: 12, map: 'stones', goal: 'Defeat 12 kobolds in Stone Field (west of Salt Bay)',
     hint: 'Kobolds of level 28 to 33, and every one of them attacks on sight. Base Level 32 or so is a fair start.',
     say: [[null, 'The kobolds fight like cornered dogs. Each pack carries a lump of coal that glows a dull red, warm in the hand though no fire touched it.']],
     reward: { xp: 9000, perz: 2500, items: { potion2: 10 } } },
   { id: 'redcoal', ch: 'Chapter 5: The Salt Road', title: 'Coal Without Fire', kind: 'talk', npc: 'saeunn', goal: 'Show the glowing coal to Saeunn the Seeress (Steinborg)',
     say: [['saeunn', 'Coal that burns without a flame... This is the Giant\'s heat, seeping up through the stone. We sang him back to sleep, but he still breathes, and his breath warms the earth.'],
-      ['saeunn', 'Kolgrof, the kobolds\' coal pit west of Grjotvangr, lies right above one of his veins. The kobolds are not raiding for fun. Something drives them.'],
-      ['saeunn', 'Go down into Kolgrof and see what it is.']],
+      ['saeunn', 'The Coal Pit, the kobolds\' quarry west of the Stone Field, lies right above one of his veins. The kobolds are not raiding for fun. Something drives them.'],
+      ['saeunn', 'Go down into Coal Pit and see what it is.']],
     reward: { xp: 5000 } },
-  { id: 'coalpit', ch: 'Chapter 5: The Salt Road', title: 'Down into Kolgrof', kind: 'visit', map: 'coalpit', goal: 'Travel west through Grjotvangr to Kolgrof',
-    say: [[null, 'Kolgrof glows. Red light seeps from every seam of the quarry, and the air shimmers with heat.'],
+  { id: 'coalpit', ch: 'Chapter 5: The Salt Road', title: 'Down into Coal Pit', kind: 'visit', map: 'coalpit', goal: 'Travel west through Stone Field to Coal Pit',
+    say: [[null, 'The Coal Pit glows. Red light seeps from every seam of the quarry, and the air shimmers with heat.'],
       [null, 'By the east road a man in a miner\'s hood waves to you from behind a rock.']],
     reward: { xp: 6000 } },
-  { id: 'miner', ch: 'Chapter 5: The Salt Road', title: 'The Escaped Miner', kind: 'talk', npc: 'dag', goal: 'Talk to Dag the Miner by the east road of Kolgrof',
+  { id: 'miner', ch: 'Chapter 5: The Salt Road', title: 'The Escaped Miner', kind: 'talk', npc: 'dag', goal: 'Talk to Dag the Miner by the east road of Coal Pit',
     say: [['dag', 'Quiet! They will hear you. I was a miner here before the kobolds took the pit, and their prisoner after. I got loose three nights ago.'],
-      ['dag', 'It is not the kobolds\' doing. Goblins came down from Brennholt, north of Galdrheim, last winter, with whips. The Kobold King bowed to them. Now the kobolds dig the red coal day and night, steal fire to light the tunnels, and the goblins cart the coal away north.'],
+      ['dag', 'It is not the kobolds\' doing. Goblins came down from Burnt Wood, north of Galdrheim, last winter, with whips. The Kobold King bowed to them. Now the kobolds dig the red coal day and night, steal fire to light the tunnels, and the goblins cart the coal away north.'],
       ['dag', 'Where to, I could not say. But I heard the word their drivers use for it: the Waking Fire.']],
     reward: { xp: 12000, perz: 4000, items: { hard_ore: 2 } } },
 
   // ---------- Chapter 6: the goblin war-band ----------
   { id: 'wakingfire', ch: 'Chapter 6: The Goblin War-Band', title: 'The Waking Fire', kind: 'talk', npc: 'ulfr', goal: 'Bring Dag\'s news to Captain Ulfr (Steinborg)',
     say: [['ulfr', 'Goblins with whips, and a Waking Fire. I do not like the sound of either.'],
-      ['ulfr', 'Brennholt lies beyond Galdrheim\'s north gate. It was a green wood once; the goblins burnt it bare when they came. If the coal goes north, it goes through Brennholt. Break their coal-train.']],
+      ['ulfr', 'Burnt Wood lies beyond Galdrheim\'s north gate. It was a green wood once; the goblins burnt it bare when they came. If the coal goes north, it goes through Burnt Wood. Break their coal-train.']],
     reward: { xp: 6000 } },
-  { id: 'coaltrain', ch: 'Chapter 6: The Goblin War-Band', title: 'Break the Coal-Train', kind: 'kill', mobs: ['goblinWarrior', 'goblinArcher', 'goblinAssassin'], n: 15, map: 'burnt', goal: 'Defeat 15 goblins in Brennholt (north of Galdrheim)',
+  { id: 'coaltrain', ch: 'Chapter 6: The Goblin War-Band', title: 'Break the Coal-Train', kind: 'kill', mobs: ['goblinWarrior', 'goblinArcher', 'goblinAssassin'], n: 15, map: 'burnt', goal: 'Defeat 15 goblins in Burnt Wood (north of Galdrheim)',
     hint: 'Goblins of level 38 to 44. They hunt in packs, so fight at the edge of a group, not in the middle of it.',
-    say: [[null, 'Among the burnt stumps lie split sacks of red coal. A trail of black dust runs north, towards Ormholt, and wagon ruts lead away south and east, the long way round to Askheid.']],
+    say: [[null, 'Among the burnt stumps lie split sacks of red coal. A trail of black dust runs north, towards Serpent Wood, and wagon ruts lead away south and east, the long way round to Ash Heath.']],
     reward: { xp: 20000, perz: 6000, items: { potion3: 10 } } },
   { id: 'trails', ch: 'Chapter 6: The Goblin War-Band', title: 'Two Trails', kind: 'talk', npc: 'vigdis', goal: 'Ask Archmage Vigdis in Galdrheim about the coal',
     say: [['vigdis', 'Red coal, the Giant\'s own heat. Burnt, it is only warm. Fed to something alive, it makes that thing a furnace.'],
-      ['vigdis', 'The ruts to Askheid: the goblins have been carting the coal all the way there, to feed the Giant Beetle. Every lump it eats, the Giant feels in his sleep. And the trail to Ormholt... I fear that is where the Waking Fire burns.'],
+      ['vigdis', 'The ruts to Ash Heath: the goblins have been carting the coal all the way there, to feed the Giant Beetle. Every lump it eats, the Giant feels in his sleep. And the trail to Serpent Wood... I fear that is where the Waking Fire burns.'],
       ['vigdis', 'Neither is a fight for you yet. You must grow beyond your first path first.']],
     reward: { xp: 8000 } },
 
@@ -168,21 +168,21 @@ export const STORY = [
   { id: 'secondpath', ch: 'Chapter 7: The Second Path', title: 'Beyond the First Path', kind: 'job2', goal: 'Take a second job: BladeMaster (Captain Ulfr), Wizard (Archmage Vigdis) or Magic Knight (Sir Eirik, Steinborg)',
     hint: 'A second-job trial opens at Job Level 40. Which trials you may take depends on where your skill points went.',
     say: [[null, 'Your power has taken a new shape. The aura around you is faint, but every monster in Aria can feel it.'],
-      ['vigdis', 'Now you are ready. Go to Askheid and put out the Giant Beetle\'s furnace.']],
+      ['vigdis', 'Now you are ready. Go to Ash Heath and put out the Giant Beetle\'s furnace.']],
     reward: { xp: 15000, perz: 10000 } },
 
   // ---------- Chapter 8: the Waking Fire ----------
-  { id: 'furnace', ch: 'Chapter 8: The Waking Fire', title: 'The Living Furnace', kind: 'kill', mob: 'cinderLord', n: 1, map: 'heath', goal: 'Defeat the Giant Beetle in Askheid (east of Glodberg)',
+  { id: 'furnace', ch: 'Chapter 8: The Waking Fire', title: 'The Living Furnace', kind: 'kill', mob: 'cinderLord', n: 1, map: 'heath', goal: 'Defeat the Giant Beetle in Ash Heath (east of Ember Hill)',
     hint: 'A level 48 mini-boss that calls Fire Beetles to its side. Base Level 50 or so, with water on your side, makes it fair.',
-    say: [[null, 'The Giant Beetle crashes down, and the red glow drains out of its shell. Far to the west, Glodberg falls quiet.'],
-      [null, 'Only one trail is left: north from Brennholt, into Ormholt.']],
+    say: [[null, 'The Giant Beetle crashes down, and the red glow drains out of its shell. Far to the west, Ember Hill falls quiet.'],
+      [null, 'Only one trail is left: north from Burnt Wood, into Serpent Wood.']],
     reward: { xp: 30000, perz: 10000, items: { potion3: 10 } } },
-  { id: 'ormholt', ch: 'Chapter 8: The Waking Fire', title: 'The Serpent Wood', kind: 'visit', map: 'serpent', goal: 'Travel north from Brennholt to Ormholt',
-    say: [[null, 'Ormholt. In the north clearing, a ring of stones has been raised around a pit of red coal, so like Eldrun\'s fire-ring that it chills you.'],
+  { id: 'ormholt', ch: 'Chapter 8: The Waking Fire', title: 'The Serpent Wood', kind: 'visit', map: 'serpent', goal: 'Travel north from Burnt Wood to Serpent Wood',
+    say: [[null, 'Serpent Wood. In the north clearing, a ring of stones has been raised around a pit of red coal, so like Eldrun\'s fire-ring that it chills you.'],
       [null, 'But these runes are cut backwards. Eldrun\'s ring sings the Giant to sleep. This one is built to wake him.']],
     reward: { xp: 12000 } },
-  { id: 'firekeepers', ch: 'Chapter 8: The Waking Fire', title: 'The Fire-Keepers', kind: 'kill', mobs: ['goblinWarrior', 'goblinArcher', 'goblinAssassin'], n: 20, map: 'serpent', goal: 'Defeat 20 goblins in Ormholt, the keepers of the Waking Fire',
-    hint: 'Ormholt\'s goblins are the strongest of their kind, and the Goblin King\'s guard. Stay out of his clearing in the north unless you mean to fight him.',
+  { id: 'firekeepers', ch: 'Chapter 8: The Waking Fire', title: 'The Fire-Keepers', kind: 'kill', mobs: ['goblinWarrior', 'goblinArcher', 'goblinAssassin'], n: 20, map: 'serpent', goal: 'Defeat 20 goblins in Serpent Wood, the keepers of the Waking Fire',
+    hint: 'Serpent Wood\'s goblins are the strongest of their kind, and the Goblin King\'s guard. Stay out of his clearing in the north unless you mean to fight him.',
     say: [[null, 'With no one left to feed it, the Waking Fire gutters and goes out. From his clearing the Goblin King howls at a cold pit.'],
       [null, 'One rune-stone of the ring, cut backwards, is small enough to carry. Archmage Vigdis will want to see it.']],
     reward: { xp: 40000, perz: 12000 } },
@@ -193,9 +193,9 @@ export const STORY = [
     reward: { xp: 20000 } },
   { id: 'twofires', ch: 'Chapter 8: The Waking Fire', title: 'Two Fire-Rings', kind: 'talk', npc: 'bram', goal: 'Return to Elder Halvard at Eldrun Camp',
     say: [['bram', 'Two fire-rings: one to keep him dreaming, and one to wake him. Ours burns bright, and theirs is cold. Let it stay that way.'],
-      ['bram', 'The kobolds of Kolgrof can lay down their picks, and the salt carts will roll again. Hakon will be glad of his horse.'],
+      ['bram', 'The kobolds of Coal Pit can lay down their picks, and the salt carts will roll again. Hakon will be glad of his horse.'],
       ['bram', 'But a hand that cuts runes backwards is still out there. Rest while you can, hero of Eldrun.'],
-      [null, 'The Waking Fire: the end of the second saga. The Kobold King in Kolgrof and the Goblin King in Ormholt still hold their courts, for anyone strong enough to face them.']],
+      [null, 'The Waking Fire: the end of the second saga. The Kobold King in Coal Pit and the Goblin King in Serpent Wood still hold their courts, for anyone strong enough to face them.']],
     reward: { xp: 60000, perz: 50000, items: { hard_ore: 5, armor_ore: 5 } } },
 ];
 
@@ -245,7 +245,7 @@ export class Story {
     return s.map || null;
   }
 
-  // the tracker's line on where to go: "Head north to Mosvangr"
+  // the tracker's line on where to go: "Head north to Moss Field"
   directions(here, prog) {
     const s = this.step, where = this.map(), hint = typeof s?.hint === 'function' ? s.hint(prog) : s?.hint || '';
     if (!s || !where) return hint;

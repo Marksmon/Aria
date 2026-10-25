@@ -42,42 +42,42 @@ and in gold over the one you are fighting. Rare drops glow gold on the ground.
 ## Maps
 
 Eldrun Camp and Steinborg are safe town maps; everything else is a 64×64 field. Only two
-portals leave the camp (Mosvangr to the north, Fenstrand to the west); every other map is
-reached by travelling on. Place names are Old Norse in style.
+portals leave the camp (Moss Field to the north, Fen Shore to the west); every other map is
+reached by travelling on. The fields have plain names; the towns' are Old Norse in style.
 
 ```
-                               Ormholt
+                               Serpent Wood
                                   |
-                              Brennholt
+                              Burnt Wood
                                   |
-                              Galdrheim    Steinborg - Birkilund
+                              Galdrheim    Steinborg - Birch Grove
                                   |            |           |
-                                  |        Mosvangr  -  Myrkdal  -  Svartskog
+                                  |        Moss Field  -  Dark Dale  -  Black Wood
                                   |            |           |           |
-Kolgrof - Grjotvangr - Saltvik - Fenstrand - Eldrun Camp   Glodberg  -  Askheid
+Coal Pit - Stone Field - Salt Bay - Fen Shore - Eldrun Camp   Ember Hill  -  Ash Heath
 ```
 
-Goblin country (Brennholt, then Ormholt) lies beyond Galdrheim's north gate; the kobolds' hills
-(Grjotvangr, then Kolgrof) lie west of Saltvik, along the road round its bay.
+Goblin country (Burnt Wood, then Serpent Wood) lies beyond Galdrheim's north gate; the kobolds' hills
+(Stone Field, then Coal Pit) lie west of Salt Bay, along the road round its bay.
 
 | Map | Level | Monsters | Boss |
 |---|---|---|---|
-| Mosvangr (moss-field) | 1–6 | Slime (Lv 1), Sprout (3) | |
-| Fenstrand (fen-shore) | 5–12 | Blue Slime (6, splits), Crab (9) | |
-| Myrkdal (dark dale) | 12–18 | Mushroom (14, slowing spores) | |
-| Birkilund (birch grove) | 16–26 | Red Sprout (18), Sprout, Slime | Giant Sprout (25) |
-| Saltvik (salt bay) | 20–32 | Sea Slime (22), Blue Crab (26), Crab | King Crab (32) |
-| Glodberg (ember-hill) | 28–36 | Beetle (30) | **Fire Giant (60, MVP)** |
-| Svartskog (black wood) | 32–42 | Dark Mushroom (34), Dark Wisp (38), Mushroom | Giant Mushroom (40) |
-| Askheid (ash heath) | 40–50 | Fire Beetle (42), Fire Wisp (45), Beetle | Giant Beetle (48) |
-| Grjotvangr (stone-field) | 28–34 | Kobold (28), Kobold Archer (30), Kobold Assassin (33) | |
-| Kolgrof (coal pit) | 30–50 | Kobold Assassin, Kobold, Kobold Archer | **Kobold King (50, MVP)** |
-| Brennholt (burnt wood) | 38–44 | Goblin (38), Goblin Archer (41), Goblin Assassin (44) | |
-| Ormholt (serpent wood) | 40–55 | Goblin Assassin, Goblin, Goblin Archer | **Goblin King (55, MVP)** |
-| Any field in the valley, more at night (Mosvangr only at night) | | Wisp (11) | |
+| Moss Field | 1–6 | Slime (Lv 1), Sprout (3) | |
+| Fen Shore | 5–12 | Blue Slime (6, splits), Crab (9) | |
+| Dark Dale | 12–18 | Mushroom (14, slowing spores) | |
+| Birch Grove | 16–26 | Red Sprout (18), Sprout, Slime | Giant Sprout (25) |
+| Salt Bay | 20–32 | Sea Slime (22), Blue Crab (26), Crab | King Crab (32) |
+| Ember Hill | 28–36 | Beetle (30) | **Fire Giant (60, MVP)** |
+| Black Wood | 32–42 | Dark Mushroom (34), Dark Wisp (38), Mushroom | Giant Mushroom (40) |
+| Ash Heath | 40–50 | Fire Beetle (42), Fire Wisp (45), Beetle | Giant Beetle (48) |
+| Stone Field | 28–34 | Kobold (28), Kobold Archer (30), Kobold Assassin (33) | |
+| Coal Pit | 30–50 | Kobold Assassin, Kobold, Kobold Archer | **Kobold King (50, MVP)** |
+| Burnt Wood | 38–44 | Goblin (38), Goblin Archer (41), Goblin Assassin (44) | |
+| Serpent Wood | 40–55 | Goblin Assassin, Goblin, Goblin Archer | **Goblin King (55, MVP)** |
+| Any field in the valley, more at night (Moss Field only at night) | | Wisp (11) | |
 
 **Passive monsters.** Like most of Ragnarok's field monsters, they leave you alone until you hit
-them; then they fight back for a while. Only the Dark Wisps, the fire beasts of Askheid, the
+them; then they fight back for a while. Only the Dark Wisps, the fire beasts of Ash Heath, the
 kobolds and goblins, the mini-bosses and the MVPs attack on sight. A Sprout runs away, and fights only when
 cornered.
 
@@ -98,7 +98,7 @@ the ATK): cut them down first. At the level their quests suggest (Giant Sprout 2
 Giant Mushroom 43, Giant Beetle 50) each is about a two-minute fight on a dozen or so Orange
 Potions; see `docs/balance.md`.
 
-**MVP.** The Fire Giant (Lv 60, 24,000 HP, Fire), optional and not part of the story, waits in the south of Glodberg and stomps the
+**MVP.** The Fire Giant (Lv 60, 24,000 HP, Fire), optional and not part of the story, waits in the south of Ember Hill and stomps the
 ground around it every few seconds. It is made for one Base 50 hero in the best gear: about three
 minutes and a bag of potions (a Blader drinks around 50 White Potions; a Sorcerer who keeps
 moving needs far fewer, but Blue Potions too). Whoever brings it down gets **MVP** over their
@@ -106,7 +106,7 @@ head, bonus Base EXP and MVP items straight to the bag, plus its drops (its horn
 sword). It comes back 15 minutes later, even if you leave the map or close the game.
 
 Two more MVPs rule the new lands: the **Kobold King** (Lv 50, 18,000 HP, Earth) holds court in the
-south of Kolgrof, and the **Goblin King** (Lv 55, 21,000 HP, Wind) in the north of Ormholt. Both
+south of Coal Pit, and the **Goblin King** (Lv 55, 21,000 HP, Wind) in the north of Serpent Wood. Both
 stomp like the Fire Giant, and each MVP keeps its own timer (20 and 30 minutes). **Every MVP calls
 guards** when it first falls below 60% HP: the Fire Giant 2 Fire Wisps and 3 Fire Beetles, each
 king 4 of his own (2 warriors, an archer and an assassin). It never calls while a guard is still
@@ -114,12 +114,12 @@ standing: once the last one falls, it can call again 2 minutes later, if it is s
 monsters of their kind (half the HP, 60% of the ATK): they follow their MVP, fight whoever it
 fights, and vanish when it falls (no EXP, no drops). The kings drop ores, a rare accessory (5%) and their **card** (1%), as does the Fire Giant.
 
-**Steinborg.** A walled market city north of Mosvangr: stone walls with towers and two gates
-(south to Mosvangr, east to Birkilund), timber houses round a fountain square, a forge, market
+**Steinborg.** A walled market city north of Moss Field: stone walls with towers and two gates
+(south to Moss Field, east to Birch Grove), timber houses round a fountain square, a forge, market
 stalls and the seeress's tower. The buildings are 3D, like Ragnarok's towns, and fade when they
 stand between you and the camera. Its storehouse opens the same chest as the camp's.
 
-**Galdrheim.** The city of sorcerers, north of Fenstrand, with a north gate onto goblin country: pale lavender stone, violet and teal
+**Galdrheim.** The city of sorcerers, north of Fen Shore, with a north gate onto goblin country: pale lavender stone, violet and teal
 roofs, star banners over the gate and crystals glowing on every tower. In its square a circle of
 runes glows over the rune-well, with a crystal floating above it; the Archmage's three-tiered
 tower stands to the north, the library to the west, the Staffwright's workshop to the east, the
@@ -149,8 +149,8 @@ other Trainee skills come free with Job Levels. At Trainee Job 10 with Basic Tra
 trial opens: three short steps a Trainee of Base Level ~10 can do, each needing one trip to the
 easy field beside the trainer: a hunt, something made from what it dropped, and the trainer's
 questions (tap an answer; a wrong one only earns a hint). **Captain Ulfr** in Steinborg tests
-Bladers (6 Slimes and 4 Sprouts in Mosvangr, 5 Slime Gel and 3 Seeds as proof, three questions
-on fighting); **Archmage Vigdis** in Galdrheim tests Sorcerers (4 Blue Slimes in Fenstrand, brew a
+Bladers (6 Slimes and 4 Sprouts in Moss Field, 5 Slime Gel and 3 Seeds as proof, three questions
+on fighting); **Archmage Vigdis** in Galdrheim tests Sorcerers (4 Blue Slimes in Fen Shore, brew a
 Blue Draught from 3 Slime Gel and 2 Water Drops, three questions on elements and chanting). Pass,
 and they change your job. Elder Halvard sends ready Trainees on to the city.
 
@@ -417,7 +417,7 @@ gear comes from boss materials:
 
 **The Last Fire-Ring.** Long ago the fire-jotnar slept beneath the hills of Aria, and the first
 settlers lit a ring of fires to keep them dreaming: Eldrun, the fire-ring. Now the fires burn low,
-the ground of Glodberg shakes, and the Fire Giant is waking. You arrive as a stranger with a
+the ground of Ember Hill shakes, and the Fire Giant is waking. You arrive as a stranger with a
 practice sword, asleep by the camp's last fire.
 
 The story runs beside the other quests, in chapters. Its current step sits at the top of the
@@ -426,15 +426,15 @@ rings the portal to take, or the person to talk to. A purple **!** marks who the
 
 | Chapter | Steps |
 |---|---|
-| Prologue (the tutorial) | Talk to the Elder · raise a stat · defeat 3 Slimes in Mosvangr · learn Basic Training · put a potion on the hotbar · back to the Elder |
+| Prologue (the tutorial) | Talk to the Elder · raise a stat · defeat 3 Slimes in Moss Field · learn Basic Training · put a potion on the hotbar · back to the Elder |
 | 1: The Stone-Fort | Travel to Steinborg · tell Captain Ulfr the fires are failing · sign Keeper Bera's ledger (the Keepers: healing, storage, save point, teleport) · meet Saeunn the Seeress · sell something for perz |
 | 2: Blade or Rune | Pass a job trial and become a Blader or a Sorcerer |
-| 3: Embers in the Wilds | Saeunn's warning · defeat the Giant Sprout in Birkilund · travel to Glodberg |
+| 3: Embers in the Wilds | Saeunn's warning · defeat the Giant Sprout in Birch Grove · travel to Ember Hill |
 | 4: The Fire-Ring | Archmage Vigdis sings the fire-ring's runes anew · bring the song home: the fire-ring rekindled |
-| 5: The Salt Road | Captain Ulfr: kobolds rob the salt carts · Hakon the Carter in Saltvik · defeat 12 kobolds in Grjotvangr · Saeunn and the glowing red coal · go down into Kolgrof · Dag the Miner: the goblins drive the kobolds to dig for a "Waking Fire" |
-| 6: The Goblin War-Band | tell Ulfr · defeat 15 goblins in Brennholt · Archmage Vigdis reads the two coal trails |
+| 5: The Salt Road | Captain Ulfr: kobolds rob the salt carts · Hakon the Carter in Salt Bay · defeat 12 kobolds in Stone Field · Saeunn and the glowing red coal · go down into Coal Pit · Dag the Miner: the goblins drive the kobolds to dig for a "Waking Fire" |
+| 6: The Goblin War-Band | tell Ulfr · defeat 15 goblins in Burnt Wood · Archmage Vigdis reads the two coal trails |
 | 7: The Second Path | take a second job (BladeMaster, Wizard or Magic Knight) |
-| 8: The Waking Fire | defeat the Giant Beetle in Askheid · travel to Ormholt · defeat 20 goblins, the keepers of the goblins' backward fire-ring · the backward rune-stone to Vigdis · home to the Elder |
+| 8: The Waking Fire | defeat the Giant Beetle in Ash Heath · travel to Serpent Wood · defeat 20 goblins, the keepers of the goblins' backward fire-ring · the backward rune-stone to Vigdis · home to the Elder |
 
 The second saga (chapters 5–8) runs from about Base 32 to Base 55. A hero who finished the first saga
 picks up at Chapter 5. No MVP is part of the story: the Fire Giant, the Kobold King and the Goblin
@@ -458,30 +458,30 @@ leads to each.
 
 | Who | Where | Quests (Base Level) |
 |---|---|---|
-| Elder Halvard | camp | The Mushroom Wood (12): hold Myrkdal's old waystone against 3 waves of Mushrooms |
+| Elder Halvard | camp | The Mushroom Wood (12): hold Dark Dale's old waystone against 3 waves of Mushrooms |
 | Astrid the Cook | camp | A Feast for Eldrun (10): bring 10 Slime Gel, 5 Crab Legs, 5 Spores, then cook it with her |
-| Sigrun the Scout | camp | The Lantern Wisp (14): hunt the golden Wisp that rises over Fenstrand's pond at night |
+| Sigrun the Scout | camp | The Lantern Wisp (14): hunt the golden Wisp that rises over Fen Shore's pond at night |
 | Gyda the Healer | camp | heals HP and SP for free |
 | Keeper Tova, Bera, Asa | camp, Steinborg, Galdrheim | sign the ledger, then: storage, healing, Save here (where you wake after fainting, and where Return Feathers go), switch first jobs, and teleport to any other Keeper you signed with (300–500 perz) |
 | Sir Eirik the Runeblade | Steinborg | the Magic Knight's trial |
-| Hild the Trader | Steinborg | shop · Hild's Crate (24): take a crate of potions to Hakon in Saltvik |
+| Hild the Trader | Steinborg | shop · Hild's Crate (24): take a crate of potions to Hakon in Salt Bay |
 | Gunnar the Gear Crafter | Steinborg | shop, forge · Stone for the Forge (34): 30 Stone, 15 Burnt Shells |
 | Holger the Refiner | Steinborg | refines gear up to +10; sells Iron and Steel Ore |
 | Ragna the Herbalist | Steinborg | brewing · The Great Remedy (38): bring 6 Dark Spores and 6 Fire Dust, then brew it with her |
-| Captain Ulfr | Steinborg | The Blader's Trial · The King of the Shore (30): the King Crab · The Beetle of Askheid (46): the Giant Beetle |
+| Captain Ulfr | Steinborg | The Blader's Trial · The King of the Shore (30): the King Crab · The Beetle of Ash Heath (46): the Giant Beetle |
 | Saeunn the Seeress | Steinborg | the story; lore of the Fire Giant and Galdrheim |
 | Embla the Stylist | Steinborg | hairstyle and dye, 1,000 perz |
 | Ivar the Ferryman | Steinborg | carts to any land you have walked, 300–3,000 perz |
 | Liv the Guide | Steinborg | who does what in the city · rethinks your training: one free stat reset and one free first-job skill reset (before a second job), then 20,000 perz each |
 | Bjorn the Gate Guard | Steinborg | which monsters attack on sight |
-| Hakon the Carter | Saltvik, by the south road | the story (Chapter 5) |
-| Dag the Miner | Kolgrof, by the north road | the story (Chapter 5) |
+| Hakon the Carter | Salt Bay, by the west road | the story (Chapter 5) |
+| Dag the Miner | Coal Pit, by the east road | the story (Chapter 5) |
 | Archmage Vigdis | Galdrheim | The Rune Trial · The Mother of Spores (40): the Giant Mushroom |
 | Orm the Staffwright | Galdrheim | shop, crafts sorcerers' gear (staves, robes) · The Living Wood (26): a Giant Root, 8 Thorns |
 | Seyla the Enchanter | Galdrheim | opens a card slot in a Lv 4 weapon (50%) |
 | Kari the Curio Seller | Galdrheim | shop: potions, feathers, torches, Speed Potions |
-| Brynja the Lorekeeper | Galdrheim | The Drowned Tomes (20): find 4 tomes washed up on the Saltvik shore |
-| Torvald the Runecarver | Galdrheim | Shadows in Svartskog (38): take rubbings of 3 Watcher stones in Svartskog |
+| Brynja the Lorekeeper | Galdrheim | The Drowned Tomes (20): find 4 tomes washed up on the Salt Bay shore |
+| Torvald the Runecarver | Galdrheim | Shadows in Black Wood (38): take rubbings of 3 Watcher stones in Black Wood |
 | Hrafn the Stargazer, Signy the Apprentice | Galdrheim | tales of the city, the stars and the jotnar |
 | Runa the Gatewarden | Galdrheim | the rune-gate: to any land you have walked, 300–3,000 perz |
 
@@ -501,7 +501,7 @@ its last step goes back to the trainer. Monsters an active quest still wants res
 Quit quest sits at the left of the Quest View's buttons and asks twice. The main people greet you
 differently as your job and the story change.
 
-**Water.** The shallow edge of a lake (Fenstrand's pond, Saltvik's bay) can be waded: the hero and
+**Water.** The shallow edge of a lake (Fen Shore's pond, Salt Bay's bay) can be waded: the hero and
 monsters are cut at the waterline, Ragnarok style, and rings spread round them as they move.
 
 ## Day and night

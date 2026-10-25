@@ -1,16 +1,16 @@
 // Aria's maps, Ragnarok style: the camp is a small town map, Steinborg a walled city, and every
-// field a 64x64 map of its own. Warp portals at the map edges join them. Only Mosvangr (north)
-// and Fenstrand (west) open from the camp; everything else is reached by travelling on:
+// field a 64x64 map of its own. Warp portals at the map edges join them. Only Moss Field (north)
+// and Fen Shore (west) open from the camp; everything else is reached by travelling on:
 //
-//                                Ormholt
+//                                Serpent Wood
 //                                   |
-//                               Brennholt
+//                               Burnt Wood
 //                                   |
-//                               Galdrheim    Steinborg - Birkilund
+//                               Galdrheim    Steinborg - Birch Grove
 //                                   |            |           |
-//                                   |        Mosvangr  -  Myrkdal  -  Svartskog
+//                                   |        Moss Field  -  Dark Dale  -  Black Wood
 //                                   |            |           |           |
-// Kolgrof - Grjotvangr - Saltvik - Fenstrand - Eldrun Camp   Glodberg  -  Askheid
+// Coal Pit - Stone Field - Salt Bay - Fen Shore - Eldrun Camp   Ember Hill  -  Ash Heath
 //
 // Every map is built once, at load, into its own group; only the current one is shown.
 import * as THREE from 'three';
@@ -20,23 +20,24 @@ import { buildCity, WALL } from './city.js';
 export const SIZE = 64;
 export const CENTER = 32;
 export const WATER_Y = -0.35;
-// Old Norse-style place names (the great names of the myths are kept for later lands)
+// place names: plain for the fields, Old Norse for the towns (the fields' Norse names wait in
+// docs/names-later.md)
 export const ZONE_NAMES = {
-  camp: 'Eldrun Camp',  // "fire-ring"
-  grove: 'Mosvangr',    // "moss-field"
-  hollow: 'Myrkdal',    // "dark dale"
-  ridge: 'Glodberg',    // "ember-hill"
-  fen: 'Fenstrand',     // "fen-shore"
-  city: 'Steinborg',    // "stone-fort"
-  birch: 'Birkilund',   // "birch grove"
-  coast: 'Saltvik',     // "salt bay"
-  deep: 'Svartskog',    // "black wood"
-  heath: 'Askheid',     // "ash heath"
-  magic: 'Galdrheim',   // "spell-home": the city of sorcerers
-  stones: 'Grjotvangr', // "stone-field": the kobolds' hills
-  coalpit: 'Kolgrof',   // "coal pit": the Kobold King's quarry
-  burnt: 'Brennholt',   // "burnt wood": goblin country
-  serpent: 'Ormholt',   // "serpent wood": the Goblin King's wood
+  camp: 'Eldrun Camp',   // "fire-ring"
+  grove: 'Moss Field',
+  hollow: 'Dark Dale',
+  ridge: 'Ember Hill',
+  fen: 'Fen Shore',
+  city: 'Steinborg',     // "stone-fort"
+  birch: 'Birch Grove',
+  coast: 'Salt Bay',
+  deep: 'Black Wood',
+  heath: 'Ash Heath',
+  magic: 'Galdrheim',    // "spell-home": the city of sorcerers
+  stones: 'Stone Field', // the kobolds' hills
+  coalpit: 'Coal Pit',   // the Kobold King's quarry
+  burnt: 'Burnt Wood',   // goblin country
+  serpent: 'Serpent Wood', // the Goblin King's wood
 };
 
 const CAMP_R = 17;   // the camp clearing's walkable radius
@@ -53,12 +54,12 @@ export const MAPS = {
   magic:  { portals: [{ to: 'fen', x: 32, z: 59 }, { to: 'burnt', x: 36.5, z: 5 }], city: 'magic' }, // the north gate opens on goblin country
   birch:  { portals: [{ to: 'city', ...W }, { to: 'hollow', ...S }], clear: { x: 40, z: 22, r: 5 } },
   hollow: { portals: [{ to: 'grove', ...W }, { to: 'birch', ...N }, { to: 'deep', ...E }, { to: 'ridge', ...S }], lift: [-0.15, 0] },
-  // the Ember Jarl's lair: an open bowl in the south of Glodberg (see mobs.js)
+  // the Ember Jarl's lair: an open bowl in the south of Ember Hill (see mobs.js)
   ridge:  { portals: [{ to: 'hollow', ...N }, { to: 'heath', ...E }], clear: { x: 32, z: 48, r: 6 }, lift: [1.3, 1.8] },
   coast:  { portals: [{ to: 'fen', ...E }, { to: 'stones', ...W }], lake: { x: 20, z: 31, rx: 11, rz: 17 }, clear: { x: 44, z: 46, r: 5 } },
   deep:   { portals: [{ to: 'hollow', ...W }, { to: 'heath', ...S }], lift: [-0.1, 0.5], clear: { x: 40, z: 40, r: 5 } },
   heath:  { portals: [{ to: 'ridge', ...W }, { to: 'deep', ...N }], lift: [0.8, 1.2], clear: { x: 40, z: 44, r: 5 } },
-  // the kobolds' hills and the Kobold King's quarry, west of Saltvik (his court is the open ground in
+  // the kobolds' hills and the Kobold King's quarry, west of Salt Bay (his court is the open ground in
   // the south), and goblin country and the Goblin King's wood, north of Galdrheim's north gate (his
   // clearing is in the north). camps: [x, z] of a tent with crates and barrels round a log seat.
   stones:  { portals: [{ to: 'coast', ...E }, { to: 'coalpit', ...W }], lift: [0.6, 1.4], camps: [[18, 20], [46, 44], [16, 46], [46, 18]] },

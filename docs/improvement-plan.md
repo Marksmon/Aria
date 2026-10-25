@@ -36,7 +36,7 @@ quests follows `docs/job-rules.md`.
 | 1.8 | The equip grid reshuffles after each equip, so it's easy to re-equip the wrong item | `inventory.equip()` removes the new piece and appends the old one at the end | Put the old piece into the slot the new one left | S |
 | 1.9 | Five identical "Bought Red Potion" toasts stack up | `menus.message()` always adds a new toast | If the newest toast has the same text, show "×5" and refresh its timer | S |
 | 1.10 | Willow canopies hide the hero completely | `world.updateOcclusion()` fades only within `t.w * 0.45` sideways | Widen to about `t.w * 0.7`, and also fade a tree that hides the current target | S |
-| 1.11 | Steinborg and Glodberg at night are hard to read on a phone | `daynight.js` night key: `hemi 0.75`, tint `#7a88c0` | Raise night `hemi` to about 1.05 and lighten the tint; compare screenshots at 00:00 | S |
+| 1.11 | Steinborg and Ember Hill at night are hard to read on a phone | `daynight.js` night key: `hemi 0.75`, tint `#7a88c0` | Raise night `hemi` to about 1.05 and lighten the tint; compare screenshots at 00:00 | S |
 | 1.12 | The README says Healing/Strong/White Potion; the game says Red/Orange/White | Docs drift | Update the README tables | S |
 
 Small balance fixes that ship with R1:
@@ -45,12 +45,12 @@ Small balance fixes that ship with R1:
 |---|---|---|---|
 | 1.13 | Resting refills HP in about 2.5 minutes early on (2 HP every 3 s) | `naturalRegen()`: while sitting, also heal at least 2% Max HP and 2% Max SP per tick. No change while walking | S |
 | 1.14 | Fainting is a free full heal (wake at full HP for a 1% EXP loss) | `player.revive()` at 50% HP and SP; keep the 1% EXP cost | S |
-| 1.15 | Lv 11 Wisps (high dodge) roam Mosvangr (Lv 1–6) day and night and kill new players | `SPAWNS.grove` has 3 day and 3 night Wisps | Drop the day Wisps from `grove` and keep 2 at night; move Sigrun's Wisp quest from Base 10 to Base 14 | S |
+| 1.15 | Lv 11 Wisps (high dodge) roam Moss Field (Lv 1–6) day and night and kill new players | `SPAWNS.grove` has 3 day and 3 night Wisps | Drop the day Wisps from `grove` and keep 2 at night; move Sigrun's Wisp quest from Base 10 to Base 14 | S |
 | 1.16 | The element system punishes silently (Earth sword on Earth Sprouts = 25%) | `main.js` ~924 already colours weak hits grey | The first weak hit ever shows a one-time tip: "Earth barely hurts Earth (25%). Try a weapon of another element." Save the flag | S |
 
 **Done when:** at 780×360 and 960×540, every window button is tappable (Playwright checks
 `elementFromPoint` on Confirm, Hand in, Craft and Buy). The HUD shows all three bars for every
-job name. A fresh hero at Base 5 can farm Mosvangr at night without meeting a Wisp.
+job name. A fresh hero at Base 5 can farm Moss Field at night without meeting a Wisp.
 
 ---
 
@@ -105,7 +105,7 @@ reference hero.
 
 ## Checked and dropped
 
-- **"Head east to Birkilund" while in Birkilund:** not a bug. The tracker refreshes every
+- **"Head east to Birch Grove" while in Birch Grove:** not a bug. The tracker refreshes every
   0.5 s; the screenshot was taken the moment the hero arrived.
 - **Flower Crown not visible on the hero:** unconfirmed. Check during R1 QA and fix only if it
   reproduces.

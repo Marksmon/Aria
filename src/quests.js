@@ -35,7 +35,7 @@ export const NPCS = {
       : c.jobId === 'mage' ? 'A Sorcerer! Mind the tents when you practise, child.' : null),
     quests: ['warden'],
     // a Trainee ready for a job is sent on to Steinborg
-    ready: 'You have learnt all a Trainee can. For the blade, go north through Mosvangr to Steinborg: Captain Ulfr trains Bladers. For sorcery, go west to Fenstrand and north to Galdrheim, the city of sorcerers.',
+    ready: 'You have learnt all a Trainee can. For the blade, go north through Moss Field to Steinborg: Captain Ulfr trains Bladers. For sorcery, go west to Fen Shore and north to Galdrheim, the city of sorcerers.',
   },
   tilly: {
     name: 'Astrid the Cook', x: 36.2, z: 33.2,
@@ -145,7 +145,7 @@ export const NPCS = {
     bye: 'Walk softly. The runes are listening.',
     greet: (c) => (c.tier === 2 ? 'The runes burn bright around you. Few in Aria cast so long a shadow.'
       : c.tier === 1 ? 'The runes changed when you chose your path. They speak of you more now.' : null),
-    trialHint: 'Sorcery is taught in Galdrheim, north of Fenstrand. When your training is done (Trainee Job Level 10, Basic Training 9), go to Archmage Vigdis there. She was my teacher.',
+    trialHint: 'Sorcery is taught in Galdrheim, north of Fen Shore. When your training is done (Trainee Job Level 10, Basic Training 9), go to Archmage Vigdis there. She was my teacher.',
     quests: [],
     lore: [
       'I learnt the runes in Galdrheim, at Vigdis\'s feet. I came to Steinborg because stone-folk need a seer more than sorcerers do.',
@@ -254,7 +254,7 @@ export const NPCS = {
     quests: ['tomes'],
     lore: [
       'The fire-jotnar were born when the world was young, from the fire under the mountains. They did not hate us. They simply burnt, the way fire does.',
-      'There were nine great jotnar. Eight were sung into the stone long ago. The ninth, the one the settlers called the Ember Jarl, slept under Glodberg. You know him as the Fire Giant.',
+      'There were nine great jotnar. Eight were sung into the stone long ago. The ninth, the one the settlers called the Ember Jarl, slept under Ember Hill. You know him as the Fire Giant.',
       'Our books say the fire-ring can be sung anew to keep him dreaming. But only beating the Giant in the waking world ends the danger for good. Sleeping, he cannot be harmed. Awake, he can.',
     ],
   },
@@ -298,7 +298,7 @@ export const NPCS = {
   },
   bjorn: {
     name: 'Bjorn the Gate Guard', map: 'city', x: 55.2, z: 29.4, dress: { body: 'blader', main: [100, 0.35, 0.9], accent: [30, 0.7, 1], hair: 'messy', dye: 'blonde', top: 'horned_helm' },
-    hello: 'Most beasts out there leave you be until you strike first. Not in Svartskog and Askheid: the dark wisps and the fire beasts come for you on sight.',
+    hello: 'Most beasts out there leave you be until you strike first. Not in Black Wood and Ash Heath: the dark wisps and the fire beasts come for you on sight.',
     later: () => '', bye: 'Keep your guard up past the gate.',
     quests: [],
   },
@@ -313,14 +313,14 @@ export const QUESTS = {
   // ---------- Eldrun Camp: one big job each ----------
   warden: {
     title: 'The Mushroom Wood', kind: 'defend', map: 'hollow', at: { x: 32, z: 32 }, place: 'the old waystone', waves: [['mushling', 3], ['mushling', 4], ['mushling', 5]], lv: 12,
-    intro: 'The Mushrooms of Myrkdal march on the camp road a little further every night. In the middle of the dale stands our old waystone. Stand by it and hold it against three waves of them. They hit back hard: bring potions.',
+    intro: 'The Mushrooms of Dark Dale march on the camp road a little further every night. In the middle of the dale stands our old waystone. Stand by it and hold it against three waves of them. They hit back hard: bring potions.',
     thanks: 'Three waves, and the stone still stands. The air already smells cleaner. You have become a true guardian of Eldrun.',
     reward: { xp: 2500, perz: 1500, items: { potion2: 5 } },
   },
 
   feast: {
     title: 'A Feast for Eldrun', kind: 'quiz', items: { gel: 10, crableg: 5, spore: 5 }, lv: 10, task: 'cook the feast with Astrid',
-    intro: "The camp hasn't feasted in a year! Bring me ten Slime Gel, five Crab Legs from Fenstrand and five Spores from Myrkdal, and cook it with me. The secret: gel for the sauce, crab for the meat, and spores only at the very end, a pinch at a time.",
+    intro: "The camp hasn't feasted in a year! Bring me ten Slime Gel, five Crab Legs from Fen Shore and five Spores from Dark Dale, and cook it with me. The secret: gel for the sauce, crab for the meat, and spores only at the very end, a pinch at a time.",
     questions: [
       { q: 'The pot is bubbling. What makes the sauce?', options: ['The Crab Legs', 'The Slime Gel', 'The Spores'], a: 1,
         why: 'Gel! Sticky, sweet and thick. Into the pot it goes.', hint: 'No, no! Think sticky. What wobbles?' },
@@ -335,7 +335,7 @@ export const QUESTS = {
 
   lights: {
     title: 'The Lantern Wisp', kind: 'kill', mob: 'lanternWisp', n: 1, rare: { map: 'fen', x: 32, z: 26, night: true }, lv: 14,
-    intro: 'The fishers of Fenstrand swear a great golden Wisp rises over the pond, but only at night. The old songs call it the Lantern Wisp. Find it, and bring it down before it drifts away at dawn. It is stronger than any Wisp you have seen.',
+    intro: 'The fishers of Fen Shore swear a great golden Wisp rises over the pond, but only at night. The old songs call it the Lantern Wisp. Find it, and bring it down before it drifts away at dawn. It is stronger than any Wisp you have seen.',
     thanks: 'The Lantern Wisp! Then the songs were true. Keep what it left you: they say it lights the darkest road.',
     reward: { xp: 2000, perz: 800, items: { glow: 5, wander: 3 } },
   },
@@ -346,13 +346,13 @@ export const QUESTS = {
   // window: a wrong answer only gets a hint). The questions teach what new players miss.
   blader_trial: {
     title: "Blader's Trial 1: Steel and Sweat", job: true, kind: 'kill', mobs: { slime: 6, sprout: 4 }, lv: 1,
-    intro: 'A Blader proves their sword first. Three tasks, all small, all honest. Go out through the south gate into Mosvangr and beat six Slimes and four Sprouts. Sprouts run from a blade, so corner them. And keep what they drop.',
+    intro: 'A Blader proves their sword first. Three tasks, all small, all honest. Go out through the south gate into Moss Field and beat six Slimes and four Sprouts. Sprouts run from a blade, so corner them. And keep what they drop.',
     thanks: 'Back on your feet, and not a Slime left laughing. Good. Now show me what you brought back.',
     reward: { xp: 120, perz: 100 },
   },
   blader_trial2: {
     title: "Blader's Trial 2: Proof of the Hunt", job: true, kind: 'fetch', items: { gel: 5, seed: 3 }, lv: 1,
-    intro: 'The Watch takes no one at their word. Bring me five Slime Gel and three Seeds as proof of your hunt. Slimes and Sprouts drop them; if you sold yours, Mosvangr has more.',
+    intro: 'The Watch takes no one at their word. Bring me five Slime Gel and three Seeds as proof of your hunt. Slimes and Sprouts drop them; if you sold yours, Moss Field has more.',
     thanks: 'Gel and seeds. Proof enough. Last task: a few questions, and mind your answers.',
     reward: { xp: 150, perz: 150, items: { potion: 5 } },
   },
@@ -378,7 +378,7 @@ export const QUESTS = {
   },
   sorcerer_trial: {
     title: 'Rune Trial 1: The Twice-Born', job: true, kind: 'kill', mob: 'blueSlime', n: 4, lv: 1,
-    intro: 'A sorcerer must keep a cool head when one foe becomes two. The Blue Slimes of Fenstrand, just south of my gate, split when struck. Beat four of them, and gather the Slime Gel and Water Drops they leave.',
+    intro: 'A sorcerer must keep a cool head when one foe becomes two. The Blue Slimes of Fen Shore, just south of my gate, split when struck. Beat four of them, and gather the Slime Gel and Water Drops they leave.',
     thanks: 'You did not panic when they split. Most do. Now, what did they leave you?',
     reward: { xp: 120, perz: 100 },
   },
@@ -425,43 +425,43 @@ export const QUESTS = {
   // ---------- the second jobs: three harder steps each, from Job Level 40 of a first job ----------
   blademaster_trial: {
     title: 'BladeMaster Trial 1: The Goblin Line', job: true, kind: 'kill', mob: 'goblinWarrior', n: 30, lv: 1,
-    intro: 'A BladeMaster ends a fight before it begins. Thirty Goblins hold the burnt wood of Brennholt, beyond Galdrheim\'s north gate. Cut through them.',
+    intro: 'A BladeMaster ends a fight before it begins. Thirty Goblins hold the burnt wood of Burnt Wood, beyond Galdrheim\'s north gate. Cut through them.',
     thanks: 'Thirty, and you are still standing straight. Next, speed.',
     reward: { xp: 15000, perz: 3000 },
   },
   blademaster_trial2: {
     title: 'BladeMaster Trial 2: Faster than Knives', job: true, kind: 'kill', mob: 'koboldAssassin', n: 20, lv: 1,
-    intro: 'The Kobold Assassins of Grjotvangr and Kolgrof dart in and out like wasps. Twenty of them. If you can catch those, you can catch anything.',
+    intro: 'The Kobold Assassins of Stone Field and Coal Pit dart in and out like wasps. Twenty of them. If you can catch those, you can catch anything.',
     thanks: 'Quick hands. Quicker than mine, these days. One last test.',
     reward: { xp: 20000, perz: 4000 },
   },
   blademaster_trial3: {
     title: 'BladeMaster Trial 3: The Burning Shell', job: true, kind: 'kill', mob: 'cinderLord', n: 1, lv: 1,
-    intro: 'The Giant Beetle of Askheid. Alone. One target, one blade, until it falls.',
+    intro: 'The Giant Beetle of Ash Heath. Alone. One target, one blade, until it falls.',
     thanks: 'You did not flinch once. Kneel; rise a BladeMaster.',
     reward: { xp: 30000, perz: 6000 },
   },
   wizard_trial: {
     title: 'Wizard Trial 1: Fire and Shadow', job: true, kind: 'fetch', items: { ember_dust: 10, shade: 10 }, lv: 1,
-    intro: 'A Wizard commands every element, not just a favourite. Bring me ten pinches of Fire Dust from the Fire Wisps of Askheid and ten Dark Crystals from the Dark Wisps of Svartskog.',
+    intro: 'A Wizard commands every element, not just a favourite. Bring me ten pinches of Fire Dust from the Fire Wisps of Ash Heath and ten Dark Crystals from the Dark Wisps of Black Wood.',
     thanks: 'Fire and shadow in one pouch, and you did not burn yourself. Next.',
     reward: { xp: 15000, perz: 3000 },
   },
   wizard_trial2: {
     title: 'Wizard Trial 2: Arrows in the Wind', job: true, kind: 'kill', mob: 'goblinArcher', n: 25, lv: 1,
-    intro: 'The Goblin Archers of Brennholt shoot from range, as we do. Out-cast twenty-five of them.',
+    intro: 'The Goblin Archers of Burnt Wood shoot from range, as we do. Out-cast twenty-five of them.',
     thanks: 'They never came close. That is the point. One more.',
     reward: { xp: 20000, perz: 4000 },
   },
   wizard_trial3: {
     title: 'Wizard Trial 3: The Rotting Well', job: true, kind: 'kill', mob: 'gloomMother', n: 1, lv: 1,
-    intro: 'The Giant Mushroom of Svartskog chokes a rune-well. Burn it, freeze it, break it: any element you like, as long as it falls.',
+    intro: 'The Giant Mushroom of Black Wood chokes a rune-well. Burn it, freeze it, break it: any element you like, as long as it falls.',
     thanks: 'The well sings again. So, Wizard, do you.',
     reward: { xp: 30000, perz: 6000 },
   },
   mknight_trial: {
     title: 'Magic Knight Trial 1: Steel', job: true, kind: 'kill', mob: 'koboldWarrior', n: 30, lv: 1,
-    intro: 'First, steel. Thirty Kobolds in the hills of Grjotvangr, west of Saltvik. Sword in hand.',
+    intro: 'First, steel. Thirty Kobolds in the hills of Stone Field, west of Salt Bay. Sword in hand.',
     thanks: 'Your sword arm is sound. Now the other half.',
     reward: { xp: 15000, perz: 3000 },
   },
@@ -473,14 +473,14 @@ export const QUESTS = {
   },
   mknight_trial3: {
     title: 'Magic Knight Trial 3: Steel and Song', job: true, kind: 'kill', mob: 'tideKing', n: 1, lv: 1,
-    intro: 'The King Crab of Saltvik: a shell no sword cuts and no spell burns. Both together will. Bring it down.',
+    intro: 'The King Crab of Salt Bay: a shell no sword cuts and no spell burns. Both together will. Bring it down.',
     thanks: 'Steel and song, as one. Rise, Magic Knight.',
     reward: { xp: 30000, perz: 6000 },
   },
   // ---------- Steinborg ----------
   pearls: {
     title: "Hild's Crate", kind: 'deliver', to: 'hakon', thing: 'crate of potions', lv: 24,
-    intro: 'Hakon the carter is stuck in Saltvik, and the salt road is no place to go without potions. Take this crate to him, by the west road of Saltvik, and come back to tell me he has it.',
+    intro: 'Hakon the carter is stuck in Salt Bay, and the salt road is no place to go without potions. Take this crate to him, by the west road of Salt Bay, and come back to tell me he has it.',
     toLine: 'From Hild? Bless that woman. With these I can get the salt carts rolling again. Tell her the first load of salt is hers.',
     thanks: 'He has it? Good. Then the salt comes back to my stall, and some of the coin comes to you.',
     reward: { xp: 9000, perz: 6000 },
@@ -488,20 +488,20 @@ export const QUESTS = {
 
   ore: {
     title: 'Stone for the Forge', kind: 'fetch', items: { stone: 30, cinder: 15 }, lv: 34,
-    intro: 'The forge is cold. Thirty Stone from the Beetles of Glodberg and fifteen Burnt Shells from the Fire Beetles of Askheid, and I can work again.',
+    intro: 'The forge is cold. Thirty Stone from the Beetles of Ember Hill and fifteen Burnt Shells from the Fire Beetles of Ash Heath, and I can work again.',
     thanks: 'Good stone, and the shells are still warm. Here: coin, and something for the road.',
     reward: { xp: 30000, perz: 8000, items: { potion3: 5 } },
   },
   remedy: {
     title: 'The Great Remedy', kind: 'quiz', items: { gloom: 6, ember_dust: 6 }, lv: 38, task: 'brew the remedy with Ragna',
-    intro: 'I can brew a remedy for the burning sickness in Askheid. Bring me six Dark Spores from Svartskog and six pinches of Fire Dust from the Fire Wisps, and brew it with me: the cold spores calm the fire, so they go in first and the dust goes in slowly after.',
+    intro: 'I can brew a remedy for the burning sickness in Ash Heath. Bring me six Dark Spores from Black Wood and six pinches of Fire Dust from the Fire Wisps, and brew it with me: the cold spores calm the fire, so they go in first and the dust goes in slowly after.',
     questions: [
       { q: 'The burning sickness runs hot. What goes in the pot first?', options: ['The Fire Dust', 'The Dark Spores', 'Water, nothing else'], a: 1,
         why: 'The spores, cold and dark. They calm the fever before the fire goes in.', hint: 'Fire on a fever? Cold first.' },
       { q: 'Now the Fire Dust. How?', options: ['All at once, quickly', 'Slowly, a pinch at a time', 'Not at all'], a: 1,
         why: 'Slowly. Fire and shadow fight in the pot; go gently and they settle.', hint: 'The pot flares! Slowly, a pinch at a time.' },
       { q: 'Fire Wisps are Fire. Which spell element hurts them most?', options: ['Water', 'Fire', 'Earth'], a: 0,
-        why: 'Water puts out fire. Remember it when you go back to Askheid.', hint: 'What do you throw on a fire to put it out?' },
+        why: 'Water puts out fire. Remember it when you go back to Ash Heath.', hint: 'What do you throw on a fire to put it out?' },
     ],
     thanks: 'Dark and bright, cold and hot... it will work. Thank you, truly.',
     reward: { xp: 45000, perz: 8000, items: { tonic: 10 } },
@@ -509,39 +509,39 @@ export const QUESTS = {
 
   kingcrab: {
     title: 'The King of the Shore', kind: 'kill', mob: 'tideKing', n: 1, lv: 30,
-    intro: 'A crab as big as a cart rules the Saltvik shore, and the fishers will not go out. Kill the King Crab.',
+    intro: 'A crab as big as a cart rules the Salt Bay shore, and the fishers will not go out. Kill the King Crab.',
     thanks: 'The King Crab, dead? The fishers will feast for a week. Well fought.',
     reward: { xp: 20000, perz: 6000, items: { potion2: 10 } },
   },
   // ---------- Galdrheim ----------
   tomes: {
     title: 'The Drowned Tomes', kind: 'search', map: 'coast', thing: 'Drowned Tome', spots: [[16, 10], [32.5, 44.5], [34, 22], [10, 49]], lv: 20,
-    intro: 'A ship carrying our oldest books sank off Saltvik. Four tomes have washed up along the shore. Look for something glinting by the water, and bring them back to me before the tide takes them again.',
+    intro: 'A ship carrying our oldest books sank off Salt Bay. Four tomes have washed up along the shore. Look for something glinting by the water, and bring them back to me before the tide takes them again.',
     thanks: 'The ink is still there. Hallveig\'s own hand! Thank you.',
     reward: { xp: 7000, perz: 4000, items: { tonic: 5 } },
   },
 
   livingwood: {
     title: 'The Living Wood', kind: 'fetch', items: { heartwood: 1, thorn: 8 }, lv: 26,
-    intro: 'The best staves are carved from wood that still lives. The Giant Sprout of Birkilund carries a root like that in its heart. Bring me a Giant Root, and eight Thorns to bind it.',
+    intro: 'The best staves are carved from wood that still lives. The Giant Sprout of Birch Grove carries a root like that in its heart. Bring me a Giant Root, and eight Thorns to bind it.',
     thanks: 'It is still warm. I will make something good of this, and so will you.',
     reward: { xp: 14000, perz: 6000, items: { potion2: 8 } },
   },
   giantmother: {
     title: 'The Mother of Spores', kind: 'kill', mob: 'gloomMother', n: 1, lv: 40,
-    intro: 'The Giant Mushroom of Svartskog has rooted itself on a rune-well. It drinks the song and breathes out rot. Destroy it, and the well will run clean.',
+    intro: 'The Giant Mushroom of Black Wood has rooted itself on a rune-well. It drinks the song and breathes out rot. Destroy it, and the well will run clean.',
     thanks: 'I felt the well clear from here. You sing louder than you know.',
     reward: { xp: 60000, perz: 10000, items: { tonic: 10 } },
   },
   giantbeetle: {
-    title: 'The Beetle of Askheid', kind: 'kill', mob: 'cinderLord', n: 1, lv: 46,
-    intro: 'In Askheid a Giant Beetle burns the heath wherever it walks. It is the worst thing the Watch has seen. Kill it.',
+    title: 'The Beetle of Ash Heath', kind: 'kill', mob: 'cinderLord', n: 1, lv: 46,
+    intro: 'In Ash Heath a Giant Beetle burns the heath wherever it walks. It is the worst thing the Watch has seen. Kill it.',
     thanks: 'You did what the whole Watch could not. Steinborg owes you.',
     reward: { xp: 120000, perz: 15000, items: { potion3: 10 } },
   },
   shades: {
-    title: 'Shadows in Svartskog', kind: 'search', map: 'deep', thing: 'Watcher stone', spots: [[18, 18], [46, 24], [26, 46]], verb: 'Rubbing taken', lv: 38,
-    intro: 'Three old Watcher stones stand among the black trees of Svartskog, older than Galdrheim. Find them, look for the faint glow, and take a rubbing of each for me. Mind the Dark Wisps: they come for you on sight.',
+    title: 'Shadows in Black Wood', kind: 'search', map: 'deep', thing: 'Watcher stone', spots: [[18, 18], [46, 24], [26, 46]], verb: 'Rubbing taken', lv: 38,
+    intro: 'Three old Watcher stones stand among the black trees of Black Wood, older than Galdrheim. Find them, look for the faint glow, and take a rubbing of each for me. Mind the Dark Wisps: they come for you on sight.',
     thanks: 'Cold, and singing. The runes on these rubbings are older than any I have carved. The Watchers will be glad.',
     reward: { xp: 45000, perz: 6000, items: { tonic: 8 } },
   },

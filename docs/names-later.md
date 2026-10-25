@@ -4,6 +4,25 @@ Monsters and items now go by plain, common names. Their old names are kept here 
 monsters and gear still to come (palette swaps, stronger versions, second-job gear). The ids in
 the code never changed, so saves are not affected.
 
+## Field maps
+
+The fields went to plain names too; the towns (Eldrun Camp, Steinborg, Galdrheim) kept theirs.
+
+| Now | Kept for later |
+|---|---|
+| Moss Field | Mosvangr |
+| Fen Shore | Fenstrand |
+| Dark Dale | Myrkdal |
+| Ember Hill | Glodberg |
+| Birch Grove | Birkilund |
+| Salt Bay | Saltvik |
+| Black Wood | Svartskog |
+| Ash Heath | Askheid |
+| Stone Field | Grjotvangr |
+| Coal Pit | Kolgrof |
+| Burnt Wood | Brennholt |
+| Serpent Wood | Ormholt |
+
 ## Monsters
 
 | Now | Kept for later |
