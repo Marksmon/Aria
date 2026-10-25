@@ -22,7 +22,7 @@ import { Menus } from './menus.js';
 import { iconTexture, iconURL, ITEMS, baseOf } from './items.js';
 import { DayNight } from './daynight.js';
 import { Audio } from './audio.js';
-import { clearSave } from './save.js';
+import { clearSave, saveCode, loadCode } from './save.js';
 import { clamp, lerp } from './noise.js';
 
 const canvas = document.getElementById('game');
@@ -1550,6 +1550,44 @@ if (save) { tContinue.textContent = 'Continue'; tNew.hidden = false; }
 const soundLabel = () => { tSound.textContent = `Sound: ${audio.enabled ? 'On' : 'Off'}`; };
 soundLabel();
 tSound.addEventListener('click', () => { audio.start(); audio.setEnabled(!audio.enabled); soundLabel(); audio.play('ui'); });
+// back up the save as a line of text (to keep in notes or a chat), or paste one back in
+const tBackup = document.getElementById('t-backup'), tRestore = document.getElementById('t-restore');
+const codeBox = document.getElementById('t-code'), codeMsg = document.getElementById('t-code-msg');
+const codeText = document.getElementById('t-code-text'), codeGo = document.getElementById('t-code-go');
+let codeMode = null;
+if (save) tBackup.hidden = false;
+const openCode = (mode) => {
+  codeMode = mode;
+  codeBox.hidden = false;
+  audio.play('ui');
+  if (mode === 'backup') {
+    codeText.value = saveCode();
+    codeText.readOnly = true;
+    codeMsg.textContent = 'Your save as a code. Copy it and keep it somewhere safe (notes, a chat). Restore save puts it back, on this phone or another.';
+    codeGo.textContent = 'Copy';
+  } else {
+    codeText.value = '';
+    codeText.readOnly = false;
+    codeMsg.textContent = 'Paste a save code here. It replaces the save in this game.';
+    codeGo.textContent = 'Load';
+  }
+};
+tBackup.addEventListener('click', () => openCode('backup'));
+tRestore.addEventListener('click', () => openCode('restore'));
+document.getElementById('t-code-close').addEventListener('click', () => { codeBox.hidden = true; audio.play('ui'); });
+codeGo.addEventListener('click', async () => {
+  if (codeMode === 'backup') {
+    codeText.select();
+    let ok = false;
+    try { await navigator.clipboard.writeText(codeText.value); ok = true; } catch { try { ok = document.execCommand('copy'); } catch { /* select it by hand */ } }
+    codeMsg.textContent = ok ? 'Copied! Paste it somewhere safe.' : 'Select the code and copy it by hand.';
+    return;
+  }
+  if (!loadCode(codeText.value)) { codeMsg.textContent = 'That is not a save code. Check it was copied whole.'; return; }
+  codeMsg.textContent = 'Save restored. Starting…';
+  resetting = true; // don't let the running game write over it
+  setTimeout(() => location.reload(), 600);
+});
 let confirmNew = false;
 tNew.addEventListener('click', () => {
   if (!confirmNew) {

@@ -36,7 +36,9 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
 
 - Develop on the session's branch, then merge to `main`: every push to `main` builds the APK
   (`.github/workflows/android.yml`). Each build's version is 1.0.<run number>, so APKs install
-  as updates.
+  as updates. Every APK must be signed with `build-tools/debug.keystore` (set in the app's
+  `build.gradle` by `build-tools/patch-android.mjs`; the workflow fails a build whose signature
+  differs). Never change that key: phones would refuse the update and players lose their saves.
 - After a build, give the owner the APK link:
   https://github.com/Marksmon/Aria/releases/download/apk-latest/Aria.apk
 - `npx vite build` must pass. Test in the browser with Playwright (the game exposes
