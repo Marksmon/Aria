@@ -465,7 +465,7 @@ rings the portal to take, or the person to talk to. A purple **!** marks who the
 | Chapter | Steps |
 |---|---|
 | Prologue (the tutorial) | Talk to the Elder · raise a stat · defeat 3 Slimes in Moss Field · learn Basic Training · put a potion on the hotbar · back to the Elder |
-| 1: The Stone-Fort | Travel to Steinborg · tell Captain Ulfr the fires are failing · sign Keeper Bera's ledger (the Keepers: healing, storage, save point, teleport) · meet Saeunn the Seeress · sell something for perz |
+| 1: The Stone-Fort | Travel to Steinborg · tell Captain Ulfr the fires are failing · sign the Keeper's ledger (the Keepers: healing, storage, save point, teleport) · meet Saeunn the Seeress · sell something for perz |
 | 2: Blade or Rune | Pass a job trial and become a Blader or a Sorcerer |
 | 3: Embers in the Wilds | Saeunn's warning · defeat the Giant Sprout in Birch Grove · travel to Ember Hill |
 | 4: The Fire-Ring | Archmage Vigdis will sing the fire-ring's runes anew · **the Vigil on Ember Hill**: stand in her rune circle and hold off the Giant's heralds for 75 seconds while her song reaches him · bring the song home: the fire-ring rekindled |
@@ -500,7 +500,7 @@ leads to each.
 | Astrid the Cook | camp | A Feast for Eldrun (10): bring 10 Slime Gel, 5 Crab Legs, 5 Spores, then cook it with her |
 | Sigrun the Scout | camp | The Lantern Wisp (14): hunt the golden Wisp that rises over Fen Shore's pond at night |
 | Gyda the Healer | camp | heals HP and SP for free |
-| Keeper Tova, Bera, Asa | camp, Steinborg, Galdrheim | sign the ledger, then: storage, healing, Save here (where you wake after fainting, and where Return Feathers go), switch first jobs, and teleport to any other Keeper you signed with (300–500 perz) |
+| The Keepers (butlers in black) | camp, Steinborg, Galdrheim | sign the ledger, then: storage, healing, Save here (where you wake after fainting, and where Return Feathers go), switch first jobs, and teleport to any other Keeper you signed with (300–500 perz) |
 | Sir Eirik the Runeblade | Steinborg | the Magic Knight's trial |
 | Hild the Trader | Steinborg | shop · Hild's Crate (24): take a crate of potions to Hakon in Salt Bay |
 | Gunnar the Gear Crafter | Steinborg | shop, forge · Stone for the Forge (34): 30 Stone, 15 Burnt Shells |

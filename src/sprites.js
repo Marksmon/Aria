@@ -5,6 +5,7 @@
 import * as THREE from 'three';
 import { mulberry32 } from './noise.js';
 import { paintSet, frameSize } from './painted.js';
+import { paintButler, BW, BH } from './butler.js';
 
 const SHEETS = import.meta.glob('./art/*.png', { eager: true, import: 'default' });
 const LAYOUTS = import.meta.glob('./art/*.json', { eager: true, import: 'default' });
@@ -600,6 +601,47 @@ function paintedSet(id, body) {
   return set;
 }
 
+// The Keepers' butler (butler.js), painted in code on the bald bodies' frame: a sprite set shaped
+// like pixelSet's, standing only, with the trainee's head spots so the shared head and hair are
+// painted on by dress() like on any bald body.
+function butlerSet() {
+  const L = LAYOUTS['./art/trainee.json'];
+  const frames = paintButler(Object.fromEntries(Object.entries(L.anims).map(([d, a]) => [d, a.idle[3][0]])));
+  const set = { pixel: true, fw: BW, fh: BH, body: L.body, bald: true, loaded: true, anchor: frames.down.foot / BH, hair: L.hair.map((c) => c.map((v) => v / 255)), anims: {}, flash: {} };
+  const cuts = [];
+  const nearest = (c) => { const t = tex(c); t.magFilter = t.minFilter = THREE.NearestFilter; t.generateMipmaps = false; return t; };
+  for (const [dir, a] of Object.entries(L.anims)) {
+    const [, , , heads, spots] = a.idle, h = heads[0];
+    const t = nearest(mk(BW, BH).c), f = nearest(mk(BW, BH).c);
+    t.userData.anchor = f.userData.anchor = frames[dir].foot / BH;
+    t.userData.head = f.userData.head = { x: h[0], crown: h[1], neck: h[2], w: h[3], eyes: h.slice(4), at: spots?.[0] || null };
+    set.anims[dir] = { idle: [t], walk: [t], attack: [t] };
+    set.flash[dir] = { idle: [f], walk: [f], attack: [f] };
+    cuts.push([t, f, frames[dir].canvas, dir]);
+  }
+  let paint = null;
+  const draw = (list = cuts) => {
+    for (const [t, f, body, dir] of list) {
+      const b = t.image.getContext('2d');
+      b.clearRect(0, 0, BW, BH);
+      b.drawImage(body, 0, 0);
+      if (paint) paint(b, t.userData, dir);
+      const g = f.image.getContext('2d');
+      g.globalCompositeOperation = 'source-over';
+      g.clearRect(0, 0, BW, BH);
+      g.drawImage(t.image, 0, 0);
+      g.globalCompositeOperation = 'source-in';
+      g.fillStyle = '#ffffff';
+      g.fillRect(0, 0, BW, BH);
+      t.needsUpdate = f.needsUpdate = true;
+    }
+  };
+  set.dress = (fn) => { paint = fn; draw(); };
+  set.repaint = (t) => { const c = cuts.find((x) => x[0] === t); if (c) draw([c]); };
+  draw();
+  return set;
+}
+
 // w = world width; height follows canvas aspect. coll = collision radius, shadow = baked shadow radius, space = min spacing.
 const PROP_DEFS = {
   tree_grove: { w: 3.0, coll: 0.45, shadow: 1.5, space: 1.7, variants: 3, make: (r, i) => treeRound(r, i % 2 ? PAL.grove2 : PAL.grove) },
@@ -666,8 +708,9 @@ export function createSprites() {
   for (const id in villagers) villagers[id] ||= villagers.bram;
 
   // a person dressed from a bald body: { body: trainee | blader | sorc | mknight, main, accent } (see
-  // outfit); the head, hair and headgear are painted on by dressPerson (main.js) once they load
-  const person = (spec) => Object.assign(sheet(spec.body, { recolor: outfit(spec.body, spec) }), { person: spec });
+  // outfit), or the Keepers' butler painted in code ({ body: 'butler' }); the head, hair and headgear
+  // are painted on by dressPeople (main.js) once they load
+  const person = (spec) => Object.assign(spec.body === 'butler' ? butlerSet() : sheet(spec.body, { recolor: outfit(spec.body, spec) }), { person: spec });
 
   return {
     mobs,

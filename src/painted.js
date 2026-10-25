@@ -16,7 +16,7 @@ const light = (c) => mix(c, '#ffffff', 0.28);
 const dark = (c) => mix(c, '#000000', 0.32);
 
 // ---------- a frame: a grid of colours ----------
-class Frame {
+export class Frame {
   constructor(w = FW, h = FH) { this.w = w; this.h = h; this.px = new Array(w * h).fill(null); }
   // draw one part: shape(set) marks its pixels; it is shaded and outlined, then laid over what's there
   part(shape, col, { outline = true, flat = false } = {}) {
@@ -56,13 +56,13 @@ class Frame {
 }
 
 // ---------- shapes ----------
-const ellipse = (cx, cy, rx, ry) => (set) => {
+export const ellipse = (cx, cy, rx, ry) => (set) => {
   for (let y = Math.floor(cy - ry); y <= Math.ceil(cy + ry); y++) for (let x = Math.floor(cx - rx); x <= Math.ceil(cx + rx); x++) {
     if (((x - cx) / (rx + 0.35)) ** 2 + ((y - cy) / (ry + 0.35)) ** 2 <= 1) set(x, y);
   }
 };
-const rect = (x0, y0, x1, y1) => (set) => { for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) set(x, y); };
-const poly = (pts) => (set) => {
+export const rect = (x0, y0, x1, y1) => (set) => { for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) set(x, y); };
+export const poly = (pts) => (set) => {
   const ys = pts.map((p) => p[1]), xs = pts.map((p) => p[0]);
   for (let y = Math.floor(Math.min(...ys)); y <= Math.ceil(Math.max(...ys)); y++) for (let x = Math.floor(Math.min(...xs)); x <= Math.ceil(Math.max(...xs)); x++) {
     let inside = false;
@@ -73,7 +73,7 @@ const poly = (pts) => (set) => {
     if (inside) set(x, y);
   }
 };
-const line = (x0, y0, x1, y1, w = 1) => (set) => {
+export const line = (x0, y0, x1, y1, w = 1) => (set) => {
   const n = Math.max(1, Math.ceil(Math.hypot(x1 - x0, y1 - y0) * 2));
   for (let i = 0; i <= n; i++) {
     const x = x0 + ((x1 - x0) * i) / n, y = y0 + ((y1 - y0) * i) / n;

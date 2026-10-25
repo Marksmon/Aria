@@ -19,7 +19,7 @@ import { skillLv, secondJobOpen } from './skills.js';
 // colours ([hue, saturation, lightness factor]), hair, dye, and headgear (top, face). Nobody's look
 // repeats, except a role any town can have: its people share the role's look
 const ROLE = {
-  keeper: { body: 'trainee', main: [140, 0.45, 0.95], accent: [46, 0.7, 1.1], hair: 'mane', dye: 'black' },             // the Keepers: green and gold
+  keeper: { body: 'butler', hair: 'mane', dye: 'black' },                                                              // the Keepers: a butler in black (butler.js)
   smith: { body: 'blader', main: [24, 0.55, 0.9], accent: [40, 0.85, 1.05], hair: 'messy', dye: 'black', face: 'round_glasses' }, // Holger and Seyla: forge leather and brass
   ferry: { body: 'trainee', main: [200, 0.5, 1], accent: [180, 0.5, 1.1], hair: 'messy', dye: 'blue', top: 'woven_cap' },   // the carters and gate-wardens who send you on
 };
@@ -103,17 +103,17 @@ export const NPCS = {
   // after fainting, and where a Return Feather takes you) and to be teleported to it by any other
   // Keeper you have registered with; each also keeps the storage chest and heals.
   keeper_camp: {
-    name: 'Keeper Tova', x: 37.6, z: 30.8, dress: ROLE.keeper, keeper: true,
+    name: 'Keeper', x: 37.6, z: 30.8, dress: ROLE.keeper, keeper: true,
     hello: 'I keep the fire\'s ledger. Sign it, and the fire remembers you: wake here after a fall, store your things, and walk the Keepers\' road to any town where you have signed.',
     later: () => '', bye: 'The fire remembers.', quests: [],
   },
   keeper_city: {
-    name: 'Keeper Bera', map: 'city', x: 23.8, z: 32.4, dress: ROLE.keeper, keeper: true,
+    name: 'Keeper', map: 'city', x: 23.8, z: 32.4, dress: ROLE.keeper, keeper: true,
     hello: 'Steinborg\'s Keeper. Sign the ledger and Steinborg remembers you: rest here, store your things, and take the Keepers\' road between towns where you have signed.',
     later: () => '', bye: 'Steinborg remembers.', quests: [],
   },
   keeper_magic: {
-    name: 'Keeper Asa', map: 'magic', x: 22.2, z: 46.0, dress: ROLE.keeper, keeper: true,
+    name: 'Keeper', map: 'magic', x: 22.2, z: 46.0, dress: ROLE.keeper, keeper: true,
     hello: 'Galdrheim\'s Keeper. The ledger here is written in runes, but your name will do. Sign, and the city remembers you.',
     later: () => '', bye: 'Galdrheim remembers.', quests: [],
   },
