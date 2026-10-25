@@ -170,7 +170,8 @@ export class Menus {
 
   quest() {
     const id = this.questId, inv = this.inv, t = this.hooks.questTarget?.(id);
-    const go = (label) => `<div class="btnrow"><button class="rbtn soft" data-act="close">Close</button><button class="rbtn" data-act="qgo" ${t ? '' : 'disabled'}>${label}</button></div>`;
+    // Quit sits at the far left of the row, away from Close and Go there, and asks twice
+    const go = (label, quit = '') => `<div class="btnrow qrow">${quit}<button class="rbtn soft" data-act="close">Close</button><button class="rbtn" data-act="qgo" ${t ? '' : 'disabled'}>${label}</button></div>`;
     const where = t ? `<div class="rnote">➜ ${esc(ZONE_NAMES[t.map])}: ${esc(t.why)}</div>` : '';
     if (id === 'story') {
       const s = this.hooks.storyStep?.();
@@ -183,8 +184,7 @@ export class Menus {
     return `<div class="qview ${q.job ? 'job' : ''}"><b>${esc(q.title)}</b><small>From ${esc(giver.name)} · ${esc(ZONE_NAMES[giver.map || 'camp'])}</small>
       <p>${esc(q.intro)}</p>
       <div class="qbox"><b>${ready ? 'Done: return to ' + esc(giver.name) : 'Goal'}</b><small>${esc(st.goal(q))}</small>${active ? `<small>Progress: ${esc(st.progress(id, inv))}</small>` : ''}${this.questReward(id)}</div>
-      ${where}${go(ready ? 'Go back' : 'Go there')}
-      ${active ? `<div class="btnrow"><button class="rbtn ${this.quitSure ? 'danger' : 'soft'}" data-act="qquit">${this.quitSure ? (SERIES[id] ? 'Yes: start the trial over' : 'Yes, give it up') : 'Quit quest'}</button></div>` : ''}</div>`;
+      ${where}${go(ready ? 'Go back' : 'Go there', active ? `<button class="rbtn ${this.quitSure ? 'danger' : 'soft'} qquit" data-act="qquit">${this.quitSure ? (SERIES[id] ? 'Yes: start the trial over' : 'Yes, give it up') : 'Quit quest'}</button>` : '')}</div>`;
   }
 
   // mode: refine | enchant | insert (card: the card being pressed in)
@@ -545,6 +545,9 @@ export class Menus {
   talk() {
     const n = NPCS[this.npc], st = this.quests.status(this.npc, this.prog, this.inv), p = this.prog;
     let text, box = '', btns = '<button class="rbtn soft" data-act="close">Bye</button>', quizzing = false;
+    // what they say on seeing this hero: their own line for the hero's job and chapter, if they have one
+    const step = this.hooks.storyStep?.(), ch = step ? +(/Chapter (\d+)/.exec(step.ch)?.[1] || 0) : 99;
+    const greet = n.greet?.({ job: JOBS[p.job].name, jobId: p.job, tier: p.tier, baseLv: p.baseLv, ch });
     // what else they do: trade and craft
     const extra = (n.stylist ? '<button class="rbtn" data-act="stylist">Change my look</button>' : '')
       + (n.shop ? '<button class="rbtn" data-act="shop">Buy / Sell</button>' : '')
@@ -580,7 +583,7 @@ export class Menus {
       btns = `<button class="rbtn soft" data-act="close">Not yet</button><button class="rbtn" data-act="jobchange" data-id="${st.job}">Become a ${JOBS[st.job].name}</button>`;
     } else if (st.state === 'offer') {
       const first = st.id === n.quests[0] || st.id === n.trial?.[0] || st.id === n.trial2?.[0];
-      text = (first ? n.hello + ' ' : '') + st.q.intro;
+      text = (first ? (greet || n.hello) + ' ' : '') + st.q.intro;
       box = `<b class="${st.q.job ? 'jobq' : ''}">${esc(st.q.title)}</b><small>${esc(this.quests.goal(st.q))}</small>${this.questReward(st.id)}`;
       btns = `<button class="rbtn soft" data-act="close">Not now</button><button class="rbtn" data-act="accept" data-id="${st.id}">Accept</button>`;
     } else if (st.state === 'active' && st.q.kind === 'quiz' && this.quests.hasItems(st.id, this.inv)) {
@@ -600,8 +603,8 @@ export class Menus {
       text = st.q.thanks;
       box = `<b class="${st.q.job ? 'jobq' : ''}">${esc(st.q.title)} ✓</b>${this.questReward(st.id)}`;
       btns = `<button class="rbtn" data-act="handin" data-id="${st.id}">Hand in</button>`;
-    } else if (st.state === 'locked') text = n.later(st.q.lv);
-    else text = n.quests.length || n.trial ? n.bye : n.hello; // people with no quests just say hello
+    } else if (st.state === 'locked') text = (greet ? greet + ' ' : '') + n.later(st.q.lv);
+    else text = greet || (n.quests.length || n.trial ? n.bye : n.hello); // people with no quests just say hello
     // a Trainee not yet ready for a trial hears what it takes; the Elder points ready Trainees to the city
     if (p.job === 'novice' && n.trialHint && (st.state === 'finished' || st.state === 'locked')) text = n.trialHint;
     if (p.job === 'novice' && n.ready && p.jobLv >= 10 && skillLv(p, 'basics') >= 9 && ['finished', 'locked', 'active'].includes(st.state)) text = n.ready;

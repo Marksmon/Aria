@@ -78,7 +78,8 @@ No weapon needed: Mend, Thrust, Guard, Rest, War Cry, Stand Firm, Rune Ward, Bli
 ## Trials
 
 - Each trial is a **three-step series**. Each step accepts itself as soon as the step before is
-  handed in. Job quests show in **green**.
+  handed in. In a second-job trial, a hunt on the way hands itself in where it is finished, so
+  only the last step goes back to the trainer. Job quests show in **green**.
 - **No reward for the steps on the way:** only completing the whole series pays, and the last step
   pays the total of all its steps (`rewardOf` in `quests.js`).
 - First-job trials are for a Trainee of Base ~10 and need one trip to the easy field beside the

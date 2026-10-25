@@ -500,6 +500,7 @@ button.eq:active { background: var(--w-sel); }
 /* a trainer's question: one answer per row, and what they said about the last one */
 .btnrow .answers { display: flex; flex-direction: column; gap: 4px; flex: 1; }
 .btnrow:has(.answers) { align-items: flex-end; }
+.btnrow.qrow .qquit { margin-right: auto; } /* Quit quest: on its own at the left, away from Go there */
 .btnrow .answers .rbtn { text-align: left; white-space: normal; }
 .qbox small.qright { color: #7fe08a; }
 .qbox small.qwrong { color: #ff9a7a; }

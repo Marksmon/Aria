@@ -568,10 +568,11 @@ export class MobManager {
         b.tryMove((dx / d) * push, (dz / d) * push);
       }
     }
-    // respawn out of view
+    // respawn out of view: twice as fast at night, and twice as fast for what a quest is hunting
     for (let i = this.dead.length - 1; i >= 0; i--) {
       const e = this.dead[i];
-      e.t -= dt * (this.night ? 2 : 1);
+      const wanted = this.hunted?.has(e.m.type) && !e.m.def.boss && !e.m.def.mvp;
+      e.t -= dt * (this.night ? 2 : 1) * (wanted ? 2 : 1);
       const far = Math.hypot(player.x - e.m.home.x, player.z - e.m.home.z) > 14;
       const nightOnly = e.m.def.night || e.m.nightOnly;
       if (e.t <= 0 && far && (!nightOnly || this.night)) {

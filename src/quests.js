@@ -4,6 +4,8 @@
 //   fetch - bring items (taken from bag + chest when you hand in)
 //   visit - set foot in every listed zone
 // map: where they stand (camp unless given). shop: they buy and sell (items.js SHOPS).
+// greet(c): an optional line that changes with the hero (c: job, jobId, tier, baseLv, ch = story chapter),
+// said in place of hello and bye
 // craft: they craft ('gear' or 'use' recipes). trial: a job trial for Trainees (Job Lv 10,
 // Basic Training 9), a short series of quests one after another, and the job it opens once the last
 // is done. heal: mends you for free. warp: the
@@ -19,6 +21,10 @@ export const NPCS = {
     hello: 'The valley is restless these days. Young legs like yours could help an old man.',
     later: (lv) => `Rest now. Come back to me when you reach Base Level ${lv}.`,
     bye: 'You have done this valley a great kindness. Sit by the fire whenever you like.',
+    greet: (c) => (c.ch >= 5 ? 'The fire burns high again, thanks to you. Even so, my old bones feel trouble on the roads.'
+      : c.tier === 2 ? `A ${c.job}! The songs will have your name in them yet.`
+      : c.jobId === 'swordman' ? 'A Blader now! I always knew that practice sword wanted to be more than a stick.'
+      : c.jobId === 'mage' ? 'A Sorcerer! Mind the tents when you practise, child.' : null),
     quests: ['warden'],
     // a Trainee ready for a job is sent on to Steinborg
     ready: 'You have learnt all a Trainee can. For the blade, go north through Mosvangr to Steinborg: Captain Ulfr trains Bladers. For sorcery, go west to Fenstrand and north to Galdrheim, the city of sorcerers.',
@@ -51,6 +57,7 @@ export const NPCS = {
     hello: 'Welcome to Steinborg market! Potions, feathers, torches. And I buy whatever you drag in from the wilds.',
     later: (lv) => `I will have work for you at Base Level ${lv}. Meanwhile, shop away!`,
     bye: 'Good trading, friend. Mind your purse on the road.',
+    greet: (c) => (c.baseLv >= 30 ? 'My best customer! The wilds must be paying you well.' : null),
     quests: ['pearls'],
   },
   gunnar: {
@@ -58,6 +65,8 @@ export const NPCS = {
     hello: 'Bring me materials and I forge them into gear: blades, staves, armor, charms. Or buy what I have on the rack.',
     later: (lv) => `I will have a job for you at the forge once you reach Base Level ${lv}.`,
     bye: 'Keep that edge sharp.',
+    greet: (c) => (c.baseLv >= 40 ? 'Back again? That gear has seen some fighting. Let us see what I can do with it.'
+      : c.jobId === 'swordman' ? 'A Blader needs good steel. Have a look at the rack.' : null),
     quests: ['ore'],
   },
   ragna: {
@@ -74,6 +83,11 @@ export const NPCS = {
     hello: 'The Watch keeps the roads clear. Strong arms are always welcome.',
     later: (lv) => `Nothing for you yet. Report back at Base Level ${lv}.`,
     bye: 'The roads are safer for your blade. Well fought.',
+    greet: (c) => ({ blademaster: 'BladeMaster. You outrank half my Watch now, and they know it.',
+      wizard: 'Archmage Vigdis\'s Wizard. Keep your storms off my walls.',
+      magicknight: 'Sword and song both. Sir Eirik must be proud.',
+      swordman: 'One of the Watch\'s own Bladers. Stand straight.',
+      mage: 'A Sorcerer at my gate. The Watch could use a few spells.' })[c.jobId] || null,
     trialHint: 'Trainees who have learnt all their basics can take the Blader\'s Trial with me: Trainee Job Level 10 and Basic Training 9.',
     quests: ['kingcrab', 'giantbeetle'],
   },
@@ -121,6 +135,8 @@ export const NPCS = {
     hello: 'The runes whisper of you. Few hear them.',
     later: (lv) => `The runes are quiet. Come to me again at Base Level ${lv}.`,
     bye: 'Walk softly. The runes are listening.',
+    greet: (c) => (c.tier === 2 ? 'The runes burn bright around you. Few in Aria cast so long a shadow.'
+      : c.tier === 1 ? 'The runes changed when you chose your path. They speak of you more now.' : null),
     trialHint: 'Sorcery is taught in Galdrheim, north of Fenstrand. When your training is done (Trainee Job Level 10, Basic Training 9), go to Archmage Vigdis there. She was my teacher.',
     quests: [],
     lore: [
@@ -175,6 +191,11 @@ export const NPCS = {
     hello: 'Welcome to Galdrheim, child. Here we sing the world into shape; we call it galdr, the song-craft.',
     later: (lv) => `You are not ready for what I would ask. Come back at Base Level ${lv}.`,
     bye: 'Sing true, and the runes will answer.',
+    greet: (c) => ({ mage: 'My student returns. Your song is steadier already.',
+      swordman: 'A Blader in Galdrheim? Sit, but keep that sword sheathed near the crystals.',
+      wizard: 'Wizard. The elements bend for you now. Do not let them bend you.',
+      blademaster: 'BladeMaster. Your sword hums; I can hear it from here.',
+      magicknight: 'Steel that sings. I taught half of that song.' })[c.jobId] || null,
     trialHint: 'When your training is done (Trainee Job Level 10, Basic Training 9), come to me and I will test whether the runes answer you.',
     quests: ['giantmother'],
     lore: [

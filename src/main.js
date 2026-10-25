@@ -367,6 +367,15 @@ function gainExp(base, job) {
 const questGiver = giverOf;
 function questComplete(id) {
   audio.play('heart');
+  // a second-job trial's hunt on the way hands itself in where you stand and starts the next
+  // step; only the last step goes back to the trainer (the whole trial still pays at the end)
+  if (NEXT[id] && Object.values(NPCS).some((n) => n.trial2?.includes(id)) && quests.turnIn(id, inv)) {
+    quests.accept(NEXT[id]);
+    menus.message(`${QUESTS[id].title} done! Next: ${QUESTS[NEXT[id]].title}`);
+    refreshQuests();
+    persist();
+    return;
+  }
   menus.message(`${QUESTS[id].title} complete! Return to ${NPCS[questGiver(id)].name}.`);
   refreshQuests();
 }
@@ -398,6 +407,11 @@ tracker.querySelector('.qhead').addEventListener('click', () => { setMin(!tracke
 let trackerHTML = '';
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 function refreshQuests() {
+  // monsters an active kill quest still wants come back twice as fast
+  mobs.hunted = new Set(Object.keys(quests.active).flatMap((k) => {
+    const q = QUESTS[k];
+    return q.kind !== 'kill' || quests.ready(k, inv) ? [] : q.mobs ? Object.keys(q.mobs) : [q.mob];
+  }));
   villagers.setMarks((npc) => {
     if (story.talkStep(npc) && storyLive()) return 'story';
     const st = quests.status(npc, prog, inv).state;

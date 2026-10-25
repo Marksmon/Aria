@@ -482,7 +482,10 @@ it, the goal, your progress, the reward and where to go. **Go there** walks you 
 portal by portal: to the nearest map with the monster, or for a gathering quest the nearest map
 where an item you still need drops, or back to whoever is waiting for you. Tap the ground to stop.
 Job quests show in green, and the steps of a series (the job trials) start on their own when the
-step before is handed in.
+step before is handed in. A second-job trial's hunts hand themselves in where you stand, so only
+its last step goes back to the trainer. Monsters an active quest still wants respawn twice as fast.
+Quit quest sits at the left of the Quest View's buttons and asks twice. The main people greet you
+differently as your job and the story change.
 
 ## Day and night
 
