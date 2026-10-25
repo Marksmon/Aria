@@ -109,9 +109,18 @@ export const STORY = [
   // (the Fire Giant itself is no part of the story: it waits in Ember Hill as an MVP, for the strongest)
   { id: 'runesong', ch: 'Chapter 4: The Fire-Ring', title: 'The Song of the Ring', kind: 'talk', npc: 'vigdis', goal: 'Go to Archmage Vigdis in Galdrheim (north of Fen Shore)',
     say: [['vigdis', 'You have seen him sleeping, then. Good. Most who see the Giant awake do not come back to tell of it.'],
-      ['vigdis', 'Hallveig cut the fire-ring\'s runes; I can sing them again. Listen, and carry the song home to Eldrun in your head. It will hold him in his dream for a long while yet.'],
-      ['vigdis', 'One day he may wake anyway. If you grow strong enough (I would say Base Level 50, and the best gear in Aria), you could end it for good. That fight is yours to choose.']],
+      ['vigdis', 'Hallveig cut the fire-ring\'s runes; I can sing them again. But the song must reach the sleeper himself. I will sing from my tower, and my runes will carry it to a circle on Ember Hill. He will feel it.'],
+      ['vigdis', 'Stand in that circle, on the hill road north of his lair, and I will begin. His heralds will come up out of the hill to break it. Hold them off until the song is done.']],
     reward: { xp: 3000, items: { potion3: 10, potion2: 10 } } },
+  // the first saga's climax: hold Ember Hill while Vigdis sings the Giant back to sleep (a survive
+  // step: main.js tickVigil). Falling, or walking away, and the song must start again
+  { id: 'vigil', ch: 'Chapter 4: The Fire-Ring', title: 'The Vigil on Ember Hill', kind: 'survive', map: 'ridge', at: { x: 32, z: 24 }, secs: 75,
+    goal: 'Stand in the rune circle on Ember Hill and hold off the Giant\'s heralds until Vigdis\'s song is done',
+    hint: 'Wave after wave of Beetles and Wisps come at you for 75 seconds. Bring potions, and stay close to the rune circle: walk away and the song breaks.',
+    say: [[null, 'The last note rings out over the hill. Deep below, something vast sighs, and is still. The heralds crumble into ash.'],
+      [null, 'Vigdis\'s voice comes faintly out of the circle: "It holds. He dreams again. Now carry the song home to Eldrun, and sing it into the fire-ring itself."'],
+      [null, '"One day he may wake anyway. If you grow strong enough (I would say Base Level 50, and the best gear in Aria), you could end it for good. That fight is yours to choose."']],
+    reward: { xp: 4000, items: { potion2: 10 } } },
   { id: 'rekindled', ch: 'Chapter 4: The Fire-Ring', title: 'The Fire-Ring Rekindled', kind: 'talk', npc: 'bram', goal: 'Bring the song home to Elder Halvard at camp',
     say: [['bram', 'Sing it, then, there by the fire... Look! It has not burnt this bright since I was a boy.'],
       ['bram', 'The Giant sleeps on under Ember Hill, and the ground is quiet. Saeunn says the runes speak of older names beyond the mountains: lands the songs still remember. The road goes on, as roads do.'],
@@ -256,6 +265,7 @@ export class Story {
 
   progress() {
     const s = this.step;
+    if (s?.kind === 'survive') return this.count ? ` (${Math.min(this.count, s.secs)}/${s.secs} s)` : '';
     return s?.kind === 'kill' ? ` (${Math.min(this.count, s.n)}/${s.n})` : '';
   }
 
@@ -273,6 +283,7 @@ export class Story {
     switch (s.kind) {
       case 'kill': return this.count >= s.n;
       case 'visit': return this.flags.visit === s.map;
+      case 'survive': return !!this.flags[s.id];
       case 'stat': return Object.values(state.prog.stats).reduce((a, b) => a + b, 0) > 6;
       case 'skill': return state.skillLv(state.prog, s.skill) >= s.lv;
       case 'hotbar': return state.hotbar.has('item', s.item);

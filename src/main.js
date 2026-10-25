@@ -7,7 +7,7 @@ import { Player } from './player.js';
 import { Input } from './input.js';
 import { UI } from './ui.js';
 import { FX } from './fx.js';
-import { MobManager, MOB_DEFS } from './mobs.js';
+import { MobManager, MOB_DEFS, guardDef } from './mobs.js';
 import { loadSave, writeSave } from './save.js';
 import { Inventory } from './inventory.js';
 import { Progress, JOBS, RATES } from './progress.js';
@@ -497,7 +497,7 @@ const nearestMap = (maps) => [...maps].sort((a, b) => hops(world.id, a) - hops(w
 function questTarget(id) {
   if (id === 'story') {
     const s = story.step, map = s && story.map();
-    return map ? { map, npc: s.npc || null, why: s.title } : null; // a talk step's person, or the Keeper to sign with
+    return map ? { map, npc: s.npc || null, at: s.at, why: s.title } : null; // a talk step's person, the Keeper to sign with, or a place
   }
   const q = QUESTS[id], giver = questGiver(id);
   if (!(id in quests.active) || quests.ready(id, inv)) return { map: NPCS[giver].map || 'camp', npc: giver, why: NPCS[giver].name };
@@ -581,6 +581,55 @@ function tickWading(dt) {
     ring(m, m.walked !== m.wadeW, m.def.w); // walked: how far it has gone in all, so a change means it moved
     m.wadeW = m.walked;
   }
+}
+
+// ---------- the vigil on Ember Hill: hold the heralds off while Vigdis sings (a survive step) ----------
+let vigil = null; // { t, next, list }
+const VIGIL_WAVE = 15; // seconds between waves of heralds (lesser ones, like a boss's guards)
+function endVigil(why) {
+  for (const m of vigil.list) if (mobs.list.includes(m)) { fx.puff(m.x, world.heightAt(m.x, m.z) + 0.3, m.z, m.def.w); mobs.remove(m); }
+  vigil = null;
+  story.count = 0;
+  if (why) menus.message(why);
+  refreshQuests();
+}
+function tickVigil(dt) {
+  const s = story.step;
+  if (!storyLive() || s?.kind !== 'survive') { if (vigil) endVigil(); return; }
+  const y = world.heightAt(s.at.x, s.at.z);
+  if (!vigil) {
+    if (world.id !== s.map) return;
+    if (Math.random() < dt * 3) fx.sparkle(s.at.x, y + 0.4, s.at.z, '#b48aff', 4); // where to stand
+    if (Math.hypot(s.at.x - player.x, s.at.z - player.z) > 3 || player.state !== 'normal') return;
+    vigil = { t: 0, next: 2, list: [] };
+    menus.message('The runes in the circle light up, and Vigdis\'s song rises out of them. The hill trembles: the heralds are coming!');
+    audio.play('night');
+    return;
+  }
+  if (world.id !== s.map || player.state === 'down') { endVigil('The song breaks off. Go back to the hill road and begin again.'); return; }
+  if (Math.hypot(s.at.x - player.x, s.at.z - player.z) > 12) { endVigil('You strayed too far, and the song breaks off. Stand by the rune circle and begin again.'); return; }
+  vigil.t += dt;
+  story.count = Math.floor(vigil.t);
+  if (Math.random() < dt * 6) fx.sparkle(s.at.x + (Math.random() - 0.5) * 3, y + 0.3, s.at.z + (Math.random() - 0.5) * 3, '#b48aff', 3); // the song in the air
+  const up = vigil.list.filter((m) => m.alive).length;
+  if (vigil.t >= vigil.next && vigil.t < s.secs - 4 && up < 4) { // a wave of heralds from all round the hill (held back while four still stand)
+    vigil.next += VIGIL_WAVE;
+    const kinds = vigil.t > 30 ? ['beetle', 'beetle', 'wisp'] : ['beetle', 'wisp'], a0 = Math.random() * Math.PI * 2; // the hill grows angrier
+    kinds.forEach((type, i) => {
+      const a = a0 + (i / kinds.length) * Math.PI * 2;
+      let x = s.at.x + Math.cos(a) * 8, z = s.at.z + Math.sin(a) * 8;
+      if (!world.walkable(x, z)) { x = s.at.x + Math.cos(a) * 4; z = s.at.z + Math.sin(a) * 4; }
+      const m = mobs.add(type, x, z);
+      m.def = guardDef(type);
+      m.hp = m.def.hp;
+      m.temp = true;
+      m.provoke();
+      vigil.list.push(m);
+    });
+    fx.puff(s.at.x, y + 0.2, s.at.z, 2);
+    cam.shake = 0.3;
+  }
+  if (vigil.t >= s.secs) { story.flag(s.id); endVigil(); }
 }
 
 // ---------- quests out in the world: searches, defences and rare hunts ----------
@@ -1453,6 +1502,7 @@ function frame() {
   if (live) fx.update(dt);
   if (live) { naturalRegen(dt); tickSkills(dt); checkPortals(); tickNav(); tickQuestWorld(dt); }
   if (live) tickWading(dt);
+  if (live) tickVigil(dt);
   dressPeople();
   tickAura(dt, t, b);
   updateCastBar();

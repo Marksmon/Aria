@@ -432,7 +432,7 @@ rings the portal to take, or the person to talk to. A purple **!** marks who the
 | 1: The Stone-Fort | Travel to Steinborg · tell Captain Ulfr the fires are failing · sign Keeper Bera's ledger (the Keepers: healing, storage, save point, teleport) · meet Saeunn the Seeress · sell something for perz |
 | 2: Blade or Rune | Pass a job trial and become a Blader or a Sorcerer |
 | 3: Embers in the Wilds | Saeunn's warning · defeat the Giant Sprout in Birch Grove · travel to Ember Hill |
-| 4: The Fire-Ring | Archmage Vigdis sings the fire-ring's runes anew · bring the song home: the fire-ring rekindled |
+| 4: The Fire-Ring | Archmage Vigdis will sing the fire-ring's runes anew · **the Vigil on Ember Hill**: stand in her rune circle and hold off the Giant's heralds for 75 seconds while her song reaches him · bring the song home: the fire-ring rekindled |
 | 5: The Salt Road | Captain Ulfr: kobolds rob the salt carts · Hakon the Carter in Salt Bay · defeat 12 kobolds in Stone Field · Saeunn and the glowing red coal · go down into Coal Pit · Dag the Miner: the goblins drive the kobolds to dig for a "Waking Fire" |
 | 6: The Goblin War-Band | tell Ulfr · defeat 15 goblins in Burnt Wood · Archmage Vigdis reads the two coal trails |
 | 7: The Second Path | take a second job (BladeMaster, Wizard or Magic Knight) |
