@@ -22,6 +22,15 @@ export const MOB_DEFS = {
   wisp: { name: 'Wisp', ai: 'wisp', art: 'wisp', el: 'wind', lv: 11, hp: 290, atk: [20, 25], def: 4, vit: 8, agi: 20, dex: 22, exp: [26, 19], adelay: 1292, passive: true, walk: 150, aggro: 6, reach: 0.75, w: 0.7, r: 0.3, fly: true, glow: true, drops: [['glow', 1, 1, 1], ['wander', 1, 1, 0.15], ['wisp_lantern', 1, 1, 0.004]] },
   // Sigrun's rare hunt: a great golden Wisp over Fen Shore's pond, out only at night while the quest is on
   lanternWisp: { name: 'Lantern Wisp', ai: 'wisp', art: 'wisp', el: 'wind', tint: '#ffd86a', lv: 16, hp: 1000, atk: [26, 34], def: 6, vit: 12, agi: 22, dex: 30, exp: [320, 220], adelay: 1250, passive: false, walk: 150, aggro: 7, chase: 10, reach: 0.85, w: 1.15, r: 0.42, fly: true, glow: true, noRespawn: true, drops: [['wisp_lantern', 1, 1, 1], ['glow', 3, 5, 1], ['wander', 1, 2, 0.5]] },
+  // the raid's bloops (Bloop Island, raid.js): stronger colours of the Bloop, recoloured sheets (sprites.js).
+  // These are their own stats; in the raid each is rebuilt at the difficulty's level (raidDef)
+  yellowSlime: { name: 'Yellow Bloop', ai: 'hopper', art: 'slimeYellow', el: 'wind', lv: 12, hp: 330, atk: [22, 28], def: 2, vit: 10, agi: 12, dex: 20, exp: [30, 21], adelay: 1500, walk: 400, aggro: 5, chase: 5, reach: 0.8, w: 1.0, r: 0.38, drops: [['gel', 1, 2, 1], ['dew', 1, 1, 0.4], ['shiny_gel', 1, 1, 0.01]] },
+  redSlime: { name: 'Red Bloop', ai: 'hopper', art: 'slimeRed', el: 'fire', lv: 18, hp: 560, atk: [36, 46], def: 4, vit: 16, agi: 16, dex: 30, exp: [75, 52], adelay: 1450, walk: 300, aggro: 5, chase: 6, reach: 0.8, w: 1.05, r: 0.4, drops: [['gel', 1, 2, 1], ['cinder', 1, 1, 0.1], ['shiny_gel', 1, 1, 0.01]] },
+  // the raid's boss: BleepBloop, a giant old war bloop in a dented helm (crown: warhelm). It belly-flops
+  // onto you, charges, stomps, and calls Red Bloops; only ever met in the raid, at the raid's level
+  bleepBloop: { crown: 'warhelm', name: 'BleepBloop', ai: 'boss', art: 'slimeOrange', el: 'fire', boss: true, lv: 35, hp: 9600, atk: [62, 80], def: 14, vit: 35, agi: 24, dex: 52, exp: [9000, 6300], adelay: 1600, walk: 300,
+    moves: [{ kind: 'leap', name: 'Belly Flop', mult: 1.6, r: 2.0 }, { kind: 'charge', name: "Veteran's Charge", mult: 1.5 }], stomp: 1.5,
+    aggro: 99, chase: 99, reach: 1.4, w: 2.6, r: 0.95, heavy: true, summon: ['redSlime', 'redSlime', 'redSlime'], summonText: 'BleepBloop bellows an old war cry, and Red Bloops come bouncing!', drops: [] },
   // ---------- the new lands: palette swaps of the valley's monsters, Ragnarok style (tint) ----------
   russet: { name: 'Red Sprout', ai: 'tank', art: 'sprout', el: 'earth', tint: '#ffb47a', lv: 18, hp: 520, atk: [35, 46], def: 5, vit: 18, agi: 18, dex: 34, exp: [80, 56], adelay: 1500, passive: true, walk: 200, aggro: 4.5, chase: 6, reach: 0.8, w: 1.0, r: 0.36, drops: [['thorn', 1, 1, 0.55], ['seed', 1, 1, 0.6], ['leaf', 1, 1, 0.4], ['berry', 1, 1, 0.2], ['bramble_ring', 1, 1, 0.003]] },
   brine: { name: 'Sea Bloop', ai: 'hopper', art: 'slimeBlue', el: 'water', tint: '#a8ffd8', lv: 22, hp: 880, atk: [50, 65], def: 4, vit: 22, agi: 20, dex: 40, exp: [125, 88], adelay: 1500, passive: true, walk: 400, aggro: 5, chase: 5, reach: 0.8, w: 1.1, r: 0.4, drops: [['salt', 1, 1, 0.55], ['gel', 1, 1, 0.8], ['tonic', 1, 1, 0.05], ['shiny_gel', 1, 1, 0.01]] },
@@ -103,7 +112,26 @@ const SUMMON_AT = 0.6, SUMMON_CD = 120;
 // build-tools/sim.mjs, so the fight is the boss and not two full-strength monsters at once)
 export const GUARD = { hp: 0.5, atk: 0.6 };
 const guardDefs = {};
-export const guardDef = (type) => (guardDefs[type] ||= { ...MOB_DEFS[type], hp: Math.round(MOB_DEFS[type].hp * GUARD.hp), atk: MOB_DEFS[type].atk.map((a) => Math.round(a * GUARD.atk)) });
+const lesser = (d) => ({ ...d, hp: Math.round(d.hp * GUARD.hp), atk: d.atk.map((a) => Math.round(a * GUARD.atk)) });
+export const guardDef = (type) => (guardDefs[type] ||= lesser(MOB_DEFS[type]));
+// A raid's monster (raid.js), rebuilt at the raid's level from the stats of a typical field monster
+// of that level (fitted to MOB_DEFS: HP about 48 a level, ATK 3.2-4 a level...), its kind's
+// strength on top (STRENGTH). Raid monsters attack on sight and never give up (relentless), drop
+// nothing (the raid pays at the end) and don't split. A boss is a mini-boss of that level.
+const STRENGTH = { slime: 0.8, blueSlime: 0.9, yellowSlime: 1, redSlime: 1.1 };
+const raidDefs = {};
+export function raidDef(type, lv) {
+  return (raidDefs[`${type}@${lv}`] ||= (() => {
+    const d = MOB_DEFS[type], k = d.boss ? 1 : STRENGTH[type] ?? 1, exp = 0.0122 * lv ** 3;
+    return {
+      ...d, lv, raidLv: lv, passive: false, relentless: true, aggro: 99, chase: 99, split: null, drops: [],
+      hp: Math.round(48 * lv * k * (d.boss ? 7 : 1)),
+      atk: [3.2, 4].map((a) => Math.round(a * lv * k * (d.boss ? 0.6 : 1))),
+      def: Math.round(0.4 * lv * k), vit: Math.round(lv * k), agi: Math.round(0.8 * lv), dex: Math.round(1.5 * lv),
+      exp: [Math.round(exp * k * (d.boss ? 20 : 1)), Math.round(exp * 0.7 * k * (d.boss ? 20 : 1))],
+    };
+  })());
+}
 // each mini-boss wears something of its own over its head, so it never looks like a big tinted
 // copy of its kind: painted once, in code (crown: the def's key)
 const CROWNS = {
@@ -124,6 +152,16 @@ const CROWNS = {
   },
   embers: (g) => { // the Giant Beetle: two burning horns
     for (const s of [-1, 1]) { g.fillStyle = '#3a1408'; g.beginPath(); g.moveTo(32 + s * 6, 52); g.quadraticCurveTo(32 + s * 26, 40, 32 + s * 20, 8); g.quadraticCurveTo(32 + s * 16, 34, 32 + s * 2, 52); g.fill(); g.fillStyle = '#ffb02a'; g.beginPath(); g.arc(32 + s * 20, 10, 6, 0, 7); g.fill(); g.fillStyle = '#fff0a0'; g.beginPath(); g.arc(32 + s * 20, 10, 2.5, 0, 7); g.fill(); }
+  },
+  warhelm: (g) => { // BleepBloop: a dented old iron war helm, a nose guard, a notch and a red plume
+    g.fillStyle = '#b84a2a'; g.beginPath(); g.moveTo(30, 14); g.quadraticCurveTo(44, 2, 56, 10); g.quadraticCurveTo(46, 10, 36, 20); g.fill();
+    g.fillStyle = '#3a3a44'; g.beginPath(); g.ellipse(32, 44, 26, 22, 0, Math.PI, 0); g.closePath(); g.fill();
+    g.fillStyle = '#8a8c96'; g.beginPath(); g.ellipse(32, 44, 23, 19, 0, Math.PI, 0); g.closePath(); g.fill();
+    g.fillStyle = '#b4b6c0'; g.beginPath(); g.ellipse(25, 36, 9, 6, -0.4, 0, Math.PI * 2); g.fill();
+    g.fillStyle = '#5a5c66'; g.fillRect(8, 42, 48, 7); g.fillStyle = '#c8a040'; for (const x of [14, 24, 40, 50]) { g.beginPath(); g.arc(x, 45.5, 2, 0, 7); g.fill(); }
+    g.fillStyle = '#5a5c66'; g.fillRect(29, 26, 6, 24); // the nose guard
+    g.fillStyle = '#3a3a44'; g.beginPath(); g.moveTo(42, 27); g.lineTo(47, 31); g.lineTo(43, 33); g.closePath(); g.fill(); // a dent
+    g.strokeStyle = '#2a2a30'; g.lineWidth = 2; g.beginPath(); g.moveTo(16, 30); g.lineTo(20, 36); g.lineTo(18, 40); g.stroke(); // an old scratch
   },
 };
 const crownTex = {};
@@ -380,6 +418,15 @@ class Mob {
       } else if (this.state === 'chase') { this.state = 'wander'; this.angry = 0; this.target = null; }
     }
 
+    // a raid's monster never gives up: its home is wherever the hero is, and it keeps on chasing
+    if (d.relentless) {
+      this.home = { x: p.x, z: p.z };
+      if (this.state !== 'chase') { this.state = 'chase'; this.target = null; }
+      this.chaseT = Math.max(this.chaseT, 5);
+      this.tired = 0;
+      this.angry = Math.max(this.angry, 1);
+    }
+
     const x0 = this.x, z0 = this.z; // after knockback, so being pushed doesn't move the legs
     const dx = p.x - this.x, dz = p.z - this.z, dist = Math.hypot(dx, dz);
     const low = this.hp / d.hp <= 0.3 && d.hp > 1;
@@ -427,7 +474,7 @@ class Mob {
     };
 
     // too far from home: back it goes (a roaming boss only when it was chasing you)
-    if (homeD > (this.provokeT > 0 || d.mvp ? 20 : 11) && this.state !== 'return' && (d.ai !== 'boss' || this.state === 'chase')) this.state = 'return';
+    if (!d.relentless && homeD > (this.provokeT > 0 || d.mvp ? 20 : 11) && this.state !== 'return' && (d.ai !== 'boss' || this.state === 'chase')) this.state = 'return';
     if (this.stunT > 0) this.stunT -= dt; // stunned: stands there
     else if (this.state === 'return') {
       moving = this.moveToward(this.home.x, this.home.z, speed, dt) > 0;
@@ -698,7 +745,7 @@ export class MobManager {
   // and when, how often it has called its guards, the guards still standing, the summon cooldown left
   bossSnapshot() {
     for (const m of this.list) {
-      if (!m.alive || !(m.def.mvp || m.def.boss)) continue;
+      if (!m.alive || !(m.def.mvp || m.def.boss) || m.temp) continue; // (a raid's boss is not kept)
       const guards = this.guardsOf(m).map((g) => [g.type, Math.ceil(g.hp)]);
       const cd = m.calls && !guards.length ? Math.max(0, SUMMON_CD - (m.t - m.guardsGoneT)) : 0;
       if (m.hp < m.def.hp || m.calls || guards.length) this.bossHp[m.type] = { hp: Math.ceil(m.hp), at: Date.now(), calls: m.calls, guards, cd };
@@ -727,7 +774,7 @@ export class MobManager {
     const c = this.add(type, boss.x + Math.cos(a) * r, boss.z + Math.sin(a) * r);
     if (!this.world.walkable(c.x, c.z)) { c.x = boss.x; c.z = boss.z; }
     c.temp = true;
-    c.def = guardDef(type);
+    c.def = boss.def.raidLv ? lesser(raidDef(type, boss.def.raidLv - 3)) : guardDef(type); // a raid boss's guards are at the raid's level
     c.hp = c.def.hp;
     c.leader = boss; // it follows the boss and fights alongside it (see update)
     c.home = { x: boss.x, z: boss.z };

@@ -494,6 +494,9 @@ const ATTIRE = {
   magicknight: recolorer([[navy, (h, s, l) => [268, Math.min(0.7, s + 0.1), l * 1.1]], [crimson, (h, s, l) => [190, 0.7, Math.min(0.6, l + 0.15)]]]),
 };
 
+// a Bloop in another colour: its green body (hue 50-150) turned to hue, saturation and lightness scaled
+const bloopColour = (hue, sat, light) => recolorer([[(h, s) => h > 50 && h < 150 && s > 0.08, (h, s, l) => [hue, Math.min(1, s * sat), Math.min(0.88, l * light)]]]);
+
 // People with no sheet of their own are dressed from a bald body (see person() below): its cloth in
 // their colours. Each body's cloth, by colour: the Trainee's browns, the Blader's navy gambeson and
 // crimson sash (steel stays), the Sorcerer's navy robe and silver trims, the Magic Knight's purple
@@ -697,6 +700,10 @@ export function createSprites() {
     beetle: sheet('beetle'),
     wisp: sheet('wisp'),
     jarl: SHEETS['./art/jarl.png'] ? sheet('jarl') : sheet('beetle'), // the MVP (PixelLab art, packed like the rest)
+    // the raid's bloops: the green Bloop's body in new colours (its blush and outline stay)
+    slimeYellow: sheet('slime', { recolor: bloopColour(50, 1.25, 1.35) }),
+    slimeRed: sheet('slime', { recolor: bloopColour(356, 1.2, 1.05) }),
+    slimeOrange: sheet('slime', { recolor: bloopColour(26, 1.3, 1.2) }), // BleepBloop
   };
   // kobolds and goblins, painted in code (painted.js) until they get PixelLab art
   for (const id of ['koboldWarrior', 'koboldArcher', 'koboldAssassin', 'goblinWarrior', 'goblinArcher', 'goblinAssassin']) mobs[id] = paintedSet(id, [16, 30]);
