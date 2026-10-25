@@ -12,6 +12,9 @@ code and all sound is synthesized, so the game ships as one offline HTML file.
 ## Get the APK
 
 Every push to `main` builds a new APK automatically (about 3–5 minutes).
+Every APK is signed with the same key (`build-tools/debug.keystore`), so a new build installs over
+the old one and keeps your save. On the title screen, **Back up save** shows your save as a code to
+copy somewhere safe, and **Restore save** puts one back (on this phone or another).
 Download it from **Releases → "Aria — latest build"** → `Aria.apk`.
 New builds install over old ones as an **update**: they share the signing key, and each build's
 version (1.0.*build number*, shown on the title screen) is higher than the last. Just open the new
@@ -90,8 +93,8 @@ warriors close in and hit hard, **archers** keep about five paces away and shoot
 and they back off), and **assassins** are quick, dart the last few steps and sometimes strike twice.
 They drop Kobold Fur and Goblin Teeth, ores for refining, and now and then Hard Ore or Armor Ore.
 
-**Bosses.** Each new field has a mini-boss: big, slow, stomping the ground around it, back 5–8
-minutes after it falls. Like the MVPs, each calls 2 guards of its own kind below 60% HP (Red
+**Bosses.** Each new field has a mini-boss: big, stomping the ground around it, back 5–8
+minutes after it falls (its timer holds when you leave the map or close the game, as an MVP's does). Like the MVPs, each calls 2 guards of its own kind below 60% HP (Red
 Sprouts, Blue Crabs, Dark Mushrooms, Fire Beetles), and again 2 minutes after the last one falls. They drop a rare material (30%) that forges the best gear, and a rare
 equip of their own (2–3%). Each wears something of its own over its head (the Giant Sprout a ring of
 burning roots, the King Crab a coral crown, the Giant Mushroom a halo of spores, the Giant Beetle
@@ -100,21 +103,50 @@ the ATK): cut them down first. At the level their quests suggest (Giant Sprout 2
 Giant Mushroom 43, Giant Beetle 50) each is about a two-minute fight on a dozen or so Orange
 Potions; see `docs/balance.md`.
 
-**MVP.** The Fire Giant (Lv 60, 24,000 HP, Fire), optional and not part of the story, waits in the south of Ember Hill and stomps the
+**MVP.** The Fire Giant (Lv 60, 24,000 HP, Fire), optional and not part of the story, roams Ember Hill and stomps the
 ground around it every few seconds. It is made for one Base 50 hero in the best gear: about three
 minutes and a bag of potions (a Blader drinks around 50 White Potions; a Sorcerer who keeps
 moving needs far fewer, but Blue Potions too). Whoever brings it down gets **MVP** over their
 head, bonus Base EXP and MVP items straight to the bag, plus its drops (its horn, crown, cape or
 sword). It comes back 15 minutes later, even if you leave the map or close the game.
 
-Two more MVPs rule the new lands: the **Kobold King** (Lv 50, 18,000 HP, Earth) holds court in the
-south of Coal Pit, and the **Goblin King** (Lv 55, 21,000 HP, Wind) in the north of Serpent Wood. Both
+Two more MVPs rule the new lands: the **Kobold King** (Lv 50, 18,000 HP, Earth) in
+Coal Pit, and the **Goblin King** (Lv 55, 21,000 HP, Wind) in Serpent Wood. Both
 stomp like the Fire Giant, and each MVP keeps its own timer (20 and 30 minutes). **Every MVP calls
 guards** when it first falls below 60% HP: the Fire Giant 2 Fire Wisps and 3 Fire Beetles, each
 king 4 of his own (2 warriors, an archer and an assassin). It never calls while a guard is still
 standing: once the last one falls, it can call again 2 minutes later, if it is still fighting. Guards are lesser
 monsters of their kind (half the HP, 60% of the ATK): they follow their MVP, fight whoever it
 fights, and vanish when it falls (no EXP, no drops). The kings drop ores, a rare accessory (5%) and their **card** (1%), as does the Fire Giant.
+
+**Where bosses are.** Mini-bosses and MVPs appear at a random spot on their map, away from you and
+the portals, and roam the whole map. A boss you leave behind keeps its wounds and its guards (and
+how often it has called them): come back, or wake up at your save point after fainting, and the
+fight is where you left it, the boss a little healed (5% of its HP a minute while it isn't
+fighting you). This holds over a restart too. No monster ever steps onto a portal.
+
+**Walking speed** follows Ragnarok's, at half pace for Aria's smaller maps: the hero takes 300 ms a
+tile (Ragnarok's 150 ms, twice as long), and each monster twice its Ragnarok walk time: Slimes 800
+(Poring), Kobolds 400, Goblins 300, Goblin Assassins 200, the Kobold King 300, the Goblin King 240
+and the Fire Giant 260 (Kobold Leader, Goblin Leader, Ifrit). Some monsters are quicker than you,
+as in Ragnarok. Speed changes work like Ragnarok's too: the strongest slow (spores: +50% walk time)
+and the strongest haste count, they don't stack, and the walk time never falls under 40%. No gear
+or skill hastes the walk for now: in Aria walking speed is a big buff. Monsters keep their pace however hurt they are.
+
+**Boss moves.** Bosses walk at Ragnarok's MVP pace (the Goblin King and the Fire Giant are quicker than you), don't slow down when wounded,
+and have moves beside the stomp. A **red circle** on the ground shows where each will land, and
+fills up until it hits: step out of it.
+
+| Boss | Moves |
+|---|---|
+| Kobold King | **Charge**: crouches, then rushes at you in a straight line (stands winded after) · **Boulder**: thrown where you stand, lands 1 s later |
+| Goblin King | **Leap**: jumps onto where you stand · **Hurled Axe** · **Frenzy** below half HP: 8 s of faster steps and attacks (he glows red) |
+| Fire Giant | **Fireball** (wide) · **Leap** |
+| Giant Sprout · Giant Mushroom | **Seed Pod** · **Spore Pod**, thrown at you |
+| King Crab · Giant Beetle | **Charge** |
+
+Each move hits for 1.4–2x the boss's ATK. Staying far away no longer keeps you safe: spells reach
+5 paces, and every boss has a move for 3–9 paces.
 
 **Steinborg.** A walled market city north of Moss Field: stone walls with towers and two gates
 (south to Moss Field, east to Birch Grove), timber houses round a fountain square, a forge, market
@@ -169,11 +201,11 @@ and they change your job. Elder Halvard sends ready Trainees on to the city.
 |---|---|---|
 | Blade Discipline | passive, 10 | +2 ATK per level with swords |
 | Iron Hide | passive, 10 | +1 DEF, +1% Max HP per level |
-| Cleave | 10 | 110–200% to the target, half to monsters beside it |
-| Heavy Strike | 10, needs Cleave 3 | 167–320%, +3% hit per level |
+| Cleave | 10 | 134–260% to the target, half to monsters beside it |
+| Heavy Strike | 10, needs Cleave 3 | 195–420%, +3% hit per level |
 | War Cry | 10 | monsters within 6 paces turn on you; ATK +1% per level for 20 s |
 | Stand Firm | 10, needs War Cry 3 | no flinching, 1% less damage per level |
-| Ground Slash | 10, needs Heavy Strike 5 | 110–200% to everything close, pushing it back a little |
+| Ground Slash | 10, needs Heavy Strike 5 | 145–280% to everything close, pushing it back a little; 2% per level to stun for 1 s |
 | Battle Rhythm | Job 10, passive | every 3rd hit restores 3 SP |
 | Last Stand | Job 10, passive | below 25% HP: +15% ATK |
 
@@ -185,10 +217,10 @@ A new Sorcerer is handed an Wooden Staff.
 | Sorcerer | | |
 |---|---|---|
 | Mana Well | passive, 10 | +2% Max SP and +1 SP per recovery tick, per level |
-| Ember Bolt | 10, 7–16 SP | a fire bolt: 120–300% MATK |
-| Frost Shard | 10, 9–18 SP | 100–190% MATK, 4% per level to freeze for 2.5 s |
-| Arc Lightning | 10, needs Ember Bolt 4 | 90–180% MATK, leaps to 2 monsters nearby for half |
-| Flame Ring | 10, needs Ember Bolt 5 | 112–220% MATK to every monster around you |
+| Ember Bolt | 10, 5–14 SP | a fire bolt: 82–190% MATK |
+| Frost Shard | 10, 7–16 SP | like Cold Bolt: one shard of ice per level, falling one after another, 21–30% MATK each |
+| Arc Lightning | 10, needs Ember Bolt 4 | 67–130% MATK, leaps to 2 monsters nearby for half; 2% per level to paralyze each for 1.2 s |
+| Flame Ring | 10, needs Ember Bolt 5 | 78–150% MATK to every monster around you; 2% per level to set each burning for 3 s |
 | Rune Ward | 10, needs Mana Well 3 | 30 s: 2% less damage per level, hits don't break your chant |
 | Blink | Job 10 | reappear 4 paces ahead |
 | Swift Chant | Job 10, passive | spells cast 15% faster |
@@ -208,8 +240,8 @@ Sorcerer's trial may hold a staff to cast.
 | Needs a sword (any weapon but a staff) | Needs a staff |
 |---|---|
 | Cleave, Heavy Strike, Ground Slash (Blader) | Ember Bolt, Frost Shard, Arc Lightning, Flame Ring (Sorcerer) |
-| Twin Fang, Piercing Edge, Final Blade (BladeMaster) | Stone Spike, Earthquake, Meteor Storm, Storm Gust, Thunderstorm (Wizard) |
-| Flame Edge, Frost Edge, Thunder Edge (Magic Knight) | |
+| Twin Fang, Piercing Edge, Final Blade, Blade Dance (BladeMaster) | Stone Spike, Earthquake, Meteor Storm, Storm Gust, Thunderstorm (Wizard) |
+| Elemental Edge, Elemental Blade, Elemental Nova (Magic Knight) | |
 
 No weapon needed: Mend, Thrust, Guard, Rest, War Cry, Stand Firm, Rune Ward, Blink, Stone Aegis.
 
@@ -239,28 +271,34 @@ points stay. Second jobs wear their first job's outfit in new colours and glow w
 | Blade Mastery | passive, 10: +3 ATK and +1 HIT per level with swords |
 | Combo Edge | passive, 10: Thrust, Cleave, Heavy Strike, Twin Fang and Piercing Edge have 4% per level to Combo, a free extra strike |
 | Momentum | passive, 5: each Combo adds a stack (up to 5, 8 s), +1% ATK per level per stack |
-| Twin Fang | 10: two cuts of 112–220%, each can Combo |
-| Piercing Edge | 10, needs Twin Fang 3: 250–520%, ignoring half the monster's DEF |
-| Final Blade | 5, needs Piercing Edge 5 and Momentum 1: spends every Momentum stack, 360–600% +50% per stack |
+| Twin Fang | 10: two cuts of 146–290%, each can Combo |
+| Piercing Edge | 10, needs Twin Fang 3: three quick thrusts of 108–225% each, ignoring half the monster's DEF |
+| Final Blade | 5, needs Piercing Edge 5 and Momentum 1: spends every Momentum stack on a flurry of 8 cuts, 66–110% each, +8% each per stack |
+| Blade Dance | 5, needs Piercing Edge 3 and Combo Edge 3: like Omnislash, you vanish and dash from monster to monster within 5 paces of your target, one at a time, 5–9 slashes of 164–260% (each can Combo); nothing can touch you while you dance. 18 s cooldown |
 
 | Wizard: the elements, over an area | |
 |---|---|
-| Elemental Attunement | passive, 10: spells +3% per level |
+| Elemental Attunement | passive, 10: spells +3% per level, and a further +3% per level to a monster weak to the spell's element |
 | Resonance | passive, 5: a spell of a different element from the last (within 8 s) +6% per level |
-| Stone Spike | 10: 125–260% MATK, Earth (new element for spells); Shatters the monster: the next spell of another element on it +30% |
-| Earthquake | 10, needs Stone Spike 3: 51–105% MATK Earth within 3 paces of the target, may stun |
-| Meteor Storm | 10, needs Ember Bolt 5: three falls of 34–70% MATK Fire around the target |
-| Storm Gust | 10, needs Frost Shard 5: 51–105% MATK Water around the target, may freeze |
-| Thunderstorm | 10, needs Arc Lightning 5: 51–105% MATK Wind around the target |
+| Stone Spike | 10: 114–240% MATK, Earth (new element for spells); Shatters the monster: the next spell of another element on it +30% |
+| Earthquake | 10, needs Stone Spike 3: three shocks of 44–80% MATK Earth within 3 paces of the target; 1.5% per level each to stun for 1.5 s |
+| Meteor Storm | 10, needs Ember Bolt 5: 3–7 meteors crash one after another at random spots within 3 paces of the target, 55–100% MATK Fire around each; 3% per level to set each monster hit burning |
+| Storm Gust | 10, needs Frost Shard 5: a 3 s blizzard, 10 gusts of 13–22% MATK Water within 3 paces; from a monster's third gust, 2% per level each to freeze it for 2.5 s |
+| Thunderstorm | 10, needs Arc Lightning 5: like Lord of Vermillion, 6 waves of lightning, 20–38% MATK Wind each within 3 paces; 1.5% per level each to paralyze for 1.5 s |
 
 | Magic Knight: ATK and MATK together | |
 |---|---|
 | Spellblade | passive, 10: sword hits add 3% of your MATK per level |
-| Elemental Chain | passive, 5: an Edge of a different element from your last (within 6 s) +6% per level and 3 SP back |
-| Flame Edge | 10: 110–200% ATK plus 47–110% MATK, Fire |
-| Frost Edge | 10: 100–190% ATK plus 57–120% MATK, Water; may freeze |
-| Thunder Edge | 10, needs Flame and Frost Edge 3: 90–180% ATK plus 47–110% MATK, Wind; half to monsters beside |
+| Elemental Chain | passive, 5: an Elemental Edge of a different element from your last (within 6 s) +6% per level and 3 SP back |
+| Elemental Edge | 10: two quick cuts of 110–200% ATK plus 63–135% MATK each, in your blade's element (none without Elemental Blade). 3% per level each: Fire burns, Water freezes, Earth stuns, Wind crackles into the monsters beside for half and may paralyze them |
+| Elemental Blade | 5, needs Spellblade 1: imbue your sword for 90–210 s; normal attacks, Edges and Novas strike as its element. Use it again to switch, free while it lasts: Fire → Water → Wind → Earth |
+| Elemental Nova | 5, needs Elemental Edge 3 and Elemental Chain 1: three waves of your blade's element roll out around you to 2.5, 4 and 5.5 paces, 116–180% ATK plus 70–110% MATK each; 4% per level each to burn, freeze, paralyze or stun by element |
 | Stone Aegis | 10: 20 s barrier soaking 60–150% of your ATK plus as much of your MATK, +1 DEF per level |
+
+**Status effects.** Some skills may **freeze**, **paralyze** or **stun** a monster (it stands
+helpless, tinted blue, yellow or grey) or set it **burning** (it loses a fifth of the hit that lit it
+every second for 3 s, flickering orange). Bosses and MVPs resist: a third of the chance, for half as
+long, and nothing takes hold while a boss is in the middle of a move.
 
 **Elements.** Every monster has an element, as in Ragnarok, and so do spells and some weapons.
 Ember Bolt and Flame Ring are Fire, Frost Shard is Water, Arc Lightning is Wind; normal attacks

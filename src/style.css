@@ -596,3 +596,12 @@ button.eq:active { background: var(--w-sel); }
 #bigmap .bm-marks { position: absolute; inset: 0; pointer-events: none; }
 #bigmap .bm-mark { position: absolute; transform: translate(-50%, -50%); pointer-events: auto; cursor: pointer; padding: 0; box-shadow: 0 1px 3px rgba(0, 0, 0, .5); }
 #bigmap .bm-mark.mob { cursor: default; }
+
+/* title screen: save backup */
+.trow { display: flex; gap: 8px; justify-content: center; }
+#t-code { position: absolute; inset: 0; margin: auto; width: min(560px, 92vw); height: fit-content; max-height: 90vh; padding: 14px; border-radius: 12px;
+  background: rgba(20, 24, 40, .96); color: #f3ead8; box-shadow: 0 8px 30px rgba(0, 0, 0, .5); display: flex; flex-direction: column; gap: 10px; z-index: 5; }
+#t-code[hidden] { display: none; }
+#t-code p { margin: 0; font-size: 14px; line-height: 1.35; }
+#t-code textarea { width: 100%; box-sizing: border-box; height: 110px; resize: none; font: 11px/1.3 monospace; color: #f3ead8;
+  background: rgba(255, 255, 255, .08); border: 1px solid rgba(255, 255, 255, .2); border-radius: 8px; padding: 8px; word-break: break-all; }

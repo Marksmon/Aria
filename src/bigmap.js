@@ -58,7 +58,7 @@ export class BigMap {
     // one entry for each kind of monster, at the home nearest the middle of where that kind lives
     const kinds = new Map();
     for (const m of this.mobs.list) {
-      if (m.def.mvp || m.leader) continue; // the MVP has its own entry below; guards come and go
+      if (m.def.mvp || m.def.boss || m.leader || m.temp) continue; // bosses have their own entries below; guards and heralds come and go
       if (!kinds.has(m.type)) kinds.set(m.type, []);
       kinds.get(m.type).push(m.home);
     }
@@ -68,7 +68,11 @@ export class BigMap {
       const at = homes.reduce((b, p) => (Math.hypot(p.x - cx, p.z - cz) < Math.hypot(b.x - cx, b.z - cz) ? p : b));
       mobs.push({ kind: 'mob', type, def: MOB_DEFS[type], x: at.x, z: at.z });
     }
-    if (this.mobs.mvp) { const v = this.mobs.mvp; mobs.push({ kind: 'mob', type: v.type, def: MOB_DEFS[v.type], x: v.x, z: v.z, mvp: true }); }
+    // the map's mini-boss and MVP: they roam, so their marker shows where they are, while they are out
+    for (const type of this.mobs.bosses || []) {
+      const b = this.mobs.list.find((m) => m.type === type && m.alive);
+      mobs.push({ kind: 'mob', type, def: MOB_DEFS[type], x: b?.x, z: b?.z, mvp: !!MOB_DEFS[type].mvp });
+    }
     mobs.sort((a, b) => a.def.lv - b.def.lv);
     for (const m of mobs) out.push({ ...m, name: m.def.name, boss: m.def.boss || m.mvp });
     return out;
@@ -82,7 +86,7 @@ export class BigMap {
     this.items.forEach((e, i) => {
       e.n = i + 1;
       const cls = `bm-mark ${e.kind}${e.boss ? ' boss' : ''}`;
-      marks += `<button class="${cls}" data-i="${i}" style="left:${pct(e.x)};top:${pct(e.z)}">${e.n}</button>`;
+      if (e.x !== undefined) marks += `<button class="${cls}" data-i="${i}" style="left:${pct(e.x)};top:${pct(e.z)}">${e.n}</button>`;
     });
     for (const [title, kinds] of groups) {
       const rows = this.items.filter((e) => kinds.includes(e.kind));
@@ -168,6 +172,12 @@ export class BigMap {
   update(dt) {
     if (!this.open) return;
     this.drawT -= dt;
-    if (this.drawT <= 0) { this.drawT = 0.2; this.draw(); this.status(); }
+    if (this.drawT <= 0) {
+      this.drawT = 0.2;
+      this.draw();
+      // a roaming boss: its marker follows it, and comes and goes as it falls and returns
+      const now = (this.mobs.bosses || []).map((t) => this.mobs.list.find((m) => m.type === t && m.alive)).map((b) => (b ? `${b.x | 0},${b.z | 0}` : '-')).join('|');
+      if (now !== this.bossKey) { this.bossKey = now; this.build(); } else this.status();
+    }
   }
 }

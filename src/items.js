@@ -133,7 +133,7 @@ const BASE_ITEMS = {
   round_shield: { type: 'equip', slot: 'shield', jobs: ['novice', 'swordman'], name: 'Round Shield', def: 2, icon: 'shield_round', desc: 'Linden boards with an iron boss. Simple, and it has saved more lives than any sword.' },
   wool_cape:    { type: 'equip', slot: 'garment', name: 'Wool Cape', def: 1, icon: 'cape', desc: 'Warm, grey and hard-wearing. Every traveller in Aria owns one.' },
   leather_boots: { type: 'equip', slot: 'shoes', name: 'Leather Boots', def: 1, icon: 'boots_leather', desc: 'Good leather soles for long roads. Your feet will thank you.' },
-  swift_boots:  { type: 'equip', slot: 'shoes', name: 'Swift Boots', def: 1, fx: 'speed', icon: 'boots', desc: 'Light boots soled with shell and laced with leaf. +20% move speed.' },
+  swift_boots:  { type: 'equip', slot: 'shoes', name: 'Swift Boots', def: 2, flee: 4, stats: { qkn: 1 }, icon: 'boots', desc: 'Light boots soled with shell and laced with leaf. Quick on your feet in a fight.' },
   torch:        { type: 'equip', slot: 'light', name: 'Torch', fx: 'light', desc: 'A pine torch dipped in pitch. Lights your way at night.' },
   // accessories: one can be worn at a time
   sprout_charm: { type: 'equip', slot: 'acc', name: 'Sprout Charm', fx: 'regen', icon: 'charm_sprout', desc: 'A Sprout seed in a woven knot. It keeps growing, and so do your wounds close. HP recovers twice as fast.' },
@@ -716,6 +716,10 @@ const PAINT = {
   skill_earthsplit: (g) => skillIcon(g, '#8a5a2a', () => { g.beginPath(); g.moveTo(32, 12); g.lineTo(28, 26); g.lineTo(36, 34); g.lineTo(26, 52); g.lineWidth = 4; g.stroke(); g.beginPath(); g.moveTo(14, 46); g.lineTo(50, 46); g.stroke(); }),
   skill_rhythm: (g) => skillIcon(g, '#3a7aa0', () => { g.beginPath(); g.moveTo(10, 34); g.lineTo(20, 34); g.lineTo(26, 18); g.lineTo(34, 48); g.lineTo(40, 30); g.lineTo(54, 30); g.lineWidth = 4; g.stroke(); }),
   // ---------- second jobs ----------
+  skill_bladedance: (g) => skillIcon(g, '#9a2a5a', () => { g.lineWidth = 3; for (const [x, y] of [[18, 20], [44, 26], [24, 44]]) { g.beginPath(); g.moveTo(x - 8, y + 6); g.lineTo(x + 8, y - 6); g.stroke(); } g.setLineDash([3, 4]); g.beginPath(); g.moveTo(18, 20); g.lineTo(44, 26); g.lineTo(24, 44); g.stroke(); g.setLineDash([]); }),
+  skill_elemedge: (g) => skillIcon(g, '#3a5a9a', () => { g.beginPath(); g.moveTo(16, 48); g.lineTo(44, 20); g.lineWidth = 5; g.stroke(); for (const [x, y, col] of [[48, 12, '#ff8a4a'], [54, 22, '#8ad0ff'], [44, 6, '#fff27a']]) { g.fillStyle = col; g.beginPath(); g.arc(x, y, 4, 0, 7); g.fill(); } }),
+  skill_elemblade: (g) => skillIcon(g, '#2a6a7a', () => { g.lineWidth = 3; g.beginPath(); g.arc(32, 32, 18, 0, 7); g.stroke(); g.beginPath(); g.moveTo(22, 42); g.lineTo(42, 22); g.lineWidth = 5; g.stroke(); g.fillStyle = '#9fe8ff'; g.beginPath(); g.arc(42, 22, 4, 0, 7); g.fill(); }),
+  skill_nova: (g) => skillIcon(g, '#c84a8a', () => { for (let i = 0; i < 8; i++) { const a = (i / 8) * Math.PI * 2; g.beginPath(); g.moveTo(32 + Math.cos(a) * 8, 32 + Math.sin(a) * 8); g.lineTo(32 + Math.cos(a) * 21, 32 + Math.sin(a) * 21); g.lineWidth = 3.5; g.stroke(); } g.beginPath(); g.arc(32, 32, 6, 0, 7); g.fill(); }),
   // BladeMaster
   skill_blademastery: (g) => skillIcon(g, '#8a3a2a', () => { for (const [a, b] of [[[16, 48], [44, 16]], [[20, 16], [48, 44]]]) { g.beginPath(); g.moveTo(...a); g.lineTo(...b); g.stroke(); } g.beginPath(); g.arc(32, 32, 5, 0, 7); g.fill(); }),
   skill_comboedge: (g) => skillIcon(g, '#b8541a', () => { g.lineWidth = 4; for (const y of [22, 32, 42]) { g.beginPath(); g.moveTo(14, y + 6); g.lineTo(46, y - 6); g.stroke(); } g.beginPath(); g.moveTo(46, 30); g.lineTo(54, 26); g.lineTo(48, 36); g.closePath(); g.fill(); }),
@@ -734,9 +738,6 @@ const PAINT = {
   // Magic Knight
   skill_spellblade: (g) => skillIcon(g, '#3a6ab8', () => { g.beginPath(); g.moveTo(18, 46); g.lineTo(46, 18); g.lineWidth = 5; g.stroke(); for (const [x, y] of [[24, 20], [44, 40], [18, 30]]) { g.beginPath(); g.moveTo(x, y - 5); g.lineTo(x + 2, y); g.lineTo(x, y + 5); g.lineTo(x - 2, y); g.closePath(); g.fill(); } }),
   skill_elemchain: (g) => skillIcon(g, '#2a8a8a', () => { g.lineWidth = 4; for (const [x, col] of [[20, '#ff8a4a'], [32, '#8ad0ff'], [44, '#fff27a']]) { g.strokeStyle = col; g.beginPath(); g.ellipse(x, 32, 7, 10, 0, 0, 7); g.stroke(); } }),
-  skill_flameedge: (g) => skillIcon(g, '#c8541a', () => { g.beginPath(); g.moveTo(18, 46); g.lineTo(44, 20); g.lineWidth = 5; g.stroke(); g.fillStyle = '#ffd26a'; g.beginPath(); g.moveTo(46, 12); g.quadraticCurveTo(56, 22, 46, 30); g.quadraticCurveTo(48, 22, 40, 20); g.closePath(); g.fill(); }),
-  skill_frostedge: (g) => skillIcon(g, '#2a8ac8', () => { g.beginPath(); g.moveTo(18, 46); g.lineTo(44, 20); g.lineWidth = 5; g.stroke(); g.lineWidth = 2.5; for (let i = 0; i < 3; i++) { const a = i * 1.05; g.beginPath(); g.moveTo(46 - Math.cos(a) * 8, 18 - Math.sin(a) * 8); g.lineTo(46 + Math.cos(a) * 8, 18 + Math.sin(a) * 8); g.stroke(); } }),
-  skill_thunderedge: (g) => skillIcon(g, '#a88a1a', () => { g.beginPath(); g.moveTo(18, 46); g.lineTo(42, 22); g.lineWidth = 5; g.stroke(); g.beginPath(); g.moveTo(50, 8); g.lineTo(42, 20); g.lineTo(48, 20); g.lineTo(40, 32); g.lineWidth = 3; g.strokeStyle = '#fff27a'; g.stroke(); }),
   skill_aegis: (g) => skillIcon(g, '#8a7a5a', () => { g.beginPath(); g.arc(32, 34, 20, Math.PI, 0); g.lineWidth = 4; g.stroke(); g.beginPath(); g.moveTo(32, 18); g.lineTo(44, 24); g.quadraticCurveTo(42, 40, 32, 48); g.quadraticCurveTo(22, 40, 20, 24); g.closePath(); g.fill(); }),
   skill_laststand: (g) => skillIcon(g, '#a01a1a', () => { g.beginPath(); g.moveTo(32, 12); g.lineTo(32, 40); g.lineWidth = 6; g.stroke(); g.beginPath(); g.arc(32, 48, 3.5, 0, 7); g.fill(); }),
   talk: (g) => {

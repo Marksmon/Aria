@@ -15,6 +15,15 @@
 // free: { jobLv } learnt automatically; granted: learnt once its needs are met; else bought with points
 import { TREES, JOBS, SECOND_AT } from './progress.js';
 
+// status: a spell (or sword sweep) may freeze, paralyze or stun a monster (it stands helpless) or set
+// it burning (damage each second). chance(lv) in %, dur in s; bosses resist: a third of the chance
+// for half as long (main.js inflict). hits/every: a skill that strikes again and again (power is per hit).
+const STATUS_WORD = { freeze: 'freeze', paralyze: 'paralyze', stun: 'stun', burn: 'set burning' };
+const statusText = (sk, lv, each = '') => `${sk.status.chance(lv)}% chance${each} to ${STATUS_WORD[sk.status.kind]} for ${sk.status.dur} s (bosses resist)`;
+
+// what an Elemental Edge or Nova does by element (main.js): the status, and for how long
+export const EDGE_FX = { fire: { kind: 'burn', dur: 3 }, water: { kind: 'freeze', dur: 2 }, wind: { kind: 'paralyze', dur: 1.2 }, earth: { kind: 'stun', dur: 1.5 } };
+
 export const SKILLS = {
   // ---------- Novice ----------
   basics: {
@@ -53,12 +62,12 @@ export const SKILLS = {
   },
   cleave: {
     name: 'Cleave', job: 'swordman', kind: 'active', max: 10, target: 'mob', range: 1.35, weapon: 'sword', icon: 'skill_cleave',
-    sp: (lv) => 5 + Math.floor(lv / 2),
-    desc: (lv) => `A wide sweep: ${100 + 10 * lv}% damage to your target, half that to any monster beside it.`,
+    sp: (lv) => 5 + Math.floor(lv / 2), power: (lv) => 120 + 14 * lv,
+    desc: (lv) => `A wide sweep: ${SKILLS.cleave.power(lv)}% damage to your target, half that to any monster beside it.`,
   },
   heavy: {
     name: 'Heavy Strike', job: 'swordman', kind: 'active', max: 10, needs: { cleave: 3 }, target: 'mob', range: 1.35, weapon: 'sword', icon: 'skill_rend',
-    sp: () => 8, power: (lv) => 150 + 17 * lv,
+    sp: () => 8, power: (lv) => 170 + 25 * lv,
     desc: (lv) => `A two-handed blow: ${SKILLS.heavy.power(lv)}% damage, +${3 * lv}% hit chance.`,
   },
   warcry: {
@@ -73,8 +82,8 @@ export const SKILLS = {
   },
   earthsplit: {
     name: 'Ground Slash', job: 'swordman', kind: 'active', max: 10, needs: { heavy: 5 }, cd: 3, weapon: 'sword', icon: 'skill_earthsplit',
-    sp: () => 20,
-    desc: (lv) => `Sweep the blade low all around you: ${100 + 10 * lv}% damage to everything close, pushing it back a little.`,
+    sp: () => 20, power: (lv) => 130 + 15 * lv, status: { kind: 'stun', chance: (lv) => 2 * lv, dur: 1 },
+    desc: (lv) => `Sweep the blade low all around you: ${SKILLS.earthsplit.power(lv)}% damage to everything close, pushing it back a little; ${statusText(SKILLS.earthsplit, lv, ' each')}.`,
   },
   rhythm: {
     name: 'Battle Rhythm', job: 'swordman', kind: 'passive', max: 1, free: { jobLv: 10 }, icon: 'skill_rhythm',
@@ -91,24 +100,24 @@ export const SKILLS = {
     desc: (lv) => `+${2 * lv}% Max SP, and +${lv} SP each time SP recovers.`,
   },
   spark: {
-    name: 'Ember Bolt', job: 'mage', kind: 'active', max: 10, target: 'mob', range: 7, magic: 'fire', weapon: 'staff', icon: 'skill_spark',
-    sp: (lv) => 6 + lv, cast: (lv) => 0.5 + 0.1 * lv, cd: 0.6, power: (lv) => 100 + 20 * lv,
+    name: 'Ember Bolt', job: 'mage', kind: 'active', max: 10, target: 'mob', range: 5, magic: 'fire', weapon: 'staff', icon: 'skill_spark',
+    sp: (lv) => 4 + lv, cast: (lv) => 0.5 + 0.1 * lv, cd: 0.6, power: (lv) => 70 + 12 * lv,
     desc: (lv) => `Hurl a bolt of fire: ${SKILLS.spark.power(lv)}% MATK. Fire: strong against Earth, weak against Water.`,
   },
   frost: {
-    name: 'Frost Shard', job: 'mage', kind: 'active', max: 10, target: 'mob', range: 7, magic: 'water', weapon: 'staff', icon: 'skill_frost',
-    sp: (lv) => 8 + lv, cast: (lv) => 0.6 + 0.08 * lv, cd: 0.6, power: (lv) => 90 + 10 * lv,
-    desc: (lv) => `A shard of ice: ${SKILLS.frost.power(lv)}% MATK, ${4 * lv}% chance to freeze the monster for 2.5 s. Water: strong against Fire, weak against Wind.`,
+    name: 'Frost Shard', job: 'mage', kind: 'active', max: 10, target: 'mob', range: 5, magic: 'water', weapon: 'staff', icon: 'skill_frost',
+    sp: (lv) => 6 + lv, cast: (lv) => 0.4 + 0.12 * lv, cd: 0.6, power: (lv) => 20 + lv, hits: (lv) => lv, every: 0.12,
+    desc: (lv) => `${lv} shard${lv > 1 ? 's' : ''} of ice rain on the monster one after another, ${SKILLS.frost.power(lv)}% MATK each. Water: strong against Fire, weak against Wind.`,
   },
   arc: {
-    name: 'Arc Lightning', job: 'mage', kind: 'active', max: 10, needs: { spark: 4 }, target: 'mob', range: 7, magic: 'wind', weapon: 'staff', icon: 'skill_arc',
-    sp: (lv) => 12 + lv, cast: (lv) => 1 + 0.1 * lv, cd: 1, power: (lv) => 80 + 10 * lv,
-    desc: (lv) => `Lightning strikes your target for ${SKILLS.arc.power(lv)}% MATK and leaps to 2 monsters nearby for half that. Wind: strong against Water, weak against Earth.`,
+    name: 'Arc Lightning', job: 'mage', kind: 'active', max: 10, needs: { spark: 4 }, target: 'mob', range: 5, magic: 'wind', weapon: 'staff', icon: 'skill_arc',
+    sp: (lv) => 10 + lv, cast: (lv) => 1 + 0.1 * lv, cd: 1, power: (lv) => 60 + 7 * lv, status: { kind: 'paralyze', chance: (lv) => 2 * lv, dur: 1.2 },
+    desc: (lv) => `Lightning strikes your target for ${SKILLS.arc.power(lv)}% MATK and leaps to 2 monsters nearby for half that; ${statusText(SKILLS.arc, lv, ' each')}. Wind: strong against Water, weak against Earth.`,
   },
   flamering: {
     name: 'Flame Ring', job: 'mage', kind: 'active', max: 10, needs: { spark: 5 }, magic: 'fire', weapon: 'staff', icon: 'skill_flamering',
-    sp: (lv) => 20 + lv, cast: () => 1.5, cd: 3,
-    desc: (lv) => `A ring of fire bursts around you: ${100 + 12 * lv}% MATK (Fire) to every monster close by.`,
+    sp: (lv) => 16 + lv, cast: () => 1.5, cd: 3, power: (lv) => 70 + 8 * lv, status: { kind: 'burn', chance: (lv) => 2 * lv, dur: 3 },
+    desc: (lv) => `A ring of fire bursts around you: ${SKILLS.flamering.power(lv)}% MATK (Fire) to every monster close by; ${statusText(SKILLS.flamering, lv, ' each')} (a fifth of the hit each second).`,
   },
   ward: {
     name: 'Rune Ward', job: 'mage', kind: 'active', max: 10, needs: { manawell: 3 }, cd: 30, icon: 'skill_ward',
@@ -141,54 +150,59 @@ export const SKILLS = {
   },
   twinfang: {
     name: 'Twin Fang', job: 'blademaster', kind: 'active', max: 10, target: 'mob', range: 1.35, weapon: 'sword', icon: 'skill_twinfang',
-    sp: (lv) => 8 + Math.floor(lv / 2), cd: 0.8, power: (lv) => 100 + 12 * lv,
-    desc: (lv) => `Two quick cuts, ${100 + 12 * lv}% damage each. Each cut can Combo.`,
+    sp: (lv) => 6 + Math.floor(lv / 2), cd: 0.8, power: (lv) => 130 + 16 * lv,
+    desc: (lv) => `Two quick cuts, ${SKILLS.twinfang.power(lv)}% damage each. Each cut can Combo.`,
   },
   pierce: {
     name: 'Piercing Edge', job: 'blademaster', kind: 'active', max: 10, needs: { twinfang: 3 }, target: 'mob', range: 1.35, weapon: 'sword', icon: 'skill_pierce',
-    sp: (lv) => 12 + lv, cd: 1.5, power: (lv) => 220 + 30 * lv,
-    desc: (lv) => `A thrust that finds the gaps: ${220 + 30 * lv}% damage, ignoring half the monster's DEF.`,
+    sp: (lv) => 9 + lv, cd: 1.5, power: (lv) => 95 + 13 * lv, hits: () => 3, every: 0.12,
+    desc: (lv) => `Three lightning thrusts that find the gaps: ${SKILLS.pierce.power(lv)}% damage each, ignoring half the monster's DEF.`,
   },
   finalblade: {
     name: 'Final Blade', job: 'blademaster', kind: 'active', max: 5, needs: { pierce: 5, momentum: 1 }, target: 'mob', range: 1.35, weapon: 'sword', icon: 'skill_finalblade',
-    sp: (lv) => 25 + 3 * lv, cd: 6, power: (lv, stacks = 0) => 300 + 60 * lv + 50 * stacks,
-    desc: (lv) => `Spend every Momentum stack on one blow: ${300 + 60 * lv}% damage, +50% for each stack.`,
+    sp: (lv) => 20 + 2 * lv, cd: 6, power: (lv, stacks = 0) => 55 + 11 * lv + 8 * stacks, hits: () => 8, every: 0.07,
+    desc: (lv) => `Spend every Momentum stack on a flurry of 8 cuts: ${SKILLS.finalblade.power(lv)}% damage each, +8% each for every stack.`,
+  },
+  bladedance: {
+    name: 'Blade Dance', job: 'blademaster', kind: 'active', max: 5, needs: { pierce: 3, comboedge: 3 }, target: 'mob', range: 4, weapon: 'sword', icon: 'skill_bladedance',
+    sp: (lv) => 40 + 5 * lv, cd: 18, power: (lv) => 140 + 24 * lv, hits: (lv) => 4 + lv, every: 0.22, area: 5,
+    desc: (lv) => `Vanish into a blur and dash from monster to monster within ${SKILLS.bladedance.area} paces of your target, one at a time: ${SKILLS.bladedance.hits(lv)} slashes of ${SKILLS.bladedance.power(lv)}% each, and each can Combo. Nothing can touch you until the dance ends.`,
   },
 
   // ---------- Wizard (from the Sorcerer): elements, over an area. Changing element from one spell
   // to the next builds Resonance; Stone Spike shatters a monster for the next spell ----------
   attune: {
     name: 'Elemental Attunement', job: 'wizard', kind: 'passive', max: 10, icon: 'skill_attune',
-    desc: (lv) => `Spells deal ${3 * lv}% more damage.`,
+    desc: (lv) => `Spells deal ${3 * lv}% more damage, and a further ${3 * lv}% to a monster weak to their element.`,
   },
   resonance: {
     name: 'Resonance', job: 'wizard', kind: 'passive', max: 5, needs: { attune: 3 }, icon: 'skill_resonance',
     desc: (lv) => `A spell of a different element from your last one (within 8 s) deals ${6 * lv}% more damage.`,
   },
   stonespike: {
-    name: 'Stone Spike', job: 'wizard', kind: 'active', max: 10, target: 'mob', range: 7, magic: 'earth', weapon: 'staff', icon: 'skill_stonespike',
-    sp: (lv) => 10 + lv, cast: (lv) => 0.8 + 0.05 * lv, cd: 0.6, power: (lv) => 110 + 15 * lv,
-    desc: (lv) => `A spike of rock bursts under the monster: ${110 + 15 * lv}% MATK (Earth), and it is Shattered for 6 s: the next spell of another element on it deals 30% more. Earth: strong against Wind, weak against Fire.`,
+    name: 'Stone Spike', job: 'wizard', kind: 'active', max: 10, target: 'mob', range: 5, magic: 'earth', weapon: 'staff', icon: 'skill_stonespike',
+    sp: (lv) => 10 + lv, cast: (lv) => 0.8 + 0.05 * lv, cd: 0.6, power: (lv) => 100 + 14 * lv,
+    desc: (lv) => `A spike of rock bursts under the monster: ${SKILLS.stonespike.power(lv)}% MATK (Earth), and it is Shattered for 6 s: the next spell of another element on it deals 30% more. Earth: strong against Wind, weak against Fire.`,
   },
   quake: {
-    name: 'Earthquake', job: 'wizard', kind: 'active', max: 10, needs: { stonespike: 3 }, target: 'mob', range: 7, magic: 'earth', weapon: 'staff', icon: 'skill_quake',
-    sp: (lv) => 30 + 2 * lv, cast: () => 1.6, cd: 3, power: (lv) => 45 + 6 * lv,
-    desc: (lv) => `The ground heaves around your target: ${45 + 6 * lv}% MATK (Earth) to every monster within 3 paces of it; 25% of them are stunned for 1.5 s.`,
+    name: 'Earthquake', job: 'wizard', kind: 'active', max: 10, needs: { stonespike: 3 }, target: 'mob', range: 5, magic: 'earth', weapon: 'staff', icon: 'skill_quake',
+    sp: (lv) => 30 + 2 * lv, cast: () => 1.6, cd: 3, power: (lv) => 40 + 4 * lv, hits: () => 3, every: 0.5, status: { kind: 'stun', chance: (lv) => 1.5 * lv, dur: 1.5 },
+    desc: (lv) => `The ground heaves around your target three times, ${SKILLS.quake.power(lv)}% MATK (Earth) each shock to every monster within 3 paces; ${statusText(SKILLS.quake, lv, ' each shock')}.`,
   },
   meteor: {
-    name: 'Meteor Storm', job: 'wizard', kind: 'active', max: 10, needs: { spark: 5 }, target: 'mob', range: 7, magic: 'fire', weapon: 'staff', icon: 'skill_meteor',
-    sp: (lv) => 40 + 2 * lv, cast: (lv) => 2.2 + 0.05 * lv, cd: 4, power: (lv) => 30 + 4 * lv,
-    desc: (lv) => `Three meteors fall around your target: ${30 + 4 * lv}% MATK (Fire) each to every monster within 3 paces.`,
+    name: 'Meteor Storm', job: 'wizard', kind: 'active', max: 10, needs: { spark: 5 }, target: 'mob', range: 5, magic: 'fire', weapon: 'staff', icon: 'skill_meteor',
+    sp: (lv) => 40 + 2 * lv, cast: (lv) => 2.2 + 0.05 * lv, cd: 4, power: (lv) => 50 + 5 * lv, hits: (lv) => 2 + Math.ceil(lv / 2), every: 0.35, status: { kind: 'burn', chance: (lv) => 3 * lv, dur: 3 },
+    desc: (lv) => `${SKILLS.meteor.hits(lv)} meteors crash down at random within 3 paces of your target, one after another: ${SKILLS.meteor.power(lv)}% MATK (Fire) to everything near where each lands; ${statusText(SKILLS.meteor, lv, ' each')} (a fifth of the hit each second).`,
   },
   stormgust: {
-    name: 'Storm Gust', job: 'wizard', kind: 'active', max: 10, needs: { frost: 5 }, target: 'mob', range: 7, magic: 'water', weapon: 'staff', icon: 'skill_stormgust',
-    sp: (lv) => 36 + 2 * lv, cast: () => 2.0, cd: 4, power: (lv) => 45 + 6 * lv,
-    desc: (lv) => `A freezing storm around your target: ${45 + 6 * lv}% MATK (Water) to every monster within 3 paces, ${3 * lv}% chance each to freeze for 2.5 s.`,
+    name: 'Storm Gust', job: 'wizard', kind: 'active', max: 10, needs: { frost: 5 }, target: 'mob', range: 5, magic: 'water', weapon: 'staff', icon: 'skill_stormgust',
+    sp: (lv) => 36 + 2 * lv, cast: () => 2.0, cd: 4, power: (lv) => 12 + lv, hits: () => 10, every: 0.3, status: { kind: 'freeze', chance: (lv) => 2 * lv, dur: 2.5 },
+    desc: (lv) => `A blizzard howls around your target for 3 s: 10 gusts of ${SKILLS.stormgust.power(lv)}% MATK (Water) to every monster within 3 paces; from the third gust on, ${statusText(SKILLS.stormgust, lv, ' each')}.`,
   },
   thunder: {
-    name: 'Thunderstorm', job: 'wizard', kind: 'active', max: 10, needs: { arc: 5 }, target: 'mob', range: 7, magic: 'wind', weapon: 'staff', icon: 'skill_thunder',
-    sp: (lv) => 32 + 2 * lv, cast: () => 1.7, cd: 3, power: (lv) => 45 + 6 * lv,
-    desc: (lv) => `Lightning rains around your target: ${45 + 6 * lv}% MATK (Wind) to every monster within 3 paces.`,
+    name: 'Thunderstorm', job: 'wizard', kind: 'active', max: 10, needs: { arc: 5 }, target: 'mob', range: 5, magic: 'wind', weapon: 'staff', icon: 'skill_thunder',
+    sp: (lv) => 32 + 2 * lv, cast: () => 1.7, cd: 3, power: (lv) => 18 + 2 * lv, hits: () => 6, every: 0.4, status: { kind: 'paralyze', chance: (lv) => 1.5 * lv, dur: 1.5 },
+    desc: (lv) => `Lightning rains around your target in 6 waves: ${SKILLS.thunder.power(lv)}% MATK (Wind) each to every monster within 3 paces; ${statusText(SKILLS.thunder, lv, ' each wave')}.`,
   },
 
   // ---------- Magic Knight (Blader and Sorcerer both walked): elemental sword skills that hit with
@@ -199,22 +213,24 @@ export const SKILLS = {
   },
   elemchain: {
     name: 'Elemental Chain', job: 'magicknight', kind: 'passive', max: 5, needs: { spellblade: 3 }, icon: 'skill_elemchain',
-    desc: (lv) => `An Edge of a different element from your last one (within 6 s) deals ${6 * lv}% more damage and gives back 3 SP.`,
+    desc: (lv) => `An Elemental Edge of a different element from your last one (within 6 s) deals ${6 * lv}% more damage and gives back 3 SP.`,
   },
-  flameedge: {
-    name: 'Flame Edge', job: 'magicknight', kind: 'active', max: 10, target: 'mob', range: 1.35, weapon: 'sword', magic: 'fire', edge: true, icon: 'skill_flameedge',
-    sp: (lv) => 6 + lv, cd: 0.8, power: (lv) => 100 + 10 * lv, mpower: (lv) => 40 + 7 * lv,
-    desc: (lv) => `A burning cut: ${100 + 10 * lv}% ATK and ${40 + 7 * lv}% MATK, as Fire.`,
+  elemedge: {
+    name: 'Elemental Edge', job: 'magicknight', kind: 'active', max: 10, target: 'mob', range: 1.35, weapon: 'sword', edge: true, icon: 'skill_elemedge',
+    sp: (lv) => 6 + lv, cd: 0.5, power: (lv) => 100 + 10 * lv, mpower: (lv) => 55 + 8 * lv, hits: () => 2, every: 0.15,
+    status: { chance: (lv) => 3 * lv }, // the kind and how long come from the element (EDGE_FX)
+    desc: (lv) => `Two quick cuts in your blade's element (see Elemental Blade; none without it): ${SKILLS.elemedge.power(lv)}% ATK and ${SKILLS.elemedge.mpower(lv)}% MATK each. By element, ${SKILLS.elemedge.status.chance(lv)}% chance each: Fire burns, Water freezes, Earth stuns, and Wind crackles into the monsters beside your target for half and may paralyze them (bosses resist).`,
   },
-  frostedge: {
-    name: 'Frost Edge', job: 'magicknight', kind: 'active', max: 10, target: 'mob', range: 1.35, weapon: 'sword', magic: 'water', edge: true, icon: 'skill_frostedge',
-    sp: (lv) => 6 + lv, cd: 0.8, power: (lv) => 90 + 10 * lv, mpower: (lv) => 50 + 7 * lv,
-    desc: (lv) => `A freezing thrust: ${90 + 10 * lv}% ATK and ${50 + 7 * lv}% MATK, as Water; ${3 * lv}% chance to freeze for 2 s.`,
+  elemblade: {
+    name: 'Elemental Blade', job: 'magicknight', kind: 'active', max: 5, needs: { spellblade: 1 }, weapon: 'sword', icon: 'skill_elemblade',
+    sp: () => 20, cd: 1, dur: (lv) => 60 + 30 * lv,
+    desc: (lv) => `Imbue your sword with an element for ${SKILLS.elemblade.dur(lv)} s: your normal attacks, Edges and Novas strike as Fire. Use it again to switch, free while it lasts: Fire, then Water, Wind, Earth. Pick what the monster is weak to.`,
   },
-  thunderedge: {
-    name: 'Thunder Edge', job: 'magicknight', kind: 'active', max: 10, needs: { flameedge: 3, frostedge: 3 }, target: 'mob', range: 1.35, weapon: 'sword', magic: 'wind', edge: true, icon: 'skill_thunderedge',
-    sp: (lv) => 12 + lv, cd: 1.2, power: (lv) => 80 + 10 * lv, mpower: (lv) => 40 + 7 * lv,
-    desc: (lv) => `A crackling sweep: ${80 + 10 * lv}% ATK and ${40 + 7 * lv}% MATK, as Wind, and half that to monsters beside your target.`,
+  nova: {
+    name: 'Elemental Nova', job: 'magicknight', kind: 'active', max: 5, needs: { elemedge: 3, elemchain: 1 }, weapon: 'sword', icon: 'skill_nova',
+    sp: (lv) => 30 + 3 * lv, cd: 4, power: (lv) => 100 + 16 * lv, mpower: (lv) => 60 + 10 * lv, hits: () => 3, every: 0.25, areas: [2.5, 4, 5.5],
+    status: { chance: (lv) => 4 * lv },
+    desc: (lv) => `Drive your sword into the ground: three waves of your blade's element roll out around you, to 2.5, 4 and 5.5 paces, ${SKILLS.nova.power(lv)}% ATK and ${SKILLS.nova.mpower(lv)}% MATK each to everything they reach (the nearest are caught by all three), with a ${SKILLS.nova.status.chance(lv)}% chance each to burn, freeze, paralyze or stun by element (bosses resist).`,
   },
   aegis: {
     name: 'Stone Aegis', job: 'magicknight', kind: 'active', max: 10, needs: { spellblade: 1 }, cd: 25, icon: 'skill_aegis',

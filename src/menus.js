@@ -41,9 +41,9 @@ const POS_KEY = 'aria.windows';
 const JOB_PITCH = {
   swordman: 'Sturdy sword fighters with more HP: Cleave, Heavy Strike, War Cry, Stand Firm and Ground Slash.',
   mage: 'Casters who strike from afar with KNL: Ember Bolt, Frost Shard, Arc Lightning, Flame Ring, Rune Ward and Blink. Low HP, lots of SP.',
-  blademaster: 'One target, cut down fast: Twin Fang, Piercing Edge and Final Blade. Blade skills may Combo, and Combos build Momentum.',
+  blademaster: 'One target, cut down fast: Twin Fang, Piercing Edge, Final Blade, and Blade Dance to dash through a crowd. Blade skills may Combo, and Combos build Momentum.',
   wizard: 'The elements over an area: Stone Spike, Earthquake, Meteor Storm, Storm Gust and Thunderstorm. Changing element builds Resonance.',
-  magicknight: 'Sword and spell as one: Flame, Frost and Thunder Edge hit with ATK and MATK together; Stone Aegis is a barrier of both.',
+  magicknight: 'Sword and spell as one: imbue your blade with an element, cut with Elemental Edge, sweep the field with Elemental Nova; Stone Aegis is a barrier of both.',
 };
 
 // the crafters: Gunnar's forge (gear), Ragna's herbs (usables), Orm's workshop (sorcerers' gear)

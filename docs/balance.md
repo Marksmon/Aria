@@ -44,43 +44,53 @@ is still a Trainee there).
 - Liv the Guide (Steinborg) rethinks your training: one free stat reset and one free first-job skill
   reset, then 20,000 perz each.
 
+## After merging main's skill and boss rework
+
+Main's newer commits reworked skills (multi-hit spells, statuses, Blade Dance, one Elemental Edge),
+raised the Blader's skills, trimmed the Sorcerer's spells and gave bosses telegraphed moves. The
+simulator now models multi-hit spells, the Sorcerer's opening cast from 5 paces, and boss moves
+against a kiting Sorcerer (half stepped out of). The bosses stay inside the targets for both jobs.
+The trimmed spells leave the Sorcerer short against some Water monsters at Base 22-34 (Sea Slime,
+Blue Crab, Dark Mushroom); that is left as main's balance decision. Rows below Base 12 are a
+Trainee, not a Sorcerer.
+
 ## Every monster at its own level (bosses with 20 Orange Potions; the Lantern Wisp without any)
 
 | Monster | Lv | Blader at its level | Sorcerer at its level |
 |---|---|---|---|
-| Slime | 1 | 100% win · 1 s · 100% HP left | 100% win · 3 s · 88% HP left |
-| Sprout | 3 | 100% win · 2 s · 100% HP left | 100% win · 5 s · 78% HP left |
-| Little Slime | 4 | 100% win · 1 s · 100% HP left | 100% win · 3 s · 87% HP left |
-| Blue Slime | 6 | 100% win · 5 s · 79% HP left | 91% win · 13 s · 26% HP left |
-| Crab | 9 | 91% win · 11 s · 27% HP left | 0% win · 10 s · boss at 65% |
-| Wisp | 11 | 87% win · 13 s · 21% HP left | 0% win · 10 s · boss at 67% |
-| Mushroom | 14 | 99% win · 21 s · 27% HP left | 100% win · 8 s · 67% HP left |
-| Lantern Wisp | 16 | 0% win · 18 s · boss at 39% | 0% win · 11 s · boss at 19% |
-| Red Sprout | 18 | 88% win · 11 s · 33% HP left | 100% win · 4 s · 67% HP left |
-| Sea Slime | 22 | 100% win · 4 s · 78% HP left | 99% win · 8 s · 9% HP left |
-| Giant Sprout | 25 | 100% win · 106 s · 58% HP left · 18 pots | 100% win · 27 s · 67% HP left · 3 pots |
-| Blue Crab | 26 | 100% win · 4 s · 68% HP left | 87% win · 6 s · 17% HP left |
-| Kobold | 28 | 100% win · 6 s · 56% HP left | 100% win · 2 s · 76% HP left |
-| Beetle | 30 | 100% win · 6 s · 54% HP left | 100% win · 4 s · 60% HP left |
-| Kobold Archer | 30 | 100% win · 4 s · 81% HP left | 100% win · 2 s · 81% HP left |
-| King Crab | 32 | 100% win · 114 s · 53% HP left · 18 pots | 98% win · 60 s · 58% HP left · 7 pots |
-| Kobold Assassin | 33 | 89% win · 5 s · 52% HP left | 100% win · 2 s · 62% HP left |
-| Dark Mushroom | 34 | 99% win · 7 s · 60% HP left | 100% win · 6 s · 35% HP left |
-| Dark Wisp | 38 | 97% win · 7 s · 58% HP left | 100% win · 5 s · 41% HP left |
-| Goblin | 38 | 100% win · 7 s · 60% HP left | 100% win · 5 s · 43% HP left |
-| Giant Mushroom | 40 | 91% win · 145 s · 33% HP left · 20 pots | 100% win · 50 s · 55% HP left · 6 pots |
-| Goblin Archer | 41 | 100% win · 5 s · 86% HP left | 100% win · 4 s · 67% HP left |
-| Fire Beetle | 42 | 100% win · 10 s · 55% HP left | 88% win · 7 s · 18% HP left |
-| Goblin Assassin | 44 | 92% win · 8 s · 50% HP left | 100% win · 4 s · 59% HP left |
-| Fire Wisp | 45 | 95% win · 9 s · 52% HP left | 90% win · 6 s · 5% HP left |
-| Giant Beetle | 48 | 77% win · 137 s · 19% HP left · 20 pots | 100% win · 37 s · 52% HP left · 6 pots |
+| Slime | 1 | 100% win · 1 s · 100% HP left | 100% win · 1 s · 100% HP left |
+| Sprout | 3 | 100% win · 2 s · 100% HP left | 100% win · 4 s · 93% HP left |
+| Little Slime | 4 | 100% win · 1 s · 100% HP left | 100% win · 1 s · 100% HP left |
+| Blue Slime | 6 | 100% win · 5 s · 79% HP left | 99% win · 10 s · 42% HP left |
+| Crab | 9 | 92% win · 12 s · 28% HP left | 0% win · 12 s · boss at 59% |
+| Wisp | 11 | 84% win · 13 s · 19% HP left | 0% win · 12 s · boss at 57% |
+| Mushroom | 14 | 98% win · 22 s · 26% HP left | 100% win · 10 s · 55% HP left |
+| Lantern Wisp | 16 | 0% win · 18 s · boss at 32% | 0% win · 12 s · boss at 39% |
+| Red Sprout | 18 | 93% win · 6 s · 65% HP left | 100% win · 6 s · 54% HP left |
+| Sea Slime | 22 | 100% win · 3 s · 80% HP left | 60% win · 10 s · 4% HP left |
+| Giant Sprout | 25 | 100% win · 88 s · 56% HP left · 15 pots | 96% win · 44 s · 65% HP left · 7 pots |
+| Blue Crab | 26 | 100% win · 3 s · 79% HP left | 37% win · 8 s · 0% HP left |
+| Kobold | 28 | 100% win · 4 s · 76% HP left | 100% win · 4 s · 77% HP left |
+| Beetle | 30 | 100% win · 5 s · 67% HP left | 100% win · 4 s · 77% HP left |
+| Kobold Archer | 30 | 100% win · 3 s · 90% HP left | 100% win · 2 s · 100% HP left |
+| King Crab | 32 | 100% win · 94 s · 54% HP left · 15 pots | 100% win · 85 s · 60% HP left · 13 pots |
+| Kobold Assassin | 33 | 97% win · 4 s · 69% HP left | 100% win · 2 s · 79% HP left |
+| Dark Mushroom | 34 | 100% win · 5 s · 69% HP left | 82% win · 9 s · 11% HP left |
+| Dark Wisp | 38 | 100% win · 5 s · 68% HP left | 98% win · 7 s · 23% HP left |
+| Goblin | 38 | 100% win · 5 s · 74% HP left | 100% win · 7 s · 25% HP left |
+| Giant Mushroom | 40 | 100% win · 123 s · 50% HP left · 18 pots | 100% win · 82 s · 55% HP left · 15 pots |
+| Goblin Archer | 41 | 100% win · 4 s · 87% HP left | 100% win · 5 s · 69% HP left |
+| Fire Beetle | 42 | 100% win · 7 s · 69% HP left | 100% win · 7 s · 22% HP left |
+| Goblin Assassin | 44 | 97% win · 6 s · 66% HP left | 100% win · 4 s · 63% HP left |
+| Fire Wisp | 45 | 99% win · 7 s · 68% HP left | 100% win · 6 s · 30% HP left |
+| Giant Beetle | 48 | 99% win · 113 s · 48% HP left · 14 pots | 100% win · 42 s · 52% HP left · 8 pots |
 
 ## Mini-bosses at their hinted level, 20 Orange Potions
 
 | Boss | Blader | Sorcerer |
 |---|---|---|
-| Giant Sprout at Base 28 | 100% win · 85 s · 55% HP left · 13 pots | 100% win · 22 s · 65% HP left · 2 pots |
-| King Crab at Base 34 | 100% win · 101 s · 52% HP left · 13 pots | 100% win · 58 s · 60% HP left · 6 pots |
-| Giant Mushroom at Base 43 | 100% win · 108 s · 49% HP left · 13 pots | 100% win · 44 s · 54% HP left · 4 pots |
-| Giant Beetle at Base 50 | 100% win · 110 s · 49% HP left · 14 pots | 100% win · 37 s · 52% HP left · 5 pots |
-| Lantern Wisp (rare hunt) at Base 16 | 100% win · 35 s · 68% HP left · 3 pots | 100% win · 14 s · 86% HP left · 2 pots |
+| Giant Sprout at Base 28 | 100% win · 70 s · 57% HP left · 10 pots | 100% win · 36 s · 62% HP left · 5 pots |
+| King Crab at Base 34 | 100% win · 83 s · 52% HP left · 10 pots | 99% win · 82 s · 59% HP left · 12 pots |
+| Giant Mushroom at Base 43 | 100% win · 84 s · 50% HP left · 8 pots | 100% win · 73 s · 54% HP left · 12 pots |
+| Giant Beetle at Base 50 | 100% win · 84 s · 49% HP left · 5 pots | 100% win · 41 s · 51% HP left · 7 pots |
+| Lantern Wisp at Base 16 | 100% win · 33 s · 65% HP left · 3 pots | 100% win · 22 s · 88% HP left · 3 pots |

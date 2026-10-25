@@ -7,7 +7,7 @@ import { Player } from './player.js';
 import { Input } from './input.js';
 import { UI } from './ui.js';
 import { FX } from './fx.js';
-import { MobManager, MOB_DEFS, guardDef } from './mobs.js';
+import { MobManager, MOB_DEFS, MOVES, guardDef } from './mobs.js';
 import { loadSave, writeSave } from './save.js';
 import { Inventory } from './inventory.js';
 import { Progress, JOBS, RATES } from './progress.js';
@@ -19,13 +19,13 @@ import { Hotbar } from './hotbar.js';
 import { BigMap } from './bigmap.js';
 import { headsReady, paintHead } from './hair.js';
 import { headgearReady, gearCut, paintGear } from './headgear.js';
-import { derive, playerAttack, mobAttack, magicAttack } from './rules.js';
-import { SKILLS, skillLv, spCost, castTime, learn, skillList, weaponOk, WEAPON_NAMES, unlearnFirstJob, RETRAIN_COST } from './skills.js';
+import { derive, playerAttack, mobAttack, magicAttack, elementMod } from './rules.js';
+import { SKILLS, EDGE_FX, skillLv, spCost, castTime, learn, skillList, weaponOk, WEAPON_NAMES, unlearnFirstJob, RETRAIN_COST } from './skills.js';
 import { Menus } from './menus.js';
 import { iconTexture, iconURL, ITEMS, baseOf } from './items.js';
 import { DayNight } from './daynight.js';
 import { Audio } from './audio.js';
-import { clearSave } from './save.js';
+import { clearSave, saveCode, loadCode } from './save.js';
 import { clamp, lerp } from './noise.js';
 
 const canvas = document.getElementById('game');
@@ -76,6 +76,7 @@ if (verEl) verEl.textContent = `v1.0.${__BUILD__} · Explore, fight, craft, surv
 const save = loadSave();
 let lookBefore = null; // the look kept, while one is being tried on
 mobs.mvpAt = typeof save?.mvpAt === 'number' ? { jarl: save.mvpAt } : save?.mvpAt || {}; // older saves timed the Fire Giant alone
+mobs.bossHp = save?.bossHp || {};
 const player = new Player(scene, world, lib.player, lib.shadow, fx);
 player.setPos(save?.x ?? world.spawn.x, save?.z ?? world.spawn.z);
 if (save?.look) player.setLook(save.look.hair === 'long' ? { ...save.look, hair: 'mane' } : save.look); // the straight long hair waits for a female look
@@ -113,6 +114,17 @@ function dressPeople() {
 }
 const villagers = new Villagers(scene, world, lib);
 player.tiles = new Tiles(world); // after the villagers: they block their tiles
+// a drop lands on open ground: one that would fall on a blocked tile (a tree, a rock, a tent) goes to
+// the nearest tile you can walk to
+fx.landAt = (x, z) => {
+  const t = player.tiles, [i, j] = t.tileAt(x, z);
+  const [rx, rz] = world.resolve(x, z, 0.3); // a spot the hero could stand on
+  if (t.free(i, j) && world.walkable(x, z) && Math.hypot(rx - x, rz - z) < 0.05) return [x, z];
+  const f = t.nearestFree(i, j, 4);
+  if (!f) return [x, z];
+  const c = t.center(...f);
+  return [c.x, c.z];
+};
 const inv = new Inventory();
 inv.level = () => prog.baseLv;
 inv.job = () => prog.wearJobs; // every job earned: a Blader who passed the Sorcerer's trial may hold a staff
@@ -130,6 +142,32 @@ let nav = null; // auto-navigation: { quest, map, npc, why } while walking to a 
 // the last Edge's element (Elemental Chain)
 let momentum = 0;
 const lastSpell = { el: null, t: -99 }, lastEdge = { el: null, t: -99 };
+// hits that come one after another (Storm Gust's gusts, Final Blade's cuts): run on the game clock,
+// and dropped if you leave the map first
+const timers = [];
+const later = (s, fn) => timers.push({ at: skillClock + s, fn, map: world.id });
+// each hit of a multi-hit skill: fn(i) for i = 0 .. hits-1, every sk.every seconds
+const repeat = (sk, lv, fn) => { for (let i = 0; i < sk.hits(lv); i++) later(i * sk.every, () => fn(i)); };
+// a status from a skill (skills.js status): freeze, paralyze and stun leave a monster helpless; a burn
+// hurts it each second for a fifth of the hit that lit it. Bosses resist: a third of the chance, for
+// half as long, and nothing takes hold while a boss is in the middle of a move.
+const STATUS_TEXT = { freeze: 'Frozen', paralyze: 'Paralyzed', stun: 'Stunned', burn: 'Burning' };
+function inflict(m, st, lv, hitDmg = 0) {
+  if (!st || !m.alive || m.act) return;
+  const boss = m.def.boss || m.def.mvp;
+  if (Math.random() * 100 >= st.chance(lv) * (boss ? 1 / 3 : 1)) return;
+  const dur = st.dur * (boss ? 0.5 : 1);
+  if (st.kind === 'burn') {
+    if (!hitDmg) return;
+    if (!(m.burnT > 0)) m.burnTick = 1;
+    m.burnT = dur;
+    m.burnDmg = Math.max(1, Math.round(hitDmg * 0.2));
+  } else {
+    m.stunT = Math.max(m.stunT, dur);
+    m.status = st.kind;
+  }
+  fx.number(m.x, overHead(m, m.sprite.scale.y * 0.8 + 0.35), m.z, STATUS_TEXT[st.kind], 'miss');
+}
 let skillClock = 0; // seconds since the game started, for those windows
 const weaponKind = () => (ITEMS[inv.gear.weapon]?.kind === 'staff' ? 'staff' : 'sword');
 function applyStats() {
@@ -141,6 +179,7 @@ function applyStats() {
   gear.flee += skillLv(prog, 'footwork') ? 3 : 0;
   gear.def += hide + (buffs.aegis > 0 && player.barrier > 0 ? aegisLv : 0);
   if (buffs.aspd > 0) gear.aspdRate *= 0.9;
+  if (buffs.imbue > 0 && imbueEl && sword) gear.el = imbueEl; // Elemental Blade
   const ps = derive(prog, gear);
   ps.maxHp = Math.floor(ps.maxHp * (1 + hide / 100));
   ps.maxSp = Math.floor(ps.maxSp * (1 + skillLv(prog, 'manawell') / 50));
@@ -149,7 +188,7 @@ function applyStats() {
   player.maxSp = ps.maxSp;
   player.hp = Math.min(player.hp, ps.maxHp);
   player.sp = Math.min(player.sp, ps.maxSp);
-  player.speedMul = inv.wearing('speed') ? 1.2 : 1;
+  player.haste = 0; // nothing hastes the walk for now: walking speed is a big buff in Aria
   player.setHeadgear(inv.gear.head && baseOf(inv.gear.head), inv.gear.face && baseOf(inv.gear.face)); // refined headgear looks like the plain piece
   player.blockChance = inv.wearing('block') ? 0.2 : 0;
   // Spellblade: normal sword hits carry some of the MATK
@@ -317,6 +356,59 @@ mobs.on('stomp', (m) => { // the ground bursts around the boss
   if (res.miss) fx.number(player.x, overHead(player, 1.3), player.z, 'Miss', 'miss');
   else player.takeDamage(res.dmg, m.x, m.z);
 });
+// ---------- boss moves (mobs.js MOVES): a red circle shows where each lands ----------
+const MOVE_COL = { fire: '#ff6a1a', earth: '#c8a06a', wind: '#dff7c8', water: '#9fe0ff', shadow: '#a89cff' };
+// a boss move lands: mult x the boss's ATK if you stand within r of (x, z)
+function bossBlow(m, mult, x, z, r) {
+  if (Math.hypot(player.x - x, player.z - z) > r + 0.3 || !player.canBeHit() || player.state === 'down') return;
+  cam.shake = 0.3;
+  const res = mobAttack(m.def, player.ps, mult);
+  if (res.miss) fx.number(player.x, overHead(player, 1.3), player.z, 'Miss', 'miss');
+  else player.takeDamage(res.dmg, x, z);
+}
+const MOVE_NAMES = { charge: 'Charge', throw: { fire: 'Fireball', shadow: 'Spore Pod', earth: 'Boulder', wind: 'Hurled Axe' }, leap: 'Leap' }; // (or the move's own name)
+mobs.on('move', (m, a) => {
+  const name = MOVE_NAMES[a.kind], label = a.mv.name || (typeof name === 'string' ? name : name[m.def.el] || 'Throw');
+  fx.number(m.x, overHead(m, m.sprite.scale.y * 0.8 + 0.4), m.z, label, 'skill');
+  audio.play('swing');
+  if (a.kind === 'charge') { // the line it will run: a warning where you stand now
+    const ahead = Math.min(a.left, Math.hypot(player.x - m.x, player.z - m.z));
+    fx.warn(m.x + m.heading.x * ahead, m.z + m.heading.z * ahead, 1.2, MOVES.charge.wind + 0.15);
+    fx.sparkle(m.x, world.heightAt(m.x, m.z) + 1, m.z, '#ff8a3a', 10);
+  }
+  if (a.kind === 'throw') fx.warn(a.spot.x, a.spot.z, a.mv.r, MOVES.throw.wind + MOVES.throw.land);
+  if (a.kind === 'leap') fx.warn(a.spot.x, a.spot.z, a.mv.r, MOVES.leap.wind + MOVES.leap.air);
+});
+mobs.on('rush', (m) => { audio.play('dodge'); fx.puff(m.x, world.heightAt(m.x, m.z) + 0.15, m.z, 1.2); });
+mobs.on('rammed', (m, mult) => bossBlow(m, mult, m.x, m.z, m.def.reach + 0.6));
+mobs.on('throw', (m, spot, mv, land) => {
+  const map = world.id, y = world.heightAt(m.x, m.z) + m.sprite.scale.y * 0.6;
+  const travel = Math.hypot(spot.x - m.x, spot.z - m.z) / 13; // fx.bolt flies 13 paces a second
+  const at = { x: spot.x, z: spot.z, alive: true };
+  setTimeout(() => {
+    if (world.id !== map) return;
+    fx.bolt(m.x, y, m.z, at, MOVE_COL[m.def.el] || '#ffffff', () => {
+      const gy = world.heightAt(spot.x, spot.z);
+      fx.puff(spot.x, gy + 0.2, spot.z, mv.r * 1.2);
+      fx.sparkle(spot.x, gy + 0.3, spot.z, MOVE_COL[m.def.el] || '#ffffff', 16);
+      audio.play('hit');
+      bossBlow(m, mv.mult, spot.x, spot.z, mv.r);
+    }, 0.9);
+  }, Math.max(0, land - travel) * 1000);
+});
+mobs.on('slam', (m, mv) => {
+  const y = world.heightAt(m.x, m.z);
+  fx.puff(m.x, y + 0.2, m.z, mv.r * 1.3);
+  fx.sparkle(m.x, y + 0.3, m.z, MOVE_COL[m.def.el] || '#ffffff', 20);
+  audio.play('hit');
+  bossBlow(m, mv.mult, m.x, m.z, mv.r);
+});
+mobs.on('frenzy', (m) => {
+  menus.message(`The ${m.def.name} flies into a frenzy!`);
+  fx.number(m.x, overHead(m, m.sprite.scale.y * 0.8 + 0.4), m.z, 'Frenzy!', 'skill');
+  fx.sparkle(m.x, world.heightAt(m.x, m.z) + 1.2, m.z, '#ff4a3a', 18);
+  audio.play('night');
+});
 // archers: an arrow flies at you, and the hit is rolled when it lands (FLEE and DEF apply)
 const playerMark = { get x() { return player.x; }, get z() { return player.z; }, alive: true };
 mobs.on('shoot', (m) => {
@@ -337,9 +429,15 @@ mobs.on('summon', (m) => {
   fx.sparkle(m.x, world.heightAt(m.x, m.z) + 1.5, m.z, '#ffd23a', 14);
   audio.play('night');
 });
-mobs.on('mvpSpawn', (s) => {
-  menus.message(MOB_DEFS[s.type].wake || `The ${MOB_DEFS[s.type].name} has appeared!`);
+mobs.on('mvpSpawn', (m) => { // an MVP announces itself; a mini-boss just turns up
+  if (!m.def.mvp) return;
+  menus.message(m.def.wake || `The ${m.def.name} has appeared!`);
   audio.play('night');
+});
+mobs.on('bossDown', (m) => {
+  const mins = Math.round(m.def.respawn / 60);
+  setTimeout(() => menus.message(`The ${m.def.name} will return in about ${mins} minutes.`), 2500);
+  persist();
 });
 // Ragnarok's MVP: the announcement over the slayer's head, MVP EXP and items straight to the bag
 mobs.on('mvp', (m) => {
@@ -584,9 +682,12 @@ function tickWading(dt) {
 }
 
 // ---------- the vigil on Ember Hill: hold the heralds off while Vigdis sings (a survive step) ----------
-let vigil = null; // { t, next, list }
+let vigil = null, giantWarnT = -99; // vigil: { t, next, list }
 const VIGIL_WAVE = 15; // seconds between waves of heralds (lesser ones, like a boss's guards)
+const giantOf = () => mobs.list.find((m) => m.alive && m.def.mvp && m.type === 'jarl');
 function endVigil(why) {
+  const g = giantOf();
+  if (g) g.lulled = false;
   for (const m of vigil.list) if (mobs.list.includes(m)) { fx.puff(m.x, world.heightAt(m.x, m.z) + 0.3, m.z, m.def.w); mobs.remove(m); }
   vigil = null;
   story.count = 0;
@@ -601,6 +702,14 @@ function tickVigil(dt) {
     if (world.id !== s.map) return;
     if (Math.random() < dt * 3) fx.sparkle(s.at.x, y + 0.4, s.at.z, '#b48aff', 4); // where to stand
     if (Math.hypot(s.at.x - player.x, s.at.z - player.z) > 3 || player.state !== 'normal') return;
+    // the Fire Giant roams the hill: the song would only wake him if he stood close, and once it
+    // begins it lulls him while it lasts
+    const g = giantOf();
+    if (g && Math.hypot(g.x - s.at.x, g.z - s.at.z) < 14) {
+      if (skillClock - giantWarnT > 8) { giantWarnT = skillClock; menus.message('The Fire Giant prowls too close to the circle: the song would wake him. Wait for him to wander off.'); }
+      return;
+    }
+    if (g) { g.lulled = true; g.state = 'wander'; }
     vigil = { t: 0, next: 2, list: [] };
     menus.message('The runes in the circle light up, and Vigdis\'s song rises out of them. The hill trembles: the heralds are coming!');
     audio.play('night');
@@ -1052,29 +1161,95 @@ function useSkill(id) {
       if (!m.alive) continue;
       const dx = m.x - player.x, dz = m.z - player.z, d = Math.hypot(dx, dz);
       if (d > 2.8 + m.def.r) continue;
-      const res = playerAttack(player.ps, m.effDef(), (100 + 10 * lv) / 100 * player.atkMul, 1, true);
+      const res = playerAttack(player.ps, m.effDef(), sk.power(lv) / 100 * player.atkMul, 1, true);
       const yy = overHead(m, m.sprite.scale.y * 0.8);
       if (res.miss) { fx.number(m.x, yy, m.z, 'Miss', 'miss'); continue; }
       fx.number(m.x, yy, m.z, res.dmg, 'dealt');
       m.hit(res.dmg, d ? dx / d : 0, d ? dz / d : 1);
       m.knock.x *= 2; m.knock.z *= 2; // pushed back a little
+      inflict(m, sk.status, lv);
     }
+    return;
+  }
+  // ---- Magic Knight: Elemental Blade imbues the sword; again switches element (free while it lasts) ----
+  if (id === 'elemblade') {
+    const on = buffs.imbue > 0;
+    if (!on && !pay()) return;
+    if (on) skillCd[id] = sk.cd;
+    imbueEl = on ? IMBUE[(IMBUE.indexOf(imbueEl) + 1) % IMBUE.length] : IMBUE[0];
+    if (!on) buffs.imbue = sk.dur(lv);
+    applyStats();
+    say(`Blade: ${imbueEl[0].toUpperCase()}${imbueEl.slice(1)}`);
+    fx.sparkle(player.x, y + 0.9, player.z, IMBUE_COL[imbueEl], 14);
+    audio.play('craft');
+    return;
+  }
+  // ---- Magic Knight: Elemental Nova, three waves of the blade's element rolling out around you ----
+  if (id === 'nova') {
+    if (!pay()) return;
+    const el = bladeEl(), fxk = EDGE_FX[el], col = IMBUE_COL[el] || '#e8e0ff', st = fxk && { ...fxk, chance: sk.status.chance };
+    const cx = player.x, cz = player.z;
+    say('Elemental Nova');
+    player.atkAnim = player.atkDur = 0.4;
+    fx.puff(cx, y + 0.2, cz, 2.2);
+    repeat(sk, lv, (i) => {
+      const r = sk.areas[i], n = 10 + Math.round(r * 6), gy = world.heightAt(cx, cz);
+      for (let j = 0; j < n; j++) { const a = (j / n) * Math.PI * 2; fx.sparkle(cx + Math.cos(a) * r, gy + 0.3, cz + Math.sin(a) * r, col, 1); }
+      cam.shake = 0.2 + i * 0.08;
+      audio.play('hit');
+      for (const m of [...mobs.list]) {
+        if (!m.alive || Math.hypot(m.x - cx, m.z - cz) > r + m.def.r) continue;
+        inflict(m, st, lv, edgeHit(m, sk.power(lv) / 100, sk.mpower(lv) / 100, el));
+      }
+    });
     return;
   }
   // the rest aim at your current target, or the nearest monster
   const target = (player.goal?.mob?.alive && player.goal.mob) || mobs.nearest(player.x, player.z, 8);
   if (!target) { menus.message('No monster nearby'); return; }
+  // ---- BladeMaster: Blade Dance, dashing from monster to monster, untouchable ----
+  if (id === 'bladedance') {
+    const run = (t) => {
+      if (!t.alive || !pay()) return;
+      say('Blade Dance');
+      const cx = t.x, cz = t.z, n = sk.hits(lv), mult = sk.power(lv) / 100;
+      player.iframes = Math.max(player.iframes, n * sk.every + 0.4);
+      player.goal = null;
+      let last = null;
+      repeat(sk, lv, () => {
+        const near = mobs.list.filter((m) => m.alive && Math.hypot(m.x - cx, m.z - cz) < sk.area + m.def.r);
+        if (!near.length) return;
+        const pool = near.length > 1 ? near.filter((m) => m !== last) : near;
+        const m = pool[Math.floor(Math.random() * pool.length)];
+        // appear at its side, coming from where you were
+        const fx0 = { x: player.x, y: world.heightAt(player.x, player.z) + 0.8, z: player.z };
+        let dx = m.x - player.x, dz = m.z - player.z, d = Math.hypot(dx, dz) || 1;
+        dx /= d; dz /= d;
+        const gap = m.def.r + 0.5, px = m.x - dx * gap, pz = m.z - dz * gap;
+        if (world.walkable(px, pz)) { player.x = px; player.z = pz; player.sync(); }
+        player.face = { x: dx, z: dz };
+        player.atkAnim = player.atkDur = 0.2;
+        fx.zap(fx0, { x: player.x, y: world.heightAt(player.x, player.z) + 0.8, z: player.z }, '#ffffff');
+        fx.slash(m.x, overHead(m, m.sprite.scale.y * 0.5), m.z, player.face, cam);
+        bladeHit(m, mult);
+        combo(m);
+        last = m;
+      });
+    };
+    player.command({ mob: target, spell: { range: sk.range, time: 0.05, run, name: sk.name } });
+    return;
+  }
   // Thrust, Cleave and Heavy Strike: walk up and hit with the next swing. opts: el, defMul
   const strike = (mult, hitMult, done, opts = {}) => player.command({ mob: target, skill: { mult, hitMult, pay, done, ...opts } });
   if (id === 'thrust') strike(1.25, 1, (t) => { say('Thrust'); combo(t); });
   if (id === 'cleave') {
-    strike((100 + 10 * lv) / 100, 1, (t) => {
+    strike(sk.power(lv) / 100, 1, (t) => {
       say('Cleave');
       combo(t);
       // the sweep catches monsters beside the target
       for (const m of [...mobs.list]) {
         if (!m.alive || m === t || Math.hypot(m.x - t.x, m.z - t.z) > 1.7 + m.def.r) continue;
-        const r = playerAttack(player.ps, m.effDef(), (100 + 10 * lv) / 200 * player.atkMul, 1, true);
+        const r = playerAttack(player.ps, m.effDef(), sk.power(lv) / 200 * player.atkMul, 1, true);
         const yy = overHead(m, m.sprite.scale.y * 0.8);
         if (r.miss) { fx.number(m.x, yy, m.z, 'Miss', 'miss'); continue; }
         fx.number(m.x, yy, m.z, r.dmg, 'dealt');
@@ -1093,47 +1268,85 @@ function useSkill(id) {
       setTimeout(() => { if (t.alive) { bladeHit(t, m); combo(t); } }, 160); // the second cut
     });
   }
-  if (id === 'pierce') strike(sk.power(lv) / 100, 1, (t) => { say('Piercing Edge'); combo(t); }, { defMul: 0.5 });
+  if (id === 'pierce') { // three thrusts: the first lands with the swing, the others right behind it
+    strike(sk.power(lv) / 100, 1, (t) => {
+      say('Piercing Edge');
+      combo(t);
+      repeat(sk, lv, (i) => { if (i && t.alive) bladeHit(t, sk.power(lv) / 100, { defMul: 0.5 }); });
+    }, { defMul: 0.5 });
+  }
   if (id === 'finalblade') {
     const stacks = momentum;
-    strike(sk.power(lv, stacks) / 100, 1, () => {
+    const cut = sk.power(lv, stacks) / 100;
+    strike(cut, 1, (t) => { // a flurry of cuts: the first with the swing, the rest a blur behind it
       say(stacks ? `Final Blade ×${stacks}` : 'Final Blade');
       momentum = 0; buffs.momentum = 0;
       cam.shake = 0.25;
+      repeat(sk, lv, (i) => {
+        if (!i || !t.alive) return;
+        bladeHit(t, cut);
+        fx.slash(t.x, overHead(t, t.sprite.scale.y * 0.5), t.z, { x: Math.cos(i * 2.1), z: Math.sin(i * 2.1) }, cam);
+        if (i === sk.hits(lv) - 1) cam.shake = 0.3;
+      });
     });
   }
-  // ---- Magic Knight: Edges hit with ATK and MATK together, in an element ----
+  // ---- Magic Knight: Elemental Edge, two cuts of ATK and MATK together in the blade's element ----
   if (sk.edge) {
-    const chain = skillLv(prog, 'elemchain'), chained = chain && lastEdge.el && lastEdge.el !== sk.magic && skillClock - lastEdge.t < 6;
-    const k = chained ? 1 + 0.06 * chain : 1;
-    strike(sk.power(lv) / 100 * k, 1, (t, res) => {
+    const el = bladeEl(), fxk = EDGE_FX[el], col = IMBUE_COL[el] || '#e8e0ff';
+    const chain = skillLv(prog, 'elemchain'), chained = chain && el && lastEdge.el && lastEdge.el !== el && skillClock - lastEdge.t < 6;
+    const k = chained ? 1 + 0.06 * chain : 1, st = fxk && { ...fxk, chance: sk.status.chance };
+    strike(sk.power(lv) / 100 * k, 1, (t) => {
       say(chained ? `${sk.name} · Chain` : sk.name);
-      lastEdge.el = sk.magic; lastEdge.t = skillClock;
+      lastEdge.el = el; lastEdge.t = skillClock;
       if (chained) player.healSp(3);
-      const extra = (m, share) => {
-        if (!m.alive) return;
-        const r = magicAttack(player.ps, m.effDef(), sk.mpower(lv) / 100 * k * share, sk.magic);
+      const magic = (m, share) => { // the MATK half of a cut
+        if (!m.alive) return 0;
+        const r = magicAttack(player.ps, m.effDef(), sk.mpower(lv) / 100 * k * share, el || 'neutral');
         fx.number(m.x, overHead(m, m.sprite.scale.y * 0.8 + 0.25), m.z, r.dmg, r.el > 1 ? 'crit' : 'dealt');
         m.hit(r.dmg, 0, 0);
+        return r.dmg;
       };
-      extra(t, 1);
-      fx.sparkle(t.x, world.heightAt(t.x, t.z) + 0.6, t.z, SPELL_COL[id], 10);
-      if (id === 'frostedge' && t.alive && !t.def.mvp && Math.random() < 0.03 * lv) { t.stunT = 2; fx.number(t.x, overHead(t, t.sprite.scale.y * 0.8 + 0.3), t.z, 'Frozen', 'miss'); }
-      if (id === 'thunderedge') { // half to the monsters beside the target
-        for (const m of [...mobs.list]) {
+      repeat(sk, lv, (i) => { // the first cut lands with the swing, the second right behind it
+        if (!t.alive) return;
+        const d = (i ? (bladeHit(t, sk.power(lv) / 100 * k, { el }).dmg || 0) : 0) + magic(t, 1);
+        fx.sparkle(t.x, world.heightAt(t.x, t.z) + 0.6, t.z, col, 8);
+        inflict(t, st, lv, d);
+        if (el !== 'wind') return;
+        fx.zap({ x: t.x, y: overHead(t, 2.4), z: t.z }, { x: t.x, y: overHead(t, 0.4), z: t.z }, col);
+        for (const m of [...mobs.list]) { // Wind: it crackles into the monsters beside the target for half
           if (!m.alive || m === t || Math.hypot(m.x - t.x, m.z - t.z) > 1.7 + m.def.r) continue;
-          const r = playerAttack({ ...player.ps, el: 'wind' }, m.effDef(), sk.power(lv) / 200 * k * player.atkMul, 1, true);
+          const r = playerAttack({ ...player.ps, el }, m.effDef(), sk.power(lv) / 200 * k * player.atkMul, 1, true);
           if (!r.miss) { fx.number(m.x, overHead(m, m.sprite.scale.y * 0.8), m.z, r.dmg, 'dealt'); m.hit(r.dmg, 0, 0); }
-          extra(m, 0.5);
+          magic(m, 0.5);
+          inflict(m, st, lv, r.dmg || 0);
         }
-      }
-    }, { el: sk.magic });
+      });
+    }, { el: el || undefined });
   }
 }
 
+// Elemental Blade: the element the sword is imbued with, while buffs.imbue lasts. Normal attacks,
+// Elemental Edge and Elemental Nova all take it (none without it)
+const IMBUE = ['fire', 'water', 'wind', 'earth'];
+let imbueEl = null;
+const bladeEl = () => (buffs.imbue > 0 && imbueEl) || null;
+// a Magic Knight blow: ATK and MATK together, in an element; the total shows as one number
+function edgeHit(m, atkMult, matkMult, el) {
+  if (!m.alive) return 0;
+  const md = m.effDef();
+  const r = playerAttack(el ? { ...player.ps, el } : player.ps, md, atkMult * player.atkMul, 1, true);
+  const g = magicAttack(player.ps, md, matkMult, el || 'neutral');
+  const dmg = (r.miss ? 0 : r.dmg) + g.dmg;
+  fx.number(m.x, overHead(m, m.sprite.scale.y * 0.8), m.z, dmg, g.el > 1 ? 'crit' : 'dealt');
+  const dx = m.x - player.x, dz = m.z - player.z, d = Math.hypot(dx, dz) || 1;
+  m.hit(dmg, dx / d * 0.5, dz / d * 0.5);
+  return dmg;
+}
 // one more blade hit on a monster (Twin Fang's second cut, a Combo): a skill hit, so no crit
-function bladeHit(t, mult) {
-  const res = playerAttack(player.ps, t.effDef(), mult * player.atkMul, 1, true);
+function bladeHit(t, mult, opts = {}) {
+  if (!t.alive) return { miss: true, dmg: 0 };
+  const md = opts.defMul !== undefined ? { ...t.effDef(), def: t.effDef().def * opts.defMul } : t.effDef();
+  const res = playerAttack(opts.el ? { ...player.ps, el: opts.el } : player.ps, md, mult * player.atkMul, 1, true);
   const yy = overHead(t, t.sprite.scale.y * 0.8);
   if (res.miss) { fx.number(t.x, yy, t.z, 'Miss', 'miss'); return res; }
   fx.number(t.x, yy, t.z, res.dmg, 'dealt');
@@ -1155,8 +1368,9 @@ function combo(t) {
 }
 
 // ---------- spells: stand still, chant (the cast bar), then the magic flies ----------
+const IMBUE_COL = { fire: '#ff7a2a', water: '#9fe0ff', wind: '#fff27a', earth: '#c8a06a' };
 const SPELL_COL = { spark: '#ff7a2a', frost: '#9fe0ff', arc: '#fff27a', flamering: '#ff6a1a', stonespike: '#c8a06a', quake: '#b9874f',
-  meteor: '#ff5a1a', stormgust: '#bfefff', thunder: '#fff27a', flameedge: '#ff7a2a', frostedge: '#9fe0ff', thunderedge: '#fff27a' };
+  meteor: '#ff5a1a', stormgust: '#bfefff', thunder: '#fff27a' };
 // the Wizard's passives for one cast: Attunement always, Resonance when the element changed
 function castMul(element) {
   let k = 1 + 0.03 * skillLv(prog, 'attune');
@@ -1170,7 +1384,9 @@ function spellHit(m, mult, element) {
   const staff = ITEMS[inv.gear.weapon];
   if (staff?.kind === 'staff' && staff.el && staff.el === element) mult *= 1.15; // an elemental staff feeds its own spells
   if (m.shatterT > skillClock && element !== 'earth') { mult *= 1.3; m.shatterT = 0; } // Stone Spike's Shatter
-  const res = magicAttack(player.ps, m.effDef(), mult, element);
+  const md = m.effDef(), attune = skillLv(prog, 'attune');
+  if (attune && elementMod(element, md.el) > 1) mult *= 1 + 0.03 * attune; // Attunement: harder still on a weakness
+  const res = magicAttack(player.ps, md, mult, element);
   const dx = m.x - player.x, dz = m.z - player.z, d = Math.hypot(dx, dz) || 1;
   // the right element hits hard (gold), the wrong one barely scratches (grey)
   fx.number(m.x, overHead(m, m.sprite.scale.y * 0.8), m.z, res.dmg, res.el > 1 ? 'crit' : res.el < 1 ? 'miss' : 'dealt');
@@ -1198,7 +1414,7 @@ function castSpell(id, lv, pay, sp) {
         fx.sparkle(player.x + Math.cos(a) * 2.2, y() + 0.3, player.z + Math.sin(a) * 2.2, SPELL_COL.flamering, 2);
       }
       fx.puff(player.x, y() + 0.2, player.z, 1.6);
-      for (const m of [...mobs.list]) if (m.alive && Math.hypot(m.x - player.x, m.z - player.z) < 2.8 + m.def.r) spellHit(m, (100 + 12 * lv) / 100 * k, sk.magic);
+      for (const m of [...mobs.list]) if (m.alive && Math.hypot(m.x - player.x, m.z - player.z) < 2.8 + m.def.r) { const r = spellHit(m, sk.power(lv) / 100 * k, sk.magic); if (r) inflict(m, sk.status, lv, r.dmg); }
     }, null, sk.name);
     return;
   }
@@ -1209,35 +1425,48 @@ function castSpell(id, lv, pay, sp) {
     say();
     const k = castMul(sk.magic);
     const from = { x: player.x + player.face.x * 0.4, y: y() + 1.0, z: player.z + player.face.z * 0.4 };
-    // the Wizard's area spells: everything within 3 paces of the target
-    const around = (cx, cz, mult, then) => {
-      for (const m of [...mobs.list]) if (m.alive && Math.hypot(m.x - cx, m.z - cz) < 3 + m.def.r) { const r = spellHit(m, mult * k, sk.magic); if (r) then?.(m); }
+    // the Wizard's area spells: everything within r paces of (cx, cz); then(m, res) for each one hit
+    const around = (cx, cz, mult, then, r = 3) => {
+      for (const m of [...mobs.list]) if (m.alive && Math.hypot(m.x - cx, m.z - cz) < r + m.def.r) { const res = spellHit(m, mult * k, sk.magic); if (res) then?.(m, res); }
     };
     const burst = (cx, cz, n = 18) => {
       const gy = world.heightAt(cx, cz);
       for (let i = 0; i < n; i++) { const a = (i / n) * Math.PI * 2, r = 1 + Math.random() * 2; fx.sparkle(cx + Math.cos(a) * r, gy + 0.3, cz + Math.sin(a) * r, SPELL_COL[id], 2); }
       fx.puff(cx, gy + 0.2, cz, 1.4);
     };
-    if (id === 'quake') {
-      cam.shake = 0.35;
-      burst(t.x, t.z, 24);
-      around(t.x, t.z, sk.power(lv) / 100, (m) => { if (m.alive && !m.def.mvp && Math.random() < 0.25) { m.stunT = 1.5; } });
-      return;
-    }
-    if (id === 'stormgust') {
-      burst(t.x, t.z, 26);
-      around(t.x, t.z, sk.power(lv) / 100, (m) => { if (m.alive && !m.def.mvp && Math.random() < 0.03 * lv) { m.stunT = 2.5; fx.number(m.x, overHead(m, m.sprite.scale.y * 0.8 + 0.3), m.z, 'Frozen', 'miss'); } });
-      return;
-    }
-    if (id === 'thunder') {
-      const at = (m) => ({ x: m.x, y: world.heightAt(m.x, m.z) + 0.5, z: m.z });
-      for (const m of mobs.list) if (m.alive && Math.hypot(m.x - t.x, m.z - t.z) < 3 + m.def.r) fx.zap({ x: m.x, y: world.heightAt(m.x, m.z) + 4, z: m.z }, at(m), SPELL_COL.thunder);
-      around(t.x, t.z, sk.power(lv) / 100);
-      return;
-    }
-    if (id === 'meteor') { // three falls, a beat apart, around where the target stood
-      const cx = t.x, cz = t.z;
-      for (let i = 0; i < 3; i++) setTimeout(() => { burst(cx + (Math.random() - 0.5) * 2, cz + (Math.random() - 0.5) * 2, 14); cam.shake = 0.2; around(cx, cz, sk.power(lv) / 100); }, i * 350);
+    // area spells strike again and again where the target stood; the ground shows the area while it lasts
+    if (sk.hits && sk.target === 'mob' && id !== 'frost') {
+      const cx = t.x, cz = t.z, mult = sk.power(lv) / 100;
+      fx.warn(cx, cz, 3, sk.hits(lv) * sk.every + 0.3, SPELL_COL[id]);
+      const caught = new Map(); // Storm Gust: gusts each monster has taken
+      repeat(sk, lv, (i) => {
+        const gy = world.heightAt(cx, cz);
+        if (id === 'quake') { // a shock: the ground jumps
+          cam.shake = 0.3;
+          burst(cx, cz, 20);
+          around(cx, cz, mult, (m) => inflict(m, sk.status, lv));
+        }
+        if (id === 'stormgust') { // a gust of the blizzard swirls round the area
+          for (let j = 0; j < 10; j++) { const a = Math.random() * Math.PI * 2, r = Math.random() * 3; fx.sparkle(cx + Math.cos(a) * r, gy + 0.3 + Math.random() * 1.5, cz + Math.sin(a) * r, SPELL_COL.stormgust, 1); }
+          if (i % 3 === 0) fx.puff(cx, gy + 0.4, cz, 1.6);
+          around(cx, cz, mult, (m) => { const n = (caught.get(m) || 0) + 1; caught.set(m, n); if (n >= 3) inflict(m, sk.status, lv); });
+        }
+        if (id === 'thunder') { // a wave of lightning: on every monster in the area, and a few strays
+          const at = (x, z) => ({ x, y: world.heightAt(x, z) + 0.4, z });
+          for (const m of mobs.list) if (m.alive && Math.hypot(m.x - cx, m.z - cz) < 3 + m.def.r) fx.zap({ x: m.x, y: world.heightAt(m.x, m.z) + 5, z: m.z }, at(m.x, m.z), SPELL_COL.thunder);
+          for (let j = 0; j < 2; j++) { const a = Math.random() * Math.PI * 2, r = Math.random() * 3, x = cx + Math.cos(a) * r, z = cz + Math.sin(a) * r; fx.zap({ x, y: world.heightAt(x, z) + 5, z }, at(x, z), SPELL_COL.thunder); }
+          around(cx, cz, mult, (m) => inflict(m, sk.status, lv));
+        }
+        if (id === 'meteor') { // a meteor falls from the sky on a random spot in the area
+          const a = Math.random() * Math.PI * 2, r = Math.sqrt(Math.random()) * 2.5, x = cx + Math.cos(a) * r, z = cz + Math.sin(a) * r;
+          const spot = { x, z, alive: true };
+          fx.bolt(x + 1.5, world.heightAt(x, z) + 7, z - 1.5, spot, SPELL_COL.meteor, () => {
+            burst(x, z, 14);
+            cam.shake = 0.25;
+            around(x, z, mult, (m, res) => inflict(m, sk.status, lv, res.dmg), 1.7);
+          }, 0.9);
+        }
+      });
       return;
     }
     if (id === 'arc') { // strikes at once, then leaps to two more
@@ -1246,7 +1475,19 @@ function castSpell(id, lv, pay, sp) {
       spellHit(t, sk.power(lv) / 100 * k, sk.magic);
       const near = mobs.list.filter((m) => m.alive && m !== t && Math.hypot(m.x - t.x, m.z - t.z) < 3.2)
         .sort((a, b) => Math.hypot(a.x - t.x, a.z - t.z) - Math.hypot(b.x - t.x, b.z - t.z)).slice(0, 2);
-      for (const m of near) { fx.zap(at(t), at(m), SPELL_COL.arc); spellHit(m, sk.power(lv) / 200 * k, sk.magic); }
+      for (const m of near) { fx.zap(at(t), at(m), SPELL_COL.arc); if (spellHit(m, sk.power(lv) / 200 * k, sk.magic)) inflict(m, sk.status, lv); }
+      if (t.alive) inflict(t, sk.status, lv);
+      return;
+    }
+    if (id === 'frost') { // shards of ice rain on the monster one after another
+      repeat(sk, lv, () => {
+        if (!t.alive) return;
+        const ty = world.heightAt(t.x, t.z);
+        fx.bolt(t.x + (Math.random() - 0.5) * 0.6, ty + 4.5, t.z + (Math.random() - 0.5) * 0.6, t, SPELL_COL.frost, () => {
+          spellHit(t, sk.power(lv) / 100 * k, sk.magic);
+          fx.sparkle(t.x, world.heightAt(t.x, t.z) + 0.5, t.z, SPELL_COL.frost, 4);
+        }, 0.45);
+      });
       return;
     }
     fx.bolt(from.x, from.y, from.z, t, SPELL_COL[id], () => {
@@ -1255,10 +1496,6 @@ function castSpell(id, lv, pay, sp) {
       if (res && id === 'stonespike' && t.alive) { t.shatterT = skillClock + 6; fx.number(t.x, overHead(t, t.sprite.scale.y * 0.8 + 0.3), t.z, 'Shattered', 'miss'); }
       const ty = world.heightAt(t.x, t.z) + 0.5;
       fx.sparkle(t.x, ty, t.z, SPELL_COL[id], 8);
-      if (res && id === 'frost' && t.alive && !t.def.mvp && Math.random() < 0.04 * lv) {
-        t.stunT = 2.5;
-        fx.number(t.x, overHead(t, t.sprite.scale.y * 0.8 + 0.3), t.z, 'Frozen', 'miss');
-      }
     });
   };
   player.command({ mob: target, spell: { range: sk.range, time, run, name: sk.name } });
@@ -1281,12 +1518,28 @@ player.on('interrupt', () => menus.message('Your spell was interrupted!'));
 let rhythm = 0;
 function tickSkills(dt) {
   skillClock += dt;
+  for (let i = timers.length - 1; i >= 0; i--) {
+    if (timers[i].at > skillClock) continue;
+    const t = timers.splice(i, 1)[0];
+    if (t.map === world.id) t.fn();
+  }
+  for (const m of mobs.list) { // burning monsters
+    if (!m.alive || !(m.burnT > 0)) continue;
+    m.burnT -= dt;
+    m.burnTick -= dt;
+    if (m.burnTick > 0) continue;
+    m.burnTick = 1;
+    fx.number(m.x, overHead(m, m.sprite.scale.y * 0.8), m.z, m.burnDmg, 'dealt');
+    fx.sparkle(m.x, overHead(m, m.sprite.scale.y * 0.4), m.z, '#ff7a2a', 4);
+    m.hit(m.burnDmg, 0, 0);
+  }
   for (const k in skillCd) skillCd[k] -= dt;
   for (const k in buffs) {
     if (buffs[k] <= 0) continue;
     buffs[k] -= dt;
     if (buffs[k] <= 0 && k === 'aspd') { applyStats(); menus.message('The Speed Potion wears off'); }
     if (buffs[k] <= 0 && k === 'momentum') momentum = 0;
+    if (buffs[k] <= 0 && k === 'imbue') { imbueEl = null; applyStats(); menus.message('Your blade loses its element'); }
     if (buffs[k] <= 0 && k === 'aegis') { player.barrier = 0; applyStats(); }
   }
   if (buffs.aegis > 0 && player.barrier <= 0) { buffs.aegis = 0; applyStats(); menus.message('Stone Aegis breaks'); }
@@ -1327,7 +1580,7 @@ function tap(cx, cy) {
   if (hit?.mob) player.command({ mob: hit.mob });
   else if (hit?.item) {
     const p = hit.item;
-    player.command({ x: p.x, z: p.z, reach: 0.7, arrive: () => { if (fx.pickups.includes(p) && collect(p)) fx.take(p); } });
+    player.command({ x: p.tx, z: p.tz, reach: 0.7, arrive: () => { if (fx.pickups.includes(p) && collect(p)) fx.take(p); } }); // where it lands
   } else if (hit?.spot) {
     const sp = hit.spot;
     player.command({ x: sp.x, z: sp.z, reach: 1.7, arrive: sp.run });
@@ -1418,7 +1671,7 @@ let questZone = null, questT = 0;
 let resetting = false;
 function persist() {
   if (!started || resetting) return;
-  writeSave({ story: story.toJSON(), look: player.look, visited: [...visited], keepers: [...keepers], savePoint, map: world.id, mvpAt: mobs.mvpAt, x: player.x, z: player.z, yaw: cam.yaw, dist: cam.dist, hp: player.hp, sp: player.sp, inv: inv.toJSON(), prog: prog.toJSON(), quests: quests.toJSON(), hotbar: hotbar.toJSON(), time: dayNight.t });
+  writeSave({ story: story.toJSON(), look: player.look, visited: [...visited], keepers: [...keepers], savePoint, map: world.id, mvpAt: mobs.mvpAt, bossHp: mobs.bossSnapshot(), x: player.x, z: player.z, yaw: cam.yaw, dist: cam.dist, hp: player.hp, sp: player.sp, inv: inv.toJSON(), prog: prog.toJSON(), quests: quests.toJSON(), hotbar: hotbar.toJSON(), time: dayNight.t });
 }
 
 // second jobs glow: a soft aura behind the hero and a ring at their feet, in the job's colour
@@ -1490,7 +1743,7 @@ function frame() {
   player.update(live ? dt : 0, b, mobs);
   if (live && player.moving && player.state === 'normal') {
     stepT -= dt;
-    if (stepT <= 0) { stepT = 0.33 / player.speedMul; audio.play('step'); }
+    if (stepT <= 0) { stepT = 1.4 / player.walkSpeed(); audio.play('step'); } // a footstep every 1.4 tiles
   }
   audio.update(dt, dayNight.night);
   if (!started) cam.yaw += dt * 0.05; // slow orbit behind the title screen
@@ -1567,6 +1820,44 @@ if (save) { tContinue.textContent = 'Continue'; tNew.hidden = false; }
 const soundLabel = () => { tSound.textContent = `Sound: ${audio.enabled ? 'On' : 'Off'}`; };
 soundLabel();
 tSound.addEventListener('click', () => { audio.start(); audio.setEnabled(!audio.enabled); soundLabel(); audio.play('ui'); });
+// back up the save as a line of text (to keep in notes or a chat), or paste one back in
+const tBackup = document.getElementById('t-backup'), tRestore = document.getElementById('t-restore');
+const codeBox = document.getElementById('t-code'), codeMsg = document.getElementById('t-code-msg');
+const codeText = document.getElementById('t-code-text'), codeGo = document.getElementById('t-code-go');
+let codeMode = null;
+if (save) tBackup.hidden = false;
+const openCode = (mode) => {
+  codeMode = mode;
+  codeBox.hidden = false;
+  audio.play('ui');
+  if (mode === 'backup') {
+    codeText.value = saveCode();
+    codeText.readOnly = true;
+    codeMsg.textContent = 'Your save as a code. Copy it and keep it somewhere safe (notes, a chat). Restore save puts it back, on this phone or another.';
+    codeGo.textContent = 'Copy';
+  } else {
+    codeText.value = '';
+    codeText.readOnly = false;
+    codeMsg.textContent = 'Paste a save code here. It replaces the save in this game.';
+    codeGo.textContent = 'Load';
+  }
+};
+tBackup.addEventListener('click', () => openCode('backup'));
+tRestore.addEventListener('click', () => openCode('restore'));
+document.getElementById('t-code-close').addEventListener('click', () => { codeBox.hidden = true; audio.play('ui'); });
+codeGo.addEventListener('click', async () => {
+  if (codeMode === 'backup') {
+    codeText.select();
+    let ok = false;
+    try { await navigator.clipboard.writeText(codeText.value); ok = true; } catch { try { ok = document.execCommand('copy'); } catch { /* select it by hand */ } }
+    codeMsg.textContent = ok ? 'Copied! Paste it somewhere safe.' : 'Select the code and copy it by hand.';
+    return;
+  }
+  if (!loadCode(codeText.value)) { codeMsg.textContent = 'That is not a save code. Check it was copied whole.'; return; }
+  codeMsg.textContent = 'Save restored. Starting…';
+  resetting = true; // don't let the running game write over it
+  setTimeout(() => location.reload(), 600);
+});
 let confirmNew = false;
 tNew.addEventListener('click', () => {
   if (!confirmNew) {

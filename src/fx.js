@@ -10,6 +10,41 @@ export class FX {
     this.pool = [];
     this.pickups = [];
     this.tint = [];
+    this.warns = [];     // boss move warnings on the ground
+    this.warnPool = [];
+  }
+
+  // a circle on the ground: red where a boss move will land, the fill growing until it hits (life s);
+  // a spell's colour for the area it covers while it lasts
+  warn(x, z, r, life, color = '#ff4a3a') {
+    if (!this.warnTex) {
+      const tex = (fill) => {
+        const c = document.createElement('canvas');
+        c.width = c.height = 128;
+        const g = c.getContext('2d');
+        g.beginPath(); g.arc(64, 64, 60, 0, Math.PI * 2);
+        if (fill) { g.fillStyle = 'rgba(255,255,255,.38)'; g.fill(); } else { g.strokeStyle = '#ffffff'; g.lineWidth = 6; g.stroke(); g.fillStyle = 'rgba(255,255,255,.12)'; g.fill(); }
+        return new THREE.CanvasTexture(c);
+      };
+      this.warnTex = [tex(false), tex(true)];
+      this.warnGeo = new THREE.PlaneGeometry(2, 2).rotateX(-Math.PI / 2);
+    }
+    let w = this.warnPool.pop();
+    if (!w) {
+      const mesh = (map) => {
+        const m = new THREE.Mesh(this.warnGeo, new THREE.MeshBasicMaterial({ map, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -4 }));
+        m.renderOrder = 2;
+        this.scene.add(m);
+        return m;
+      };
+      w = { ring: mesh(this.warnTex[0]), fill: mesh(this.warnTex[1]) };
+    }
+    const y = this.world.heightAt(x, z) + 0.12;
+    for (const m of [w.ring, w.fill]) { m.position.set(x, y, z); m.visible = true; m.material.color.set(color); }
+    w.ring.scale.set(r, 1, r);
+    w.fill.scale.set(0.01, 1, 0.01);
+    Object.assign(w, { r, t: 0, life });
+    this.warns.push(w);
   }
 
   sprite(map, opts = {}) {
@@ -184,6 +219,8 @@ export class FX {
   clearPickups() {
     for (const p of this.pickups) { this.release(p.s); if (p.glow) this.release(p.glow); }
     this.pickups = [];
+    for (const w of this.warns) { w.ring.visible = w.fill.visible = false; this.warnPool.push(w); }
+    this.warns = [];
   }
 
   // a faint gold halo, for rare drops
@@ -209,9 +246,10 @@ export class FX {
     const size = 0.55;
     s.scale.set(size, size, 1);
     const a = Math.random() * Math.PI * 2, r = 0.3 + Math.random() * 0.6;
+    // it lands where you can reach it: never under a tree or a rock (landAt, set by the game)
+    const [tx, tz] = this.landAt ? this.landAt(x + Math.cos(a) * r, z + Math.sin(a) * r) : [x + Math.cos(a) * r, z + Math.sin(a) * r];
     const p = {
-      s, item, count, x, z,
-      tx: x + Math.cos(a) * r, tz: z + Math.sin(a) * r,
+      s, item, count, x, z, tx, tz,
       t: 0, life: 45, size,
     };
     if (rare) { // a soft halo behind it, and a few sparkles as it lands
@@ -226,6 +264,13 @@ export class FX {
   }
 
   update(dt) {
+    for (let i = this.warns.length - 1; i >= 0; i--) {
+      const w = this.warns[i];
+      w.t += dt;
+      const k = Math.min(1, w.t / w.life), s = Math.max(0.01, w.r * k);
+      w.fill.scale.set(s, 1, s);
+      if (w.t >= w.life) { w.ring.visible = w.fill.visible = false; this.warns.splice(i, 1); this.warnPool.push(w); }
+    }
     if (this.mark) {
       this.markT -= dt;
       this.mark.visible = this.markT > 0;

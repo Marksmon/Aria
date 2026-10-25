@@ -41,8 +41,8 @@ quests. Code: `src/progress.js` (jobs, levels, points), `src/skills.js` (trees, 
 | Needs a sword (any weapon but a staff) | Needs a staff |
 |---|---|
 | Cleave, Heavy Strike, Ground Slash (Blader) | Ember Bolt, Frost Shard, Arc Lightning, Flame Ring (Sorcerer) |
-| Twin Fang, Piercing Edge, Final Blade (BladeMaster) | Stone Spike, Earthquake, Meteor Storm, Storm Gust, Thunderstorm (Wizard) |
-| Flame Edge, Frost Edge, Thunder Edge (Magic Knight) | |
+| Twin Fang, Piercing Edge, Final Blade, Blade Dance (BladeMaster) | Stone Spike, Earthquake, Meteor Storm, Storm Gust, Thunderstorm (Wizard) |
+| Elemental Edge, Elemental Blade, Elemental Nova (Magic Knight) | |
 
 No weapon needed: Mend, Thrust, Guard, Rest, War Cry, Stand Firm, Rune Ward, Blink, Stone Aegis.
 
@@ -74,6 +74,36 @@ No weapon needed: Mend, Thrust, Guard, Rest, War Cry, Stand Firm, Rune Ward, Bli
 | 20 / 5 | BladeMaster |
 | 5 / 20 | Wizard |
 | any, below Job 40 | none |
+
+## Second-job skills
+
+- **Three or four active skills per second job** (the owner's rule). BladeMaster: Twin Fang,
+  Piercing Edge, Final Blade, Blade Dance. Magic Knight: Elemental Edge, Elemental Blade,
+  Elemental Nova, Stone Aegis. Wizard: Stone Spike, Earthquake, Meteor Storm, Storm Gust,
+  Thunderstorm (its area spells were asked for by name). Add passives rather than more actives.
+- **Multi-hit, Ragnarok style:** the Wizard's area spells strike again and again over a few seconds
+  (Storm Gust, Lord of Vermillion), and so do Piercing Edge, Final Blade, Elemental Edge and
+  Elemental Nova. `hits`/`every` on the skill, `power` per hit.
+- **Status effects** (freeze, paralyze, stun, burn) come with area skills and by element. Bosses
+  resist: a third of the chance for half as long, never immune.
+
+## Damage balance between jobs
+
+Checked with the fight simulator (a neutral Lv 55 boss and a pack of six Lv 38 monsters, Base 60 and
+70). Skill numbers live on each skill in `skills.js` (`power`, and `mpower` for the Magic Knight's
+MATK part), used by both the damage and the skill text.
+
+- **Second jobs are much stronger than first jobs:** about 2–4x their own first job.
+- **First jobs are close to each other:** a Blader does about 0.8–0.9x a Sorcerer's single-target
+  damage, clears packs as fast, and takes about as long on the Kobold and Goblin Kings.
+- **BladeMaster vs Wizard: do not even them out.** The BladeMaster is not elemental: its damage is
+  the same on every monster, so it keeps the higher steady single-target damage (about 1.4x the
+  Wizard's on a neutral monster). The Wizard makes up the gap with elements: on a monster weak to
+  its element it clearly out-damages the BladeMaster (about 1.4x, helped by Elemental Attunement's
+  extra damage on a weakness), and on one that resists it, it falls far behind.
+  It is also the best at packs.
+- **Magic Knight:** between the two on one target, close to the BladeMaster on packs, with the most
+  HP and its Stone Aegis barrier.
 
 ## Trials
 

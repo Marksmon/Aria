@@ -41,16 +41,21 @@ jobs:
           node build-tools/patch-android.mjs
           npx cap sync android
 
-      - name: Use fixed debug key (with the rising version, new builds install over old ones)
-        run: |
-          mkdir -p ~/.android
-          cp build-tools/debug.keystore ~/.android/debug.keystore
-
       - name: Build APK
         working-directory: android
         run: |
           chmod +x gradlew
           ./gradlew assembleDebug --no-daemon
+
+      # every APK must carry the same signature (build-tools/debug.keystore, set by patch-android.mjs),
+      # or phones refuse it as an update and the player has to uninstall, losing the save
+      - name: Check the APK is signed with the fixed key
+        run: |
+          want=$(keytool -list -v -keystore build-tools/debug.keystore -storepass android | grep -m1 'SHA256:' | awk '{print $2}')
+          got=$(keytool -printcert -jarfile android/app/build/outputs/apk/debug/app-debug.apk | grep -m1 'SHA256:' | awk '{print $2}')
+          echo "key: $want"
+          echo "apk: $got"
+          test -n "$want" && test "$want" = "$got"
 
       - name: Publish to the "latest" release
         env:

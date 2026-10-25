@@ -11,7 +11,7 @@
 // boss (KITE). Things the sim leaves
 // out: walking, kiting, flinching, regen during the fight.
 import { derive, playerAttack, mobAttack, magicAttack, elementMod } from '../src/rules.js';
-import { MOB_DEFS, guardDef } from '../src/mobs.js';
+import { MOB_DEFS, guardDef, MOVES } from '../src/mobs.js';
 import { Progress } from '../src/progress.js';
 import { SKILLS, spCost, castTime } from '../src/skills.js';
 
@@ -64,7 +64,8 @@ export function hero(kind, base) {
 
 // a Sorcerer's bolts: power % by level, and their element. The sim casts whichever learnt one hits
 // this monster hardest
-const BOLTS = { spark: [(lv) => SKILLS.spark.power(lv), 'fire'], frost: [(lv) => SKILLS.frost.power(lv), 'water'], arc: [(lv) => SKILLS.arc.power(lv), 'wind'] };
+// power x hits: Frost Shard rains several small shards
+const BOLTS = Object.fromEntries([['spark', 'fire'], ['frost', 'water'], ['arc', 'wind']].map(([k, el]) => [k, [(lv) => SKILLS[k].power(lv) * (SKILLS[k].hits?.(lv) || 1), el]]));
 const bestBolt = (prog, def) => Object.keys(BOLTS).filter((k) => prog.skills[k])
   .sort((a, b) => BOLTS[b][0](prog.skills[b]) * elementMod(BOLTS[b][1], def.el) - BOLTS[a][0](prog.skills[a]) * elementMod(BOLTS[a][1], def.el))[0];
 
@@ -74,6 +75,8 @@ function fight(h, def, opts = {}) {
   const ps = h.ps, potHp = POTIONS[opts.potion || 'potion2'], potMax = opts.potions ?? 0;
   let blue = 0; const blueMax = h.kind === 'sorcerer' ? (opts.blue ?? (opts.potions ? 15 : 0)) : 0; // Blue Potions for SP
   let hp = ps.maxHp, sp = ps.maxSp, mob = def.hp, t = 0, potions = 0, next = 0, mobNext = def.adelay / 1000, stompAt = def.boss || def.mvp ? 7 : Infinity;
+  // a boss's moves reach 3 to 9 paces: they find a Sorcerer kiting it, not a Blader at its side
+  const moves = h.kind === 'sorcerer' ? (def.moves || []).filter((m) => MOVES[m.kind]?.min).map((m) => ({ ...m, at: MOVES[m.kind].cd })) : [];
   const guards = []; let called = false, goneT = -1e9, hits = 0;
   const strike = (d) => {
     const sk = h.kind === 'blader' ? 'heavy' : bestBolt(h.prog, d) || 'spark', lv = h.prog.skills[sk] || 0;
@@ -86,6 +89,8 @@ function fight(h, def, opts = {}) {
     return [playerAttack(ps, d).dmg, ps.interval];
   };
   const call = () => { called = true; for (const g of def.summon.slice(0, 2)) guards.push({ def: guardDef(g), hp: guardDef(g).hp, next: t + 1 }); };
+  // spells reach 5 paces: a Sorcerer lands one before a monster closes in
+  if (h.kind === 'sorcerer') { const [dmg] = strike(def); mob -= dmg; mobNext += 1.2; }
   while (t < LIMIT) {
     t = Math.min(next, mobNext, stompAt);
     if (t === next) { // the hero acts
@@ -107,6 +112,7 @@ function fight(h, def, opts = {}) {
       stompAt = t + 7;
     }
     for (const g of guards) while (g.hp > 0 && g.next <= t) { hp -= mobAttack(g.def, ps).dmg; g.next += g.def.adelay / 1000; }
+    for (const m of moves) while (m.at <= t) { if (Math.random() > STOMP_DODGE) hp -= mobAttack(def, ps, m.mult || 1.5).dmg; m.at += MOVES[m.kind].cd; } // the red circle: half are stepped out of
     if (hp <= 0) return { win: false, t, potions, hpLeft: 0, mobLeft: mob / def.hp };
   }
   return { win: false, t, potions, hpLeft: hp / ps.maxHp, mobLeft: mob / def.hp };

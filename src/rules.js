@@ -5,6 +5,10 @@ const rnd = (n) => Math.floor(Math.random() * n); // 0 .. n-1
 
 // Elements, Ragnarok's table at element level 1 (attack element -> defending element -> damage %).
 // Monsters have an element (mobs.js el); spells and some weapons do too.
+// Walking follows Ragnarok's times (ms a tile: the hero 150, a Poring 400, the Goblin Leader 120),
+// all taken twice as long, as Aria's maps are smaller than Ragnarok's.
+export const WALK_SCALE = 2;
+
 export const ELEMENTS = {
   neutral: { name: 'Neutral', color: '#c8c0b0' },
   water: { name: 'Water', color: '#6cc4ef' },
