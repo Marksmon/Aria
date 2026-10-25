@@ -424,11 +424,11 @@ rings the portal to take, or the person to talk to. A purple **!** marks who the
 | Chapter | Steps |
 |---|---|
 | Prologue (the tutorial) | Talk to the Elder · raise a stat · defeat 3 Slimes in Mosvangr · learn Basic Training · put a potion on the hotbar · back to the Elder |
-| 1: The Stone-Fort | Travel to Steinborg · tell Captain Ulfr the fires are failing · meet Saeunn the Seeress · sell something for perz |
+| 1: The Stone-Fort | Travel to Steinborg · tell Captain Ulfr the fires are failing · sign Keeper Bera's ledger (the Keepers: healing, storage, save point, teleport) · meet Saeunn the Seeress · sell something for perz |
 | 2: Blade or Rune | Pass a job trial and become a Blader or a Sorcerer |
 | 3: Embers in the Wilds | Saeunn's warning · defeat the Giant Sprout in Birkilund · travel to Glodberg |
 | 4: The Fire-Ring | Archmage Vigdis sings the fire-ring's runes anew · bring the song home: the fire-ring rekindled |
-| 5: The Salt Road | Captain Ulfr: kobolds rob the salt carts · sign a Keeper's ledger · Hakon the Carter in Saltvik · defeat 12 kobolds in Grjotvangr · Saeunn and the glowing red coal · go down into Kolgrof · Dag the Miner: the goblins drive the kobolds to dig for a "Waking Fire" |
+| 5: The Salt Road | Captain Ulfr: kobolds rob the salt carts · Hakon the Carter in Saltvik · defeat 12 kobolds in Grjotvangr · Saeunn and the glowing red coal · go down into Kolgrof · Dag the Miner: the goblins drive the kobolds to dig for a "Waking Fire" |
 | 6: The Goblin War-Band | tell Ulfr · defeat 15 goblins in Brennholt · Archmage Vigdis reads the two coal trails |
 | 7: The Second Path | take a second job (BladeMaster, Wizard or Magic Knight) |
 | 8: The Waking Fire | defeat the Giant Beetle in Askheid · travel to Ormholt · defeat 20 goblins, the keepers of the goblins' backward fire-ring · the backward rune-stone to Vigdis · home to the Elder |

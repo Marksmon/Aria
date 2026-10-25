@@ -454,7 +454,7 @@ const nearestMap = (maps) => [...maps].sort((a, b) => hops(world.id, a) - hops(w
 function questTarget(id) {
   if (id === 'story') {
     const s = story.step, map = s && story.map();
-    return map ? { map, npc: s.kind === 'talk' ? s.npc : null, why: s.title } : null;
+    return map ? { map, npc: s.npc || null, why: s.title } : null; // a talk step's person, or the Keeper to sign with
   }
   const q = QUESTS[id], giver = questGiver(id);
   if (!(id in quests.active) || quests.ready(id, inv)) return { map: NPCS[giver].map || 'camp', npc: giver, why: NPCS[giver].name };

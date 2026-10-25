@@ -60,8 +60,15 @@ export const STORY = [
     reward: { xp: 40, perz: 200 } },
   { id: 'captain', ch: 'Chapter 1: The Stone-Fort', title: 'Word for the Captain', kind: 'talk', npc: 'ulfr', goal: 'Tell Captain Ulfr (by the south gate) about the fires',
     say: [['ulfr', 'Eldrun\'s fires, failing? ... Then the old tales are more than tales.'],
-      ['ulfr', 'Saeunn the Seeress has been seeing fire in her runes for a month. Her tower is in the north-east of the city. Go to her. I will double the watch on the south road.']],
+      ['ulfr', 'Saeunn the Seeress has been seeing fire in her runes for a month. Her tower is in the north-east of the city. Go to her. I will double the watch on the south road.'],
+      ['ulfr', 'But first, sign Keeper Bera\'s ledger by the west houses. A Keeper mends you, keeps your things, saves your place, and sends you to any other Keeper you have signed. You will walk these roads a great deal.']],
     reward: { xp: 40 } },
+  // the Keepers, taught early: storage, healing, a save point, and the Keepers' road between towns
+  { id: 'keepers', ch: 'Chapter 1: The Stone-Fort', title: 'The Keepers\' Ledger', kind: 'keeper', map: 'city', npc: 'keeper_city', goal: 'Sign Keeper Bera\'s ledger (by the west houses of Steinborg)',
+    hint: 'Talk to Keeper Bera and choose Sign the ledger. Keeper Tova at the camp already knows you.',
+    say: [['keeper_city', 'There: Steinborg remembers you now. Tap me whenever you need me. Heal me mends you. Storage keeps what your bag cannot carry. Save here makes this the place you wake after a fall.'],
+      ['keeper_city', 'And Teleport takes you to any other Keeper whose ledger you have signed, for a fare: Tova at your camp already, and one waits in Galdrheim too. Now go on to the Seeress.']],
+    reward: { xp: 40, perz: 300 } },
   { id: 'seeress', ch: 'Chapter 1: The Stone-Fort', title: 'The Seeress', kind: 'talk', npc: 'saeunn', goal: 'Find Saeunn the Seeress at her tower (north-east of the city)',
     say: [['saeunn', 'So. You are the one the runes showed me: a stranger by a dying fire.'],
       ['saeunn', 'Beneath Glodberg sleeps the Fire Giant, the last of the fire-jotnar. The fire-ring kept him dreaming. When the ring goes out, he wakes, and all of Aria burns.'],
@@ -114,13 +121,8 @@ export const STORY = [
   { id: 'saltroad', ch: 'Chapter 5: The Salt Road', title: 'Trouble on the Salt Road', kind: 'talk', npc: 'ulfr', goal: 'Captain Ulfr has sent for you (by the south gate of Steinborg)',
     say: [['ulfr', 'There you are. The Giant sleeps, but the valley does not. The salt carts from Saltvik have stopped coming, and the last carter who made it here was half dead.'],
       ['ulfr', 'He swore kobolds did it. Kobolds! They keep to their stone hills and bark at anyone who comes near. They do not rob carts.'],
-      ['ulfr', 'Before you go: sign Keeper Bera\'s ledger by the west houses. Then a Keeper anywhere can send you back to Steinborg, and you will need to come back often.']],
-    reward: { xp: 3000, perz: 1000 } },
-  { id: 'ledger', ch: 'Chapter 5: The Salt Road', title: 'The Keepers\' Ledger', kind: 'keeper', map: 'city', goal: 'Sign a Keeper\'s ledger (Keeper Bera, by the west houses of Steinborg)',
-    hint: 'Talk to a Keeper and choose Register. Keepers also save your place, mend you and keep your chest.',
-    say: [[null, 'Your name is in the Keepers\' ledger. From any Keeper, for a fee, you can now travel to every Keeper you have signed.'],
-      ['ulfr', 'Good. Now go west through Fenstrand to Saltvik. Hakon the carter is waiting by the south road.']],
-    reward: { xp: 2000 } },
+      ['ulfr', 'Go west through Fenstrand to Saltvik. Hakon the carter is waiting by the south road. Ivar\'s carts or the Keepers will bring you back quickly.']],
+    reward: { xp: 5000, perz: 1000 } },
   { id: 'carter', ch: 'Chapter 5: The Salt Road', title: 'The Carter\'s Tale', kind: 'talk', npc: 'hakon', goal: 'Find Hakon the Carter by the south road of Saltvik',
     say: [['hakon', 'Kobolds, I tell you, a dozen of them, out of Grjotvangr with axes and bows. Took my horse and my cart.'],
       ['hakon', 'And here is the strange thing: they left the salt. They took the lamp oil, the pitch, the tinder. Every kobold I ever met runs from a torch. Why would they steal fire?'],
@@ -197,7 +199,8 @@ export const STORY = [
 
 // the steps as they were before the Fire Giant left the story, and where those steps went
 const OLD_ORDER = ['wake', 'stats', 'slimes', 'training', 'hotbar', 'report', 'north', 'captain', 'seeress', 'trade', 'path', 'heralds', 'matron', 'roots', 'emberhill', 'ready', 'lastfire', 'jarl', 'rekindled'];
-const RENAMED = { ready: 'runesong', lastfire: 'runesong', jarl: 'rekindled' };
+// ledger: the Keepers' step moved from Chapter 5 to Chapter 1 ('keepers'); a hero who was on it goes on to the carter
+const RENAMED = { ready: 'runesong', lastfire: 'runesong', jarl: 'rekindled', ledger: 'carter' };
 
 // directions: which way to walk from one map to reach another, through which portal
 export function route(from, to) {
