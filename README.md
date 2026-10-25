@@ -93,7 +93,9 @@ They drop Kobold Fur and Goblin Teeth, ores for refining, and now and then Hard 
 **Bosses.** Each new field has a mini-boss: big, slow, stomping the ground around it, back 5–8
 minutes after it falls. Like the MVPs, each calls 2 guards of its own kind below 60% HP (Red
 Sprouts, Blue Crabs, Dark Mushrooms, Fire Beetles), and again 2 minutes after the last one falls. They drop a rare material (30%) that forges the best gear, and a rare
-equip of their own (2–3%). Their guards are lesser servants of their kind (half the HP, 60% of
+equip of their own (2–3%). Each wears something of its own over its head (the Giant Sprout a ring of
+burning roots, the King Crab a coral crown, the Giant Mushroom a halo of spores, the Giant Beetle
+two burning horns). Their guards are lesser servants of their kind (half the HP, 60% of
 the ATK): cut them down first. At the level their quests suggest (Giant Sprout 28, King Crab 34,
 Giant Mushroom 43, Giant Beetle 50) each is about a two-minute fight on a dozen or so Orange
 Potions; see `docs/balance.md`.

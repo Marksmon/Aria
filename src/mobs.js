@@ -33,10 +33,10 @@ export const MOB_DEFS = {
   // mini-bosses: one on each new field, big and slow, they stomp like the Fire Giant, call two of
   // their own kind as guards (summon: see SUMMON_CD) and come back after `respawn` seconds. A hard fight for their own level: 2-4 minutes and a bag of potions
   // (a few levels above them is wiser). Their rare materials craft the best gear.
-  matron: { name: 'Giant Sprout', ai: 'boss', art: 'sprout', el: 'earth', tint: '#ff9a6a', boss: true, lv: 25, hp: 7200, atk: [44, 59], def: 10, vit: 25, agi: 18, dex: 40, exp: [4200, 2940], adelay: 1700, speed: 1.2, aggro: 5.5, chase: 12, reach: 1.3, w: 2.0, r: 0.75, heavy: true, summon: ['russet', 'russet'], summonText: 'The Giant Sprout shakes its leaves, and Red Sprouts come running!', respawn: 300, drops: [['heartwood', 1, 1, 0.3], ['thorn', 3, 5, 1], ['potion2', 1, 2, 0.5], ['thorn_mantle', 1, 1, 0.03], ['bramble_ring', 1, 1, 0.05], ['sprout_card', 1, 1, 0.01]] },
-  tideKing: { name: 'King Crab', ai: 'boss', art: 'crab', el: 'water', tint: '#8ab8ff', boss: true, lv: 32, hp: 8900, atk: [41, 54], def: 18, vit: 32, agi: 22, dex: 48, exp: [8400, 5880], adelay: 1600, speed: 1.3, aggro: 5.5, chase: 12, reach: 1.4, w: 2.3, r: 0.85, heavy: true, summon: ['tidecrab', 'tidecrab'], summonText: 'The King Crab clacks its claws, and Blue Crabs scuttle in!', respawn: 300, drops: [['king_pearl', 1, 1, 0.3], ['pearl', 1, 2, 0.6], ['crableg', 2, 3, 1], ['tidebreaker', 1, 1, 0.02], ['coral_shield', 1, 1, 0.05], ['crab_card', 1, 1, 0.01]] },
-  gloomMother: { name: 'Giant Mushroom', ai: 'boss', art: 'mushling', el: 'shadow', tint: '#9a7cff', boss: true, lv: 40, hp: 11200, atk: [55, 71], def: 14, vit: 40, agi: 28, dex: 60, exp: [17000, 11900], adelay: 1700, speed: 1.15, aggro: 5.5, chase: 12, reach: 1.4, w: 2.2, r: 0.8, heavy: true, mdef: 30, summon: ['gloomcap', 'gloomcap'], summonText: 'The Giant Mushroom puffs, and Dark Mushrooms sprout around it!', respawn: 420, drops: [['gloom_heart', 1, 1, 0.3], ['gloom', 2, 4, 1], ['potion3', 1, 2, 0.4], ['gloom_staff', 1, 1, 0.02], ['gloom_hood', 1, 1, 0.05], ['mushroom_card', 1, 1, 0.01]] },
-  cinderLord: { name: 'Giant Beetle', ai: 'boss', art: 'beetle', el: 'fire', tint: '#ff7a4a', boss: true, lv: 48, hp: 10800, atk: [56, 73], def: 22, vit: 48, agi: 32, dex: 70, exp: [28000, 19600], adelay: 1600, speed: 1.15, aggro: 5.5, chase: 12, reach: 1.5, w: 2.4, r: 0.9, heavy: true, summon: ['cinderBeetle', 'cinderBeetle'], summonText: 'The Giant Beetle roars, and Fire Beetles answer!', respawn: 480, drops: [['cinder_core', 1, 1, 0.3], ['cinder', 2, 4, 1], ['potion3', 1, 2, 0.5], ['cinder_greaves', 1, 1, 0.03], ['cinder_mail', 1, 1, 0.04], ['beetle_card', 1, 1, 0.01]] },
+  matron: { crown: 'roots', name: 'Giant Sprout', ai: 'boss', art: 'sprout', el: 'earth', tint: '#ff9a6a', boss: true, lv: 25, hp: 7200, atk: [44, 59], def: 10, vit: 25, agi: 18, dex: 40, exp: [4200, 2940], adelay: 1700, speed: 1.2, aggro: 5.5, chase: 12, reach: 1.3, w: 2.0, r: 0.75, heavy: true, summon: ['russet', 'russet'], summonText: 'The Giant Sprout shakes its leaves, and Red Sprouts come running!', respawn: 300, drops: [['heartwood', 1, 1, 0.3], ['thorn', 3, 5, 1], ['potion2', 1, 2, 0.5], ['thorn_mantle', 1, 1, 0.03], ['bramble_ring', 1, 1, 0.05], ['sprout_card', 1, 1, 0.01]] },
+  tideKing: { crown: 'coral', name: 'King Crab', ai: 'boss', art: 'crab', el: 'water', tint: '#8ab8ff', boss: true, lv: 32, hp: 8900, atk: [41, 54], def: 18, vit: 32, agi: 22, dex: 48, exp: [8400, 5880], adelay: 1600, speed: 1.3, aggro: 5.5, chase: 12, reach: 1.4, w: 2.3, r: 0.85, heavy: true, summon: ['tidecrab', 'tidecrab'], summonText: 'The King Crab clacks its claws, and Blue Crabs scuttle in!', respawn: 300, drops: [['king_pearl', 1, 1, 0.3], ['pearl', 1, 2, 0.6], ['crableg', 2, 3, 1], ['tidebreaker', 1, 1, 0.02], ['coral_shield', 1, 1, 0.05], ['crab_card', 1, 1, 0.01]] },
+  gloomMother: { crown: 'gloom', name: 'Giant Mushroom', ai: 'boss', art: 'mushling', el: 'shadow', tint: '#9a7cff', boss: true, lv: 40, hp: 11200, atk: [55, 71], def: 14, vit: 40, agi: 28, dex: 60, exp: [17000, 11900], adelay: 1700, speed: 1.15, aggro: 5.5, chase: 12, reach: 1.4, w: 2.2, r: 0.8, heavy: true, mdef: 30, summon: ['gloomcap', 'gloomcap'], summonText: 'The Giant Mushroom puffs, and Dark Mushrooms sprout around it!', respawn: 420, drops: [['gloom_heart', 1, 1, 0.3], ['gloom', 2, 4, 1], ['potion3', 1, 2, 0.4], ['gloom_staff', 1, 1, 0.02], ['gloom_hood', 1, 1, 0.05], ['mushroom_card', 1, 1, 0.01]] },
+  cinderLord: { crown: 'embers', name: 'Giant Beetle', ai: 'boss', art: 'beetle', el: 'fire', tint: '#ff7a4a', boss: true, lv: 48, hp: 10800, atk: [56, 73], def: 22, vit: 48, agi: 32, dex: 70, exp: [28000, 19600], adelay: 1600, speed: 1.15, aggro: 5.5, chase: 12, reach: 1.5, w: 2.4, r: 0.9, heavy: true, summon: ['cinderBeetle', 'cinderBeetle'], summonText: 'The Giant Beetle roars, and Fire Beetles answer!', respawn: 480, drops: [['cinder_core', 1, 1, 0.3], ['cinder', 2, 4, 1], ['potion3', 1, 2, 0.5], ['cinder_greaves', 1, 1, 0.03], ['cinder_mail', 1, 1, 0.04], ['beetle_card', 1, 1, 0.01]] },
   // MVP boss of Ember Hill: one at a time, back 15 minutes after it falls. Its slayer gets the MVP
   // reward on top of the drops. Stomps the ground around it every few seconds (stomp: x its ATK),
   // and calls 2 Fire Wisps and 3 Fire Beetles (summon: see SUMMON_CD).
@@ -77,6 +77,36 @@ const SUMMON_AT = 0.6, SUMMON_CD = 120;
 export const GUARD = { hp: 0.5, atk: 0.6 };
 const guardDefs = {};
 export const guardDef = (type) => (guardDefs[type] ||= { ...MOB_DEFS[type], hp: Math.round(MOB_DEFS[type].hp * GUARD.hp), atk: MOB_DEFS[type].atk.map((a) => Math.round(a * GUARD.atk)) });
+// each mini-boss wears something of its own over its head, so it never looks like a big tinted
+// copy of its kind: painted once, in code (crown: the def's key)
+const CROWNS = {
+  roots: (g) => { // the Giant Sprout: a ring of glowing roots and thorns
+    g.strokeStyle = '#5a2a0e'; g.lineWidth = 7; g.beginPath(); g.ellipse(32, 44, 24, 9, 0, 0, Math.PI * 2); g.stroke();
+    g.strokeStyle = '#ff8a3a'; g.lineWidth = 3; g.stroke();
+    for (const x of [12, 22, 32, 42, 52]) { g.fillStyle = '#ffb04a'; g.beginPath(); g.moveTo(x - 4, 42); g.quadraticCurveTo(x - 2, 20, x + (x % 20 ? 4 : -4), 10); g.quadraticCurveTo(x + 1, 24, x + 4, 42); g.fill(); }
+  },
+  coral: (g) => { // the King Crab: a coral crown studded with pearls
+    g.fillStyle = '#e8607a';
+    for (const [x, h] of [[14, 20], [24, 30], [32, 36], [40, 30], [50, 20]]) { g.beginPath(); g.moveTo(x - 4, 50); g.lineTo(x - 2, 50 - h); g.lineTo(x + 2, 50 - h + 6); g.lineTo(x + 4, 50); g.fill(); }
+    g.fillStyle = '#c8405a'; g.fillRect(10, 44, 44, 8);
+    for (const x of [16, 32, 48]) { g.fillStyle = '#fff8f0'; g.beginPath(); g.arc(x, 48, 3.5, 0, 7); g.fill(); }
+  },
+  gloom: (g) => { // the Giant Mushroom: a halo of drifting violet spores
+    for (let i = 0; i < 9; i++) { const a = (i / 9) * Math.PI * 2, r = 5 + (i % 3) * 2; g.fillStyle = i % 2 ? '#c8a8ff' : '#8a5aff'; g.beginPath(); g.arc(32 + Math.cos(a) * 22, 38 + Math.sin(a) * 9, r, 0, 7); g.fill(); }
+    g.fillStyle = '#f0e0ff'; g.beginPath(); g.arc(32, 30, 6, 0, 7); g.fill();
+  },
+  embers: (g) => { // the Giant Beetle: two burning horns
+    for (const s of [-1, 1]) { g.fillStyle = '#3a1408'; g.beginPath(); g.moveTo(32 + s * 6, 52); g.quadraticCurveTo(32 + s * 26, 40, 32 + s * 20, 8); g.quadraticCurveTo(32 + s * 16, 34, 32 + s * 2, 52); g.fill(); g.fillStyle = '#ffb02a'; g.beginPath(); g.arc(32 + s * 20, 10, 6, 0, 7); g.fill(); g.fillStyle = '#fff0a0'; g.beginPath(); g.arc(32 + s * 20, 10, 2.5, 0, 7); g.fill(); }
+  },
+};
+const crownTex = {};
+function crownTexture(key) {
+  if (crownTex[key]) return crownTex[key];
+  const c = document.createElement('canvas'); c.width = c.height = 64;
+  CROWNS[key](c.getContext('2d'));
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace;
+  return (crownTex[key] = t);
+}
 const ATTACK_ANIM = 0.5; // PixelLab monsters play their attack animation for this long
 const STRIDE = 1.5;      // walk cycle length in body widths: legs keep pace with the ground
 
@@ -97,6 +127,12 @@ class Mob {
     this.shadow = new THREE.Mesh(mgr.shadowGeo, mgr.shadowMat);
     this.shadow.scale.setScalar(this.def.w * 0.9);
     mgr.scene.add(this.sprite, this.shadow);
+    if (this.def.crown) {
+      this.crown = new THREE.Sprite(new THREE.SpriteMaterial({ map: crownTexture(this.def.crown), alphaTest: 0.3 }));
+      this.crown.renderOrder = 2.7;
+      this.crown.scale.setScalar(0.9 * this.def.w);
+      mgr.scene.add(this.crown);
+    }
     this.home = { x, z };
     this.reset(x, z);
   }
@@ -412,6 +448,11 @@ class Mob {
     const y = this.mgr.world.heightAt(this.x, this.z);
     this.sprite.position.set(this.x, y + lift, this.z);
     this.shadow.position.set(this.x, y + 0.03, this.z);
+    if (this.crown) { // sits over the head, bobbing a little
+      this.crown.visible = this.sprite.visible;
+      const top = this.sprite.scale.y * (this.art.body[1] / this.art.fh); // the top of the body, above the feet
+      this.crown.position.set(this.x, y + lift + top + this.crown.scale.y * 0.2 + Math.sin(this.t * 2.2) * 0.05, this.z);
+    }
   }
 
   // frame by facing (relative to the camera) and by what the monster is doing
@@ -518,6 +559,7 @@ export class MobManager {
   remove(m) {
     this.list = this.list.filter((o) => o !== m);
     this.scene.remove(m.sprite, m.shadow);
+    if (m.crown) this.scene.remove(m.crown);
     m.mat.dispose();
     this.tint = this.tint.filter((t) => t !== m.mat);
   }
@@ -525,6 +567,7 @@ export class MobManager {
   kill(m) {
     m.alive = false;
     m.sprite.visible = m.shadow.visible = false;
+    if (m.crown) m.crown.visible = false;
     const y = this.world.heightAt(m.x, m.z) + (m.def.fly ? 0.7 : 0.3);
     this.fx.puff(m.x, y, m.z, m.def.w);
     const drops = [];
