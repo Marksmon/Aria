@@ -17,6 +17,8 @@ import { Villagers } from './villagers.js';
 import { Tiles } from './tiles.js';
 import { Hotbar } from './hotbar.js';
 import { BigMap } from './bigmap.js';
+import { headsReady, paintHead } from './hair.js';
+import { headgearReady, gearCut, paintGear } from './headgear.js';
 import { derive, playerAttack, mobAttack, magicAttack } from './rules.js';
 import { SKILLS, skillLv, spCost, castTime, learn, skillList, weaponOk, WEAPON_NAMES, unlearnFirstJob, RETRAIN_COST } from './skills.js';
 import { Menus } from './menus.js';
@@ -84,8 +86,31 @@ const quests = new Quests();
 quests.load(save?.quests);
 const story = new Story();
 if (!story.load(save?.story) && save) story.catchUp(prog); // a save from before the story
-// people without a sprite of their own yet borrow someone's (NPCS look)
-for (const [id, n] of Object.entries(NPCS)) lib.villagers[id] ||= lib.villagers[n.look] || lib.villagers.bram;
+// people without a sprite of their own are dressed from a bald body (NPCS dress: one sheet for each
+// look, so a role's people share theirs); a shop or crafter may borrow another town's (NPCS look)
+const dressed = new Map(); // dress spec -> its sheet
+for (const [id, n] of Object.entries(NPCS)) {
+  if (n.dress && !dressed.has(n.dress)) dressed.set(n.dress, lib.person(n.dress));
+  lib.villagers[id] ||= (n.dress && dressed.get(n.dress)) || lib.villagers[n.look] || lib.villagers.bram;
+}
+// their head, hair and headgear are painted on once those images have loaded (like the hero's)
+let undressed = [...dressed.values()];
+function dressPeople() {
+  if (!undressed.length || !headsReady()) return;
+  undressed = undressed.filter((art) => {
+    const { hair = 'messy', dye = 'brown', top = null, face = null } = art.person;
+    if (!art.dress || !headgearReady(top) || !headgearReady(face)) return true;
+    art.dress((g, ud, dir) => {
+      const at = ud.head?.at;
+      if (!at) return;
+      paintHead(g, at, dir, { hair, dye }, gearCut(top, dir), top);
+      paintGear(g, at, dir, face, 0);
+      paintGear(g, at, dir, top, 0);
+    });
+    for (const [id, n] of Object.entries(NPCS)) if (n.dress === art.person) delete portraits[id]; // drawn again, dressed
+    return false;
+  });
+}
 const villagers = new Villagers(scene, world, lib);
 player.tiles = new Tiles(world); // after the villagers: they block their tiles
 const inv = new Inventory();
@@ -1428,6 +1453,7 @@ function frame() {
   if (live) fx.update(dt);
   if (live) { naturalRegen(dt); tickSkills(dt); checkPortals(); tickNav(); tickQuestWorld(dt); }
   if (live) tickWading(dt);
+  dressPeople();
   tickAura(dt, t, b);
   updateCastBar();
   hotbar.update();

@@ -485,7 +485,11 @@ leads to each.
 | Hrafn the Stargazer, Signy the Apprentice | Galdrheim | tales of the city, the stars and the jotnar |
 | Runa the Gatewarden | Galdrheim | the rune-gate: to any land you have walked, 300–3,000 perz |
 
-Gyda, Ivar, Liv, Bjorn, Holger, Hakon, Dag and the people of Galdrheim borrow other people's sprites until their own are drawn. People with tales to tell have a **Tell me more** button.
+People without a PixelLab sprite of their own are dressed from a bald hero body (Trainee, Blader,
+Sorcerer or Magic Knight) in their own colours, with the shared head, a hairstyle, a dye and
+headgear (`dress` in `src/quests.js`). No one's look repeats except a role every town can have: the
+Keepers share theirs, as do the smiths (Holger, Seyla) and the carters and gate-wardens (Ivar,
+Runa); Galdrheim's Orm and Kari dress like Steinborg's Gunnar and Hild. People with tales to tell have a **Tell me more** button.
 
 **Quest list.** Tap a quest under the clock (or the story step) for its **Quest View**: who gave
 it, the goal, your progress, the reward and where to go. **Go there** walks you to it by itself,

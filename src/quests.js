@@ -15,6 +15,14 @@ import { MOB_DEFS } from './mobs.js';
 import { ZONE_NAMES } from './world.js';
 import { skillLv, secondJobOpen } from './skills.js';
 
+// People with no sprite of their own are dressed from a bald body (sprites.js person): body, cloth
+// colours ([hue, saturation, lightness factor]), hair, dye, and headgear (top, face). Nobody's look
+// repeats, except a role any town can have: its people share the role's look
+const ROLE = {
+  keeper: { body: 'trainee', main: [140, 0.45, 0.95], accent: [46, 0.7, 1.1], hair: 'mane', dye: 'black' },             // the Keepers: green and gold
+  smith: { body: 'blader', main: [24, 0.55, 0.9], accent: [40, 0.85, 1.05], hair: 'messy', dye: 'black', face: 'round_glasses' }, // Holger and Seyla: forge leather and brass
+  ferry: { body: 'trainee', main: [200, 0.5, 1], accent: [180, 0.5, 1.1], hair: 'messy', dye: 'blue', top: 'woven_cap' },   // the carters and gate-wardens who send you on
+};
 export const NPCS = {
   bram: {
     name: 'Elder Halvard', x: 27.9, z: 31.9,
@@ -45,7 +53,7 @@ export const NPCS = {
   },
   // a healer, like Ragnarok's: she mends you for nothing (no sprite of her own yet)
   gyda: {
-    name: 'Gyda the Healer', x: 29.6, z: 35.8, look: 'tilly', heal: true,
+    name: 'Gyda the Healer', x: 29.6, z: 35.8, dress: { body: 'trainee', main: [0, 0.04, 1.7], accent: [355, 0.65, 1.05], hair: 'mane', dye: 'red', top: 'flower_wreath' }, heal: true,
     hello: 'Hurt? Sit down, let me see. Nobody leaves my fire bleeding.',
     later: () => '', bye: 'There. Good as new. Try to stay that way.',
     quests: [],
@@ -95,23 +103,23 @@ export const NPCS = {
   // after fainting, and where a Return Feather takes you) and to be teleported to it by any other
   // Keeper you have registered with; each also keeps the storage chest and heals.
   keeper_camp: {
-    name: 'Keeper Tova', x: 37.6, z: 30.8, look: 'wren', keeper: true,
+    name: 'Keeper Tova', x: 37.6, z: 30.8, dress: ROLE.keeper, keeper: true,
     hello: 'I keep the fire\'s ledger. Sign it, and the fire remembers you: wake here after a fall, store your things, and walk the Keepers\' road to any town where you have signed.',
     later: () => '', bye: 'The fire remembers.', quests: [],
   },
   keeper_city: {
-    name: 'Keeper Bera', map: 'city', x: 23.8, z: 32.4, look: 'ragna', keeper: true,
+    name: 'Keeper Bera', map: 'city', x: 23.8, z: 32.4, dress: ROLE.keeper, keeper: true,
     hello: 'Steinborg\'s Keeper. Sign the ledger and Steinborg remembers you: rest here, store your things, and take the Keepers\' road between towns where you have signed.',
     later: () => '', bye: 'Steinborg remembers.', quests: [],
   },
   keeper_magic: {
-    name: 'Keeper Asa', map: 'magic', x: 22.2, z: 46.0, look: 'embla', keeper: true,
+    name: 'Keeper Asa', map: 'magic', x: 22.2, z: 46.0, dress: ROLE.keeper, keeper: true,
     hello: 'Galdrheim\'s Keeper. The ledger here is written in runes, but your name will do. Sign, and the city remembers you.',
     later: () => '', bye: 'Galdrheim remembers.', quests: [],
   },
   // the Magic Knight's trainer: for heroes who have walked both the Blader's and the Sorcerer's path
   eirik: {
-    name: 'Sir Eirik the Runeblade', map: 'city', x: 40.6, z: 50.2, look: 'ulfr',
+    name: 'Sir Eirik the Runeblade', map: 'city', x: 40.6, z: 50.2, dress: { body: 'mknight', main: [205, 0.45, 1], accent: [45, 0.8, 1.1], hair: 'mane', dye: 'silver', top: 'horned_helm' },
     trial2: ['mknight_trial', 'mknight_trial2', 'mknight_trial3'], job2: 'magicknight',
     hello: 'Steel or song, they ask you, as if a hand could hold only one. I hold both. So could you.',
     later: () => '', bye: 'Keep your edge sharp and your runes sharper.',
@@ -147,14 +155,14 @@ export const NPCS = {
   },
   // the ferryman's carts take you to any land you have walked before, for perz (warp: the fare per map)
   ivar: {
-    name: 'Ivar the Ferryman', map: 'city', x: 30.4, z: 38.6, look: 'gunnar', warp: true,
+    name: 'Ivar the Ferryman', map: 'city', x: 30.4, z: 38.6, dress: ROLE.ferry, warp: true,
     hello: 'My carts know every road you have walked. Pay the fare and save your boots.',
     later: () => '', bye: 'Safe roads.',
     quests: [],
   },
   // smith: what they do to your gear (menus.js smith window): refine (Holger) or enchant (Seyla)
   holger: {
-    name: 'Holger the Refiner', map: 'city', x: 47.2, z: 31.4, look: 'gunnar', smith: 'refine', shop: 'holger',
+    name: 'Holger the Refiner', map: 'city', x: 47.2, z: 31.4, dress: ROLE.smith, smith: 'refine', shop: 'holger',
     hello: 'Gunnar makes gear; I make it better. Bring ore and perz and I hammer a piece up a level, up to +10. Up to a point it is safe. Past that, the metal decides, and sometimes it shatters.',
     later: () => '', bye: 'Strike while it is hot. And not before.',
     quests: [],
@@ -166,19 +174,19 @@ export const NPCS = {
   },
   // ---------- out in the fields (the story) ----------
   hakon: {
-    name: 'Hakon the Carter', map: 'coast', x: 12, z: 10, look: 'gunnar',
+    name: 'Hakon the Carter', map: 'coast', x: 12, z: 10, dress: { body: 'trainee', main: [8, 0.5, 1.05], accent: [35, 0.4, 1], hair: 'messy', dye: 'brown', top: 'woven_cap' },
     hello: 'Lost my cart, lost my horse, and I am not going back down that road alone.',
     later: () => '', bye: 'Mind the kobolds. They bite.',
     quests: [],
   },
   dag: {
-    name: 'Dag the Miner', map: 'coalpit', x: 51, z: 28, look: 'gunnar',
+    name: 'Dag the Miner', map: 'coalpit', x: 51, z: 28, dress: { body: 'trainee', main: [220, 0.08, 0.7], accent: [28, 0.6, 1], hair: 'messy', dye: 'red' },
     hello: 'Keep your voice down. The whole pit has ears.',
     later: () => '', bye: 'When the kobolds are free of the goblins, I will dig here again. Honest coal, the black kind.',
     quests: [],
   },
   liv: {
-    name: 'Liv the Guide', map: 'city', x: 28.6, z: 52.8, look: 'hild',
+    name: 'Liv the Guide', map: 'city', x: 28.6, z: 52.8, dress: { body: 'trainee', main: [330, 0.5, 1.2], accent: [50, 0.6, 1.2], hair: 'mane', dye: 'blonde' },
     hello: 'New to Steinborg? Hild trades in the square, Gunnar forges in the east and Holger refines gear beside him, Ragna brews in the north-west, the Seeress keeps her tower in the north-east, and Ivar\'s carts wait by the square.',
     later: () => '', bye: 'The walls are strong and the beer is cold. Welcome.',
     retrain: true, // rethinks a hero's training: stats, and first-job skills (menus.js, skills.js unlearnFirstJob)
@@ -186,7 +194,7 @@ export const NPCS = {
   },
   // ---------- Galdrheim, the city of sorcerers ----------
   vigdis: {
-    name: 'Archmage Vigdis', map: 'magic', x: 28, z: 20.8, look: 'saeunn', trial: ['sorcerer_trial', 'sorcerer_trial2', 'sorcerer_trial3'], job: 'mage',
+    name: 'Archmage Vigdis', map: 'magic', x: 28, z: 20.8, dress: { body: 'sorc', main: [215, 0.15, 1.55], accent: [46, 0.75, 1.05], hair: 'mane', dye: 'silver', top: 'ember_crown' }, trial: ['sorcerer_trial', 'sorcerer_trial2', 'sorcerer_trial3'], job: 'mage',
     trial2: ['wizard_trial', 'wizard_trial2', 'wizard_trial3'], job2: 'wizard',
     trial2Hint: 'At Job Level 40 a Sorcerer may take the Wizard\'s trial with me. If you walk the Blader\'s path too, the staff must have more of your skill points than the sword.',
     hello: 'Welcome to Galdrheim, child. Here we sing the world into shape; we call it galdr, the song-craft.',
@@ -218,7 +226,7 @@ export const NPCS = {
     ],
   },
   seyla: {
-    name: 'Seyla the Enchanter', map: 'magic', x: 49.4, z: 36.2, look: 'saeunn', smith: 'enchant',
+    name: 'Seyla the Enchanter', map: 'magic', x: 49.4, z: 36.2, dress: ROLE.smith, smith: 'enchant',
     hello: 'I open a hollow in a great weapon, a slot, where a monster card can sleep. Only Lv 4 weapons are strong enough to hold one. Half the time the weapon takes the song; the other half it cracks apart.',
     later: () => '', bye: 'Bring me something worth the risk.',
     quests: [],
@@ -239,7 +247,7 @@ export const NPCS = {
     ],
   },
   brynja: {
-    name: 'Brynja the Lorekeeper', map: 'magic', x: 15.4, z: 37.4, look: 'ragna',
+    name: 'Brynja the Lorekeeper', map: 'magic', x: 15.4, z: 37.4, dress: { body: 'sorc', main: [130, 0.4, 1.05], accent: [36, 0.55, 1], hair: 'mane', dye: 'red', face: 'round_glasses' },
     hello: 'Quiet, please. This is the oldest library north of the mountains.',
     later: (lv) => `I have a task for you, but not yet. Come back at Base Level ${lv}.`,
     bye: 'Return your books on time. All of them.',
@@ -251,7 +259,7 @@ export const NPCS = {
     ],
   },
   torvald: {
-    name: 'Torvald the Runecarver', map: 'magic', x: 41.2, z: 46.8, look: 'ulfr',
+    name: 'Torvald the Runecarver', map: 'magic', x: 41.2, z: 46.8, dress: { body: 'blader', main: [170, 0.35, 0.95], accent: [200, 0.4, 1], hair: 'mane', dye: 'silver' },
     hello: 'Every rune is a word, and every word is a promise. I carve them so the promises last.',
     later: (lv) => `My chisel needs something you cannot fetch yet. Come back at Base Level ${lv}.`,
     bye: 'Mind the stones. They are older than they look.',
@@ -262,7 +270,7 @@ export const NPCS = {
     ],
   },
   hrafn: {
-    name: 'Hrafn the Stargazer', map: 'magic', x: 45.6, z: 52.2, look: 'bram',
+    name: 'Hrafn the Stargazer', map: 'magic', x: 45.6, z: 52.2, dress: { body: 'sorc', main: [248, 0.6, 0.85], accent: [200, 0.3, 1.15], hair: 'messy', dye: 'black', face: 'raven_mask' },
     hello: 'Ah, a visitor. Have you looked up lately? Nobody looks up.',
     later: () => '', bye: 'Clear skies to you.',
     quests: [],
@@ -272,7 +280,7 @@ export const NPCS = {
     ],
   },
   signy: {
-    name: 'Signy the Apprentice', map: 'magic', x: 36.6, z: 37.2, look: 'tilly',
+    name: 'Signy the Apprentice', map: 'magic', x: 36.6, z: 37.2, dress: { body: 'sorc', main: [300, 0.45, 1.15], accent: [330, 0.5, 1.1], hair: 'mane', dye: 'blonde' },
     hello: 'Are you a sorcerer? I am going to be one! I can already make a spark. Mostly on purpose.',
     later: () => '', bye: 'Bye! Do not tell the Archmage about the scorch on the library door.',
     quests: [],
@@ -283,13 +291,13 @@ export const NPCS = {
     ],
   },
   runa: {
-    name: 'Runa the Gatewarden', map: 'magic', x: 28, z: 53, look: 'wren', warp: true,
+    name: 'Runa the Gatewarden', map: 'magic', x: 28, z: 53, dress: ROLE.ferry, warp: true,
     hello: 'Galdrheim\'s rune-gate can send you to any land you have walked, for a fee. The song is free; the upkeep is not.',
     later: () => '', bye: 'Step lightly through the gate.',
     quests: [],
   },
   bjorn: {
-    name: 'Bjorn the Gate Guard', map: 'city', x: 55.2, z: 29.4, look: 'ulfr',
+    name: 'Bjorn the Gate Guard', map: 'city', x: 55.2, z: 29.4, dress: { body: 'blader', main: [100, 0.35, 0.9], accent: [30, 0.7, 1], hair: 'messy', dye: 'blonde', top: 'horned_helm' },
     hello: 'Most beasts out there leave you be until you strike first. Not in Svartskog and Askheid: the dark wisps and the fire beasts come for you on sight.',
     later: () => '', bye: 'Keep your guard up past the gate.',
     quests: [],

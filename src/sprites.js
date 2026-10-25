@@ -493,6 +493,22 @@ const ATTIRE = {
   magicknight: recolorer([[navy, (h, s, l) => [268, Math.min(0.7, s + 0.1), l * 1.1]], [crimson, (h, s, l) => [190, 0.7, Math.min(0.6, l + 0.15)]]]),
 };
 
+// People with no sheet of their own are dressed from a bald body (see person() below): its cloth in
+// their colours. Each body's cloth, by colour: the Trainee's browns, the Blader's navy gambeson and
+// crimson sash (steel stays), the Sorcerer's navy robe and silver trims, the Magic Knight's purple
+// and cyan. Skin is never touched (the Trainee's cloth test stops below skin's lightness)
+const CLOTH = {
+  trainee: { main: (h, s, l) => (h < 45 || h > 330) && s > 0.05 && l < 0.45, accent: (h, s, l) => h >= 25 && h < 60 && l >= 0.45 && s < 0.45 },
+  blader: { main: navy, accent: crimson },
+  sorc: { main: navy, accent: silver },
+  mknight: { main: (h, s) => h > 255 && h < 325 && s > 0.1, accent: (h, s) => h > 165 && h < 215 && s > 0.35 },
+};
+// main / accent: [hue, saturation, lightness factor]
+export const outfit = (body, { main, accent }) => recolorer([
+  main && [CLOTH[body].main, (h, s, l) => [main[0], main[1], Math.min(0.92, l * (main[2] ?? 1))]],
+  accent && [CLOTH[body].accent, (h, s, l) => [accent[0], accent[1], Math.min(0.92, l * (accent[2] ?? 1))]],
+].filter(Boolean), main ? [{ band: 0, trim: [main[0], Math.min(0.9, main[1] + 0.1), 0.3] }] : []);
+
 // A packed PixelLab sheet cut into textures: anims[dir][anim] = [tex], flash = white copies
 // for the hit flash. Frames start blank and fill in once the sheet image has loaded.
 // body = [w, h] in pixels of the standing character, used to size it in the world.
@@ -649,9 +665,14 @@ export function createSprites() {
   villagers.embla ||= villagers.hild; // the stylist borrows the trader's look until her own is drawn
   for (const id in villagers) villagers[id] ||= villagers.bram;
 
+  // a person dressed from a bald body: { body: trainee | blader | sorc | mknight, main, accent } (see
+  // outfit); the head, hair and headgear are painted on by dressPerson (main.js) once they load
+  const person = (spec) => Object.assign(sheet(spec.body, { recolor: outfit(spec.body, spec) }), { person: spec });
+
   return {
     mobs,
     villagers,
+    person,
     marks: { offer: tex(questMark('!', '#e3a13a')), ready: tex(questMark('?', '#5fae45')), story: tex(questMark('!', '#8a6af0')) },
     fx: { slash: tex(slashArc()), puff: tex(puff()) },
     props,
