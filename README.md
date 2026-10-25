@@ -89,21 +89,21 @@ and they back off), and **assassins** are quick, dart the last few steps and som
 They drop Kobold Fur and Goblin Teeth, ores for refining, and now and then Hard Ore or Armor Ore.
 
 **Bosses.** Each new field has a mini-boss: big, stomping the ground around it, back 5–8
-minutes after it falls. Like the MVPs, each calls 2 guards of its own kind below 60% HP (Red
+minutes after it falls (its timer holds when you leave the map or close the game, as an MVP's does). Like the MVPs, each calls 2 guards of its own kind below 60% HP (Red
 Sprouts, Blue Crabs, Dark Mushrooms, Fire Beetles), and again 2 minutes after the last one falls. They drop a rare material (30%) that forges the best gear, and a rare
 equip of their own (2–3%). They hit hard: at their own level each is a 3–4 minute fight and a
 bag of potions, so most players come a few levels above them (Giant Sprout 25, King Crab 32,
 Giant Mushroom 40, Giant Beetle 48).
 
-**MVP.** The Fire Giant (Lv 60, 24,000 HP, Fire), optional and not part of the story, waits in the south of Glodberg and stomps the
+**MVP.** The Fire Giant (Lv 60, 24,000 HP, Fire), optional and not part of the story, roams Glodberg and stomps the
 ground around it every few seconds. It is made for one Base 50 hero in the best gear: about three
 minutes and a bag of potions (a Blader drinks around 50 White Potions; a Sorcerer who keeps
 moving needs far fewer, but Blue Potions too). Whoever brings it down gets **MVP** over their
 head, bonus Base EXP and MVP items straight to the bag, plus its drops (its horn, crown, cape or
 sword). It comes back 15 minutes later, even if you leave the map or close the game.
 
-Two more MVPs rule the new lands: the **Kobold King** (Lv 50, 18,000 HP, Earth) holds court in the
-south of Kolgrof, and the **Goblin King** (Lv 55, 21,000 HP, Wind) in the north of Ormholt. Both
+Two more MVPs rule the new lands: the **Kobold King** (Lv 50, 18,000 HP, Earth) in
+Kolgrof, and the **Goblin King** (Lv 55, 21,000 HP, Wind) in Ormholt. Both
 stomp like the Fire Giant, and each MVP keeps its own timer (20 and 30 minutes). **Every MVP calls
 guards** when it first falls below 60% HP: the Fire Giant 2 Fire Wisps and 3 Fire Beetles, each
 king 4 of his own (2 warriors, an archer and an assassin). It never calls while a guard is still
@@ -111,13 +111,19 @@ standing: once the last one falls, it can call again 2 minutes later, if it is s
 monsters: they follow their MVP, fight whoever it fights, and vanish when it falls (no EXP, no
 drops). The kings drop ores, a rare accessory (5%) and their **card** (1%), as does the Fire Giant.
 
+**Where bosses are.** Mini-bosses and MVPs appear at a random spot on their map, away from you and
+the portals, and roam the whole map. A boss you leave behind keeps its wounds and its guards (and
+how often it has called them): come back, or wake up at your save point after fainting, and the
+fight is where you left it, the boss a little healed (5% of its HP a minute while it isn't
+fighting you). This holds over a restart too. No monster ever steps onto a portal.
+
 **Walking speed** follows Ragnarok's, at half pace for Aria's smaller maps: the hero takes 300 ms a
 tile (Ragnarok's 150 ms, twice as long), and each monster twice its Ragnarok walk time: Slimes 800
 (Poring), Kobolds 400, Goblins 300, Goblin Assassins 200, the Kobold King 300, the Goblin King 240
 and the Fire Giant 260 (Kobold Leader, Goblin Leader, Ifrit). Some monsters are quicker than you,
 as in Ragnarok. Speed changes work like Ragnarok's too: the strongest slow (spores: +50% walk time)
-and the strongest haste (Swift Boots: -20%) count, they don't stack, and the walk time never falls
-under 40%. Monsters keep their pace however hurt they are.
+and the strongest haste count, they don't stack, and the walk time never falls under 40%. No gear
+or skill hastes the walk for now: in Aria walking speed is a big buff. Monsters keep their pace however hurt they are.
 
 **Boss moves.** Bosses walk at Ragnarok's MVP pace (the Goblin King and the Fire Giant are quicker than you), don't slow down when wounded,
 and have moves beside the stomp. A **red circle** on the ground shows where each will land, and

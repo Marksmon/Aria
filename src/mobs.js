@@ -40,7 +40,7 @@ export const MOB_DEFS = {
   // and calls 2 Fire Wisps and 3 Fire Beetles (summon: see SUMMON_CD).
   // Made for a Base 50 character in the best gear, alone: about 3 minutes and a bag of potions.
   jarl: { name: 'Fire Giant', ai: 'boss', art: 'jarl', el: 'fire', lv: 60, hp: 24000, atk: [150, 200], def: 20, vit: 40, agi: 30, dex: 70, mdef: 40, exp: [60000, 42000], adelay: 1600, walk: 130, aggro: 7, chase: 25, reach: 1.9, w: 3.1, r: 1.15, heavy: true,
-    mvp: true, respawn: 900, lair: { x: 32, z: 48 }, mvpExp: 30000, stomp: 1.8, moves: [{ kind: 'throw', mult: 2.0, r: 2.0 }, { kind: 'leap', mult: 1.8, r: 2.2 }],
+    mvp: true, respawn: 900, mvpExp: 30000, stomp: 1.8, moves: [{ kind: 'throw', mult: 2.0, r: 2.0 }, { kind: 'leap', mult: 1.8, r: 2.2 }],
     summon: ['emberWisp', 'emberWisp', 'cinderBeetle', 'cinderBeetle', 'cinderBeetle'], summonText: 'The Fire Giant roars, and the fire answers!', mvpDrops: [['potion3', 3], ['ember_heart', 1]],
     wake: 'The ground trembles… the Fire Giant has woken in Glodberg!',
     drops: [['potion2', 2, 3, 0.8], ['potion3', 1, 2, 0.5], ['stone', 4, 6, 1], ['jarl_horn', 1, 1, 0.25], ['ember_crown', 1, 1, 0.05], ['jarl_mantle', 1, 1, 0.03], ['jarl_staff', 1, 1, 0.02], ['emberbrand', 1, 1, 0.01], ['jarl_card', 1, 1, 0.01]] },
@@ -57,11 +57,11 @@ export const MOB_DEFS = {
   // the kings: MVPs like the Fire Giant, a step below it. They stomp, and call four guards
   // (summon: see SUMMON_CD). Both are quick on their feet and have moves of their own (see MOVES).
   koboldKing: { name: 'Kobold King', ai: 'boss', art: 'koboldKing', el: 'earth', lv: 50, hp: 18000, atk: [120, 160], def: 22, vit: 45, agi: 30, dex: 70, mdef: 25, exp: [36000, 25200], adelay: 1500, walk: 150, aggro: 7, chase: 25, reach: 1.4, w: 1.3, r: 0.6, heavy: true,
-    mvp: true, respawn: 1200, lair: { x: 32, z: 46 }, mvpExp: 18000, stomp: 1.6, moves: [{ kind: 'charge', mult: 1.7 }, { kind: 'throw', mult: 1.8, r: 1.6 }], summon: ['koboldWarrior', 'koboldWarrior', 'koboldArcher', 'koboldAssassin'], mvpDrops: [['potion3', 3], ['hard_ore', 2]],
+    mvp: true, respawn: 1200, mvpExp: 18000, stomp: 1.6, moves: [{ kind: 'charge', mult: 1.7 }, { kind: 'throw', mult: 1.8, r: 1.6 }], summon: ['koboldWarrior', 'koboldWarrior', 'koboldArcher', 'koboldAssassin'], mvpDrops: [['potion3', 3], ['hard_ore', 2]],
     wake: 'War drums in the quarry… the Kobold King holds court in Kolgrof!',
     drops: [['potion3', 1, 2, 0.5], ['kobold_fur', 4, 6, 1], ['hard_ore', 1, 2, 0.4], ['armor_ore', 1, 2, 0.4], ['kobold_ring', 1, 1, 0.05], ['kobold_card', 1, 1, 0.01]] },
   goblinKing: { name: 'Goblin King', ai: 'boss', art: 'goblinKing', el: 'wind', lv: 55, hp: 21000, atk: [138, 180], def: 22, vit: 48, agi: 34, dex: 74, mdef: 30, exp: [48000, 33600], adelay: 1500, walk: 120, aggro: 7, chase: 25, reach: 1.4, w: 1.3, r: 0.6, heavy: true,
-    mvp: true, respawn: 1800, lair: { x: 32, z: 16 }, mvpExp: 24000, stomp: 1.7, moves: [{ kind: 'leap', mult: 1.7, r: 1.8 }, { kind: 'throw', mult: 1.4, r: 1.3 }, { kind: 'frenzy' }], summon: ['goblinWarrior', 'goblinWarrior', 'goblinArcher', 'goblinAssassin'], mvpDrops: [['potion3', 3], ['hard_ore', 3]],
+    mvp: true, respawn: 1800, mvpExp: 24000, stomp: 1.7, moves: [{ kind: 'leap', mult: 1.7, r: 1.8 }, { kind: 'throw', mult: 1.4, r: 1.3 }, { kind: 'frenzy' }], summon: ['goblinWarrior', 'goblinWarrior', 'goblinArcher', 'goblinAssassin'], mvpDrops: [['potion3', 3], ['hard_ore', 3]],
     wake: 'Horns in the dark wood… the Goblin King rides out in Ormholt!',
     drops: [['potion3', 1, 2, 0.6], ['goblin_tooth', 4, 6, 1], ['hard_ore', 1, 3, 0.45], ['armor_ore', 1, 3, 0.45], ['goblin_charm', 1, 1, 0.05], ['goblin_card', 1, 1, 0.01]] },
 };
@@ -84,6 +84,13 @@ export const MOVES = {
   frenzy: { cd: 22, dur: 8, below: 0.5 },
 };
 const RESPAWN = 60;
+// a wounded boss or MVP heals 5% of its HP a minute while it isn't fighting you, on its map or not;
+// what it has left is kept when you leave (bossHp, saved), so a fight can be picked up again
+const BOSS_REGEN = 0.05;
+// monsters never step onto a portal: they stay this far (plus their own size) from one
+const PORTAL_KEEP = 2.2;
+const portalGap = (w, x, z) => Math.min(Infinity, ...w.portals.map((p) => Math.hypot(p.x - x, p.z - z)));
+const nearPortal = (w, x, z, r = 0) => portalGap(w, x, z) < PORTAL_KEEP + r;
 const WHITE = new THREE.Color('#ffffff');
 const STATUS_COL = Object.fromEntries(Object.entries({ freeze: '#8fd0ff', paralyze: '#fff27a', stun: '#d8c8a8', burn: '#ff9a6a', burn2: '#ffc08a', rage: '#ff8a7a', rage2: '#ffb0a0' })
   .map(([k, c]) => [k, new THREE.Color(c)]));
@@ -153,6 +160,25 @@ class Mob {
     this.mat.rotation = 0;
   }
 
+  // a boss or MVP roams the whole map: walks to a random spot, rests a moment, picks another.
+  // Where it last headed is its home, so after a chase it goes back to its roaming
+  roam(dt, spd, moved) {
+    if (!this.target || this.wanderT <= 0) {
+      if (this.target === null && this.restT > 0) { this.restT -= dt; return; }
+      const s = this.mgr.findSpot(Math.random);
+      if (!s) return;
+      this.target = s;
+      this.home = { x: s.x, z: s.z };
+      this.wanderT = 30;
+    }
+    const m = this.moveToward(this.target.x, this.target.z, spd, dt);
+    moved(m > 0);
+    // stuck against a rock or a tent (it slides but gets nowhere): pick somewhere else
+    const c = this.roamCheck ||= { t: 0, x: this.x, z: this.z };
+    if ((c.t += dt) > 1.2) { const gone = Math.hypot(this.x - c.x, this.z - c.z); Object.assign(c, { t: 0, x: this.x, z: this.z }); if (gone < spd * 0.3) this.wanderT = 0; }
+    if (Math.hypot(this.target.x - this.x, this.target.z - this.z) < 0.5 || m === 0) { this.target = null; this.restT = 1.5 + Math.random() * 3; }
+  }
+
   // a boss picks a move it is in range for (see MOVES)
   pickMove(p, dist, dx, dz) {
     const d = this.def;
@@ -165,6 +191,7 @@ class Mob {
         this.mgr.emit('frenzy', this);
       } else {
         if (dist < M.min || dist > M.max) continue;
+        if (mv.kind === 'leap' && nearPortal(this.mgr.world, p.x, p.z, d.r)) continue; // not onto a portal
         this.heading = { x: dx / dist, z: dz / dist };
         const spot = { x: p.x, z: p.z };
         if (mv.kind === 'charge') this.act = { kind: 'charge', mv, t: M.wind, phase: 'wind', left: Math.min(dist + 2, M.max) };
@@ -226,8 +253,11 @@ class Mob {
     const w = this.mgr.world;
     const nx = this.x + dx, nz = this.z + dz;
     const [rx, rz] = w.resolve(nx, nz, this.def.r);
-    if (!w.isSafe(rx, rz) && w.walkable(rx, rz)) { this.x = rx; this.z = rz; return true; }
-    return false;
+    if (w.isSafe(rx, rz) || !w.walkable(rx, rz)) return false;
+    // never onto a portal (though one somehow inside the edge may always step away from it)
+    if (nearPortal(w, rx, rz, this.def.r) && portalGap(w, rx, rz) <= portalGap(w, this.x, this.z)) return false;
+    this.x = rx; this.z = rz;
+    return true;
   }
 
   moveToward(tx, tz, speed, dt) {
@@ -310,6 +340,7 @@ class Mob {
     const dx = p.x - this.x, dz = p.z - this.z, dist = Math.hypot(dx, dz);
     const low = this.hp / d.hp <= 0.3 && d.hp > 1;
     this.rageT -= dt;
+    if ((d.mvp || d.boss) && this.state !== 'chase' && this.hp < d.hp) this.hp = Math.min(d.hp, this.hp + d.hp * BOSS_REGEN / 60 * dt);
     // as in Ragnarok, a monster keeps its pace however hurt it is (a frenzied boss speeds up)
     const speed = d.speed * (this.rageT > 0 ? 1.3 : 1);
     let lift = 0;
@@ -351,7 +382,8 @@ class Mob {
       }
     };
 
-    if (homeD > (this.provokeT > 0 || d.mvp ? 20 : 11) && this.state !== 'return') this.state = 'return';
+    // too far from home: back it goes (a roaming boss only when it was chasing you)
+    if (homeD > (this.provokeT > 0 || d.mvp ? 20 : 11) && this.state !== 'return' && (d.ai !== 'boss' || this.state === 'chase')) this.state = 'return';
     if (this.stunT > 0) this.stunT -= dt; // stunned: stands there
     else if (this.state === 'return') {
       moving = this.moveToward(this.home.x, this.home.z, speed, dt) > 0;
@@ -386,7 +418,7 @@ class Mob {
               this.mgr.emit('windup', this);
             } else if (this.nextMove <= 0) this.pickMove(p, dist, dx, dz);
           }
-        } else wander();
+        } else this.roam(dt, speed * 0.6, (m) => { moving = m; });
         break;
       }
       case 'hopper':
@@ -563,8 +595,9 @@ export class MobManager {
     this.tint = [];
     this.handlers = {};
     this.night = false;
-    this.mvp = null;  // { type, x, z } on a map with an MVP
-    this.mvpAt = {};  // per MVP: when it may next appear (ms since 1970)
+    this.bosses = []; // this map's bosses and MVPs (types): each appears when its time comes
+    this.mvpAt = {};  // per boss and MVP: when it may next appear (ms since 1970; the game saves it)
+    this.bossHp = {}; // per boss and MVP met in a fight: { hp, at, calls, guards: [[type, hp]], cd } (saved)
     this.cam = { fx: 0, fz: -1, rx: 1, rz: 0 }; // camera basis, set by the game each frame
     const sg = new THREE.PlaneGeometry(1, 0.6);
     sg.rotateX(-Math.PI / 2);
@@ -577,11 +610,12 @@ export class MobManager {
   on(name, fn) { (this.handlers[name] ||= []).push(fn); }
   emit(name, ...a) { for (const fn of this.handlers[name] || []) fn(...a); }
 
-  // a free spot for a monster's home, away from the portals you arrive by
-  findSpot(rng) {
+  // a free spot for a monster's home, away from the portals you arrive by (and from you, if given)
+  findSpot(rng, away = null) {
     for (let i = 0; i < 400; i++) {
       const x = 4 + rng() * 56, z = 4 + rng() * 56;
       if (this.world.portals.some((p) => Math.hypot(p.x - x, p.z - z) < 9)) continue;
+      if (away && Math.hypot(away.x - x, away.z - z) < 16) continue;
       if (!this.world.walkable(x, z)) continue;
       const [rx, rz] = this.world.resolve(x, z, 0.5);
       if (Math.hypot(rx - x, rz - z) > 0.01) continue;
@@ -593,16 +627,17 @@ export class MobManager {
 
   // a new map: clear every monster and spawn the map's own. spawns: [[type, count, nightOnly]]
   setMap(spawns, seed = 11) {
+    this.bossSnapshot(); // the bosses you leave behind keep their wounds
     for (const m of [...this.list]) this.remove(m);
     this.dead = [];
-    this.mvp = null;
+    this.bosses = [];
     const rng = mulberry32(seed);
     for (const [type, count, nightOnly] of spawns) {
       for (let i = 0; i < count; i++) {
         const s = this.findSpot(rng);
         if (!s) continue;
-        // the MVP waits out its respawn time even across map changes and restarts
-        if (MOB_DEFS[type].mvp) { this.mvp = { type, ...(MOB_DEFS[type].lair || s) }; continue; }
+        // bosses and MVPs wait out their respawn time even across map changes and restarts (update)
+        if (MOB_DEFS[type].mvp || MOB_DEFS[type].boss) { this.bosses.push(type); continue; }
         const m = this.add(type, s.x, s.z);
         m.nightOnly = !!nightOnly;
         if (nightOnly && !this.night) { m.alive = false; m.sprite.visible = m.shadow.visible = false; this.dead.push({ m, t: 0 }); }
@@ -610,23 +645,42 @@ export class MobManager {
     }
   }
 
+  // how every boss and MVP stands, those on this map now and those met before (for the save): its HP
+  // and when, how often it has called its guards, the guards still standing, the summon cooldown left
+  bossSnapshot() {
+    for (const m of this.list) {
+      if (!m.alive || !(m.def.mvp || m.def.boss)) continue;
+      const guards = this.guardsOf(m).map((g) => [g.type, Math.ceil(g.hp)]);
+      const cd = m.calls && !guards.length ? Math.max(0, SUMMON_CD - (m.t - m.guardsGoneT)) : 0;
+      if (m.hp < m.def.hp || m.calls || guards.length) this.bossHp[m.type] = { hp: Math.ceil(m.hp), at: Date.now(), calls: m.calls, guards, cd };
+      else delete this.bossHp[m.type];
+    }
+    return this.bossHp;
+  }
+
   guardsOf(boss) { return this.list.filter((o) => o.leader === boss && o.alive); }
 
   // a king's guards: they come running, and don't come back once beaten
   summon(boss) {
     boss.mgr.emit('summon', boss);
-    const list = boss.def.summon, a0 = Math.random() * Math.PI * 2, r = 1.2 + boss.def.r;
-    list.forEach((type, i) => {
-      const a = a0 + (i / list.length) * Math.PI * 2;
-      const c = this.add(type, boss.x + Math.cos(a) * r, boss.z + Math.sin(a) * r);
-      if (!this.world.walkable(c.x, c.z)) { c.x = boss.x; c.z = boss.z; }
-      c.temp = true;
-      c.leader = boss; // it follows the boss and fights alongside it (see update)
-      c.home = { x: boss.x, z: boss.z };
+    const list = boss.def.summon;
+    for (const type of list) {
+      const c = this.guard(boss, type, list.length);
       c.state = 'chase';
       c.chaseT = 15;
       c.angry = 30;
-    });
+    }
+  }
+
+  // one guard for a boss, placed in a ring round it (n: how many share the ring)
+  guard(boss, type, n) {
+    const a = Math.random() * Math.PI * 2 + (this.guardsOf(boss).length / n) * Math.PI * 2, r = 1.2 + boss.def.r;
+    const c = this.add(type, boss.x + Math.cos(a) * r, boss.z + Math.sin(a) * r);
+    if (!this.world.walkable(c.x, c.z)) { c.x = boss.x; c.z = boss.z; }
+    c.temp = true;
+    c.leader = boss; // it follows the boss and fights alongside it (see update)
+    c.home = { x: boss.x, z: boss.z };
+    return c;
   }
 
   add(type, x, z) {
@@ -670,9 +724,10 @@ export class MobManager {
     // the last of a boss's guards falls: its summoning cooldown starts
     if (m.leader?.alive && !this.guardsOf(m.leader).some((o) => o !== m)) m.leader.guardsGoneT = m.leader.t;
     if (m.def.noRespawn || m.temp) { this.remove(m); return; }
-    if (m.def.mvp) { // gone until its respawn time comes round (the game saves mvpAt)
+    if (m.def.mvp || m.def.boss) { // gone until its respawn time comes round, whatever map you go to
       this.mvpAt[m.type] = Date.now() + m.def.respawn * 1000;
-      this.emit('mvp', m);
+      delete this.bossHp[m.type];
+      this.emit(m.def.mvp ? 'mvp' : 'bossDown', m);
       this.remove(m);
       return;
     }
@@ -680,10 +735,20 @@ export class MobManager {
   }
 
   update(dt, player) {
-    // the MVP appears once its time has come
-    if (this.mvp && Date.now() >= (this.mvpAt[this.mvp.type] || 0) && !this.list.some((m) => m.def.mvp)) {
-      this.add(this.mvp.type, this.mvp.x, this.mvp.z);
-      this.emit('mvpSpawn', this.mvp);
+    // a boss or MVP appears once its time has come, somewhere on the map away from you
+    for (const type of this.bosses) {
+      if (Date.now() < (this.mvpAt[type] || 0) || this.list.some((m) => m.type === type)) continue;
+      const s = this.findSpot(Math.random, player);
+      if (!s) continue;
+      const m = this.add(type, s.x, s.z);
+      const w = this.bossHp[type]; // as you left it: its wounds (less what it healed since) and its guards
+      if (w) {
+        m.hp = Math.min(m.def.hp, w.hp + m.def.hp * BOSS_REGEN * (Date.now() - w.at) / 60000);
+        m.calls = w.calls || 0;
+        if (w.cd) m.guardsGoneT = m.t - (SUMMON_CD - w.cd);
+        for (const [g, hp] of w.guards || []) if (MOB_DEFS[g]) this.guard(m, g, w.guards.length).hp = Math.min(MOB_DEFS[g].hp, hp);
+      }
+      this.emit('mvpSpawn', m);
     }
     for (const m of this.list) if (m.alive) m.update(dt, player);
     // keep monsters from stacking on top of each other

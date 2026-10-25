@@ -22,7 +22,10 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   and burn work on bosses too, at a third of the chance for half as long.
 - **Walking speed:** Ragnarok's walk times (ms a tile: hero 150, monsters from Ragnarok's monster
   database) taken twice as long for Aria's smaller maps (`WALK_SCALE` in `rules.js`). Haste and slow
-  follow Ragnarok's rule: only the strongest of each counts, never under 40%.
+  follow Ragnarok's rule: only the strongest of each counts, never under 40%. No gear or skill hastes the walk
+  (the owner's call: speed is a big buff in Aria).
+- **Bosses and MVPs** spawn at random spots and roam their whole map; each has a respawn timer
+  (`mvpAt`, saved) that holds across map changes and restarts.
 - **Quests:** side quests and job trials can be quit from the Quest View; the main story quest
   can never be quit.
 - **Character art:** bodies are bald to the standard in `docs/character-standard.md`; the game

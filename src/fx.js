@@ -232,9 +232,10 @@ export class FX {
     const size = 0.55;
     s.scale.set(size, size, 1);
     const a = Math.random() * Math.PI * 2, r = 0.3 + Math.random() * 0.6;
+    // it lands where you can reach it: never under a tree or a rock (landAt, set by the game)
+    const [tx, tz] = this.landAt ? this.landAt(x + Math.cos(a) * r, z + Math.sin(a) * r) : [x + Math.cos(a) * r, z + Math.sin(a) * r];
     const p = {
-      s, item, count, x, z,
-      tx: x + Math.cos(a) * r, tz: z + Math.sin(a) * r,
+      s, item, count, x, z, tx, tz,
       t: 0, life: 45, size,
     };
     if (rare) { // a soft halo behind it, and a few sparkles as it lands

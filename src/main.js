@@ -72,6 +72,7 @@ if (verEl) verEl.textContent = `v1.0.${__BUILD__} · Explore, fight, craft, surv
 const save = loadSave();
 let lookBefore = null; // the look kept, while one is being tried on
 mobs.mvpAt = typeof save?.mvpAt === 'number' ? { jarl: save.mvpAt } : save?.mvpAt || {}; // older saves timed the Fire Giant alone
+mobs.bossHp = save?.bossHp || {};
 const player = new Player(scene, world, lib.player, lib.shadow, fx);
 player.setPos(save?.x ?? world.spawn.x, save?.z ?? world.spawn.z);
 if (save?.look) player.setLook(save.look.hair === 'long' ? { ...save.look, hair: 'mane' } : save.look); // the straight long hair waits for a female look
@@ -86,6 +87,17 @@ if (!story.load(save?.story) && save) story.catchUp(prog); // a save from before
 for (const [id, n] of Object.entries(NPCS)) lib.villagers[id] ||= lib.villagers[n.look] || lib.villagers.bram;
 const villagers = new Villagers(scene, world, lib);
 player.tiles = new Tiles(world); // after the villagers: they block their tiles
+// a drop lands on open ground: one that would fall on a blocked tile (a tree, a rock, a tent) goes to
+// the nearest tile you can walk to
+fx.landAt = (x, z) => {
+  const t = player.tiles, [i, j] = t.tileAt(x, z);
+  const [rx, rz] = world.resolve(x, z, 0.3); // a spot the hero could stand on
+  if (t.free(i, j) && world.walkable(x, z) && Math.hypot(rx - x, rz - z) < 0.05) return [x, z];
+  const f = t.nearestFree(i, j, 4);
+  if (!f) return [x, z];
+  const c = t.center(...f);
+  return [c.x, c.z];
+};
 const inv = new Inventory();
 inv.level = () => prog.baseLv;
 inv.job = () => prog.wearJobs; // every job earned: a Blader who passed the Sorcerer's trial may hold a staff
@@ -149,7 +161,7 @@ function applyStats() {
   player.maxSp = ps.maxSp;
   player.hp = Math.min(player.hp, ps.maxHp);
   player.sp = Math.min(player.sp, ps.maxSp);
-  player.haste = inv.wearing('speed') ? 20 : 0; // speed boots: 20% off the walk time, like Cart Boost
+  player.haste = 0; // nothing hastes the walk for now: walking speed is a big buff in Aria
   player.setHeadgear(inv.gear.head && baseOf(inv.gear.head), inv.gear.face && baseOf(inv.gear.face)); // refined headgear looks like the plain piece
   player.blockChance = inv.wearing('block') ? 0.2 : 0;
   // Spellblade: normal sword hits carry some of the MATK
@@ -379,9 +391,15 @@ mobs.on('summon', (m) => {
   fx.sparkle(m.x, world.heightAt(m.x, m.z) + 1.5, m.z, '#ffd23a', 14);
   audio.play('night');
 });
-mobs.on('mvpSpawn', (s) => {
-  menus.message(MOB_DEFS[s.type].wake || `The ${MOB_DEFS[s.type].name} has appeared!`);
+mobs.on('mvpSpawn', (m) => { // an MVP announces itself; a mini-boss just turns up
+  if (!m.def.mvp) return;
+  menus.message(m.def.wake || `The ${m.def.name} has appeared!`);
   audio.play('night');
+});
+mobs.on('bossDown', (m) => {
+  const mins = Math.round(m.def.respawn / 60);
+  setTimeout(() => menus.message(`The ${m.def.name} will return in about ${mins} minutes.`), 2500);
+  persist();
 });
 // Ragnarok's MVP: the announcement over the slayer's head, MVP EXP and items straight to the bag
 mobs.on('mvp', (m) => {
@@ -1298,7 +1316,7 @@ function tap(cx, cy) {
   if (hit?.mob) player.command({ mob: hit.mob });
   else if (hit?.item) {
     const p = hit.item;
-    player.command({ x: p.x, z: p.z, reach: 0.7, arrive: () => { if (fx.pickups.includes(p) && collect(p)) fx.take(p); } });
+    player.command({ x: p.tx, z: p.tz, reach: 0.7, arrive: () => { if (fx.pickups.includes(p) && collect(p)) fx.take(p); } }); // where it lands
   } else if (hit?.spot) {
     const sp = hit.spot;
     player.command({ x: sp.x, z: sp.z, reach: 1.7, arrive: sp.run });
@@ -1387,7 +1405,7 @@ let questZone = null, questT = 0;
 let resetting = false;
 function persist() {
   if (!started || resetting) return;
-  writeSave({ story: story.toJSON(), look: player.look, visited: [...visited], keepers: [...keepers], savePoint, map: world.id, mvpAt: mobs.mvpAt, x: player.x, z: player.z, yaw: cam.yaw, dist: cam.dist, hp: player.hp, sp: player.sp, inv: inv.toJSON(), prog: prog.toJSON(), quests: quests.toJSON(), hotbar: hotbar.toJSON(), time: dayNight.t });
+  writeSave({ story: story.toJSON(), look: player.look, visited: [...visited], keepers: [...keepers], savePoint, map: world.id, mvpAt: mobs.mvpAt, bossHp: mobs.bossSnapshot(), x: player.x, z: player.z, yaw: cam.yaw, dist: cam.dist, hp: player.hp, sp: player.sp, inv: inv.toJSON(), prog: prog.toJSON(), quests: quests.toJSON(), hotbar: hotbar.toJSON(), time: dayNight.t });
 }
 
 // second jobs glow: a soft aura behind the hero and a ring at their feet, in the job's colour

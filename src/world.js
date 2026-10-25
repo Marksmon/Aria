@@ -49,13 +49,13 @@ export const MAPS = {
   magic:  { portals: [{ to: 'fen', x: 32, z: 59 }], city: 'magic' },
   birch:  { portals: [{ to: 'city', ...W }, { to: 'hollow', ...S }], clear: { x: 40, z: 22, r: 5 } },
   hollow: { portals: [{ to: 'grove', ...W }, { to: 'birch', ...N }, { to: 'deep', ...E }, { to: 'ridge', ...S }], lift: [-0.15, 0] },
-  // the Ember Jarl's lair: an open bowl in the south of Glodberg (see mobs.js)
+  // an open bowl in the south of Glodberg (the Fire Giant roams the whole map; see mobs.js roam)
   ridge:  { portals: [{ to: 'hollow', ...N }, { to: 'heath', ...E }], clear: { x: 32, z: 48, r: 6 }, lift: [1.3, 1.8] },
   coast:  { portals: [{ to: 'fen', ...E }, { to: 'stones', ...S }], lake: { x: 20, z: 31, rx: 11, rz: 17 }, clear: { x: 44, z: 46, r: 5 } },
   deep:   { portals: [{ to: 'hollow', ...W }, { to: 'heath', ...S }, { to: 'serpent', ...E }], lift: [-0.1, 0.5], clear: { x: 40, z: 40, r: 5 } },
   heath:  { portals: [{ to: 'ridge', ...W }, { to: 'deep', ...N }, { to: 'burnt', ...E }], lift: [0.8, 1.2], clear: { x: 40, z: 44, r: 5 } },
-  // the kobolds' hills and the Kobold King's quarry (his court is the open ground in the south),
-  // goblin country and the Goblin King's wood (his clearing is in the north). camps: [x, z] of
+  // the kobolds' hills and the Kobold King's quarry (open ground in the south), goblin country and
+  // the Goblin King's wood (a clearing in the north); the kings roam their whole map. camps: [x, z] of
   // a tent with crates and barrels round a log seat.
   stones:  { portals: [{ to: 'coast', ...N }, { to: 'coalpit', ...S }], lift: [0.6, 1.4], camps: [[18, 20], [46, 44], [16, 46], [46, 18]] },
   coalpit: { portals: [{ to: 'stones', ...N }], lift: [0.4, 2.0], clear: { x: 32, z: 46, r: 7 }, camps: [[18, 24], [46, 24], [22, 44], [42, 42]] },
