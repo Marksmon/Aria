@@ -320,9 +320,9 @@ export const QUESTS = {
 
   feast: {
     title: 'A Feast for Eldrun', kind: 'quiz', items: { gel: 10, crableg: 5, spore: 5 }, lv: 10, task: 'cook the feast with Astrid',
-    intro: "The camp hasn't feasted in a year! Bring me ten Slime Gel, five Crab Legs from Fen Shore and five Spores from Dark Dale, and cook it with me. The secret: gel for the sauce, crab for the meat, and spores only at the very end, a pinch at a time.",
+    intro: "The camp hasn't feasted in a year! Bring me ten Bloop Gel, five Crab Legs from Fen Shore and five Spores from Dark Dale, and cook it with me. The secret: gel for the sauce, crab for the meat, and spores only at the very end, a pinch at a time.",
     questions: [
-      { q: 'The pot is bubbling. What makes the sauce?', options: ['The Crab Legs', 'The Slime Gel', 'The Spores'], a: 1,
+      { q: 'The pot is bubbling. What makes the sauce?', options: ['The Crab Legs', 'The Bloop Gel', 'The Spores'], a: 1,
         why: 'Gel! Sticky, sweet and thick. Into the pot it goes.', hint: 'No, no! Think sticky. What wobbles?' },
       { q: 'And the Spores?', options: ['All of them, right away', 'Never: they are poison', 'A pinch at a time, at the very end'], a: 2,
         why: 'A pinch at a time. Too many and the whole camp sneezes for a week.', hint: 'Careful! Remember what I said about the spores.' },
@@ -346,13 +346,13 @@ export const QUESTS = {
   // window: a wrong answer only gets a hint). The questions teach what new players miss.
   blader_trial: {
     title: "Blader's Trial 1: Steel and Sweat", job: true, kind: 'kill', mobs: { slime: 6, sprout: 4 }, lv: 1,
-    intro: 'A Blader proves their sword first. Three tasks, all small, all honest. Go out through the south gate into Moss Field and beat six Slimes and four Sprouts. Sprouts run from a blade, so corner them. And keep what they drop.',
-    thanks: 'Back on your feet, and not a Slime left laughing. Good. Now show me what you brought back.',
+    intro: 'A Blader proves their sword first. Three tasks, all small, all honest. Go out through the south gate into Moss Field and beat six Bloops and four Sprouts. Sprouts run from a blade, so corner them. And keep what they drop.',
+    thanks: 'Back on your feet, and not a Bloop left laughing. Good. Now show me what you brought back.',
     reward: { xp: 120, perz: 100 },
   },
   blader_trial2: {
     title: "Blader's Trial 2: Proof of the Hunt", job: true, kind: 'fetch', items: { gel: 5, seed: 3 }, lv: 1,
-    intro: 'The Watch takes no one at their word. Bring me five Slime Gel and three Seeds as proof of your hunt. Slimes and Sprouts drop them; if you sold yours, Moss Field has more.',
+    intro: 'The Watch takes no one at their word. Bring me five Bloop Gel and three Seeds as proof of your hunt. Bloops and Sprouts drop them; if you sold yours, Moss Field has more.',
     thanks: 'Gel and seeds. Proof enough. Last task: a few questions, and mind your answers.',
     reward: { xp: 150, perz: 150, items: { potion: 5 } },
   },
@@ -378,16 +378,16 @@ export const QUESTS = {
   },
   sorcerer_trial: {
     title: 'Rune Trial 1: The Twice-Born', job: true, kind: 'kill', mob: 'blueSlime', n: 4, lv: 1,
-    intro: 'A sorcerer must keep a cool head when one foe becomes two. The Blue Slimes of Fen Shore, just south of my gate, split when struck. Beat four of them, and gather the Slime Gel and Water Drops they leave.',
+    intro: 'A sorcerer must keep a cool head when one foe becomes two. The Blue Bloops of Fen Shore, just south of my gate, split when struck. Beat four of them, and gather the Bloop Gel and Water Drops they leave.',
     thanks: 'You did not panic when they split. Most do. Now, what did they leave you?',
     reward: { xp: 120, perz: 100 },
   },
   sorcerer_trial2: {
     title: 'Rune Trial 2: The Blue Draught', job: true, kind: 'quiz', items: { gel: 3, dew: 2 }, lv: 1, task: 'brew a Blue Draught with Archmage Vigdis',
-    intro: 'Every sorcerer brews before they cast. The Blue Draught: Water Drops in the pot first, then the Slime Gel, then stir it slowly, three times, the way the sun goes. Bring me three Slime Gel and two Water Drops and brew it with me.',
+    intro: 'Every sorcerer brews before they cast. The Blue Draught: Water Drops in the pot first, then the Bloop Gel, then stir it slowly, three times, the way the sun goes. Bring me three Bloop Gel and two Water Drops and brew it with me.',
     questions: [
       { q: 'The pot is warm. What goes in first?',
-        options: ['The Slime Gel', 'The Water Drops', 'Both at once'], a: 1,
+        options: ['The Bloop Gel', 'The Water Drops', 'Both at once'], a: 1,
         why: 'Yes: water first, always. It carries everything else.',
         hint: 'Too soon. Listen again: water carries everything else, so it goes in first.' },
       { q: 'The gel is in and the pot hisses. How do you stir?',
@@ -414,8 +414,8 @@ export const QUESTS = {
         options: ['Strong: water drowns it', 'It barely scratches', 'It heals the Crab'], a: 1,
         why: 'Barely a scratch: like against like. Weak hits show in grey. Pick another element.',
         hint: 'Can you drown a fish? Like against like barely scratches.' },
-      { q: 'You are chanting a spell and a Slime hits you. What happens?',
-        options: ['The spell casts anyway', 'The chant breaks', 'The Slime is frozen'], a: 1,
+      { q: 'You are chanting a spell and a Bloop hits you. What happens?',
+        options: ['The spell casts anyway', 'The chant breaks', 'The Bloop is frozen'], a: 1,
         why: 'The chant breaks. Cast from a distance, and Rune Ward, once you learn it, keeps the chant whole.',
         hint: 'No. A blow breaks your focus, and the chant with it.' },
     ],

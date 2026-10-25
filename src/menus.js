@@ -4,7 +4,7 @@
 // Pickup toasts and messages live here too. Plain DOM over the canvas.
 import { ITEMS, RECIPES, SLOTS, SHOPS, PRICES, sellPrice, equipLine, iconURL, canWear, jobLine, recipeKind, upgradeLine, refineInfo, canEnchant, canInsert, ENCHANT, MAX_REFINE, enchantStep } from './items.js';
 import { BAG_SLOTS, CHEST_SLOTS } from './inventory.js';
-import { STATS, STAT_KEYS, JOBS, RATES } from './progress.js';
+import { STATS, STAT_KEYS, JOBS, QUEST_RATE } from './progress.js';
 import { statCost } from './ro-tables.js';
 import { HAIRSTYLES, DYES, hairstyles, lookPortrait } from './hair.js';
 import { NPCS, QUESTS, giverOf, rewardOf, SERIES } from './quests.js';
@@ -498,7 +498,7 @@ export class Menus {
 
   reward(r) {
     const items = Object.entries(r.items || {}).map(([id, n]) => `<span class="cost ok">${icon(id, 'xs')}${n} ${esc(ITEMS[id].name)}</span>`).join('');
-    return `<div class="costs"><span class="cost ok">${(r.xp * RATES.base).toLocaleString()} Base EXP · ${(Math.round((r.job ?? r.xp * 0.7)) * RATES.job).toLocaleString()} Job EXP</span>${r.perz ? `<span class="cost ok">${r.perz.toLocaleString()} perz</span>` : ''}${items}</div>`;
+    return `<div class="costs"><span class="cost ok">${(r.xp * QUEST_RATE.base).toLocaleString()} Base EXP · ${(Math.round((r.job ?? r.xp * 0.7)) * QUEST_RATE.job).toLocaleString()} Job EXP</span>${r.perz ? `<span class="cost ok">${r.perz.toLocaleString()} perz</span>` : ''}${items}</div>`;
   }
 
   // how many of an item the active quests still want (with who wants them), so a sale can keep them

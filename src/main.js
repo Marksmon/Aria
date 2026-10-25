@@ -10,7 +10,7 @@ import { FX } from './fx.js';
 import { MobManager, MOB_DEFS, MOVES, guardDef } from './mobs.js';
 import { loadSave, writeSave } from './save.js';
 import { Inventory } from './inventory.js';
-import { Progress, JOBS, RATES } from './progress.js';
+import { Progress, JOBS, RATES, QUEST_RATE } from './progress.js';
 import { Quests, QUESTS, NPCS, FARES, NEXT, SERIES, giverOf } from './quests.js';
 import { Story, INTRO, route } from './story.js';
 import { Villagers } from './villagers.js';
@@ -316,7 +316,7 @@ player.on('faint', () => {
 });
 mobs.on('death', (m, drops) => {
   audio.play('kill');
-  gainExp(...m.def.exp);
+  gainExp(...m.def.exp, RATES);
   for (const id of quests.onKill(m.type)) questComplete(id);
   story.onKill(m.type);
   for (const [item, count] of drops) {
@@ -451,7 +451,7 @@ mobs.on('mvp', (m) => {
     if (got < n) inv.chest.add(id, n - got);
     menus.toast(id, n);
   }
-  gainExp(d.mvpExp, 0);
+  gainExp(d.mvpExp, 0, RATES);
   const mins = Math.round(d.respawn / 60);
   setTimeout(() => menus.message(`The ${d.name} will return in about ${mins} minutes.`), 2500);
   persist();
@@ -462,10 +462,11 @@ const knownSkills = () => new Set(skillList(prog).filter((id) => skillLv(prog, i
 function announceSkills(before) {
   for (const id of knownSkills()) if (!before.has(id) && (SKILLS[id].free || SKILLS[id].granted)) menus.message(`New skill: ${SKILLS[id].name}! See the Skills window.`);
 }
-function gainExp(base, job) {
+// rate: RATES for battles, QUEST_RATE for quest rewards; none for EXP already counted at its rate
+function gainExp(base, job, rate = { base: 1, job: 1 }) {
   const k = inv.wearing('exp') ? 1.25 : 1;
   const known = knownSkills();
-  const ups = prog.gain(Math.round(base * k * RATES.base), Math.round(job * k * RATES.job));
+  const ups = prog.gain(Math.round(base * k * rate.base), Math.round(job * k * rate.job));
   if (!ups.base && !ups.job) return;
   applyStats();
   const y = world.heightAt(player.x, player.z);
@@ -511,7 +512,7 @@ function giveReward(r) {
     if (got < n) inv.chest.add(id, n - got); // bag full: it goes to the chest
     menus.toast(id, n);
   }
-  if (r.xp) gainExp(r.xp, r.job ?? Math.round(r.xp * 0.7)); // (a job trial's steps on the way pay nothing)
+  if (r.xp) gainExp(r.xp, r.job ?? Math.round(r.xp * 0.7), QUEST_RATE); // (a job trial's steps on the way pay nothing)
 }
 // '!' / '?' bubbles over villagers, and the quest list under the clock: the story step first,
 // then the active quests. It collapses to its title bar and scrolls when it gets long.

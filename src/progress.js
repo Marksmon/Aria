@@ -4,9 +4,11 @@
 // POW = STR, QKN = AGI, END = VIT, KNL = INT, FNS = DEX, FTN = LUK.
 import { BASE_EXP, JOB_EXP, MAX_BASE, MAX_JOB, statPointsAt, statCost } from './ro-tables.js';
 
-// server rates, like a Ragnarok server's "x4 / x4": every Base and Job EXP gain (monsters, MVPs,
-// quests) is multiplied. 4x makes for a quicker climb than Ragnarok's own 1x pace.
+// server rates, like a Ragnarok server's "x4 / x4", for battles: monsters, mini-bosses, MVPs and
+// raids. 4x makes for a quicker climb than Ragnarok's own 1x pace. Quest rewards (side quests, job
+// trials, the main story) pay at QUEST_RATE, so the climb comes mostly from fighting
 export const RATES = { base: 4, job: 4 };
+export const QUEST_RATE = { base: 2, job: 2 };
 export const STAT_KEYS = ['pow', 'qkn', 'end', 'knl', 'fns', 'ftn'];
 export const STATS = {
   pow: { name: 'POW', full: 'Power', desc: 'Attack, carrying weight' },

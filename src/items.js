@@ -8,8 +8,8 @@ import { headgearIcon, headgearReady } from './headgear.js';
 // Equipment: slot (weapon, armor, shoes, light, acc), atk + wlv for weapons, def, and fx for a
 // special effect. icon names the painted icon when it isn't the item's own id.
 const BASE_ITEMS = {
-  gel:    { type: 'misc', name: 'Slime Gel',  desc: 'A wobbly blob left behind by a Slime. Sticky enough to glue a boot. Cooks, crafters and potion-makers all want it.', from: 'Slimes' },
-  dew:    { type: 'misc', name: 'Water Drop',   desc: 'Cool water that never quite spills, gathered from Blue Slimes. Brewers swear by it for clean potions.', from: 'Blue Slimes' },
+  gel:    { type: 'misc', name: 'Bloop Gel',  desc: 'A wobbly blob left behind by a Bloop. Sticky enough to glue a boot. Cooks, crafters and potion-makers all want it.', from: 'Bloops' },
+  dew:    { type: 'misc', name: 'Water Drop',   desc: 'Cool water that never quite spills, gathered from Blue Bloops. Brewers swear by it for clean potions.', from: 'Blue Bloops' },
   seed:   { type: 'misc', name: 'Seed', desc: 'A Sprout\'s seed. It wiggles when you hold it, as if it still wants to run. Used in charms and teas.', from: 'Sprouts' },
   leaf:   { type: 'misc', name: 'Leaf', desc: 'Soft, green and surprisingly tough. Woven into tunics and caps, or tossed into a potion for colour.', from: 'Sprouts' },
   shell:  { type: 'misc', name: 'Shell',  desc: 'A hard pink piece of Crab shell. Smiths layer it into armor; it turns a blade better than you would think.', from: 'Crabs' },
@@ -17,7 +17,7 @@ const BASE_ITEMS = {
   stone:  { type: 'misc', name: 'Stone', desc: 'Sharp stone from a Beetle\'s back, the same grey rock as Ember Hill. Smiths grind it into blades.', from: 'Beetles' },
   glow:   { type: 'misc', name: 'Glow Dust',  desc: 'Faintly warm dust shaken from night Wisps. It glows in the dark for days. Sorcerers use it in nearly everything.', from: 'Wisps' },
   thorn:  { type: 'misc', name: 'Thorn', desc: 'A springy, thorny twig from a Red Sprout. Brambles from Birch Grove bind staves and make a bitter tea.', from: 'Red Sprouts' },
-  salt:   { type: 'misc', name: 'Salt', desc: 'White crystals left by Sea Slimes. It tastes of the sea, and it keeps old ink from fading.', from: 'Sea Slimes' },
+  salt:   { type: 'misc', name: 'Salt', desc: 'White crystals left by Sea Bloops. It tastes of the sea, and it keeps old ink from fading.', from: 'Sea Bloops' },
   pearl:  { type: 'misc', name: 'Pearl', desc: 'A small pearl with a blue sheen, found in one Blue Crab in a dozen. Traders love these.', from: 'Blue Crabs' },
   gloom:  { type: 'misc', name: 'Dark Spore', desc: 'A Dark Mushroom spore that glows a dull violet. Herbalists brew it into the strongest potions.', from: 'Dark Mushrooms' },
   shade:  { type: 'misc', name: 'Dark Crystal', desc: 'A sliver of cold purple light from a Dark Wisp. Runecarvers set it into stone to make runes shine.', from: 'Dark Wisps' },
@@ -40,11 +40,11 @@ const BASE_ITEMS = {
 
   // usables, like Ragnarok's potions and wings. use: hp/sp [min, max], warp (random | camp),
   // buff + t (seconds), cure (ends the Mushling spores' slow)
-  potion:  { type: 'use', usable: true, name: 'Red Potion', use: { hp: [45, 65] }, desc: 'A red potion brewed from slime gel and herbs, the first thing every Trainee learns to carry. Restores 45–65 HP.' },
+  potion:  { type: 'use', usable: true, name: 'Red Potion', use: { hp: [45, 65] }, desc: 'A red potion brewed from bloop gel and herbs, the first thing every Trainee learns to carry. Restores 45–65 HP.' },
   potion2: { type: 'use', usable: true, name: 'Orange Potion',  use: { hp: [105, 145] }, desc: 'An orange potion, thick and strong: a Red Potion boiled down with spores. Restores 105–145 HP.' },
   potion3: { type: 'use', usable: true, name: 'White Potion', use: { hp: [175, 235] }, desc: 'A white potion that shines like milk in moonlight, brewed with glow dust or dark spores. Restores 175–235 HP.' },
   tonic:   { type: 'use', usable: true, name: 'Blue Potion', use: { sp: [40, 60] }, desc: 'A blue potion that tastes like cold rain. Sorcerers drink it by the bottle. Restores 40–60 SP.' },
-  berry:   { type: 'use', usable: true, name: 'Berry', use: { hp: [16, 22] }, desc: 'A wild berry, sweet and juicy, found on Slimes and Sprouts. A quick bite between fights. Restores 16–22 HP.', from: 'Slimes and Sprouts' },
+  berry:   { type: 'use', usable: true, name: 'Berry', use: { hp: [16, 22] }, desc: 'A wild berry, sweet and juicy, found on Bloops and Sprouts. A quick bite between fights. Restores 16–22 HP.', from: 'Bloops and Sprouts' },
   crableg: { type: 'use', usable: true, name: 'Crab Leg', use: { hp: [70, 100] }, desc: 'A Crab leg, roasted in its own shell. Astrid at the camp says nothing tastes better. Restores 70–100 HP.', from: 'Crabs' },
   herb:    { type: 'use', usable: true, name: 'Green Herb', use: { hp: [5, 8], cure: true }, desc: 'A bitter green herb that clears the head. Cures spore sickness and restores a little HP.', from: 'Sprouts and Mushrooms' },
   quick:   { type: 'use', usable: true, name: 'Speed Potion', use: { buff: 'aspd', t: 180 }, desc: 'A fizzing potion that makes your hands faster than your thoughts. +10% attack speed for 3 minutes.' },
@@ -71,8 +71,8 @@ const BASE_ITEMS = {
   emberbrand:   { type: 'equip', slot: 'weapon', jobs: ['swordman'], el: 'fire', rare: true, name: 'Flame Sword', atk: 110, wlv: 4, icon: 'weapon3', desc: 'The Fire Giant\'s own blade, still burning. Few have held it and fewer have kept it.', from: 'the Fire Giant' },
   // rare drops, Ragnarok style: each from one kind of monster at a fraction of a percent.
   // stats: bonus points to POW, QKN, END, KNL, FNS, FTN; mhp / msp: extra Max HP / SP
-  gooey_ring:   { type: 'equip', slot: 'acc', rare: true, name: 'Slime Ring', stats: { ftn: 2 }, mhp: 20, icon: 'r_gooey', desc: 'A ring of hardened slime that never quite dries. Lucky, they say.', from: 'Slimes (0.5%)' },
-  tide_pendant: { type: 'equip', slot: 'acc', rare: true, name: 'Water Necklace', stats: { knl: 2 }, msp: 15, icon: 'r_tide', desc: 'A drop of Blue Slime water held in glass. Cool to the touch, like deep water.', from: 'Blue Slimes (0.3%)' },
+  gooey_ring:   { type: 'equip', slot: 'acc', rare: true, name: 'Bloop Ring', stats: { ftn: 2 }, mhp: 20, icon: 'r_gooey', desc: 'A ring of hardened bloop that never quite dries. Lucky, they say.', from: 'Bloops (0.5%)' },
+  tide_pendant: { type: 'equip', slot: 'acc', rare: true, name: 'Water Necklace', stats: { knl: 2 }, msp: 15, icon: 'r_tide', desc: 'A drop of Blue Bloop water held in glass. Cool to the touch, like deep water.', from: 'Blue Bloops (0.3%)' },
   seedling_band: { type: 'equip', slot: 'acc', rare: true, name: 'Leaf Bracelet', stats: { end: 1, qkn: 1 }, fx: 'regen', icon: 'r_seed', desc: 'A living green bracelet that sprouted from a Sprout\'s seed. HP recovers twice as fast.', from: 'Sprouts (0.4%)' },
   mud_buckler:  { type: 'equip', slot: 'shield', jobs: ['novice', 'swordman'], rare: true, name: 'Shell Buckler', def: 3, mhp: 40, icon: 'r_buckler', desc: 'A small round shield cut from a big Crab\'s shell, light and hard.', from: 'Crabs (0.3%)' },
   spore_cloak:  { type: 'equip', slot: 'garment', rare: true, name: 'Mushroom Cloak', def: 1, flee: 4, icon: 'r_cloak', desc: 'Woven from mushroom threads, light as mist. Blows aside like it was never there.', from: 'Mushrooms (0.25%)' },
@@ -92,7 +92,7 @@ const BASE_ITEMS = {
   cinderfang:   { type: 'equip', slot: 'weapon', jobs: ['swordman'], el: 'fire', name: 'Lava Sword', atk: 95, wlv: 4, stats: { pow: 2 }, icon: 'weapon_cinder', desc: 'A blade quenched in a Fire Core. Its edge glows red when it is angry, which is always.' },
   hornblade:    { type: 'equip', slot: 'weapon', jobs: ['swordman'], el: 'fire', name: 'Giant Sword', atk: 120, wlv: 4, stats: { pow: 3, end: 1 }, icon: 'weapon_jarl', desc: 'Ground from the Fire Giant\'s own horn and quenched in its heart. The finest sword in Aria.' },
   prism_ring:   { type: 'equip', slot: 'acc', name: 'Rainbow Ring', stats: { pow: 1, qkn: 1, end: 1, knl: 1, fns: 1, ftn: 1 }, icon: 'r_prism', desc: 'Shimmering gel set in pearl. It catches every colour, and a little of every strength.' },
-  slime_band:   { type: 'equip', slot: 'acc', name: 'Slime Band', stats: { ftn: 2, knl: 2 }, mhp: 30, msp: 20, icon: 'r_twin', desc: 'A green ring and a blue pendant, melted into one. Two slimes\' worth of luck.' },
+  slime_band:   { type: 'equip', slot: 'acc', name: 'Bloop Band', stats: { ftn: 2, knl: 2 }, mhp: 30, msp: 20, icon: 'r_twin', desc: 'A green ring and a blue pendant, melted into one. Two slimes\' worth of luck.' },
   bramble_ring: { type: 'equip', slot: 'acc', rare: true, name: 'Thorn Ring', stats: { pow: 1 }, hit: 3, icon: 'r_bramble', desc: 'A ring of Red Sprout thorns. It bites back, and so do you.', from: 'Red Sprouts (0.3%)' },
   coral_shield: { type: 'equip', slot: 'shield', rare: true, name: 'Coral Shield', def: 4, msp: 20, icon: 'r_coral', desc: 'Coral from the Salt Bay shore, light, hard, and humming with the sea.', from: 'Blue Crabs (0.25%)' },
   gloom_hood:   { type: 'equip', slot: 'garment', rare: true, name: 'Dark Hood', def: 2, flee: 3, stats: { knl: 1 }, icon: 'r_hood', desc: 'Woven from violet spore threads. Things in the dark see you less clearly.', from: 'Dark Mushrooms (0.25%)' },
@@ -112,7 +112,7 @@ const BASE_ITEMS = {
   mushroom_card: { type: 'misc', rare: true, name: 'Giant Mushroom Card', icon: 'card_mushroom', card: { on: 'weapon', matk: 15, mspRate: 10, stats: { knl: 4 } }, desc: 'The Giant Mushroom on a violet card that smells of rain. In a weapon with a slot: MATK +15%, KNL +4, Max SP +10%.', from: 'the Giant Mushroom (1%)' },
   beetle_card:  { type: 'misc', rare: true, name: 'Giant Beetle Card', icon: 'card_beetle', card: { on: 'weapon', atk: 25, stats: { pow: 4 } }, desc: 'The Giant Beetle on a scorched card. In a weapon with a slot: ATK +25, POW +4.', from: 'the Giant Beetle (1%)' },
   jarl_card:    { type: 'misc', rare: true, name: 'Fire Giant Card', icon: 'card_jarl', card: { on: 'weapon', matk: 60, mspRate: 30, mhpRate: 15, el: 'fire', stats: { knl: 12, fns: 8 } }, desc: 'The Fire Giant on a scorched card, still warm: a sorcerer\'s treasure. In a weapon with a slot: MATK +60%, KNL +12, FNS +8 (quicker casting), Max SP +30%, Max HP +15%, and the weapon turns to Fire (a staff then adds 15% to Fire spells).', from: 'the Fire Giant (1%)' },
-  shiny_gel:    { type: 'misc', rare: true, name: 'Shiny Gel', desc: 'Slime gel that shimmers with every colour, found once in a hundred slimes. Collectors and ring-makers prize it.', from: 'any slime (1%)' },
+  shiny_gel:    { type: 'misc', rare: true, name: 'Shiny Gel', desc: 'Bloop gel that shimmers with every colour, found once in a hundred bloops. Collectors and ring-makers prize it.', from: 'any bloop (1%)' },
 
   // headgear: worn on the head and seen on your character (see headgear.js): Head pieces on the
   // crown, Face pieces on the eyes of the head layer
