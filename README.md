@@ -72,7 +72,7 @@ reached by travelling on. Place names are Old Norse in style.
 | Kolgrof (coal pit) | 30–50 | Kobold Assassin, Kobold, Kobold Archer | **Kobold King (50, MVP)** |
 | Brennholt (burnt wood) | 38–44 | Goblin (38), Goblin Archer (41), Goblin Assassin (44) | |
 | Ormholt (serpent wood) | 40–55 | Goblin Assassin, Goblin, Goblin Archer | **Goblin King (55, MVP)** |
-| Any field in the valley, more at night | | Wisp (11) | |
+| Any field in the valley, more at night (Mosvangr only at night) | | Wisp (11) | |
 
 **Passive monsters.** Like most of Ragnarok's field monsters, they leave you alone until you hit
 them; then they fight back for a while. Only the Dark Wisps, the fire beasts of Askheid, the
@@ -128,7 +128,9 @@ here, and their gear is made here. It has a storehouse too (the same chest).
 Ragnarok's classic rules with Aria's own stat names (see `docs/ragnarok-mechanics.md`):
 POW (STR), QKN (AGI), END (VIT), KNL (INT), FNS (DEX), FTN (LUK). Base Level and Job Level
 gain EXP separately; stat points come from Base Levels, skill points from Job Levels. HP does
-not recover while you walk; resting doubles it.
+not recover while you walk. Resting (sitting, or standing in a town) doubles it and also gives
+back 5% of Max HP and 6% of Max SP a tick, so a full rest takes about a minute. Fainting sends
+you to your save point with half your HP and SP and costs 1% of the EXP to the next level.
 
 **Placing stat points.** In the Status window, ▲ places a point (shown in green, with how many
 are pending); **Confirm** locks them in and **Reset** takes back any not yet locked in. Closing
@@ -282,12 +284,13 @@ Giant Mushroom 2%), Flame (+50%, MVP 2%) and Great Staff (+55%, from three boss 
 ## Items
 
 The Items window has three tabs: **Usables**, **Equips** and **Miscs**. Weapons, armor, boots,
-torch, headgear and charms are items: equip them from the Equips tab, and tap a worn piece in
-the Equipment window to take it off.
+torch, headgear and charms are items: equip them from the Equips tab (the piece taken off lands in
+the same bag slot). In the Equipment window, tap a worn piece to see what it is and double-tap it
+to take it off. Shops sell 1, 10 or all, and "Sell all" keeps what an active quest still needs.
 
 | Usable | Effect | Where |
 |---|---|---|
-| Healing / Strong / White Potion | 45–65 / 105–145 / 175–235 HP | Hild's shop, Ragna; drops |
+| Red / Orange / White Potion | 45–65 / 105–145 / 175–235 HP | Hild's shop, Ragna; drops |
 | Blue Potion | 40–60 SP | Hild's shop, Ragna; Blue and Sea Slimes |
 | Berry · Crab Leg | 16–22 · 70–100 HP | Slimes, Sprouts · Crabs |
 | Green Herb | cures spore sickness, a little HP | Sprouts, Mushrooms |
@@ -447,7 +450,7 @@ A few big jobs instead of many errands: one each in the camp, and a handful in S
 |---|---|---|
 | Elder Halvard | camp | The Mushroom Wood (12): 25 Mushrooms |
 | Astrid the Cook | camp | A Feast for Eldrun (10): 20 Slime Gel, 10 Crab Legs, 10 Spores |
-| Sigrun the Scout | camp | Lights in the Dark (10): 15 Wisps |
+| Sigrun the Scout | camp | Lights in the Dark (14): 15 Wisps |
 | Gyda the Healer | camp | heals HP and SP for free |
 | Keeper Tova, Bera, Asa | camp, Steinborg, Galdrheim | sign the ledger, then: storage, healing, Save here (where you wake after fainting, and where Return Feathers go), switch first jobs, and teleport to any other Keeper you signed with (300–500 perz) |
 | Sir Eirik the Runeblade | Steinborg | the Magic Knight's trial |

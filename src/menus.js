@@ -86,6 +86,7 @@ export class Menus {
     if (!WINDOWS[id]) return;
     if (!this.wins[id]) this.build(id);
     this.raise(this.wins[id]);
+    if (id !== 'story' && this.wins.story) this.raise(this.wins.story); // the story is never hidden under another window
     this.render(id);
     this.hooks.ui?.();
   }
@@ -234,9 +235,18 @@ export class Menus {
 
   place(el, x, y) {
     const W = window.innerWidth, H = window.innerHeight;
-    el.style.left = Math.max(0, Math.min(W - el.offsetWidth, x)) + 'px';
-    el.style.top = Math.max(0, Math.min(H - 28, y)) + 'px';
-    el.style.maxHeight = (H - el.offsetTop - 6) + 'px'; // long windows scroll instead of running off screen
+    const left = Math.max(0, Math.min(W - el.offsetWidth, x));
+    el.style.left = left + 'px';
+    // the hotbar is drawn over the windows (so things can be dragged onto it): a window that would
+    // reach under it stops above it, moving up to fit if it can, and scrolls if it is still too long
+    const hb = document.getElementById('hotbar')?.getBoundingClientRect();
+    const under = hb && hb.height && left < hb.right && left + el.offsetWidth > hb.left;
+    const floor = under ? hb.top - 4 : H - 6;
+    el.style.maxHeight = 'none';
+    const tall = el.offsetHeight;
+    const top = Math.max(0, Math.min(H - 28, y, floor - tall));
+    el.style.top = top + 'px';
+    el.style.maxHeight = Math.max(80, floor - top) + 'px'; // long windows scroll instead of running off screen
   }
 
   raise(el) { el.style.zIndex = ++this.top; }
@@ -270,12 +280,22 @@ export class Menus {
   }
 
   message(text) {
+    // the same line again (five potions bought in a row) counts up on one toast instead of stacking
+    const last = this.toasts.lastElementChild;
+    if (last && last.dataset.text === text && !last.classList.contains('out')) {
+      last.dataset.n = (+last.dataset.n || 1) + 1;
+      last.textContent = `${text} ×${last.dataset.n}`;
+      clearTimeout(last.outT); clearTimeout(last.goneT);
+      last.outT = setTimeout(() => last.classList.add('out'), 2600);
+      last.goneT = setTimeout(() => last.remove(), 3100);
+      return;
+    }
     const el = document.createElement('div');
     el.className = 'toast note';
-    el.textContent = text;
+    el.textContent = el.dataset.text = text;
     this.toasts.appendChild(el);
-    setTimeout(() => el.classList.add('out'), 2600);
-    setTimeout(() => el.remove(), 3100);
+    el.outT = setTimeout(() => el.classList.add('out'), 2600);
+    el.goneT = setTimeout(() => el.remove(), 3100);
   }
 
   // ---------- window contents ----------
@@ -317,12 +337,20 @@ export class Menus {
     const slot = (label, key, side) => {
       const id = key && g[key], it = id && ITEMS[id];
       if (!it) return `<div class="eq ${side} off"><i></i><span>${label}</span></div>`;
-      return `<button class="eq ${side}" data-act="unequip" data-id="${key}" title="${esc(it.name)}${equipLine(it) ? ' · ' + equipLine(it) : ''} (tap to take off)">${icon(id, 'eqi')}<span>${esc(it.name)}</span></button>`;
+      return `<button class="eq ${side}${this.eqSel === key ? ' on' : ''}" data-act="eqpick" data-id="${key}" title="${esc(it.name)}${equipLine(it) ? ' · ' + equipLine(it) : ''}">${icon(id, 'eqi')}<span>${esc(it.name)}</span></button>`;
     };
+    // one tap shows what a worn piece is; a second tap on it straight after takes it off
+    const selId = this.eqSel && g[this.eqSel], sel = selId && ITEMS[selId];
+    if (this.eqSel && !sel) this.eqSel = null;
+    const up = sel ? upgradeLine(sel) : '';
+    const detail = sel
+      ? `<b class="${sel.rare ? 'rare' : ''}">${esc(sel.name)}${sel.rare ? ' ✦' : ''}</b><span class="rstat">${esc(SLOTS[sel.slot])}${equipLine(sel) ? ' · ' + equipLine(sel) : ''} · ${esc(jobLine(sel))}${up ? ' · ' + esc(up) : ''}</span><span>${esc(sel.desc)}</span>`
+      : '<span>Tap a piece to see what it is. Double-tap it to take it off.</span>';
     const left = [slot('head', 'head', 'l'), slot('face', 'face', 'l'), slot('armor', 'armor', 'l'), slot('weapon', 'weapon', 'l'), slot('accessory', 'acc', 'l')];
     const right = [slot('garment', 'garment', 'r'), slot('shield', 'shield', 'r'), slot('shoes', 'shoes', 'r'), slot('accessory', 'acc2', 'r'), slot('light', 'light', 'r')];
     return `<div class="equipwrap"><div class="ecol">${left.join('')}</div><div class="eme"><img src="${this.portrait?.('player') || ''}" alt=""></div><div class="ecol">${right.join('')}</div></div>
-      <div class="rfoot"><span>Tap a piece to take it off</span></div>`;
+      <div class="rdetail">${detail}</div>
+      <div class="rfoot"><span>Double-tap a piece to take it off</span></div>`;
   }
 
   // Ragnarok's skill window: the job's tree with levels, SP costs and a raise button
@@ -463,12 +491,31 @@ export class Menus {
     const r = rewardOf(id);
     if (r) return (SERIES[id] ? '<small>For completing the whole trial:</small>' : '') + this.reward(r);
     const last = SERIES[id].at(-1);
-    return `<small>No reward for this step: the whole trial pays when ${esc(QUESTS[last].title)} is done.</small>${this.reward(rewardOf(last))}`;
+    return `<small>Paid when the whole trial is done (after ${esc(QUESTS[last].title)}):</small>${this.reward(rewardOf(last))}`;
   }
 
   reward(r) {
     const items = Object.entries(r.items || {}).map(([id, n]) => `<span class="cost ok">${icon(id, 'xs')}${n} ${esc(ITEMS[id].name)}</span>`).join('');
     return `<div class="costs"><span class="cost ok">${(r.xp * RATES.base).toLocaleString()} Base EXP · ${(Math.round((r.job ?? r.xp * 0.7)) * RATES.job).toLocaleString()} Job EXP</span>${r.perz ? `<span class="cost ok">${r.perz.toLocaleString()} perz</span>` : ''}${items}</div>`;
+  }
+
+  // how many of an item the active quests still want (with who wants them), so a sale can keep them
+  questNeed(item) {
+    let n = 0, who = null;
+    for (const id of Object.keys(this.quests.active)) {
+      const want = QUESTS[id].items?.[item];
+      if (want) { n += want; who = who || NPCS[giverOf(id)].name.split(' ')[0]; }
+    }
+    return { n, who };
+  }
+
+  // Sell 1, Sell 10, and Sell all, which keeps what a quest still needs
+  sellButtons(sel) {
+    const have = this.inv.bag.count(sel), need = this.questNeed(sel), keep = Math.min(have, need.n);
+    let h = '<button class="rbtn" data-act="sell" data-n="1">Sell 1</button>';
+    if (have - keep >= 10) h += '<button class="rbtn soft" data-act="sell" data-n="10">Sell 10</button>';
+    if (have - keep > 1) h += `<button class="rbtn soft" data-act="sell" data-n="${have - keep}">${keep ? `Sell all but ${keep}` : 'Sell all'}</button>`;
+    return (keep ? `<small class="keepnote">${esc(need.who)} needs ${need.n} for a quest</small>` : '') + `<div class="btnrow">${h}</div>`;
   }
 
   // a Steinborg shop: buy at the shop's price, sell anything for half
@@ -489,7 +536,7 @@ export class Menus {
       h += this.grid(inv.bag.slots, 'sell', 18);
       h += `<div class="rdetail">${it
         ? `<b class="${it.rare ? 'rare' : ''}">${esc(it.name)}</b><span>${sellPrice(sel) ? `Sells for ${sellPrice(sel).toLocaleString()} perz each · you have ${inv.bag.count(sel)}` : "The shop won't buy this."}</span>
-          ${sellPrice(sel) ? `<div class="btnrow"><button class="rbtn" data-act="sell" data-n="1">Sell 1</button>${inv.bag.count(sel) > 1 ? `<button class="rbtn soft" data-act="sell" data-n="all">Sell all</button>` : ''}</div>` : ''}`
+          ${sellPrice(sel) ? this.sellButtons(sel) : ''}`
         : '<span>Tap an item in your bag to sell it. Worn gear is not for sale.</span>'}</div>`;
     }
     return h + `<div class="rfoot"><span>Bag ${inv.bag.slots.length}/${BAG_SLOTS}</span><span class="perz">${inv.perz.toLocaleString()} perz</span></div>`;
@@ -666,7 +713,7 @@ export class Menus {
       else this.message(inv.perz < PRICES[t.dataset.id] * n ? 'Not enough perz' : 'Bag is full');
     }
     if (act === 'sell' && this.sellSel) {
-      const n = t.dataset.n === 'all' ? inv.bag.count(this.sellSel) : 1, got = sellPrice(this.sellSel) * n;
+      const n = Math.min(inv.bag.count(this.sellSel), +t.dataset.n || 1), got = sellPrice(this.sellSel) * n;
       if (inv.sell(this.sellSel, n)) { this.hooks.traded?.('sell'); this.message(`Sold for ${got.toLocaleString()} perz`); }
     }
     if (act === 'accept') this.hooks.accept?.(t.dataset.id);
@@ -677,6 +724,15 @@ export class Menus {
     }
     if (act === 'tab') { this.tab = t.dataset.id; this.selected = null; this.render(id); }
     if (act === 'equip' && inv.equip(this.selected)) { this.selected = null; this.hooks.equipped?.(); }
+    if (act === 'eqpick') {
+      const key = t.dataset.id, now = performance.now();
+      if (this.eqSel === key && now - (this.eqT || 0) < 450) { // a double tap: take it off
+        this.eqSel = null;
+        if (inv.unequip(key)) this.hooks.equipped?.();
+        else this.message('Bag is full');
+      } else { this.eqSel = key; this.eqT = now; }
+      this.render(id);
+    }
     if (act === 'unequip') {
       if (inv.unequip(t.dataset.id)) this.hooks.equipped?.();
       else this.message('Bag is full');

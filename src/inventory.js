@@ -126,12 +126,19 @@ export class Inventory {
   // put on a piece of equipment from the bag; whatever was in its slot goes back in the bag
   equip(id) {
     const it = ITEMS[id];
-    if (it?.type !== 'equip' || !canWear(id, this.job()) || !this.bag.remove(id, 1)) return false;
+    if (it?.type !== 'equip' || !canWear(id, this.job())) return false;
     // a second accessory goes in the free hand
     const slot = it.slot === 'acc' && this.gear.acc && !this.gear.acc2 ? 'acc2' : it.slot;
     const old = this.gear[slot];
+    // the piece taken off goes where the new one was, so the bag does not shuffle under your finger
+    const at = this.bag.slots.findIndex((s) => s.id === id);
+    if (at < 0) return false;
+    if (old && this.bag.slots[at].n === 1) this.bag.slots[at] = { id: old, n: 1 };
+    else {
+      this.bag.remove(id, 1);
+      if (old) this.bag.add(old, 1); // the slot just freed always has room
+    }
     this.gear[slot] = id;
-    if (old) this.bag.add(old, 1); // the slot just freed always has room
     this.changed();
     return true;
   }

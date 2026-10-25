@@ -48,7 +48,7 @@ const mobs = new MobManager(scene, world, lib, fx);
 // monsters per map: [type, count, nightOnly]. Wisps drift about by day too; night brings more of them and ~20% more of the rest
 const SPAWNS = {
   camp: [],
-  grove: [['slime', 12], ['sprout', 9], ['wisp', 3], ['wisp', 3, true], ['slime', 3, true], ['sprout', 2, true]],
+  grove: [['slime', 12], ['sprout', 9], ['wisp', 2, true], ['slime', 3, true], ['sprout', 2, true]], // the first field: Wisps only at night
   fen: [['blueSlime', 9], ['crab', 7], ['wisp', 3], ['wisp', 3, true], ['blueSlime', 2, true], ['crab', 1, true]],
   hollow: [['mushling', 12], ['wisp', 3], ['wisp', 3, true], ['mushling', 2, true]],
   ridge: [['beetle', 10], ['jarl', 1], ['wisp', 3], ['wisp', 3, true], ['beetle', 2, true]],
@@ -204,11 +204,19 @@ const audio = new Audio();
 // damage numbers float up from whoever was hit, Ragnarok style
 const overHead = (o, h) => world.heightAt(o.x, o.z) + h;
 player.on('swing', () => audio.play('swing'));
+// the first weak elemental hit ever explains the grey number, once
+function weakTip(m, el) {
+  if (story.flags.elementTip) return;
+  story.flag('elementTip');
+  const E = (e) => e[0].toUpperCase() + e.slice(1);
+  menus.message(`A weak hit! ${E(el)} barely hurts the ${m.def.name}, which is ${E(m.def.el)}. Grey numbers mean the wrong element: try another weapon or spell.`);
+}
 player.on('strike', (m, res) => {
   const y = overHead(m, m.sprite.scale.y * 0.8);
   if (res.miss) fx.number(m.x, y, m.z, 'Miss', 'miss');
   else {
     fx.number(m.x, y, m.z, res.dmg, res.crit || res.el > 1 ? 'crit' : res.el < 1 ? 'miss' : 'dealt');
+    if (res.el < 1) weakTip(m, player.ps.el);
     audio.play('hit');
     // Battle Rhythm: every fifth hit that lands gives back 1 SP
     if (skillLv(prog, 'rhythm') && ++rhythm % 5 === 0) player.healSp(1);
@@ -233,6 +241,9 @@ player.on('faint', () => {
     enterMap(savePoint ? savePoint.map : 'camp', null);
     if (savePoint) player.revive(savePoint.x, savePoint.z);
     else player.revive(world.spawn.x, world.spawn.z);
+    // waking up is not a free heal: half HP and SP (a Keeper or Gyda mends the rest)
+    player.hp = Math.ceil(player.maxHp * 0.5);
+    player.sp = Math.max(Math.min(player.sp, player.maxSp), Math.ceil(player.maxSp * 0.5));
     cam.target.set(player.x, world.heightAt(player.x, player.z), player.z);
     ui.faint(false);
   }, 2200);
@@ -395,7 +406,7 @@ function refreshQuests() {
   let h = '';
   const s = story.step;
   if (s && storyLive()) {
-    const where = story.directions(world.id);
+    const where = story.directions(world.id, prog);
     h += `<div class="story" data-q="story"><small>${esc(s.ch)}</small><b>★ ${esc(s.title)}</b><span>${esc(s.goal)}${story.progress()}</span>${where ? `<em>➜ ${esc(where)}</em>` : ''}</div>`;
   }
   for (const id of Object.keys(quests.active)) {
@@ -935,6 +946,7 @@ function spellHit(m, mult, element) {
   const dx = m.x - player.x, dz = m.z - player.z, d = Math.hypot(dx, dz) || 1;
   // the right element hits hard (gold), the wrong one barely scratches (grey)
   fx.number(m.x, overHead(m, m.sprite.scale.y * 0.8), m.z, res.dmg, res.el > 1 ? 'crit' : res.el < 1 ? 'miss' : 'dealt');
+  if (res.el < 1) weakTip(m, element);
   audio.play('hit');
   m.hit(res.dmg, dx / d * 0.5, dz / d * 0.5);
   return res;
@@ -1068,15 +1080,16 @@ function screenDist(cx, cy, x, y, z) {
 // the thing drawn nearest the tap: checked at its feet and its middle, monsters favoured
 function pick(cx, cy) {
   let best = null, bd = PICK_PX;
-  const consider = (hit, x, y, h, z, bias = 1) => {
-    for (const f of [0.15, 0.55]) {
+  const consider = (hit, x, y, h, z, bias = 1, fs = [0.15, 0.55]) => {
+    for (const f of fs) {
       const d = screenDist(cx, cy, x, y + h * f, z) * bias;
       if (d < bd) { bd = d; best = hit; }
     }
   };
   for (const m of mobs.list) if (m.alive) consider({ mob: m }, m.x, m.sprite.position.y, m.sprite.scale.y * 0.8, m.z, 0.8);
   for (const p of fx.pickups) consider({ item: p }, p.x, p.s.position.y, 0.5, p.z);
-  for (const sp of SPOTS) if (sp.map === world.id) consider({ spot: sp }, sp.x, world.heightAt(sp.x, sp.z), sp.h, sp.z);
+  // people are picked at their feet, middle and the ! or ? bubble over their head
+  for (const sp of SPOTS) if (sp.map === world.id) consider({ spot: sp }, sp.x, world.heightAt(sp.x, sp.z), sp.h, sp.z, 1, sp.npc ? [0.15, 0.55, 1.12] : undefined);
   return best;
 }
 function tap(cx, cy) {
@@ -1152,8 +1165,10 @@ function naturalRegen(dt) {
   const low = player.hp < player.maxHp * 0.25 && skillLv(prog, 'secondwind') ? 3 : 1;
   if (!walking) hpT += dt * fast * low * (inv.wearing('regen') ? 2 : 1);
   spT += dt * fast;
-  if (hpT >= 6) { hpT -= 6; player.heal(player.ps.hpRegen); }
-  if (spT >= 8) { spT -= 8; player.healSp(player.ps.spRegen + skillLv(prog, 'manawell')); }
+  // resting (sitting, or in a town) also gives back a share of the whole bar, so a full rest takes
+  // about a minute at any level instead of minutes early on
+  if (hpT >= 6) { hpT -= 6; player.heal(player.ps.hpRegen + (resting ? Math.ceil(player.maxHp * 0.05) : 0)); }
+  if (spT >= 8) { spT -= 8; player.healSp(player.ps.spRegen + skillLv(prog, 'manawell') + (resting ? Math.ceil(player.maxSp * 0.06) : 0)); }
 }
 
 function resize() {
@@ -1260,7 +1275,7 @@ function frame() {
   tickAura(dt, t, b);
   updateCastBar();
   hotbar.update();
-  world.updateOcclusion(player.x, player.z, b);
+  world.updateOcclusion(player.x, player.z, b, player.goal?.mob?.alive ? player.goal.mob : null);
 
   const py = world.heightAt(player.x, player.z);
   cam.target.lerp(tmpV.set(player.x, py, player.z), 1 - Math.exp(-8 * dt));

@@ -10,7 +10,7 @@ const STATES = {
   dawn:  { sky: C('#e7b9a0'), hemiSky: C('#ffd9c0'), hemiGround: C('#5a4a40'), hemi: 1.35, sun: C('#ffc29a'), sunI: 1.0, tint: C('#ffe2d2'), fog: [20, 46], night: 0.4 },
   day:   { sky: C('#a3c9d8'), hemiSky: C('#fff6e2'), hemiGround: C('#6b5a40'), hemi: 1.9, sun: C('#fff0d0'), sunI: 1.6, tint: C('#ffffff'), fog: [24, 50], night: 0 },
   dusk:  { sky: C('#d99a72'), hemiSky: C('#ffc49a'), hemiGround: C('#4a3a34'), hemi: 1.25, sun: C('#ffa060'), sunI: 1.0, tint: C('#ffd2b4'), fog: [20, 44], night: 0.5 },
-  night: { sky: C('#18213a'), hemiSky: C('#8fa4e0'), hemiGround: C('#1c1c2c'), hemi: 0.75, sun: C('#7f8cff'), sunI: 0.3, tint: C('#7a88c0'), fog: [14, 36], night: 1 },
+  night: { sky: C('#1c2742'), hemiSky: C('#9fb2ea'), hemiGround: C('#2a2a3c'), hemi: 1.05, sun: C('#8f9aff'), sunI: 0.4, tint: C('#94a0d2'), fog: [16, 38], night: 1 }, // dark, but readable on a phone
 };
 // [time of day 0..1, state]; 0 = 6:00
 const KEYS = [[0, 'dawn'], [0.06, 'day'], [0.52, 'day'], [0.6, 'dusk'], [0.68, 'night'], [0.93, 'night'], [1, 'dawn']];

@@ -342,16 +342,19 @@ function buildMap(id, scene, lib, shared) {
     group.add(s);
     if (w >= 1.6) tall.push({ s, x: p.x, z: p.z, w, h: w * variant.aspect, variant });
   }
-  function updateOcclusion(px, pz, cam) {
+  // trees and tall props between the camera and the hero (or what the hero is fighting) fade, so
+  // neither hides under a wide canopy
+  function updateOcclusion(px, pz, cam, also = null) {
     city?.occlude(px, pz, cam);
+    const hides = (t, x, z) => {
+      const dx = t.x - x, dz = t.z - z;
+      if (Math.abs(dx) >= 6 || Math.abs(dz) >= 6) return false;
+      const along = dx * cam.fx + dz * cam.fz;     // < 0 = between camera and the one behind
+      const side = dx * cam.rx + dz * cam.rz;
+      return along < 0.2 && along > -t.h * 0.9 && Math.abs(side) < t.w * 0.7 + 0.35;
+    };
     for (const t of tall) {
-      const dx = t.x - px, dz = t.z - pz;
-      let fade = false;
-      if (Math.abs(dx) < 6 && Math.abs(dz) < 6) {
-        const along = dx * cam.fx + dz * cam.fz;     // < 0 = between camera and player
-        const side = dx * cam.rx + dz * cam.rz;
-        fade = along < 0.2 && along > -t.h * 0.9 && Math.abs(side) < t.w * 0.45 + 0.35;
-      }
+      const fade = hides(t, px, pz) || (also && hides(t, also.x, also.z));
       const want = fade ? t.variant.faded : t.variant.mat;
       if (t.s.material !== want) t.s.material = want;
     }

@@ -294,7 +294,7 @@ export const QUESTS = {
     reward: { xp: 1800, perz: 1000, items: { potion: 10 } },
   },
   lights: {
-    title: 'Lights in the Dark', kind: 'kill', mob: 'wisp', n: 15, lv: 10,
+    title: 'Lights in the Dark', kind: 'kill', mob: 'wisp', n: 15, lv: 14,
     intro: 'Wisps drift all over the valley, and at night there are twice as many. I need to know where they nest. Catch fifteen of them for me.',
     thanks: 'A map of lights! It is beautiful. Keep these.',
     reward: { xp: 2000, perz: 800, items: { glow: 5, wander: 3 } },

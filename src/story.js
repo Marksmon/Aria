@@ -20,6 +20,7 @@
 import { NPCS } from './quests.js';
 import { MAPS, ZONE_NAMES } from './world.js';
 import { JOBS } from './progress.js';
+import { skillLv } from './skills.js';
 
 export const INTRO = [
   [null, 'Long ago, the fire-jotnar slept beneath the hills of Aria. The first settlers lit a ring of fires around their camp to keep them dreaming, and named it Eldrun: the fire-ring.'],
@@ -72,7 +73,10 @@ export const STORY = [
 
   // ---------- Chapter 2: the blade or the rune ----------
   { id: 'path', ch: 'Chapter 2: Blade or Rune', title: 'Choose Your Path', kind: 'job', goal: 'Reach Trainee Job 10 with Basic Training 9, then pass a job trial: Captain Ulfr in Steinborg (Blader) or Archmage Vigdis in Galdrheim, north of Fenstrand (Sorcerer)',
-    hint: 'Fight in Mosvangr, Fenstrand or Myrkdal to gain Job Levels.',
+    // a hint may depend on the hero: here, whether the trials are open yet
+    hint: (prog) => (prog && prog.jobLv >= 10 && skillLv(prog, 'basics') >= 9
+      ? "You're ready: take a trial with Captain Ulfr (Steinborg) or Archmage Vigdis (Galdrheim)."
+      : 'Fight in Mosvangr, Fenstrand or Myrkdal to gain Job Levels, and raise Basic Training to 9.'),
     say: [[null, 'The path is chosen. Your new skills are waiting in the Skills window.']],
     reward: { xp: 500, perz: 300 } },
 
@@ -237,10 +241,10 @@ export class Story {
   }
 
   // the tracker's line on where to go: "Head north to Mosvangr"
-  directions(here) {
-    const s = this.step, where = this.map();
-    if (!s || !where) return s?.hint || '';
-    if (where === here) return s.kind === 'talk' ? `${NPCS[s.npc].name} is on this map` : s.hint || '';
+  directions(here, prog) {
+    const s = this.step, where = this.map(), hint = typeof s?.hint === 'function' ? s.hint(prog) : s?.hint || '';
+    if (!s || !where) return hint;
+    if (where === here) return s.kind === 'talk' ? `${NPCS[s.npc].name} is on this map` : hint;
     const p = route(here, where);
     return p ? `Head ${compass(p)} to ${ZONE_NAMES[p.to]}${p.to !== where ? `, on to ${ZONE_NAMES[where]}` : ''}` : '';
   }

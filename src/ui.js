@@ -45,6 +45,7 @@ export class UI {
     this.lastInfo = key;
     const el = this.infoEl;
     el.querySelector('.jobname').textContent = jobName;
+    el.querySelector('.who').classList.toggle('long', jobName.length > 8);
     el.querySelector('.lv').textContent = `Lv ${prog.baseLv} · Job ${prog.jobLv}`;
     el.querySelector('.who em').hidden = prog.statPoints <= 0 && prog.skillPoints <= 0;
     const bar = (cls, v, max, label) => {
