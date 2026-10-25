@@ -87,7 +87,8 @@ MATK part), used by both the damage and the skill text.
 - **BladeMaster vs Wizard: do not even them out.** The BladeMaster is not elemental: its damage is
   the same on every monster, so it keeps the higher steady single-target damage (about 1.4x the
   Wizard's on a neutral monster). The Wizard makes up the gap with elements: on a monster weak to
-  its element it out-damages the BladeMaster, and on one that resists it, it falls far behind.
+  its element it clearly out-damages the BladeMaster (about 1.4x, helped by Elemental Attunement's
+  extra damage on a weakness), and on one that resists it, it falls far behind.
   It is also the best at packs.
 - **Magic Knight:** between the two on one target, close to the BladeMaster on packs, with the most
   HP and its Stone Aegis barrier.

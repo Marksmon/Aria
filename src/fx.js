@@ -10,6 +10,40 @@ export class FX {
     this.pool = [];
     this.pickups = [];
     this.tint = [];
+    this.warns = [];     // boss move warnings on the ground
+    this.warnPool = [];
+  }
+
+  // a red circle on the ground where a boss move will land: the fill grows until it hits (life s)
+  warn(x, z, r, life) {
+    if (!this.warnTex) {
+      const tex = (fill) => {
+        const c = document.createElement('canvas');
+        c.width = c.height = 128;
+        const g = c.getContext('2d');
+        g.beginPath(); g.arc(64, 64, 60, 0, Math.PI * 2);
+        if (fill) { g.fillStyle = 'rgba(255,60,40,.38)'; g.fill(); } else { g.strokeStyle = '#ff4a3a'; g.lineWidth = 6; g.stroke(); g.fillStyle = 'rgba(255,60,40,.12)'; g.fill(); }
+        return new THREE.CanvasTexture(c);
+      };
+      this.warnTex = [tex(false), tex(true)];
+      this.warnGeo = new THREE.PlaneGeometry(2, 2).rotateX(-Math.PI / 2);
+    }
+    let w = this.warnPool.pop();
+    if (!w) {
+      const mesh = (map) => {
+        const m = new THREE.Mesh(this.warnGeo, new THREE.MeshBasicMaterial({ map, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -4 }));
+        m.renderOrder = 2;
+        this.scene.add(m);
+        return m;
+      };
+      w = { ring: mesh(this.warnTex[0]), fill: mesh(this.warnTex[1]) };
+    }
+    const y = this.world.heightAt(x, z) + 0.12;
+    for (const m of [w.ring, w.fill]) { m.position.set(x, y, z); m.visible = true; }
+    w.ring.scale.set(r, 1, r);
+    w.fill.scale.set(0.01, 1, 0.01);
+    Object.assign(w, { r, t: 0, life });
+    this.warns.push(w);
   }
 
   sprite(map, opts = {}) {
@@ -170,6 +204,8 @@ export class FX {
   clearPickups() {
     for (const p of this.pickups) { this.release(p.s); if (p.glow) this.release(p.glow); }
     this.pickups = [];
+    for (const w of this.warns) { w.ring.visible = w.fill.visible = false; this.warnPool.push(w); }
+    this.warns = [];
   }
 
   // a faint gold halo, for rare drops
@@ -212,6 +248,13 @@ export class FX {
   }
 
   update(dt) {
+    for (let i = this.warns.length - 1; i >= 0; i--) {
+      const w = this.warns[i];
+      w.t += dt;
+      const k = Math.min(1, w.t / w.life), s = Math.max(0.01, w.r * k);
+      w.fill.scale.set(s, 1, s);
+      if (w.t >= w.life) { w.ring.visible = w.fill.visible = false; this.warns.splice(i, 1); this.warnPool.push(w); }
+    }
     if (this.mark) {
       this.markT -= dt;
       this.mark.visible = this.markT > 0;

@@ -7,7 +7,7 @@ import { Player } from './player.js';
 import { Input } from './input.js';
 import { UI } from './ui.js';
 import { FX } from './fx.js';
-import { MobManager, MOB_DEFS } from './mobs.js';
+import { MobManager, MOB_DEFS, MOVES } from './mobs.js';
 import { loadSave, writeSave } from './save.js';
 import { Inventory } from './inventory.js';
 import { Progress, JOBS, RATES } from './progress.js';
@@ -16,7 +16,7 @@ import { Story, INTRO, route } from './story.js';
 import { Villagers } from './villagers.js';
 import { Tiles } from './tiles.js';
 import { Hotbar } from './hotbar.js';
-import { derive, playerAttack, mobAttack, magicAttack } from './rules.js';
+import { derive, playerAttack, mobAttack, magicAttack, elementMod } from './rules.js';
 import { SKILLS, skillLv, spCost, castTime, learn, skillList, weaponOk, WEAPON_NAMES } from './skills.js';
 import { Menus } from './menus.js';
 import { iconTexture, iconURL, ITEMS, baseOf } from './items.js';
@@ -278,6 +278,59 @@ mobs.on('stomp', (m) => { // the ground bursts around the boss
   const res = mobAttack(m.def, player.ps, m.def.stomp || 1.5);
   if (res.miss) fx.number(player.x, overHead(player, 1.3), player.z, 'Miss', 'miss');
   else player.takeDamage(res.dmg, m.x, m.z);
+});
+// ---------- boss moves (mobs.js MOVES): a red circle shows where each lands ----------
+const MOVE_COL = { fire: '#ff6a1a', earth: '#c8a06a', wind: '#dff7c8', water: '#9fe0ff', shadow: '#a89cff' };
+// a boss move lands: mult x the boss's ATK if you stand within r of (x, z)
+function bossBlow(m, mult, x, z, r) {
+  if (Math.hypot(player.x - x, player.z - z) > r + 0.3 || !player.canBeHit() || player.state === 'down') return;
+  cam.shake = 0.3;
+  const res = mobAttack(m.def, player.ps, mult);
+  if (res.miss) fx.number(player.x, overHead(player, 1.3), player.z, 'Miss', 'miss');
+  else player.takeDamage(res.dmg, x, z);
+}
+const MOVE_NAMES = { charge: 'Charge', throw: { fire: 'Fireball', shadow: 'Spore Pod', earth: 'Boulder', wind: 'Hurled Axe' }, leap: 'Leap' }; // (or the move's own name)
+mobs.on('move', (m, a) => {
+  const name = MOVE_NAMES[a.kind], label = a.mv.name || (typeof name === 'string' ? name : name[m.def.el] || 'Throw');
+  fx.number(m.x, overHead(m, m.sprite.scale.y * 0.8 + 0.4), m.z, label, 'skill');
+  audio.play('swing');
+  if (a.kind === 'charge') { // the line it will run: a warning where you stand now
+    const ahead = Math.min(a.left, Math.hypot(player.x - m.x, player.z - m.z));
+    fx.warn(m.x + m.heading.x * ahead, m.z + m.heading.z * ahead, 1.2, MOVES.charge.wind + 0.15);
+    fx.sparkle(m.x, world.heightAt(m.x, m.z) + 1, m.z, '#ff8a3a', 10);
+  }
+  if (a.kind === 'throw') fx.warn(a.spot.x, a.spot.z, a.mv.r, MOVES.throw.wind + MOVES.throw.land);
+  if (a.kind === 'leap') fx.warn(a.spot.x, a.spot.z, a.mv.r, MOVES.leap.wind + MOVES.leap.air);
+});
+mobs.on('rush', (m) => { audio.play('dodge'); fx.puff(m.x, world.heightAt(m.x, m.z) + 0.15, m.z, 1.2); });
+mobs.on('rammed', (m, mult) => bossBlow(m, mult, m.x, m.z, m.def.reach + 0.6));
+mobs.on('throw', (m, spot, mv, land) => {
+  const map = world.id, y = world.heightAt(m.x, m.z) + m.sprite.scale.y * 0.6;
+  const travel = Math.hypot(spot.x - m.x, spot.z - m.z) / 13; // fx.bolt flies 13 paces a second
+  const at = { x: spot.x, z: spot.z, alive: true };
+  setTimeout(() => {
+    if (world.id !== map) return;
+    fx.bolt(m.x, y, m.z, at, MOVE_COL[m.def.el] || '#ffffff', () => {
+      const gy = world.heightAt(spot.x, spot.z);
+      fx.puff(spot.x, gy + 0.2, spot.z, mv.r * 1.2);
+      fx.sparkle(spot.x, gy + 0.3, spot.z, MOVE_COL[m.def.el] || '#ffffff', 16);
+      audio.play('hit');
+      bossBlow(m, mv.mult, spot.x, spot.z, mv.r);
+    }, 0.9);
+  }, Math.max(0, land - travel) * 1000);
+});
+mobs.on('slam', (m, mv) => {
+  const y = world.heightAt(m.x, m.z);
+  fx.puff(m.x, y + 0.2, m.z, mv.r * 1.3);
+  fx.sparkle(m.x, y + 0.3, m.z, MOVE_COL[m.def.el] || '#ffffff', 20);
+  audio.play('hit');
+  bossBlow(m, mv.mult, m.x, m.z, mv.r);
+});
+mobs.on('frenzy', (m) => {
+  menus.message(`The ${m.def.name} flies into a frenzy!`);
+  fx.number(m.x, overHead(m, m.sprite.scale.y * 0.8 + 0.4), m.z, 'Frenzy!', 'skill');
+  fx.sparkle(m.x, world.heightAt(m.x, m.z) + 1.2, m.z, '#ff4a3a', 18);
+  audio.play('night');
 });
 // archers: an arrow flies at you, and the hit is rolled when it lands (FLEE and DEF apply)
 const playerMark = { get x() { return player.x; }, get z() { return player.z; }, alive: true };
@@ -919,7 +972,9 @@ function spellHit(m, mult, element) {
   const staff = ITEMS[inv.gear.weapon];
   if (staff?.kind === 'staff' && staff.el && staff.el === element) mult *= 1.15; // an elemental staff feeds its own spells
   if (m.shatterT > skillClock && element !== 'earth') { mult *= 1.3; m.shatterT = 0; } // Stone Spike's Shatter
-  const res = magicAttack(player.ps, m.effDef(), mult, element);
+  const md = m.effDef(), attune = skillLv(prog, 'attune');
+  if (attune && elementMod(element, md.el) > 1) mult *= 1 + 0.03 * attune; // Attunement: harder still on a weakness
+  const res = magicAttack(player.ps, md, mult, element);
   const dx = m.x - player.x, dz = m.z - player.z, d = Math.hypot(dx, dz) || 1;
   // the right element hits hard (gold), the wrong one barely scratches (grey)
   fx.number(m.x, overHead(m, m.sprite.scale.y * 0.8), m.z, res.dmg, res.el > 1 ? 'crit' : res.el < 1 ? 'miss' : 'dealt');

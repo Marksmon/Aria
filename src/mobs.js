@@ -31,16 +31,16 @@ export const MOB_DEFS = {
   // mini-bosses: one on each new field, big and slow, they stomp like the Fire Giant, call two of
   // their own kind as guards (summon: see SUMMON_CD) and come back after `respawn` seconds. A hard fight for their own level: 2-4 minutes and a bag of potions
   // (a few levels above them is wiser). Their rare materials craft the best gear.
-  matron: { name: 'Giant Sprout', ai: 'boss', art: 'sprout', el: 'earth', tint: '#ff9a6a', boss: true, lv: 25, hp: 9000, atk: [80, 108], def: 10, vit: 25, agi: 18, dex: 40, exp: [4200, 2940], adelay: 1700, speed: 1.2, aggro: 5.5, chase: 12, reach: 1.3, w: 2.0, r: 0.75, heavy: true, summon: ['russet', 'russet'], summonText: 'The Giant Sprout shakes its leaves, and Red Sprouts come running!', respawn: 300, drops: [['heartwood', 1, 1, 0.3], ['thorn', 3, 5, 1], ['potion2', 1, 2, 0.5], ['thorn_mantle', 1, 1, 0.03], ['bramble_ring', 1, 1, 0.05], ['sprout_card', 1, 1, 0.01]] },
-  tideKing: { name: 'King Crab', ai: 'boss', art: 'crab', el: 'water', tint: '#8ab8ff', boss: true, lv: 32, hp: 11000, atk: [92, 120], def: 18, vit: 32, agi: 22, dex: 48, exp: [8400, 5880], adelay: 1600, speed: 1.3, aggro: 5.5, chase: 12, reach: 1.4, w: 2.3, r: 0.85, heavy: true, summon: ['tidecrab', 'tidecrab'], summonText: 'The King Crab clacks its claws, and Blue Crabs scuttle in!', respawn: 300, drops: [['king_pearl', 1, 1, 0.3], ['pearl', 1, 2, 0.6], ['crableg', 2, 3, 1], ['tidebreaker', 1, 1, 0.02], ['coral_shield', 1, 1, 0.05], ['crab_card', 1, 1, 0.01]] },
-  gloomMother: { name: 'Giant Mushroom', ai: 'boss', art: 'mushling', el: 'shadow', tint: '#9a7cff', boss: true, lv: 40, hp: 14000, atk: [122, 158], def: 14, vit: 40, agi: 28, dex: 60, exp: [17000, 11900], adelay: 1700, speed: 1.15, aggro: 5.5, chase: 12, reach: 1.4, w: 2.2, r: 0.8, heavy: true, mdef: 30, summon: ['gloomcap', 'gloomcap'], summonText: 'The Giant Mushroom puffs, and Dark Mushrooms sprout around it!', respawn: 420, drops: [['gloom_heart', 1, 1, 0.3], ['gloom', 2, 4, 1], ['potion3', 1, 2, 0.4], ['gloom_staff', 1, 1, 0.02], ['gloom_hood', 1, 1, 0.05], ['mushroom_card', 1, 1, 0.01]] },
-  cinderLord: { name: 'Giant Beetle', ai: 'boss', art: 'beetle', el: 'fire', tint: '#ff7a4a', boss: true, lv: 48, hp: 16000, atk: [125, 162], def: 22, vit: 48, agi: 32, dex: 70, exp: [28000, 19600], adelay: 1600, speed: 1.15, aggro: 5.5, chase: 12, reach: 1.5, w: 2.4, r: 0.9, heavy: true, summon: ['cinderBeetle', 'cinderBeetle'], summonText: 'The Giant Beetle roars, and Fire Beetles answer!', respawn: 480, drops: [['cinder_core', 1, 1, 0.3], ['cinder', 2, 4, 1], ['potion3', 1, 2, 0.5], ['cinder_greaves', 1, 1, 0.03], ['cinder_mail', 1, 1, 0.04], ['beetle_card', 1, 1, 0.01]] },
+  matron: { name: 'Giant Sprout', ai: 'boss', art: 'sprout', el: 'earth', tint: '#ff9a6a', boss: true, lv: 25, hp: 9000, atk: [80, 108], def: 10, vit: 25, agi: 18, dex: 40, exp: [4200, 2940], adelay: 1700, speed: 1.8, moves: [{ kind: 'throw', name: 'Seed Pod', mult: 1.5, r: 1.5 }], aggro: 5.5, chase: 12, reach: 1.3, w: 2.0, r: 0.75, heavy: true, summon: ['russet', 'russet'], summonText: 'The Giant Sprout shakes its leaves, and Red Sprouts come running!', respawn: 300, drops: [['heartwood', 1, 1, 0.3], ['thorn', 3, 5, 1], ['potion2', 1, 2, 0.5], ['thorn_mantle', 1, 1, 0.03], ['bramble_ring', 1, 1, 0.05], ['sprout_card', 1, 1, 0.01]] },
+  tideKing: { name: 'King Crab', ai: 'boss', art: 'crab', el: 'water', tint: '#8ab8ff', boss: true, lv: 32, hp: 11000, atk: [92, 120], def: 18, vit: 32, agi: 22, dex: 48, exp: [8400, 5880], adelay: 1600, speed: 2.0, moves: [{ kind: 'charge', mult: 1.5 }], aggro: 5.5, chase: 12, reach: 1.4, w: 2.3, r: 0.85, heavy: true, summon: ['tidecrab', 'tidecrab'], summonText: 'The King Crab clacks its claws, and Blue Crabs scuttle in!', respawn: 300, drops: [['king_pearl', 1, 1, 0.3], ['pearl', 1, 2, 0.6], ['crableg', 2, 3, 1], ['tidebreaker', 1, 1, 0.02], ['coral_shield', 1, 1, 0.05], ['crab_card', 1, 1, 0.01]] },
+  gloomMother: { name: 'Giant Mushroom', ai: 'boss', art: 'mushling', el: 'shadow', tint: '#9a7cff', boss: true, lv: 40, hp: 14000, atk: [122, 158], def: 14, vit: 40, agi: 28, dex: 60, exp: [17000, 11900], adelay: 1700, speed: 1.7, moves: [{ kind: 'throw', mult: 1.5, r: 1.8 }], aggro: 5.5, chase: 12, reach: 1.4, w: 2.2, r: 0.8, heavy: true, mdef: 30, summon: ['gloomcap', 'gloomcap'], summonText: 'The Giant Mushroom puffs, and Dark Mushrooms sprout around it!', respawn: 420, drops: [['gloom_heart', 1, 1, 0.3], ['gloom', 2, 4, 1], ['potion3', 1, 2, 0.4], ['gloom_staff', 1, 1, 0.02], ['gloom_hood', 1, 1, 0.05], ['mushroom_card', 1, 1, 0.01]] },
+  cinderLord: { name: 'Giant Beetle', ai: 'boss', art: 'beetle', el: 'fire', tint: '#ff7a4a', boss: true, lv: 48, hp: 16000, atk: [125, 162], def: 22, vit: 48, agi: 32, dex: 70, exp: [28000, 19600], adelay: 1600, speed: 2.0, moves: [{ kind: 'charge', mult: 1.6 }], aggro: 5.5, chase: 12, reach: 1.5, w: 2.4, r: 0.9, heavy: true, summon: ['cinderBeetle', 'cinderBeetle'], summonText: 'The Giant Beetle roars, and Fire Beetles answer!', respawn: 480, drops: [['cinder_core', 1, 1, 0.3], ['cinder', 2, 4, 1], ['potion3', 1, 2, 0.5], ['cinder_greaves', 1, 1, 0.03], ['cinder_mail', 1, 1, 0.04], ['beetle_card', 1, 1, 0.01]] },
   // MVP boss of Glodberg: one at a time, back 15 minutes after it falls. Its slayer gets the MVP
   // reward on top of the drops. Stomps the ground around it every few seconds (stomp: x its ATK),
   // and calls 2 Fire Wisps and 3 Fire Beetles (summon: see SUMMON_CD).
   // Made for a Base 50 character in the best gear, alone: about 3 minutes and a bag of potions.
-  jarl: { name: 'Fire Giant', ai: 'boss', art: 'jarl', el: 'fire', lv: 60, hp: 24000, atk: [150, 200], def: 20, vit: 40, agi: 30, dex: 70, mdef: 40, exp: [60000, 42000], adelay: 1600, speed: 1.35, aggro: 7, chase: 25, reach: 1.9, w: 3.1, r: 1.15, heavy: true,
-    mvp: true, respawn: 900, lair: { x: 32, z: 48 }, mvpExp: 30000, stomp: 1.8,
+  jarl: { name: 'Fire Giant', ai: 'boss', art: 'jarl', el: 'fire', lv: 60, hp: 24000, atk: [150, 200], def: 20, vit: 40, agi: 30, dex: 70, mdef: 40, exp: [60000, 42000], adelay: 1600, speed: 2.4, aggro: 7, chase: 25, reach: 1.9, w: 3.1, r: 1.15, heavy: true,
+    mvp: true, respawn: 900, lair: { x: 32, z: 48 }, mvpExp: 30000, stomp: 1.8, moves: [{ kind: 'throw', mult: 2.0, r: 2.0 }, { kind: 'leap', mult: 1.8, r: 2.2 }],
     summon: ['emberWisp', 'emberWisp', 'cinderBeetle', 'cinderBeetle', 'cinderBeetle'], summonText: 'The Fire Giant roars, and the fire answers!', mvpDrops: [['potion3', 3], ['ember_heart', 1]],
     wake: 'The ground trembles… the Fire Giant has woken in Glodberg!',
     drops: [['potion2', 2, 3, 0.8], ['potion3', 1, 2, 0.5], ['stone', 4, 6, 1], ['jarl_horn', 1, 1, 0.25], ['ember_crown', 1, 1, 0.05], ['jarl_mantle', 1, 1, 0.03], ['jarl_staff', 1, 1, 0.02], ['emberbrand', 1, 1, 0.01], ['jarl_card', 1, 1, 0.01]] },
@@ -55,17 +55,31 @@ export const MOB_DEFS = {
   goblinArcher: { name: 'Goblin Archer', ai: 'archer', art: 'goblinArcher', el: 'wind', lv: 41, hp: 1700, atk: [120, 150], def: 10, vit: 28, agi: 40, dex: 82, exp: [700, 490], adelay: 1800, speed: 1.6, aggro: 7, chase: 9, range: 5.5, reach: 0.8, w: 0.7, r: 0.32, drops: [['goblin_tooth', 1, 1, 0.5], ['potion3', 1, 1, 0.04], ['wander', 1, 1, 0.1], ['hard_ore', 1, 1, 0.02]] },
   goblinAssassin: { name: 'Goblin Assassin', ai: 'assassin', art: 'goblinAssassin', el: 'wind', lv: 44, hp: 1800, atk: [140, 178], def: 8, vit: 26, agi: 75, dex: 82, exp: [850, 595], adelay: 1100, speed: 2.7, aggro: 6, chase: 10, reach: 0.75, double: 0.25, w: 0.7, r: 0.3, drops: [['goblin_tooth', 1, 2, 0.5], ['quick', 1, 1, 0.04], ['potion3', 1, 1, 0.04], ['hard_ore', 1, 1, 0.025], ['armor_ore', 1, 1, 0.02]] },
   // the kings: MVPs like the Fire Giant, a step below it. They stomp, and call four guards
-  // (summon: see SUMMON_CD).
-  koboldKing: { name: 'Kobold King', ai: 'boss', art: 'koboldKing', el: 'earth', lv: 50, hp: 18000, atk: [120, 160], def: 22, vit: 45, agi: 30, dex: 70, mdef: 25, exp: [36000, 25200], adelay: 1500, speed: 1.4, aggro: 7, chase: 25, reach: 1.4, w: 1.3, r: 0.6, heavy: true,
-    mvp: true, respawn: 1200, lair: { x: 32, z: 46 }, mvpExp: 18000, stomp: 1.6, summon: ['koboldWarrior', 'koboldWarrior', 'koboldArcher', 'koboldAssassin'], mvpDrops: [['potion3', 3], ['hard_ore', 2]],
+  // (summon: see SUMMON_CD). Both are quick on their feet and have moves of their own (see MOVES).
+  koboldKing: { name: 'Kobold King', ai: 'boss', art: 'koboldKing', el: 'earth', lv: 50, hp: 18000, atk: [120, 160], def: 22, vit: 45, agi: 30, dex: 70, mdef: 25, exp: [36000, 25200], adelay: 1500, speed: 3.0, aggro: 7, chase: 25, reach: 1.4, w: 1.3, r: 0.6, heavy: true,
+    mvp: true, respawn: 1200, lair: { x: 32, z: 46 }, mvpExp: 18000, stomp: 1.6, moves: [{ kind: 'charge', mult: 1.7 }, { kind: 'throw', mult: 1.8, r: 1.6 }], summon: ['koboldWarrior', 'koboldWarrior', 'koboldArcher', 'koboldAssassin'], mvpDrops: [['potion3', 3], ['hard_ore', 2]],
     wake: 'War drums in the quarry… the Kobold King holds court in Kolgrof!',
     drops: [['potion3', 1, 2, 0.5], ['kobold_fur', 4, 6, 1], ['hard_ore', 1, 2, 0.4], ['armor_ore', 1, 2, 0.4], ['kobold_ring', 1, 1, 0.05], ['kobold_card', 1, 1, 0.01]] },
-  goblinKing: { name: 'Goblin King', ai: 'boss', art: 'goblinKing', el: 'wind', lv: 55, hp: 21000, atk: [138, 180], def: 22, vit: 48, agi: 34, dex: 74, mdef: 30, exp: [48000, 33600], adelay: 1500, speed: 1.45, aggro: 7, chase: 25, reach: 1.4, w: 1.3, r: 0.6, heavy: true,
-    mvp: true, respawn: 1800, lair: { x: 32, z: 16 }, mvpExp: 24000, stomp: 1.7, summon: ['goblinWarrior', 'goblinWarrior', 'goblinArcher', 'goblinAssassin'], mvpDrops: [['potion3', 3], ['hard_ore', 3]],
+  goblinKing: { name: 'Goblin King', ai: 'boss', art: 'goblinKing', el: 'wind', lv: 55, hp: 21000, atk: [138, 180], def: 22, vit: 48, agi: 34, dex: 74, mdef: 30, exp: [48000, 33600], adelay: 1500, speed: 3.2, aggro: 7, chase: 25, reach: 1.4, w: 1.3, r: 0.6, heavy: true,
+    mvp: true, respawn: 1800, lair: { x: 32, z: 16 }, mvpExp: 24000, stomp: 1.7, moves: [{ kind: 'leap', mult: 1.7, r: 1.8 }, { kind: 'throw', mult: 1.4, r: 1.3 }, { kind: 'frenzy' }], summon: ['goblinWarrior', 'goblinWarrior', 'goblinArcher', 'goblinAssassin'], mvpDrops: [['potion3', 3], ['hard_ore', 3]],
     wake: 'Horns in the dark wood… the Goblin King rides out in Ormholt!',
     drops: [['potion3', 1, 2, 0.6], ['goblin_tooth', 4, 6, 1], ['hard_ore', 1, 3, 0.45], ['armor_ore', 1, 3, 0.45], ['goblin_charm', 1, 1, 0.05], ['goblin_card', 1, 1, 0.01]] },
 };
 
+// Boss moves (def.moves), each shown first by a red circle on the ground so it can be dodged:
+//   charge - from 3 to 9 paces: crouches, then rushes in a straight line; the first thing in its
+//            path takes mult x ATK. It stands, winded, for a moment after.
+//   throw  - from 3.5 to 9 paces: hurls a rock (or fireball, or spore pod) where you stand; it lands
+//            1 s later, mult x ATK within r.
+//   leap   - from 2.5 to 8 paces: jumps onto where you stand, landing 0.9 s later, mult x ATK within r.
+//   frenzy - below half HP: for 8 s it moves 30% faster and attacks 40% faster.
+// cd: seconds before the same move again (a boss uses one move at a time, and waits 2.5 s between).
+export const MOVES = {
+  charge: { min: 3, max: 9, cd: 9, wind: 0.6 },
+  throw: { min: 3.5, max: 9, cd: 6, wind: 0.5, land: 1.0 },
+  leap: { min: 2.5, max: 8, cd: 10, wind: 0.25, air: 0.9 },
+  frenzy: { cd: 22, dur: 8, below: 0.5 },
+};
 const RESPAWN = 60;
 // A boss (MVP or mini-boss) first calls its guards when it falls below 60% HP. It calls again only
 // once every guard is gone, and not until 2 minutes after the last one fell, while it still fights.
@@ -119,11 +133,85 @@ class Mob {
     this.provokeT = 0; // taunted: it comes for you
     this.stunT = 0;
     this.calls = 0;          // times it has called its guards (bosses)
+    this.act = null;         // a boss move in progress: { kind, t, ... }
+    this.moveCd = {};        // per move: seconds until it can be used again
+    this.nextMove = 3;       // seconds until any move
+    this.rageT = 0;          // frenzy left
+    this.mat.color.set('#ffffff');
     this.guardsGoneT = -1e9; // when (its own clock, this.t) its last guard fell
     this.sprite.visible = this.shadow.visible = true;
     const upp = d.w / this.art.body[0]; // def.w is the body width
     this.sprite.scale.set(this.art.fw * upp, this.art.fh * upp, 1);
     this.mat.rotation = 0;
+  }
+
+  // a boss picks a move it is in range for (see MOVES)
+  pickMove(p, dist, dx, dz) {
+    const d = this.def;
+    for (const mv of d.moves || []) {
+      const M = MOVES[mv.kind];
+      if ((this.moveCd[mv.kind] || 0) > 0) continue;
+      if (mv.kind === 'frenzy') {
+        if (this.hp / d.hp > M.below) continue;
+        this.rageT = M.dur;
+        this.mgr.emit('frenzy', this);
+      } else {
+        if (dist < M.min || dist > M.max) continue;
+        this.heading = { x: dx / dist, z: dz / dist };
+        const spot = { x: p.x, z: p.z };
+        if (mv.kind === 'charge') this.act = { kind: 'charge', mv, t: M.wind, phase: 'wind', left: Math.min(dist + 2, M.max) };
+        if (mv.kind === 'throw') this.act = { kind: 'throw', mv, t: M.wind, spot };
+        if (mv.kind === 'leap') this.act = { kind: 'leap', mv, t: M.wind + M.air, from: { x: this.x, z: this.z }, spot };
+        this.atkAnim = ATTACK_ANIM * 1.6;
+        this.mgr.emit('move', this, this.act);
+      }
+      this.moveCd[mv.kind] = M.cd;
+      this.nextMove = 2.5;
+      return;
+    }
+  }
+
+  // a move in progress, frame by frame: { moving, lift }
+  acting(dt, p, dist, dx, dz) {
+    const a = this.act, M = MOVES[a.kind];
+    a.t -= dt;
+    if (a.kind === 'charge') {
+      if (a.phase === 'wind') { // crouched, glaring
+        if (a.t <= 0) { a.phase = 'run'; a.hit = false; this.mgr.emit('rush', this); }
+        return { moving: false, lift: 0 };
+      }
+      if (a.phase === 'run') {
+        const step = 10 * dt, ok = this.tryMove(this.heading.x * step, this.heading.z * step);
+        a.left -= step;
+        this.atkAnim = ATTACK_ANIM;
+        if (!a.hit && dist < this.def.reach + 0.5) { a.hit = true; this.mgr.emit('rammed', this, a.mv.mult); }
+        if (!ok || a.left <= 0 || a.hit) { a.phase = 'rest'; a.t = 0.7; }
+        return { moving: ok, lift: 0 };
+      }
+      if (a.t <= 0) this.act = null; // winded
+      return { moving: false, lift: 0 };
+    }
+    if (a.kind === 'throw') {
+      if (!a.thrown && a.t <= 0) { a.thrown = true; a.t = 0.35; this.atkAnim = ATTACK_ANIM; this.mgr.emit('throw', this, a.spot, a.mv, M.land); }
+      else if (a.thrown && a.t <= 0) this.act = null;
+      return { moving: false, lift: 0 };
+    }
+    if (a.kind === 'leap') {
+      const k = Math.min(1, Math.max(0, 1 - a.t / M.air)); // 0 at take-off, 1 on landing
+      if (a.t <= M.air) {
+        this.x = a.from.x + (a.spot.x - a.from.x) * k;
+        this.z = a.from.z + (a.spot.z - a.from.z) * k;
+      }
+      if (a.t <= 0) {
+        this.act = null;
+        this.atkAnim = ATTACK_ANIM;
+        this.mgr.emit('slam', this, a.mv);
+        return { moving: false, lift: 0 };
+      }
+      return { moving: false, lift: a.t <= M.air ? Math.sin(k * Math.PI) * 2.2 : 0 };
+    }
+    this.act = null;
+    return { moving: false, lift: 0 };
   }
 
   tryMove(dx, dz) {
@@ -213,7 +301,10 @@ class Mob {
     const x0 = this.x, z0 = this.z; // after knockback, so being pushed doesn't move the legs
     const dx = p.x - this.x, dz = p.z - this.z, dist = Math.hypot(dx, dz);
     const low = this.hp / d.hp <= 0.3 && d.hp > 1;
-    const speed = d.speed * (low ? 0.6 : 1);
+    this.rageT -= dt;
+    // a wounded monster limps, but a boss does not slow down (a frenzied one speeds up)
+    const speed = d.speed * (low && d.ai !== 'boss' ? 0.6 : 1) * (this.rageT > 0 ? 1.3 : 1);
+    let lift = 0;
     // Play Dead and safe ground (camp) make monsters lose interest
     const available = p.state !== 'down' && p.state !== 'feign' && !this.mgr.world.isSafe(p.x, p.z);
     const aggro = this.provokeT > 0 ? 14 : d.aggro;
@@ -248,7 +339,7 @@ class Mob {
           this.atkAnim = ATTACK_ANIM;
           if (dist > 0.01) this.heading = { x: dx / dist, z: dz / dist };
         }
-        this.atkCd = d.adelay / 1000;
+        this.atkCd = d.adelay / 1000 * (this.rageT > 0 ? 0.6 : 1);
       }
     };
 
@@ -258,9 +349,40 @@ class Mob {
       moving = this.moveToward(this.home.x, this.home.z, speed, dt) > 0;
       if (homeD < 2 || !moving) { this.state = 'wander'; this.tired = 2; }
     } else switch (d.ai) {
-      case 'hopper':
-      case 'tank':
       case 'boss': {
+        if (this.state === 'wander' && available && hostile && this.tired <= 0 && dist < aggro) {
+          this.state = 'chase';
+          this.chaseT = d.chase;
+        }
+        if (this.act) { // in the middle of a move: it finishes it, whatever else happens
+          const r = this.acting(dt, p, dist, dx, dz);
+          moving = r.moving;
+          lift = r.lift;
+          break;
+        }
+        if (this.state === 'chase') {
+          this.chaseT -= dt;
+          this.nextMove -= dt;
+          for (const k in this.moveCd) this.moveCd[k] -= dt;
+          if (this.chaseT <= 0 || !available || dist > aggro * 2.2) { this.state = 'wander'; this.tired = 3; }
+          else if (this.special > 0) { // winding up a stomp: stand still, then it lands
+            this.special -= dt;
+            if (this.special <= 0) this.mgr.emit('stomp', this);
+          } else {
+            if (dist > d.reach * 0.7) moving = this.moveToward(p.x, p.z, speed, dt) > 0;
+            contact();
+            if (dist < 3.2 && this.specialCd <= 0) {
+              this.special = 0.8;
+              this.specialCd = 7;
+              this.atkAnim = ATTACK_ANIM * 1.6;
+              this.mgr.emit('windup', this);
+            } else if (this.nextMove <= 0) this.pickMove(p, dist, dx, dz);
+          }
+        } else wander();
+        break;
+      }
+      case 'hopper':
+      case 'tank': {
         if (this.state === 'wander' && available && hostile && this.tired <= 0 && dist < aggro) {
           this.state = 'chase';
           this.chaseT = d.chase;
@@ -276,12 +398,6 @@ class Mob {
             } else {
               if (hopping && dist > d.reach * 0.7) moving = this.moveToward(p.x, p.z, speed, dt) > 0;
               contact();
-              if (d.ai === 'boss' && dist < 3.2 && this.specialCd <= 0) {
-                this.special = 0.8;
-                this.specialCd = 7;
-                this.atkAnim = ATTACK_ANIM * 1.6;
-                this.mgr.emit('windup', this);
-              }
             }
           }
         } else wander();
@@ -395,12 +511,12 @@ class Mob {
     // ---- visuals ----
     this.walked += Math.hypot(this.x - x0, this.z - z0);
     if (d.ai === 'hopper') this.hop += dt * (moving ? 1.25 : 0.6);
-    let lift = 0;
     if (d.ai === 'hopper' && moving && this.hop % 1 < 0.55) lift = Math.sin(((this.hop % 1) / 0.55) * Math.PI) * 0.28 * d.w;
     else if (d.fly) lift = 0.7 + Math.sin(this.t * 4) * 0.15;
     const tex = this.frame(moving);
     if (this.mat.map !== tex) { this.mat.map = tex; this.sprite.center.y = tex.userData.anchor; }
-    this.mat.rotation = low ? Math.sin(this.t * 15) * 0.13 : 0;
+    this.mat.rotation = low && !this.act ? Math.sin(this.t * 15) * 0.13 : 0;
+    if (d.moves) this.mat.color.set(this.rageT > 0 ? (Math.sin(this.t * 10) > 0 ? '#ff8a7a' : '#ffb0a0') : '#ffffff');
 
     const y = this.mgr.world.heightAt(this.x, this.z);
     this.sprite.position.set(this.x, y + lift, this.z);

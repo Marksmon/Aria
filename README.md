@@ -88,7 +88,7 @@ warriors close in and hit hard, **archers** keep about five paces away and shoot
 and they back off), and **assassins** are quick, dart the last few steps and sometimes strike twice.
 They drop Kobold Fur and Goblin Teeth, ores for refining, and now and then Hard Ore or Armor Ore.
 
-**Bosses.** Each new field has a mini-boss: big, slow, stomping the ground around it, back 5–8
+**Bosses.** Each new field has a mini-boss: big, stomping the ground around it, back 5–8
 minutes after it falls. Like the MVPs, each calls 2 guards of its own kind below 60% HP (Red
 Sprouts, Blue Crabs, Dark Mushrooms, Fire Beetles), and again 2 minutes after the last one falls. They drop a rare material (30%) that forges the best gear, and a rare
 equip of their own (2–3%). They hit hard: at their own level each is a 3–4 minute fight and a
@@ -110,6 +110,21 @@ king 4 of his own (2 warriors, an archer and an assassin). It never calls while 
 standing: once the last one falls, it can call again 2 minutes later, if it is still fighting. Guards are ordinary
 monsters: they follow their MVP, fight whoever it fights, and vanish when it falls (no EXP, no
 drops). The kings drop ores, a rare accessory (5%) and their **card** (1%), as does the Fire Giant.
+
+**Boss moves.** Bosses walk fast (the kings almost as fast as you), don't slow down when wounded,
+and have moves beside the stomp. A **red circle** on the ground shows where each will land, and
+fills up until it hits: step out of it.
+
+| Boss | Moves |
+|---|---|
+| Kobold King | **Charge**: crouches, then rushes at you in a straight line (stands winded after) · **Boulder**: thrown where you stand, lands 1 s later |
+| Goblin King | **Leap**: jumps onto where you stand · **Hurled Axe** · **Frenzy** below half HP: 8 s of faster steps and attacks (he glows red) |
+| Fire Giant | **Fireball** (wide) · **Leap** |
+| Giant Sprout · Giant Mushroom | **Seed Pod** · **Spore Pod**, thrown at you |
+| King Crab · Giant Beetle | **Charge** |
+
+Each move hits for 1.4–2x the boss's ATK. Staying far away no longer keeps you safe: spells reach
+5 paces, and every boss has a move for 3–9 paces.
 
 **Steinborg.** A walled market city north of Mosvangr: stone walls with towers and two gates
 (south to Mosvangr, east to Birkilund), timber houses round a fountain square, a forge, market
@@ -235,7 +250,7 @@ points stay. Second jobs wear their first job's outfit in new colours and glow w
 
 | Wizard: the elements, over an area | |
 |---|---|
-| Elemental Attunement | passive, 10: spells +3% per level |
+| Elemental Attunement | passive, 10: spells +3% per level, and a further +3% per level to a monster weak to the spell's element |
 | Resonance | passive, 5: a spell of a different element from the last (within 8 s) +6% per level |
 | Stone Spike | 10: 114–240% MATK, Earth (new element for spells); Shatters the monster: the next spell of another element on it +30% |
 | Earthquake | 10, needs Stone Spike 3: 79–160% MATK Earth within 3 paces of the target, may stun |

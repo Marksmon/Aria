@@ -91,17 +91,17 @@ export const SKILLS = {
     desc: (lv) => `+${2 * lv}% Max SP, and +${lv} SP each time SP recovers.`,
   },
   spark: {
-    name: 'Ember Bolt', job: 'mage', kind: 'active', max: 10, target: 'mob', range: 7, magic: 'fire', weapon: 'staff', icon: 'skill_spark',
+    name: 'Ember Bolt', job: 'mage', kind: 'active', max: 10, target: 'mob', range: 5, magic: 'fire', weapon: 'staff', icon: 'skill_spark',
     sp: (lv) => 4 + lv, cast: (lv) => 0.5 + 0.1 * lv, cd: 0.6, power: (lv) => 70 + 12 * lv,
     desc: (lv) => `Hurl a bolt of fire: ${SKILLS.spark.power(lv)}% MATK. Fire: strong against Earth, weak against Water.`,
   },
   frost: {
-    name: 'Frost Shard', job: 'mage', kind: 'active', max: 10, target: 'mob', range: 7, magic: 'water', weapon: 'staff', icon: 'skill_frost',
+    name: 'Frost Shard', job: 'mage', kind: 'active', max: 10, target: 'mob', range: 5, magic: 'water', weapon: 'staff', icon: 'skill_frost',
     sp: (lv) => 6 + lv, cast: (lv) => 0.6 + 0.08 * lv, cd: 0.6, power: (lv) => 60 + 8 * lv,
     desc: (lv) => `A shard of ice: ${SKILLS.frost.power(lv)}% MATK, ${4 * lv}% chance to freeze the monster for 2.5 s. Water: strong against Fire, weak against Wind.`,
   },
   arc: {
-    name: 'Arc Lightning', job: 'mage', kind: 'active', max: 10, needs: { spark: 4 }, target: 'mob', range: 7, magic: 'wind', weapon: 'staff', icon: 'skill_arc',
+    name: 'Arc Lightning', job: 'mage', kind: 'active', max: 10, needs: { spark: 4 }, target: 'mob', range: 5, magic: 'wind', weapon: 'staff', icon: 'skill_arc',
     sp: (lv) => 10 + lv, cast: (lv) => 1 + 0.1 * lv, cd: 1, power: (lv) => 60 + 7 * lv,
     desc: (lv) => `Lightning strikes your target for ${SKILLS.arc.power(lv)}% MATK and leaps to 2 monsters nearby for half that. Wind: strong against Water, weak against Earth.`,
   },
@@ -159,34 +159,34 @@ export const SKILLS = {
   // to the next builds Resonance; Stone Spike shatters a monster for the next spell ----------
   attune: {
     name: 'Elemental Attunement', job: 'wizard', kind: 'passive', max: 10, icon: 'skill_manawell',
-    desc: (lv) => `Spells deal ${3 * lv}% more damage.`,
+    desc: (lv) => `Spells deal ${3 * lv}% more damage, and a further ${3 * lv}% to a monster weak to their element.`,
   },
   resonance: {
     name: 'Resonance', job: 'wizard', kind: 'passive', max: 5, needs: { attune: 3 }, icon: 'skill_swiftchant',
     desc: (lv) => `A spell of a different element from your last one (within 8 s) deals ${6 * lv}% more damage.`,
   },
   stonespike: {
-    name: 'Stone Spike', job: 'wizard', kind: 'active', max: 10, target: 'mob', range: 7, magic: 'earth', weapon: 'staff', icon: 'skill_stone',
+    name: 'Stone Spike', job: 'wizard', kind: 'active', max: 10, target: 'mob', range: 5, magic: 'earth', weapon: 'staff', icon: 'skill_stone',
     sp: (lv) => 10 + lv, cast: (lv) => 0.8 + 0.05 * lv, cd: 0.6, power: (lv) => 100 + 14 * lv,
     desc: (lv) => `A spike of rock bursts under the monster: ${SKILLS.stonespike.power(lv)}% MATK (Earth), and it is Shattered for 6 s: the next spell of another element on it deals 30% more. Earth: strong against Wind, weak against Fire.`,
   },
   quake: {
-    name: 'Earthquake', job: 'wizard', kind: 'active', max: 10, needs: { stonespike: 3 }, target: 'mob', range: 7, magic: 'earth', weapon: 'staff', icon: 'skill_earthsplit',
+    name: 'Earthquake', job: 'wizard', kind: 'active', max: 10, needs: { stonespike: 3 }, target: 'mob', range: 5, magic: 'earth', weapon: 'staff', icon: 'skill_earthsplit',
     sp: (lv) => 30 + 2 * lv, cast: () => 1.6, cd: 3, power: (lv) => 70 + 9 * lv,
     desc: (lv) => `The ground heaves around your target: ${SKILLS.quake.power(lv)}% MATK (Earth) to every monster within 3 paces of it; 25% of them are stunned for 1.5 s.`,
   },
   meteor: {
-    name: 'Meteor Storm', job: 'wizard', kind: 'active', max: 10, needs: { spark: 5 }, target: 'mob', range: 7, magic: 'fire', weapon: 'staff', icon: 'skill_flamering',
+    name: 'Meteor Storm', job: 'wizard', kind: 'active', max: 10, needs: { spark: 5 }, target: 'mob', range: 5, magic: 'fire', weapon: 'staff', icon: 'skill_flamering',
     sp: (lv) => 40 + 2 * lv, cast: (lv) => 2.2 + 0.05 * lv, cd: 4, power: (lv) => 45 + 6 * lv,
     desc: (lv) => `Three meteors fall around your target: ${SKILLS.meteor.power(lv)}% MATK (Fire) each to every monster within 3 paces.`,
   },
   stormgust: {
-    name: 'Storm Gust', job: 'wizard', kind: 'active', max: 10, needs: { frost: 5 }, target: 'mob', range: 7, magic: 'water', weapon: 'staff', icon: 'skill_frost',
+    name: 'Storm Gust', job: 'wizard', kind: 'active', max: 10, needs: { frost: 5 }, target: 'mob', range: 5, magic: 'water', weapon: 'staff', icon: 'skill_frost',
     sp: (lv) => 36 + 2 * lv, cast: () => 2.0, cd: 4, power: (lv) => 70 + 9 * lv,
     desc: (lv) => `A freezing storm around your target: ${SKILLS.stormgust.power(lv)}% MATK (Water) to every monster within 3 paces, ${3 * lv}% chance each to freeze for 2.5 s.`,
   },
   thunder: {
-    name: 'Thunderstorm', job: 'wizard', kind: 'active', max: 10, needs: { arc: 5 }, target: 'mob', range: 7, magic: 'wind', weapon: 'staff', icon: 'skill_arc',
+    name: 'Thunderstorm', job: 'wizard', kind: 'active', max: 10, needs: { arc: 5 }, target: 'mob', range: 5, magic: 'wind', weapon: 'staff', icon: 'skill_arc',
     sp: (lv) => 32 + 2 * lv, cast: () => 1.7, cd: 3, power: (lv) => 70 + 9 * lv,
     desc: (lv) => `Lightning rains around your target: ${SKILLS.thunder.power(lv)}% MATK (Wind) to every monster within 3 paces.`,
   },
