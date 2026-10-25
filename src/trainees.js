@@ -1,7 +1,7 @@
 // Sprite designs for the Trainee, male and female, painted in code like the job designs (bladers.js)
 // on the bald bodies' frame, so the shared head and hair go on top (docs/character-standard.md).
 // After the owner's Trainee sheet, in brown where the sheet has blue: a brown vest with a small steel chestplate over a white shirt with
-// rolled sleeves and a pointed collar, brown leather shoulder straps, belts and a satchel at the hip,
+// rolled sleeves and a pointed collar, black leather shoulder straps, belts and a satchel at the hip,
 // fingerless gloves with bracers; on him baggy dark trousers tucked into tall cuffed boots and a brown
 // front panel with the compass star, on her a short brown skirt over white, a thigh strap and knee
 // boots. The sheet has no weapon, so the owner gave the Trainee a dagger.
@@ -14,8 +14,8 @@ export const BW = 106, BH = 108; // the bald bodies' frame (src/art/trainee.json
 const LEGS = 63;                 // chin to ground, in pixels, in every direction
 
 const C = {
-  vest: '#8a5a34', vestLt: '#a8744a', shirt: '#efe9de', shirtDk: '#cfc6b6', steel: '#b9bec8', leather: '#5a3824',
-  strap: '#3a2316', pants: '#2b2730', boot: '#4a2e1f', trim: '#c9a24a', skin: '#f2c8a2', glove: '#3a2a22',
+  vest: '#8a5a34', vestLt: '#a8744a', shirt: '#efe9de', shirtDk: '#cfc6b6', steel: '#b9bec8', leather: '#2c272d',
+  strap: '#17141a', pants: '#2b2730', boot: '#4a2e1f', trim: '#c9a24a', skin: '#f2c8a2', glove: '#3a2a22',
   blade: '#d8dce4', edge: '#ffffff', emblem: '#f1e3c4',
 };
 export const TRAINEES = { traineeM: { name: 'Trainee', sex: 'm' }, traineeF: { name: 'Trainee', sex: 'f' } };
