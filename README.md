@@ -175,10 +175,10 @@ A new Sorcerer is handed an Wooden Staff.
 | Sorcerer | | |
 |---|---|---|
 | Mana Well | passive, 10 | +2% Max SP and +1 SP per recovery tick, per level |
-| Ember Bolt | 10, 7–16 SP | a fire bolt: 120–300% MATK |
-| Frost Shard | 10, 9–18 SP | 100–190% MATK, 4% per level to freeze for 2.5 s |
-| Arc Lightning | 10, needs Ember Bolt 4 | 90–180% MATK, leaps to 2 monsters nearby for half |
-| Flame Ring | 10, needs Ember Bolt 5 | 112–220% MATK to every monster around you |
+| Ember Bolt | 10, 5–14 SP | a fire bolt: 82–190% MATK |
+| Frost Shard | 10, 7–16 SP | 68–140% MATK, 4% per level to freeze for 2.5 s |
+| Arc Lightning | 10, needs Ember Bolt 4 | 67–130% MATK, leaps to 2 monsters nearby for half |
+| Flame Ring | 10, needs Ember Bolt 5 | 78–150% MATK to every monster around you |
 | Rune Ward | 10, needs Mana Well 3 | 30 s: 2% less damage per level, hits don't break your chant |
 | Blink | Job 10 | reappear 4 paces ahead |
 | Swift Chant | Job 10, passive | spells cast 15% faster |
@@ -229,27 +229,27 @@ points stay. Second jobs wear their first job's outfit in new colours and glow w
 | Blade Mastery | passive, 10: +3 ATK and +1 HIT per level with swords |
 | Combo Edge | passive, 10: Thrust, Cleave, Heavy Strike, Twin Fang and Piercing Edge have 4% per level to Combo, a free extra strike |
 | Momentum | passive, 5: each Combo adds a stack (up to 5, 8 s), +1% ATK per level per stack |
-| Twin Fang | 10: two cuts of 112–220%, each can Combo |
-| Piercing Edge | 10, needs Twin Fang 3: 250–520%, ignoring half the monster's DEF |
-| Final Blade | 5, needs Piercing Edge 5 and Momentum 1: spends every Momentum stack, 360–600% +50% per stack |
+| Twin Fang | 10: two cuts of 146–290%, each can Combo |
+| Piercing Edge | 10, needs Twin Fang 3: 318–660%, ignoring half the monster's DEF |
+| Final Blade | 5, needs Piercing Edge 5 and Momentum 1: spends every Momentum stack, 540–900% +60% per stack |
 
 | Wizard: the elements, over an area | |
 |---|---|
 | Elemental Attunement | passive, 10: spells +3% per level |
 | Resonance | passive, 5: a spell of a different element from the last (within 8 s) +6% per level |
-| Stone Spike | 10: 125–260% MATK, Earth (new element for spells); Shatters the monster: the next spell of another element on it +30% |
-| Earthquake | 10, needs Stone Spike 3: 51–105% MATK Earth within 3 paces of the target, may stun |
-| Meteor Storm | 10, needs Ember Bolt 5: three falls of 34–70% MATK Fire around the target |
-| Storm Gust | 10, needs Frost Shard 5: 51–105% MATK Water around the target, may freeze |
-| Thunderstorm | 10, needs Arc Lightning 5: 51–105% MATK Wind around the target |
+| Stone Spike | 10: 114–240% MATK, Earth (new element for spells); Shatters the monster: the next spell of another element on it +30% |
+| Earthquake | 10, needs Stone Spike 3: 79–160% MATK Earth within 3 paces of the target, may stun |
+| Meteor Storm | 10, needs Ember Bolt 5: three falls of 51–105% MATK Fire around the target |
+| Storm Gust | 10, needs Frost Shard 5: 79–160% MATK Water around the target, may freeze |
+| Thunderstorm | 10, needs Arc Lightning 5: 79–160% MATK Wind around the target |
 
 | Magic Knight: ATK and MATK together | |
 |---|---|
 | Spellblade | passive, 10: sword hits add 3% of your MATK per level |
 | Elemental Chain | passive, 5: an Edge of a different element from your last (within 6 s) +6% per level and 3 SP back |
-| Flame Edge | 10: 110–200% ATK plus 47–110% MATK, Fire |
-| Frost Edge | 10: 100–190% ATK plus 57–120% MATK, Water; may freeze |
-| Thunder Edge | 10, needs Flame and Frost Edge 3: 90–180% ATK plus 47–110% MATK, Wind; half to monsters beside |
+| Flame Edge | 10: 186–330% ATK plus 103–220% MATK, Fire |
+| Frost Edge | 10: 176–320% ATK plus 113–230% MATK, Water; may freeze |
+| Thunder Edge | 10, needs Flame and Frost Edge 3: 166–310% ATK plus 103–220% MATK, Wind; half to monsters beside |
 | Stone Aegis | 10: 20 s barrier soaking 60–150% of your ATK plus as much of your MATK, +1 DEF per level |
 
 **Elements.** Every monster has an element, as in Ragnarok, and so do spells and some weapons.

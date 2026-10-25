@@ -946,7 +946,7 @@ function castSpell(id, lv, pay, sp) {
         fx.sparkle(player.x + Math.cos(a) * 2.2, y() + 0.3, player.z + Math.sin(a) * 2.2, SPELL_COL.flamering, 2);
       }
       fx.puff(player.x, y() + 0.2, player.z, 1.6);
-      for (const m of [...mobs.list]) if (m.alive && Math.hypot(m.x - player.x, m.z - player.z) < 2.8 + m.def.r) spellHit(m, (100 + 12 * lv) / 100 * k, sk.magic);
+      for (const m of [...mobs.list]) if (m.alive && Math.hypot(m.x - player.x, m.z - player.z) < 2.8 + m.def.r) spellHit(m, sk.power(lv) / 100 * k, sk.magic);
     }, null, sk.name);
     return;
   }
@@ -991,14 +991,14 @@ function castSpell(id, lv, pay, sp) {
     if (id === 'arc') { // strikes at once, then leaps to two more
       const at = (m) => ({ x: m.x, y: world.heightAt(m.x, m.z) + 0.5, z: m.z });
       fx.zap(from, at(t), SPELL_COL.arc);
-      spellHit(t, (80 + 10 * lv) / 100 * k, sk.magic);
+      spellHit(t, sk.power(lv) / 100 * k, sk.magic);
       const near = mobs.list.filter((m) => m.alive && m !== t && Math.hypot(m.x - t.x, m.z - t.z) < 3.2)
         .sort((a, b) => Math.hypot(a.x - t.x, a.z - t.z) - Math.hypot(b.x - t.x, b.z - t.z)).slice(0, 2);
-      for (const m of near) { fx.zap(at(t), at(m), SPELL_COL.arc); spellHit(m, (80 + 10 * lv) / 200 * k, sk.magic); }
+      for (const m of near) { fx.zap(at(t), at(m), SPELL_COL.arc); spellHit(m, sk.power(lv) / 200 * k, sk.magic); }
       return;
     }
     fx.bolt(from.x, from.y, from.z, t, SPELL_COL[id], () => {
-      const base = id === 'spark' ? (100 + 20 * lv) / 100 : id === 'stonespike' ? sk.power(lv) / 100 : (90 + 10 * lv) / 100;
+      const base = sk.power(lv) / 100;
       const res = spellHit(t, base * k, sk.magic);
       if (res && id === 'stonespike' && t.alive) { t.shatterT = skillClock + 6; fx.number(t.x, overHead(t, t.sprite.scale.y * 0.8 + 0.3), t.z, 'Shattered', 'miss'); }
       const ty = world.heightAt(t.x, t.z) + 0.5;
