@@ -1,6 +1,6 @@
 // BleepBloop, the raid boss of Bloop Island (raid.js), painted pixel by pixel in code like the
 // kobolds (painted.js): a giant old war bloop, orange and scarred, with a scowl, an eyepatch over
-// his right eye, a bushy grey beard and his dented iron helm with a red crest. Frames: 4 directions
+// his right eye, a bushy grey beard hiding his mouth and his dented iron helm with a red crest. Frames: 4 directions
 // (down, up, right; left is right mirrored) x idle (1), walk (4: he hops, squashing and stretching)
 // and attack (4: a squashed wind-up, then a slam). Plain canvas: sprites.js makes the sprite set.
 import { Frame, ellipse, rect, poly, line } from './painted.js';
@@ -12,7 +12,7 @@ const GROUND = 61;               // the row the blob sits on
 const C = {
   body: '#e8782a', belly: '#f6a24a', shine: '#ffe0b0', scar: '#8a3a1a',
   beard: '#cfc6b4', beardDk: '#9a917e', patch: '#1e1a1a', strap: '#3a2a22',
-  eye: '#fff4dc', pupil: '#7a1a10', brow: '#3a1a10', mouth: '#4a1410', tooth: '#f4ecd8',
+  eye: '#fff4dc', pupil: '#7a1a10', brow: '#3a1a10',
   iron: '#7e808a', ironLt: '#aeb0ba', ironDk: '#4e505a', brass: '#d8b04a', crest: '#c23a22',
 };
 const flat = { outline: false, flat: true };
@@ -42,9 +42,8 @@ function paint(view, squash = 0, lift = 0, lean = 0) {
     F.part(line(ex - 4, ey - 6, ex + 6, ey - 3, 2), C.brow, flat);
     F.part(poly([[cx + rx * 0.4, cy], [cx + rx + 4, cy + 2], [cx + rx + 1, cy + 10], [cx + rx - 3, cy + 15], [cx + rx * 0.45, cy + 9]]), C.beard);
     for (const k of [0.55, 0.72, 0.88]) F.part(line(cx + rx * k, cy + 3, cx + rx * k + 1, cy + 9, 1), C.beardDk, flat);
-    F.part(rect(Math.round(cx + rx * 0.62), Math.round(cy - 2), Math.round(cx + rx * 0.9), Math.round(cy)), C.mouth, flat);
   } else {
-    // the face: a scowling eye, the eyepatch, a grimace full of teeth and a bushy beard
+    // the face: a scowling eye, the eyepatch and a bushy beard (it hides his mouth)
     const ey = cy - 6;
     F.part(line(cx - rx * 0.8, top + 9, cx + rx * 0.45, ey - 7, 2), C.strap, flat); // the strap, over the brow
     F.part(ellipse(cx - 9, ey, 5, 4.5), C.patch);
@@ -55,8 +54,6 @@ function paint(view, squash = 0, lift = 0, lean = 0) {
     F.part(line(cx + 11, ey - 9, cx + 14, ey + 6, 1), C.scar, flat); // an old cut through the brow
     F.part(poly([[cx - 15, cy + 1], [cx + 15, cy + 1], [cx + 14, cy + 8], [cx + 9, cy + 14], [cx + 5, cy + 11], [cx + 1, cy + 17], [cx - 3, cy + 12], [cx - 8, cy + 15], [cx - 12, cy + 10], [cx - 15, cy + 7]]), C.beard);
     for (const x of [-9, -4, 1, 6, 10]) F.part(line(cx + x, cy + 5, cx + x + 1, cy + 11, 1), C.beardDk, flat);
-    F.part(rect(cx - 5, cy - 2, cx + 5, cy + 1), C.mouth);
-    for (const x of [-4, -1, 2]) F.part(rect(cx + x, cy - 1, cx + x + 1, cy), C.tooth, flat);
   }
 
   // the helm: an iron dome on the crown of the blob, brass-studded, dented, with a red crest
