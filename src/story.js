@@ -79,7 +79,7 @@ export const STORY = [
     reward: { xp: 40, perz: 150 } },
 
   // ---------- Chapter 2: the blade or the rune ----------
-  // story EXP (x4 with RATES) is paced so each chapter brings a hero to the next one's hinted level:
+  // story EXP (x2 with QUEST_RATE) is paced so each chapter brings a hero to the next one's hinted level:
   // the Giant Sprout at about Base 28, Chapter 5's kobolds at about 32
   { id: 'path', ch: 'Chapter 2: Blade or Rune', title: 'Choose Your Path', kind: 'job', goal: 'Reach Trainee Job 10 with Basic Training 9, then pass a job trial: Captain Ulfr in Steinborg (Blader) or Archmage Vigdis in Galdrheim, north of Fen Shore (Sorcerer)',
     // a hint may depend on the hero: here, whether the trials are open yet
@@ -137,8 +137,20 @@ export const STORY = [
   { id: 'carter', ch: 'Chapter 5: The Salt Road', title: 'The Carter\'s Tale', kind: 'talk', npc: 'hakon', goal: 'Find Hakon the Carter by the west road of Salt Bay',
     say: [['hakon', 'Kobolds, I tell you, a dozen of them, out of Stone Field with axes and bows. Took my horse and my cart.'],
       ['hakon', 'And here is the strange thing: they left the salt. They took the lamp oil, the pitch, the tinder. Every kobold I ever met runs from a torch. Why would they steal fire?'],
-      ['hakon', 'The road goes west, round the bay and into their hills. If you go, go armed.']],
+      ['hakon', 'The road goes west, round the bay and into their hills. If you go, go armed.'],
+      ['hakon', 'One more thing. The Boatman by the water says the salt could go round by boat, if not for the bloops of Bloop Island. Help him first, and the road will wait.']],
     reward: { xp: 4000 } },
+  // the first raid (raid.js): the Boatman's Tutorial run, which pays and moves the story on, win or
+  // lose (or a clear on any difficulty)
+  { id: 'bloopisle', ch: 'Chapter 5: The Salt Road', title: 'Bloop Island', kind: 'raid', raid: 'bloop', map: 'coast', npc: 'boatman', goal: 'Take the Tutorial crossing to Bloop Island (the Boatman by the water in Salt Bay)',
+    hint: 'Three waves of bloops, then BleepBloop, in 10 minutes. The Tutorial run starts no cooldown, and it pays whether you win or not.',
+    // a won Tutorial, or a lost one (the Boatman and his crew finish the job for you, this once)
+    say: (flags) => (flags.bloopisle_lost
+      ? [['boatman', 'You didn\'t make it this time, so my crew and I went in and finished him off for you. Here is your pay all the same.'],
+        ['boatman', 'But we won\'t do it next time! Come back stronger, whenever the tide allows: four crossings, from Easy to Hell. The harder the crossing, the better the pay.']]
+      : [['boatman', 'BleepBloop beaten, and on your first crossing! The bloops will keep off the boats for a while after a visit like that.'],
+        ['boatman', 'Come back whenever the tide allows: four crossings, from Easy to Hell. The harder the crossing, the better the pay.']]),
+    reward: { xp: 3000, perz: 2000 } },
   { id: 'stonefield', ch: 'Chapter 5: The Salt Road', title: 'The Stone-Field', kind: 'kill', mobs: ['koboldWarrior', 'koboldArcher', 'koboldAssassin'], n: 12, map: 'stones', goal: 'Defeat 12 kobolds in Stone Field (west of Salt Bay)',
     hint: 'Kobolds of level 28 to 33, and every one of them attacks on sight. Base Level 32 or so is a fair start.',
     say: [[null, 'The kobolds fight like cornered dogs. Each pack carries a lump of coal that glows a dull red, warm in the hand though no fire touched it.']],
@@ -284,6 +296,7 @@ export class Story {
       case 'kill': return this.count >= s.n;
       case 'visit': return this.flags.visit === s.map;
       case 'survive': return !!this.flags[s.id];
+      case 'raid': return !!this.flags[s.id];
       case 'stat': return Object.values(state.prog.stats).reduce((a, b) => a + b, 0) > 6;
       case 'skill': return state.skillLv(state.prog, s.skill) >= s.lv;
       case 'hotbar': return state.hotbar.has('item', s.item);

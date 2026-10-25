@@ -9,6 +9,7 @@ import { statCost } from './ro-tables.js';
 import { HAIRSTYLES, DYES, hairstyles, lookPortrait } from './hair.js';
 import { NPCS, QUESTS, giverOf, rewardOf, SERIES } from './quests.js';
 import { ZONE_NAMES } from './world.js';
+import { RAIDS, waitText } from './raid.js';
 import { SKILLS, skillList, skillLv, learnBlock, spCost, WEAPON_NAMES, RETRAIN_COST } from './skills.js';
 
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -558,6 +559,7 @@ export class Menus {
       + (n.smith ? `<button class="rbtn" data-act="smithwin" data-id="${n.smith}">${SMITHS[n.smith].button}</button>` : '')
       + (n.heal ? '<button class="rbtn" data-act="heal">Heal me</button>' : '')
       + (n.warp ? '<button class="rbtn" data-act="ferrylist">Travel</button>' : '')
+      + (n.raid ? `<button class="rbtn" data-act="ferrylist">${esc(RAIDS[n.raid].name)}</button>` : '')
       + (n.keeper && this.hooks.keeperKnown?.(this.npc) ? '<button class="rbtn" data-act="chestwin">Storage</button><button class="rbtn" data-act="heal">Heal me</button>'
         + `<button class="rbtn" data-act="keepsave" ${this.hooks.savedAt?.() === this.npc ? 'disabled' : ''}>Save here</button><button class="rbtn" data-act="keeplist">Teleport</button>` : '')
       + (n.keeper && !this.hooks.keeperKnown?.(this.npc) ? '<button class="rbtn" data-act="keepreg">Sign the ledger</button>' : '');
@@ -567,6 +569,21 @@ export class Menus {
       this.wins.talk.querySelector('.rw-title').textContent = n.name;
       return `<div class="talkwrap"><img class="portrait" src="${this.portrait(this.npc)}" alt="">
         <div class="say"><p>Which town? You have ${this.inv.perz.toLocaleString()} perz.</p><div class="btnrow wrap">${rows || '<span>You have not signed any other Keeper\'s ledger yet.</span>'}</div>
+        <div class="btnrow"><button class="rbtn soft" data-act="close">Bye</button></div></div></div>`;
+    }
+    if (n.raid && this.ferrying) { // the raid: its difficulties, the advised level, and the shared cooldown
+      const R = RAIDS[n.raid], info = this.hooks.raidInfo?.(n.raid) || { wait: 0 };
+      // the Tutorial run only while the story waits on the raid; it never waits on the tide
+      const list = Object.entries(R.difficulties).filter(([, d]) => !d.tutorial || info.story);
+      const rows = list.map(([k, d]) => `<button class="rbtn ${p.baseLv < d.lv ? 'warn' : ''}" data-act="raidgo" data-id="${k}" ${info.wait && !d.tutorial ? 'disabled' : ''}>
+        <b>${esc(d.name)}</b> · Lv ${d.lv} · ${esc(d.advice)}${d.tutorial ? '' : ` · rewards x${d.mult}`}</button>`).join('');
+      const note = (info.story ? 'First time out? Take the Tutorial crossing: it costs no tide, and I will pay you whether you beat him or not. ' : '')
+        + (info.wait ? `The tide is wrong for a full crossing. Come back in ${waitText(info.wait)}.`
+          : `Three waves of bloops, then BleepBloop himself, and only ${R.secs / 60} minutes before the tide turns and I must row you back. After a crossing, the tide keeps me ashore ${R.cooldown / 3600000} hours.`);
+      this.wins.talk.querySelector('.rw-title').textContent = n.name;
+      return `<div class="talkwrap"><img class="portrait" src="${this.portrait(this.npc)}" alt="">
+        <div class="say"><p>${esc(note)}</p><div class="btnrow wrap raids">${rows}</div>
+        ${list.some(([, d]) => p.baseLv < d.lv) ? `<small>Below the advised level (you are Base ${p.baseLv}), it will be a hard fight.</small>` : ''}
         <div class="btnrow"><button class="rbtn soft" data-act="close">Bye</button></div></div></div>`;
     }
     if (n.warp && this.ferrying) { // the lands you have walked, and the fare to each
@@ -738,6 +755,7 @@ export class Menus {
     if (act === 'chestwin') { this.close('talk'); this.show('chest'); }
     if (act === 'lore') { this.loreAt++; this.render('talk'); }
     if (act === 'ferry') this.hooks.ferry?.(t.dataset.id);
+    if (act === 'raidgo') this.hooks.raidGo?.(NPCS[this.npc].raid, t.dataset.id);
     if (act === 'shoptab') { this.shopTab = t.dataset.id; this.sellSel = null; this.render(id); }
     if (act === 'buy') {
       const n = +t.dataset.n;

@@ -117,6 +117,13 @@ export const NPCS = {
     hello: 'Galdrheim\'s Keeper. The ledger here is written in runes, but your name will do. Sign, and the city remembers you.',
     later: () => '', bye: 'Galdrheim remembers.', quests: [],
   },
+  // the Boatman of Salt Bay rows heroes out to Bloop Island, the first raid (raid.js)
+  boatman: {
+    name: 'Boatman', map: 'coast', x: 33.5, z: 40.5, raid: 'bloop',
+    dress: { body: 'trainee', main: [28, 0.45, 0.7], accent: [205, 0.5, 1], hair: 'mane', dye: 'silver' }, // an old salt: oilskin browns, sea-blue trim
+    hello: 'Out there, past the reeds: Bloop Island. The bloops have swarmed it under old BleepBloop, a war bloop with a helm and a temper. Nobody fishes those waters now.',
+    later: () => '', bye: 'Mind the tide.', quests: [],
+  },
   // the Magic Knight's trainer: for heroes who have walked both the Blader's and the Sorcerer's path
   eirik: {
     name: 'Sir Eirik the Runeblade', map: 'city', x: 40.6, z: 50.2, dress: { body: 'mknight', main: [205, 0.45, 1], accent: [45, 0.8, 1.1], hair: 'mane', dye: 'silver', top: 'horned_helm' },

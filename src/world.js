@@ -38,6 +38,7 @@ export const ZONE_NAMES = {
   coalpit: 'Coal Pit',   // the Kobold King's quarry
   burnt: 'Burnt Wood',   // goblin country
   serpent: 'Serpent Wood', // the Goblin King's wood
+  bloop: 'Bloop Island',   // the first raid (raid.js): a small round island out in Salt Bay
 };
 
 const CAMP_R = 17;   // the camp clearing's walkable radius
@@ -66,6 +67,9 @@ export const MAPS = {
   coalpit: { portals: [{ to: 'stones', ...E }], lift: [0.4, 2.0], clear: { x: 32, z: 46, r: 7 }, camps: [[18, 24], [46, 24], [22, 44], [42, 42]] },
   burnt:   { portals: [{ to: 'magic', ...S }, { to: 'serpent', ...N }], lift: [0, 0.4], camps: [[20, 20], [46, 46], [20, 46]] },
   serpent: { portals: [{ to: 'burnt', ...S }], lift: [-0.1, 0.5], clear: { x: 32, z: 16, r: 7 }, camps: [[20, 20], [44, 40], [20, 44], [46, 18]] },
+  // the raid's arena: a round island of radius r in the middle of the map, the sea all round it. No
+  // portals: the Boatman rows you in and out (raid.js)
+  bloop:   { portals: [], arena: { r: 13 } },
 };
 const SEG = 128; // terrain vertices per side - 1 (0.5 unit spacing)
 
@@ -85,6 +89,7 @@ const GROUND = {
   coalpit: ['#4c4642', '#625a52'],
   burnt: ['#4a4036', '#62533f'],
   serpent: ['#2c4230', '#3a5236'],
+  bloop: ['#7fb64e', '#9cc85e'],
   dirt: '#b49a6c',
   sand: '#c6b483',
 };
@@ -103,6 +108,7 @@ const TABLE = {
   stones: [['rock', 18], ['rock_grey', 14], ['rock_small', 22], ['shrub_dry', 16], ['grass_dry', 30], ['tree_dead', 5]],
   coalpit: [['rock_grey', 24], ['rock', 8], ['rock_small', 28], ['tree_dead', 14], ['grass_dark', 12], ['shrub_dry', 8]],
   burnt: [['tree_dead', 34], ['stump', 16], ['rock_small', 14], ['grass_dry', 18], ['shrub_dry', 10], ['rock_grey', 5]],
+  bloop: [['grass', 40], ['flowers', 28], ['bush', 8], ['rock_small', 14], ['rock_grey', 4]],
   serpent: [['tree_dark', 36], ['mushroom_big', 10], ['mushrooms', 18], ['grass_dark', 22], ['stump', 6], ['tree_dead', 6]],
 };
 const BORDER = { grove: 'tree_grove', hollow: 'tree_dark', ridge: 'rock', fen: 'tree_willow', camp: 'tree_grove', city: 'tree_grove', magic: 'tree_birch', birch: 'tree_birch', coast: 'rock_grey', deep: 'tree_dark', heath: 'tree_dead', stones: 'rock', coalpit: 'rock_grey', burnt: 'tree_dead', serpent: 'tree_dark' };
@@ -122,7 +128,7 @@ function buildMap(id, scene, lib, shared) {
   for (const [k, v] of Object.entries(GROUND)) {
     groundCols[k] = Array.isArray(v) ? v.map((h) => new THREE.Color(h)) : new THREE.Color(v);
   }
-  const LAKE = def.lake;
+  const LAKE = def.lake, ARENA = def.arena;
   const edgeDist = (x, z) => Math.min(x, z, SIZE - x, SIZE - z);
   const lakeD = (x, z) => (LAKE ? Math.hypot((x - LAKE.x) / LAKE.rx, (z - LAKE.z) / LAKE.rz) : 9);
   const campR = (x, z) => Math.hypot(x - CENTER, z - CENTER);
@@ -154,6 +160,7 @@ function buildMap(id, scene, lib, shared) {
     if (h < WATER_Y + 0.25) h = WATER_Y + 0.25 + (h - WATER_Y - 0.25) * 0.2;
     const ld = lakeD(x, z);
     if (ld < 1.5) h = lerp(h, -1.1, sstep(1.5, 0.65, ld));
+    if (ARENA) return lerp(h * 0.35 + 0.1, -1.4, sstep(ARENA.r - 2, ARENA.r + 1.5, campR(x, z))); // a low round island, sand sloping into the sea
     // flat ground under the portals and along the trails' ends
     for (const p of def.portals) {
       const d = Math.hypot(x - p.x, z - p.z);
@@ -171,10 +178,10 @@ function buildMap(id, scene, lib, shared) {
   }
 
   // a lake's shallow edge (to about knee deep) can be waded: the water hides the feet (see wading)
-  const SHALLOW = LAKE ? WATER_Y - 0.22 : WATER_Y + 0.08;
+  const SHALLOW = LAKE || ARENA ? WATER_Y - 0.22 : WATER_Y + 0.08;
   const walkable = (x, z) => edgeDist(x, z) > 2.4 && (!isCamp || campR(x, z) < CAMP_R) && heightAt(x, z) > SHALLOW;
   // standing in the water: how deep (0 on dry land)
-  const wading = (x, z) => (LAKE ? Math.max(0, WATER_Y + 0.04 - heightAt(x, z)) : 0);
+  const wading = (x, z) => (LAKE || ARENA ? Math.max(0, WATER_Y + 0.04 - heightAt(x, z)) : 0);
   const isSafe = () => isCamp || isCity; // towns are safe ground
 
   function colorAt(x, z, h) {
@@ -188,7 +195,7 @@ function buildMap(id, scene, lib, shared) {
     }
     const pd = pathDist(x, z);
     if (pd < 1.4) out.lerp(groundCols.dirt, sstep(1.4, 0.5, pd + (noise.n(x * 0.9, z * 0.9) - 0.5) * 0.6) * 0.9);
-    if (lakeD(x, z) < 1.6 && h < WATER_Y + 0.45) out.lerp(groundCols.sand, sstep(WATER_Y + 0.45, WATER_Y + 0.05, h) * 0.85);
+    if ((ARENA || lakeD(x, z) < 1.6) && h < WATER_Y + 0.45) out.lerp(groundCols.sand, sstep(WATER_Y + 0.45, WATER_Y + 0.05, h) * 0.85);
     const e = Math.min(edgeDist(x, z), isCamp ? CAMP_R + 3 - campR(x, z) : 99);
     if (e < 6) out.multiplyScalar(1 - 0.3 * sstep(6, 1.5, e));
     out.multiplyScalar(0.9 + noise.fbm(x * 0.4, z * 0.4, 2) * 0.2);
@@ -270,7 +277,7 @@ function buildMap(id, scene, lib, shared) {
   }
 
   // treeline framing the map (camp: a ring of forest around the clearing; city: outside the walls)
-  for (let i = 0; i < (isCamp ? 1400 : 900); i++) {
+  for (let i = 0; i < (isCamp ? 1400 : ARENA ? 0 : 900); i++) { // (the arena has the sea for a border)
     const x = 0.5 + rng() * 63, z = 0.5 + rng() * 63;
     const e = isCamp ? campR(x, z) - CAMP_R : 3.6 - edgeDist(x, z);
     if (isCity && (inWalls(x, z, 1.6) || pathDist(x, z) < 4.5 || edgeDist(x, z) > 3.4)) continue; // keep the walls in view
@@ -281,7 +288,7 @@ function buildMap(id, scene, lib, shared) {
 
   // interior scatter
   let interior = 0;
-  const want = isCamp ? 40 : isCity ? 0 : 330;
+  const want = isCamp ? 40 : isCity ? 0 : ARENA ? 36 : 330;
   for (let i = 0; i < 6000 && interior < want; i++) {
     const x = 3 + rng() * 58, z = 3 + rng() * 58;
     if (isCamp && (campR(x, z) < 7.5 || campR(x, z) > CAMP_R - 1)) continue;
@@ -326,13 +333,13 @@ function buildMap(id, scene, lib, shared) {
   group.add(terrain);
 
   // ---------- Water ----------
-  if (LAKE) {
-    const waterGeo = new THREE.PlaneGeometry(LAKE.rx * 3.2, LAKE.rz * 3.2);
+  if (LAKE || ARENA) {
+    const waterGeo = ARENA ? new THREE.PlaneGeometry(SIZE * 3, SIZE * 3) : new THREE.PlaneGeometry(LAKE.rx * 3.2, LAKE.rz * 3.2);
     waterGeo.rotateX(-Math.PI / 2);
     const water = new THREE.Mesh(waterGeo, new THREE.MeshLambertMaterial({
       color: '#5aa6c4', map: lib.water, transparent: true, opacity: 0.82, depthWrite: false,
     }));
-    water.position.set(LAKE.x, WATER_Y, LAKE.z);
+    water.position.set(ARENA ? CENTER : LAKE.x, WATER_Y, ARENA ? CENTER : LAKE.z);
     water.renderOrder = 1;
     group.add(water);
   }

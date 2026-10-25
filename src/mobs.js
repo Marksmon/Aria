@@ -22,13 +22,13 @@ export const MOB_DEFS = {
   wisp: { name: 'Wisp', ai: 'wisp', art: 'wisp', el: 'wind', lv: 11, hp: 290, atk: [20, 25], def: 4, vit: 8, agi: 20, dex: 22, exp: [26, 19], adelay: 1292, passive: true, walk: 150, aggro: 6, reach: 0.75, w: 0.7, r: 0.3, fly: true, glow: true, drops: [['glow', 1, 1, 1], ['wander', 1, 1, 0.15], ['wisp_lantern', 1, 1, 0.004]] },
   // Sigrun's rare hunt: a great golden Wisp over Fen Shore's pond, out only at night while the quest is on
   lanternWisp: { name: 'Lantern Wisp', ai: 'wisp', art: 'wisp', el: 'wind', tint: '#ffd86a', lv: 16, hp: 1000, atk: [26, 34], def: 6, vit: 12, agi: 22, dex: 30, exp: [320, 220], adelay: 1250, passive: false, walk: 150, aggro: 7, chase: 10, reach: 0.85, w: 1.15, r: 0.42, fly: true, glow: true, noRespawn: true, drops: [['wisp_lantern', 1, 1, 1], ['glow', 3, 5, 1], ['wander', 1, 2, 0.5]] },
-  // the raid's bloops (Bloop Island, raid.js): stronger colours of the Bloop, recoloured sheets (sprites.js).
+  // the raid's bloops (Bloop Island, raid.js; raid: only met there): stronger colours of the Bloop, recoloured sheets (sprites.js).
   // These are their own stats; in the raid each is rebuilt at the difficulty's level (raidDef)
-  yellowSlime: { name: 'Yellow Bloop', ai: 'hopper', art: 'slimeYellow', el: 'wind', lv: 12, hp: 330, atk: [22, 28], def: 2, vit: 10, agi: 12, dex: 20, exp: [30, 21], adelay: 1500, walk: 400, aggro: 5, chase: 5, reach: 0.8, w: 1.0, r: 0.38, drops: [['gel', 1, 2, 1], ['dew', 1, 1, 0.4], ['shiny_gel', 1, 1, 0.01]] },
-  redSlime: { name: 'Red Bloop', ai: 'hopper', art: 'slimeRed', el: 'fire', lv: 18, hp: 560, atk: [36, 46], def: 4, vit: 16, agi: 16, dex: 30, exp: [75, 52], adelay: 1450, walk: 300, aggro: 5, chase: 6, reach: 0.8, w: 1.05, r: 0.4, drops: [['gel', 1, 2, 1], ['cinder', 1, 1, 0.1], ['shiny_gel', 1, 1, 0.01]] },
+  yellowSlime: { raid: true, name: 'Yellow Bloop', ai: 'hopper', art: 'slimeYellow', el: 'wind', lv: 12, hp: 330, atk: [22, 28], def: 2, vit: 10, agi: 12, dex: 20, exp: [30, 21], adelay: 1500, walk: 400, aggro: 5, chase: 5, reach: 0.8, w: 1.0, r: 0.38, drops: [['gel', 1, 2, 1], ['dew', 1, 1, 0.4], ['shiny_gel', 1, 1, 0.01]] },
+  redSlime: { raid: true, name: 'Red Bloop', ai: 'hopper', art: 'slimeRed', el: 'fire', lv: 18, hp: 560, atk: [36, 46], def: 4, vit: 16, agi: 16, dex: 30, exp: [75, 52], adelay: 1450, walk: 300, aggro: 5, chase: 6, reach: 0.8, w: 1.05, r: 0.4, drops: [['gel', 1, 2, 1], ['cinder', 1, 1, 0.1], ['shiny_gel', 1, 1, 0.01]] },
   // the raid's boss: BleepBloop, a giant old war bloop in a dented helm (crown: warhelm). It belly-flops
   // onto you, charges, stomps, and calls Red Bloops; only ever met in the raid, at the raid's level
-  bleepBloop: { crown: 'warhelm', name: 'BleepBloop', ai: 'boss', art: 'slimeOrange', el: 'fire', boss: true, lv: 35, hp: 9600, atk: [62, 80], def: 14, vit: 35, agi: 24, dex: 52, exp: [9000, 6300], adelay: 1600, walk: 300,
+  bleepBloop: { raid: true, crown: 'warhelm', name: 'BleepBloop', ai: 'boss', art: 'slimeOrange', el: 'neutral', boss: true, lv: 35, hp: 9600, atk: [62, 80], def: 14, vit: 35, agi: 24, dex: 52, exp: [9000, 6300], adelay: 1600, walk: 300,
     moves: [{ kind: 'leap', name: 'Belly Flop', mult: 1.6, r: 2.0 }, { kind: 'charge', name: "Veteran's Charge", mult: 1.5 }], stomp: 1.5,
     aggro: 99, chase: 99, reach: 1.4, w: 2.6, r: 0.95, heavy: true, summon: ['redSlime', 'redSlime', 'redSlime'], summonText: 'BleepBloop bellows an old war cry, and Red Bloops come bouncing!', drops: [] },
   // ---------- the new lands: palette swaps of the valley's monsters, Ragnarok style (tint) ----------
@@ -116,19 +116,21 @@ const lesser = (d) => ({ ...d, hp: Math.round(d.hp * GUARD.hp), atk: d.atk.map((
 export const guardDef = (type) => (guardDefs[type] ||= lesser(MOB_DEFS[type]));
 // A raid's monster (raid.js), rebuilt at the raid's level from the stats of a typical field monster
 // of that level (fitted to MOB_DEFS: HP about 48 a level, ATK 3.2-4 a level...), its kind's
-// strength on top (STRENGTH). Raid monsters attack on sight and never give up (relentless), drop
-// nothing (the raid pays at the end) and don't split. A boss is a mini-boss of that level.
+// strength on top (STRENGTH), then the difficulty's scale (s: { hp, atk }; a wave comes all at once,
+// so its monsters are a swarm of weaker ones). Raid monsters attack on sight and never give up
+// (relentless), drop nothing (the raid pays at the end) and don't split. A boss is a mini-boss of
+// that level; guard: the scale its guards come at (the waves').
 const STRENGTH = { slime: 0.8, blueSlime: 0.9, yellowSlime: 1, redSlime: 1.1 };
 const raidDefs = {};
-export function raidDef(type, lv) {
-  return (raidDefs[`${type}@${lv}`] ||= (() => {
+export function raidDef(type, lv, s = { hp: 1, atk: 1 }, guard = null) {
+  return (raidDefs[`${type}@${lv}:${s.hp},${s.atk},${s.exp}`] ||= (() => {
     const d = MOB_DEFS[type], k = d.boss ? 1 : STRENGTH[type] ?? 1, exp = 0.0122 * lv ** 3;
     return {
-      ...d, lv, raidLv: lv, passive: false, relentless: true, aggro: 99, chase: 99, split: null, drops: [],
-      hp: Math.round(48 * lv * k * (d.boss ? 7 : 1)),
-      atk: [3.2, 4].map((a) => Math.round(a * lv * k * (d.boss ? 0.6 : 1))),
+      ...d, lv, raidLv: lv, raidGuard: guard, passive: false, relentless: true, aggro: 99, chase: 99, split: null, drops: [],
+      hp: Math.round(48 * lv * k * (d.boss ? 7 : 1) * s.hp),
+      atk: [3.2, 4].map((a) => Math.round(a * lv * k * (d.boss ? 0.6 : 1) * s.atk)),
       def: Math.round(0.4 * lv * k), vit: Math.round(lv * k), agi: Math.round(0.8 * lv), dex: Math.round(1.5 * lv),
-      exp: [Math.round(exp * k * (d.boss ? 20 : 1)), Math.round(exp * 0.7 * k * (d.boss ? 20 : 1))],
+      exp: [1, 0.7].map((j) => Math.round(exp * j * k * (d.boss ? 20 : 1) * (s.exp ?? s.hp))), // a weaker swarm is worth less
     };
   })());
 }
@@ -774,7 +776,7 @@ export class MobManager {
     const c = this.add(type, boss.x + Math.cos(a) * r, boss.z + Math.sin(a) * r);
     if (!this.world.walkable(c.x, c.z)) { c.x = boss.x; c.z = boss.z; }
     c.temp = true;
-    c.def = boss.def.raidLv ? lesser(raidDef(type, boss.def.raidLv - 3)) : guardDef(type); // a raid boss's guards are at the raid's level
+    c.def = boss.def.raidLv ? lesser(raidDef(type, boss.def.raidLv - 3, boss.def.raidGuard || undefined)) : guardDef(type); // a raid boss's guards: at the raid's level and strength
     c.hp = c.def.hp;
     c.leader = boss; // it follows the boss and fights alongside it (see update)
     c.home = { x: boss.x, z: boss.z };

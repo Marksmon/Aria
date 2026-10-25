@@ -7,7 +7,8 @@ import { Player } from './player.js';
 import { Input } from './input.js';
 import { UI } from './ui.js';
 import { FX } from './fx.js';
-import { MobManager, MOB_DEFS, MOVES, guardDef } from './mobs.js';
+import { MobManager, MOB_DEFS, MOVES, guardDef, raidDef } from './mobs.js';
+import { RAIDS, rollReward } from './raid.js';
 import { loadSave, writeSave } from './save.js';
 import { Inventory } from './inventory.js';
 import { Progress, JOBS, RATES, QUEST_RATE } from './progress.js';
@@ -66,6 +67,7 @@ const SPAWNS = {
   stones: [['koboldWarrior', 10], ['koboldArcher', 6], ['koboldAssassin', 2], ['koboldWarrior', 2, true]],
   coalpit: [['koboldAssassin', 7], ['koboldWarrior', 5], ['koboldArcher', 5], ['koboldKing', 1], ['koboldAssassin', 2, true]],
   burnt: [['goblinWarrior', 10], ['goblinArcher', 6], ['goblinAssassin', 2], ['goblinWarrior', 2, true]],
+  bloop: [], // the raid spawns its own (tickRaid)
   serpent: [['goblinAssassin', 7], ['goblinWarrior', 5], ['goblinArcher', 5], ['goblinKing', 1], ['goblinAssassin', 2, true]],
 };
 
@@ -316,7 +318,8 @@ player.on('faint', () => {
 });
 mobs.on('death', (m, drops) => {
   audio.play('kill');
-  gainExp(...m.def.exp, RATES);
+  if (raid && m.def.raidLv) { raid.exp[0] += m.def.exp[0] * RATES.base; raid.exp[1] += m.def.exp[1] * RATES.job; } // a raid holds its EXP until the run ends
+  else gainExp(...m.def.exp, RATES);
   for (const id of quests.onKill(m.type)) questComplete(id);
   story.onKill(m.type);
   for (const [item, count] of drops) {
@@ -743,6 +746,147 @@ function tickVigil(dt) {
   if (vigil.t >= s.secs) { story.flag(s.id); endVigil(); }
 }
 
+// ---------- raids (raid.js): three waves and a boss against the clock ----------
+// The Boatman rows you out; the waves come in from the shore all round and never give up; after each
+// wave a breather (and before the boss a full heal). EXP is held while you fight and paid when the
+// run ends: x1.5 on a clear, the kills alone otherwise. Leaving, fainting or the tide (the timer)
+// ends it. One cooldown for every difficulty, from going in. The story's Tutorial run (only while the
+// story waits on the raid) starts no cooldown, and pays the clear reward and moves the story on, win
+// or lose.
+let raidAt = save?.raidAt || 0; // when the tide lets the Boatman row again (ms since 1970)
+let raid = null; // { id, diff, left, wave, phase: land | fight | rest, restT, list, boss, exp: [base, job], arrived, shown }
+const raidBar = document.getElementById('raidbar'), bossBar = document.getElementById('bossbar');
+raidBar.querySelector('.rb-leave').addEventListener('click', () => { if (raid) endRaid(false, 'You leave the island, and the Boatman rows you back to Salt Bay.'); });
+const raidOf = (map) => Object.entries(RAIDS).find(([, R]) => R.map === map)?.[1] || null;
+const storyRaid = (id) => storyLive() && story.step?.kind === 'raid' && story.step.raid === id;
+const boatSpot = (R) => ({ x: NPCS[R.npc].x, z: NPCS[R.npc].z + 1.4 });
+function raidInfo(id) {
+  return { wait: Math.max(0, raidAt - Date.now()), story: storyRaid(id) };
+}
+function raidGo(id, diff) {
+  const R = RAIDS[id], D = R.difficulties[diff], info = raidInfo(id);
+  if (raid || warping || !D || (D.tutorial ? !info.story : info.wait)) return;
+  if (!D.tutorial) raidAt = Date.now() + R.cooldown; // the tide, from going in
+  raid = { id, diff, left: R.secs, wave: -1, phase: 'land', restT: 2.5, list: [], boss: null, exp: [0, 0], arrived: false, shown: 1 };
+  menus.close('talk');
+  warp(R.map, null, R.landing);
+}
+// one of the raid's monsters, from the shore, away from the hero
+function raidSpawn(R, type, lv, s, guard = null) {
+  const r = MAPS[R.map].arena.r - 2;
+  let x = 32, z = 32;
+  for (let i = 0; i < 40; i++) {
+    const a = Math.random() * Math.PI * 2;
+    x = 32 + Math.cos(a) * r; z = 32 + Math.sin(a) * r;
+    if (world.walkable(x, z) && Math.hypot(x - player.x, z - player.z) > 7) break;
+  }
+  const m = mobs.add(type, x, z);
+  m.def = raidDef(type, lv, s, guard);
+  m.hp = m.def.hp;
+  m.temp = true;
+  fx.puff(x, world.heightAt(x, z) + 0.3, z, m.def.w);
+  raid.list.push(m);
+  return m;
+}
+function raidNext(R, D) {
+  raid.wave++;
+  raid.phase = 'fight';
+  if (raid.wave < R.waves.length) {
+    for (const [type, n, off] of R.waves[raid.wave]) for (let i = 0; i < n; i++) raidSpawn(R, type, D.lv + off, D.wave);
+    menus.message(`Wave ${raid.wave + 1} of ${R.waves.length}! The bloops come bouncing in from the shore.`);
+    audio.play('night');
+    cam.shake = 0.25;
+  } else {
+    const [type, off] = R.boss;
+    raid.boss = raidSpawn(R, type, D.lv + off, D.boss, D.wave);
+    menus.message(`${raid.boss.def.name} rises out of the surf, an old war bloop in a dented helm!`);
+    audio.play('night');
+    cam.shake = 0.6;
+  }
+}
+function tickRaid(dt) {
+  if (!raid) return;
+  const R = RAIDS[raid.id], D = R.difficulties[raid.diff];
+  if (!raid.arrived) {
+    if (world.id !== R.map || warping) return;
+    raid.arrived = true;
+    menus.message(`${R.name}, ${D.name}: three waves of bloops, then their boss. ${R.secs / 60} minutes before the tide turns!`);
+  }
+  if (world.id !== R.map) { endRaid(false, 'You left the island, and the raid is lost.', true); return; }
+  if (player.state === 'down') { endRaid(false, 'You fainted, and the raid is lost.', true); return; }
+  raid.left -= dt;
+  if (raid.left <= 0) { endRaid(false, 'The tide turns! The Boatman rows you back before the raid is done.'); return; }
+  if (raid.phase === 'fight' && !raid.list.some((m) => m.alive && mobs.list.includes(m))) {
+    if (raid.boss) { winRaid(R, D); return; }
+    const last = raid.wave === R.waves.length - 1, k = last && R.bossHeal ? 1 : R.breather;
+    player.heal(Math.ceil(player.maxHp * k));
+    player.healSp(Math.ceil(player.maxSp * k));
+    fx.sparkle(player.x, world.heightAt(player.x, player.z) + 0.6, player.z, '#9fe8a8', 14);
+    menus.message(last ? 'The last wave falls, and the island shakes... Your HP and SP are restored. Get ready!' : `Wave ${raid.wave + 1} cleared! Catch your breath (HP and SP partly restored).`);
+    raid.phase = 'rest';
+    raid.restT = R.rest;
+    raid.list = [];
+  }
+  if (raid.phase !== 'fight' && (raid.restT -= dt) <= 0) raidNext(R, D);
+  raidHud(R, D);
+}
+function raidHud(R, D) {
+  raidBar.hidden = false;
+  const s = Math.max(0, Math.ceil(raid.left));
+  raidBar.querySelector('.rb-name').textContent = `${R.name} · ${D.name}`;
+  const time = raidBar.querySelector('.rb-time');
+  time.textContent = `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+  time.classList.toggle('low', s < 60);
+  raidBar.querySelector('.rb-stage').textContent = raid.boss ? 'Boss' : raid.wave < 0 ? 'Landing' : `Wave ${raid.wave + 1}/${R.waves.length}`;
+  raidBar.querySelector('.rb-exp').textContent = `EXP held ${Math.round(raid.exp[0]).toLocaleString()}`;
+  // the boss's big health bar
+  const b = raid.boss;
+  bossBar.hidden = !(b && b.alive);
+  if (bossBar.hidden) return;
+  const f = Math.max(0, b.hp / b.def.hp);
+  bossBar.querySelector('.bb-name').textContent = `${b.def.name} · Lv ${b.def.lv}`;
+  bossBar.querySelector('.bb-bar i').style.width = `${(f * 100).toFixed(1)}%`;
+  bossBar.classList.toggle('low', f < 0.3);
+  if (f < raid.shown - 0.001) { bossBar.classList.remove('hit'); void bossBar.offsetWidth; bossBar.classList.add('hit'); } // a blow lands: the bar flashes
+  raid.shown = f;
+}
+function winRaid(R, D) {
+  audio.play('levelup');
+  fx.sparkle(player.x, world.heightAt(player.x, player.z) + 1, player.z, '#ffd23a', 30);
+  menus.message(`${R.name} cleared on ${D.name} with ${Math.floor(raid.left / 60)}:${String(Math.floor(raid.left % 60)).padStart(2, '0')} to spare!`);
+  endRaid(true, null);
+}
+// the clear reward: perz, items, and the rare roll
+function raidReward(id, diff) {
+  const r = rollReward(id, diff);
+  if (r.perz) { inv.addPerz(r.perz); menus.message(`+${r.perz.toLocaleString()} perz`); }
+  const give = (item, n) => { const got = inv.add(item, n); if (got < n) inv.chest.add(item, n - got); menus.toast(item, n); };
+  for (const [item, n] of Object.entries(r.items)) give(item, n);
+  if (r.rare) { give(r.rare, 1); audio.play('heart'); menus.message(`Rare find! ${ITEMS[r.rare].name}!`); }
+}
+// the run is over: its monsters go, the EXP held is paid, and (unless the hero went elsewhere) the
+// Boatman rows them back
+function endRaid(win, why, stay = false) {
+  const R = RAIDS[raid.id], D = R.difficulties[raid.diff], [b, j] = raid.exp, k = win ? 1.5 : 1, run = raid;
+  for (const m of [...mobs.list]) if (m.def.raidLv) mobs.remove(m);
+  raid = null;
+  // a clear pays the reward; so does the story's Tutorial run, win or lose. Either moves the story on
+  if (win || D.tutorial) raidReward(run.id, run.diff);
+  if ((win || D.tutorial) && storyRaid(run.id)) {
+    if (!win) story.flags[`${story.step.id}_lost`] = true; // the Boatman finishes a lost Tutorial for you (story.js says so)
+    story.flag(story.step.id);
+  }
+  raidBar.hidden = bossBar.hidden = true;
+  if (why) menus.message(why);
+  if (b || j) {
+    menus.message(`Raid EXP: +${Math.round(b * k).toLocaleString()} Base, +${Math.round(j * k).toLocaleString()} Job${win ? ' (x1.5 for the clear)' : ''}`);
+    gainExp(Math.round(b * k), Math.round(j * k)); // already at the battle rate
+  }
+  if (!stay) setTimeout(() => warp(R.from, null, boatSpot(R)), win ? 2500 : 700);
+  refreshQuests();
+  persist();
+}
+
 // ---------- quests out in the world: searches, defences and rare hunts ----------
 let searchT = 0, defense = null, waveRest = 0; // waveRest: a breather between a defence's waves
 function tickQuestWorld(dt) {
@@ -822,7 +966,8 @@ const storyLive = () => !!story.flags.intro && !story.done; // after the opening
 // a step is done: its lines play, then the reward, then the next step is announced
 function storyDone() {
   const s = story.advance();
-  menus.story(s.say || [], `${s.ch} · ${s.title}`, () => {
+  const say = typeof s.say === 'function' ? s.say(story.flags) : s.say; // (a step's lines may depend on how it went)
+  menus.story(say || [], `${s.ch} · ${s.title}`, () => {
     if (s.reward) giveReward(s.reward);
     audio.play('heart');
     const next = story.step;
@@ -907,6 +1052,9 @@ const menus = new Menus(inv, prog, player, {
   },
   // Ivar the Ferryman: the lands you have walked, and his fares
   ferryList: () => Object.entries(FARES).filter(([m]) => visited.has(m) && m !== world.id),
+  // the Boatman: the raid's difficulties and the tide
+  raidInfo: (id) => raidInfo(id),
+  raidGo: (id, diff) => raidGo(id, diff),
   ferry(map) {
     const fare = FARES[map];
     if (!visited.has(map) || inv.perz < fare) return;
@@ -1673,7 +1821,8 @@ let questZone = null, questT = 0;
 let resetting = false;
 function persist() {
   if (!started || resetting) return;
-  writeSave({ story: story.toJSON(), look: player.look, visited: [...visited], keepers: [...keepers], savePoint, map: world.id, mvpAt: mobs.mvpAt, bossHp: mobs.bossSnapshot(), x: player.x, z: player.z, yaw: cam.yaw, dist: cam.dist, hp: player.hp, sp: player.sp, inv: inv.toJSON(), prog: prog.toJSON(), quests: quests.toJSON(), hotbar: hotbar.toJSON(), time: dayNight.t });
+  const isle = raidOf(world.id), at = isle ? boatSpot(isle) : player; // a run is never saved: back on the shore
+  writeSave({ story: story.toJSON(), look: player.look, visited: [...visited], keepers: [...keepers], savePoint, raidAt, map: isle ? isle.from : world.id, mvpAt: mobs.mvpAt, bossHp: mobs.bossSnapshot(), x: at.x, z: at.z, yaw: cam.yaw, dist: cam.dist, hp: player.hp, sp: player.sp, inv: inv.toJSON(), prog: prog.toJSON(), quests: quests.toJSON(), hotbar: hotbar.toJSON(), time: dayNight.t });
 }
 
 // second jobs glow: a soft aura behind the hero and a ring at their feet, in the job's colour
@@ -1758,6 +1907,7 @@ function frame() {
   if (live) { naturalRegen(dt); tickSkills(dt); checkPortals(); tickNav(); tickQuestWorld(dt); }
   if (live) tickWading(dt);
   if (live) tickVigil(dt);
+  if (live) tickRaid(dt);
   dressPeople();
   tickAura(dt, t, b);
   updateCastBar();
@@ -1893,4 +2043,4 @@ tContinue.addEventListener('click', () => {
   }, 450);
 });
 
-window.__aria = { lib, warp, enterMap, useSkill, useItem, story, SPOTS, player, world, cam, camera, mobs, fx, inv, prog, quests, villagers, menus, hotbar, dayNight, audio, stats: world.stats };
+window.__aria = { lib, warp, enterMap, useSkill, useItem, story, SPOTS, player, world, cam, camera, mobs, fx, inv, prog, quests, villagers, menus, hotbar, dayNight, audio, stats: world.stats, raid: () => raid, raidAt: () => raidAt, gainExp };

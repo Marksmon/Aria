@@ -28,6 +28,16 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   (`mvpAt`, saved) that holds across map changes and restarts.
 - **Quests:** side quests and job trials can be quit from the Quest View; the main story quest
   can never be quit.
+- **EXP rates:** battles pay x4 (`RATES`: monsters, mini-bosses, MVPs, raids); quests pay x2
+  (`QUEST_RATE`: side quests, job trials, the main story).
+- **Raids** (`src/raid.js`): 3 waves of relentless monsters, then a boss with a big health bar, all
+  within 10 minutes, in a small round arena. Half HP/SP back after each wave, all of it before the
+  boss. One 3 h cooldown shared by every difficulty, from setting out. The story's step gets a
+  Tutorial run: no cooldown, and the clear reward win or lose (a loss gets the Boatman's "we finished
+  it for you, but not next time"). Easy/Normal/Hard/Hell are made for Base 30/40/50/60: Easy with no
+  potions, Normal with 20 Orange, Hard and Hell for a second job with 30 and 50 White. Clear rewards
+  x1/x3/x6/x9 and a rare chance of 5/10/15/20%. Raid EXP is held and paid at the end: x1.5 on a clear,
+  the kills alone on a failure.
 - **Character art:** bodies are bald to the standard in `docs/character-standard.md`; the game
   paints the shared head, hair and headgear.
 - **Names:** plain common names in game; the cooler Old Norse names wait in `docs/names-later.md`.

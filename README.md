@@ -65,11 +65,11 @@ Goblin country (Burnt Wood, then Serpent Wood) lies beyond Galdrheim's north gat
 
 | Map | Level | Monsters | Boss |
 |---|---|---|---|
-| Moss Field | 1–6 | Slime (Lv 1), Sprout (3) | |
-| Fen Shore | 5–12 | Blue Slime (6, splits), Crab (9) | |
+| Moss Field | 1–6 | Bloop (Lv 1), Sprout (3) | |
+| Fen Shore | 5–12 | Blue Bloop (6, splits), Crab (9) | |
 | Dark Dale | 12–18 | Mushroom (14, slowing spores) | |
-| Birch Grove | 16–26 | Red Sprout (18), Sprout, Slime | Giant Sprout (25) |
-| Salt Bay | 20–32 | Sea Slime (22), Blue Crab (26), Crab | King Crab (32) |
+| Birch Grove | 16–26 | Red Sprout (18), Sprout, Bloop | Giant Sprout (25) |
+| Salt Bay | 20–32 | Sea Bloop (22), Blue Crab (26), Crab | King Crab (32) |
 | Ember Hill | 28–36 | Beetle (30) | **Fire Giant (60, MVP)** |
 | Black Wood | 32–42 | Dark Mushroom (34), Dark Wisp (38), Mushroom | Giant Mushroom (40) |
 | Ash Heath | 40–50 | Fire Beetle (42), Fire Wisp (45), Beetle | Giant Beetle (48) |
@@ -84,7 +84,7 @@ them; then they fight back for a while. Only the Dark Wisps, the fire beasts of 
 kobolds and goblins, the mini-bosses and the MVPs attack on sight. A Sprout runs away, and fights only when
 cornered.
 
-The new lands' monsters are palette swaps of the valley's, like a family of slimes. No
+The new lands' monsters are palette swaps of the valley's, like a family of bloops in many colours. No
 health bars: monsters flash white when hit and wobble when nearly beaten. They respawn 60 s
 after they fall, twice as fast at night.
 
@@ -126,7 +126,7 @@ fight is where you left it, the boss a little healed (5% of its HP a minute whil
 fighting you). This holds over a restart too. No monster ever steps onto a portal.
 
 **Walking speed** suits Aria's small maps: the hero takes 300 ms a tile, and monsters their own
-time (Slimes 800 ms, Kobolds 400, Goblins 300, Goblin Assassins 200, the Kobold King 300, the
+time (Bloops 800 ms, Kobolds 400, Goblins 300, Goblin Assassins 200, the Kobold King 300, the
 Goblin King 240 and the Fire Giant 260), so some are quicker than you. Speed changes: only the
 strongest slow (spores: +50% walk time) and the strongest haste count, they don't stack, and the walk time never falls under 40%. No gear
 or skill hastes the walk for now: in Aria walking speed is a big buff. Monsters keep their pace however hurt they are.
@@ -158,6 +158,40 @@ tower stands to the north, the library to the west, the Staffwright's workshop t
 Watcher runestones and the stargazer's observatory to the south. Sorcerers take their job trial
 here, and their gear is made here. It has a storehouse too (the same chest).
 
+## Raids
+
+A raid is a timed run in an arena of its own: **three waves** of monsters that attack on sight and
+never stop following you, then a **boss**, all within the time limit. The first is **Bloop Island**,
+a small round island out in Salt Bay; the **Boatman** by the water rows you out (`src/raid.js`).
+
+- **Bloop Island:** wave 1 is Green and Blue Bloops, wave 2 Blue and **Yellow Bloops**, wave 3 Yellow
+  and **Red Bloops**. Then comes **BleepBloop**, a giant orange war-veteran bloop in a dented helm. He
+  belly-flops onto you, charges and stomps, and calls Red Bloops at 60% HP. A big health bar shows his
+  HP while you fight him.
+- **10 minutes** for the lot. After each wave you get back half your HP and SP, and before the boss
+  all of it.
+- **Difficulty:** you choose when you set out. The monsters' level and strength follow it.
+
+| Difficulty | Made for | Monsters | Rewards | Rare chance |
+|---|---|---|---|---|
+| Easy | Base 30, no potions needed | Lv 26–35 | x1 | 5% |
+| Normal | Base 40, 20 Orange Potions | Lv 36–45 | x3 | 10% |
+| Hard | Base 50 with a second job, 30 White Potions | Lv 46–55 | x6 | 15% |
+| Hell | Base 60 with a second job, 50 White Potions | Lv 56–65 | x9 | 20% |
+
+- **EXP is held while you fight** and paid when the run ends. A clear pays all of it **x1.5**. A
+  failed run (the time runs out, you faint, or you leave) pays only the monsters you beat, with no
+  bonus.
+- **A clear** also pays perz, Bloop Gel, Water Drops, Bloop Cores and maybe Shiny Gel (times the
+  difficulty's reward), and a chance at a rare: Veteran's Boots, the Bloop Buckler, the Bleep Ring,
+  the Bloop Ring or the Water Necklace.
+- **The tide:** one 3-hour cooldown for every difficulty, starting when you set out.
+- **The Tutorial crossing** (Chapter 5): while the story waits on the raid, the Boatman also offers
+  a gentler Tutorial run (Lv 24–33 monsters). It starts no cooldown and pays the clear reward win or
+  lose. Lose it, and the Boatman's crew finish BleepBloop for you, this once.
+- Tuned with a whole-run simulation: every monster of a wave at once, natural regen, the breathers.
+  A first job can't clear Hard or Hell.
+
 ## Character
 
 Classic MMORPG rules with Aria's own stat names (see the mechanics notes in `docs/`):
@@ -171,8 +205,10 @@ you to your save point with half your HP and SP and costs 1% of the EXP to the n
 are pending); **Confirm** locks them in and **Reset** takes back any not yet locked in. Closing
 the window also takes back unconfirmed points.
 
-**Rates.** 4x, for a quicker climb: every Base and Job EXP gain from monsters, MVPs and quests is
-four times the base rate (`RATES` in `src/progress.js`). Quest windows show the EXP you will get.
+**Rates.** Battles pay 4x: every Base and Job EXP gain from monsters, mini-bosses, MVPs and raids is
+four times the base rate (`RATES` in `src/progress.js`). Quests pay 2x (`QUEST_RATE`): side quests,
+job trials and the main story. So the climb comes mostly from fighting. Quest windows show the EXP
+you will get.
 
 ## Jobs and skills
 
@@ -181,9 +217,9 @@ other Trainee skills come free with Job Levels. At Trainee Job 10 with Basic Tra
 trial opens: three short steps a Trainee of Base Level ~10 can do, each needing one trip to the
 easy field beside the trainer: a hunt, something made from what it dropped, and the trainer's
 questions (tap an answer; a wrong one only earns a hint). **Captain Ulfr** in Steinborg tests
-Bladers (6 Slimes and 4 Sprouts in Moss Field, 5 Slime Gel and 3 Seeds as proof, three questions
-on fighting); **Archmage Vigdis** in Galdrheim tests Sorcerers (4 Blue Slimes in Fen Shore, brew a
-Blue Draught from 3 Slime Gel and 2 Water Drops, three questions on elements and chanting). Pass,
+Bladers (6 Bloops and 4 Sprouts in Moss Field, 5 Bloop Gel and 3 Seeds as proof, three questions
+on fighting); **Archmage Vigdis** in Galdrheim tests Sorcerers (4 Blue Bloops in Fen Shore, brew a
+Blue Draught from 3 Bloop Gel and 2 Water Drops, three questions on elements and chanting). Pass,
 and they change your job. Elder Halvard sends ready Trainees on to the city.
 
 | Trainee | | |
@@ -313,7 +349,7 @@ A strong hit (150%) shows in gold, a weak one (25–50%) in grey.
 | Wind | **150%** | 50% | 100% | 25% | 100% |
 | Earth | 100% | 25% | 50% | **150%** | 100% |
 
-Water: the slimes, crabs, King Crab · Earth: Sprouts, Mushrooms, beetles, Giant Sprout ·
+Water: the bloops, crabs, King Crab · Earth: Sprouts, Mushrooms, beetles, Giant Sprout ·
 Fire: Fire Beetles, Fire Wisps, Giant Beetle, Fire Giant · Wind: Wisps, goblins, Goblin King ·
 Earth also: kobolds, Kobold King · Shadow:
 Dark Mushrooms, Dark Wisps, Giant Mushroom.
@@ -332,8 +368,8 @@ to take it off. Shops sell 1, 10 or all, and "Sell all" keeps what an active que
 | Usable | Effect | Where |
 |---|---|---|
 | Red / Orange / White Potion | 45–65 / 105–145 / 175–235 HP | Hild's shop, Ragna; drops |
-| Blue Potion | 40–60 SP | Hild's shop, Ragna; Blue and Sea Slimes |
-| Berry · Crab Leg | 16–22 · 70–100 HP | Slimes, Sprouts · Crabs |
+| Blue Potion | 40–60 SP | Hild's shop, Ragna; Blue and Sea Bloops |
+| Berry · Crab Leg | 16–22 · 70–100 HP | Bloops, Sprouts · Crabs |
 | Green Herb | cures spore sickness, a little HP | Sprouts, Mushrooms |
 | Speed Potion | +10% attack speed for 3 minutes | Ragna |
 | Teleport Feather | random spot on this map | Hild's shop, Ragna; Wisps |
@@ -344,8 +380,8 @@ bursts gold on the ground and shows in gold in your bag.
 
 | Rare item | Slot | Effect | From |
 |---|---|---|---|
-| Slime Ring | Accessory | FTN +2, Max HP +20 | Slime, 0.5% |
-| Water Necklace | Accessory | KNL +2, Max SP +15 | Blue Slime, 0.3% |
+| Bloop Ring | Accessory | FTN +2, Max HP +20 | Bloop, 0.5% |
+| Water Necklace | Accessory | KNL +2, Max SP +15 | Blue Bloop, 0.3% |
 | Leaf Bracelet | Accessory | END +1, QKN +1, HP recovers twice as fast | Sprout, 0.4% |
 | Flower Crown | Head | FLEE +1 | Sprout, 0.5% (also crafted) |
 | Shell Buckler | Shield | DEF 3, Max HP +40 | Crab, 0.3% |
@@ -353,7 +389,10 @@ bursts gold on the ground and shows in gold in your bag.
 | Stone Ring | Accessory | END +2, DEF 1 | Beetle, 0.3% |
 | Horn Sword | Weapon | ATK 68, weapon Lv 3, POW +1 | Beetle, 0.15% |
 | Lantern | Light | lights the night, KNL +1, FNS +1 | Wisp, 0.4% |
-| Shiny Gel | Misc | a collector's prize | Green and Blue Slimes, 1% |
+| Shiny Gel | Misc | a collector's prize | Green and Blue Bloops, 1% |
+| Veteran's Boots | Shoes | DEF 3, FLEE +3, END +1, Max HP +60 | Bloop Island (a clear: 5–20%) |
+| Bloop Buckler | Shield | DEF 4, Max HP +80 | Bloop Island (a clear: 5–20%) |
+| Bleep Ring | Accessory | POW +1, QKN +1, FTN +1, Max HP +40 | Bloop Island (a clear: 5–20%) |
 | Horned Crown | Head | DEF 4, POW +2, END +1 | Fire Giant, 5% |
 | Flame Sword | Weapon | ATK 110, weapon Lv 4 | Fire Giant, 1% |
 | King's Ring | Accessory | POW +2, END +1, Max HP +50 | Kobold King, 5% |
@@ -449,7 +488,7 @@ gear comes from boss materials:
 | Lava Sword (ATK 95, weapon Lv 4, POW +2) | Fire Core (Giant Beetle) |
 | Giant Sword (ATK 120, weapon Lv 4, POW +3, END +1) | Giant Horn + Fire Heart + Fire Core |
 | Rainbow Ring (every stat +1) | Shiny Gel |
-| Slime Band (FTN +2, KNL +2, Max HP +30, Max SP +20) | Slime Ring + Water Necklace |
+| Bloop Band (FTN +2, KNL +2, Max HP +30, Max SP +20) | Bloop Ring + Water Necklace |
 
 ## Story
 
@@ -464,12 +503,12 @@ rings the portal to take, or the person to talk to. A purple **!** marks who the
 
 | Chapter | Steps |
 |---|---|
-| Prologue (the tutorial) | Talk to the Elder · raise a stat · defeat 3 Slimes in Moss Field · learn Basic Training · put a potion on the hotbar · back to the Elder |
+| Prologue (the tutorial) | Talk to the Elder · raise a stat · defeat 3 Bloops in Moss Field · learn Basic Training · put a potion on the hotbar · back to the Elder |
 | 1: The Stone-Fort | Travel to Steinborg · tell Captain Ulfr the fires are failing · sign the Keeper's ledger (the Keepers: healing, storage, save point, teleport) · meet Saeunn the Seeress · sell something for perz |
 | 2: Blade or Rune | Pass a job trial and become a Blader or a Sorcerer |
 | 3: Embers in the Wilds | Saeunn's warning · defeat the Giant Sprout in Birch Grove · travel to Ember Hill |
 | 4: The Fire-Ring | Archmage Vigdis will sing the fire-ring's runes anew · **the Vigil on Ember Hill**: stand in her rune circle and hold off the Giant's heralds for 75 seconds while her song reaches him · bring the song home: the fire-ring rekindled |
-| 5: The Salt Road | Captain Ulfr: kobolds rob the salt carts · Hakon the Carter in Salt Bay · defeat 12 kobolds in Stone Field · Saeunn and the glowing red coal · go down into Coal Pit · Dag the Miner: the goblins drive the kobolds to dig for a "Waking Fire" |
+| 5: The Salt Road | Captain Ulfr: kobolds rob the salt carts · Hakon the Carter in Salt Bay · **Bloop Island**: the Boatman's Tutorial crossing (the first raid) · defeat 12 kobolds in Stone Field · Saeunn and the glowing red coal · go down into Coal Pit · Dag the Miner: the goblins drive the kobolds to dig for a "Waking Fire" |
 | 6: The Goblin War-Band | tell Ulfr · defeat 15 goblins in Burnt Wood · Archmage Vigdis reads the two coal trails |
 | 7: The Second Path | take a second job (BladeMaster, Wizard or Magic Knight) |
 | 8: The Waking Fire | defeat the Giant Beetle in Ash Heath · travel to Serpent Wood · defeat 20 goblins, the keepers of the goblins' backward fire-ring · the backward rune-stone to Vigdis · home to the Elder |
@@ -497,7 +536,7 @@ leads to each.
 | Who | Where | Quests (Base Level) |
 |---|---|---|
 | Elder Halvard | camp | The Mushroom Wood (12): hold Dark Dale's old waystone against 3 waves of Mushrooms |
-| Astrid the Cook | camp | A Feast for Eldrun (10): bring 10 Slime Gel, 5 Crab Legs, 5 Spores, then cook it with her |
+| Astrid the Cook | camp | A Feast for Eldrun (10): bring 10 Bloop Gel, 5 Crab Legs, 5 Spores, then cook it with her |
 | Sigrun the Scout | camp | The Lantern Wisp (14): hunt the golden Wisp that rises over Fen Shore's pond at night |
 | Gyda the Healer | camp | heals HP and SP for free |
 | The Keepers (butlers in black) | camp, Steinborg, Galdrheim | sign the ledger, then: storage, healing, Save here (where you wake after fainting, and where Return Feathers go), switch first jobs, and teleport to any other Keeper you signed with (300–500 perz) |
@@ -513,6 +552,7 @@ leads to each.
 | Liv the Guide | Steinborg | who does what in the city · rethinks your training: one free stat reset and one free first-job skill reset (before a second job), then 20,000 perz each |
 | Bjorn the Gate Guard | Steinborg | which monsters attack on sight |
 | Hakon the Carter | Salt Bay, by the west road | the story (Chapter 5) |
+| Boatman | Salt Bay, by the water | rows you out to **Bloop Island**, the raid (see Raids) |
 | Dag the Miner | Coal Pit, by the east road | the story (Chapter 5) |
 | Archmage Vigdis | Galdrheim | The Rune Trial · The Mother of Spores (40): the Giant Mushroom |
 | Orm the Staffwright | Galdrheim | shop, crafts sorcerers' gear (staves, robes) · The Living Wood (26): a Giant Root, 8 Thorns |

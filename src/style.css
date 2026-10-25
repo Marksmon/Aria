@@ -605,3 +605,46 @@ button.eq:active { background: var(--w-sel); }
 #t-code p { margin: 0; font-size: 14px; line-height: 1.35; }
 #t-code textarea { width: 100%; box-sizing: border-box; height: 110px; resize: none; font: 11px/1.3 monospace; color: #f3ead8;
   background: rgba(255, 255, 255, .08); border: 1px solid rgba(255, 255, 255, .2); border-radius: 8px; padding: 8px; word-break: break-all; }
+
+/* a raid: the time left, the wave and the EXP held, and the boss's big health bar */
+#raidbar {
+  position: absolute;
+  top: calc(10px + env(safe-area-inset-top));
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 6px 4px 12px;
+  background: rgba(38, 28, 22, .82);
+  border: 2px solid #8a6a3e;
+  border-radius: 10px;
+  color: #fff4dc;
+  font-size: 13px;
+  white-space: nowrap;
+  pointer-events: auto;
+}
+#raidbar[hidden], #bossbar[hidden] { display: none; }
+#raidbar .rb-time { font-weight: bold; font-variant-numeric: tabular-nums; color: #ffe37a; min-width: 38px; }
+#raidbar .rb-time.low { color: #ff7a5a; }
+#raidbar .rb-exp { color: #bfe8a8; }
+#raidbar .rb-leave { font: inherit; font-size: 12px; padding: 3px 10px; border-radius: 7px; border: 1px solid #c8a060; background: #6a4a2a; color: #fff4dc; }
+#bossbar {
+  position: absolute;
+  top: calc(46px + env(safe-area-inset-top));
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(62vw, 520px);
+  text-align: center;
+  color: #fff4dc;
+  text-shadow: 0 0 3px #2e2118, 0 0 3px #2e2118;
+}
+#bossbar .bb-name { font-size: 15px; font-weight: bold; letter-spacing: .06em; margin-bottom: 3px; }
+#bossbar .bb-bar { position: relative; height: 16px; border: 2px solid #2e2118; border-radius: 6px; background: #3a2a22; overflow: hidden; box-shadow: 0 2px 6px rgba(0, 0, 0, .5); }
+#bossbar .bb-bar i { position: absolute; inset: 0 auto 0 0; background: linear-gradient(#ffb45a, #e86a2a); transition: width .15s; }
+#bossbar.low .bb-bar i { background: linear-gradient(#ff7a6a, #c82a2a); }
+#bossbar .bb-bar s { position: absolute; top: 0; bottom: 0; left: 60%; width: 2px; background: rgba(255, 244, 220, .7); } /* where it calls its guards */
+#bossbar.hit .bb-bar { animation: bbhit .18s; }
+@keyframes bbhit { 0% { filter: brightness(2); } 100% { filter: none; } }
+.btnrow.raids .rbtn { text-align: left; }
+.rbtn.warn { box-shadow: inset 0 0 0 2px #c8603a; }

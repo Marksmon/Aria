@@ -112,6 +112,11 @@ const BASE_ITEMS = {
   mushroom_card: { type: 'misc', rare: true, name: 'Giant Mushroom Card', icon: 'card_mushroom', card: { on: 'weapon', matk: 15, mspRate: 10, stats: { knl: 4 } }, desc: 'The Giant Mushroom on a violet card that smells of rain. In a weapon with a slot: MATK +15%, KNL +4, Max SP +10%.', from: 'the Giant Mushroom (1%)' },
   beetle_card:  { type: 'misc', rare: true, name: 'Giant Beetle Card', icon: 'card_beetle', card: { on: 'weapon', atk: 25, stats: { pow: 4 } }, desc: 'The Giant Beetle on a scorched card. In a weapon with a slot: ATK +25, POW +4.', from: 'the Giant Beetle (1%)' },
   jarl_card:    { type: 'misc', rare: true, name: 'Fire Giant Card', icon: 'card_jarl', card: { on: 'weapon', matk: 60, mspRate: 30, mhpRate: 15, el: 'fire', stats: { knl: 12, fns: 8 } }, desc: 'The Fire Giant on a scorched card, still warm: a sorcerer\'s treasure. In a weapon with a slot: MATK +60%, KNL +12, FNS +8 (quicker casting), Max SP +30%, Max HP +15%, and the weapon turns to Fire (a staff then adds 15% to Fire spells).', from: 'the Fire Giant (1%)' },
+  // Bloop Island (the raid, raid.js): its clear reward and rare finds
+  bloop_core:   { type: 'misc', name: 'Bloop Core', desc: 'The hard, warm heart of a raid bloop, still faintly bouncing. Crafters pay well for it.', from: 'Bloop Island (the raid)' },
+  veteran_boots: { type: 'equip', slot: 'shoes', rare: true, name: "Veteran's Boots", def: 3, flee: 3, mhp: 60, stats: { end: 1 }, icon: 'boots_veteran', desc: "BleepBloop's old marching boots, iron-toed and patched from a hundred battles. Somehow they fit a hero's feet.", from: 'Bloop Island (a clear: 5-20%)' },
+  bloop_buckler: { type: 'equip', slot: 'shield', rare: true, name: 'Bloop Buckler', def: 4, mhp: 80, icon: 'r_bloopbuckler', desc: 'A round shield of hardened orange bloop. Blows bounce off it, mostly.', from: 'Bloop Island (a clear: 5-20%)' },
+  bleep_ring:   { type: 'equip', slot: 'acc', rare: true, name: 'Bleep Ring', stats: { pow: 1, qkn: 1, ftn: 1 }, mhp: 40, icon: 'r_bleep', desc: 'A ring with a tiny orange bloop set in it, which bleeps when danger is near.', from: 'Bloop Island (a clear: 5-20%)' },
   shiny_gel:    { type: 'misc', rare: true, name: 'Shiny Gel', desc: 'Bloop gel that shimmers with every colour, found once in a hundred bloops. Collectors and ring-makers prize it.', from: 'any bloop (1%)' },
 
   // headgear: worn on the head and seen on your character (see headgear.js): Head pieces on the
@@ -231,6 +236,7 @@ export const canInsert = (card, key) => {
 // Prices in perz (Aria's coin, like Ragnarok's zeny): what a shop asks; any shop buys for half. 0 = can't be sold.
 export const PRICES = {
   // early drops (gel to spore) pay enough to keep a beginner in potions
+  bloop_core: 600, veteran_boots: 24000, bloop_buckler: 20000, bleep_ring: 22000,
   gel: 15, dew: 20, seed: 16, leaf: 16, shell: 50, spore: 60, stone: 60, glow: 50, ember_heart: 4000,
   kobold_fur: 260, goblin_tooth: 380, iron_ore: 50, steel_ore: 200, hard_ore: 4000, armor_ore: 4000,
   kobold_ring: 20000, goblin_charm: 24000, kobold_card: 40000, goblin_card: 40000, jarl_card: 60000, sprout_card: 16000, crab_card: 18000, mushroom_card: 20000, beetle_card: 22000,
@@ -649,6 +655,24 @@ const PAINT = {
     g.beginPath(); g.ellipse(32, 36, 20, 14, 0, 0, Math.PI * 2); g.strokeStyle = OUT; g.lineWidth = 9; g.stroke();
     g.strokeStyle = '#5fae45'; g.lineWidth = 5; g.stroke();
     for (const [x, y] of [[14, 30], [32, 22], [50, 30]]) shape(g, () => g.ellipse(x, y, 6, 3.5, -0.4, 0, Math.PI * 2), '#8fd060', 2);
+  },
+  r_bloopbuckler: (g) => {
+    shape(g, () => g.arc(32, 32, 24, 0, Math.PI * 2), '#e8862a');
+    shape(g, () => g.arc(32, 32, 15, 0, Math.PI * 2), '#ffb45a', 2.5);
+    shape(g, () => g.arc(32, 32, 5, 0, Math.PI * 2), '#8a8c96', 2.5);
+    gloss(g, 22, 22, 6, 4);
+  },
+  r_bleep: (g) => charmIcon(g, '#ff9a3a', '#5a5c66'),
+  boots_veteran: (g) => { // an iron toe cap, brass buckles and a red patch
+    shape(g, () => { g.moveTo(18, 10); g.lineTo(34, 10); g.lineTo(34, 40); g.lineTo(52, 44); g.quadraticCurveTo(56, 54, 48, 56); g.lineTo(14, 56); g.lineTo(18, 34); g.closePath(); }, '#6a4a2e');
+    shape(g, () => { g.moveTo(40, 42); g.lineTo(52, 44); g.quadraticCurveTo(56, 54, 48, 56); g.lineTo(40, 56); g.closePath(); }, '#9a9ca6', 2);
+    for (const y of [20, 30]) { g.fillStyle = '#d8b04a'; g.fillRect(22, y - 2, 10, 4); }
+    shape(g, () => g.rect(20, 40, 8, 7), '#b83a26', 1.5);
+  },
+  bloop_core: (g) => {
+    shape(g, () => g.arc(32, 34, 20, 0, Math.PI * 2), '#e8862a');
+    shape(g, () => g.arc(32, 34, 10, 0, Math.PI * 2), '#ffd27a', 2.5);
+    gloss(g, 25, 26, 5, 3.5);
   },
   r_buckler: (g) => {
     shape(g, () => g.arc(32, 32, 24, 0, Math.PI * 2), '#c9726a');
