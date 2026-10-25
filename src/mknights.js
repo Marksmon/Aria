@@ -9,9 +9,11 @@
 // guards and toe caps (a white blouse, black corset, short white skirt and thigh-high boots on her),
 // a drawn sword with a winged yellow guard and glowing runes held low, a glowing compass sigil
 // floating by the other hand, and a great compass star in a ring on the coat's back.
-// Standing only for now (the design), 8 directions: the left ones are the right ones mirrored.
+// Standing, walking (8 frames) and attacking (7: the sword swung, the sigil flaring on the cut), 8
+// directions: the left ones are the right ones mirrored.
 // Not used in the game yet. Plain canvas, no three.js.
 import { Frame, ellipse, rect, poly, line } from './painted.js';
+import { REST, SWING, SLASH, CAST, behind, swordArm, slashArc, burst, animFrames } from './design-anim.js';
 
 export const BW = 106, BH = 108; // the bald bodies' frame (src/art/trainee.json)
 const LEGS = 63;                 // chin to ground, in pixels, in every direction
@@ -24,6 +26,14 @@ const C = {
 export const MKNIGHTS = { mknightM: { name: 'Magic Knight', sex: 'm' }, mknightF: { name: 'Magic Knight', sex: 'f' } };
 
 const flat = { outline: false, flat: true }; // a trim's line: no outline or shading
+let P = REST; // the pose being painted (design-anim.js): its step, bob and attack frame
+// the sword arm swinging from the shoulder (x, y); mirror: the back view (the arm on the viewer's right)
+function swing(F, x, y, view, mirror = false) {
+  let [a, b] = SWING[view][P.atk];
+  if (mirror) { a = 180 - a; b = 180 - b; }
+  swordArm(F, x, y, a, b, { sleeve: C.coat, glove: C.glove, blade: C.blade, edge: C.glow, guard: C.trim, gem: C.core });
+  if (P.atk === SLASH) slashArc(F, x, y, 30, mirror ? 140 : view === 'side' ? -40 : -60, mirror ? 30 : view === 'side' ? 50 : 40, '#fff1c4', C.glow);
+}
 const soft = { outline: false };             // shaded, but no outline (a panel inside a part)
 const edge = (F, pts, col) => { for (let i = 0; i < pts.length - 1; i++) F.part(line(...pts[i], ...pts[i + 1], 1), col, flat); };
 
@@ -97,19 +107,21 @@ function sword(F, x, y, tx, ty) {
 }
 
 function legs(F, o, cx, cy, r, toe) {
+  cy -= P.bob; // the feet stay on the ground while the body sinks
   const { f, legs: L, knee } = build(o);
   L.forEach(([a, b], i) => {
     const sh = i ? -Math.round(r / 2) : 0, mid = cx + (a + b) / 2 + sh;
-    F.part(rect(cx + a + sh, cy + 30, cx + b + sh, cy + 58), C.pants);
-    F.part(rect(cx + a - (f ? 0 : 1) + sh, cy + knee, cx + b + (f ? 0 : 1) + sh, cy + 58), C.boot);
-    F.part(ellipse(mid + toe + (i ? 0.5 : -0.5), cy + 60.5, f ? 4 : 4.5, 2.5), C.boot);
-    F.part(line(cx + a - (f ? 0 : 1) + sh, cy + knee, cx + b + (f ? 0 : 1) + sh, cy + knee, 1), C.trim, flat);
-    const ky = cy + 45;
+    const cyl = cy - Math.round(Math.max(0, i ? -P.step : P.step) * 2); // the stepping leg lifts
+    F.part(rect(cx + a + sh, cy + 30, cx + b + sh, cyl + 58), C.pants);
+    F.part(rect(cx + a - (f ? 0 : 1) + sh, cyl + knee, cx + b + (f ? 0 : 1) + sh, cyl + 58), C.boot);
+    F.part(ellipse(mid + toe + (i ? 0.5 : -0.5), cyl + 60.5, f ? 4 : 4.5, 2.5), C.boot);
+    F.part(line(cx + a - (f ? 0 : 1) + sh, cyl + knee, cx + b + (f ? 0 : 1) + sh, cyl + knee, 1), C.trim, flat);
+    const ky = cyl + 45;
     F.part(poly([[mid, ky - 6], [mid + 3, ky - 2], [mid + 3, ky + 2], [mid, ky + 6], [mid - 3, ky + 2], [mid - 3, ky - 2]]), C.trim);
     F.part(poly([[mid, ky - 3], [mid + 1, ky], [mid, ky + 3], [mid - 1, ky]]), C.boot, flat);
     F.dot(mid, ky, C.core);
-    F.part(line(mid - 3, cy + 53, mid + 3, cy + 53, 1), C.trim, flat);
-    F.part(ellipse(mid + toe + (i ? 0.5 : -0.5), cy + 61, 2, 1.2), C.trim, flat); // the toe cap
+    F.part(line(mid - 3, cyl + 53, mid + 3, cyl + 53, 1), C.trim, flat);
+    F.part(ellipse(mid + toe + (i ? 0.5 : -0.5), cyl + 61, 2, 1.2), C.trim, flat); // the toe cap
   });
 }
 
@@ -218,20 +230,26 @@ function frontView(F, o, cx, cy, s, r) {
 
   // the arms and pauldrons; the near hand holds the sword low, its blade angled out to the ground,
   // the sigil floats by the other
-  const [hx, hy] = arm(F, cx - W - 4, cx - W, cy, -1);
+  const atk = P.atk >= 0;
+  const [hx, hy] = atk ? [0, 0] : arm(F, cx - W - 4, cx - W, cy, -1); // while attacking the sword arm swings instead
   const [fx, fy] = arm(F, R(cx + W), R(cx + W + 4), cy, 1);
   pauldron(F, cx - W - 2, cy, -1, f);
   pauldron(F, R(cx + W + 2), cy, 1, f);
-  sword(F, hx, hy, hx - 10, cy + 58);
-  F.part(ellipse(hx, hy, 2.8, 2.6), C.glove); // the hand over the grip
-  F.dot(hx - 1, hy + 2, C.skin);
+  if (atk) swing(F, cx - W - 2, cy + 6, 'front');
+  else {
+    sword(F, hx, hy, hx - 10, cy + 58);
+    F.part(ellipse(hx, hy, 2.8, 2.6), C.glove); // the hand over the grip
+    F.dot(hx - 1, hy + 2, C.skin);
+  }
   sigil(F, fx + 8, fy - 2);
+  if (atk) burst(F, fx + 8, fy - 2, CAST.burst[P.atk], { core: '#ffffff', glow: C.glow, spark: C.spark }); // the sigil flares with the cut
   return F;
 }
 
 function backView(F, o, cx, cy, s, r) {
   const { f, W, waist, hip, hem } = build(o);
   const R = (v) => v - r;
+  if (P.atk >= 0 && behind(P.atk)) swing(F, R(cx + W + 2), cy + 6, 'front', true); // the blade in front of him, hidden
   legs(F, o, cx, cy, r, 0);
   F.part(poly([[cx - W, cy + 3], [R(cx + W), cy + 3], [R(cx + W + 1), cy + 8], [R(cx + waist), cy + 22], [R(cx + hip), cy + 30], [cx - hip, cy + 30], [cx - waist, cy + 22], [cx - W - 1, cy + 8]]), C.coat);
   // the coat's back over a white layer, split up the middle in pointed tails, the great compass star
@@ -253,15 +271,18 @@ function backView(F, o, cx, cy, s, r) {
   edge(F, [[cx - W + 1 + s, cy + 16], [cx + s, cy + 19], [R(cx + W - 1) + s, cy + 16]], C.trim);
   // the arms; the sword in the far hand, on the viewer's right from behind
   arm(F, cx - W - 4, cx - W, cy, -1);
-  const [hx, hy] = arm(F, R(cx + W), R(cx + W + 4), cy, 1);
-  sword(F, hx, hy, hx + 10, cy + 58);
-  F.part(ellipse(hx, hy, 2.8, 2.6), C.glove);
+  if (P.atk < 0) { // the sword arm swings instead while attacking
+    const [hx, hy] = arm(F, R(cx + W), R(cx + W + 4), cy, 1);
+    sword(F, hx, hy, hx + 10, cy + 58);
+    F.part(ellipse(hx, hy, 2.8, 2.6), C.glove);
+  }
   pauldron(F, cx - W - 2, cy, -1, f);
   pauldron(F, R(cx + W + 2), cy, 1, f);
   // the tall collar and its back
   for (const side of [-1, 1]) collar(F, (u) => (side < 0 ? cx - u : R(cx + u)) + s, cy);
   F.part(poly([[cx - 6 + s, cy - 3], [cx + 6 + s, cy - 3], [cx + 8 + s, cy + 4], [cx - 8 + s, cy + 4]]), C.coat);
   F.part(line(cx - 6 + s, cy - 3, cx + 6 + s, cy - 3, 1), C.trim, flat);
+  if (P.atk >= 0 && !behind(P.atk)) swing(F, R(cx + W + 2), cy + 6, 'front', true);
   return F;
 }
 
@@ -280,18 +301,19 @@ function side(F, o, cx, cy) {
   F.part(line(cx - 7, cy + 12, cx - 12, cy + hem - 6, 1), C.fold, flat);
   F.part(line(cx - 9, cy + 14, cx - 15, cy + hem - 6, 1), C.trim, flat);
   edge(F, tails.map(([x, y]) => [x, y - 1]), C.trim);
+  const cy0 = cy - P.bob; // the legs stay on the ground
   const leg = (x) => {
-    F.part(rect(x - 3, cy + 30, x + 2, cy + 58), C.pants);
-    F.part(rect(x - 3, cy + knee, x + 2, cy + 58), C.boot);
-    F.part(ellipse(x + 1, cy + 60.5, 4.5, 2.5), C.boot);
-    F.part(line(x - 3, cy + knee, x + 2, cy + knee, 1), C.trim, flat);
-    F.part(poly([[x + 1, cy + 39], [x + 5, cy + 44], [x + 2, cy + 50], [x, cy + 44]]), C.trim);
-    F.dot(x + 2, cy + 44, C.core);
-    F.part(line(x - 3, cy + 53, x + 2, cy + 53, 1), C.trim, flat);
-    F.part(ellipse(x + 4, cy + 61, 1.5, 1), C.trim, flat);
+    F.part(rect(x - 3, cy0 + 30, x + 2, cy0 + 58), C.pants);
+    F.part(rect(x - 3, cy0 + knee, x + 2, cy0 + 58), C.boot);
+    F.part(ellipse(x + 1, cy0 + 60.5, 4.5, 2.5), C.boot);
+    F.part(line(x - 3, cy0 + knee, x + 2, cy0 + knee, 1), C.trim, flat);
+    F.part(poly([[x + 1, cy0 + 39], [x + 5, cy0 + 44], [x + 2, cy0 + 50], [x, cy0 + 44]]), C.trim);
+    F.dot(x + 2, cy0 + 44, C.core);
+    F.part(line(x - 3, cy0 + 53, x + 2, cy0 + 53, 1), C.trim, flat);
+    F.part(ellipse(x + 4, cy0 + 61, 1.5, 1), C.trim, flat);
   };
-  leg(cx - 2);
-  leg(cx + 2);
+  leg(cx - 2 - Math.round(3 * P.step)); // the far leg, then the near one, striding
+  leg(cx + 2 + Math.round(3 * P.step));
   // the white layer, the coat's front edge
   F.part(poly([[cx - 4, cy + 27], [cx + 6, cy + 27], [cx + 6, cy + (f ? 35 : 48)], [cx - 6, cy + (f ? 36 : 50)]]), C.lining);
   if (!f) {
@@ -320,6 +342,7 @@ function side(F, o, cx, cy) {
   F.part(line(cx - 3, cy + 14, cx + 3, cy + 14, 1), C.trim, flat);
   crystal(F, cx - 7, cy + 27, 1);
   pauldron(F, cx - 1, cy, -1, f);
+  if (P.atk >= 0) { swing(F, cx - 1, cy + 6, 'side'); return F; }
   F.part(poly([[cx - 2, cy + 15], [cx + 3, cy + 15], [cx + 9, cy + 22], [cx + 6, cy + 25]]), C.glove);
   F.part(line(cx + 1, cy + 18, cx + 5, cy + 21, 1), C.trim, flat);
   const hx = cx + 9, hy = cy + 24;
@@ -344,4 +367,9 @@ export function paintMKnight(id, heads) {
     out[dir] = { canvas: (flip ? F.mirror() : F).toCanvas(), foot: BH - (neck + LEGS) };
   }
   return out;
+}
+// one design's moves: { dir: { idle, walk, attack, bob } } (design-anim.js animFrames)
+export function animMKnight(id, heads) {
+  const o = MKNIGHTS[id];
+  return animFrames(VIEWS, heads, BW, (view, cx, cy, pose) => { P = pose; try { return paint(o, view, cx, cy); } finally { P = REST; } });
 }

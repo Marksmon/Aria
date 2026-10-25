@@ -11,9 +11,11 @@
 //   sleeves with crystal tassels, a wide black sash with a gold medallion, a chained book at the
 //   hip, black boots (thigh-high on her, the robe open over them); a tall gold staff with crossed
 //   rings around a blue star, sparkling.
-// Standing only for now (the design), 8 directions: the left ones are the right ones mirrored.
+// Standing, walking (8 frames) and casting (7: the staff raised, then the crystal bursting), 8
+// directions: the left ones are the right ones mirrored.
 // Not used in the game yet. Plain canvas, no three.js.
 import { Frame, ellipse, rect, poly, line } from './painted.js';
+import { REST, CAST, burst, animFrames } from './design-anim.js';
 
 export const BW = 106, BH = 108; // the bald bodies' frame (src/art/trainee.json)
 const LEGS = 63;                 // chin to ground, in pixels, in every direction
@@ -36,6 +38,10 @@ export const MAGES = {
 };
 
 const flat = { outline: false, flat: true }; // a trim's line: no outline or shading
+let P = REST; // the pose being painted (design-anim.js): its step, bob and attack frame
+const lift = () => (P.atk >= 0 ? CAST.lift[P.atk] : 0); // how high the staff is raised
+// the cast's burst at the crystal
+const cast = (F, x, y, C) => { if (P.atk >= 0) burst(F, x, y, CAST.burst[P.atk], { core: '#ffffff', glow: C.gem, spark: '#cfe2ff' }); };
 const soft = { outline: false };             // shaded, but no outline (a panel inside a part)
 const edge = (F, pts, col) => { for (let i = 0; i < pts.length - 1; i++) F.part(line(...pts[i], ...pts[i + 1], 1), col, flat); };
 
@@ -73,10 +79,11 @@ function mark(F, x, y, C, wiz, big = false) {
   }
 }
 
-// the staff, upright, the hand at hy: a bronze crook holding a crystal (Sorcerer), a gold ring around
+// the staff, upright (or leaning: lean, the head's shift), the hand at hy: a bronze crook holding a crystal (Sorcerer), a gold ring around
 // a star with a crystal hanging under it (Wizard)
-function staff(F, x, top, bottom, C, wiz) {
-  F.part(line(x, top + 4, x, bottom, 2), C.shaft);
+function staff(F, x, top, bottom, C, wiz, lean = 0) {
+  F.part(line(x + lean, top + 4, x, bottom, 2), C.shaft);
+  x += lean; // the head leans with the shaft
   if (wiz) {
     top -= 3;
     F.part(poly([[x - 2, top + 7], [x + 2, top + 7], [x + 1, top + 11], [x - 1, top + 11]]), C.trim); // the collar under the head
@@ -109,17 +116,19 @@ function collar(F, X, cy, C) {
 }
 
 function legs(F, o, cx, cy, r, toe) {
+  cy -= P.bob; // the feet stay on the ground while the body sinks
   const { f, legs: L, knee } = build(o), C = o.C;
   L.forEach(([a, b], i) => {
     const sh = i ? -Math.round(r / 2) : 0, mid = cx + (a + b) / 2 + sh;
-    F.part(rect(cx + a + sh, cy + 30, cx + b + sh, cy + 58), C.pants);
-    F.part(rect(cx + a - (f ? 0 : 1) + sh, cy + knee, cx + b + (f ? 0 : 1) + sh, cy + 58), C.boot);
-    F.part(ellipse(mid + toe + (i ? 0.5 : -0.5), cy + 60.5, f ? 4 : 4.5, 2.5), C.boot);
-    F.part(line(cx + a - (f ? 0 : 1) + sh, cy + knee, cx + b + (f ? 0 : 1) + sh, cy + knee, 1), C.trim, flat);
-    const ky = cy + (o.wiz && f ? 44 : knee + 2);
+    const cyl = cy - Math.round(Math.max(0, i ? -P.step : P.step) * 2); // the stepping leg lifts
+    F.part(rect(cx + a + sh, cy + 30, cx + b + sh, cyl + 58), C.pants);
+    F.part(rect(cx + a - (f ? 0 : 1) + sh, cyl + knee, cx + b + (f ? 0 : 1) + sh, cyl + 58), C.boot);
+    F.part(ellipse(mid + toe + (i ? 0.5 : -0.5), cyl + 60.5, f ? 4 : 4.5, 2.5), C.boot);
+    F.part(line(cx + a - (f ? 0 : 1) + sh, cyl + knee, cx + b + (f ? 0 : 1) + sh, cyl + knee, 1), C.trim, flat);
+    const ky = cyl + (o.wiz && f ? 44 : knee + 2);
     F.part(poly([[mid - 2, ky], [mid + 2, ky], [mid, ky + 4]]), C.trim);
     F.dot(mid, ky + 1, C.gem);
-    F.part(line(mid - 3, cy + 57, mid + 3, cy + 57, 1), C.trim, flat);
+    F.part(line(mid - 3, cyl + 57, mid + 3, cyl + 57, 1), C.trim, flat);
   });
 }
 
@@ -137,7 +146,7 @@ function frontView(F, o, cx, cy, s, r) {
   const R = (v) => v - r;
   const sx = cx - W - 8; // the staff, in the hand on the viewer's left, clear of long hair
 
-  staff(F, sx, cy - 10, cy + 60, C, w);
+  staff(F, sx, cy - 10 - lift(), cy + 60 - P.bob - lift(), C, w);
   // the coat's back half behind the legs: its lining, its colour at the edges, pointed hem
   const back = [[cx - W - 6, cy + hem - 2], [cx - W - 3, cy + hem - 5], [cx - 4, cy + hem + 1], [R(cx + 4), cy + hem - 2], [R(cx + W + 4), cy + hem + 1], [R(cx + W + 7), cy + hem - 4]];
   F.part(poly([[cx - W, cy + 6], [R(cx + W), cy + 6], ...back.slice().reverse()]), C.coat);
@@ -251,10 +260,11 @@ function frontView(F, o, cx, cy, s, r) {
     F.part(line((x0 + x1) / 2, cy + 8, (inn + out) / 2 - side, cy + yi, 1), C.fold, flat);
     if (w) { F.part(line((x0 + x1) / 2 + side, cy + 6, out + side * -1, cy + yo - 3, 1), C.trim, flat); crystal(F, out, cy + yo + 1, C, 2); }
     const hx = side < 0 ? sx + 1 : (x0 + x1) / 2 + 2;
-    const hy = cy + yi + ((yo - yi) * (inn - hx)) / (inn - out) + 2; // under the opening
+    const hy = cy + yi + ((yo - yi) * (inn - hx)) / (inn - out) + 2 - (side < 0 ? lift() : 0); // under the opening (raised with the staff)
     F.part(ellipse(hx, hy, 2.8, 2.6), C.glove);
     F.dot(hx + side, hy + 1.5, C.skin);
   }
+  cast(F, sx, cy - 10 - lift() - (w ? 3 : 2), C);
   return F;
 }
 
@@ -262,7 +272,7 @@ function backView(F, o, cx, cy, s, r) {
   const { f, W, waist, hip, hem } = build(o), C = o.C, w = o.wiz;
   const R = (v) => v - r;
   // the staff in the far hand, on the viewer's right from behind
-  staff(F, R(cx + W + 8), cy - 10, cy + 60, C, w);
+  staff(F, R(cx + W + 8), cy - 10 - lift(), cy + 60 - P.bob - lift(), C, w);
   legs(F, o, cx, cy, r, 0);
   F.part(poly([[cx - W, cy + 3], [R(cx + W), cy + 3], [R(cx + W + 1), cy + 8], [R(cx + waist), cy + 22], [R(cx + hip), cy + 30], [cx - hip, cy + 30], [cx - waist, cy + 22], [cx - W - 1, cy + 8]]), C.coat);
   // the coat's back: to the knee (to the ankle on the Wizard), split up the middle in pointed tails
@@ -299,7 +309,7 @@ function backView(F, o, cx, cy, s, r) {
     F.part(line((x0 + x1) / 2, cy + 8, (inn + out) / 2 - side, cy + yi, 1), C.fold, flat);
     if (w) crystal(F, out, cy + yo + 1, C, 2);
     const hx = side < 0 ? (x0 + x1) / 2 - 2 : R(cx + W + 8) - 1;
-    F.part(ellipse(hx, cy + yi + ((yo - yi) * (inn - hx)) / (inn - out) + 2, 2.8, 2.6), C.glove);
+    F.part(ellipse(hx, cy + yi + ((yo - yi) * (inn - hx)) / (inn - out) + 2 - (side > 0 ? lift() : 0), 2.8, 2.6), C.glove);
   }
   // the collar, or the Wizard's mantle with its hood
   if (w) {
@@ -316,6 +326,7 @@ function backView(F, o, cx, cy, s, r) {
     F.part(poly([[cx - 7 + s, cy - 3], [cx + 7 + s, cy - 3], [cx + 9 + s, cy + 4], [cx - 9 + s, cy + 4]]), C.coat);
     F.part(line(cx - 7 + s, cy - 3, cx + 7 + s, cy - 3, 1), C.trim, flat);
   }
+  cast(F, R(cx + W + 8), cy - 10 - lift() - (w ? 3 : 2), C);
   return F;
 }
 
@@ -337,16 +348,17 @@ function side(F, o, cx, cy) {
     edge(F, pts.slice(1, 4), C.trim);
     F.dot(cx - 17, cy - 12, C.gem);
   }
+  const cy0 = cy - P.bob; // the legs stay on the ground
   const leg = (x) => {
-    F.part(rect(x - 3, cy + 30, x + 2, cy + 58), C.pants);
-    F.part(rect(x - 3, cy + knee, x + 2, cy + 58), C.boot);
-    F.part(ellipse(x + 1, cy + 60.5, 4.5, 2.5), C.boot);
-    F.part(line(x - 3, cy + knee, x + 2, cy + knee, 1), C.trim, flat);
-    const ky = cy + (w && f ? 44 : knee + 2);
+    F.part(rect(x - 3, cy0 + 30, x + 2, cy0 + 58), C.pants);
+    F.part(rect(x - 3, cy0 + knee, x + 2, cy0 + 58), C.boot);
+    F.part(ellipse(x + 1, cy0 + 60.5, 4.5, 2.5), C.boot);
+    F.part(line(x - 3, cy0 + knee, x + 2, cy0 + knee, 1), C.trim, flat);
+    const ky = cy0 + (w && f ? 44 : knee + 2);
     F.part(poly([[x + 1, ky], [x + 4, ky + 1], [x + 2, ky + 5]]), C.trim);
   };
-  leg(cx - 2);
-  leg(cx + 2);
+  leg(cx - 2 - Math.round(3 * P.step)); // the far leg, then the near one, striding
+  leg(cx + 2 + Math.round(3 * P.step));
   // the red layer and the coat's front edge
   F.part(poly([[cx - 4, cy + 27], [cx + 6, cy + 27], [cx + 5, cy + (f ? 44 : 48)], [cx - 6, cy + (f ? 46 : 50)]]), C.lining);
   if (!(f && !w)) {
@@ -381,8 +393,8 @@ function side(F, o, cx, cy) {
     crystal(F, cx - 2, cy + 20, C, 1);
   }
   // the near sleeve, the staff, the hand on it
-  const sx = cx + 14;
-  staff(F, sx, cy - 12, cy + 60, C, w);
+  const sx = cx + 14, ln = P.atk >= 0 ? CAST.lean[P.atk] : 0;
+  staff(F, sx, cy - 12 - lift(), cy + 60 - P.bob - lift(), C, w, ln);
   if (w) { // the long sleeve hangs below the forearm
     F.part(poly([[cx - 4, cy + 4], [cx + 1, cy + 4], [cx + 6, cy + 14], [cx + 12, cy + 20], [cx + 6, cy + 32], [cx - 2, cy + 24]]), C.coat);
     F.part(line(cx + 12, cy + 20, cx + 6, cy + 32, 1), C.trim, flat);
@@ -392,8 +404,9 @@ function side(F, o, cx, cy) {
   F.part(poly([[cx - 4, cy + 4], [cx + 1, cy + 4], [cx + 6, cy + 14], [cx + 12, cy + 20], [cx + 8, cy + 25], [cx - 2, cy + 19]]), C.coat);
   F.part(line(cx + 12, cy + 20, cx + 8, cy + 25, 1), C.trim, flat);
   F.part(line(cx - 1, cy + 8, cx + 4, cy + 17, 1), C.fold, flat);
-  F.part(ellipse(sx - 1, cy + 22, 2.6, 2.6), C.glove);
-  F.dot(sx - 1, cy + 24, C.skin);
+  F.part(ellipse(sx - 1, cy + 22 - lift(), 2.6, 2.6), C.glove);
+  F.dot(sx - 1, cy + 24 - lift(), C.skin);
+  cast(F, sx + ln, cy - 12 - lift() - (w ? 3 : 2), C);
   return F;
 }
 
@@ -412,4 +425,9 @@ export function paintMage(id, heads) {
     out[dir] = { canvas: (flip ? F.mirror() : F).toCanvas(), foot: BH - (neck + LEGS) };
   }
   return out;
+}
+// one design's moves: { dir: { idle, walk, attack, bob } } (design-anim.js animFrames)
+export function animMage(id, heads) {
+  const o = MAGES[id];
+  return animFrames(VIEWS, heads, BW, (view, cx, cy, pose) => { P = pose; try { return paint(o, view, cx, cy); } finally { P = REST; } });
 }

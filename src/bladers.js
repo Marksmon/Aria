@@ -12,9 +12,11 @@
 //   on its back, white and navy coat tails, black greaves with gold knee guards and toe caps
 //   (thigh-high boots on her), an ornate sword with a winged gold guard, a navy scarf on him and a
 //   white breastplate on her.
-// Standing only for now (the design), 8 directions: the left ones are the right ones mirrored.
+// Standing, walking (8 frames) and attacking (7: the sword drawn and swung), 8 directions: the left
+// ones are the right ones mirrored.
 // Not used in the game yet. Plain canvas, no three.js.
 import { Frame, ellipse, rect, poly, line } from './painted.js';
+import { REST, SWING, SLASH, behind, swordArm, slashArc, animFrames } from './design-anim.js';
 
 export const BW = 106, BH = 108; // the bald bodies' frame (src/art/trainee.json), so heads fit as on theirs
 const LEGS = 63;                 // chin to ground, in pixels, in every direction
@@ -37,6 +39,7 @@ export const BLADERS = {
 };
 
 const flat = { outline: false, flat: true }; // a trim's line: no outline or shading
+let P = REST; // the pose being painted (design-anim.js): its step, bob and attack frame
 const soft = { outline: false };             // shaded, but no outline (a panel inside a part)
 
 // the crest: a small shield with a white sword between two wings
@@ -96,6 +99,19 @@ function emblem(F, x, y, C) {
   F.dot(x - 1, y + 3, C.trim); F.dot(x + 1, y + 3, C.trim);
 }
 
+// the sword in the swing: the Blader's plain steel, the BladeMaster's with a blue glow and a gem
+const blade = (o) => o.master
+  ? { sleeve: o.C.armor, glove: o.C.armor, blade: '#c8d4f0', edge: '#8ab8ff', guard: o.C.trim, gem: o.C.gem, arc: '#cfe2ff', arc2: '#7fb0ff' }
+  : { sleeve: o.C.shirt, glove: o.C.leather, blade: '#d6dae2', edge: '#ffffff', guard: o.C.trim, arc: '#ffffff', arc2: '#c8d0dc' };
+// the sword arm swinging from the shoulder (x, y); mirror: the back view (the arm on the viewer's right)
+function swing(F, o, x, y, view, mirror = false) {
+  let [a, b] = SWING[view][P.atk];
+  if (mirror) { a = 180 - a; b = 180 - b; }
+  const c = blade(o);
+  swordArm(F, x, y, a, b, c);
+  if (P.atk === SLASH) slashArc(F, x, y, 30, mirror ? 140 : view === 'side' ? -40 : -60, mirror ? 30 : view === 'side' ? 50 : 40, c.arc, c.arc2);
+}
+
 // one direction's standing frame. cx, cy: the head's chin in the frame (the trainee's, so the
 // shared head lands on the collar). view: front | front3 | side | back3 | back
 function paint(o, view, cx, cy) {
@@ -117,27 +133,30 @@ function build(o) {
 }
 
 function legs(F, o, cx, cy, r, toe) {
+  cy -= P.bob; // the feet stay on the ground while the body sinks
   const { f, legs: L } = build(o), C = o.C, m = o.master;
   const knee = m && f ? cy + 34 : m ? cy + 41 : cy + 44; // where the boots start
   L.forEach(([a, b], i) => {
     const sh = i ? -Math.round(r / 2) : 0;
-    F.part(rect(cx + a + sh, cy + 30, cx + b + sh, cy + 58), C.pants);
-    F.part(rect(cx + a - (f ? 0 : 1) + sh, knee, cx + b + (f ? 0 : 1) + sh, cy + 58), C.boot);
-    F.part(ellipse(cx + (a + b) / 2 + toe + sh + (i ? 0.5 : -0.5), cy + 60.5, f ? 4 : 4.5, 2.5), C.boot);
+    const cyl = cy - Math.round(Math.max(0, i ? -P.step : P.step) * 2); // the stepping leg lifts
+    const kn = knee - cy + cyl;
+    F.part(rect(cx + a + sh, cy + 30, cx + b + sh, cyl + 58), C.pants);
+    F.part(rect(cx + a - (f ? 0 : 1) + sh, kn, cx + b + (f ? 0 : 1) + sh, cyl + 58), C.boot);
+    F.part(ellipse(cx + (a + b) / 2 + toe + sh + (i ? 0.5 : -0.5), cyl + 60.5, f ? 4 : 4.5, 2.5), C.boot);
     const mid = cx + (a + b) / 2 + sh;
     if (m) {
       // gold-edged greaves with a pointed knee guard and a gem
-      F.part(line(cx + a - (f ? 0 : 1) + sh, knee, cx + b + (f ? 0 : 1) + sh, knee, 1), C.trim, flat);
-      const ky = f ? cy + 44 : cy + 45;
+      F.part(line(cx + a - (f ? 0 : 1) + sh, kn, cx + b + (f ? 0 : 1) + sh, kn, 1), C.trim, flat);
+      const ky = f ? cyl + 44 : cyl + 45;
       F.part(poly([[mid, ky - 6], [mid + 3, ky - 2], [mid + 3, ky + 2], [mid, ky + 6], [mid - 3, ky + 2], [mid - 3, ky - 2]]), C.trim);
       F.part(poly([[mid, ky - 3], [mid + 1, ky], [mid, ky + 3], [mid - 1, ky]]), C.armor, flat);
       F.dot(mid, ky, C.gem);
-      F.part(line(mid - 3, cy + 52, mid + 3, cy + 52, 1), C.trim, flat); // a gold band and toe cap
-      F.part(ellipse(cx + (a + b) / 2 + toe + sh + (i ? 0.5 : -0.5), cy + 61, 2, 1.2), C.trim, flat);
+      F.part(line(mid - 3, cyl + 52, mid + 3, cyl + 52, 1), C.trim, flat); // a gold band and toe cap
+      F.part(ellipse(cx + (a + b) / 2 + toe + sh + (i ? 0.5 : -0.5), cyl + 61, 2, 1.2), C.trim, flat);
     } else {
       // a folded cuff with a steel knee cap
-      F.part(rect(cx + a - (f ? 0 : 1) + sh, knee, cx + b + (f ? 0 : 1) + sh, knee + 1), C.leather, soft);
-      F.part(poly([[mid - 2, knee + 1], [mid + 2, knee + 1], [mid, knee + 5]]), f ? C.trim : C.steel);
+      F.part(rect(cx + a - (f ? 0 : 1) + sh, kn, cx + b + (f ? 0 : 1) + sh, kn + 1), C.leather, soft);
+      F.part(poly([[mid - 2, kn + 1], [mid + 2, kn + 1], [mid, kn + 5]]), f ? C.trim : C.steel);
     }
   });
 }
@@ -233,8 +252,8 @@ function frontView(F, o, cx, cy, s, r) {
   F.part(line(R(cx + 15), cy + 50, R(cx + 16), cy + 54, 2), C.trim, flat);
   if (m) {
     for (const y of [34, 44]) F.dot(R(cx + 9 + Math.round((y - 26) / 4)), cy + y, C.trim), F.dot(R(cx + 10 + Math.round((y - 26) / 4)), cy + y, C.trim);
-    hilt(F, R(cx + 9), cy + 23, C, -1);
-  } else {
+    if (P.atk < 0) hilt(F, R(cx + 9), cy + 23, C, -1); // drawn while attacking
+  } else if (P.atk < 0) {
     F.part(line(R(cx + 6), cy + 24, R(cx + 12), cy + 22, 1), C.trim, flat); // the cross-guard
     F.part(line(R(cx + 8), cy + 21, R(cx + 7), cy + 18, 1), C.strap, flat);
   }
@@ -271,8 +290,10 @@ function frontView(F, o, cx, cy, s, r) {
     }
   }
 
-  // the arms hang at the sides: sleeves, then fingerless gloves (gauntlets on the BladeMaster)
+  // the arms hang at the sides: sleeves, then fingerless gloves (gauntlets on the BladeMaster); the
+  // sword arm swings instead while attacking
   for (const side of [-1, 1]) {
+    if (P.atk >= 0 && side < 0) continue;
     const x0 = side < 0 ? cx - W - 4 : R(cx + W + 0), x1 = side < 0 ? cx - W + 0 : R(cx + W + 4);
     if (m) F.part(rect(x0, cy + 10, x1, cy + 17), C.armor);
     else F.part(rect(x0, cy + 18, x1, cy + 20), C.shirt);
@@ -289,12 +310,14 @@ function frontView(F, o, cx, cy, s, r) {
     if (m) F.part(line(hx - 2, cy + 27, hx + 2, cy + 27, 1), C.trim, flat); // gold knuckles
     F.dot(hx, cy + 30, C.skin); F.dot(hx + side, cy + 30, C.skin);
   }
+  if (P.atk >= 0) swing(F, o, cx - W - 2, cy + 6, 'front');
   return F;
 }
 
 function backView(F, o, cx, cy, s, r) {
   const { f, W, waist, hip } = build(o), C = o.C, m = o.master;
   const R = (v) => v - r; // the far side (the viewer's right, turning away)
+  if (P.atk >= 0 && behind(P.atk)) swing(F, o, R(cx + W + 2), cy + 6, 'front', true); // the blade in front of him, hidden
   // the sword at the hip, on the viewer's left from behind
   F.part(line(cx - 9, cy + 26, cx - 16, cy + 54, 2), C.sheath);
   F.part(line(cx - 15, cy + 50, cx - 16, cy + 54, 2), C.trim, flat);
@@ -309,8 +332,9 @@ function backView(F, o, cx, cy, s, r) {
     F.part(line(cx - 4 + s, cy + (f ? 39 : 42), cx + 4 + s, cy + (f ? 39 : 42), 1), C.trim, flat);
   }
   F.part(rect(cx - hip, cy + 24, R(cx + hip), cy + 26), C.leather);
-  // the arms at the sides
+  // the arms at the sides (the sword arm swings while attacking)
   for (const side of [-1, 1]) {
+    if (P.atk >= 0 && side > 0) continue;
     const x0 = side < 0 ? cx - W - 4 : R(cx + W + 0), x1 = side < 0 ? cx - W + 0 : R(cx + W + 4);
     F.part(rect(x0, cy + 10, x1, cy + 26), m ? C.armor : C.leather);
     F.part(ellipse((x0 + x1) / 2, cy + 28, 2.8, 2.6), m ? C.armor : C.strap);
@@ -345,45 +369,46 @@ function backView(F, o, cx, cy, s, r) {
     F.part(line(cx - 7 + s, cy + (f ? 3 : 5), cx + 7 + s, cy + (f ? 3 : 5), 1), C.trim, flat);
     if (!f) F.part(ellipse(cx - W - 1, cy + 6, 5, 4), C.steel);
   }
+  if (P.atk >= 0 && !behind(P.atk)) swing(F, o, R(cx + W + 2), cy + 6, 'front', true);
   return F;
 }
 
 // facing right: the near (right) arm hangs at the front of the body, the cape flows behind
 function side(F, o, cx, cy) {
   const { f } = build(o), C = o.C, m = o.master;
-  const knee = m && f ? cy + 34 : m ? cy + 41 : cy + 44;
+  const cy0 = cy - P.bob, knee = (m && f ? 34 : m ? 41 : 44) + cy0; // the legs stay on the ground
   const leg = (x, col) => {
-    F.part(rect(x - 3, cy + 30, x + 2, cy + 58), C.pants);
-    F.part(rect(x - 3, knee, x + 2, cy + 58), C.boot);
-    F.part(ellipse(x + 1, cy + 60.5, 4.5, 2.5), C.boot);
+    F.part(rect(x - 3, cy0 + 30, x + 2, cy0 + 58), C.pants);
+    F.part(rect(x - 3, knee, x + 2, cy0 + 58), C.boot);
+    F.part(ellipse(x + 1, cy0 + 60.5, 4.5, 2.5), C.boot);
     if (m) {
       F.part(line(x - 3, knee, x + 2, knee, 1), C.trim, flat);
-      F.part(poly([[x + 1, cy + 39], [x + 5, cy + 44], [x + 2, cy + 50], [x, cy + 44]]), C.trim);
-      F.dot(x + 2, cy + 44, C.gem);
-      F.part(line(x - 3, cy + 52, x + 2, cy + 52, 1), C.trim, flat);
-      F.part(ellipse(x + 4, cy + 61, 1.5, 1), C.trim, flat);
+      F.part(poly([[x + 1, cy0 + 39], [x + 5, cy0 + 44], [x + 2, cy0 + 50], [x, cy0 + 44]]), C.trim);
+      F.dot(x + 2, cy0 + 44, C.gem);
+      F.part(line(x - 3, cy0 + 52, x + 2, cy0 + 52, 1), C.trim, flat);
+      F.part(ellipse(x + 4, cy0 + 61, 1.5, 1), C.trim, flat);
     }
     else F.part(poly([[x + 1, knee + 1], [x + 4, knee + 2], [x + 2, knee + 6]]), col);
   };
   // the cape behind
   if (m) {
-    F.part(poly([[cx - 4, cy + 2], [cx - 8, cy + 6], [cx - 16, cy + 30], [cx - 21, cy + 56], [cx - 16, cy + 53], [cx - 13, cy + 59], [cx - 8, cy + 54], [cx - 4, cy + 30]]), C.cape);
-    F.part(line(cx - 6, cy + 10, cx - 12, cy + 52, 1), C.lining, flat);
-    F.part(line(cx - 21, cy + 55, cx - 16, cy + 52, 1), C.trim, flat);
-    F.part(line(cx - 16, cy + 52, cx - 13, cy + 58, 1), C.trim, flat);
-    F.part(line(cx - 9, cy + 10, cx - 18, cy + 52, 1), C.trim, flat);
-    for (const [x, y] of [[cx - 21, cy + 56], [cx - 13, cy + 59]]) F.part(poly([[x - 1.5, y - 2], [x + 1.5, y - 2], [x, y + 1]]), C.trim);
+    F.part(poly([[cx - 4, cy0 + 2], [cx - 8, cy0 + 6], [cx - 16, cy0 + 30], [cx - 21, cy0 + 56], [cx - 16, cy0 + 53], [cx - 13, cy0 + 59], [cx - 8, cy0 + 54], [cx - 4, cy0 + 30]]), C.cape);
+    F.part(line(cx - 6, cy0 + 10, cx - 12, cy0 + 52, 1), C.lining, flat);
+    F.part(line(cx - 21, cy0 + 55, cx - 16, cy0 + 52, 1), C.trim, flat);
+    F.part(line(cx - 16, cy0 + 52, cx - 13, cy0 + 58, 1), C.trim, flat);
+    F.part(line(cx - 9, cy0 + 10, cx - 18, cy0 + 52, 1), C.trim, flat);
+    for (const [x, y] of [[cx - 21, cy0 + 56], [cx - 13, cy0 + 59]]) F.part(poly([[x - 1.5, y - 2], [x + 1.5, y - 2], [x, y + 1]]), C.trim);
     // the tall collar behind the head
-    const pts = [[cx - 3, cy + 3], [cx - 6, cy - 5], [cx - 16, cy - 10], [cx - 14, cy - 2], [cx - 8, cy + 4]];
+    const pts = [[cx - 3, cy0 + 3], [cx - 6, cy - 5], [cx - 16, cy - 10], [cx - 14, cy - 2], [cx - 8, cy0 + 4]];
     F.part(poly(pts), C.armor);
-    F.part(poly([[cx - 7, cy + 1], [cx - 8, cy - 3], [cx - 13, cy - 7], [cx - 12, cy - 2], [cx - 9, cy + 2]]), C.cape, soft);
+    F.part(poly([[cx - 7, cy0 + 1], [cx - 8, cy - 3], [cx - 13, cy - 7], [cx - 12, cy - 2], [cx - 9, cy0 + 2]]), C.cape, soft);
     edge(F, pts.slice(1, 4), C.trim);
   }
   // the sword at the far hip, behind
-  F.part(line(cx + 3, cy + 24, cx - 13, cy + 48, 2), C.sheath);
-  F.part(line(cx - 11, cy + 45, cx - 13, cy + 48, 2), C.trim, flat);
-  leg(cx - 2, f ? C.trim : C.steel);
-  leg(cx + 2, f ? C.trim : C.steel);
+  F.part(line(cx + 3, cy0 + 24, cx - 13, cy0 + 48, 2), C.sheath);
+  F.part(line(cx - 11, cy0 + 45, cx - 13, cy0 + 48, 2), C.trim, flat);
+  leg(cx - 2 - Math.round(3 * P.step), f ? C.trim : C.steel); // the far leg, then the near one, striding
+  leg(cx + 2 + Math.round(3 * P.step), f ? C.trim : C.steel);
   // tails or skirt
   if (m) F.part(poly([[cx - 6, cy + 27], [cx + 6, cy + 27], [cx + 5, cy + (f ? 46 : 52)], [cx - 9, cy + (f ? 47 : 53)]]), C.lining);
   else F.part(poly([[cx - 6, cy + 27], [cx + 6, cy + 27], [cx + 7, cy + (f ? 35 : 38)], [cx - 7, cy + (f ? 35 : 38)]]), C.shirt);
@@ -403,7 +428,7 @@ function side(F, o, cx, cy) {
     F.part(rect(cx - 1, cy + 23, cx + 3, cy + 27), C.trim);
     F.part(line(cx - 6, cy + 10, cx + 5, cy + 10, 1), C.trim, flat); // filigree on the armour
     F.part(line(cx - 6, cy + 19, cx + 6, cy + 19, 1), C.trim, flat);
-    hilt(F, cx + 4, cy + 23, C, -1);
+    if (P.atk < 0) hilt(F, cx + 4, cy + 23, C, -1);
   }
   // shoulders and collar
   if (m) {
@@ -421,6 +446,7 @@ function side(F, o, cx, cy) {
   // the near arm, hanging
   if (m) pauldron(F, cx - 1, cy, -1, f, C);
   else if (!f) F.part(ellipse(cx - 1, cy + 6, 4.5, 3.5), C.steel);
+  if (P.atk >= 0) { swing(F, o, cx - 1, cy + 6, 'side'); return F; }
   F.part(rect(cx - 3, cy + (m ? 11 : 20), cx + 1, cy + 26), m ? C.armor : C.leather);
   if (!m) F.part(rect(cx - 3, cy + 18, cx + 1, cy + 19), C.shirt);
   F.part(line(cx - 3, cy + (m ? 16 : 20), cx + 1, cy + (m ? 16 : 20), 1), C.trim, flat);
@@ -445,4 +471,9 @@ export function paintBlader(id, heads) {
     out[dir] = { canvas: (flip ? F.mirror() : F).toCanvas(), foot: BH - (neck + LEGS) };
   }
   return out;
+}
+// one design's moves: { dir: { idle, walk, attack, bob } } (design-anim.js animFrames)
+export function animBlader(id, heads) {
+  const o = BLADERS[id];
+  return animFrames(VIEWS, heads, BW, (view, cx, cy, pose) => { P = pose; try { return paint(o, view, cx, cy); } finally { P = REST; } });
 }
