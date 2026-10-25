@@ -1,0 +1,353 @@
+// Sprite designs for the Blader and the BladeMaster, male and female, painted in code (like the
+// butler, butler.js) on the bald bodies' frame, so the shared head and hair go on top like anyone's
+// (docs/character-standard.md). After the owner's two uniform sheets:
+// - Blader: a navy capelet with gold trim (the hood bunched at the neck on him, a stand-up collar on
+//   her), a shield crest, a white shirt, brown belts, a shoulder strap and pouches, a navy tabard,
+//   fingerless brown gloves, black trousers (black tights and a short skirt on her), tall brown boots
+//   and a navy sheathed sword at the hip; a steel pauldron on his right shoulder.
+// - BladeMaster: black armour edged in gold with blue gems, a high collar, a long navy cape lined
+//   in white with pointed ends and the crest on its back, white and navy coat tails, black gauntlets
+//   and greaves (thigh-high boots on her), a navy scarf on him and a white breastplate on her.
+// Standing only for now (the design), 8 directions: the left ones are the right ones mirrored.
+// Not used in the game yet. Plain canvas, no three.js.
+import { Frame, ellipse, rect, poly, line } from './painted.js';
+
+export const BW = 106, BH = 108; // the bald bodies' frame (src/art/trainee.json), so heads fit as on theirs
+const LEGS = 63;                 // chin to ground, in pixels, in every direction
+
+const BLADER = {
+  cape: '#2f4a8e', trim: '#d2aa4e', shirt: '#ece6d8', leather: '#7c4b2b', strap: '#5a3520',
+  pants: '#2c2833', boot: '#6c3f25', steel: '#b9bec8', skin: '#f2c8a2', crest: '#e9edf5', gem: '#4a86e8',
+  sheath: '#2a3c78', fold: '#223769',
+};
+const MASTER = {
+  cape: '#283e98', lining: '#eceaf3', trim: '#d8ac4c', shirt: '#f0ede6', armor: '#27232f', leather: '#6a4128',
+  strap: '#4a2e1e', pants: '#211e27', boot: '#24212b', skin: '#f2c8a2', crest: '#e9edf5', gem: '#4a8cf0',
+  sheath: '#24367e', scarf: '#2c45a6', fold: '#1d2d72', liningDk: '#c4c2d2',
+};
+export const BLADERS = {
+  bladerM: { name: 'Blader', sex: 'm', master: false, C: BLADER },
+  bladerF: { name: 'Blader', sex: 'f', master: false, C: BLADER },
+  masterM: { name: 'BladeMaster', sex: 'm', master: true, C: MASTER },
+  masterF: { name: 'BladeMaster', sex: 'f', master: true, C: MASTER },
+};
+
+const flat = { outline: false, flat: true }; // a trim's line: no outline or shading
+const soft = { outline: false };             // shaded, but no outline (a panel inside a part)
+
+// the crest: a small shield with a white sword between two wings
+function crest(F, x, y, C, big = false) {
+  const k = big ? 2 : 1;
+  F.part(poly([[x - 3 * k, y - 3 * k], [x + 3 * k, y - 3 * k], [x + 3 * k, y + k], [x, y + 4 * k], [x - 3 * k, y + k]]), C.cape);
+  F.part(line(x - 3 * k, y - 3 * k, x + 3 * k, y - 3 * k, 1), C.trim, flat);
+  F.part(line(x, y - 2 * k, x, y + 2 * k + (big ? 1 : 0), 1), C.crest, flat);
+  F.part(line(x - k, y - k, x + k, y - k, 1), C.crest, flat);
+  if (big) { F.part(line(x - 5, y - 1, x - 2, y + 1, 1), C.crest, flat); F.part(line(x + 5, y - 1, x + 2, y + 1, 1), C.crest, flat); }
+}
+
+// the tabard's emblem: a little sword, point down, its guard and pommel in gold
+function emblem(F, x, y, C) {
+  F.part(line(x, y, x, y + 7, 1), C.crest, flat);
+  F.part(line(x - 2, y + 1, x + 2, y + 1, 1), C.trim, flat);
+  F.dot(x, y - 1, C.trim);
+  F.dot(x - 1, y + 3, C.trim); F.dot(x + 1, y + 3, C.trim);
+}
+
+// one direction's standing frame. cx, cy: the head's chin in the frame (the trainee's, so the
+// shared head lands on the collar). view: front | front3 | side | back3 | back
+function paint(o, view, cx, cy) {
+  const F = new Frame(BW, BH);
+  if (view === 'side') return side(F, o, cx, cy);
+  const back = view === 'back' || view === 'back3';
+  const s = view === 'front3' ? 3 : view === 'back3' ? -2 : 0; // the front (or the seam) turns this way
+  const r = view === 'front3' || view === 'back3' ? 3 : 0;     // the far side narrows
+  return back ? backView(F, o, cx, cy, s, r) : frontView(F, o, cx, cy, s, r);
+}
+
+// the build: shoulders, waist and hips (half widths), and the legs
+function build(o) {
+  const f = o.sex === 'f';
+  return {
+    f, W: f ? 11 : 13, waist: f ? 7 : 10, hip: f ? 10 : 10,
+    legs: f ? [[-7, -2], [2, 7]] : [[-8, -2], [2, 8]],
+  };
+}
+
+function legs(F, o, cx, cy, r, toe) {
+  const { f, legs: L } = build(o), C = o.C, m = o.master;
+  const knee = m && f ? cy + 34 : m ? cy + 41 : cy + 44; // where the boots start
+  L.forEach(([a, b], i) => {
+    const sh = i ? -Math.round(r / 2) : 0;
+    F.part(rect(cx + a + sh, cy + 30, cx + b + sh, cy + 58), C.pants);
+    F.part(rect(cx + a - (f ? 0 : 1) + sh, knee, cx + b + (f ? 0 : 1) + sh, cy + 58), C.boot);
+    F.part(ellipse(cx + (a + b) / 2 + toe + sh + (i ? 0.5 : -0.5), cy + 60.5, f ? 4 : 4.5, 2.5), C.boot);
+    const mid = cx + (a + b) / 2 + sh;
+    if (m) {
+      // gold-edged greaves with a pointed knee guard and a gem
+      F.part(line(cx + a - (f ? 0 : 1) + sh, knee, cx + b + (f ? 0 : 1) + sh, knee, 1), C.trim, flat);
+      const ky = f ? cy + 44 : cy + 45;
+      F.part(poly([[mid - 3, ky - 2], [mid + 3, ky - 2], [mid + 3, ky + 2], [mid, ky + 5], [mid - 3, ky + 2]]), C.armor);
+      F.part(line(mid - 3, ky - 2, mid + 3, ky - 2, 1), C.trim, flat);
+      F.dot(mid, ky, C.gem);
+      F.part(line(mid - 3, cy + 57, mid + 3, cy + 57, 1), C.trim, flat);
+    } else {
+      // a folded cuff with a steel knee cap
+      F.part(rect(cx + a - (f ? 0 : 1) + sh, knee, cx + b + (f ? 0 : 1) + sh, knee + 1), C.leather, soft);
+      F.part(poly([[mid - 2, knee + 1], [mid + 2, knee + 1], [mid, knee + 5]]), f ? C.trim : C.steel);
+    }
+  });
+}
+
+function frontView(F, o, cx, cy, s, r) {
+  const { f, W, waist, hip } = build(o), C = o.C, m = o.master;
+  const R = (v) => v - r; // a point on the far (viewer's right) side
+
+  // the long cape behind (BladeMaster): its white lining shows behind the legs, navy at the edges
+  if (m) {
+    const hem = [[cx - W - 9, cy + 58], [cx - W - 5, cy + 54], [cx - 8, cy + 61], [cx - 3, cy + 57], [cx + 3, cy + 61], [R(cx + 8), cy + 57], [R(cx + W + 6), cy + 61], [R(cx + W + 9), cy + 55]];
+    F.part(poly([[cx - W - 1, cy + 3], [R(cx + W + 1), cy + 3], ...hem.slice().reverse()]), C.cape);
+    F.part(poly([[cx - W + 1, cy + 8], [R(cx + W - 1), cy + 8], [R(cx + W + 5), cy + 56], [cx + 3, cy + 59], [cx - 3, cy + 56], [cx - W - 5, cy + 55]]), C.lining, soft);
+    F.part(line(cx - W - 2, cy + 20, cx - W - 4, cy + 52, 1), C.liningDk, flat);
+    F.part(line(R(cx + W + 2), cy + 20, R(cx + W + 4), cy + 52, 1), C.liningDk, flat);
+    F.part(line(cx - W - 9, cy + 58, cx - W - 5, cy + 54, 1), C.trim, flat);
+    F.part(line(R(cx + W + 6), cy + 61, R(cx + W + 9), cy + 55, 1), C.trim, flat);
+  }
+  legs(F, o, cx, cy, r, s);
+
+  // the body
+  F.part(poly([[cx - W, cy + 3], [R(cx + W), cy + 3], [R(cx + W + 1), cy + 8], [R(cx + waist), cy + 22], [R(cx + hip), cy + 30], [cx - hip, cy + 30], [cx - waist, cy + 22], [cx - W - 1, cy + 8]]), m ? C.armor : C.shirt);
+
+  // below the belt: shirt tails or a skirt, with the tabard down the middle
+  if (m) {
+    // white coat tails at the sides, the navy panel in front
+    F.part(poly([[cx - hip, cy + 27], [cx - 3 + s, cy + 27], [cx - 5 + s, cy + (f ? 44 : 50)], [cx - hip - (f ? 3 : 2), cy + (f ? 47 : 53)]]), C.lining);
+    F.part(poly([[R(cx + hip), cy + 27], [cx + 3 + s, cy + 27], [cx + 5 + s, cy + (f ? 44 : 50)], [R(cx + hip + (f ? 3 : 2)), cy + (f ? 47 : 53)]]), C.lining);
+    if (f) F.part(poly([[cx - hip, cy + 27], [R(cx + hip), cy + 27], [R(cx + hip + 1), cy + 34], [cx - hip - 1, cy + 34]]), C.armor); // the short black skirt
+    F.part(poly([[cx - 4 + s, cy + 27], [cx + 4 + s, cy + 27], [cx + 4 + s, cy + (f ? 46 : 52)], [cx + s, cy + (f ? 49 : 55)], [cx - 4 + s, cy + (f ? 46 : 52)]]), C.cape);
+    F.part(line(cx - 4 + s, cy + 28, cx - 4 + s, cy + (f ? 46 : 52), 1), C.trim, flat);
+    F.part(line(cx + 4 + s, cy + 28, cx + 4 + s, cy + (f ? 46 : 52), 1), C.trim, flat);
+    emblem(F, cx + s, cy + 34, C);
+    F.dot(cx + s, cy + 31, C.gem);
+  } else {
+    if (f) F.part(poly([[cx - hip, cy + 27], [R(cx + hip), cy + 27], [R(cx + hip + 2), cy + 35], [cx - hip - 2, cy + 35]]), C.shirt); // the white skirt
+    else F.part(poly([[cx - hip, cy + 27], [R(cx + hip), cy + 27], [R(cx + hip + 1), cy + 38], [cx - hip - 1, cy + 38]]), C.shirt); // the shirt's tails
+    F.part(poly([[cx - 4 + s, cy + 27], [cx + 4 + s, cy + 27], [cx + 4 + s, cy + (f ? 39 : 43)], [cx - 4 + s, cy + (f ? 39 : 43)]]), C.cape);
+    F.part(line(cx - 4 + s, cy + 28, cx - 4 + s, cy + (f ? 39 : 43), 1), C.trim, flat);
+    F.part(line(cx + 4 + s, cy + 28, cx + 4 + s, cy + (f ? 39 : 43), 1), C.trim, flat);
+    emblem(F, cx + s, cy + 30, C);
+  }
+
+  // the chest
+  if (m && f) {
+    F.part(poly([[cx - 7 + s, cy + 5], [cx + 7 + s, cy + 5], [cx + 7 + s, cy + 14], [cx + s, cy + 16], [cx - 7 + s, cy + 14]]), C.shirt); // the white breastplate
+    F.part(line(cx - 7 + s, cy + 14, cx + s, cy + 16, 1), C.trim, flat);
+    F.part(line(cx + s, cy + 16, cx + 7 + s, cy + 14, 1), C.trim, flat);
+    F.part(line(cx + s, cy + 17, cx + s, cy + 23, 1), C.trim, flat); // the corset's lacing
+    F.dot(cx + s, cy + 7, C.gem);
+  } else if (m) {
+    F.part(poly([[cx - 4 + s, cy + 3], [cx + 4 + s, cy + 3], [cx + s, cy + 14]]), C.shirt); // the shirt in the open collar
+    F.part(line(cx - 5 + s, cy + 3, cx - 1 + s, cy + 20, 1), C.trim, flat); // the coat's gold edges
+    F.part(line(cx + 5 + s, cy + 3, cx + 1 + s, cy + 20, 1), C.trim, flat);
+    F.dot(cx + s, cy + 17, C.gem);
+  } else if (f) {
+    F.part(line(cx - W + 2, cy + 15, R(cx + W - 2), cy + 15, 1), C.strap, flat); // the harness under the chest
+    F.part(line(cx - 6 + s, cy + 4, cx + 6 + s, cy + 21, 2), C.strap, flat);
+  } else {
+    F.part(line(cx - 9 + s, cy + 4, cx + 7 + s, cy + 23, 2), C.strap, flat); // the shoulder strap
+    F.dot(cx - 2 + s, cy + 13, C.trim);
+  }
+
+  // the belt, its buckle and pouches
+  F.part(rect(cx - hip, cy + 24, R(cx + hip), cy + 26), C.leather);
+  F.part(rect(cx - 1 + s, cy + 24, cx + 1 + s, cy + 26), C.trim, soft);
+  F.part(rect(cx - hip + 1, cy + 26, cx - hip + 4, cy + 30), C.leather);
+  if (!m) F.part(rect(R(cx + hip - 4), cy + 26, R(cx + hip - 1), cy + 30), C.leather);
+  F.dot(cx - hip + 2, cy + 27, C.trim);
+
+  // the sword at the far hip, in its navy sheath
+  F.part(line(R(cx + 9), cy + 26, R(cx + 16), cy + 54, 2), C.sheath);
+  F.part(line(R(cx + 15), cy + 50, R(cx + 16), cy + 54, 2), C.trim, flat);
+  F.part(line(R(cx + 6), cy + 24, R(cx + 12), cy + 22, 1), C.trim, flat); // the cross-guard
+  F.part(line(R(cx + 8), cy + 21, R(cx + 7), cy + 18, 1), m ? C.armor : C.strap, flat);
+  if (m) F.dot(R(cx + 9), cy + 23, C.gem);
+
+  // the shoulders: a capelet with the collar (Blader), armour and the collar (BladeMaster)
+  if (m) {
+    F.part(poly([[cx - 6 + s, cy - 2], [cx + 6 + s, cy - 2], [cx + 8 + s, cy + 4], [cx - 8 + s, cy + 4]]), C.armor); // the high collar
+    F.part(line(cx - 6 + s, cy - 2, cx + 6 + s, cy - 2, 1), C.trim, flat);
+    if (!f) F.part(ellipse(cx + s, cy + 3, 6, 2), C.scarf); // the navy scarf
+    for (const side of [-1, 1]) {
+      const x = side < 0 ? cx - W - 1 : R(cx + W + 1);
+      F.part(ellipse(x, cy + 6, f ? 5 : 6, 4), C.armor);
+      F.part(ellipse(x, cy + 9, f ? 4.5 : 5.5, 3), C.armor);
+      F.part(line(x - (f ? 4 : 5), cy + 3, x + (f ? 4 : 5), cy + 3, 1), C.trim, flat);
+      F.part(line(x - (f ? 4 : 5), cy + 11, x + (f ? 4 : 5), cy + 11, 1), C.trim, flat);
+      F.dot(x, cy + 6, C.gem);
+    }
+  } else {
+    for (const side of [-1, 1]) {
+      const sx = side < 0 ? cx - W : R(cx + W), ix = cx + side * 5 + s;
+      const edge = [[sx + side * 4, cy + 22], [sx - side * 2, cy + 23], [ix + side * 2, cy + 18], [ix, cy + 1]];
+      F.part(poly([[ix, cy + 1], [sx + side * 1, cy + 3], [sx + side * 4, cy + 12], ...edge]), C.cape);
+      for (let i = 0; i < edge.length - 1; i++) F.part(line(...edge[i], ...edge[i + 1], 1), C.trim, flat);
+      F.part(line(sx + side * 2, cy + 9, sx + side * 2, cy + 20, 1), C.fold, flat);
+    }
+    if (f) {
+      F.part(poly([[cx - 6 + s, cy - 2], [cx + 6 + s, cy - 2], [cx + 8 + s, cy + 3], [cx - 8 + s, cy + 3]]), C.cape); // the stand-up collar
+      F.part(line(cx - 6 + s, cy - 2, cx + 6 + s, cy - 2, 1), C.trim, flat);
+      crest(F, cx - 5 + s, cy + 9, C);
+    } else {
+      F.part(ellipse(cx + s, cy + 2, 8, 3), C.cape); // the hood, bunched at the neck
+      F.part(line(cx - 6 + s, cy + 4, cx + 6 + s, cy + 4, 1), C.trim, flat);
+      F.part(ellipse(cx - W - 1, cy + 6, 5, 4), C.steel); // the pauldron on his right shoulder
+      F.part(ellipse(cx - W - 1, cy + 9, 4.5, 2.5), C.steel);
+      F.part(line(cx - W - 5, cy + 9, cx - W + 3, cy + 9, 1), C.trim, flat);
+      crest(F, R(cx + 8) + s, cy + 10, C);
+    }
+  }
+
+  // the arms hang at the sides: sleeves, then fingerless gloves (gauntlets on the BladeMaster)
+  for (const side of [-1, 1]) {
+    const x0 = side < 0 ? cx - W - 4 : R(cx + W + 0), x1 = side < 0 ? cx - W + 0 : R(cx + W + 4);
+    if (m) F.part(rect(x0, cy + 10, x1, cy + 17), C.armor);
+    else F.part(rect(x0, cy + 18, x1, cy + 20), C.shirt);
+    F.part(rect(x0, m ? cy + 16 : cy + 20, x1, cy + 26), m ? C.armor : C.leather);
+    F.part(line(x0, m ? cy + 16 : cy + 20, x1, m ? cy + 16 : cy + 20, 1), C.trim, flat);
+    const hx = (x0 + x1) / 2;
+    F.part(ellipse(hx, cy + 28, 2.8, 2.6), m ? C.armor : C.strap);
+    F.dot(hx, cy + 30, C.skin); F.dot(hx + side, cy + 30, C.skin);
+  }
+  return F;
+}
+
+function backView(F, o, cx, cy, s, r) {
+  const { f, W, waist, hip } = build(o), C = o.C, m = o.master;
+  const R = (v) => v - r; // the far side (the viewer's right, turning away)
+  // the sword at the hip, on the viewer's left from behind
+  F.part(line(cx - 9, cy + 26, cx - 16, cy + 54, 2), C.sheath);
+  F.part(line(cx - 15, cy + 50, cx - 16, cy + 54, 2), C.trim, flat);
+  legs(F, o, cx, cy, r, 0);
+  F.part(poly([[cx - W, cy + 3], [R(cx + W), cy + 3], [R(cx + W + 1), cy + 8], [R(cx + waist), cy + 22], [R(cx + hip), cy + 30], [cx - hip, cy + 30], [cx - waist, cy + 22], [cx - W - 1, cy + 8]]), m ? C.armor : C.shirt);
+  // below the belt
+  if (m) {
+    F.part(poly([[cx - hip, cy + 27], [R(cx + hip), cy + 27], [R(cx + hip + 2), cy + (f ? 47 : 53)], [cx - hip - 2, cy + (f ? 47 : 53)]]), C.lining);
+  } else {
+    F.part(poly([[cx - hip, cy + 27], [R(cx + hip), cy + 27], [R(cx + hip + (f ? 2 : 1)), cy + (f ? 35 : 38)], [cx - hip - (f ? 2 : 1), cy + (f ? 35 : 38)]]), C.shirt);
+    F.part(poly([[cx - 4 + s, cy + 27], [cx + 4 + s, cy + 27], [cx + 4 + s, cy + (f ? 39 : 42)], [cx - 4 + s, cy + (f ? 39 : 42)]]), C.cape);
+    F.part(line(cx - 4 + s, cy + (f ? 39 : 42), cx + 4 + s, cy + (f ? 39 : 42), 1), C.trim, flat);
+  }
+  F.part(rect(cx - hip, cy + 24, R(cx + hip), cy + 26), C.leather);
+  // the arms at the sides
+  for (const side of [-1, 1]) {
+    const x0 = side < 0 ? cx - W - 4 : R(cx + W + 0), x1 = side < 0 ? cx - W + 0 : R(cx + W + 4);
+    F.part(rect(x0, cy + 10, x1, cy + 26), m ? C.armor : C.leather);
+    F.part(ellipse((x0 + x1) / 2, cy + 28, 2.8, 2.6), m ? C.armor : C.strap);
+  }
+  if (m) {
+    // the long cape to the ankles, pointed ends, gold trim and the big crest; a white edge where it folds
+    const hem = [[R(cx + W + 8), cy + 56], [R(cx + W + 4), cy + 60], [R(cx + 7), cy + 56], [cx + 2 + s, cy + 61], [cx - 4 + s, cy + 56], [cx - W - 4, cy + 60], [cx - W - 8, cy + 56]];
+    F.part(poly([[cx - W + 2, cy + 2], [R(cx + W - 2), cy + 2], [R(cx + W + 3), cy + 12], ...hem, [cx - W - 3, cy + 12]]), C.cape);
+    for (const [x0, x1] of [[-5, -8], [5 - r, 7 - r], [-W + 1, -W - 3], [W - 1 - r, W + 3 - r]]) F.part(line(cx + x0 + s, cy + 30, cx + x1 + s, cy + 55, 1), C.fold, flat);
+    F.part(line(cx - W - 7, cy + 55, cx - W - 4, cy + 18, 1), C.lining, flat);
+    F.part(line(R(cx + W + 7), cy + 55, R(cx + W + 4), cy + 18, 1), C.lining, flat);
+    for (let i = 0; i < hem.length - 1; i++) F.part(line(hem[i][0], hem[i][1] - 1, hem[i + 1][0], hem[i + 1][1] - 1, 1), C.trim, flat);
+    F.part(rect(cx - W - 1 + s, cy + 1, R(cx + W + 1) + s, cy + 4), C.armor); // the collar and shoulders over it
+    F.part(line(cx - W - 1 + s, cy + 1, R(cx + W + 1) + s, cy + 1, 1), C.trim, flat);
+    crest(F, cx + s, cy + 24, C, true);
+    for (const side of [-1, 1]) {
+      const x = side < 0 ? cx - W - 1 : R(cx + W + 1);
+      F.part(ellipse(x, cy + 6, f ? 5 : 6, 4), C.armor);
+      F.part(line(x - (f ? 4 : 5), cy + 3, x + (f ? 4 : 5), cy + 3, 1), C.trim, flat);
+    }
+    if (f) F.part(poly([[cx - 7 + s, cy - 3], [cx + 7 + s, cy - 3], [cx + 8 + s, cy + 3], [cx - 8 + s, cy + 3]]), C.armor); // the high collar
+  } else {
+    // the capelet over the back, gold-edged, with the crest
+    F.part(poly([[cx - W - 1, cy + 2], [R(cx + W + 1), cy + 2], [R(cx + W + 4), cy + 12], [R(cx + W + 4), cy + 24], [cx - W - 4, cy + 24], [cx - W - 4, cy + 12]]), C.cape);
+    F.part(line(cx - W - 4, cy + 24, R(cx + W + 4), cy + 24, 1), C.trim, flat);
+    for (const x of [-W + 1, W - 1 - r]) F.part(line(cx + x + s, cy + 10, cx + x + s, cy + 22, 1), C.fold, flat);
+    crest(F, cx + s, cy + 14, C, true);
+    if (f) F.part(poly([[cx - 7 + s, cy - 3], [cx + 7 + s, cy - 3], [cx + 8 + s, cy + 3], [cx - 8 + s, cy + 3]]), C.cape); // the stand-up collar
+    else F.part(ellipse(cx + s, cy + 2, 9, 3.5), C.cape); // the hood, bunched at the neck
+    F.part(line(cx - 7 + s, cy + (f ? 3 : 5), cx + 7 + s, cy + (f ? 3 : 5), 1), C.trim, flat);
+    if (!f) F.part(ellipse(cx - W - 1, cy + 6, 5, 4), C.steel);
+  }
+  return F;
+}
+
+// facing right: the near (right) arm hangs at the front of the body, the cape flows behind
+function side(F, o, cx, cy) {
+  const { f } = build(o), C = o.C, m = o.master;
+  const knee = m && f ? cy + 34 : m ? cy + 41 : cy + 44;
+  const leg = (x, col) => {
+    F.part(rect(x - 3, cy + 30, x + 2, cy + 58), C.pants);
+    F.part(rect(x - 3, knee, x + 2, cy + 58), C.boot);
+    F.part(ellipse(x + 1, cy + 60.5, 4.5, 2.5), C.boot);
+    if (m) { F.part(line(x - 3, knee, x + 2, knee, 1), C.trim, flat); F.part(poly([[x + 1, cy + 42], [x + 4, cy + 44], [x + 2, cy + 49]]), C.armor); F.dot(x + 2, cy + 44, C.gem); }
+    else F.part(poly([[x + 1, knee + 1], [x + 4, knee + 2], [x + 2, knee + 6]]), col);
+  };
+  // the cape behind
+  if (m) {
+    F.part(poly([[cx - 4, cy + 2], [cx - 8, cy + 6], [cx - 16, cy + 30], [cx - 21, cy + 56], [cx - 16, cy + 53], [cx - 13, cy + 59], [cx - 8, cy + 54], [cx - 4, cy + 30]]), C.cape);
+    F.part(line(cx - 6, cy + 10, cx - 12, cy + 52, 1), C.lining, flat);
+    F.part(line(cx - 21, cy + 55, cx - 16, cy + 52, 1), C.trim, flat);
+    F.part(line(cx - 16, cy + 52, cx - 13, cy + 58, 1), C.trim, flat);
+  }
+  // the sword at the far hip, behind
+  F.part(line(cx + 3, cy + 24, cx - 13, cy + 48, 2), C.sheath);
+  F.part(line(cx - 11, cy + 45, cx - 13, cy + 48, 2), C.trim, flat);
+  leg(cx - 2, f ? C.trim : C.steel);
+  leg(cx + 2, f ? C.trim : C.steel);
+  // tails or skirt
+  if (m) F.part(poly([[cx - 6, cy + 27], [cx + 6, cy + 27], [cx + 5, cy + (f ? 46 : 52)], [cx - 9, cy + (f ? 47 : 53)]]), C.lining);
+  else F.part(poly([[cx - 6, cy + 27], [cx + 6, cy + 27], [cx + 7, cy + (f ? 35 : 38)], [cx - 7, cy + (f ? 35 : 38)]]), C.shirt);
+  F.part(poly([[cx + 2, cy + 27], [cx + 6, cy + 27], [cx + 7, cy + (f ? 39 : 43)], [cx + 3, cy + (f ? 39 : 43)]]), C.cape); // the front panel
+  F.part(line(cx + 3, cy + 28, cx + 3, cy + (f ? 39 : 43), 1), C.trim, flat);
+  // the body
+  F.part(poly([[cx - 7, cy + 2], [cx + 4, cy + 2], [cx + (f ? 8 : 7), cy + (f ? 10 : 8)], [cx + 6, cy + 22], [cx + 7, cy + 30], [cx - 7, cy + 30], [cx - 6, cy + 22], [cx - 8, cy + 8]]), m ? C.armor : C.shirt);
+  if (m && f) F.part(poly([[cx + 1, cy + 5], [cx + 7, cy + 9], [cx + 6, cy + 15], [cx + 1, cy + 15]]), C.shirt, soft);
+  F.part(rect(cx - 6, cy + 24, cx + 6, cy + 26), C.leather);
+  F.part(rect(cx + 5, cy + 24, cx + 6, cy + 26), C.trim, soft);
+  if (m) F.part(poly([[cx - 7, cy + 26], [cx - 3, cy + 26], [cx - 3, cy + 30], [cx - 7, cy + 30]]), C.leather);
+  // shoulders and collar
+  if (m) {
+    F.part(poly([[cx - 4, cy - 3], [cx + 2, cy - 2], [cx + 3, cy + 4], [cx - 6, cy + 4]]), C.armor);
+    F.part(line(cx - 4, cy - 3, cx + 2, cy - 2, 1), C.trim, flat);
+    if (!f) F.part(ellipse(cx + 2, cy + 3, 3, 2), C.scarf);
+  } else {
+    F.part(poly([[cx - 7, cy + 1], [cx + 3, cy + 1], [cx + 6, cy + 10], [cx + 3, cy + 20], [cx - 11, cy + 25], [cx - 12, cy + 10]]), C.cape);
+    F.part(line(cx + 3, cy + 20, cx - 11, cy + 25, 1), C.trim, flat);
+    F.part(line(cx - 8, cy + 8, cx - 9, cy + 22, 1), C.fold, flat);
+    F.part(line(cx + 6, cy + 10, cx + 3, cy + 20, 1), C.trim, flat);
+    if (f) { F.part(poly([[cx - 4, cy - 3], [cx + 2, cy - 2], [cx + 3, cy + 3], [cx - 6, cy + 3]]), C.cape); F.part(line(cx - 4, cy - 3, cx + 2, cy - 2, 1), C.trim, flat); }
+    else F.part(ellipse(cx - 1, cy + 2, 6, 3), C.cape);
+  }
+  // the near arm, hanging
+  if (m) {
+    F.part(ellipse(cx - 1, cy + 7, 5.5, 4.5), C.armor);
+    F.part(line(cx - 5, cy + 3, cx + 3, cy + 3, 1), C.trim, flat);
+    F.dot(cx - 1, cy + 7, C.gem);
+  } else if (!f) F.part(ellipse(cx - 1, cy + 6, 4.5, 3.5), C.steel);
+  F.part(rect(cx - 3, cy + (m ? 11 : 20), cx + 1, cy + 26), m ? C.armor : C.leather);
+  if (!m) F.part(rect(cx - 3, cy + 18, cx + 1, cy + 19), C.shirt);
+  F.part(line(cx - 3, cy + (m ? 16 : 20), cx + 1, cy + (m ? 16 : 20), 1), C.trim, flat);
+  F.part(ellipse(cx, cy + 28, 2.6, 2.6), m ? C.armor : C.strap);
+  F.dot(cx + 2, cy + 29, C.skin);
+  return F;
+}
+
+// dir -> [view, mirrored]; heads: the trainee's head data, { dir: [x, crown, neck, ...] }
+const VIEWS = {
+  down: ['front', false], downright: ['front3', false], right: ['side', false], upright: ['back3', false], up: ['back', false],
+  downleft: ['front3', true], left: ['side', true], upleft: ['back3', true],
+};
+// one design's frames: { dir: { canvas, foot } } (foot: rows from the frame's bottom to the ground)
+export function paintBlader(id, heads) {
+  const o = BLADERS[id], out = {};
+  for (const [dir, [view, flip]] of Object.entries(VIEWS)) {
+    const [x, , neck] = heads[dir];
+    const cx = flip ? BW - 1 - x : x; // a mirrored view is painted unmirrored, then flipped
+    const F = paint(o, view, Math.round(cx), neck);
+    out[dir] = { canvas: (flip ? F.mirror() : F).toCanvas(), foot: BH - (neck + LEGS) };
+  }
+  return out;
+}
