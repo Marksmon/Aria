@@ -497,6 +497,9 @@ its last step goes back to the trainer. Monsters an active quest still wants res
 Quit quest sits at the left of the Quest View's buttons and asks twice. The main people greet you
 differently as your job and the story change.
 
+**Water.** The shallow edge of a lake (Fenstrand's pond, Saltvik's bay) can be waded: the hero and
+monsters are cut at the waterline, Ragnarok style, and rings spread round them as they move.
+
 ## Day and night
 
 A full day lasts 10 minutes. Night brings Wisps and extra monsters. Rest in the tent

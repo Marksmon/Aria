@@ -58,6 +58,20 @@ export class FX {
     }
   }
 
+  // a ring spreading on the water round someone wading in the shallows
+  ripple(x, y, z, size = 1) {
+    let m = this.ripples?.pop();
+    if (!m) {
+      this.ringGeo ||= new THREE.RingGeometry(0.78, 1, 28).rotateX(-Math.PI / 2);
+      m = new THREE.Mesh(this.ringGeo, new THREE.MeshBasicMaterial({ color: '#e8f6ff', transparent: true, depthWrite: false }));
+      m.renderOrder = 2; // over the water
+      this.scene.add(m);
+    }
+    m.position.set(x, y, z);
+    m.visible = true;
+    this.live.push({ m, t: 0, life: 0.9, kind: 'ripple', sc: 0.25 * size });
+  }
+
   // a spell flying at a monster: a glowing ball with a trail; onHit() when it lands
   bolt(x, y, z, target, color, onHit, size = 0.55) {
     const s = this.sprite(this.lib.fx.puff, { depthTest: false, renderOrder: 5 });
@@ -244,6 +258,12 @@ export class FX {
           this.live.push({ s, t: 0, life: 0.3, kind: 'puff', v: [0, 0.3, 0], sc: e.sc * 0.6, color: true });
           s.scale.set(e.sc * 0.6, e.sc * 0.6, 1);
         }
+      } else if (e.kind === 'ripple') {
+        const sc = e.sc * (1 + k * 3.2);
+        e.m.scale.set(sc, 1, sc);
+        e.m.material.opacity = 0.55 * (1 - k);
+        if (k >= 1) { e.m.visible = false; (this.ripples ||= []).push(e.m); this.live.splice(i, 1); }
+        continue;
       } else if (e.kind === 'puff') {
         e.s.position.x += e.v[0] * dt;
         e.s.position.y += e.v[1] * dt;

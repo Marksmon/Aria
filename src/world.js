@@ -169,7 +169,11 @@ function buildMap(id, scene, lib, shared) {
     return Math.max(h, WATER_Y + 0.25);
   }
 
-  const walkable = (x, z) => edgeDist(x, z) > 2.4 && (!isCamp || campR(x, z) < CAMP_R) && heightAt(x, z) > WATER_Y + 0.08;
+  // a lake's shallow edge (to about knee deep) can be waded: the water hides the feet (see wading)
+  const SHALLOW = LAKE ? WATER_Y - 0.22 : WATER_Y + 0.08;
+  const walkable = (x, z) => edgeDist(x, z) > 2.4 && (!isCamp || campR(x, z) < CAMP_R) && heightAt(x, z) > SHALLOW;
+  // standing in the water: how deep (0 on dry land)
+  const wading = (x, z) => (LAKE ? Math.max(0, WATER_Y + 0.04 - heightAt(x, z)) : 0);
   const isSafe = () => isCamp || isCity; // towns are safe ground
 
   function colorAt(x, z, h) {
@@ -491,7 +495,7 @@ function buildMap(id, scene, lib, shared) {
   }
 
   return {
-    id, group, heightAt, walkable, isSafe, resolve, addSolid, update, terrain, updateOcclusion, portals,
+    id, group, heightAt, walkable, wading, isSafe, resolve, addSolid, update, terrain, updateOcclusion, portals,
     minimap: mini, fireMat, fireLight, stats: { props: props.length, interior },
     zoneAt: () => id,
   };
@@ -582,6 +586,7 @@ export function buildWorld(scene, lib) {
     get stats() { return cur.stats; },
     heightAt: (x, z) => cur.heightAt(x, z),
     walkable: (x, z) => cur.walkable(x, z),
+    wading: (x, z) => cur.wading(x, z),
     resolve: (x, z, r) => cur.resolve(x, z, r),
     isSafe: (x, z) => cur.isSafe(x, z) && (cur.id !== 'camp' || Math.hypot(x - CENTER, z - CENTER) < CAMP_R + 2),
     zoneAt: () => cur.id,

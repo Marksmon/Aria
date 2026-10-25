@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import './style.css';
 import { createSprites } from './sprites.js';
-import { buildWorld, ZONE_NAMES, MAPS } from './world.js';
+import { buildWorld, ZONE_NAMES, MAPS, WATER_Y } from './world.js';
 import { CITY, MAGIC } from './city.js';
 import { Player } from './player.js';
 import { Input } from './input.js';
@@ -29,6 +29,7 @@ import { clamp, lerp } from './noise.js';
 const canvas = document.getElementById('game');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, powerPreference: 'high-performance' });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
+renderer.localClippingEnabled = true; // wading: sprites are cut at the waterline
 
 const scene = new THREE.Scene();
 const SKY = new THREE.Color('#a3c9d8');
@@ -527,6 +528,35 @@ function tickNav() {
   player.command({ x: p.x, z: p.z, reach: 0.05 });
 }
 const stopNav = () => { if (nav) { nav = null; refreshQuests(); } };
+
+// ---------- wading: in a lake's shallows the water hides the feet, and rings spread round them ----------
+// A sprite faces the camera, so the water cannot hide its feet by depth: like Ragnarok, the sprite is
+// cut at the waterline instead (a clipping plane on its material while it stands in the water)
+const waterLine = new THREE.Plane(new THREE.Vector3(0, 1, 0), -WATER_Y); // keeps what is above the surface
+function wet(mat, on) {
+  if (!!mat.userData.wet === on) return;
+  mat.userData.wet = on;
+  mat.clippingPlanes = on ? [waterLine] : null;
+  mat.needsUpdate = true;
+}
+let wadeT = 0;
+function tickWading(dt) {
+  const inWater = world.wading(player.x, player.z) > 0;
+  for (const mat of [player.mat, player.headSpr.material, player.hairSpr.material]) wet(mat, inWater);
+  for (const m of mobs.list) wet(m.mat, m.alive && !m.def.fly && world.wading(m.x, m.z) > 0);
+  wadeT -= dt;
+  if (wadeT > 0) return;
+  wadeT = 0.32;
+  const ring = (o, moving, size) => {
+    if (world.wading(o.x, o.z) > 0 && (moving || Math.random() < 0.25)) fx.ripple(o.x, WATER_Y + 0.015, o.z, size);
+  };
+  ring(player, player.moving, 1);
+  for (const m of mobs.list) {
+    if (!m.alive || m.def.fly || Math.hypot(m.x - player.x, m.z - player.z) > 16) continue;
+    ring(m, m.walked !== m.wadeW, m.def.w); // walked: how far it has gone in all, so a change means it moved
+    m.wadeW = m.walked;
+  }
+}
 
 // ---------- quests out in the world: searches, defences and rare hunts ----------
 let searchT = 0, defense = null, waveRest = 0; // waveRest: a breather between a defence's waves
@@ -1397,6 +1427,7 @@ function frame() {
   villagers.update(dt, player, b);
   if (live) fx.update(dt);
   if (live) { naturalRegen(dt); tickSkills(dt); checkPortals(); tickNav(); tickQuestWorld(dt); }
+  if (live) tickWading(dt);
   tickAura(dt, t, b);
   updateCastBar();
   hotbar.update();
