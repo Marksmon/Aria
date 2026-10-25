@@ -5,9 +5,9 @@
 //   high collar, a black shirt with a gold and blue gem pendant, white inner panels, a brown belt
 //   with pouches, fingerless gloves, black trousers (black tights on her, with a white blouse and a
 //   black corset) and black boots edged in gold; a bronze staff holding a blue crystal in a ring.
-// - Wizard, grander than the Sorcerer: a deep navy robe to the ankles over a longer white layer,
+// - Wizard, grander than the Sorcerer: a deep navy robe to the ankles over a longer red layer,
 //   every point of its hem hung with a blue crystal, gold filigree down its panels, a tall flared
-//   collar standing behind the head, a broad gold-edged mantle with gems at the shoulders, long
+//   collar (red inside) standing behind the head, a broad gold-edged mantle with gems at the shoulders, long
 //   sleeves with crystal tassels, a wide black sash with a gold medallion, a chained book at the
 //   hip, black boots (thigh-high on her, the robe open over them); a tall gold staff with crossed
 //   rings around a blue star, sparkling.
@@ -24,8 +24,8 @@ const SORC = {
   gem: '#5a86f0', shaft: '#7a5530', glove: '#2c2630',
 };
 const WIZ = {
-  coat: '#25317a', fold: '#1b245e', lining: '#eeebf2', liningDk: '#c9c6d6', trim: '#d8ae4e', shirt: '#211d2c',
-  blouse: '#f0ede6', leather: '#5e3c26', strap: '#40281a', pants: '#1f1c27', boot: '#221f2a', skin: '#f2c8a2',
+  coat: '#25317a', fold: '#1b245e', lining: '#b8262e', liningDk: '#861a22', trim: '#d8ae4e', shirt: '#211d2c',
+  blouse: '#c8343a', leather: '#5e3c26', strap: '#40281a', pants: '#1f1c27', boot: '#221f2a', skin: '#f2c8a2',
   gem: '#4c90ff', shaft: '#d8ae4e', glove: '#252030', book: '#2a3478',
 };
 export const MAGES = {
@@ -99,7 +99,7 @@ function staff(F, x, top, bottom, C, wiz) {
 }
 
 // one side of the Wizard's tall collar, standing up behind the head and flaring out beside it,
-// white inside and edged in gold. X(u): a point u pixels out from the middle on this side
+// its lining inside and edged in gold. X(u): a point u pixels out from the middle on this side
 function collar(F, X, cy, C) {
   const pts = [[X(4), cy + 3], [X(7), cy - 4], [X(16), cy - 11], [X(15), cy - 3], [X(11), cy + 4]];
   F.part(poly(pts), C.coat);
