@@ -1,9 +1,9 @@
 // Sprite designs for the Trainee, male and female, painted in code like the job designs (bladers.js)
 // on the bald bodies' frame, so the shared head and hair go on top (docs/character-standard.md).
-// After the owner's Trainee sheet: a navy vest with a small steel chestplate over a white shirt with
+// After the owner's Trainee sheet, in brown where the sheet has blue: a brown vest with a small steel chestplate over a white shirt with
 // rolled sleeves and a pointed collar, brown leather shoulder straps, belts and a satchel at the hip,
-// fingerless gloves with bracers; on him baggy dark trousers tucked into tall cuffed boots and a navy
-// front panel with the compass star, on her a short navy skirt over white, a thigh strap and knee
+// fingerless gloves with bracers; on him baggy dark trousers tucked into tall cuffed boots and a brown
+// front panel with the compass star, on her a short brown skirt over white, a thigh strap and knee
 // boots. The sheet has no weapon, so the owner gave the Trainee a dagger.
 // Standing, walking (8 frames) and attacking (7: a dagger slash), 8 directions: the left ones are the
 // right ones mirrored. Not used in the game yet. Plain canvas, no three.js.
@@ -14,9 +14,9 @@ export const BW = 106, BH = 108; // the bald bodies' frame (src/art/trainee.json
 const LEGS = 63;                 // chin to ground, in pixels, in every direction
 
 const C = {
-  vest: '#2f3b70', vestLt: '#4a5994', shirt: '#efe9de', shirtDk: '#cfc6b6', steel: '#b9bec8', leather: '#7a4a2c',
-  strap: '#553321', pants: '#2b2730', boot: '#4e3122', trim: '#c9a24a', skin: '#f2c8a2', glove: '#3a2a22',
-  blade: '#d8dce4', edge: '#ffffff', emblem: '#dfe4f2',
+  vest: '#8a5a34', vestLt: '#a8744a', shirt: '#efe9de', shirtDk: '#cfc6b6', steel: '#b9bec8', leather: '#5a3824',
+  strap: '#3a2316', pants: '#2b2730', boot: '#4a2e1f', trim: '#c9a24a', skin: '#f2c8a2', glove: '#3a2a22',
+  blade: '#d8dce4', edge: '#ffffff', emblem: '#f1e3c4',
 };
 export const TRAINEES = { traineeM: { name: 'Trainee', sex: 'm' }, traineeF: { name: 'Trainee', sex: 'f' } };
 
@@ -29,7 +29,7 @@ function build(o) {
   return { f, W: f ? 10 : 11, waist: f ? 7 : 9, hip: f ? 9 : 9, knee: f ? 44 : 43 };
 }
 
-// the compass star, small, in white on navy
+// the compass star, small, in cream on the brown
 function star(F, x, y) {
   F.part(poly([[x, y - 3], [x + 1, y - 1], [x + 3, y], [x + 1, y + 1], [x, y + 3], [x - 1, y + 1], [x - 3, y], [x - 1, y - 1]]), C.emblem, flat);
 }
@@ -100,17 +100,17 @@ function frontView(F, o, cx, cy, s, r) {
   F.part(poly([[cx - W, cy + 3], [R(cx + W), cy + 3], [R(cx + W + 1), cy + 8], [R(cx + waist), cy + 22], [R(cx + hip), cy + 28], [cx - hip, cy + 28], [cx - waist, cy + 22], [cx - W - 1, cy + 8]]), C.shirt);
   if (f) {
     F.part(poly([[cx - hip, cy + 26], [R(cx + hip), cy + 26], [R(cx + hip + 3), cy + 37], [cx - hip - 3, cy + 37]]), C.shirt); // the white underskirt
-    F.part(poly([[cx - hip, cy + 26], [R(cx + hip), cy + 26], [R(cx + hip + 2), cy + 35], [cx - hip - 2, cy + 35]]), C.vest); // the navy skirt
+    F.part(poly([[cx - hip, cy + 26], [R(cx + hip), cy + 26], [R(cx + hip + 2), cy + 35], [cx - hip - 2, cy + 35]]), C.vest); // the brown skirt
     F.part(line(cx - hip - 2, cy + 35, R(cx + hip + 2), cy + 35, 1), C.trim, flat);
   }
-  // the navy front panel, hanging from the belt on his right (the viewer's left), white-edged, the star on it
+  // the brown front panel, hanging from the belt on his right (the viewer's left), white-edged, the star on it
   const pl = f ? 41 : 47;
   F.part(poly([[cx - 6 + s, cy + 26], [cx + s, cy + 26], [cx + s, cy + pl - 2], [cx - 3 + s, cy + pl], [cx - 6 + s, cy + pl - 2]]), C.vest);
   F.part(line(cx - 6 + s, cy + pl - 2, cx - 3 + s, cy + pl, 1), C.shirt, flat);
   F.part(line(cx - 3 + s, cy + pl, cx + s, cy + pl - 2, 1), C.shirt, flat);
   star(F, cx - 3 + s, cy + pl - 7);
 
-  // the navy vest, open at the top over the shirt and its collar; the steel chestplate
+  // the brown vest, open at the top over the shirt and its collar; the steel chestplate
   F.part(poly([[cx - W, cy + 3], [cx - 3 + s, cy + 3], [cx - 1 + s, cy + 12], [cx - 2 + s, cy + 23], [cx - waist, cy + 23], [cx - W - 1, cy + 8]]), C.vest);
   F.part(poly([[R(cx + W), cy + 3], [cx + 3 + s, cy + 3], [cx + 1 + s, cy + 12], [cx + 2 + s, cy + 23], [R(cx + waist), cy + 23], [R(cx + W + 1), cy + 8]]), C.vest);
   if (f) F.part(rect(cx - 2 + s, cy + 12, cx + 2 + s, cy + 23), C.vest, soft); // hers closes below the chest
@@ -155,7 +155,7 @@ function backView(F, o, cx, cy, s, r) {
   F.part(poly([[cx - W, cy + 3], [R(cx + W), cy + 3], [R(cx + W + 1), cy + 8], [R(cx + waist), cy + 24], [cx - waist, cy + 24], [cx - W - 1, cy + 8]]), C.vest);
   F.part(line(cx - 7 + s, cy + 3, R(cx + 6) + s, cy + 22, 1), C.strap, flat);
   F.part(line(R(cx + 7) + s, cy + 3, cx - 6 + s, cy + 22, 1), C.strap, flat);
-  F.part(ellipse(cx + s, cy + 12, 3.5, 3.5), C.vest, soft); // the star, on a navy patch over the straps' crossing
+  F.part(ellipse(cx + s, cy + 12, 3.5, 3.5), C.vest, soft); // the star, on a patch of the vest over the straps' crossing
   star(F, cx + s, cy + 12);
   const pl = f ? 40 : 46;
   F.part(poly([[cx - 4 + s, cy + 25], [cx + 4 + s, cy + 25], [cx + 4 + s, cy + pl - 3], [cx + s, cy + pl], [cx - 4 + s, cy + pl - 3]]), C.vest);
