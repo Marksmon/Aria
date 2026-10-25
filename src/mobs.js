@@ -26,9 +26,9 @@ export const MOB_DEFS = {
   // These are their own stats; in the raid each is rebuilt at the difficulty's level (raidDef)
   yellowSlime: { raid: true, name: 'Yellow Bloop', ai: 'hopper', art: 'slimeYellow', el: 'wind', lv: 12, hp: 330, atk: [22, 28], def: 2, vit: 10, agi: 12, dex: 20, exp: [30, 21], adelay: 1500, walk: 400, aggro: 5, chase: 5, reach: 0.8, w: 1.0, r: 0.38, drops: [['gel', 1, 2, 1], ['dew', 1, 1, 0.4], ['shiny_gel', 1, 1, 0.01]] },
   redSlime: { raid: true, name: 'Red Bloop', ai: 'hopper', art: 'slimeRed', el: 'fire', lv: 18, hp: 560, atk: [36, 46], def: 4, vit: 16, agi: 16, dex: 30, exp: [75, 52], adelay: 1450, walk: 300, aggro: 5, chase: 6, reach: 0.8, w: 1.05, r: 0.4, drops: [['gel', 1, 2, 1], ['cinder', 1, 1, 0.1], ['shiny_gel', 1, 1, 0.01]] },
-  // the raid's boss: BleepBloop, a giant, scarred old war bloop with an eyepatch, a beard and a dented
-  // helm, painted in code (bleepbloop.js). It belly-flops
-  // onto you, charges, stomps, and calls Red Bloops; only ever met in the raid, at the raid's level
+  // the raid's boss: BleepBloop, a giant old bloop general (white beard, plumed hat, mantle), painted
+  // in code (bleepbloop.js). It belly-flops onto you, charges, stomps, and calls Red Bloops; only ever
+  // met in the raid, at the raid's level
   bleepBloop: { raid: true, name: 'BleepBloop', ai: 'boss', art: 'bleepBloop', el: 'neutral', boss: true, lv: 35, hp: 9600, atk: [62, 80], def: 14, vit: 35, agi: 24, dex: 52, exp: [9000, 6300], adelay: 1600, walk: 300,
     moves: [{ kind: 'leap', name: 'Belly Flop', mult: 1.6, r: 2.0 }, { kind: 'charge', name: "Veteran's Charge", mult: 1.5 }], stomp: 1.5,
     aggro: 99, chase: 99, reach: 1.4, w: 2.6, r: 0.95, heavy: true, summon: ['redSlime', 'redSlime', 'redSlime'], summonText: 'BleepBloop bellows an old war cry, and Red Bloops come bouncing!', drops: [] },
