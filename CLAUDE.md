@@ -17,6 +17,9 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
 - **Damage balance:** second jobs hit about 2–4x their first job; Blader and Sorcerer stay close.
   Do not even out the BladeMaster and the Wizard: the BladeMaster is not elemental and keeps the
   higher steady damage, while the Wizard's elements make up the gap (see `docs/job-rules.md`).
+- **Second-job skills:** the BladeMaster and Magic Knight keep to 3–4 active skills each (add
+  passives, not actives). Area and multi-hit skills work Ragnarok style; their freeze, paralyze, stun
+  and burn work on bosses too, at a third of the chance for half as long.
 - **Quests:** side quests and job trials can be quit from the Quest View; the main story quest
   can never be quit.
 - **Character art:** bodies are bald to the standard in `docs/character-standard.md`; the game

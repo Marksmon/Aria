@@ -178,7 +178,7 @@ they change your job. Elder Halvard sends ready Trainees on to the city.
 | Heavy Strike | 10, needs Cleave 3 | 195–420%, +3% hit per level |
 | War Cry | 10 | monsters within 6 paces turn on you; ATK +1% per level for 20 s |
 | Stand Firm | 10, needs War Cry 3 | no flinching, 1% less damage per level |
-| Ground Slash | 10, needs Heavy Strike 5 | 145–280% to everything close, pushing it back a little |
+| Ground Slash | 10, needs Heavy Strike 5 | 145–280% to everything close, pushing it back a little; 2% per level to stun for 1 s |
 | Battle Rhythm | Job 10, passive | every 5th hit restores 1 SP |
 | Last Stand | Job 10, passive | below 25% HP: +15% ATK |
 
@@ -191,9 +191,9 @@ A new Sorcerer is handed an Wooden Staff.
 |---|---|---|
 | Mana Well | passive, 10 | +2% Max SP and +1 SP per recovery tick, per level |
 | Ember Bolt | 10, 5–14 SP | a fire bolt: 82–190% MATK |
-| Frost Shard | 10, 7–16 SP | 68–140% MATK, 4% per level to freeze for 2.5 s |
-| Arc Lightning | 10, needs Ember Bolt 4 | 67–130% MATK, leaps to 2 monsters nearby for half |
-| Flame Ring | 10, needs Ember Bolt 5 | 78–150% MATK to every monster around you |
+| Frost Shard | 10, 7–16 SP | like Cold Bolt: one shard of ice per level, falling one after another, 21–30% MATK each |
+| Arc Lightning | 10, needs Ember Bolt 4 | 67–130% MATK, leaps to 2 monsters nearby for half; 2% per level to paralyze each for 1.2 s |
+| Flame Ring | 10, needs Ember Bolt 5 | 78–150% MATK to every monster around you; 2% per level to set each burning for 3 s |
 | Rune Ward | 10, needs Mana Well 3 | 30 s: 2% less damage per level, hits don't break your chant |
 | Blink | Job 10 | reappear 4 paces ahead |
 | Swift Chant | Job 10, passive | spells cast 15% faster |
@@ -213,8 +213,8 @@ Sorcerer's trial may hold a staff to cast.
 | Needs a sword (any weapon but a staff) | Needs a staff |
 |---|---|
 | Cleave, Heavy Strike, Ground Slash (Blader) | Ember Bolt, Frost Shard, Arc Lightning, Flame Ring (Sorcerer) |
-| Twin Fang, Piercing Edge, Final Blade (BladeMaster) | Stone Spike, Earthquake, Meteor Storm, Storm Gust, Thunderstorm (Wizard) |
-| Flame Edge, Frost Edge, Thunder Edge (Magic Knight) | |
+| Twin Fang, Piercing Edge, Final Blade, Blade Dance (BladeMaster) | Stone Spike, Earthquake, Meteor Storm, Storm Gust, Thunderstorm (Wizard) |
+| Elemental Edge, Elemental Blade, Elemental Nova (Magic Knight) | |
 
 No weapon needed: Mend, Thrust, Guard, Rest, War Cry, Stand Firm, Rune Ward, Blink, Stone Aegis.
 
@@ -245,27 +245,33 @@ points stay. Second jobs wear their first job's outfit in new colours and glow w
 | Combo Edge | passive, 10: Thrust, Cleave, Heavy Strike, Twin Fang and Piercing Edge have 4% per level to Combo, a free extra strike |
 | Momentum | passive, 5: each Combo adds a stack (up to 5, 8 s), +1% ATK per level per stack |
 | Twin Fang | 10: two cuts of 146–290%, each can Combo |
-| Piercing Edge | 10, needs Twin Fang 3: 318–660%, ignoring half the monster's DEF |
-| Final Blade | 5, needs Piercing Edge 5 and Momentum 1: spends every Momentum stack, 540–900% +60% per stack |
+| Piercing Edge | 10, needs Twin Fang 3: three quick thrusts of 108–225% each, ignoring half the monster's DEF |
+| Final Blade | 5, needs Piercing Edge 5 and Momentum 1: spends every Momentum stack on a flurry of 8 cuts, 66–110% each, +8% each per stack |
+| Blade Dance | 5, needs Piercing Edge 3 and Combo Edge 3: like Omnislash, you vanish and dash from monster to monster within 5 paces of your target, one at a time, 5–9 slashes of 164–260% (each can Combo); nothing can touch you while you dance. 18 s cooldown |
 
 | Wizard: the elements, over an area | |
 |---|---|
 | Elemental Attunement | passive, 10: spells +3% per level, and a further +3% per level to a monster weak to the spell's element |
 | Resonance | passive, 5: a spell of a different element from the last (within 8 s) +6% per level |
 | Stone Spike | 10: 114–240% MATK, Earth (new element for spells); Shatters the monster: the next spell of another element on it +30% |
-| Earthquake | 10, needs Stone Spike 3: 79–160% MATK Earth within 3 paces of the target, may stun |
-| Meteor Storm | 10, needs Ember Bolt 5: three falls of 51–105% MATK Fire around the target |
-| Storm Gust | 10, needs Frost Shard 5: 79–160% MATK Water around the target, may freeze |
-| Thunderstorm | 10, needs Arc Lightning 5: 79–160% MATK Wind around the target |
+| Earthquake | 10, needs Stone Spike 3: three shocks of 44–80% MATK Earth within 3 paces of the target; 1.5% per level each to stun for 1.5 s |
+| Meteor Storm | 10, needs Ember Bolt 5: 3–7 meteors crash one after another at random spots within 3 paces of the target, 55–100% MATK Fire around each; 3% per level to set each monster hit burning |
+| Storm Gust | 10, needs Frost Shard 5: a 3 s blizzard, 10 gusts of 13–22% MATK Water within 3 paces; from a monster's third gust, 2% per level each to freeze it for 2.5 s |
+| Thunderstorm | 10, needs Arc Lightning 5: like Lord of Vermillion, 6 waves of lightning, 20–38% MATK Wind each within 3 paces; 1.5% per level each to paralyze for 1.5 s |
 
 | Magic Knight: ATK and MATK together | |
 |---|---|
 | Spellblade | passive, 10: sword hits add 3% of your MATK per level |
-| Elemental Chain | passive, 5: an Edge of a different element from your last (within 6 s) +6% per level and 3 SP back |
-| Flame Edge | 10: 186–330% ATK plus 103–220% MATK, Fire |
-| Frost Edge | 10: 176–320% ATK plus 113–230% MATK, Water; may freeze |
-| Thunder Edge | 10, needs Flame and Frost Edge 3: 166–310% ATK plus 103–220% MATK, Wind; half to monsters beside |
+| Elemental Chain | passive, 5: an Elemental Edge of a different element from your last (within 6 s) +6% per level and 3 SP back |
+| Elemental Edge | 10: two quick cuts of 110–200% ATK plus 63–135% MATK each, in your blade's element (none without Elemental Blade). 3% per level each: Fire burns, Water freezes, Earth stuns, Wind crackles into the monsters beside for half and may paralyze them |
+| Elemental Blade | 5, needs Spellblade 1: imbue your sword for 90–210 s; normal attacks, Edges and Novas strike as its element. Use it again to switch, free while it lasts: Fire → Water → Wind → Earth |
+| Elemental Nova | 5, needs Elemental Edge 3 and Elemental Chain 1: three waves of your blade's element roll out around you to 2.5, 4 and 5.5 paces, 116–180% ATK plus 70–110% MATK each; 4% per level each to burn, freeze, paralyze or stun by element |
 | Stone Aegis | 10: 20 s barrier soaking 60–150% of your ATK plus as much of your MATK, +1 DEF per level |
+
+**Status effects.** Some skills may **freeze**, **paralyze** or **stun** a monster (it stands
+helpless, tinted blue, yellow or grey) or set it **burning** (it loses a fifth of the hit that lit it
+every second for 3 s, flickering orange). Bosses and MVPs resist: a third of the chance, for half as
+long, and nothing takes hold while a boss is in the middle of a move.
 
 **Elements.** Every monster has an element, as in Ragnarok, and so do spells and some weapons.
 Ember Bolt and Flame Ring are Fire, Frost Shard is Water, Arc Lightning is Wind; normal attacks

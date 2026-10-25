@@ -41,8 +41,8 @@ quests. Code: `src/progress.js` (jobs, levels, points), `src/skills.js` (trees, 
 | Needs a sword (any weapon but a staff) | Needs a staff |
 |---|---|
 | Cleave, Heavy Strike, Ground Slash (Blader) | Ember Bolt, Frost Shard, Arc Lightning, Flame Ring (Sorcerer) |
-| Twin Fang, Piercing Edge, Final Blade (BladeMaster) | Stone Spike, Earthquake, Meteor Storm, Storm Gust, Thunderstorm (Wizard) |
-| Flame Edge, Frost Edge, Thunder Edge (Magic Knight) | |
+| Twin Fang, Piercing Edge, Final Blade, Blade Dance (BladeMaster) | Stone Spike, Earthquake, Meteor Storm, Storm Gust, Thunderstorm (Wizard) |
+| Elemental Edge, Elemental Blade, Elemental Nova (Magic Knight) | |
 
 No weapon needed: Mend, Thrust, Guard, Rest, War Cry, Stand Firm, Rune Ward, Blink, Stone Aegis.
 
@@ -74,6 +74,18 @@ No weapon needed: Mend, Thrust, Guard, Rest, War Cry, Stand Firm, Rune Ward, Bli
 | 20 / 5 | BladeMaster |
 | 5 / 20 | Wizard |
 | any, below Job 40 | none |
+
+## Second-job skills
+
+- **Three or four active skills per second job** (the owner's rule). BladeMaster: Twin Fang,
+  Piercing Edge, Final Blade, Blade Dance. Magic Knight: Elemental Edge, Elemental Blade,
+  Elemental Nova, Stone Aegis. Wizard: Stone Spike, Earthquake, Meteor Storm, Storm Gust,
+  Thunderstorm (its area spells were asked for by name). Add passives rather than more actives.
+- **Multi-hit, Ragnarok style:** the Wizard's area spells strike again and again over a few seconds
+  (Storm Gust, Lord of Vermillion), and so do Piercing Edge, Final Blade, Elemental Edge and
+  Elemental Nova. `hits`/`every` on the skill, `power` per hit.
+- **Status effects** (freeze, paralyze, stun, burn) come with area skills and by element. Bosses
+  resist: a third of the chance for half as long, never immune.
 
 ## Damage balance between jobs
 

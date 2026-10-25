@@ -55,7 +55,7 @@ export class DayNight {
     this.tint.copy(A.tint).lerp(B.tint, k);
 
     for (const m of this.world.tintMats) m.color.copy(this.tint);
-    for (const m of this.mobs.tint) { m.color.copy(this.tint); if (m.userData.tint) m.color.multiply(m.userData.tint); }
+    for (const m of this.mobs.tint) { m.color.copy(this.tint); if (m.userData.tint) m.color.multiply(m.userData.tint); if (m.userData.fx) m.color.multiply(m.userData.fx); }
     this.player.tint = this.tint;
     this.world.fireBoost = 1 + this.night * 0.8;
 

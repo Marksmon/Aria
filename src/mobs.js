@@ -81,6 +81,9 @@ export const MOVES = {
   frenzy: { cd: 22, dur: 8, below: 0.5 },
 };
 const RESPAWN = 60;
+const WHITE = new THREE.Color('#ffffff');
+const STATUS_COL = Object.fromEntries(Object.entries({ freeze: '#8fd0ff', paralyze: '#fff27a', stun: '#d8c8a8', burn: '#ff9a6a', burn2: '#ffc08a', rage: '#ff8a7a', rage2: '#ffb0a0' })
+  .map(([k, c]) => [k, new THREE.Color(c)]));
 // A boss (MVP or mini-boss) first calls its guards when it falls below 60% HP. It calls again only
 // once every guard is gone, and not until 2 minutes after the last one fell, while it still fights.
 const SUMMON_AT = 0.6, SUMMON_CD = 120;
@@ -137,7 +140,9 @@ class Mob {
     this.moveCd = {};        // per move: seconds until it can be used again
     this.nextMove = 3;       // seconds until any move
     this.rageT = 0;          // frenzy left
-    this.mat.color.set('#ffffff');
+    this.status = null;      // why it is helpless while stunT lasts: freeze, paralyze, stun
+    this.burnT = 0;          // burning (main.js inflict)
+    this.mat.userData.fx = null;
     this.guardsGoneT = -1e9; // when (its own clock, this.t) its last guard fell
     this.sprite.visible = this.shadow.visible = true;
     const upp = d.w / this.art.body[0]; // def.w is the body width
@@ -516,7 +521,11 @@ class Mob {
     const tex = this.frame(moving);
     if (this.mat.map !== tex) { this.mat.map = tex; this.sprite.center.y = tex.userData.anchor; }
     this.mat.rotation = low && !this.act ? Math.sin(this.t * 15) * 0.13 : 0;
-    if (d.moves) this.mat.color.set(this.rageT > 0 ? (Math.sin(this.t * 10) > 0 ? '#ff8a7a' : '#ffb0a0') : '#ffffff');
+    // a colour over the monster for what ails it (daynight.js multiplies it in)
+    this.mat.userData.fx = this.stunT > 0 && this.status ? STATUS_COL[this.status]
+      : this.burnT > 0 ? (Math.sin(this.t * 12) > 0 ? STATUS_COL.burn : STATUS_COL.burn2)
+      : this.rageT > 0 ? (Math.sin(this.t * 10) > 0 ? STATUS_COL.rage : STATUS_COL.rage2) : null;
+    if (!this.mgr.tint.includes(this.mat)) this.mat.color.copy(this.mat.userData.tint || WHITE).multiply(this.mat.userData.fx || WHITE);
 
     const y = this.mgr.world.heightAt(this.x, this.z);
     this.sprite.position.set(this.x, y + lift, this.z);

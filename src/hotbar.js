@@ -5,6 +5,7 @@
 // bar to clear them.
 import { ITEMS, iconURL } from './items.js';
 import { SKILLS } from './skills.js';
+import { OLD_EDGES } from './progress.js';
 
 export const SLOTS = 6;
 export const PAGES = 3;
@@ -146,6 +147,7 @@ export class Hotbar {
     const pages = Array.isArray(d) ? [d] : Array.isArray(d?.pages) ? d.pages : null;
     if (!pages) return;
     const ok = (s) => s && ((s.kind === 'skill' && SKILLS[s.id]?.kind === 'active') || (s.kind === 'item' && ITEMS[s.id]?.usable));
+    for (const row of pages) for (const s of row || []) if (s?.kind === 'skill' && OLD_EDGES.includes(s.id)) s.id = 'elemedge'; // the merged Edges
     this.pages = Array.from({ length: PAGES }, (_, p) => Array.from({ length: SLOTS }, (_, i) => (ok(pages[p]?.[i]) ? { kind: pages[p][i].kind, id: pages[p][i].id } : null)));
     this.page = Math.min(PAGES - 1, Math.max(0, d?.page | 0));
     this.render();

@@ -14,15 +14,16 @@ export class FX {
     this.warnPool = [];
   }
 
-  // a red circle on the ground where a boss move will land: the fill grows until it hits (life s)
-  warn(x, z, r, life) {
+  // a circle on the ground: red where a boss move will land, the fill growing until it hits (life s);
+  // a spell's colour for the area it covers while it lasts
+  warn(x, z, r, life, color = '#ff4a3a') {
     if (!this.warnTex) {
       const tex = (fill) => {
         const c = document.createElement('canvas');
         c.width = c.height = 128;
         const g = c.getContext('2d');
         g.beginPath(); g.arc(64, 64, 60, 0, Math.PI * 2);
-        if (fill) { g.fillStyle = 'rgba(255,60,40,.38)'; g.fill(); } else { g.strokeStyle = '#ff4a3a'; g.lineWidth = 6; g.stroke(); g.fillStyle = 'rgba(255,60,40,.12)'; g.fill(); }
+        if (fill) { g.fillStyle = 'rgba(255,255,255,.38)'; g.fill(); } else { g.strokeStyle = '#ffffff'; g.lineWidth = 6; g.stroke(); g.fillStyle = 'rgba(255,255,255,.12)'; g.fill(); }
         return new THREE.CanvasTexture(c);
       };
       this.warnTex = [tex(false), tex(true)];
@@ -39,7 +40,7 @@ export class FX {
       w = { ring: mesh(this.warnTex[0]), fill: mesh(this.warnTex[1]) };
     }
     const y = this.world.heightAt(x, z) + 0.12;
-    for (const m of [w.ring, w.fill]) { m.position.set(x, y, z); m.visible = true; }
+    for (const m of [w.ring, w.fill]) { m.position.set(x, y, z); m.visible = true; m.material.color.set(color); }
     w.ring.scale.set(r, 1, r);
     w.fill.scale.set(0.01, 1, 0.01);
     Object.assign(w, { r, t: 0, life });

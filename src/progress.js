@@ -20,6 +20,7 @@ export const STATS = {
 // a Sorcerer (tier 1), and either can later take a second job (tier 2). A hero may walk both first
 // paths: they share one Job Level and one pool of skill points, and switch between them at their
 // trainers. Walking both opens the Magic Knight.
+export const OLD_EDGES = ['flameedge', 'frostedge', 'thunderedge'];
 export const JOBS = {
   novice: { name: 'Trainee', tier: 0 },
   swordman: { name: 'Blader', tier: 1 },
@@ -173,6 +174,10 @@ export class Progress {
     this.jobExp = Math.max(0, +d.jobExp || 0);
     for (const k of STAT_KEYS) this.stats[k] = Math.max(1, Math.min(99, d.stats?.[k] | 0 || 1));
     this.skills = { ...(d.skills || {}) };
+    // Flame, Frost and Thunder Edge became one Elemental Edge: it takes the highest of them, and the
+    // rest of those points come back to be spent again
+    const edges = OLD_EDGES.map((k) => this.skills[k] | 0);
+    if (edges.some(Boolean)) { this.skills.elemedge = Math.max(this.skills.elemedge | 0, ...edges); for (const k of OLD_EDGES) delete this.skills[k]; }
     // saves from before the second jobs: the first job held is the one earned
     this.unlocked = (d.unlocked || (this.tier === 1 ? [this.job] : [])).filter((j) => JOBS[j] && j !== 'novice');
     this.firstLv = Math.max(1, Math.min(MAX_JOB.swordman, d.firstLv | 0 || (this.tier === 1 ? this.jobLv : 1)));
