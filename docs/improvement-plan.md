@@ -11,6 +11,15 @@ Before every release: `npx vite build` passes, a Playwright run covers the items
 exposes `window.__aria`), then merge to `main` for the APK. Anything touching jobs, skills or job
 quests follows `docs/job-rules.md`.
 
+## Status (end of October 2026)
+
+All of R1 to R4 is done, except 4.5 (PixelLab art for the kobolds and goblins, which needs the
+PixelLab key). Along the way the owner also asked for: easier first-job trials with questions, a
+big map on the minimap, plain names for the field maps, goblin lands north of Galdrheim and the
+kobolds west of Salt Bay, wading in lake shallows, a look of their own for every person, and
+plain "Spawned / Not spawned" boss status. The balance numbers are in `docs/balance.md`. Item 2.6
+(Sorcerer and Blader kill speed within 25%) was only partly met: see there.
+
 ## Order of work
 
 | Release | Theme | Why first |
