@@ -408,6 +408,8 @@ tracker.querySelector('.qhead').addEventListener('click', () => { setMin(!tracke
 let trackerHTML = '';
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 function refreshQuests() {
+  // a rare hunt's monster leaves once its quest is done or given up
+  for (const m of [...mobs.list]) if (m.temp && m.alive && MOB_DEFS[m.type].noRespawn && !Object.keys(quests.active).some((k) => QUESTS[k].mob === m.type && !quests.ready(k, inv))) mobs.remove(m);
   // monsters an active kill quest still wants come back twice as fast
   mobs.hunted = new Set(Object.keys(quests.active).flatMap((k) => {
     const q = QUESTS[k];
@@ -473,6 +475,10 @@ function questTarget(id) {
   }
   const q = QUESTS[id], giver = questGiver(id);
   if (!(id in quests.active) || quests.ready(id, inv)) return { map: NPCS[giver].map || 'camp', npc: giver, why: NPCS[giver].name };
+  if (q.rare) return { map: q.rare.map, at: q.rare, why: `the ${MOB_DEFS[q.mob].name}${q.rare.night ? ', out only at night' : ''}` };
+  if (q.kind === 'search') return { map: q.map, why: `${q.thing}s` };
+  if (q.kind === 'defend') return { map: q.map, at: q.at, why: q.place };
+  if (q.kind === 'deliver') return { map: NPCS[q.to].map || 'camp', npc: q.to, why: NPCS[q.to].name };
   if (q.kind === 'kill') { // for a hunt of several kinds, the first kind still wanted
     const mob = q.mobs ? Object.keys(q.mobs).find((m) => (quests.active[id][m] || 0) < q.mobs[m]) : q.mob;
     const map = nearestMap(mapsOf(mob));
@@ -508,9 +514,10 @@ function startNav(id) {
 function tickNav() {
   if (!nav || warping || player.state !== 'normal' || player.goal || player.cast || menus.isOpen('story')) return;
   if (world.id === nav.map) {
-    const k = nav.npc, spot = k && SPOTS.find((sp) => sp.npc === k);
+    const k = nav.npc, spot = k && SPOTS.find((sp) => sp.npc === k), at = nav.at;
     nav = null;
     if (spot) player.command({ x: spot.x, z: spot.z, reach: 1.7, arrive: spot.run });
+    else if (at) player.command({ x: at.x, z: at.z, reach: 1.5 }); // a place: the waystone, the pond
     else menus.message(`You have arrived in ${ZONE_NAMES[world.id]}.`);
     refreshQuests();
     return;
@@ -520,6 +527,80 @@ function tickNav() {
   player.command({ x: p.x, z: p.z, reach: 0.05 });
 }
 const stopNav = () => { if (nav) { nav = null; refreshQuests(); } };
+
+// ---------- quests out in the world: searches, defences and rare hunts ----------
+let searchT = 0, defense = null, waveRest = 0; // waveRest: a breather between a defence's waves
+function tickQuestWorld(dt) {
+  searchT -= dt;
+  waveRest -= dt;
+  const y = (x, z) => world.heightAt(x, z);
+  for (const [id, a] of Object.entries(quests.active)) {
+    const q = QUESTS[id];
+    // a search: what is still to be found glints, and is picked up by walking over it
+    if (q.kind === 'search' && q.map === world.id) {
+      if (searchT <= 0) q.spots.forEach(([x, z], i) => { if (!a.includes(i) && Math.hypot(x - player.x, z - player.z) < 26) fx.sparkle(x, y(x, z) + 0.4, z, '#ffe37a', 4); });
+    }
+    // a rare hunt: it shows itself on its map (at night, if it keeps to the night) until it falls
+    if (q.rare && q.rare.map === world.id) {
+      const out = mobs.list.find((m) => m.type === q.mob && m.alive);
+      const time = !q.rare.night || dayNight.night > 0.6;
+      if (!out && time && !quests.ready(id, inv)) {
+        const m = mobs.add(q.mob, q.rare.x, q.rare.z);
+        m.temp = true;
+        menus.message(`Something golden rises over ${ZONE_NAMES[world.id]}... the ${MOB_DEFS[q.mob].name}!`);
+        audio.play('night');
+      } else if (out && !time) { mobs.remove(out); menus.message(`Dawn: the ${MOB_DEFS[q.mob].name} fades away. It will be back tonight.`); }
+    }
+    // a defence: stand by the place and the waves come
+    if (q.kind === 'defend' && q.map === world.id && !quests.ready(id, inv) && !defense) {
+      if (searchT <= 0) fx.sparkle(q.at.x, y(q.at.x, q.at.z) + 0.6, q.at.z, '#8fd4ff', 6);
+      if (waveRest <= 0 && Math.hypot(q.at.x - player.x, q.at.z - player.z) < 3.5 && player.state === 'normal') startWave(id);
+    }
+  }
+  if (searchT <= 0) searchT = 0.6;
+  for (const { id, n } of quests.onSearch(world.id, player.x, player.z)) {
+    const q = QUESTS[id];
+    audio.play('pickup');
+    fx.sparkle(player.x, y(player.x, player.z) + 0.8, player.z, '#ffe37a', 18);
+    menus.message(`${q.verb || 'Found'}: ${q.thing} ${n}/${q.spots.length}`);
+    if (quests.ready(id, inv)) questComplete(id); else refreshQuests();
+  }
+  tickDefense(dt);
+}
+function startWave(id) {
+  const q = QUESTS[id], [type, count] = q.waves[quests.active[id]];
+  const list = [];
+  for (let i = 0; i < count; i++) {
+    const a = (i / count) * Math.PI * 2 + Math.random(), r = 6 + Math.random() * 2;
+    let x = q.at.x + Math.cos(a) * r, z = q.at.z + Math.sin(a) * r;
+    if (!world.walkable(x, z)) { x = q.at.x + Math.cos(a) * 3; z = q.at.z + Math.sin(a) * 3; }
+    const m = mobs.add(type, x, z);
+    m.temp = true;
+    m.provoke();
+    list.push(m);
+  }
+  defense = { id, list, next: 0 };
+  audio.play('night');
+  menus.message(`Wave ${quests.active[id] + 1} of ${q.waves.length}: ${count} ${MOB_DEFS[type].name}s come for ${q.place}!`);
+}
+function tickDefense(dt) {
+  if (!defense) return;
+  const q = QUESTS[defense.id];
+  // walked away, fainted, or left the map: the wave scatters (waves already held still count)
+  if (!(defense.id in quests.active) || world.id !== q.map || player.state === 'down' || Math.hypot(q.at.x - player.x, q.at.z - player.z) > 16) {
+    for (const m of defense.list) if (mobs.list.includes(m)) mobs.remove(m);
+    defense = null;
+    if (q.map === world.id) menus.message(`You left ${q.place}, and the wave scatters. Come back to try again.`);
+    return;
+  }
+  if (defense.list.some((m) => m.alive)) return;
+  quests.waveHeld(defense.id);
+  const id = defense.id;
+  defense = null;
+  audio.play('levelup');
+  if (quests.ready(id, inv)) questComplete(id);
+  else { waveRest = 6; menus.message(`Wave held! Catch your breath: the next one comes in a few seconds.`); refreshQuests(); }
+}
 
 // ---------- the story ----------
 const storyLive = () => !!story.flags.intro && !story.done; // after the opening pages
@@ -668,6 +749,13 @@ const menus = new Menus(inv, prog, player, {
     menus.message(`New quest: ${QUESTS[id].title}`);
     menus.close('talk');
     refreshQuests();
+  },
+  // a delivery handed over: back to whoever sent it
+  delivered(id) {
+    quests.deliver(id);
+    audio.play('pickup');
+    questComplete(id);
+    persist();
   },
   // a trainer's question: a chime when right, a thud when not (no penalty, just try again)
   answered(id, ok) {
@@ -1295,7 +1383,7 @@ function frame() {
   world.update(dt, t);
   villagers.update(dt, player, b);
   if (live) fx.update(dt);
-  if (live) { naturalRegen(dt); tickSkills(dt); checkPortals(); tickNav(); }
+  if (live) { naturalRegen(dt); tickSkills(dt); checkPortals(); tickNav(); tickQuestWorld(dt); }
   tickAura(dt, t, b);
   updateCastBar();
   hotbar.update();

@@ -29,7 +29,7 @@ Ragnarok-style: no on-screen controller. Landscape.
 | Tap an item on the ground: pick it up | Click |
 | Tap a person, the chest (camp or Steinborg storage) or the tent: talk / open / rest | Click |
 | Step onto a glowing portal: go to the next map | |
-| Tap the minimap: the big map. People, portals and monsters are numbered, and named in a list on the left (mini-bosses and MVPs say if they are out, or when they are back). Tap a person, a portal or open ground, on the map or in the list, and the hero walks there; monsters are only for reading | Click |
+| Tap the minimap: the big map. People, portals and monsters are numbered, and named in a list on the left (mini-bosses and MVPs say if they are out). Tap a person, a portal or open ground, on the map or in the list, and the hero walks there; monsters are only for reading | Click |
 | Hotbar (bottom): tap a slot to use a skill or item; the button at its end flips between 3 pages | 1–6 · Tab: next page |
 | Drag active skills (Skills window) and usable items (Items window) onto the hotbar; drag a slot off to clear it | Drag |
 | Drag one finger: turn the camera · pinch: zoom | Drag or Q / E · mouse wheel |
@@ -447,18 +447,25 @@ means you can hand one in. Active quests show under the clock.
 
 A few big jobs instead of many errands: one each in the camp, and a handful in Steinborg.
 
+**Kinds of quest.** Hunt (defeat monsters), gather (bring items), **cook or brew** (bring the
+makings, then answer the cook's or brewer's questions; a wrong answer only gets a hint), **search**
+(walk over the glinting things on a map), **defend** (stand by a place and hold it against waves; walk
+away and the wave scatters), **deliver** (carry something to someone in another land) and **rare
+hunt** (a unique monster that appears only while the quest is on, some only at night). "Go there"
+leads to each.
+
 | Who | Where | Quests (Base Level) |
 |---|---|---|
-| Elder Halvard | camp | The Mushroom Wood (12): 25 Mushrooms |
-| Astrid the Cook | camp | A Feast for Eldrun (10): 20 Slime Gel, 10 Crab Legs, 10 Spores |
-| Sigrun the Scout | camp | Lights in the Dark (14): 15 Wisps |
+| Elder Halvard | camp | The Mushroom Wood (12): hold Myrkdal's old waystone against 3 waves of Mushrooms |
+| Astrid the Cook | camp | A Feast for Eldrun (10): bring 10 Slime Gel, 5 Crab Legs, 5 Spores, then cook it with her |
+| Sigrun the Scout | camp | The Lantern Wisp (14): hunt the golden Wisp that rises over Fenstrand's pond at night |
 | Gyda the Healer | camp | heals HP and SP for free |
 | Keeper Tova, Bera, Asa | camp, Steinborg, Galdrheim | sign the ledger, then: storage, healing, Save here (where you wake after fainting, and where Return Feathers go), switch first jobs, and teleport to any other Keeper you signed with (300–500 perz) |
 | Sir Eirik the Runeblade | Steinborg | the Magic Knight's trial |
-| Hild the Trader | Steinborg | shop · Pearls of Saltvik (24): 5 Pearls |
+| Hild the Trader | Steinborg | shop · Hild's Crate (24): take a crate of potions to Hakon in Saltvik |
 | Gunnar the Gear Crafter | Steinborg | shop, forge · Stone for the Forge (34): 30 Stone, 15 Burnt Shells |
 | Holger the Refiner | Steinborg | refines gear up to +10; sells Iron and Steel Ore |
-| Ragna the Herbalist | Steinborg | brewing · The Great Remedy (38): 12 Dark Spores, 12 Fire Dust |
+| Ragna the Herbalist | Steinborg | brewing · The Great Remedy (38): bring 6 Dark Spores and 6 Fire Dust, then brew it with her |
 | Captain Ulfr | Steinborg | The Blader's Trial · The King of the Shore (30): the King Crab · The Beetle of Askheid (46): the Giant Beetle |
 | Saeunn the Seeress | Steinborg | the story; lore of the Fire Giant and Galdrheim |
 | Embla the Stylist | Steinborg | hairstyle and dye, 1,000 perz |
@@ -471,8 +478,8 @@ A few big jobs instead of many errands: one each in the camp, and a handful in S
 | Orm the Staffwright | Galdrheim | shop, crafts sorcerers' gear (staves, robes) · The Living Wood (26): a Giant Root, 8 Thorns |
 | Seyla the Enchanter | Galdrheim | opens a card slot in a Lv 4 weapon (50%) |
 | Kari the Curio Seller | Galdrheim | shop: potions, feathers, torches, Speed Potions |
-| Brynja the Lorekeeper | Galdrheim | The Drowned Tomes (20): 15 Salt, 10 Water Drops |
-| Torvald the Runecarver | Galdrheim | Shadows in Svartskog (38): 10 Dark Crystals |
+| Brynja the Lorekeeper | Galdrheim | The Drowned Tomes (20): find 4 tomes washed up on the Saltvik shore |
+| Torvald the Runecarver | Galdrheim | Shadows in Svartskog (38): take rubbings of 3 Watcher stones in Svartskog |
 | Hrafn the Stargazer, Signy the Apprentice | Galdrheim | tales of the city, the stars and the jotnar |
 | Runa the Gatewarden | Galdrheim | the rune-gate: to any land you have walked, 300–3,000 perz |
 

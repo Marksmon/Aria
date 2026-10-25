@@ -2,8 +2,8 @@
 // land they lead to) and the monsters that live there show as numbered markers, named in a list on
 // the left. Tap a person or a portal, in the list or on the map, and the hero walks there (and
 // talks, for a person); tap open ground and the hero walks to the nearest spot it can reach there.
-// Monsters are only for reading: tapping one does nothing. Mini-bosses and the MVP say whether they
-// are out or how long until they come back. The game keeps running while the map is open; tap the
+// Monsters are only for reading: tapping one does nothing. Mini-bosses and the MVP say whether
+// they are out. The game keeps running while the map is open; tap the
 // minimap again, the × or Esc to close it.
 import { ZONE_NAMES } from './world.js';
 import { NPCS } from './quests.js';
@@ -132,18 +132,9 @@ export class BigMap {
     return null;
   }
 
-  // a mini-boss or MVP: out now, or how long until it comes back
+  // a mini-boss or MVP: only whether it is out now, not when it returns
   statusOf(type) {
-    const def = MOB_DEFS[type], mm = (sec) => `${Math.floor(sec / 60)}:${String(Math.floor(sec % 60)).padStart(2, '0')}`;
-    if (this.mobs.list.some((m) => m.type === type && m.alive)) return { up: true, text: 'Spawned' };
-    if (def.mvp) {
-      const left = ((this.mobs.mvpAt[type] || 0) - Date.now()) / 1000;
-      return left > 0 ? { up: false, text: `Back in ${mm(left)}` } : { up: true, text: 'Waking' };
-    }
-    const e = this.mobs.dead.find((d) => d.m.type === type);
-    if (!e) return { up: true, text: 'Spawned' };
-    const left = Math.max(0, e.t) / (this.mobs.night ? 2 : 1); // the clock runs twice as fast at night
-    return left > 0 ? { up: false, text: `Back in ${mm(left)}` } : { up: true, text: 'Coming back' };
+    return this.mobs.list.some((m) => m.type === type && m.alive) ? { up: true, text: 'Spawned' } : { up: false, text: 'Not spawned' };
   }
 
   status() {

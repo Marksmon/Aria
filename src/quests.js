@@ -303,23 +303,34 @@ export const FARES = { camp: 300, city: 500, magic: 500, grove: 300, fen: 400, h
 export const QUESTS = {
   // ---------- Eldrun Camp: one big job each ----------
   warden: {
-    title: 'The Mushroom Wood', kind: 'kill', mob: 'mushling', n: 25, lv: 12,
-    intro: 'The Mushrooms of Myrkdal spread their spores closer to the camp every night. Go east from Mosvangr and cut down twenty-five of them. They hit back hard: bring potions.',
-    thanks: 'The air already smells cleaner. You have become a true guardian of Eldrun.',
+    title: 'The Mushroom Wood', kind: 'defend', map: 'hollow', at: { x: 32, z: 32 }, place: 'the old waystone', waves: [['mushling', 3], ['mushling', 4], ['mushling', 5]], lv: 12,
+    intro: 'The Mushrooms of Myrkdal march on the camp road a little further every night. In the middle of the dale stands our old waystone. Stand by it and hold it against three waves of them. They hit back hard: bring potions.',
+    thanks: 'Three waves, and the stone still stands. The air already smells cleaner. You have become a true guardian of Eldrun.',
     reward: { xp: 2500, perz: 1500, items: { potion2: 5 } },
   },
+
   feast: {
-    title: 'A Feast for Eldrun', kind: 'fetch', items: { gel: 20, crableg: 10, spore: 10 }, lv: 10,
-    intro: "The camp hasn't feasted in a year. Twenty Slime Gel, ten Crab Legs from Fenstrand and ten Spores from Myrkdal, and we'll eat like jarls!",
+    title: 'A Feast for Eldrun', kind: 'quiz', items: { gel: 10, crableg: 5, spore: 5 }, lv: 10, task: 'cook the feast with Astrid',
+    intro: "The camp hasn't feasted in a year! Bring me ten Slime Gel, five Crab Legs from Fenstrand and five Spores from Myrkdal, and cook it with me. The secret: gel for the sauce, crab for the meat, and spores only at the very end, a pinch at a time.",
+    questions: [
+      { q: 'The pot is bubbling. What makes the sauce?', options: ['The Crab Legs', 'The Slime Gel', 'The Spores'], a: 1,
+        why: 'Gel! Sticky, sweet and thick. Into the pot it goes.', hint: 'No, no! Think sticky. What wobbles?' },
+      { q: 'And the Spores?', options: ['All of them, right away', 'Never: they are poison', 'A pinch at a time, at the very end'], a: 2,
+        why: 'A pinch at a time. Too many and the whole camp sneezes for a week.', hint: 'Careful! Remember what I said about the spores.' },
+      { q: 'Hungry heroes on the road eat Crab Legs too. Why carry them?', options: ['They heal a good bite of HP', 'They make you run faster', 'Crabs follow you home'], a: 0,
+        why: 'They heal! Better than a Berry and cheaper than a potion.', hint: 'Ha! No. What does food do for a hurt hero?' },
+    ],
     thanks: 'Smell that! The whole camp will sing your name tonight. Take these, and a full belly.',
     reward: { xp: 1800, perz: 1000, items: { potion: 10 } },
   },
+
   lights: {
-    title: 'Lights in the Dark', kind: 'kill', mob: 'wisp', n: 15, lv: 14,
-    intro: 'Wisps drift all over the valley, and at night there are twice as many. I need to know where they nest. Catch fifteen of them for me.',
-    thanks: 'A map of lights! It is beautiful. Keep these.',
+    title: 'The Lantern Wisp', kind: 'kill', mob: 'lanternWisp', n: 1, rare: { map: 'fen', x: 32, z: 26, night: true }, lv: 14,
+    intro: 'The fishers of Fenstrand swear a great golden Wisp rises over the pond, but only at night. The old songs call it the Lantern Wisp. Find it, and bring it down before it drifts away at dawn. It is stronger than any Wisp you have seen.',
+    thanks: 'The Lantern Wisp! Then the songs were true. Keep what it left you: they say it lights the darkest road.',
     reward: { xp: 2000, perz: 800, items: { glow: 5, wander: 3 } },
   },
+
   // ---------- the job trials: three short steps each, easy for a Trainee of Base Level ~10 ----------
   // Each first-job trial needs one trip to the easy field beside its trainer: a hunt, something
   // made from what the hunt dropped, and the trainer's questions (kind 'quiz', answered in the talk
@@ -459,11 +470,13 @@ export const QUESTS = {
   },
   // ---------- Steinborg ----------
   pearls: {
-    title: 'Pearls of Saltvik', kind: 'fetch', items: { pearl: 5 }, lv: 24,
-    intro: 'The Blue Crabs of Saltvik carry pearls in their shells, one crab in a dozen. Bring me five and I pay like a queen.',
-    thanks: 'Beautiful! As promised.',
+    title: "Hild's Crate", kind: 'deliver', to: 'hakon', thing: 'crate of potions', lv: 24,
+    intro: 'Hakon the carter is stuck in Saltvik, and the salt road is no place to go without potions. Take this crate to him, by the south road of Saltvik, and come back to tell me he has it.',
+    toLine: 'From Hild? Bless that woman. With these I can get the salt carts rolling again. Tell her the first load of salt is hers.',
+    thanks: 'He has it? Good. Then the salt comes back to my stall, and some of the coin comes to you.',
     reward: { xp: 9000, perz: 6000 },
   },
+
   ore: {
     title: 'Stone for the Forge', kind: 'fetch', items: { stone: 30, cinder: 15 }, lv: 34,
     intro: 'The forge is cold. Thirty Stone from the Beetles of Glodberg and fifteen Burnt Shells from the Fire Beetles of Askheid, and I can work again.',
@@ -471,11 +484,20 @@ export const QUESTS = {
     reward: { xp: 30000, perz: 8000, items: { potion3: 5 } },
   },
   remedy: {
-    title: 'The Great Remedy', kind: 'fetch', items: { gloom: 12, ember_dust: 12 }, lv: 38,
-    intro: 'I can brew a remedy for the burning sickness in Askheid, but it needs twelve Dark Spores from Svartskog and twelve pinches of Fire Dust from the Fire Wisps. Both bite.',
+    title: 'The Great Remedy', kind: 'quiz', items: { gloom: 6, ember_dust: 6 }, lv: 38, task: 'brew the remedy with Ragna',
+    intro: 'I can brew a remedy for the burning sickness in Askheid. Bring me six Dark Spores from Svartskog and six pinches of Fire Dust from the Fire Wisps, and brew it with me: the cold spores calm the fire, so they go in first and the dust goes in slowly after.',
+    questions: [
+      { q: 'The burning sickness runs hot. What goes in the pot first?', options: ['The Fire Dust', 'The Dark Spores', 'Water, nothing else'], a: 1,
+        why: 'The spores, cold and dark. They calm the fever before the fire goes in.', hint: 'Fire on a fever? Cold first.' },
+      { q: 'Now the Fire Dust. How?', options: ['All at once, quickly', 'Slowly, a pinch at a time', 'Not at all'], a: 1,
+        why: 'Slowly. Fire and shadow fight in the pot; go gently and they settle.', hint: 'The pot flares! Slowly, a pinch at a time.' },
+      { q: 'Fire Wisps are Fire. Which spell element hurts them most?', options: ['Water', 'Fire', 'Earth'], a: 0,
+        why: 'Water puts out fire. Remember it when you go back to Askheid.', hint: 'What do you throw on a fire to put it out?' },
+    ],
     thanks: 'Dark and bright, cold and hot... it will work. Thank you, truly.',
     reward: { xp: 45000, perz: 8000, items: { tonic: 10 } },
   },
+
   kingcrab: {
     title: 'The King of the Shore', kind: 'kill', mob: 'tideKing', n: 1, lv: 30,
     intro: 'A crab as big as a cart rules the Saltvik shore, and the fishers will not go out. Kill the King Crab.',
@@ -484,11 +506,12 @@ export const QUESTS = {
   },
   // ---------- Galdrheim ----------
   tomes: {
-    title: 'The Drowned Tomes', kind: 'fetch', items: { salt: 15, dew: 10 }, lv: 20,
-    intro: 'A ship carrying our oldest books sank off Saltvik. The tomes have washed ashore, crusted with salt. To clean them I need fifteen handfuls of Salt from the Sea Slimes and ten Water Drops.',
+    title: 'The Drowned Tomes', kind: 'search', map: 'coast', thing: 'Drowned Tome', spots: [[16, 10], [32.5, 44.5], [34, 22], [10, 49]], lv: 20,
+    intro: 'A ship carrying our oldest books sank off Saltvik. Four tomes have washed up along the shore. Look for something glinting by the water, and bring them back to me before the tide takes them again.',
     thanks: 'The ink is still there. Hallveig\'s own hand! Thank you.',
     reward: { xp: 7000, perz: 4000, items: { tonic: 5 } },
   },
+
   livingwood: {
     title: 'The Living Wood', kind: 'fetch', items: { heartwood: 1, thorn: 8 }, lv: 26,
     intro: 'The best staves are carved from wood that still lives. The Giant Sprout of Birkilund carries a root like that in its heart. Bring me a Giant Root, and eight Thorns to bind it.',
@@ -508,11 +531,12 @@ export const QUESTS = {
     reward: { xp: 120000, perz: 15000, items: { potion3: 10 } },
   },
   shades: {
-    title: 'Shadows in Svartskog', kind: 'fetch', items: { shade: 10 }, lv: 38,
-    intro: 'Dark Wisps drift between the black trees of Svartskog. Bring me ten of their crystals; I carve their light into the Watchers. Mind: they come for you on sight.',
-    thanks: 'Cold, and singing. The Watchers will be glad of them.',
+    title: 'Shadows in Svartskog', kind: 'search', map: 'deep', thing: 'Watcher stone', spots: [[18, 18], [46, 24], [26, 46]], verb: 'Rubbing taken', lv: 38,
+    intro: 'Three old Watcher stones stand among the black trees of Svartskog, older than Galdrheim. Find them, look for the faint glow, and take a rubbing of each for me. Mind the Dark Wisps: they come for you on sight.',
+    thanks: 'Cold, and singing. The runes on these rubbings are older than any I have carved. The Watchers will be glad.',
     reward: { xp: 45000, perz: 6000, items: { tonic: 8 } },
   },
+
 };
 
 // quests that come in a series (the job trials): each step's next one, accepted as soon as it is
@@ -538,8 +562,10 @@ export function rewardOf(id) {
 export const giverOf = (id) => Object.keys(NPCS).find((n) => NPCS[n].quests.includes(id) || NPCS[n].trial?.includes(id) || NPCS[n].trial2?.includes(id));
 
 // a fresh quest's progress: zones visited, kills per monster (a hunt of several kinds), or a count
-// (kills, or a quiz's questions answered)
-const fresh = (q) => (q.kind === 'visit' ? [] : q.mobs ? {} : 0);
+// (kills, a quiz's questions answered, waves held, or 1 once a delivery is made); a search keeps
+// the spots found
+const fresh = (q) => (q.kind === 'visit' || q.kind === 'search' ? [] : q.mobs ? {} : 0);
+const V3_RESET = ['warden', 'lights'];
 const plural = (n, name) => `${n} ${name}${n > 1 && !name.endsWith('s') ? 's' : ''}`;
 
 export class Quests {
@@ -596,8 +622,33 @@ export class Quests {
     if (q.kind === 'kill') return q.mobs ? Object.entries(q.mobs).every(([m, n]) => (a[m] || 0) >= n) : a >= q.n;
     if (q.kind === 'visit') return q.zones.every((z) => a.includes(z));
     if (q.kind === 'quiz') return a >= q.questions.length && this.hasItems(id, inv);
+    if (q.kind === 'search') return a.length >= q.spots.length;
+    if (q.kind === 'defend') return a >= q.waves.length;
+    if (q.kind === 'deliver') return a >= 1;
     return this.hasItems(id, inv);
   }
+
+  // a search: the hero stands at (x, z) on a map. Returns [{ id, n }] for each thing just found
+  onSearch(map, x, z) {
+    const out = [];
+    for (const [id, a] of Object.entries(this.active)) {
+      const q = QUESTS[id];
+      if (q.kind !== 'search' || q.map !== map) continue;
+      q.spots.forEach(([sx, sz], i) => {
+        if (!a.includes(i) && Math.hypot(sx - x, sz - z) < 1.6) { a.push(i); out.push({ id, n: a.length }); }
+      });
+    }
+    return out;
+  }
+
+  // a defence: one more wave held
+  waveHeld(id) { if (QUESTS[id]?.kind === 'defend' && id in this.active) this.active[id]++; }
+
+  // a delivery: the active quest that wants something given to this person, if any
+  deliveryFor(npc) {
+    return Object.keys(this.active).find((id) => QUESTS[id].kind === 'deliver' && QUESTS[id].to === npc && !this.active[id]) || null;
+  }
+  deliver(id) { if (QUESTS[id]?.kind === 'deliver' && id in this.active) this.active[id] = 1; }
 
   // a quiz answer: { ok, note }. A right one moves on to the next question; a wrong one only
   // earns a hint, so the question can be tried again
@@ -667,6 +718,9 @@ export class Quests {
     if (q.kind === 'visit') return `Zones ${a.length}/${q.zones.length}`;
     if (q.kind === 'quiz' && !this.hasItems(id, inv)) return this.itemsLine(q, inv);
     if (q.kind === 'quiz') return `Questions ${Math.min(a, q.questions.length)}/${q.questions.length}`;
+    if (q.kind === 'search') return `${q.thing}s found ${a.length}/${q.spots.length}`;
+    if (q.kind === 'defend') return `Waves held ${Math.min(a, q.waves.length)}/${q.waves.length}`;
+    if (q.kind === 'deliver') return a ? 'Delivered' : `Take the ${q.thing} to ${NPCS[q.to].name}`;
     return this.itemsLine(q, inv);
   }
 
@@ -678,23 +732,29 @@ export class Quests {
     if (q.kind === 'kill' && q.mobs) return 'Defeat ' + Object.entries(q.mobs).map(([m, n]) => plural(n, MOB_DEFS[m].name)).join(' and ');
     if (q.kind === 'kill') return `Defeat ${plural(q.n, MOB_DEFS[q.mob].name)}`;
     if (q.kind === 'visit') return `Visit ${q.zones.map((z) => ZONE_NAMES[z]).join(', ')}`;
+    if (q.kind === 'search') return `Find ${q.spots.length} ${q.thing}s in ${ZONE_NAMES[q.map]}`;
+    if (q.kind === 'defend') return `Hold ${q.place} in ${ZONE_NAMES[q.map]} against ${q.waves.length} waves`;
+    if (q.kind === 'deliver') return `Take the ${q.thing} to ${NPCS[q.to].name} (${ZONE_NAMES[NPCS[q.to].map || 'camp']})`;
     const bring = q.items ? 'Bring ' + Object.entries(q.items).map(([item, n]) => `${n} ${ITEMS[item].name}`).join(', ') : '';
     if (q.kind === 'quiz') return bring ? `${bring}, then ${q.task}` : q.task;
     return bring;
   }
 
   // v2: the first-job trials became hunts and quizzes. An older save's count on a step that is now
-  // a quiz was kills or nothing, so its questions start from the first
-  toJSON() { return { v: 2, active: this.active, done: this.done }; }
+  // a quiz was kills or nothing, so its questions start from the first.
+  // v3: side quests became searches, a defence, a delivery and a rare hunt: counts kept from the old
+  // kill quests (Wisps, Mushrooms) mean nothing now and start again
+  toJSON() { return { v: 3, active: this.active, done: this.done }; }
   load(d) {
     if (!d) return;
     this.done = (d.done || []).filter((id) => QUESTS[id]);
     for (const [id, a] of Object.entries(d.active || {})) {
       if (!QUESTS[id] || this.done.includes(id)) continue;
       const q = QUESTS[id];
-      if (q.kind === 'visit') this.active[id] = Array.isArray(a) ? a : [];
+      if (q.kind === 'visit' || q.kind === 'search') this.active[id] = Array.isArray(a) ? a : [];
       else if (q.mobs) this.active[id] = a && typeof a === 'object' && !Array.isArray(a) ? a : {};
-      else this.active[id] = q.kind === 'quiz' && (d.v || 1) < 2 ? 0 : Math.max(0, a | 0);
+      else if ((q.kind === 'quiz' && (d.v || 1) < 2) || (V3_RESET.includes(id) && (d.v || 1) < 3)) this.active[id] = 0;
+      else this.active[id] = Math.max(0, a | 0);
     }
   }
 }

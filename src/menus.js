@@ -574,6 +574,20 @@ export class Menus {
         <div class="say"><p>Where to? You have ${this.inv.perz.toLocaleString()} perz.</p><div class="btnrow wrap">${rows || '<span>You have not walked any other land yet.</span>'}</div>
         <div class="btnrow"><button class="rbtn soft" data-act="close">Bye</button></div></div></div>`;
     }
+    const parcel = this.quests.deliveryFor(this.npc);
+    if (parcel) { // someone was sent to this person with a package
+      const q = QUESTS[parcel];
+      this.wins.talk.querySelector('.rw-title').textContent = n.name;
+      return `<div class="talkwrap"><img class="portrait" src="${this.portrait(this.npc)}" alt="">
+        <div class="say"><p>${esc(n.hello)}</p><div class="qbox"><b>${esc(q.title)}</b><small>${esc(this.quests.goal(q))}</small></div>
+        <div class="btnrow"><button class="rbtn soft" data-act="close">Not yet</button><button class="rbtn" data-act="deliver" data-id="${parcel}">Give the ${esc(q.thing)}</button></div></div></div>`;
+    }
+    if (this.delivered) { // what they said on taking it
+      const line = this.delivered;
+      this.delivered = null;
+      this.wins.talk.querySelector('.rw-title').textContent = n.name;
+      return `<div class="talkwrap"><img class="portrait" src="${this.portrait(this.npc)}" alt=""><div class="say"><p>${esc(line)}</p><div class="btnrow"><button class="rbtn soft" data-act="close">Bye</button></div></div></div>`;
+    }
     if (st.state === 'job') { // the trial is done: the job change
       text = `You passed. Will you walk the path of the ${JOBS[st.job].name}?`;
       const second = JOBS[st.job].tier === 2, keep = p.tier === 1 && !second;
@@ -721,6 +735,7 @@ export class Menus {
     }
     if (act === 'accept') this.hooks.accept?.(t.dataset.id);
     if (act === 'handin') { this.quizNote = null; this.hooks.handIn?.(t.dataset.id); }
+    if (act === 'deliver') { this.delivered = QUESTS[t.dataset.id].toLine; this.hooks.delivered?.(t.dataset.id); this.render('talk'); }
     if (act === 'answer') {
       const r = this.quests.answer(t.dataset.id, +t.dataset.n);
       if (r) { this.quizNote = r; this.hooks.answered?.(t.dataset.id, r.ok); this.render('talk'); }
