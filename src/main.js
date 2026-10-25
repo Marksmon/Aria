@@ -18,7 +18,7 @@ import { Tiles } from './tiles.js';
 import { Hotbar } from './hotbar.js';
 import { BigMap } from './bigmap.js';
 import { derive, playerAttack, mobAttack, magicAttack } from './rules.js';
-import { SKILLS, skillLv, spCost, castTime, learn, skillList, weaponOk, WEAPON_NAMES } from './skills.js';
+import { SKILLS, skillLv, spCost, castTime, learn, skillList, weaponOk, WEAPON_NAMES, unlearnFirstJob, RETRAIN_COST } from './skills.js';
 import { Menus } from './menus.js';
 import { iconTexture, iconURL, ITEMS, baseOf } from './items.js';
 import { DayNight } from './daynight.js';
@@ -219,8 +219,8 @@ player.on('strike', (m, res) => {
     fx.number(m.x, y, m.z, res.dmg, res.crit || res.el > 1 ? 'crit' : res.el < 1 ? 'miss' : 'dealt');
     if (res.el < 1) weakTip(m, player.ps.el);
     audio.play('hit');
-    // Battle Rhythm: every fifth hit that lands gives back 1 SP
-    if (skillLv(prog, 'rhythm') && ++rhythm % 5 === 0) player.healSp(1);
+    // Battle Rhythm: every third hit that lands gives back 3 SP, so a Blader keeps swinging skills
+    if (skillLv(prog, 'rhythm') && ++rhythm % 3 === 0) player.healSp(3);
   }
 });
 player.on('hurt', (n) => {
@@ -750,6 +750,19 @@ const menus = new Menus(inv, prog, player, {
     menus.close('talk');
     refreshQuests();
   },
+  // Liv's retraining: the first of each kind is free
+  retrain(kind) {
+    const cost = prog.resets[kind] ? RETRAIN_COST : 0;
+    if (inv.perz < cost) { menus.message('Not enough perz'); return; }
+    if (kind === 'stats') prog.resetStats();
+    else if (!unlearnFirstJob(prog)) return;
+    inv.perz -= cost;
+    applyStats();
+    hotbar.render?.();
+    audio.play('craft');
+    menus.message(kind === 'stats' ? 'Your stats are back to 1: place your points again in the Status window.' : 'Your first-job skills are unlearnt: spend the points again in the Skills window.');
+    persist();
+  },
   // a delivery handed over: back to whoever sent it
   delivered(id) {
     quests.deliver(id);
@@ -966,7 +979,7 @@ function useSkill(id) {
       }
     });
   }
-  if (id === 'heavy') strike((130 + 15 * lv) / 100, 1 + (3 * lv) / 100, (t) => { say('Heavy Strike'); combo(t); });
+  if (id === 'heavy') strike(sk.power(lv) / 100, 1 + (3 * lv) / 100, (t) => { say('Heavy Strike'); combo(t); });
   // ---- BladeMaster ----
   if (id === 'twinfang') {
     const m = sk.power(lv) / 100;
@@ -1126,14 +1139,14 @@ function castSpell(id, lv, pay, sp) {
     if (id === 'arc') { // strikes at once, then leaps to two more
       const at = (m) => ({ x: m.x, y: world.heightAt(m.x, m.z) + 0.5, z: m.z });
       fx.zap(from, at(t), SPELL_COL.arc);
-      spellHit(t, (80 + 10 * lv) / 100 * k, sk.magic);
+      spellHit(t, sk.power(lv) / 100 * k, sk.magic);
       const near = mobs.list.filter((m) => m.alive && m !== t && Math.hypot(m.x - t.x, m.z - t.z) < 3.2)
         .sort((a, b) => Math.hypot(a.x - t.x, a.z - t.z) - Math.hypot(b.x - t.x, b.z - t.z)).slice(0, 2);
-      for (const m of near) { fx.zap(at(t), at(m), SPELL_COL.arc); spellHit(m, (80 + 10 * lv) / 200 * k, sk.magic); }
+      for (const m of near) { fx.zap(at(t), at(m), SPELL_COL.arc); spellHit(m, sk.power(lv) / 200 * k, sk.magic); }
       return;
     }
     fx.bolt(from.x, from.y, from.z, t, SPELL_COL[id], () => {
-      const base = id === 'spark' ? (100 + 20 * lv) / 100 : id === 'stonespike' ? sk.power(lv) / 100 : (90 + 10 * lv) / 100;
+      const base = sk.power(lv) / 100;
       const res = spellHit(t, base * k, sk.magic);
       if (res && id === 'stonespike' && t.alive) { t.shatterT = skillClock + 6; fx.number(t.x, overHead(t, t.sprite.scale.y * 0.8 + 0.3), t.z, 'Shattered', 'miss'); }
       const ty = world.heightAt(t.x, t.z) + 0.5;

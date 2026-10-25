@@ -58,8 +58,8 @@ export const SKILLS = {
   },
   heavy: {
     name: 'Heavy Strike', job: 'swordman', kind: 'active', max: 10, needs: { cleave: 3 }, target: 'mob', range: 1.35, weapon: 'sword', icon: 'skill_rend',
-    sp: () => 8,
-    desc: (lv) => `A two-handed blow: ${130 + 15 * lv}% damage, +${3 * lv}% hit chance.`,
+    sp: () => 8, power: (lv) => 150 + 17 * lv,
+    desc: (lv) => `A two-handed blow: ${SKILLS.heavy.power(lv)}% damage, +${3 * lv}% hit chance.`,
   },
   warcry: {
     name: 'War Cry', job: 'swordman', kind: 'active', max: 10, cd: 8, icon: 'skill_warcry',
@@ -78,7 +78,7 @@ export const SKILLS = {
   },
   rhythm: {
     name: 'Battle Rhythm', job: 'swordman', kind: 'passive', max: 1, free: { jobLv: 10 }, icon: 'skill_rhythm',
-    desc: () => 'Every fifth hit that lands restores 1 SP.',
+    desc: () => 'Every third hit that lands restores 3 SP.',
   },
   laststand: {
     name: 'Last Stand', job: 'swordman', kind: 'passive', max: 1, free: { jobLv: 10 }, icon: 'skill_laststand',
@@ -92,18 +92,18 @@ export const SKILLS = {
   },
   spark: {
     name: 'Ember Bolt', job: 'mage', kind: 'active', max: 10, target: 'mob', range: 7, magic: 'fire', weapon: 'staff', icon: 'skill_spark',
-    sp: (lv) => 6 + lv, cast: (lv) => 0.5 + 0.1 * lv, cd: 0.6,
-    desc: (lv) => `Hurl a bolt of fire: ${100 + 20 * lv}% MATK. Fire: strong against Earth, weak against Water.`,
+    sp: (lv) => 6 + lv, cast: (lv) => 0.5 + 0.1 * lv, cd: 0.6, power: (lv) => 100 + 20 * lv,
+    desc: (lv) => `Hurl a bolt of fire: ${SKILLS.spark.power(lv)}% MATK. Fire: strong against Earth, weak against Water.`,
   },
   frost: {
     name: 'Frost Shard', job: 'mage', kind: 'active', max: 10, target: 'mob', range: 7, magic: 'water', weapon: 'staff', icon: 'skill_frost',
-    sp: (lv) => 8 + lv, cast: (lv) => 0.6 + 0.08 * lv, cd: 0.6,
-    desc: (lv) => `A shard of ice: ${90 + 10 * lv}% MATK, ${4 * lv}% chance to freeze the monster for 2.5 s. Water: strong against Fire, weak against Wind.`,
+    sp: (lv) => 8 + lv, cast: (lv) => 0.6 + 0.08 * lv, cd: 0.6, power: (lv) => 90 + 10 * lv,
+    desc: (lv) => `A shard of ice: ${SKILLS.frost.power(lv)}% MATK, ${4 * lv}% chance to freeze the monster for 2.5 s. Water: strong against Fire, weak against Wind.`,
   },
   arc: {
     name: 'Arc Lightning', job: 'mage', kind: 'active', max: 10, needs: { spark: 4 }, target: 'mob', range: 7, magic: 'wind', weapon: 'staff', icon: 'skill_arc',
-    sp: (lv) => 12 + lv, cast: (lv) => 1 + 0.1 * lv, cd: 1,
-    desc: (lv) => `Lightning strikes your target for ${80 + 10 * lv}% MATK and leaps to 2 monsters nearby for half that. Wind: strong against Water, weak against Earth.`,
+    sp: (lv) => 12 + lv, cast: (lv) => 1 + 0.1 * lv, cd: 1, power: (lv) => 80 + 10 * lv,
+    desc: (lv) => `Lightning strikes your target for ${SKILLS.arc.power(lv)}% MATK and leaps to 2 monsters nearby for half that. Wind: strong against Water, weak against Earth.`,
   },
   flamering: {
     name: 'Flame Ring', job: 'mage', kind: 'active', max: 10, needs: { spark: 5 }, magic: 'fire', weapon: 'staff', icon: 'skill_flamering',
@@ -263,6 +263,17 @@ export function learn(prog, id) {
 }
 
 // skill points spent in one job's tree
+// Liv's retraining: every first-job skill (Blader and Sorcerer) is unlearnt and its points come
+// back. Only before a second job, so the second-job rules (secondJobOpen) can never be dodged; the
+// Trainee's tree is kept (Basic Training 9 is what opened the job). Skills learnt for free come back
+// by themselves, from the Job Level
+export const RETRAIN_COST = 20000; // perz, after the first time
+export function unlearnFirstJob(prog) {
+  if (prog.tier !== 1) return false;
+  for (const id of Object.keys(prog.skills)) if (JOBS[SKILLS[id]?.job]?.tier === 1) delete prog.skills[id];
+  prog.resets.skills++;
+  return true;
+}
 export const pointsIn = (prog, job) => Object.entries(prog.skills).reduce((a, [id, n]) => a + (SKILLS[id]?.job === job ? n : 0), 0);
 export const MK_POINTS = 20; // the Magic Knight wants this many points in both the Blader's and the Sorcerer's tree
 // may this hero take a second job's trial? From Job Level 40 of a first job. The Magic Knight needs

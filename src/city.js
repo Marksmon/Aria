@@ -166,7 +166,8 @@ const THEMES = {
 };
 
 // ctx: { group, lib, heightAt, place(type, x, z, force), addBox(x0, z0, x1, z1, kind), addSolid(x, z, r), boxes,
-//   gates: the sides with a gate ('s' south, 'e' east) }; variant: 'city' (Steinborg) | 'magic' (Galdrheim)
+//   gates: the gateways, [{ side: 'n' | 's' | 'e' | 'w', c: where along that wall }] (or just 's' for the middle) };
+//   variant: 'city' (Steinborg) | 'magic' (Galdrheim)
 export function buildCity(ctx, variant = 'city') {
   const { group, place, addBox, addSolid } = ctx;
   const T = THEMES[variant];
@@ -208,7 +209,9 @@ export function buildCity(ctx, variant = 'city') {
     fades.push({ meshes, x, z, r, h });
   };
   const Y = 0.05; // the city floor is flat
-  const gates = ctx.gates || ['s', 'e'];
+  // where each wall has its gateway: side -> its middle along the wall (undefined: no gate)
+  const gateAt = {};
+  for (const g of ctx.gates || ['s', 'e']) { const o = typeof g === 'string' ? { side: g, c: 32 } : g; gateAt[o.side] = o.c; }
 
   // ---------- paving ----------
   const pw = WALL.x1 - WALL.x0, pd = WALL.z1 - WALL.z0;
@@ -218,7 +221,9 @@ export function buildCity(ctx, variant = 'city') {
   for (let i = 0; i < puv.count; i++) puv.setXY(i, puv.getX(i) * pw / 2, puv.getY(i) * pd / 2);
   mesh(pave, M.cobble, (WALL.x0 + WALL.x1) / 2, Y + 0.02, (WALL.z0 + WALL.z1) / 2).renderOrder = 0;
   // paved roads out through the gates
-  for (const [x, z, w, d] of [gates.includes('s') && [32, 58.5, GATE * 2, 7], gates.includes('e') && [58.5, 32, 7, GATE * 2]].filter(Boolean)) {
+  const G = gateAt;
+  for (const [x, z, w, d] of [G.s !== undefined && [G.s, 58.5, GATE * 2, 7], G.n !== undefined && [G.n, 5.5, GATE * 2, 7],
+    G.e !== undefined && [58.5, G.e, 7, GATE * 2], G.w !== undefined && [5.5, G.w, 7, GATE * 2]].filter(Boolean)) {
     const g = new THREE.PlaneGeometry(w, d);
     g.rotateX(-Math.PI / 2);
     const u = g.attributes.uv;
@@ -228,12 +233,12 @@ export function buildCity(ctx, variant = 'city') {
 
   // ---------- walls, gates and towers ----------
   const { x0, x1, z0, z1, t, h } = WALL;
-  const side = (fixed, a, b, gate) => (gate ? [[fixed, a, 32 - GATE], [fixed, 32 + GATE, b]] : [[fixed, a, b]]);
+  const side = (fixed, a, b, c) => (c !== undefined ? [[fixed, a, c - GATE], [fixed, c + GATE, b]] : [[fixed, a, b]]);
   const runs = [ // [axis, fixed, from, to]
-    ...side(z0, x0, x1, false).map((r) => ['x', ...r]),
-    ...side(z1, x0, x1, gates.includes('s')).map((r) => ['x', ...r]),
-    ...side(x0, z0, z1, false).map((r) => ['z', ...r]),
-    ...side(x1, z0, z1, gates.includes('e')).map((r) => ['z', ...r]),
+    ...side(z0, x0, x1, G.n).map((r) => ['x', ...r]),
+    ...side(z1, x0, x1, G.s).map((r) => ['x', ...r]),
+    ...side(x0, z0, z1, G.w).map((r) => ['z', ...r]),
+    ...side(x1, z0, z1, G.e).map((r) => ['z', ...r]),
   ];
   const merlon = new THREE.BoxGeometry(0.55, 0.55, 0.55);
   for (const [axis, fixed, a, b] of runs) {
@@ -256,8 +261,10 @@ export function buildCity(ctx, variant = 'city') {
   }
   // towers at the corners and beside each gateway; an arch over each gateway
   const towers = [[x0, z0], [x1, z0], [x0, z1], [x1, z1]];
-  if (gates.includes('s')) towers.push([32 - GATE - 0.6, z1], [32 + GATE + 0.6, z1]);
-  if (gates.includes('e')) towers.push([x1, 32 - GATE - 0.6], [x1, 32 + GATE + 0.6]);
+  if (G.s !== undefined) towers.push([G.s - GATE - 0.6, z1], [G.s + GATE + 0.6, z1]);
+  if (G.n !== undefined) towers.push([G.n - GATE - 0.6, z0], [G.n + GATE + 0.6, z0]);
+  if (G.e !== undefined) towers.push([x1, G.e - GATE - 0.6], [x1, G.e + GATE + 0.6]);
+  if (G.w !== undefined) towers.push([x0, G.w - GATE - 0.6], [x0, G.w + GATE + 0.6]);
   const orb = variant === 'magic' ? new THREE.MeshBasicMaterial({ color: '#9fe8ff' }) : null;
   for (const [tx, tz] of towers) {
     const r = 1.25, th = h + 1.5;
@@ -268,12 +275,13 @@ export function buildCity(ctx, variant = 'city') {
     addSolid(tx, tz, r);
     fadeable(parts, tx, tz, r, th + 3);
   }
-  for (const [ax, gx, gz] of [gates.includes('s') && ['x', 32, z1], gates.includes('e') && ['z', x1, 32]].filter(Boolean)) {
+  for (const [ax, gx, gz] of [G.s !== undefined && ['x', G.s, z1], G.n !== undefined && ['x', G.n, z0], G.e !== undefined && ['z', x1, G.e], G.w !== undefined && ['z', x0, G.w]].filter(Boolean)) {
+    const out = (ax === 'x' ? gz : gx) < 32 ? -1 : 1; // which face of the wall is the outside
     const span = GATE * 2 + 1.2, lw = ax === 'x' ? span : t + 0.2, ld = ax === 'x' ? t + 0.2 : span;
     const lintel = mesh(boxUV(new THREE.BoxGeometry(lw, 1.0, ld), lw, 1, ld, 2), M.stoneDark, gx, Y + h + 0.1, gz);
     const ban = canvasTex(32, 48, T.banner);
     const bm = new THREE.Mesh(new THREE.PlaneGeometry(0.9, 1.35), lam({ map: ban, transparent: true, alphaTest: 0.5, side: THREE.DoubleSide }));
-    bm.position.set(gx + (ax === 'x' ? 0 : t / 2 + 0.12), Y + h - 0.6, gz + (ax === 'x' ? t / 2 + 0.12 : 0));
+    bm.position.set(gx + (ax === 'x' ? 0 : out * (t / 2 + 0.12)), Y + h - 0.6, gz + (ax === 'x' ? out * (t / 2 + 0.12) : 0));
     if (ax === 'z') bm.rotation.y = Math.PI / 2;
     group.add(bm);
     fadeable([lintel, bm], gx, gz, span / 2, h + 1);
@@ -418,7 +426,7 @@ const LAYOUTS = {
 
     // the Archmage's tower: three tiers, a tall violet spire, a ring of crystals turning round it
     {
-      const tx = 32, tz = 15.2;
+      const tx = 28, tz = 15.2; // a little west of the middle, so the north gate's road runs past it
       const tiers = [[3.0, 3.2], [2.3, 3.4], [1.7, 3.0]];
       let y = Y;
       const parts = [];
@@ -509,7 +517,7 @@ const LAYOUTS = {
     // lamps, birches, flowerbeds, the herb pots by the library
     for (const [x, z] of [[29.2, 40], [34.8, 40], [29.2, 47.5], [34.8, 47.5], [24.2, 30.4], [39.8, 30.4], [24.4, 20.2], [39.6, 20.2]]) P('lamp', x, z);
     for (const [x, z] of [[12.2, 37.6], [52.2, 22.6], [19.8, 37.8], [44.2, 37.6], [52.4, 34.8], [19.8, 21.4]]) P('tree_birch', x, z);
-    for (const [x, z] of [[28.6, 29.6], [35.4, 29.6], [28.6, 36.4], [35.4, 36.4], [30.4, 21.4], [33.6, 21.4]]) P('flowers', x, z);
+    for (const [x, z] of [[28.6, 29.6], [35.4, 29.6], [28.6, 36.4], [35.4, 36.4], [26.4, 21.4], [29.6, 21.4]]) P('flowers', x, z); // the last two frame the Archmage's door
     P('barrel', 44.6, 33.4); P('crate', 45.6, 33.6); P('anvil', 51.6, 33.2); P('crate', 19.2, 23.2); P('barrel', 18.6, 36.2);
     void rng; void addBox;
     return {

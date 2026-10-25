@@ -2,11 +2,15 @@
 // field a 64x64 map of its own. Warp portals at the map edges join them. Only Mosvangr (north)
 // and Fenstrand (west) open from the camp; everything else is reached by travelling on:
 //
-//              Steinborg - Birkilund
-//                  |           |
-//   Saltvik    Mosvangr  -  Myrkdal  -  Svartskog
-//      |           |           |           |
-//  Fenstrand - Eldrun Camp   Glodberg  -  Askheid
+//                                Ormholt
+//                                   |
+//                               Brennholt
+//                                   |
+//                               Galdrheim    Steinborg - Birkilund
+//                                   |            |           |
+//                                   |        Mosvangr  -  Myrkdal  -  Svartskog
+//                                   |            |           |           |
+// Kolgrof - Grjotvangr - Saltvik - Fenstrand - Eldrun Camp   Glodberg  -  Askheid
 //
 // Every map is built once, at load, into its own group; only the current one is shown.
 import * as THREE from 'three';
@@ -46,21 +50,21 @@ export const MAPS = {
   grove:  { portals: [{ to: 'camp', ...S }, { to: 'city', ...N }, { to: 'hollow', ...E }] },
   fen:    { portals: [{ to: 'camp', ...E }, { to: 'coast', ...W }, { to: 'magic', ...N }], lake: { x: 30, z: 37, rx: 8, rz: 6 } },
   city:   { portals: [{ to: 'grove', x: 32, z: 59 }, { to: 'birch', x: 59, z: 32 }], city: 'city' },
-  magic:  { portals: [{ to: 'fen', x: 32, z: 59 }], city: 'magic' },
+  magic:  { portals: [{ to: 'fen', x: 32, z: 59 }, { to: 'burnt', x: 36.5, z: 5 }], city: 'magic' }, // the north gate opens on goblin country
   birch:  { portals: [{ to: 'city', ...W }, { to: 'hollow', ...S }], clear: { x: 40, z: 22, r: 5 } },
   hollow: { portals: [{ to: 'grove', ...W }, { to: 'birch', ...N }, { to: 'deep', ...E }, { to: 'ridge', ...S }], lift: [-0.15, 0] },
   // the Ember Jarl's lair: an open bowl in the south of Glodberg (see mobs.js)
   ridge:  { portals: [{ to: 'hollow', ...N }, { to: 'heath', ...E }], clear: { x: 32, z: 48, r: 6 }, lift: [1.3, 1.8] },
-  coast:  { portals: [{ to: 'fen', ...E }, { to: 'stones', ...S }], lake: { x: 20, z: 31, rx: 11, rz: 17 }, clear: { x: 44, z: 46, r: 5 } },
-  deep:   { portals: [{ to: 'hollow', ...W }, { to: 'heath', ...S }, { to: 'serpent', ...E }], lift: [-0.1, 0.5], clear: { x: 40, z: 40, r: 5 } },
-  heath:  { portals: [{ to: 'ridge', ...W }, { to: 'deep', ...N }, { to: 'burnt', ...E }], lift: [0.8, 1.2], clear: { x: 40, z: 44, r: 5 } },
-  // the kobolds' hills and the Kobold King's quarry (his court is the open ground in the south),
-  // goblin country and the Goblin King's wood (his clearing is in the north). camps: [x, z] of
-  // a tent with crates and barrels round a log seat.
-  stones:  { portals: [{ to: 'coast', ...N }, { to: 'coalpit', ...S }], lift: [0.6, 1.4], camps: [[18, 20], [46, 44], [16, 46], [46, 18]] },
-  coalpit: { portals: [{ to: 'stones', ...N }], lift: [0.4, 2.0], clear: { x: 32, z: 46, r: 7 }, camps: [[18, 24], [46, 24], [22, 44], [42, 42]] },
-  burnt:   { portals: [{ to: 'heath', ...W }, { to: 'serpent', ...N }], lift: [0, 0.4], camps: [[20, 20], [46, 46], [20, 46]] },
-  serpent: { portals: [{ to: 'burnt', ...S }, { to: 'deep', ...W }], lift: [-0.1, 0.5], clear: { x: 32, z: 16, r: 7 }, camps: [[20, 20], [44, 40], [20, 44], [46, 18]] },
+  coast:  { portals: [{ to: 'fen', ...E }, { to: 'stones', ...W }], lake: { x: 20, z: 31, rx: 11, rz: 17 }, clear: { x: 44, z: 46, r: 5 } },
+  deep:   { portals: [{ to: 'hollow', ...W }, { to: 'heath', ...S }], lift: [-0.1, 0.5], clear: { x: 40, z: 40, r: 5 } },
+  heath:  { portals: [{ to: 'ridge', ...W }, { to: 'deep', ...N }], lift: [0.8, 1.2], clear: { x: 40, z: 44, r: 5 } },
+  // the kobolds' hills and the Kobold King's quarry, west of Saltvik (his court is the open ground in
+  // the south), and goblin country and the Goblin King's wood, north of Galdrheim's north gate (his
+  // clearing is in the north). camps: [x, z] of a tent with crates and barrels round a log seat.
+  stones:  { portals: [{ to: 'coast', ...E }, { to: 'coalpit', ...W }], lift: [0.6, 1.4], camps: [[18, 20], [46, 44], [16, 46], [46, 18]] },
+  coalpit: { portals: [{ to: 'stones', ...E }], lift: [0.4, 2.0], clear: { x: 32, z: 46, r: 7 }, camps: [[18, 24], [46, 24], [22, 44], [42, 42]] },
+  burnt:   { portals: [{ to: 'magic', ...S }, { to: 'serpent', ...N }], lift: [0, 0.4], camps: [[20, 20], [46, 46], [20, 46]] },
+  serpent: { portals: [{ to: 'burnt', ...S }], lift: [-0.1, 0.5], clear: { x: 32, z: 16, r: 7 }, camps: [[20, 20], [44, 40], [20, 44], [46, 18]] },
 };
 const SEG = 128; // terrain vertices per side - 1 (0.5 unit spacing)
 
@@ -245,7 +249,7 @@ function buildMap(id, scene, lib, shared) {
   if (isCity) {
     city = buildCity({
       group, lib, heightAt: (x, z) => heightAt(x, z), place, boxes,
-      gates: def.portals.map((p) => (p.z > 55 ? 's' : p.x > 55 ? 'e' : p.x < 9 ? 'w' : 'n')),
+      gates: def.portals.map((p) => (p.z > 55 ? { side: 's', c: p.x } : p.x > 55 ? { side: 'e', c: p.z } : p.x < 9 ? { side: 'w', c: p.z } : { side: 'n', c: p.x })),
       addBox: (x0, z0, x1, z1, kind) => boxes.push({ x0, z0, x1, z1, kind }),
       addSolid: (x, z, coll) => solids.push({ x, z, coll }),
     }, def.city);

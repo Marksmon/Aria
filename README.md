@@ -46,18 +46,19 @@ portals leave the camp (Mosvangr to the north, Fenstrand to the west); every oth
 reached by travelling on. Place names are Old Norse in style.
 
 ```
-  Galdrheim  Steinborg - Birkilund
-     |           |           |
-     |       Mosvangr  -  Myrkdal  -  Svartskog  -  Ormholt
-     |           |           |           |            |
- Fenstrand - Eldrun Camp   Glodberg  -  Askheid  -  Brennholt
-     |
-  Saltvik
-     |
- Grjotvangr
-     |
-  Kolgrof
+                               Ormholt
+                                  |
+                              Brennholt
+                                  |
+                              Galdrheim    Steinborg - Birkilund
+                                  |            |           |
+                                  |        Mosvangr  -  Myrkdal  -  Svartskog
+                                  |            |           |           |
+Kolgrof - Grjotvangr - Saltvik - Fenstrand - Eldrun Camp   Glodberg  -  Askheid
 ```
+
+Goblin country (Brennholt, then Ormholt) lies beyond Galdrheim's north gate; the kobolds' hills
+(Grjotvangr, then Kolgrof) lie west of Saltvik, along the road round its bay.
 
 | Map | Level | Monsters | Boss |
 |---|---|---|---|
@@ -92,9 +93,10 @@ They drop Kobold Fur and Goblin Teeth, ores for refining, and now and then Hard 
 **Bosses.** Each new field has a mini-boss: big, slow, stomping the ground around it, back 5–8
 minutes after it falls. Like the MVPs, each calls 2 guards of its own kind below 60% HP (Red
 Sprouts, Blue Crabs, Dark Mushrooms, Fire Beetles), and again 2 minutes after the last one falls. They drop a rare material (30%) that forges the best gear, and a rare
-equip of their own (2–3%). They hit hard: at their own level each is a 3–4 minute fight and a
-bag of potions, so most players come a few levels above them (Giant Sprout 25, King Crab 32,
-Giant Mushroom 40, Giant Beetle 48).
+equip of their own (2–3%). Their guards are lesser servants of their kind (half the HP, 60% of
+the ATK): cut them down first. At the level their quests suggest (Giant Sprout 28, King Crab 34,
+Giant Mushroom 43, Giant Beetle 50) each is about a two-minute fight on a dozen or so Orange
+Potions; see `docs/balance.md`.
 
 **MVP.** The Fire Giant (Lv 60, 24,000 HP, Fire), optional and not part of the story, waits in the south of Glodberg and stomps the
 ground around it every few seconds. It is made for one Base 50 hero in the best gear: about three
@@ -108,16 +110,16 @@ south of Kolgrof, and the **Goblin King** (Lv 55, 21,000 HP, Wind) in the north 
 stomp like the Fire Giant, and each MVP keeps its own timer (20 and 30 minutes). **Every MVP calls
 guards** when it first falls below 60% HP: the Fire Giant 2 Fire Wisps and 3 Fire Beetles, each
 king 4 of his own (2 warriors, an archer and an assassin). It never calls while a guard is still
-standing: once the last one falls, it can call again 2 minutes later, if it is still fighting. Guards are ordinary
-monsters: they follow their MVP, fight whoever it fights, and vanish when it falls (no EXP, no
-drops). The kings drop ores, a rare accessory (5%) and their **card** (1%), as does the Fire Giant.
+standing: once the last one falls, it can call again 2 minutes later, if it is still fighting. Guards are lesser
+monsters of their kind (half the HP, 60% of the ATK): they follow their MVP, fight whoever it
+fights, and vanish when it falls (no EXP, no drops). The kings drop ores, a rare accessory (5%) and their **card** (1%), as does the Fire Giant.
 
 **Steinborg.** A walled market city north of Mosvangr: stone walls with towers and two gates
 (south to Mosvangr, east to Birkilund), timber houses round a fountain square, a forge, market
 stalls and the seeress's tower. The buildings are 3D, like Ragnarok's towns, and fade when they
 stand between you and the camera. Its storehouse opens the same chest as the camp's.
 
-**Galdrheim.** The city of sorcerers, north of Fenstrand: pale lavender stone, violet and teal
+**Galdrheim.** The city of sorcerers, north of Fenstrand, with a north gate onto goblin country: pale lavender stone, violet and teal
 roofs, star banners over the gate and crystals glowing on every tower. In its square a circle of
 runes glows over the rune-well, with a crystal floating above it; the Archmage's three-tiered
 tower stands to the north, the library to the west, the Staffwright's workshop to the east, the
@@ -166,11 +168,11 @@ and they change your job. Elder Halvard sends ready Trainees on to the city.
 | Blade Discipline | passive, 10 | +2 ATK per level with swords |
 | Iron Hide | passive, 10 | +1 DEF, +1% Max HP per level |
 | Cleave | 10 | 110–200% to the target, half to monsters beside it |
-| Heavy Strike | 10, needs Cleave 3 | 145–280%, +3% hit per level |
+| Heavy Strike | 10, needs Cleave 3 | 167–320%, +3% hit per level |
 | War Cry | 10 | monsters within 6 paces turn on you; ATK +1% per level for 20 s |
 | Stand Firm | 10, needs War Cry 3 | no flinching, 1% less damage per level |
 | Ground Slash | 10, needs Heavy Strike 5 | 110–200% to everything close, pushing it back a little |
-| Battle Rhythm | Job 10, passive | every 5th hit restores 1 SP |
+| Battle Rhythm | Job 10, passive | every 3rd hit restores 3 SP |
 | Last Stand | Job 10, passive | below 25% HP: +15% ATK |
 
 **Sorcerers** cast from range. A spell walks you into range, then you stand and chant (the cast
@@ -470,7 +472,7 @@ leads to each.
 | Saeunn the Seeress | Steinborg | the story; lore of the Fire Giant and Galdrheim |
 | Embla the Stylist | Steinborg | hairstyle and dye, 1,000 perz |
 | Ivar the Ferryman | Steinborg | carts to any land you have walked, 300–3,000 perz |
-| Liv the Guide | Steinborg | who does what in the city |
+| Liv the Guide | Steinborg | who does what in the city · rethinks your training: one free stat reset and one free first-job skill reset (before a second job), then 20,000 perz each |
 | Bjorn the Gate Guard | Steinborg | which monsters attack on sight |
 | Hakon the Carter | Saltvik, by the south road | the story (Chapter 5) |
 | Dag the Miner | Kolgrof, by the north road | the story (Chapter 5) |

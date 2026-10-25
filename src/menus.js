@@ -9,7 +9,7 @@ import { statCost } from './ro-tables.js';
 import { HAIRSTYLES, DYES, hairstyles, lookPortrait } from './hair.js';
 import { NPCS, QUESTS, giverOf, rewardOf, SERIES } from './quests.js';
 import { ZONE_NAMES } from './world.js';
-import { SKILLS, skillList, skillLv, learnBlock, spCost, WEAPON_NAMES } from './skills.js';
+import { SKILLS, skillList, skillLv, learnBlock, spCost, WEAPON_NAMES, RETRAIN_COST } from './skills.js';
 
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const icon = (id, cls = '') => `<img class="ico ${cls}" src="${iconURL(id)}" alt="">`;
@@ -118,6 +118,7 @@ export class Menus {
     this.ferrying = false; // the Ferryman's list of lands, once asked for
     this.loreAt = 0;       // how far into their tales (NPCS lore) they are
     this.quizNote = null;  // what a trainer said about the last answer
+    this.retraining = false; // Liv's retraining choices are open
     this.show('talk');
   }
 
@@ -177,7 +178,8 @@ export class Menus {
       const s = this.hooks.storyStep?.();
       if (!s) return '<div class="rnote">The story is over, for now.</div>';
       this.wins.quest.querySelector('.rw-title').textContent = 'Story';
-      return `<div class="qview story"><small>${esc(s.ch)}</small><b>★ ${esc(s.title)}</b><p>${esc(s.goal)}${esc(this.hooks.storyProgress?.() || '')}</p>${where}<div class="rnote">The main story can't be given up.</div>${go('Go there')}</div>`;
+      const hint = typeof s.hint === 'function' ? s.hint(this.prog) : s.hint; // the advice, wherever you are
+      return `<div class="qview story"><small>${esc(s.ch)}</small><b>★ ${esc(s.title)}</b><p>${esc(s.goal)}${esc(this.hooks.storyProgress?.() || '')}</p>${hint ? `<div class="rnote">${esc(hint)}</div>` : ''}${where}<div class="rnote">The main story can't be given up.</div>${go('Go there')}</div>`;
     }
     const q = QUESTS[id], st = this.quests, active = id in st.active, ready = active && st.ready(id, inv), giver = NPCS[giverOf(id)];
     this.wins.quest.querySelector('.rw-title').textContent = q.job ? 'Job Quest' : 'Quest';
@@ -549,7 +551,8 @@ export class Menus {
     const step = this.hooks.storyStep?.(), ch = step ? +(/Chapter (\d+)/.exec(step.ch)?.[1] || 0) : 99;
     const greet = n.greet?.({ job: JOBS[p.job].name, jobId: p.job, tier: p.tier, baseLv: p.baseLv, ch });
     // what else they do: trade and craft
-    const extra = (n.stylist ? '<button class="rbtn" data-act="stylist">Change my look</button>' : '')
+    const extra = (n.retrain ? '<button class="rbtn" data-act="retrainwin">Rethink my training</button>' : '')
+      + (n.stylist ? '<button class="rbtn" data-act="stylist">Change my look</button>' : '')
       + (n.shop ? '<button class="rbtn" data-act="shop">Buy / Sell</button>' : '')
       + (n.craft ? `<button class="rbtn" data-act="craftwin" data-id="${n.craft}">${CRAFTERS[n.craft].button}</button>` : '')
       + (n.smith ? `<button class="rbtn" data-act="smithwin" data-id="${n.smith}">${SMITHS[n.smith].button}</button>` : '')
@@ -572,6 +575,18 @@ export class Menus {
       this.wins.talk.querySelector('.rw-title').textContent = n.name;
       return `<div class="talkwrap"><img class="portrait" src="${this.portrait(this.npc)}" alt="">
         <div class="say"><p>Where to? You have ${this.inv.perz.toLocaleString()} perz.</p><div class="btnrow wrap">${rows || '<span>You have not walked any other land yet.</span>'}</div>
+        <div class="btnrow"><button class="rbtn soft" data-act="close">Bye</button></div></div></div>`;
+    }
+    if (n.retrain && this.retraining) { // Liv: stats, and first-job skills, back to be placed again
+      const p = this.prog, cost = (k) => (p.resets[k] ? RETRAIN_COST : 0), sure = this.retrainSure;
+      const inTrial = Object.values(NPCS).some((o) => o.trial2?.some((k) => k in this.quests.active));
+      const skillsOk = p.tier === 1 && !inTrial;
+      const row = (k, label, ok, why) => `<button class="rbtn ${sure === k ? 'danger' : ''}" data-act="retrain" data-id="${k}" ${ok && this.inv.perz >= cost(k) ? '' : 'disabled'}>${sure === k ? 'Yes, start over' : label} · ${cost(k) ? cost(k).toLocaleString() + ' perz' : 'free'}</button>${ok ? '' : `<small>${why}</small>`}`;
+      this.wins.talk.querySelector('.rw-title').textContent = n.name;
+      return `<div class="talkwrap"><img class="portrait" src="${this.portrait(this.npc)}" alt="">
+        <div class="say"><p>Not happy with how you trained? The first time is on me. After that, the masters charge ${RETRAIN_COST.toLocaleString()} perz.</p>
+        <div class="qbox"><small>Stats: every stat back to 1, and all your points to place again.</small><small>Skills: every Blader and Sorcerer skill unlearnt, and the points back. Your Trainee skills stay.</small></div>
+        <div class="btnrow wrap retrain">${row('stats', 'Reset my stats', true, '')}${row('skills', 'Reset my first-job skills', skillsOk, p.tier === 1 ? 'Not during a second-job trial.' : p.tier === 0 ? 'Choose a first job first.' : 'Not once you have a second job.')}</div>
         <div class="btnrow"><button class="rbtn soft" data-act="close">Bye</button></div></div></div>`;
     }
     const parcel = this.quests.deliveryFor(this.npc);
@@ -735,6 +750,14 @@ export class Menus {
     }
     if (act === 'accept') this.hooks.accept?.(t.dataset.id);
     if (act === 'handin') { this.quizNote = null; this.hooks.handIn?.(t.dataset.id); }
+    if (act === 'retrainwin') { this.retraining = true; this.retrainSure = null; this.render('talk'); }
+    if (act === 'retrain') {
+      const k = t.dataset.id;
+      if (this.retrainSure !== k) { this.retrainSure = k; this.render('talk'); return; } // asks twice
+      this.retrainSure = null;
+      this.hooks.retrain?.(k);
+      this.render('talk');
+    }
     if (act === 'deliver') { this.delivered = QUESTS[t.dataset.id].toLine; this.hooks.delivered?.(t.dataset.id); this.render('talk'); }
     if (act === 'answer') {
       const r = this.quests.answer(t.dataset.id, +t.dataset.n);

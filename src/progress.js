@@ -65,6 +65,7 @@ export class Progress {
     this.jobExp = 0;
     this.stats = { pow: 1, qkn: 1, end: 1, knl: 1, fns: 1, ftn: 1 };
     this.skills = {};  // skill id -> level (stage 2)
+    this.resets = { stats: 0, skills: 0 }; // Liv's retraining: how often each was done (the first is free)
   }
 
   get baseNeed() { return BASE_EXP[this.baseLv - 1] ?? Infinity; }
@@ -156,8 +157,14 @@ export class Progress {
     return lost;
   }
 
+  // Liv's retraining: every stat back to 1, so all their points can be placed again
+  resetStats() {
+    for (const k of STAT_KEYS) this.stats[k] = 1;
+    this.resets.stats++;
+  }
+
   toJSON() {
-    return { v: 2, job: this.job, unlocked: this.unlocked, firstLv: this.firstLv, baseLv: this.baseLv, jobLv: this.jobLv, baseExp: this.baseExp, jobExp: this.jobExp, stats: this.stats, skills: this.skills };
+    return { v: 2, job: this.job, unlocked: this.unlocked, firstLv: this.firstLv, baseLv: this.baseLv, jobLv: this.jobLv, baseExp: this.baseExp, jobExp: this.jobExp, stats: this.stats, skills: this.skills, resets: this.resets };
   }
   load(d) {
     if (!d) return;
@@ -173,6 +180,7 @@ export class Progress {
     this.jobExp = Math.max(0, +d.jobExp || 0);
     for (const k of STAT_KEYS) this.stats[k] = Math.max(1, Math.min(99, d.stats?.[k] | 0 || 1));
     this.skills = { ...(d.skills || {}) };
+    this.resets = { stats: d.resets?.stats | 0, skills: d.resets?.skills | 0 };
     // saves from before the second jobs: the first job held is the one earned
     this.unlocked = (d.unlocked || (this.tier === 1 ? [this.job] : [])).filter((j) => JOBS[j] && j !== 'novice');
     this.firstLv = Math.max(1, Math.min(MAX_JOB.swordman, d.firstLv | 0 || (this.tier === 1 ? this.jobLv : 1)));

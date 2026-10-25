@@ -166,13 +166,13 @@ export const NPCS = {
   },
   // ---------- out in the fields (the story) ----------
   hakon: {
-    name: 'Hakon the Carter', map: 'coast', x: 36.4, z: 52.6, look: 'gunnar',
+    name: 'Hakon the Carter', map: 'coast', x: 12, z: 10, look: 'gunnar',
     hello: 'Lost my cart, lost my horse, and I am not going back down that road alone.',
     later: () => '', bye: 'Mind the kobolds. They bite.',
     quests: [],
   },
   dag: {
-    name: 'Dag the Miner', map: 'coalpit', x: 35.2, z: 10.4, look: 'gunnar',
+    name: 'Dag the Miner', map: 'coalpit', x: 51, z: 28, look: 'gunnar',
     hello: 'Keep your voice down. The whole pit has ears.',
     later: () => '', bye: 'When the kobolds are free of the goblins, I will dig here again. Honest coal, the black kind.',
     quests: [],
@@ -181,11 +181,12 @@ export const NPCS = {
     name: 'Liv the Guide', map: 'city', x: 28.6, z: 52.8, look: 'hild',
     hello: 'New to Steinborg? Hild trades in the square, Gunnar forges in the east and Holger refines gear beside him, Ragna brews in the north-west, the Seeress keeps her tower in the north-east, and Ivar\'s carts wait by the square.',
     later: () => '', bye: 'The walls are strong and the beer is cold. Welcome.',
+    retrain: true, // rethinks a hero's training: stats, and first-job skills (menus.js, skills.js unlearnFirstJob)
     quests: [],
   },
   // ---------- Galdrheim, the city of sorcerers ----------
   vigdis: {
-    name: 'Archmage Vigdis', map: 'magic', x: 32, z: 20.8, look: 'saeunn', trial: ['sorcerer_trial', 'sorcerer_trial2', 'sorcerer_trial3'], job: 'mage',
+    name: 'Archmage Vigdis', map: 'magic', x: 28, z: 20.8, look: 'saeunn', trial: ['sorcerer_trial', 'sorcerer_trial2', 'sorcerer_trial3'], job: 'mage',
     trial2: ['wizard_trial', 'wizard_trial2', 'wizard_trial3'], job2: 'wizard',
     trial2Hint: 'At Job Level 40 a Sorcerer may take the Wizard\'s trial with me. If you walk the Blader\'s path too, the staff must have more of your skill points than the sword.',
     hello: 'Welcome to Galdrheim, child. Here we sing the world into shape; we call it galdr, the song-craft.',
@@ -416,7 +417,7 @@ export const QUESTS = {
   // ---------- the second jobs: three harder steps each, from Job Level 40 of a first job ----------
   blademaster_trial: {
     title: 'BladeMaster Trial 1: The Goblin Line', job: true, kind: 'kill', mob: 'goblinWarrior', n: 30, lv: 1,
-    intro: 'A BladeMaster ends a fight before it begins. Thirty Goblins hold the burnt wood of Brennholt, east of Askheid. Cut through them.',
+    intro: 'A BladeMaster ends a fight before it begins. Thirty Goblins hold the burnt wood of Brennholt, beyond Galdrheim\'s north gate. Cut through them.',
     thanks: 'Thirty, and you are still standing straight. Next, speed.',
     reward: { xp: 15000, perz: 3000 },
   },
@@ -452,7 +453,7 @@ export const QUESTS = {
   },
   mknight_trial: {
     title: 'Magic Knight Trial 1: Steel', job: true, kind: 'kill', mob: 'koboldWarrior', n: 30, lv: 1,
-    intro: 'First, steel. Thirty Kobolds in the hills of Grjotvangr, south of Saltvik. Sword in hand.',
+    intro: 'First, steel. Thirty Kobolds in the hills of Grjotvangr, west of Saltvik. Sword in hand.',
     thanks: 'Your sword arm is sound. Now the other half.',
     reward: { xp: 15000, perz: 3000 },
   },
@@ -471,7 +472,7 @@ export const QUESTS = {
   // ---------- Steinborg ----------
   pearls: {
     title: "Hild's Crate", kind: 'deliver', to: 'hakon', thing: 'crate of potions', lv: 24,
-    intro: 'Hakon the carter is stuck in Saltvik, and the salt road is no place to go without potions. Take this crate to him, by the south road of Saltvik, and come back to tell me he has it.',
+    intro: 'Hakon the carter is stuck in Saltvik, and the salt road is no place to go without potions. Take this crate to him, by the west road of Saltvik, and come back to tell me he has it.',
     toLine: 'From Hild? Bless that woman. With these I can get the salt carts rolling again. Tell her the first load of salt is hers.',
     thanks: 'He has it? Good. Then the salt comes back to my stall, and some of the coin comes to you.',
     reward: { xp: 9000, perz: 6000 },
