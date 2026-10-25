@@ -159,11 +159,11 @@ they change your job. Elder Halvard sends ready Trainees on to the city.
 |---|---|---|
 | Blade Discipline | passive, 10 | +2 ATK per level with swords |
 | Iron Hide | passive, 10 | +1 DEF, +1% Max HP per level |
-| Cleave | 10 | 110–200% to the target, half to monsters beside it |
-| Heavy Strike | 10, needs Cleave 3 | 145–280%, +3% hit per level |
+| Cleave | 10 | 134–260% to the target, half to monsters beside it |
+| Heavy Strike | 10, needs Cleave 3 | 195–420%, +3% hit per level |
 | War Cry | 10 | monsters within 6 paces turn on you; ATK +1% per level for 20 s |
 | Stand Firm | 10, needs War Cry 3 | no flinching, 1% less damage per level |
-| Ground Slash | 10, needs Heavy Strike 5 | 110–200% to everything close, pushing it back a little |
+| Ground Slash | 10, needs Heavy Strike 5 | 145–280% to everything close, pushing it back a little |
 | Battle Rhythm | Job 10, passive | every 5th hit restores 1 SP |
 | Last Stand | Job 10, passive | below 25% HP: +15% ATK |
 

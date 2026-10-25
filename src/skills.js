@@ -53,13 +53,13 @@ export const SKILLS = {
   },
   cleave: {
     name: 'Cleave', job: 'swordman', kind: 'active', max: 10, target: 'mob', range: 1.35, weapon: 'sword', icon: 'skill_cleave',
-    sp: (lv) => 5 + Math.floor(lv / 2),
-    desc: (lv) => `A wide sweep: ${100 + 10 * lv}% damage to your target, half that to any monster beside it.`,
+    sp: (lv) => 5 + Math.floor(lv / 2), power: (lv) => 120 + 14 * lv,
+    desc: (lv) => `A wide sweep: ${SKILLS.cleave.power(lv)}% damage to your target, half that to any monster beside it.`,
   },
   heavy: {
     name: 'Heavy Strike', job: 'swordman', kind: 'active', max: 10, needs: { cleave: 3 }, target: 'mob', range: 1.35, weapon: 'sword', icon: 'skill_rend',
-    sp: () => 8,
-    desc: (lv) => `A two-handed blow: ${130 + 15 * lv}% damage, +${3 * lv}% hit chance.`,
+    sp: () => 8, power: (lv) => 170 + 25 * lv,
+    desc: (lv) => `A two-handed blow: ${SKILLS.heavy.power(lv)}% damage, +${3 * lv}% hit chance.`,
   },
   warcry: {
     name: 'War Cry', job: 'swordman', kind: 'active', max: 10, cd: 8, icon: 'skill_warcry',
@@ -73,8 +73,8 @@ export const SKILLS = {
   },
   earthsplit: {
     name: 'Ground Slash', job: 'swordman', kind: 'active', max: 10, needs: { heavy: 5 }, cd: 3, weapon: 'sword', icon: 'skill_earthsplit',
-    sp: () => 20,
-    desc: (lv) => `Sweep the blade low all around you: ${100 + 10 * lv}% damage to everything close, pushing it back a little.`,
+    sp: () => 20, power: (lv) => 130 + 15 * lv,
+    desc: (lv) => `Sweep the blade low all around you: ${SKILLS.earthsplit.power(lv)}% damage to everything close, pushing it back a little.`,
   },
   rhythm: {
     name: 'Battle Rhythm', job: 'swordman', kind: 'passive', max: 1, free: { jobLv: 10 }, icon: 'skill_rhythm',

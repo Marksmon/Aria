@@ -801,7 +801,7 @@ function useSkill(id) {
       if (!m.alive) continue;
       const dx = m.x - player.x, dz = m.z - player.z, d = Math.hypot(dx, dz);
       if (d > 2.8 + m.def.r) continue;
-      const res = playerAttack(player.ps, m.effDef(), (100 + 10 * lv) / 100 * player.atkMul, 1, true);
+      const res = playerAttack(player.ps, m.effDef(), sk.power(lv) / 100 * player.atkMul, 1, true);
       const yy = overHead(m, m.sprite.scale.y * 0.8);
       if (res.miss) { fx.number(m.x, yy, m.z, 'Miss', 'miss'); continue; }
       fx.number(m.x, yy, m.z, res.dmg, 'dealt');
@@ -817,13 +817,13 @@ function useSkill(id) {
   const strike = (mult, hitMult, done, opts = {}) => player.command({ mob: target, skill: { mult, hitMult, pay, done, ...opts } });
   if (id === 'thrust') strike(1.25, 1, (t) => { say('Thrust'); combo(t); });
   if (id === 'cleave') {
-    strike((100 + 10 * lv) / 100, 1, (t) => {
+    strike(sk.power(lv) / 100, 1, (t) => {
       say('Cleave');
       combo(t);
       // the sweep catches monsters beside the target
       for (const m of [...mobs.list]) {
         if (!m.alive || m === t || Math.hypot(m.x - t.x, m.z - t.z) > 1.7 + m.def.r) continue;
-        const r = playerAttack(player.ps, m.effDef(), (100 + 10 * lv) / 200 * player.atkMul, 1, true);
+        const r = playerAttack(player.ps, m.effDef(), sk.power(lv) / 200 * player.atkMul, 1, true);
         const yy = overHead(m, m.sprite.scale.y * 0.8);
         if (r.miss) { fx.number(m.x, yy, m.z, 'Miss', 'miss'); continue; }
         fx.number(m.x, yy, m.z, r.dmg, 'dealt');
@@ -832,7 +832,7 @@ function useSkill(id) {
       }
     });
   }
-  if (id === 'heavy') strike((130 + 15 * lv) / 100, 1 + (3 * lv) / 100, (t) => { say('Heavy Strike'); combo(t); });
+  if (id === 'heavy') strike(sk.power(lv) / 100, 1 + (3 * lv) / 100, (t) => { say('Heavy Strike'); combo(t); });
   // ---- BladeMaster ----
   if (id === 'twinfang') {
     const m = sk.power(lv) / 100;
