@@ -26,9 +26,10 @@ export const MOB_DEFS = {
   // These are their own stats; in the raid each is rebuilt at the difficulty's level (raidDef)
   yellowSlime: { raid: true, name: 'Yellow Bloop', ai: 'hopper', art: 'slimeYellow', el: 'wind', lv: 12, hp: 330, atk: [22, 28], def: 2, vit: 10, agi: 12, dex: 20, exp: [30, 21], adelay: 1500, walk: 400, aggro: 5, chase: 5, reach: 0.8, w: 1.0, r: 0.38, drops: [['gel', 1, 2, 1], ['dew', 1, 1, 0.4], ['shiny_gel', 1, 1, 0.01]] },
   redSlime: { raid: true, name: 'Red Bloop', ai: 'hopper', art: 'slimeRed', el: 'fire', lv: 18, hp: 560, atk: [36, 46], def: 4, vit: 16, agi: 16, dex: 30, exp: [75, 52], adelay: 1450, walk: 300, aggro: 5, chase: 6, reach: 0.8, w: 1.05, r: 0.4, drops: [['gel', 1, 2, 1], ['cinder', 1, 1, 0.1], ['shiny_gel', 1, 1, 0.01]] },
-  // the raid's boss: BleepBloop, a giant old war bloop in a dented helm (crown: warhelm). It belly-flops
+  // the raid's boss: BleepBloop, a giant, scarred old war bloop with an eyepatch, a beard and a dented
+  // helm, painted in code (bleepbloop.js). It belly-flops
   // onto you, charges, stomps, and calls Red Bloops; only ever met in the raid, at the raid's level
-  bleepBloop: { raid: true, crown: 'warhelm', name: 'BleepBloop', ai: 'boss', art: 'slimeOrange', el: 'neutral', boss: true, lv: 35, hp: 9600, atk: [62, 80], def: 14, vit: 35, agi: 24, dex: 52, exp: [9000, 6300], adelay: 1600, walk: 300,
+  bleepBloop: { raid: true, name: 'BleepBloop', ai: 'boss', art: 'bleepBloop', el: 'neutral', boss: true, lv: 35, hp: 9600, atk: [62, 80], def: 14, vit: 35, agi: 24, dex: 52, exp: [9000, 6300], adelay: 1600, walk: 300,
     moves: [{ kind: 'leap', name: 'Belly Flop', mult: 1.6, r: 2.0 }, { kind: 'charge', name: "Veteran's Charge", mult: 1.5 }], stomp: 1.5,
     aggro: 99, chase: 99, reach: 1.4, w: 2.6, r: 0.95, heavy: true, summon: ['redSlime', 'redSlime', 'redSlime'], summonText: 'BleepBloop bellows an old war cry, and Red Bloops come bouncing!', drops: [] },
   // ---------- the new lands: palette swaps of the valley's monsters, Ragnarok style (tint) ----------
@@ -154,16 +155,6 @@ const CROWNS = {
   },
   embers: (g) => { // the Giant Beetle: two burning horns
     for (const s of [-1, 1]) { g.fillStyle = '#3a1408'; g.beginPath(); g.moveTo(32 + s * 6, 52); g.quadraticCurveTo(32 + s * 26, 40, 32 + s * 20, 8); g.quadraticCurveTo(32 + s * 16, 34, 32 + s * 2, 52); g.fill(); g.fillStyle = '#ffb02a'; g.beginPath(); g.arc(32 + s * 20, 10, 6, 0, 7); g.fill(); g.fillStyle = '#fff0a0'; g.beginPath(); g.arc(32 + s * 20, 10, 2.5, 0, 7); g.fill(); }
-  },
-  warhelm: (g) => { // BleepBloop: a dented old iron war helm, a nose guard, a notch and a red plume
-    g.fillStyle = '#b84a2a'; g.beginPath(); g.moveTo(30, 14); g.quadraticCurveTo(44, 2, 56, 10); g.quadraticCurveTo(46, 10, 36, 20); g.fill();
-    g.fillStyle = '#3a3a44'; g.beginPath(); g.ellipse(32, 44, 26, 22, 0, Math.PI, 0); g.closePath(); g.fill();
-    g.fillStyle = '#8a8c96'; g.beginPath(); g.ellipse(32, 44, 23, 19, 0, Math.PI, 0); g.closePath(); g.fill();
-    g.fillStyle = '#b4b6c0'; g.beginPath(); g.ellipse(25, 36, 9, 6, -0.4, 0, Math.PI * 2); g.fill();
-    g.fillStyle = '#5a5c66'; g.fillRect(8, 42, 48, 7); g.fillStyle = '#c8a040'; for (const x of [14, 24, 40, 50]) { g.beginPath(); g.arc(x, 45.5, 2, 0, 7); g.fill(); }
-    g.fillStyle = '#5a5c66'; g.fillRect(29, 26, 6, 24); // the nose guard
-    g.fillStyle = '#3a3a44'; g.beginPath(); g.moveTo(42, 27); g.lineTo(47, 31); g.lineTo(43, 33); g.closePath(); g.fill(); // a dent
-    g.strokeStyle = '#2a2a30'; g.lineWidth = 2; g.beginPath(); g.moveTo(16, 30); g.lineTo(20, 36); g.lineTo(18, 40); g.stroke(); // an old scratch
   },
 };
 const crownTex = {};

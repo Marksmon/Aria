@@ -6,6 +6,7 @@ import * as THREE from 'three';
 import { mulberry32 } from './noise.js';
 import { paintSet, frameSize } from './painted.js';
 import { paintButler, BW, BH } from './butler.js';
+import { paintBleepBloop, BW as BBW, BH as BBH, BODY as BB_BODY } from './bleepbloop.js';
 
 const SHEETS = import.meta.glob('./art/*.png', { eager: true, import: 'default' });
 const LAYOUTS = import.meta.glob('./art/*.json', { eager: true, import: 'default' });
@@ -494,8 +495,11 @@ const ATTIRE = {
   magicknight: recolorer([[navy, (h, s, l) => [268, Math.min(0.7, s + 0.1), l * 1.1]], [crimson, (h, s, l) => [190, 0.7, Math.min(0.6, l + 0.15)]]]),
 };
 
-// a Bloop in another colour: its green body (hue 50-150) turned to hue, saturation and lightness scaled
-const bloopColour = (hue, sat, light) => recolorer([[(h, s) => h > 50 && h < 150 && s > 0.08, (h, s, l) => [hue, Math.min(1, s * sat), Math.min(0.88, l * light)]]]);
+// a Bloop in another colour: its body (the green Bloop's hues 50-150, or the Blue Bloop's) turned to
+// hue, its saturation scaled, its lightness scaled and lifted; the outline and the eyes stay
+const GREEN_BODY = (h, s) => h > 50 && h < 150 && s > 0.08;
+const BLUE_BODY = (h, s, l) => h > 160 && h < 235 && s > 0.2 && l > 0.28;
+const bloopColour = (hue, sat, light, lift = 0, body = GREEN_BODY) => recolorer([[body, (h, s, l) => [hue, Math.min(1, s * sat), Math.min(0.88, l * light + lift)]]]);
 
 // People with no sheet of their own are dressed from a bald body (see person() below): its cloth in
 // their colours. Each body's cloth, by colour: the Trainee's browns, the Blader's navy gambeson and
@@ -582,8 +586,12 @@ function pixelSet(url, { fw, fh, body, foot = 0, hair = [], anims, bald = false,
 // A hand-painted monster (painted.js) as a sprite set shaped like pixelSet's: the same anims and
 // white flash copies, drawn at once. body = the standing figure's [w, h] in pixels.
 function paintedSet(id, body) {
-  const [fw, fh] = frameSize(id), frames = paintSet(id);
-  const anchor = 2 / fh; // painted.js stands the feet two rows above the frame's bottom
+  const [fw, fh] = frameSize(id);
+  return codeSet(paintSet(id), fw, fh, body, 2 / fh); // painted.js stands the feet two rows above the frame's bottom
+}
+// frames painted in code ({ dir: { anim: [canvas] } }) as a sprite set; anchor: where the feet are,
+// as a share of the frame height from the bottom
+function codeSet(frames, fw, fh, body, anchor) {
   const set = { pixel: true, fw, fh, body, bald: false, loaded: true, anchor, hair: [], anims: {}, flash: {}, dress() {}, repaint() {} };
   const nearest = (c) => { const t = tex(c); t.magFilter = t.minFilter = THREE.NearestFilter; t.generateMipmaps = false; t.userData.anchor = anchor; return t; };
   for (const [dir, list] of Object.entries(frames)) {
@@ -701,9 +709,9 @@ export function createSprites() {
     wisp: sheet('wisp'),
     jarl: SHEETS['./art/jarl.png'] ? sheet('jarl') : sheet('beetle'), // the MVP (PixelLab art, packed like the rest)
     // the raid's bloops: the green Bloop's body in new colours (its blush and outline stay)
-    slimeYellow: sheet('slime', { recolor: bloopColour(50, 1.25, 1.35) }),
-    slimeRed: sheet('slime', { recolor: bloopColour(356, 1.2, 1.05) }),
-    slimeOrange: sheet('slime', { recolor: bloopColour(26, 1.3, 1.2) }), // BleepBloop
+    slimeYellow: sheet('slime', { recolor: bloopColour(50, 1.7, 1.1, 0.22) }), // a bright gold
+    slimeRed: sheet('blueslime', { recolor: bloopColour(354, 1.05, 1, 0, BLUE_BODY) }), // the Blue Bloop's drop, in red
+    bleepBloop: codeSet(paintBleepBloop(), BBW, BBH, BB_BODY, 3 / BBH), // the raid boss, painted in code (bleepbloop.js)
   };
   // kobolds and goblins, painted in code (painted.js) until they get PixelLab art
   for (const id of ['koboldWarrior', 'koboldArcher', 'koboldAssassin', 'goblinWarrior', 'goblinArcher', 'goblinAssassin']) mobs[id] = paintedSet(id, [16, 30]);
