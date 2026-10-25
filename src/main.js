@@ -16,6 +16,7 @@ import { Story, INTRO, route } from './story.js';
 import { Villagers } from './villagers.js';
 import { Tiles } from './tiles.js';
 import { Hotbar } from './hotbar.js';
+import { BigMap } from './bigmap.js';
 import { derive, playerAttack, mobAttack, magicAttack } from './rules.js';
 import { SKILLS, skillLv, spCost, castTime, learn, skillList, weaponOk, WEAPON_NAMES } from './skills.js';
 import { Menus } from './menus.js';
@@ -712,13 +713,21 @@ menus.portrait = (id) => (id === 'player' ? (portraits[`${prog.job}|${jobArt().d
   : (portraits[id] ||= lib.villagers[id].anims.down.idle[0].image.toDataURL()));
 // things in camp and town you tap to use: the player walks over, then it opens. h = height on screen
 const SPOTS = [
-  { map: 'camp', ...world.camp.fire, h: 0.9, run: () => menus.message('A warm fire. Crafting is done in Steinborg now: Gunnar forges gear, Ragna brews usables.') },
-  { map: 'camp', ...world.camp.chest, h: 0.8, run: () => menus.show('chest') },
-  { map: 'camp', ...world.camp.tent, h: 2.2, run: () => rest() },
-  { map: 'city', ...CITY.chest, h: 0.8, run: () => menus.show('chest') }, // Steinborg's storehouse: the same chest
-  { map: 'magic', ...MAGIC.chest, h: 0.8, run: () => menus.show('chest') }, // and Galdrheim's
+  { map: 'camp', ...world.camp.fire, label: 'Campfire', h: 0.9, run: () => menus.message('A warm fire. Crafting is done in Steinborg now: Gunnar forges gear, Ragna brews usables.') },
+  { map: 'camp', ...world.camp.chest, label: 'Storage', h: 0.8, run: () => menus.show('chest') },
+  { map: 'camp', ...world.camp.tent, label: 'Tent', h: 2.2, run: () => rest() },
+  { map: 'city', ...CITY.chest, label: 'Storage', h: 0.8, run: () => menus.show('chest') }, // Steinborg's storehouse: the same chest
+  { map: 'magic', ...MAGIC.chest, label: 'Storage', h: 0.8, run: () => menus.show('chest') }, // and Galdrheim's
   ...villagers.list.map((v) => ({ npc: v.id, map: v.map, x: v.x, z: v.z, h: v.top, run: () => { if (menus.isOpen('story')) return; if (story.talkStep(v.id) && storyLive()) storyDone(); else menus.talkTo(v.id); } })),
 ];
+
+// ---------- the big map: tap the minimap ----------
+const bigmap = new BigMap({
+  world, player, mobs, spots: SPOTS,
+  goal: () => ui.goal,
+  go(target) { stopNav(); player.command(target); },
+});
+document.getElementById('minimap').addEventListener('click', () => { if (started) bigmap.toggle(); });
 
 // ---------- hotbar: skills and items ----------
 const hotbar = new Hotbar(document.getElementById('hotbar'), inv, {
@@ -1266,7 +1275,8 @@ function frame() {
   const b = camBasis();
   // windows never pause the game, like Ragnarok
   for (const w of ['items', 'equip', 'skills', 'status']) if (input.tapped(w) && started) menus.toggle(w);
-  if (input.tapped('close')) menus.close();
+  if (input.tapped('close')) { if (bigmap.open) bigmap.close(); else menus.close(); }
+  bigmap.update(dt);
   const live = started;
   const clicks = input.takeClicks();
   if (live) for (const c of clicks) tap(c.x, c.y);

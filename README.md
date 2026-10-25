@@ -29,6 +29,7 @@ Ragnarok-style: no on-screen controller. Landscape.
 | Tap an item on the ground: pick it up | Click |
 | Tap a person, the chest (camp or Steinborg storage) or the tent: talk / open / rest | Click |
 | Step onto a glowing portal: go to the next map | |
+| Tap the minimap: the big map. People, portals and monsters are numbered, and named in a list on the left (mini-bosses and MVPs say if they are out, or when they are back). Tap a person, a portal or open ground, on the map or in the list, and the hero walks there; monsters are only for reading | Click |
 | Hotbar (bottom): tap a slot to use a skill or item; the button at its end flips between 3 pages | 1–6 · Tab: next page |
 | Drag active skills (Skills window) and usable items (Items window) onto the hotbar; drag a slot off to clear it | Drag |
 | Drag one finger: turn the camera · pinch: zoom | Drag or Q / E · mouse wheel |
