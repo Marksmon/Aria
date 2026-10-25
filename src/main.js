@@ -710,13 +710,14 @@ function tickVigil(dt) {
       return;
     }
     if (g) { g.lulled = true; g.state = 'wander'; }
-    vigil = { t: 0, next: 2, list: [] };
+    vigil = { t: 0, next: 2, list: [], giant: g };
     menus.message('The runes in the circle light up, and Vigdis\'s song rises out of them. The hill trembles: the heralds are coming!');
     audio.play('night');
     return;
   }
   if (world.id !== s.map || player.state === 'down') { endVigil('The song breaks off. Go back to the hill road and begin again.'); return; }
   if (Math.hypot(s.at.x - player.x, s.at.z - player.z) > 12) { endVigil('You strayed too far, and the song breaks off. Stand by the rune circle and begin again.'); return; }
+  if (vigil.giant?.alive && !vigil.giant.lulled) { endVigil('You struck the Fire Giant: he wakes, and the song breaks off. Let him wander off, then begin again.'); return; }
   vigil.t += dt;
   story.count = Math.floor(vigil.t);
   if (Math.random() < dt * 6) fx.sparkle(s.at.x + (Math.random() - 0.5) * 3, y + 0.3, s.at.z + (Math.random() - 0.5) * 3, '#b48aff', 3); // the song in the air

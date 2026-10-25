@@ -69,10 +69,11 @@ export class BigMap {
       mobs.push({ kind: 'mob', type, def: MOB_DEFS[type], x: at.x, z: at.z });
     }
     // the map's mini-boss and MVP: they roam, so their marker shows where they are, while they are out
-    for (const type of this.mobs.bosses || []) {
-      const b = this.mobs.list.find((m) => m.type === type && m.alive);
-      mobs.push({ kind: 'mob', type, def: MOB_DEFS[type], x: b?.x, z: b?.z, mvp: !!MOB_DEFS[type].mvp });
-    }
+    this.out = this.roamers();
+    (this.mobs.bosses || []).forEach((type, i) => {
+      const b = this.out[i];
+      mobs.push({ kind: 'mob', type, def: MOB_DEFS[type], x: b?.x, z: b?.z, mvp: !!MOB_DEFS[type].mvp, roam: b });
+    });
     mobs.sort((a, b) => a.def.lv - b.def.lv);
     for (const m of mobs) out.push({ ...m, name: m.def.name, boss: m.def.boss || m.mvp });
     return out;
@@ -100,6 +101,21 @@ export class BigMap {
     this.list.innerHTML = list;
     this.marks.innerHTML = marks;
     this.status();
+  }
+
+  // the map's bosses that are out now, in this.mobs.bosses order (null: not spawned)
+  roamers() {
+    return (this.mobs.bosses || []).map((t) => this.mobs.list.find((m) => m.type === t && m.alive) || null);
+  }
+
+  // move each roaming boss's marker to where it is now
+  follow() {
+    const pct = (v) => `${(v / SIZE) * 100}%`;
+    for (const e of this.items) {
+      if (!e.roam) continue;
+      const mk = this.marks.querySelector(`[data-i="${e.n - 1}"]`);
+      if (mk) { mk.style.left = pct(e.roam.x); mk.style.top = pct(e.roam.z); }
+    }
   }
 
   tapEntry(e) {
@@ -175,9 +191,11 @@ export class BigMap {
     if (this.drawT <= 0) {
       this.drawT = 0.2;
       this.draw();
-      // a roaming boss: its marker follows it, and comes and goes as it falls and returns
-      const now = (this.mobs.bosses || []).map((t) => this.mobs.list.find((m) => m.type === t && m.alive)).map((b) => (b ? `${b.x | 0},${b.z | 0}` : '-')).join('|');
-      if (now !== this.bossKey) { this.bossKey = now; this.build(); } else this.status();
+      // a roaming boss: its marker comes and goes as it falls and returns (the list is built again
+      // then); in between only the marker moves, so the list is left alone and a tap on it never lost
+      const out = this.roamers();
+      if (out.some((b, i) => b !== this.out[i])) this.build();
+      else { this.follow(); this.status(); }
     }
   }
 }

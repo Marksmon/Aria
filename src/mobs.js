@@ -328,6 +328,7 @@ class Mob {
     if (!this.alive) return;
     this.hp -= dmg;
     this.flash = 0.09;
+    if (this.lulled) { this.lulled = false; this.provoke(); } // a blow wakes a lulled boss (the vigil's song breaks)
     const k = this.def.mvp ? 0 : this.def.heavy ? 0.8 : 1.6; // a small nudge: Ragnarok monsters barely move when hit
     this.knock.x = fx * k;
     this.knock.z = fz * k;

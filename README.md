@@ -1,12 +1,12 @@
 # Aria
 
-A small 2.5D open-world fantasy RPG for phones, in the spirit of old-school Ragnarok Online:
+A small 2.5D open-world fantasy RPG for phones, in the spirit of old-school MMORPGs:
 painted 2D sprites standing in a 3D world. You camp in the valley of Aria, travel from map to map,
 fight monsters and bosses, sell their loot for perz in the walled city of Steinborg and have
 better gear made from what they drop.
 
 Built with Three.js + Vite, wrapped as an Android app with Capacitor. The player, monsters and
-villagers are PixelLab pixel-art sprites in a Ragnarok Online-like style; the world is painted in
+villagers are PixelLab pixel-art sprites in a classic MMORPG style; the world is painted in
 code and all sound is synthesized, so the game ships as one offline HTML file.
 
 ## Get the APK
@@ -22,7 +22,7 @@ APK and tap **Update**; don't uninstall first, or your save goes with the old ap
 
 ## Controls
 
-Ragnarok-style: no on-screen controller. Landscape.
+Classic MMORPG style: no on-screen controller. Landscape.
 
 | Touch | Desktop |
 |---|---|
@@ -79,12 +79,12 @@ Goblin country (Burnt Wood, then Serpent Wood) lies beyond Galdrheim's north gat
 | Serpent Wood | 40–55 | Goblin Assassin, Goblin, Goblin Archer | **Goblin King (55, MVP)** |
 | Any field in the valley, more at night (Moss Field only at night) | | Wisp (11) | |
 
-**Passive monsters.** Like most of Ragnarok's field monsters, they leave you alone until you hit
+**Passive monsters.** Most field monsters leave you alone until you hit
 them; then they fight back for a while. Only the Dark Wisps, the fire beasts of Ash Heath, the
 kobolds and goblins, the mini-bosses and the MVPs attack on sight. A Sprout runs away, and fights only when
 cornered.
 
-The new lands' monsters are palette swaps of the valley's, like Ragnarok's slime family. No
+The new lands' monsters are palette swaps of the valley's, like a family of slimes. No
 health bars: monsters flash white when hit and wobble when nearly beaten. They respawn 60 s
 after they fall, twice as fast at night.
 
@@ -125,15 +125,13 @@ how often it has called them): come back, or wake up at your save point after fa
 fight is where you left it, the boss a little healed (5% of its HP a minute while it isn't
 fighting you). This holds over a restart too. No monster ever steps onto a portal.
 
-**Walking speed** follows Ragnarok's, at half pace for Aria's smaller maps: the hero takes 300 ms a
-tile (Ragnarok's 150 ms, twice as long), and each monster twice its Ragnarok walk time: Slimes 800
-(Poring), Kobolds 400, Goblins 300, Goblin Assassins 200, the Kobold King 300, the Goblin King 240
-and the Fire Giant 260 (Kobold Leader, Goblin Leader, Ifrit). Some monsters are quicker than you,
-as in Ragnarok. Speed changes work like Ragnarok's too: the strongest slow (spores: +50% walk time)
-and the strongest haste count, they don't stack, and the walk time never falls under 40%. No gear
+**Walking speed** suits Aria's small maps: the hero takes 300 ms a tile, and monsters their own
+time (Slimes 800 ms, Kobolds 400, Goblins 300, Goblin Assassins 200, the Kobold King 300, the
+Goblin King 240 and the Fire Giant 260), so some are quicker than you. Speed changes: only the
+strongest slow (spores: +50% walk time) and the strongest haste count, they don't stack, and the walk time never falls under 40%. No gear
 or skill hastes the walk for now: in Aria walking speed is a big buff. Monsters keep their pace however hurt they are.
 
-**Boss moves.** Bosses walk at Ragnarok's MVP pace (the Goblin King and the Fire Giant are quicker than you), don't slow down when wounded,
+**Boss moves.** Bosses walk at a boss's quick pace (the Goblin King and the Fire Giant are quicker than you), don't slow down when wounded,
 and have moves beside the stomp. A **red circle** on the ground shows where each will land, and
 fills up until it hits: step out of it.
 
@@ -150,7 +148,7 @@ Each move hits for 1.4–2x the boss's ATK. Staying far away no longer keeps you
 
 **Steinborg.** A walled market city north of Moss Field: stone walls with towers and two gates
 (south to Moss Field, east to Birch Grove), timber houses round a fountain square, a forge, market
-stalls and the seeress's tower. The buildings are 3D, like Ragnarok's towns, and fade when they
+stalls and the seeress's tower. The buildings are 3D and fade when they
 stand between you and the camera. Its storehouse opens the same chest as the camp's.
 
 **Galdrheim.** The city of sorcerers, north of Fen Shore, with a north gate onto goblin country: pale lavender stone, violet and teal
@@ -162,7 +160,7 @@ here, and their gear is made here. It has a storehouse too (the same chest).
 
 ## Character
 
-Ragnarok's classic rules with Aria's own stat names (see `docs/ragnarok-mechanics.md`):
+Classic MMORPG rules with Aria's own stat names (see the mechanics notes in `docs/`):
 POW (STR), QKN (AGI), END (VIT), KNL (INT), FNS (DEX), FTN (LUK). Base Level and Job Level
 gain EXP separately; stat points come from Base Levels, skill points from Job Levels. HP does
 not recover while you walk. Resting (sitting, or standing in a town) doubles it and also gives
@@ -174,7 +172,7 @@ are pending); **Confirm** locks them in and **Reset** takes back any not yet loc
 the window also takes back unconfirmed points.
 
 **Rates.** 4x, for a quicker climb: every Base and Job EXP gain from monsters, MVPs and quests is
-four times Ragnarok's own (`RATES` in `src/progress.js`). Quest windows show the EXP you will get.
+four times the base rate (`RATES` in `src/progress.js`). Quest windows show the EXP you will get.
 
 ## Jobs and skills
 
@@ -248,7 +246,7 @@ No weapon needed: Mend, Thrust, Guard, Rest, War Cry, Stand Firm, Rune Ward, Bli
 ### Second jobs
 
 From **Job Level 40** of a first job (it goes to 50), a three-step trial opens a second job. Job
-Level starts again at 1 (up to 50, on Ragnarok's second-job table); your first-job skills and
+Level starts again at 1 (up to 50, on the second-job EXP table); your first-job skills and
 points stay. Second jobs wear their first job's outfit in new colours and glow with a small aura
 (the Magic Knight has its own sprite).
 
@@ -300,7 +298,7 @@ helpless, tinted blue, yellow or grey) or set it **burning** (it loses a fifth o
 every second for 3 s, flickering orange). Bosses and MVPs resist: a third of the chance, for half as
 long, and nothing takes hold while a boss is in the middle of a move.
 
-**Elements.** Every monster has an element, as in Ragnarok, and so do spells and some weapons.
+**Elements.** Every monster has an element, and so do spells and some weapons.
 Ember Bolt and Flame Ring are Fire, Frost Shard is Water, Arc Lightning is Wind; normal attacks
 are Neutral unless the weapon has one (Fire Sword, Flame Sword, Lava Sword and the Giant Sword
 are Fire, Sea Sword and Ice Sword Water, Wind Sword Wind, Stone Sword and Horn Sword
@@ -341,7 +339,7 @@ to take it off. Shops sell 1, 10 or all, and "Sell all" keeps what an active que
 | Teleport Feather | random spot on this map | Hild's shop, Ragna; Wisps |
 | Return Feather | back to your save point (the camp until you save with a Keeper) | Hild's shop, Ragna |
 
-**Rare drops.** Like Ragnarok, each monster has a rare equip it drops very seldom. A rare find
+**Rare drops.** Each monster has a rare equip it drops very seldom. A rare find
 bursts gold on the ground and shows in gold in your bag.
 
 | Rare item | Slot | Effect | From |
@@ -374,7 +372,7 @@ and Sea Sword, and the Great, Flame, Fire and Mushroom Staves. They refine for t
 
 **Holger the Refiner** (Steinborg, beside Gunnar's forge) refines weapons, armor, shields,
 capes, boots and head gear, worn or in the bag, one level at a time up to **+10**, at
-Hollgrehenn's rates from Ragnarok. Each level adds ATK to a weapon (+2 / +3 / +5 / +7 by weapon
+classic refining rates. Each level adds ATK to a weapon (+2 / +3 / +5 / +7 by weapon
 level) or 1 DEF to anything else. Up to the safe level a try always works; past it, a failed try
 **breaks the piece** (any card in it comes back to you). The window shows the chance and asks
 twice before a risky try.
@@ -397,7 +395,7 @@ Core) and 50,000 perz. The second works a quarter of the time and costs twice as
 boss materials in any mix, 100,000 perz). A failed try breaks the weapon; any card in it comes
 back to you.
 
-**Cards.** Each MVP drops its card (1%), and like Ragnarok's MVP cards they are overpowered.
+**Cards.** Each MVP drops its card (1%), and like classic MVP cards they are overpowered.
 Each mini-boss drops one too (1%): a good step up, but nothing like an MVP's.
 Select a card in the Miscs tab and tap **Insert** to press it into a weapon with a
 free slot. It stays there for good, unless the weapon later breaks at Holger's.
@@ -422,7 +420,7 @@ A job change puts away what the new job can't use.
 Leaf Cap, Flower Crown, Horned Crown, and the animated **Fire Crown** (crafted from the
 MVP's Fire Heart).
 
-**Your look, Ragnarok style.** A character is layers: the job's body, then one shared head (the
+**Your look.** A character is layers: the job's body, then one shared head (the
 standard face: eyes only, no mouth), then your hairstyle, then headgear. You choose a hairstyle
 (Tousled or Long) and a hair dye (8 colours) when you start a new game; **Embla the Stylist** by
 Steinborg's fountain changes them for 1,000 perz. Your hair stays the same through job changes,
@@ -430,7 +428,7 @@ and the job changes your outfit. Headgear snaps to the head layer, so hats sit o
 glasses and masks sit on the eyes, in every direction and every frame. See
 `docs/character-standard.md`.
 
-**Perz and shops.** Perz is Aria's coin (Ragnarok's zeny). Monsters don't drop perz, as in Ragnarok: sell your loot. In Steinborg,
+**Perz and shops.** Perz is Aria's coin. Monsters don't drop perz: sell your loot. In Steinborg,
 **Hild the Trader** sells potions, herbs, feathers and torches, and **Gunnar** sells swords,
 armor, shields, capes and boots. In Galdrheim, **Kari** sells the same goods as Hild (and Speed
 Potions), and **Orm the Staffwright** sells staves and robes. Any shop buys anything for half its
@@ -542,7 +540,7 @@ Quit quest sits at the left of the Quest View's buttons and asks twice. The main
 differently as your job and the story change.
 
 **Water.** The shallow edge of a lake (Fen Shore's pond, Salt Bay's bay) can be waded: the hero and
-monsters are cut at the waterline, Ragnarok style, and rings spread round them as they move.
+monsters are cut at the waterline, and rings spread round them as they move.
 
 ## Day and night
 
@@ -555,7 +553,7 @@ to restore HP, save, and sleep until morning.
 - [x] **M7** PixelLab sprites for the whole cast
 - [x] **M8** Leveling and equipment
 - [x] **M9** Camp villagers and quest chains
-- [x] Ragnarok-style controls, rules, windows, maps and portals; Aria's own skills; MVP boss
+- [x] Classic MMORPG-style controls, rules, windows, maps and portals; Aria's own skills; MVP boss
 - [x] Steinborg, four new lands, mini-bosses, perz and shops, the Sorcerer and job trials
 - [ ] Cards, more jobs
 
@@ -576,7 +574,7 @@ shops and quests), `hotbar.js`, `daynight.js`, `audio.js`,
 ## PixelLab art
 
 Every character is made with PixelLab's Pro mode from a style reference: the player from a
-Ragnarok Online sprite (kept out of the repo), everyone else from the player, so the cast shares
+style reference sprite (kept out of the repo), everyone else from the player, so the cast shares
 one look. Raw exports live in `art/pixellab/<name>/`; older versions stay in `*_v1` / `*_v2`.
 
 ```bash

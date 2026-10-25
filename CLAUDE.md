@@ -31,6 +31,8 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
 - **Character art:** bodies are bald to the standard in `docs/character-standard.md`; the game
   paints the shared head, hair and headgear.
 - **Names:** plain common names in game; the cooler Old Norse names wait in `docs/names-later.md`.
+- **README:** never mention Ragnarok (or its names: Poring, zeny...) in `README.md`; describe Aria
+  on its own. The design notes in `docs/` and the code may still refer to it.
 
 ## Working on the repo
 
