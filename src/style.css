@@ -479,6 +479,10 @@ button.eq:active { background: var(--w-sel); }
 .stt .pts { font-weight: 700; }
 .stt .pts b { float: right; }
 .sthead { display: flex; gap: 10px; align-items: baseline; padding: 4px 6px; border-bottom: 1px solid var(--w-line); background: var(--w-soft); font-size: 13px; color: var(--w-dim); }
+.setrow { display: flex; align-items: center; gap: 8px; padding: 8px; border-bottom: 1px solid var(--w-line2); font-size: 13px; color: var(--w-text); }
+.setrow:last-child { border-bottom: 0; }
+.setrow > span { flex: 1; display: flex; flex-direction: column; font-weight: 700; }
+.setrow small { font-weight: 400; color: var(--w-dim); font-size: 11px; }
 .sthead > b { margin-right: auto; color: var(--w-gold); font-size: 14px; }
 .sthead span b { color: var(--w-text); }
 .stsub { display: flex; justify-content: space-between; }

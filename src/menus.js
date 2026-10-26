@@ -59,6 +59,7 @@ const WINDOWS = {
   look:   { title: 'Your Look',  at: [0.50, 0.16], w: 299 },
   smith:  { title: '',           at: [0.50, 0.12], w: 368 },
   quest:  { title: 'Quest',      at: [0.50, 0.16], w: 368 },
+  settings: { title: 'Settings', at: [0.50, 0.22], w: 253 },
 };
 // the smith window's three jobs: Holger's refining, Seyla's slots, pressing in a card
 const SMITHS = {
@@ -516,8 +517,14 @@ export class Menus {
       <div class="strow"><span class="rtag">${n ? `${n} point${n === 1 ? '' : 's'} placed, not locked in yet` : 'Tap ▲ to place points, then Confirm'}</span>
         <button class="rbtn soft" data-act="statreset" ${n ? '' : 'disabled'}>Reset</button><button class="rbtn" data-act="statconfirm" ${n ? '' : 'disabled'}>Confirm</button></div>
       <div class="rsub stsub"><span>Battle</span></div>
-      <table class="stt battle"><tbody>${battle.map((r) => `<tr>${r[0]}<td class="gap"></td>${r[1]}</tr>`).join('')}</tbody></table>
-      <div class="strow"><span class="rtag">Saved as you play</span><button class="rbtn soft" data-act="totitle">Characters</button></div>`;
+      <table class="stt battle"><tbody>${battle.map((r) => `<tr>${r[0]}<td class="gap"></td>${r[1]}</tr>`).join('')}</tbody></table>`;
+  }
+
+  // the ⚙ window: sound, and back to the title screen (the game saves first) to play another hero
+  settings() {
+    const on = this.hooks.soundOn?.();
+    return `<div class="setrow"><span>Sound</span><button class="rbtn${on ? '' : ' soft'}" data-act="sound" aria-pressed="${!!on}">${on ? 'On' : 'Off'}</button></div>
+      <div class="setrow"><span>Main menu<small>Your game is saved first. Pick another hero there.</small></span><button class="rbtn" data-act="totitle">Back to main menu</button></div>`;
   }
 
   // Holger's refining, Seyla's slots and card inserting: pick a piece (worn or in the bag), see the
@@ -826,6 +833,7 @@ export class Menus {
       if (v < 99 && statCost(v) <= this.prog.statPoints - this.pendCost()) { this.pend[k] = (this.pend[k] || 0) + 1; this.hooks.ui?.(); this.render(id); }
     }
     if (act === 'totitle') this.hooks.toTitle?.(); // back to the title screen, to play another hero
+    if (act === 'sound') { this.hooks.toggleSound?.(); this.render(id); }
     if (act === 'statreset') { this.pend = {}; this.hooks.ui?.(); this.render(id); }
     if (act === 'statconfirm') {
       for (const [k, n] of Object.entries(this.pend)) for (let i = 0; i < n; i++) this.prog.raise(k);

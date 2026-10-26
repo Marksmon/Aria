@@ -1268,7 +1268,7 @@ const menus = new Menus(inv, prog, player, {
   soundOn: () => audio.enabled,
   toggleSound() { audio.setEnabled(!audio.enabled); },
   closed() { persist(); },
-  // the Status window's Characters: save, and back to the title to pick a hero (not in a raid)
+  // Settings' Back to main menu: save, and back to the title to pick a hero (not in a raid)
   toTitle() {
     if (raidOf(world.id)) { menus.message('Finish the raid first.'); return; }
     persist();
@@ -2267,7 +2267,7 @@ function frame() {
 
   const b = camBasis();
   // windows never pause the game, like Ragnarok
-  for (const w of ['items', 'equip', 'skills', 'status']) if (input.tapped(w) && started) menus.toggle(w);
+  for (const w of ['items', 'equip', 'skills', 'status', 'settings']) if (input.tapped(w) && started) menus.toggle(w);
   if (input.tapped('close')) { if (bigmap.open) bigmap.close(); else menus.close(); }
   bigmap.update(dt);
   const live = started;

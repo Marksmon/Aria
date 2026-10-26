@@ -20,8 +20,9 @@ this phone or another).
 ## Heroes and storage
 
 The title screen has three character slots. Tap a hero and **Continue** (or **Play**), or tap an
-empty slot to make a new one; **Delete** removes the picked hero (it asks twice). **Characters**, at
-the foot of the Status window, saves and goes back to the title screen to play another hero. Every
+empty slot to make a new one; **Delete** removes the picked hero (it asks twice). In the game, the **⚙**
+button (next to Skills) opens Settings: Sound on or off, and **Back to main menu**, which saves and
+goes back to the title screen to play another hero. Every
 hero keeps their own level, job, bag, gear, perz and quests, but the Keepers' storage (96 slots) is
 shared: what one hero puts away, the others can take out.
 Download it from **Releases → "Aria — latest build"** → `Aria.apk`.
