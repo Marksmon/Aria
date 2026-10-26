@@ -70,7 +70,7 @@ const BASE_ITEMS = {
   stone_blade:  { type: 'equip', slot: 'weapon', el: 'earth', jobs: ['novice', 'swordman'], name: 'Stone Sword', atk: 25, wlv: 1, icon: 'weapon1', desc: 'Ridge stone knapped to an edge and bound to a grip. Crude, but it bites.' },
   ember_edge:   { type: 'equip', slot: 'weapon', jobs: ['novice', 'swordman'], el: 'fire', name: 'Fire Sword',  atk: 44, wlv: 2, icon: 'weapon2', desc: 'A stone blade worked with glow dust until it took the fire. Warm to the touch, glowing at the edge.' },
   iron_sword:   { type: 'equip', slot: 'weapon', jobs: ['novice', 'swordman'], name: 'Iron Sword',  atk: 58, wlv: 2, icon: 'weapon_iron', desc: 'Plain Steinborg steel, well balanced and well made. The Watch carries these.' },
-  // bows (the Archer's weapon, both hands): they shoot from range, and their ATK comes from FNS
+  // bows (the Archer's weapon; a shield can be worn with one): they shoot from range, and their ATK comes from FNS
   // (rules.js derive). A bow shoots only with arrows in the Arrows slot (never used up)
   hunting_bow:  { type: 'equip', slot: 'weapon', kind: 'bow', jobs: ['archer'], name: 'Hunting Bow', atk: 30, wlv: 1, icon: 'bow_hunt', desc: 'A plain ash bow, the first every Veidheim child is given. It bends like it means it.' },
   composite_bow: { type: 'equip', slot: 'weapon', kind: 'bow', jobs: ['archer'], name: 'Composite Bow', atk: 55, wlv: 2, icon: 'bow_comp', desc: 'Horn, sinew and wood glued in layers. Short enough to shoot from the saddle, strong enough to bring down a stag.' },
@@ -111,7 +111,7 @@ const BASE_ITEMS = {
   gooey_ring:   { type: 'equip', slot: 'acc', rare: true, name: 'Bloop Ring', stats: { ftn: 2 }, mhp: 20, icon: 'r_gooey', desc: 'A ring of hardened bloop that never quite dries. Lucky, they say.', from: 'Bloops (0.5%)' },
   tide_pendant: { type: 'equip', slot: 'acc', rare: true, name: 'Water Necklace', stats: { knl: 2 }, msp: 15, icon: 'r_tide', desc: 'A drop of Blue Bloop water held in glass. Cool to the touch, like deep water.', from: 'Blue Bloops (0.3%)' },
   seedling_band: { type: 'equip', slot: 'acc', rare: true, name: 'Leaf Bracelet', stats: { end: 1, qkn: 1 }, fx: 'regen', icon: 'r_seed', desc: 'A living green bracelet that sprouted from a Sprout\'s seed. HP recovers twice as fast.', from: 'Sprouts (0.4%)' },
-  mud_buckler:  { type: 'equip', slot: 'shield', jobs: ['novice', 'swordman'], rare: true, name: 'Shell Buckler', def: 3, mhp: 40, icon: 'r_buckler', desc: 'A small round shield cut from a big Crab\'s shell, light and hard.', from: 'Crabs (0.3%)' },
+  mud_buckler:  { type: 'equip', slot: 'shield', jobs: ['novice', 'swordman', 'archer'], rare: true, name: 'Shell Buckler', def: 3, mhp: 40, icon: 'r_buckler', desc: 'A small round shield cut from a big Crab\'s shell, light and hard.', from: 'Crabs (0.3%)' },
   spore_cloak:  { type: 'equip', slot: 'garment', rare: true, name: 'Mushroom Cloak', def: 1, flee: 4, icon: 'r_cloak', desc: 'Woven from mushroom threads, light as mist. Blows aside like it was never there.', from: 'Mushrooms (0.25%)' },
   horn_blade:   { type: 'equip', slot: 'weapon', jobs: ['swordman'], el: 'earth', rare: true, name: 'Horn Sword', atk: 68, wlv: 3, stats: { pow: 1 }, icon: 'weapon_horn', desc: 'A sword ground from a Beetle\'s horn, harder than iron. Beetles rarely give one up.', from: 'Beetles (0.15%)' },
   pebble_ring:  { type: 'equip', slot: 'acc', rare: true, name: 'Stone Ring', stats: { end: 2 }, def: 1, icon: 'r_pebble', desc: 'A plain stone band from a Beetle\'s back. It makes you feel as heavy as a hill.', from: 'Beetles (0.3%)' },
@@ -248,7 +248,7 @@ const BASE_ITEMS = {
   beetle_plate: { type: 'equip', slot: 'armor', jobs: ['swordman'], name: 'Beetle Armor', def: 6, icon: 'armor3', desc: 'Heavy plates of Beetle shell, dark and very hard. Bladers only: it takes a strong back.' },
   chain_mail:   { type: 'equip', slot: 'armor', jobs: ['swordman'], name: 'Chain Mail', def: 5, icon: 'armor_chain', desc: 'Iron rings, oiled and tight, from Gunnar\'s own forge. The Watch\'s standard armor.' },
   mage_robe:    { type: 'equip', slot: 'armor', jobs: ['mage'], name: 'Robe', def: 2, msp: 30, icon: 'armor_robe', desc: 'Blue wool stitched with silver runes. Galdrheim\'s apprentices wear these.' },
-  round_shield: { type: 'equip', slot: 'shield', jobs: ['novice', 'swordman'], name: 'Round Shield', def: 2, icon: 'shield_round', desc: 'Linden boards with an iron boss. Simple, and it has saved more lives than any sword.' },
+  round_shield: { type: 'equip', slot: 'shield', jobs: ['novice', 'swordman', 'archer'], name: 'Round Shield', def: 2, icon: 'shield_round', desc: 'Linden boards with an iron boss. Simple, and it has saved more lives than any sword.' },
   wool_cape:    { type: 'equip', slot: 'garment', name: 'Wool Cape', def: 1, icon: 'cape', desc: 'Warm, grey and hard-wearing. Every traveller in Aria owns one.' },
   leather_boots: { type: 'equip', slot: 'shoes', name: 'Leather Boots', def: 1, icon: 'boots_leather', desc: 'Good leather soles for long roads. Your feet will thank you.' },
   swift_boots:  { type: 'equip', slot: 'shoes', name: 'Swift Boots', def: 2, flee: 4, stats: { qkn: 1 }, icon: 'boots', desc: 'Light boots soled with shell and laced with leaf. Quick on your feet in a fight.' },

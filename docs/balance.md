@@ -13,7 +13,7 @@ fight in detail). The simulator uses the game's own rules (`src/rules.js`), mons
   a Robe.
 - **Archer:** FNS 45%, QKN 20%, END 25%, POW 10%; Double Shot 5, Keen Eye 5, Double Shot 10, Keen
   Eye 10, Focus, Long Sight, Arrow Rain... Hunting Bow and Wooden Arrows, then a +5 Composite Bow,
-  Iron Arrows, Chain Mail, Wool Cape and Leather Boots (no shield: a bow takes both hands). It
+  Iron Arrows, Chain Mail, Wool Cape and Leather Boots (and a shield if they like: a bow no longer takes both hands). It
   shoots twice as a monster closes in, steps back so 30% of a monster's swings miss (half of a
   boss's), and uses Arrow Rain on a boss's guards.
 

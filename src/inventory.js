@@ -138,9 +138,7 @@ export class Inventory {
     // a second accessory goes in the free hand
     const slot = it.slot === 'acc' && this.gear.acc && !this.gear.acc2 ? 'acc2' : it.slot;
     const old = this.gear[slot];
-    // a bow takes both hands: it puts the shield away, and a shield puts the bow away
-    const twoHands = (it.kind === 'bow' && this.gear.shield) ? 'shield' : (it.slot === 'shield' && ITEMS[this.gear.weapon]?.kind === 'bow') ? 'weapon' : null;
-    if (twoHands && !this.bag.room(this.gear[twoHands])) return false;
+    // (a bow and a shield go together: an Archer straps the shield to the forearm, the owner's call)
     // the piece taken off goes where the new one was, so the bag does not shuffle under your finger
     const at = this.bag.slots.findIndex((s) => s.id === id);
     if (at < 0) return false;
@@ -150,7 +148,6 @@ export class Inventory {
       if (old) this.bag.add(old, 1); // the slot just freed always has room
     }
     this.gear[slot] = id;
-    if (twoHands) { this.bag.add(this.gear[twoHands], 1); this.gear[twoHands] = null; }
     this.changed();
     return true;
   }

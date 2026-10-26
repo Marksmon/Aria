@@ -29,7 +29,7 @@ quests. Code: `src/progress.js` (jobs, levels, points), `src/skills.js` (trees, 
 - Trained by **Huntmaster Sigrid** in Veidheim. Trial: 5 Yellow Bloops in Willow Marsh, wax a
   bowstring with 5 Bloop Gel (a quiz with items, like the Sorcerer's brew), her three questions.
   A new Archer is handed a Hunting Bow and Wooden Arrows, worn at once.
-- **Bows** (`kind: 'bow'`) take both hands (no shield). A bow's normal attack and the bow skills
+- **Bows** (`kind: 'bow'`) can be worn with a shield (the owner's call; they used to take both hands). A bow's normal attack and the bow skills
   reach `BOW_RANGE` (5) paces, +0.2 a level of Long Sight; the arrow flies and the hit is rolled
   when it lands.
 - **Ragnarok's ranged rule:** with a bow, status ATK comes from FNS (`fns + (fns/10)^2 + pow/5 +
