@@ -117,7 +117,7 @@ export class Progress {
     return t;
   }
   // the jobs whose gear this hero may wear: the current job and every first or second job earned
-  get wearJobs() { return this.job === 'novice' ? ['novice'] : [...new Set([this.job, ...this.unlocked, ...(JOBS[this.job].from || [])])]; }
+  get wearJobs() { return this.job === 'novice' ? ['novice'] : [this.job, ...(JOBS[this.job].from || [])]; }
   // skill points: one per job level in every tier walked (the Trainee's from Job 2; the first jobs
   // share theirs), minus skill levels learnt in any tree
   get skillPoints() {

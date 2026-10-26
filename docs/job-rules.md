@@ -58,17 +58,21 @@ quests. Code: `src/progress.js` (jobs, levels, points), `src/skills.js` (trees, 
 
 ### Skills that need a weapon
 
-| Needs a sword (or bare hands) | Needs a staff | Needs a bow |
+| Needs a sword | Needs a bow | Needs no weapon |
 |---|---|---|
-| Cleave, Heavy Strike, Ground Slash (Blader) | Ember Bolt, Frost Shard, Arc Lightning, Flame Ring (Sorcerer) | Double Shot, Arrow Rain (Archer) |
-| Twin Fang, Piercing Edge, Final Blade, Blade Dance (BladeMaster) | Stone Spike, Earthquake, Meteor Storm, Storm Gust, Thunderstorm (Wizard) | |
-| Elemental Edge, Elemental Blade, Elemental Nova (Magic Knight) | | |
+| Cleave, Heavy Strike, War Cry, Stand Firm, Ground Slash (Blader) | Double Shot, Arrow Rain, Focus, Hunter's Mark, Leap Back (Archer) | Ember Bolt, Frost Shard, Arc Lightning, Flame Ring, Rune Ward, Blink (Sorcerer) |
+| Twin Fang, Piercing Edge, Final Blade, Blade Dance (BladeMaster) | Tailwind, Gale Step, Hurricane Volley, Cyclone Arrow (Windrunner) | Stone Spike, Earthquake, Meteor Storm, Storm Gust, Thunderstorm (Wizard) |
+| Elemental Edge, Elemental Blade, Elemental Nova (Magic Knight) | Lunar Multishot, Crescent Arrow (Moon Ranger) | Starfall, Moonveil (Moon Ranger), Stone Aegis (Magic Knight) |
+| | | the Beastmaster's summons and Pack Frenzy; Mend, Thrust, Guard, Rest (Trainee) |
 
-No weapon needed: Mend, Thrust, Guard, Rest, War Cry, Stand Firm, Rune Ward, Blink, Stone Aegis,
-Focus, Hunter's Mark, Leap Back.
+Bare hands are no sword: with no weapon a hero fights hand to hand and has no blade skills, and an
+Archer or Windrunner with no bow fights hand to hand too. Starfall needs no bow and still falls from
+bow range.
 
-- Gear follows every job earned, so a Blader who passed the Sorcerer's trial may hold a staff,
-  and one who passed the Archer's a bow.
+- Gear follows **the job worn** (`wearJobs`): a Blader holds swords, a Sorcerer staves, an Archer
+  bows; a second job, those of the first jobs it stands on (a Magic Knight swords and staves, a
+  Beastmaster swords and bows). Switching jobs at a Keeper puts away what the new job can't use
+  (`dropUnwearable`), e.g. a Blader's sword when switching to Archer (the owner's call).
 
 ## Second jobs: who may take which trial
 

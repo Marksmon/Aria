@@ -7,7 +7,8 @@
 //
 // A hero who has walked several paths (see progress.js) keeps every tree they earned: passives work
 // whatever job they wear, and actives too, as long as the right weapon is in hand (weapon: 'sword'
-// = a sword (or bare hands), 'staff' = a staff, 'bow' = a bow). range: 'bow' = the bow's reach. Skill points go into any tree the
+// = a sword, 'staff' = a staff, 'bow' = a bow; bare hands are none of them, and a Sorcerer's spells need
+// no staff). range: 'bow' = the bow's reach. Skill points go into any tree the
 // hero earned, active job or not (trainTrees).
 //
 // kind: active (goes on the hotbar) | passive
@@ -73,12 +74,12 @@ export const SKILLS = {
     desc: (lv) => `A two-handed blow: ${SKILLS.heavy.power(lv)}% damage, +${3 * lv}% hit chance.`,
   },
   warcry: {
-    name: 'War Cry', job: 'swordman', kind: 'active', max: 10, cd: 8, icon: 'skill_warcry',
+    name: 'War Cry', job: 'swordman', kind: 'active', max: 10, cd: 8, weapon: 'sword', icon: 'skill_warcry',
     sp: () => 10,
     desc: (lv) => `Shout: monsters within 6 paces turn on you, and your ATK rises ${lv}% for 20 s.`,
   },
   standfirm: {
-    name: 'Stand Firm', job: 'swordman', kind: 'active', max: 10, needs: { warcry: 3 }, cd: 20, icon: 'skill_standfirm',
+    name: 'Stand Firm', job: 'swordman', kind: 'active', max: 10, needs: { warcry: 3 }, cd: 20, weapon: 'sword', icon: 'skill_standfirm',
     sp: () => 12,
     desc: (lv) => `Plant your feet for ${6 + Math.floor(lv / 2)} s: no flinching, ${lv}% less damage taken.`,
   },
@@ -102,22 +103,22 @@ export const SKILLS = {
     desc: (lv) => `+${2 * lv}% Max SP, and +${lv} SP each time SP recovers.`,
   },
   spark: {
-    name: 'Ember Bolt', job: 'mage', kind: 'active', max: 10, target: 'mob', range: 5, magic: 'fire', weapon: 'staff', icon: 'skill_spark',
+    name: 'Ember Bolt', job: 'mage', kind: 'active', max: 10, target: 'mob', range: 5, magic: 'fire', icon: 'skill_spark',
     sp: (lv) => 4 + lv, cast: (lv) => 0.5 + 0.1 * lv, cd: 0.6, power: (lv) => 70 + 12 * lv,
     desc: (lv) => `Hurl a bolt of fire: ${SKILLS.spark.power(lv)}% MATK. Fire: strong against Earth, weak against Water.`,
   },
   frost: {
-    name: 'Frost Shard', job: 'mage', kind: 'active', max: 10, target: 'mob', range: 5, magic: 'water', weapon: 'staff', icon: 'skill_frost',
+    name: 'Frost Shard', job: 'mage', kind: 'active', max: 10, target: 'mob', range: 5, magic: 'water', icon: 'skill_frost',
     sp: (lv) => 6 + lv, cast: (lv) => 0.4 + 0.12 * lv, cd: 0.6, power: (lv) => 20 + lv, hits: (lv) => lv, every: 0.12,
     desc: (lv) => `${lv} shard${lv > 1 ? 's' : ''} of ice rain on the monster one after another, ${SKILLS.frost.power(lv)}% MATK each. Water: strong against Fire, weak against Wind.`,
   },
   arc: {
-    name: 'Arc Lightning', job: 'mage', kind: 'active', max: 10, needs: { spark: 4 }, target: 'mob', range: 5, magic: 'wind', weapon: 'staff', icon: 'skill_arc',
+    name: 'Arc Lightning', job: 'mage', kind: 'active', max: 10, needs: { spark: 4 }, target: 'mob', range: 5, magic: 'wind', icon: 'skill_arc',
     sp: (lv) => 10 + lv, cast: (lv) => 1 + 0.1 * lv, cd: 1, power: (lv) => 60 + 7 * lv, status: { kind: 'paralyze', chance: (lv) => 2 * lv, dur: 1.2 },
     desc: (lv) => `Lightning strikes your target for ${SKILLS.arc.power(lv)}% MATK and leaps to 2 monsters nearby for half that; ${statusText(SKILLS.arc, lv, ' each')}. Wind: strong against Water, weak against Earth.`,
   },
   flamering: {
-    name: 'Flame Ring', job: 'mage', kind: 'active', max: 10, needs: { spark: 5 }, magic: 'fire', weapon: 'staff', icon: 'skill_flamering',
+    name: 'Flame Ring', job: 'mage', kind: 'active', max: 10, needs: { spark: 5 }, magic: 'fire', icon: 'skill_flamering',
     sp: (lv) => 16 + lv, cast: () => 1.5, cd: 3, power: (lv) => 70 + 8 * lv, status: { kind: 'burn', chance: (lv) => 2 * lv, dur: 3 },
     desc: (lv) => `A ring of fire bursts around you: ${SKILLS.flamering.power(lv)}% MATK (Fire) to every monster close by; ${statusText(SKILLS.flamering, lv, ' each')} (a fifth of the hit each second).`,
   },
@@ -157,17 +158,17 @@ export const SKILLS = {
     desc: (lv) => `Arrows fall round your target: ${SKILLS.arrowrain.power(lv)}% damage to every monster within 2.5 paces of it, pushing them back a little.`,
   },
   focus: {
-    name: 'Focus', job: 'archer', kind: 'active', max: 10, cd: 5, icon: 'skill_focus',
+    name: 'Focus', job: 'archer', kind: 'active', max: 10, cd: 5, weapon: 'bow', icon: 'skill_focus',
     sp: (lv) => 10 + lv,
     desc: (lv) => `Steady your breath: +${lv} QKN and +${lv} FNS for 60 s.`,
   },
   huntmark: {
-    name: "Hunter's Mark", job: 'archer', kind: 'active', max: 5, needs: { keeneye: 3 }, target: 'mob', range: 'bow', cd: 3, icon: 'skill_mark',
+    name: "Hunter's Mark", job: 'archer', kind: 'active', max: 5, needs: { keeneye: 3 }, target: 'mob', range: 'bow', cd: 3, weapon: 'bow', icon: 'skill_mark',
     sp: () => 12,
     desc: (lv) => `Mark a monster for 10 s: everything you hit it with deals ${4 * lv}% more.`,
   },
   leapback: {
-    name: 'Leap Back', job: 'archer', kind: 'active', max: 1, free: { jobLv: 10 }, cd: 6, icon: 'skill_leapback',
+    name: 'Leap Back', job: 'archer', kind: 'active', max: 1, free: { jobLv: 10 }, cd: 6, weapon: 'bow', icon: 'skill_leapback',
     sp: () => 6,
     desc: () => 'Spring 3 paces back, away from the nearest monster.',
   },
@@ -191,12 +192,12 @@ export const SKILLS = {
     desc: (lv) => `After a burst of speed (Gale Step, Tailwind's rush) your next 3 arrows deal ${8 * lv}% more.`,
   },
   tailwind: {
-    name: 'Tailwind', job: 'windrunner', kind: 'active', max: 10, cd: 30, icon: 'skill_tailwind',
+    name: 'Tailwind', job: 'windrunner', kind: 'active', max: 10, cd: 30, weapon: 'bow', icon: 'skill_tailwind',
     sp: (lv) => 20 + 2 * lv, dur: (lv) => 20 + 2 * lv,
     desc: (lv) => `The wind at your back for ${SKILLS.tailwind.dur(lv)} s: your bow shoots ${2 * lv}% faster. For its first 4 s you rush, walking 30% quicker.`,
   },
   galestep: {
-    name: 'Gale Step', job: 'windrunner', kind: 'active', max: 5, cd: 6, icon: 'skill_galestep',
+    name: 'Gale Step', job: 'windrunner', kind: 'active', max: 5, cd: 6, weapon: 'bow', icon: 'skill_galestep',
     sp: () => 12, haste: (lv) => 20 + 4 * lv,
     desc: (lv) => `Dash 4 paces away from the nearest monster (or ahead): nothing can touch you on the way. Then walk ${SKILLS.galestep.haste(lv)}% quicker for 2 s.`,
   },
@@ -232,7 +233,7 @@ export const SKILLS = {
     desc: (lv) => `A fan of ${SKILLS.multishot.arrows(lv)} moonlit arrows: one at your target, the rest at the monsters nearest it (all at the target if it is alone). Each ${SKILLS.multishot.power(lv)}% ATK + ${SKILLS.multishot.mpower(lv)}% MATK.`,
   },
   starfall: {
-    name: 'Starfall', job: 'moonranger', kind: 'active', max: 10, needs: { multishot: 3 }, target: 'mob', range: 'bow', weapon: 'bow', cd: 3, icon: 'skill_starfall',
+    name: 'Starfall', job: 'moonranger', kind: 'active', max: 10, needs: { multishot: 3 }, target: 'mob', range: 'bow', cd: 3, icon: 'skill_starfall',
     sp: (lv) => 30 + 3 * lv, power: (lv) => 30 + 4 * lv, mpower: (lv) => 45 + 6 * lv, hits: (lv) => 2 + Math.floor(lv / 2), every: 0.6, area: 3,
     status: { kind: 'stun', chance: (lv) => 1.5 * lv, dur: 1.5 },
     desc: (lv) => `Stars fall round your target for ${SKILLS.starfall.hits(lv)} waves: each ${SKILLS.starfall.power(lv)}% ATK + ${SKILLS.starfall.mpower(lv)}% MATK to every monster within 3 paces, ${1.5 * lv}% to stun it for 1.5 s.`,
@@ -334,27 +335,27 @@ export const SKILLS = {
     desc: (lv) => `A spell of a different element from your last one (within 8 s) deals ${6 * lv}% more damage.`,
   },
   stonespike: {
-    name: 'Stone Spike', job: 'wizard', kind: 'active', max: 10, target: 'mob', range: 5, magic: 'earth', weapon: 'staff', icon: 'skill_stonespike',
+    name: 'Stone Spike', job: 'wizard', kind: 'active', max: 10, target: 'mob', range: 5, magic: 'earth', icon: 'skill_stonespike',
     sp: (lv) => 10 + lv, cast: (lv) => 0.8 + 0.05 * lv, cd: 0.6, power: (lv) => 100 + 14 * lv,
     desc: (lv) => `A spike of rock bursts under the monster: ${SKILLS.stonespike.power(lv)}% MATK (Earth), and it is Shattered for 6 s: the next spell of another element on it deals 30% more. Earth: strong against Wind, weak against Fire.`,
   },
   quake: {
-    name: 'Earthquake', job: 'wizard', kind: 'active', max: 10, needs: { stonespike: 3 }, target: 'mob', range: 5, magic: 'earth', weapon: 'staff', icon: 'skill_quake',
+    name: 'Earthquake', job: 'wizard', kind: 'active', max: 10, needs: { stonespike: 3 }, target: 'mob', range: 5, magic: 'earth', icon: 'skill_quake',
     sp: (lv) => 30 + 2 * lv, cast: () => 1.6, cd: 3, power: (lv) => 40 + 4 * lv, hits: () => 3, every: 0.5, status: { kind: 'stun', chance: (lv) => 1.5 * lv, dur: 1.5 },
     desc: (lv) => `The ground heaves around your target three times, ${SKILLS.quake.power(lv)}% MATK (Earth) each shock to every monster within 3 paces; ${statusText(SKILLS.quake, lv, ' each shock')}.`,
   },
   meteor: {
-    name: 'Meteor Storm', job: 'wizard', kind: 'active', max: 10, needs: { spark: 5 }, target: 'mob', range: 5, magic: 'fire', weapon: 'staff', icon: 'skill_meteor',
+    name: 'Meteor Storm', job: 'wizard', kind: 'active', max: 10, needs: { spark: 5 }, target: 'mob', range: 5, magic: 'fire', icon: 'skill_meteor',
     sp: (lv) => 40 + 2 * lv, cast: (lv) => 2.2 + 0.05 * lv, cd: 4, power: (lv) => 50 + 5 * lv, hits: (lv) => 2 + Math.ceil(lv / 2), every: 0.35, status: { kind: 'burn', chance: (lv) => 3 * lv, dur: 3 },
     desc: (lv) => `${SKILLS.meteor.hits(lv)} meteors crash down at random within 3 paces of your target, one after another: ${SKILLS.meteor.power(lv)}% MATK (Fire) to everything near where each lands; ${statusText(SKILLS.meteor, lv, ' each')} (a fifth of the hit each second).`,
   },
   stormgust: {
-    name: 'Storm Gust', job: 'wizard', kind: 'active', max: 10, needs: { frost: 5 }, target: 'mob', range: 5, magic: 'water', weapon: 'staff', icon: 'skill_stormgust',
+    name: 'Storm Gust', job: 'wizard', kind: 'active', max: 10, needs: { frost: 5 }, target: 'mob', range: 5, magic: 'water', icon: 'skill_stormgust',
     sp: (lv) => 36 + 2 * lv, cast: () => 2.0, cd: 4, power: (lv) => 12 + lv, hits: () => 10, every: 0.3, status: { kind: 'freeze', chance: (lv) => 2 * lv, dur: 2.5 },
     desc: (lv) => `A blizzard howls around your target for 3 s: 10 gusts of ${SKILLS.stormgust.power(lv)}% MATK (Water) to every monster within 3 paces; from the third gust on, ${statusText(SKILLS.stormgust, lv, ' each')}.`,
   },
   thunder: {
-    name: 'Thunderstorm', job: 'wizard', kind: 'active', max: 10, needs: { arc: 5 }, target: 'mob', range: 5, magic: 'wind', weapon: 'staff', icon: 'skill_thunder',
+    name: 'Thunderstorm', job: 'wizard', kind: 'active', max: 10, needs: { arc: 5 }, target: 'mob', range: 5, magic: 'wind', icon: 'skill_thunder',
     sp: (lv) => 32 + 2 * lv, cast: () => 1.7, cd: 3, power: (lv) => 18 + 2 * lv, hits: () => 6, every: 0.4, status: { kind: 'paralyze', chance: (lv) => 1.5 * lv, dur: 1.5 },
     desc: (lv) => `Lightning rains around your target in 6 waves: ${SKILLS.thunder.power(lv)}% MATK (Wind) each to every monster within 3 paces; ${statusText(SKILLS.thunder, lv, ' each wave')}.`,
   },
@@ -410,8 +411,10 @@ export function skillLv(prog, id) {
   return prog.skills[id] || 0;
 }
 
-// the weapon an active skill needs in hand, and whether it is there ('sword' = a sword; bare hands
-// count as a sword for this; 'staff' = a staff; 'bow' = a bow)
+// the weapon an active skill needs in hand, and whether it is there ('sword' = a sword, 'staff' = a
+// staff, 'bow' = a bow; bare hands, 'none', are none of them). The owner's rules: Blader, BladeMaster
+// and Magic Knight blade skills need a sword; every Archer and Windrunner skill a bow, and the Moon
+// Ranger's arrows; spells (Sorcerer, Wizard, Starfall) and the Beastmaster's beasts need nothing
 export const WEAPON_NAMES = { sword: 'a sword', staff: 'a staff', bow: 'a bow' };
 export const BOW_RANGE = 5; // paces a bow reaches, before Long Sight
 export const weaponOk = (id, weaponKind) => !SKILLS[id].weapon || SKILLS[id].weapon === weaponKind;

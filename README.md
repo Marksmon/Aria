@@ -357,17 +357,21 @@ job you earned too, but a BladeMaster, Wizard or Windrunner never puts more poin
 than into its own (a Wizard's Blader tree stays at or under its Sorcerer tree).
 
 Every skill you have learnt keeps working, whatever job you wear. Passives always apply; actives
-need the right weapon in hand. Gear follows every job you have earned, so a Blader who passed the
-Sorcerer's trial may hold a staff to cast, and one who passed the Archer's a bow.
+need the right weapon in hand (spells need none). Gear follows the job you wear: a Blader holds
+swords, a Sorcerer staves, an Archer bows (a second job, those of the first jobs it stands on), and
+switching jobs at a Keeper puts away what the new job can't use and, if your hands are empty, puts
+on the best weapon in your bag that it can (and arrows, for a bow).
 
-| Needs a sword (or bare hands) | Needs a staff | Needs a bow |
+| Needs a sword | Needs a bow | Needs no weapon |
 |---|---|---|
-| Cleave, Heavy Strike, Ground Slash (Blader) | Ember Bolt, Frost Shard, Arc Lightning, Flame Ring (Sorcerer) | Double Shot, Arrow Rain (Archer) |
-| Twin Fang, Piercing Edge, Final Blade, Blade Dance (BladeMaster) | Stone Spike, Earthquake, Meteor Storm, Storm Gust, Thunderstorm (Wizard) | |
-| Elemental Edge, Elemental Blade, Elemental Nova (Magic Knight) | | |
+| Cleave, Heavy Strike, War Cry, Stand Firm, Ground Slash (Blader) | Double Shot, Arrow Rain, Focus, Hunter's Mark, Leap Back (Archer) | Ember Bolt, Frost Shard, Arc Lightning, Flame Ring, Rune Ward, Blink (Sorcerer) |
+| Twin Fang, Piercing Edge, Final Blade, Blade Dance (BladeMaster) | Tailwind, Gale Step, Hurricane Volley, Cyclone Arrow (Windrunner) | Stone Spike, Earthquake, Meteor Storm, Storm Gust, Thunderstorm (Wizard) |
+| Elemental Edge, Elemental Blade, Elemental Nova (Magic Knight) | Lunar Multishot, Crescent Arrow (Moon Ranger) | Starfall, Moonveil (Moon Ranger), Stone Aegis (Magic Knight) |
+| | | the Beastmaster's summons and Pack Frenzy; Mend, Thrust, Guard, Rest (Trainee) |
 
-No weapon needed: Mend, Thrust, Guard, Rest, War Cry, Stand Firm, Rune Ward, Blink, Stone Aegis,
-Focus, Hunter's Mark, Leap Back.
+Bare hands are no sword: with no weapon a hero fights hand to hand and has no blade skills, and an
+Archer or Windrunner with no bow fights hand to hand too. Starfall needs no bow and still falls from
+bow range.
 
 ### Second jobs
 

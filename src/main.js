@@ -25,7 +25,7 @@ import { headgearReady, gearCut, paintGear } from './headgear.js';
 import { derive, playerAttack, mobAttack, magicAttack, elementMod, ELEMENTS } from './rules.js';
 import { SKILLS, EDGE_FX, skillLv, spCost, castTime, learn, skillList, weaponOk, WEAPON_NAMES, BOW_RANGE, unlearnFirstJob, unlearnSecondJob, RETRAIN_COST } from './skills.js';
 import { Menus } from './menus.js';
-import { iconTexture, iconURL, ITEMS, baseOf } from './items.js';
+import { iconTexture, iconURL, ITEMS, baseOf, canWear } from './items.js';
 import { DayNight } from './daynight.js';
 import { Audio } from './audio.js';
 import { clamp, lerp } from './noise.js';
@@ -145,7 +145,7 @@ fx.landAt = (x, z) => {
 };
 const inv = new Inventory();
 inv.level = () => prog.baseLv;
-inv.job = () => prog.wearJobs; // every job earned: a Blader who passed the Sorcerer's trial may hold a staff
+inv.job = () => prog.wearJobs; // the job worn and the first jobs it stands on: switching jobs puts away the rest
 // the player's look follows the job: the Trainee's clothes, then the first and second jobs'
 const jobArt = () => bodyArt(player.look);
 held = () => inv.gear.weapon;
@@ -218,7 +218,8 @@ function inflict(m, st, lv, hitDmg = 0) {
   fx.number(m.x, overHead(m, m.sprite.scale.y * 0.8 + 0.35), m.z, STATUS_TEXT[st.kind], 'miss');
 }
 let skillClock = 0; // seconds since the game started, for those windows
-const weaponKind = () => { const k = ITEMS[inv.gear.weapon]?.kind; return k === 'staff' || k === 'bow' ? k : 'sword'; };
+// what is in hand: 'sword', 'staff', 'bow', or 'none' (bare hands: no blade skills, no sword mastery)
+const weaponKind = () => { const it = ITEMS[inv.gear.weapon]; return !it ? 'none' : it.kind === 'staff' || it.kind === 'bow' ? it.kind : 'sword'; };
 // an Archer's bonuses on one monster: Hunter's Mark on it, Steady Aim from 4 paces
 function bowMul(m) {
   let k = 1;
@@ -1191,6 +1192,16 @@ const menus = new Menus(inv, prog, player, {
       if (ITEMS[inv.gear.weapon]?.kind !== 'bow' && inv.bag.count('hunting_bow')) inv.equip('hunting_bow');
       if (!inv.gear.ammo && inv.bag.count('wooden_arrow')) inv.equip('wooden_arrow');
     }
+    // empty hands after the switch: the best weapon in the bag the new job can hold, and arrows for a bow
+    if (!inv.gear.weapon) {
+      const best = inv.bag.slots.map((s) => s.id).filter((id) => ITEMS[id].slot === 'weapon' && canWear(id, prog.wearJobs))
+        .sort((a, b) => (ITEMS[b].atk || 0) + (ITEMS[b].matk || 0) - (ITEMS[a].atk || 0) - (ITEMS[a].matk || 0))[0];
+      if (best) inv.equip(best);
+    }
+    if (ITEMS[inv.gear.weapon]?.kind === 'bow' && !inv.gear.ammo) {
+      const arrows = inv.bag.slots.map((s) => s.id).filter((id) => ITEMS[id].slot === 'ammo').sort((a, b) => (ITEMS[b].atk || 0) - (ITEMS[a].atk || 0))[0];
+      if (arrows) inv.equip(arrows);
+    }
     const aJob = `${/^[AEIOU]/.test(JOBS[job].name) ? 'an' : 'a'} ${JOBS[job].name}`; // an Archer
     if (off.length) menus.message(`Put away what ${aJob} can't use: ${off.map((i) => ITEMS[i].name).join(', ')}`);
     player.setArt(jobArt());
@@ -1631,7 +1642,8 @@ function useSkill(id) {
   }
   // ---- Moon Ranger: from bow range (Star Sight reaches further), each arrow ATK and MATK together ----
   if (id === 'multishot' || id === 'starfall' || id === 'crescent') {
-    const far = player.reach + (id === 'crescent' ? 0 : 0.5 * skillLv(prog, 'starsight'));
+    // Starfall needs no bow: it always calls the stars down from bow range
+    const far = (id === 'starfall' ? Math.max(player.reach, BOW_RANGE) : player.reach) + (id === 'crescent' ? 0 : 0.5 * skillLv(prog, 'starsight'));
     const cost = id === 'starfall' && nightUp ? Math.ceil(sp * (1 - 0.04 * skillLv(prog, 'lunartide'))) : sp;
     const paid = () => {
       if (player.sp < cost) { menus.message('Not enough SP'); return false; }
