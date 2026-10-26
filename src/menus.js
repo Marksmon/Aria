@@ -144,16 +144,36 @@ export class Menus {
   }
 
   look() {
-    const d = this.lookDraft, styles = hairstyles(), changed = d.hair !== this.lookFrom.hair || d.dye !== this.lookFrom.dye || (d.body || 'm') !== (this.lookFrom.body || 'm');
+    const d = this.lookDraft, styles = hairstyles();
     const price = this.lookMode === 'stylist' ? 1000 : 0;
     const body = (b, name) => `<button class="rbtn${(d.body || 'm') === b ? '' : ' soft'}" data-act="lookbody" data-id="${b}" aria-pressed="${(d.body || 'm') === b}">${name}</button>`;
     return `<div class="lookwrap"><img class="lookpic" src="${lookPortrait(d, 96)}" alt="">
+      <label class="lookname">Name <input id="lookname" type="text" maxlength="16" autocomplete="off" spellcheck="false" placeholder="Your hero's name" value="${esc(d.name || '')}"></label>
       <div class="lookrow">${body('m', 'Male')}${body('f', 'Female')}</div>
       <div class="lookrow"><button class="rbtn soft" data-act="lookhair" data-id="-1">◀</button><b>${esc(HAIRSTYLES[d.hair] || d.hair)}</b><button class="rbtn soft" data-act="lookhair" data-id="1">▶</button></div>
       <div class="swatches">${Object.entries(DYES).map(([k, v]) => `<button class="swatch${d.dye === k ? ' on' : ''}" data-act="lookdye" data-id="${k}" title="${esc(v.name)}" style="background:${v.swatch}"></button>`).join('')}</div>
       <small>${esc(DYES[d.dye].name)} · ${styles.length} hairstyles</small>
       <div class="btnrow">${this.lookMode === 'new' ? '' : '<button class="rbtn soft" data-act="close">Cancel</button>'}
-        <button class="rbtn" data-act="lookok" ${this.lookMode === 'stylist' && (!changed || this.inv.perz < price) ? 'disabled' : ''}>${this.lookMode === 'new' ? 'Begin' : `Change · ${price.toLocaleString()} perz`}</button></div></div>`;
+        <button class="rbtn" data-act="lookok" ${this.lookBlocked() ? 'disabled' : ''}>${this.lookMode === 'new' ? 'Begin' : `Change · ${price.toLocaleString()} perz`}</button></div></div>`;
+  }
+
+  // the look can't be kept without a name, and the Stylist's needs a change and the perz for it
+  lookBlocked() {
+    const d = this.lookDraft, f = this.lookFrom;
+    if (!d.name?.trim()) return true;
+    const changed = ['hair', 'dye', 'name'].some((k) => d[k] !== f[k]) || (d.body || 'm') !== (f.body || 'm');
+    return this.lookMode === 'stylist' && (!changed || this.inv.perz < 1000);
+  }
+
+  // typing a name: kept as it's typed (letters, digits, spaces, ' and -), without drawing the window
+  // again so the box keeps its focus
+  input(e) {
+    if (e.target.id !== 'lookname' || !this.lookDraft) return;
+    const clean = e.target.value.replace(/[^\p{L}\p{N} '-]/gu, '').replace(/\s+/g, ' ').slice(0, 16);
+    if (clean !== e.target.value) e.target.value = clean;
+    this.lookDraft.name = clean;
+    const ok = this.wins.look?.querySelector('[data-act="lookok"]');
+    if (ok) ok.disabled = this.lookBlocked();
   }
 
   openShop(id) {
@@ -228,6 +248,7 @@ export class Menus {
       }
     });
     el.addEventListener('click', (e) => this.click(e, id));
+    el.addEventListener('input', (e) => this.input(e));
     this.dragBar(el, id);
     // where it was left, else its default spot; always kept on screen
     requestAnimationFrame(() => {
@@ -407,7 +428,8 @@ export class Menus {
       [d('Critical', Math.floor(ps.crit)), d('Aspd', ps.aspd)],
     ];
     const n = this.pendCount();
-    return `<div class="sthead"><b>${esc(JOBS[p.job].name)}</b><span>Base Lv <b>${p.baseLv}</b></span><span>Job Lv <b>${p.jobLv}</b></span></div>
+    const name = this.hooks.currentLook?.().name;
+    return `<div class="sthead"><b>${esc(name ? `${name} · ${JOBS[p.job].name}` : JOBS[p.job].name)}</b><span>Base Lv <b>${p.baseLv}</b></span><span>Job Lv <b>${p.jobLv}</b></span></div>
       <div class="rsub stsub"><span>Stats</span><span>Status Point <b>${pts}</b></span></div>
       <table class="stt stats"><tbody>${STAT_KEYS.map(stat).join('')}</tbody></table>
       <div class="strow"><span class="rtag">${n ? `${n} point${n === 1 ? '' : 's'} placed, not locked in yet` : 'Tap ▲ to place points, then Confirm'}</span>
@@ -705,7 +727,9 @@ export class Menus {
     }
     if (act === 'lookdye') { this.lookDraft.dye = t.dataset.id; this.hooks.look?.(this.lookDraft); this.hooks.ui?.(); this.render(id); }
     if (act === 'lookok') {
+      if (this.lookBlocked()) return;
       const mode = this.lookMode;
+      this.lookDraft.name = this.lookDraft.name.trim();
       this.lookFrom = { ...this.lookDraft }; // kept: closing won't put the old look back
       this.close('look');
       this.hooks.lookDone?.(this.lookDraft, mode);

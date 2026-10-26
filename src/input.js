@@ -27,6 +27,7 @@ export class Input {
     window.addEventListener('pointercancel', (e) => this.ptrs.delete(e.pointerId), opts);
     window.addEventListener('pointerout', (e) => { if (!e.relatedTarget) this.hover = null; });
     window.addEventListener('keydown', (e) => {
+      if (e.target.closest?.('input, textarea')) return; // typing (a name): not a key for the game
       const k = e.key.toLowerCase();
       if (!e.repeat) {
         const win = e.altKey ? { e: 'items', q: 'equip', s: 'skills', a: 'status' }[k] : { i: 'items', b: 'items', escape: 'close' }[k];

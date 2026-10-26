@@ -210,6 +210,7 @@ const ui = new UI(world);
 ui.mobs = mobs;
 ui.prog = prog;
 ui.jobName = () => JOBS[prog.job].name;
+ui.heroName = () => player.look.name || '';
 
 const cam = { yaw: save?.yaw ?? 0, dist: save?.dist ?? 12, target: new THREE.Vector3(), shake: 0 };
 

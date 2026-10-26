@@ -23,6 +23,7 @@ export class UI {
     this.mobs = null;
     this.prog = null;
     this.jobName = () => 'Novice';
+    this.heroName = () => ''; // the name chosen with the look
   }
 
   hurt() {
@@ -37,13 +38,17 @@ export class UI {
   }
 
   // Ragnarok's basic info window: job, levels, HP / SP bars and EXP to the next levels
-  drawInfo(p, prog, jobName) {
+  drawInfo(p, prog, jobName, heroName = '') {
     const pct = (a, b, maxed) => (maxed ? 100 : Math.min(100, (a / b) * 100));
     const bp = pct(prog.baseExp, prog.baseNeed, prog.baseMaxed), jp = pct(prog.jobExp, prog.jobNeed, prog.jobMaxed);
-    const key = [p.hp, p.maxHp, p.sp, p.maxSp, prog.baseLv, prog.jobLv, bp.toFixed(1), jp.toFixed(1), jobName, prog.statPoints, prog.skillPoints].join('/');
+    const key = [p.hp, p.maxHp, p.sp, p.maxSp, prog.baseLv, prog.jobLv, bp.toFixed(1), jp.toFixed(1), jobName, prog.statPoints, prog.skillPoints, heroName].join('/');
     if (key === this.lastInfo) return;
     this.lastInfo = key;
     const el = this.infoEl;
+    const nm = el.querySelector('.heroname');
+    nm.textContent = heroName;
+    nm.hidden = !heroName;
+    document.body.classList.toggle('named', !!heroName); // the buttons and toasts under the panel move down a line
     el.querySelector('.jobname').textContent = jobName;
     el.querySelector('.who').classList.toggle('long', jobName.length > 8);
     el.querySelector('.lv').textContent = `Lv ${prog.baseLv} · Job ${prog.jobLv}`;
@@ -69,7 +74,7 @@ export class UI {
   }
 
   update(dt, player, yaw) {
-    if (this.prog) this.drawInfo(player, this.prog, this.jobName());
+    if (this.prog) this.drawInfo(player, this.prog, this.jobName(), this.heroName());
     this.zoneTimer -= dt;
     if (this.zoneTimer <= 0) {
       this.zoneTimer = 0.3;

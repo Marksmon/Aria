@@ -320,6 +320,10 @@ img { -webkit-user-drag: none; user-select: none; }
   flex-direction: column;
   gap: 3px;
 }
+#info .heroname { font-size: 13px; font-weight: 700; color: #ffe37a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#info .heroname[hidden] { display: none; }
+body.named #winbtns { top: calc(123px + env(safe-area-inset-top)); }
+body.named #toasts { top: calc(151px + env(safe-area-inset-top)); }
 #info .who { display: flex; align-items: baseline; gap: 6px; white-space: nowrap; min-width: 0; }
 #info .jobname { font-size: 14px; color: #fff; }
 #info .lv { font-weight: 600; color: #cfd8ea; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
@@ -535,6 +539,9 @@ button.eq:active { background: var(--w-sel); }
 .lookwrap { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 8px; }
 .lookpic { width: 96px; height: 96px; image-rendering: pixelated; background: rgba(255, 255, 255, .06); border-radius: 8px; }
 .lookrow { display: flex; align-items: center; gap: 10px; }
+.lookname { display: flex; align-items: center; gap: 8px; font-weight: 600; color: var(--w-gold); }
+.lookname input { width: 150px; font: inherit; font-weight: 600; padding: 5px 8px; border-radius: 6px; border: 1px solid rgba(255, 255, 255, .25); background: rgba(10, 12, 20, .6); color: #fff; }
+.lookname input:focus { outline: 2px solid var(--w-gold); outline-offset: 1px; }
 .lookrow b { min-width: 70px; text-align: center; color: var(--w-gold); }
 .swatches { display: flex; gap: 5px; flex-wrap: wrap; justify-content: center; }
 .swatch { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--w-line); padding: 0; }

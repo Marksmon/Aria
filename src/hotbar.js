@@ -37,6 +37,7 @@ export class Hotbar {
     this.flip.addEventListener('pointerdown', (e) => { e.preventDefault(); e.stopPropagation(); this.turn(); });
     el.appendChild(this.flip);
     window.addEventListener('keydown', (e) => {
+      if (e.target.closest?.('input, textarea')) return; // typing (a name): not a key for the game
       const n = +e.key;
       if (!e.repeat && n >= 1 && n <= SLOTS) this.use(n - 1);
       if (!e.repeat && e.key === 'Tab') { e.preventDefault(); this.turn(); }
