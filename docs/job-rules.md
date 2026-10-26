@@ -60,10 +60,10 @@ quests. Code: `src/progress.js` (jobs, levels, points), `src/skills.js` (trees, 
 
 | Needs a sword | Needs a bow | Needs no weapon |
 |---|---|---|
-| Cleave, Heavy Strike, War Cry, Stand Firm, Ground Slash (Blader) | Double Shot, Arrow Rain, Focus, Hunter's Mark, Leap Back (Archer) | Ember Bolt, Frost Shard, Arc Lightning, Flame Ring, Rune Ward, Blink (Sorcerer) |
-| Twin Fang, Piercing Edge, Final Blade, Blade Dance (BladeMaster) | Tailwind, Gale Step, Hurricane Volley, Cyclone Arrow (Windrunner) | Stone Spike, Earthquake, Meteor Storm, Storm Gust, Thunderstorm (Wizard) |
-| Elemental Edge, Elemental Blade, Elemental Nova (Magic Knight) | Lunar Multishot, Crescent Arrow (Moon Ranger) | Starfall, Moonveil (Moon Ranger), Stone Aegis (Magic Knight) |
-| | | the Beastmaster's summons and Pack Frenzy; Mend, Thrust, Guard, Rest (Trainee) |
+| Cleave, Heavy Strike, Ground Slash (Blader) | Double Shot, Arrow Rain (Archer) | Ember Bolt, Frost Shard, Arc Lightning, Flame Ring, Rune Ward, Blink (Sorcerer) |
+| Twin Fang, Piercing Edge, Final Blade, Blade Dance (BladeMaster) | Hurricane Volley, Cyclone Arrow (Windrunner) | Stone Spike, Earthquake, Meteor Storm, Storm Gust, Thunderstorm (Wizard) |
+| Elemental Edge, Elemental Blade, Elemental Nova (Magic Knight) | Lunar Multishot, Crescent Arrow (Moon Ranger) | War Cry, Stand Firm (Blader); Focus, Hunter's Mark, Leap Back (Archer); Tailwind, Gale Step (Windrunner) |
+| | | Starfall, Moonveil (Moon Ranger), Stone Aegis (Magic Knight), the Beastmaster's summons and Pack Frenzy; Mend, Thrust, Guard, Rest (Trainee) |
 
 Bare hands are no sword: with no weapon a hero fights hand to hand and has no blade skills, and an
 Archer or Windrunner with no bow fights hand to hand too. Starfall needs no bow and still falls from

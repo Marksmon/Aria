@@ -12,8 +12,9 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
     a Keeper changes the job worn. Job Lv 1 of a first
     or second job counts: a Job 50 Blader has 50 points (the Trainee's stay 9).
   - Learnt skills stay usable with the right weapon. Blade skills need a sword (bare hands are no
-    sword); every Archer and Windrunner skill needs a bow, and the Moon Ranger's arrows; spells
-    (Sorcerer, Wizard, Starfall) and the Beastmaster's skills need none. With no bow an Archer
+    sword); Archer, Windrunner and Moon Ranger shots need a bow; spells (Sorcerer, Wizard,
+    Starfall), buffs and moves (War Cry, Stand Firm, Focus, Hunter's Mark, Leap Back, Tailwind,
+    Gale Step) and the Beastmaster's skills need none. With no bow an Archer
     fights hand to hand. Gear follows the job worn (and a second job's first jobs); switching jobs
     puts away what the new job can't use.
   - The Archer (Huntmaster Sigrid, Veidheim) shoots from 5 paces with ATK from FNS; a bow needs

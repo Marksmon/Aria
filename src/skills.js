@@ -74,12 +74,12 @@ export const SKILLS = {
     desc: (lv) => `A two-handed blow: ${SKILLS.heavy.power(lv)}% damage, +${3 * lv}% hit chance.`,
   },
   warcry: {
-    name: 'War Cry', job: 'swordman', kind: 'active', max: 10, cd: 8, weapon: 'sword', icon: 'skill_warcry',
+    name: 'War Cry', job: 'swordman', kind: 'active', max: 10, cd: 8, icon: 'skill_warcry',
     sp: () => 10,
     desc: (lv) => `Shout: monsters within 6 paces turn on you, and your ATK rises ${lv}% for 20 s.`,
   },
   standfirm: {
-    name: 'Stand Firm', job: 'swordman', kind: 'active', max: 10, needs: { warcry: 3 }, cd: 20, weapon: 'sword', icon: 'skill_standfirm',
+    name: 'Stand Firm', job: 'swordman', kind: 'active', max: 10, needs: { warcry: 3 }, cd: 20, icon: 'skill_standfirm',
     sp: () => 12,
     desc: (lv) => `Plant your feet for ${6 + Math.floor(lv / 2)} s: no flinching, ${lv}% less damage taken.`,
   },
@@ -158,17 +158,17 @@ export const SKILLS = {
     desc: (lv) => `Arrows fall round your target: ${SKILLS.arrowrain.power(lv)}% damage to every monster within 2.5 paces of it, pushing them back a little.`,
   },
   focus: {
-    name: 'Focus', job: 'archer', kind: 'active', max: 10, cd: 5, weapon: 'bow', icon: 'skill_focus',
+    name: 'Focus', job: 'archer', kind: 'active', max: 10, cd: 5, icon: 'skill_focus',
     sp: (lv) => 10 + lv,
     desc: (lv) => `Steady your breath: +${lv} QKN and +${lv} FNS for 60 s.`,
   },
   huntmark: {
-    name: "Hunter's Mark", job: 'archer', kind: 'active', max: 5, needs: { keeneye: 3 }, target: 'mob', range: 'bow', cd: 3, weapon: 'bow', icon: 'skill_mark',
+    name: "Hunter's Mark", job: 'archer', kind: 'active', max: 5, needs: { keeneye: 3 }, target: 'mob', range: 'bow', cd: 3, icon: 'skill_mark',
     sp: () => 12,
     desc: (lv) => `Mark a monster for 10 s: everything you hit it with deals ${4 * lv}% more.`,
   },
   leapback: {
-    name: 'Leap Back', job: 'archer', kind: 'active', max: 1, free: { jobLv: 10 }, cd: 6, weapon: 'bow', icon: 'skill_leapback',
+    name: 'Leap Back', job: 'archer', kind: 'active', max: 1, free: { jobLv: 10 }, cd: 6, icon: 'skill_leapback',
     sp: () => 6,
     desc: () => 'Spring 3 paces back, away from the nearest monster.',
   },
@@ -192,12 +192,12 @@ export const SKILLS = {
     desc: (lv) => `After a burst of speed (Gale Step, Tailwind's rush) your next 3 arrows deal ${8 * lv}% more.`,
   },
   tailwind: {
-    name: 'Tailwind', job: 'windrunner', kind: 'active', max: 10, cd: 30, weapon: 'bow', icon: 'skill_tailwind',
+    name: 'Tailwind', job: 'windrunner', kind: 'active', max: 10, cd: 30, icon: 'skill_tailwind',
     sp: (lv) => 20 + 2 * lv, dur: (lv) => 20 + 2 * lv,
     desc: (lv) => `The wind at your back for ${SKILLS.tailwind.dur(lv)} s: your bow shoots ${2 * lv}% faster. For its first 4 s you rush, walking 30% quicker.`,
   },
   galestep: {
-    name: 'Gale Step', job: 'windrunner', kind: 'active', max: 5, cd: 6, weapon: 'bow', icon: 'skill_galestep',
+    name: 'Gale Step', job: 'windrunner', kind: 'active', max: 5, cd: 6, icon: 'skill_galestep',
     sp: () => 12, haste: (lv) => 20 + 4 * lv,
     desc: (lv) => `Dash 4 paces away from the nearest monster (or ahead): nothing can touch you on the way. Then walk ${SKILLS.galestep.haste(lv)}% quicker for 2 s.`,
   },
@@ -413,8 +413,9 @@ export function skillLv(prog, id) {
 
 // the weapon an active skill needs in hand, and whether it is there ('sword' = a sword, 'staff' = a
 // staff, 'bow' = a bow; bare hands, 'none', are none of them). The owner's rules: Blader, BladeMaster
-// and Magic Knight blade skills need a sword; every Archer and Windrunner skill a bow, and the Moon
-// Ranger's arrows; spells (Sorcerer, Wizard, Starfall) and the Beastmaster's beasts need nothing
+// and Magic Knight blade skills need a sword; Archer, Windrunner and Moon Ranger shots a bow; spells
+// (Sorcerer, Wizard, Starfall), buffs and moves (War Cry, Stand Firm, Focus, Hunter's Mark, Leap
+// Back, Tailwind, Gale Step) and the Beastmaster's beasts need nothing
 export const WEAPON_NAMES = { sword: 'a sword', staff: 'a staff', bow: 'a bow' };
 export const BOW_RANGE = 5; // paces a bow reaches, before Long Sight
 export const weaponOk = (id, weaponKind) => !SKILLS[id].weapon || SKILLS[id].weapon === weaponKind;

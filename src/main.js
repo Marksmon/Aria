@@ -1633,7 +1633,7 @@ function useSkill(id) {
       audio.play('craft');
       player.command({ mob: t });
     };
-    player.command({ mob: target, spell: { range: player.reach, time: 0.05, run, name: sk.name } });
+    player.command({ mob: target, spell: { range: Math.max(player.reach, BOW_RANGE), time: 0.05, run, name: sk.name } }); // from bow range, bow or not
     return;
   }
   if (id === 'doubleshot') {
