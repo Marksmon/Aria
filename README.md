@@ -331,7 +331,8 @@ at bow range and looses arrows, each hit rolled when the arrow lands. With a bow
 FNS instead of POW, and FNS also brings the HIT that lets arrows find quick monsters. A bow needs
 **arrows** in the Arrows slot of the Equipment window: they are bought once and never run out.
 Elemental arrows (Fire, Ice, Wind, Earth) give every shot their element and a little ATK; Iron
-Arrows hit harder. A shield can be worn with a bow. A new Archer is handed a Hunting Bow and
+Arrows hit harder. An Archer can carry a shield too: it is strapped to the forearm, so the hand
+stays free to draw the string. A new Archer is handed a Hunting Bow and
 Wooden Arrows, already worn. Asa the Fletcher in Veidheim sells bows and arrows and makes better
 ones at her workbench (**Make bows**); Kobold and Goblin Archers, the Goblin King and the Fire Giant
 drop rare bows.
@@ -528,7 +529,7 @@ to take it off. Shops sell 1, 10 or all, and "Sell all" keeps what an active que
 | Return Feather | back to your save point (the camp until you save with a Keeper) | Hild's shop, Ragna |
 | Honey | 150–210 HP | Eydis's shop (Veidheim); Bears |
 
-**Bows and arrows** (Archers). A shield can be worn with a bow. Arrows go in the Arrows slot and are
+**Bows and arrows** (Archers). A shield goes with a bow, strapped to the forearm. Arrows go in the Arrows slot and are
 never used up; an elemental arrow sets every shot's element.
 
 | Bow or arrows | ATK | Where |

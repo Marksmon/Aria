@@ -138,7 +138,8 @@ export class Inventory {
     // a second accessory goes in the free hand
     const slot = it.slot === 'acc' && this.gear.acc && !this.gear.acc2 ? 'acc2' : it.slot;
     const old = this.gear[slot];
-    // (a bow and a shield go together: an Archer straps the shield to the forearm, the owner's call)
+    // (a bow and a shield go together: an Archer's shield is strapped to the forearm, so the hand still
+    // draws the string; the owner's call)
     // the piece taken off goes where the new one was, so the bag does not shuffle under your finger
     const at = this.bag.slots.findIndex((s) => s.id === id);
     if (at < 0) return false;

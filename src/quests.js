@@ -393,7 +393,7 @@ export const NPCS = {
   },
   asa: {
     name: 'Asa the Fletcher', map: 'hunt', x: 35.4, z: 40.2, craft: 'bow', dress: { body: 'trainee', main: [140, 0.4, 0.85], accent: [10, 0.6, 1], hair: 'pony', dye: 'brown', bow: true },
-    hello: 'I make the bows and arrows for the whole village, and sell them to anyone who can draw one. Bring me vines, shells, willow or steel and I will make you a better bow at my bench. A quiver lasts: we pick our arrows up again.',
+    hello: 'I make the bows and arrows for the whole village, and sell them to anyone who can draw one. Bring me vines, shells, willow or steel and I will make you a better bow at my bench. A quiver lasts: we pick our arrows up again. And strap a small shield to your forearm: the hand still draws, and the arm is safer.',
     later: (lv) => `My wood is running low, but the woods are too dangerous for you yet. Base Level ${lv}, then.`,
     bye: 'Straight shafts, true flights.',
     quests: ['bowstaves'],
