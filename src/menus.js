@@ -10,7 +10,7 @@ import { HAIRSTYLES, DYES, hairstyles, lookPortrait } from './hair.js';
 import { NPCS, QUESTS, giverOf, rewardOf, SERIES } from './quests.js';
 import { ZONE_NAMES } from './world.js';
 import { RAIDS, waitText } from './raid.js';
-import { SKILLS, skillList, skillLv, learnBlock, spCost, castTime, pointsIn, WEAPON_NAMES, RETRAIN_COST, MK_POINTS } from './skills.js';
+import { SKILLS, skillList, skillLv, learnBlock, trainTrees, spCost, castTime, pointsIn, WEAPON_NAMES, RETRAIN_COST, MK_POINTS } from './skills.js';
 
 // the Skills window's trees: every tree the hero has earned, the current job's first, then the jobs it
 // stands on, then the rest
@@ -447,7 +447,7 @@ export class Menus {
       const cls = ['sknode', lv ? '' : 'off', id === this.skSel ? 'sel' : '', !block ? 'can' : '', active ? 'act' : 'pas'].filter(Boolean).join(' ');
       return `<button class="${cls}" style="left:${at.x}px;top:${at.y}px" data-act="sksel" data-id="${id}"${active && lv ? ` data-drag="skill:${id}"` : ''} title="${esc(sk.name)}">${icon(sk.icon)}<b>${badge}</b></button>`;
     }).join('');
-    const train = TREES_OF(p.job).includes(tree) ? '' : `<div class="sknote">Switch to ${esc(JOBS[tree].name)} at a Keeper to train this tree.</div>`;
+    const train = trainTrees(p).includes(tree) ? '' : `<div class="sknote">Switch to ${esc(JOBS[tree].name)} at a Keeper to train this tree.</div>`;
     return `<div class="rtabs sktabs">${tabs}</div>${train}
       <div class="skwrap"><div class="sktree"><div class="skcanvas" style="width:${lay.w}px;height:${lay.h}px"><svg width="${lay.w}" height="${lay.h}">${lines.join('')}</svg>${nodes}</div></div>
       <div class="skdetail">${this.skillDetail(this.skSel)}</div></div>
@@ -722,7 +722,7 @@ export class Menus {
       this.wins.talk.querySelector('.rw-title').textContent = n.name;
       return `<div class="talkwrap"><img class="portrait" src="${this.portrait(this.npc)}" alt="">
         <div class="say"><p>Not happy with how you trained? The first time is on me. After that, the masters charge ${RETRAIN_COST.toLocaleString()} perz.</p>
-        <div class="qbox"><small>Stats: every stat back to 1, and all your points to place again.</small><small>${second ? `Skills: every ${esc(TREES[p.job].filter((j) => JOBS[j].tier >= 1).reverse().map((j) => JOBS[j].name).join(', ').replace(/, ([^,]*)$/, ' and $1'))} skill unlearnt, and the points back. Your Trainee skills stay. ${esc(second)} skills can be raised again once the first jobs are rebuilt: ${esc(this.secondRule(p.job))}, and every first-job point spent.` : 'Skills: every Blader, Sorcerer and Archer skill unlearnt, and the points back. Your Trainee skills stay.'}</small></div>
+        <div class="qbox"><small>Stats: every stat back to 1, and all your points to place again.</small><small>${second ? `Skills: every ${esc(trainTrees(p).filter((j) => JOBS[j].tier >= 1).reverse().map((j) => JOBS[j].name).join(', ').replace(/, ([^,]*)$/, ' and $1'))} skill unlearnt, and the points back. Your Trainee skills stay. ${esc(second)} skills can be raised again once the first jobs are rebuilt: ${esc(this.secondRule(p.job))}, and every first-job point spent.` : 'Skills: every Blader, Sorcerer and Archer skill unlearnt, and the points back. Your Trainee skills stay.'}</small></div>
         <div class="btnrow wrap retrain">${row('stats', 'Reset my stats', true, '')}${row('skills', second ? 'Reset my job skills' : 'Reset my first-job skills', skillsOk, p.tier === 1 ? 'Not during a second-job trial.' : 'Choose a first job first.')}</div>
         <div class="btnrow"><button class="rbtn soft" data-act="close">Bye</button></div></div></div>`;
     }

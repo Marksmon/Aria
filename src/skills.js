@@ -416,11 +416,18 @@ export const WEAPON_NAMES = { sword: 'a sword', staff: 'a staff', bow: 'a bow' }
 export const BOW_RANGE = 5; // paces a bow reaches, before Long Sight
 export const weaponOk = (id, weaponKind) => !SKILLS[id].weapon || SKILLS[id].weapon === weaponKind;
 
+// the trees this hero's points may go into: the active job's (the current job and the jobs before
+// it); a second job also trains every other first job it earned (the owner's call)
+export function trainTrees(prog) {
+  const own = TREES[prog.job];
+  return prog.tier === 2 ? [...own, ...prog.unlocked.filter((j) => JOBS[j]?.tier === 1 && !own.includes(j))] : own;
+}
+
 // why a skill can't be raised right now, or null if it can
 export function learnBlock(prog, id) {
   const s = SKILLS[id];
   if (s.free || s.granted) return 'free';
-  if (!TREES[prog.job].includes(s.job)) return 'job'; // points only go to the active job's trees (switch at a Keeper)
+  if (!trainTrees(prog).includes(s.job)) return 'job'; // points only go to the active job's trees (switch at a Keeper)
   if (skillLv(prog, id) >= s.max) return 'max';
   for (const [k, n] of Object.entries(s.needs || {})) if (skillLv(prog, k) < n) return `Needs ${SKILLS[k].name} ${n}`;
   if (JOBS[s.job].tier === 2) { const why = secondJobBlock(prog); if (why) return why; }
@@ -430,6 +437,11 @@ export function learnBlock(prog, id) {
   if (from.length > 1 && from.includes(s.job) && pointsIn(prog, s.job) >= MK_POINTS) {
     const short = from.find((j) => pointsIn(prog, j) < MK_POINTS);
     if (short) return `Needs ${MK_POINTS} points in the ${JOBS[short].name} tree first (${pointsIn(prog, short)} now)`;
+  }
+  // a second job of one path (BladeMaster, Wizard, Windrunner): another first job's tree never gets
+  // more points than the path's own (a Wizard's Blader tree stays at or under its Sorcerer tree)
+  if (from.length === 1 && JOBS[s.job].tier === 1 && s.job !== from[0] && pointsIn(prog, s.job) >= pointsIn(prog, from[0])) {
+    return `Needs more points in the ${JOBS[from[0]].name} tree first: ${JOBS[s.job].name} can't pass it (${pointsIn(prog, s.job)} / ${pointsIn(prog, from[0])})`;
   }
   if (prog.skillPoints <= 0) return 'points';
   return null;
@@ -453,15 +465,13 @@ export function unlearnFirstJob(prog) {
   prog.resets.skills++;
   return true;
 }
-// a second job's retraining: its own tree and the first jobs' trees it stands on (the Trainee's
-// stays, and so does a first job walked outside it, such as a BladeMaster's Sorcerer skills: that tree
-// could never be trained again). The points come back, and secondJobBlock makes sure the first jobs
-// are rebuilt first
+// a second job's retraining: its own tree and every first-job tree it trains (trainTrees); the
+// Trainee's stays. The points come back, and secondJobBlock makes sure the first jobs are rebuilt first
 export function unlearnSecondJob(prog) {
   if (prog.tier !== 2) return false;
   for (const id of Object.keys(prog.skills)) {
     const job = SKILLS[id]?.job;
-    if (JOBS[job]?.tier >= 1 && TREES[prog.job].includes(job)) delete prog.skills[id];
+    if (JOBS[job]?.tier >= 1 && trainTrees(prog).includes(job)) delete prog.skills[id];
   }
   prog.resets.skills++;
   return true;
@@ -480,7 +490,7 @@ export function secondJobBlock(prog) {
     if (pointsIn(prog, from[0]) < most) return `Needs the most points in the ${JOBS[from[0]].name} tree`;
   }
   // the first-tier pool, as far as the trees open to this job can hold it
-  const room = Object.values(SKILLS).reduce((a, s) => a + (!s.free && !s.granted && JOBS[s.job].tier <= 1 && TREES[prog.job].includes(s.job) ? s.max : 0), 0);
+  const room = Object.values(SKILLS).reduce((a, s) => a + (!s.free && !s.granted && JOBS[s.job].tier <= 1 && trainTrees(prog).includes(s.job) ? s.max : 0), 0);
   const pool = Math.min(room, (MAX_JOB.novice - 1) + prog.levelOf('swordman'));
   const spent = Object.entries(prog.skills).reduce((a, [id, n]) => a + (JOBS[SKILLS[id]?.job]?.tier <= 1 ? n : 0), 0);
   if (spent < pool) return `Needs every Trainee and first-job skill point spent first (${pool - spent} left)`;

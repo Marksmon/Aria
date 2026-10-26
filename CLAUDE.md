@@ -26,6 +26,8 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
     20 Sorcerer points) and every Trainee and first-job point is spent (`secondJobBlock`). A second
     job's skill reset unlearns first- and second-job skills, so the first jobs are rebuilt first. A
     two-path second job's tree that has 20 points takes no more until the other path's has 20.
+  - Second jobs also train every other first job they earned (`trainTrees`), but for BladeMaster,
+    Wizard and Windrunner another first-job tree never passes the path's own (Wizard: Blader <= Sorcerer).
 - **Damage balance:** second jobs hit about 2–4x their first job; Blader and Sorcerer stay close.
   Do not even out the BladeMaster and the Wizard: the BladeMaster is not elemental and keeps the
   higher steady damage, while the Wizard's elements make up the gap (see `docs/job-rules.md`).

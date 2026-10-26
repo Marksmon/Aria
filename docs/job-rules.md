@@ -48,6 +48,10 @@ quests. Code: `src/progress.js` (jobs, levels, points), `src/skills.js` (trees, 
   For example, a Blader's points go to the Blader and Trainee trees; a Magic Knight's go to the
   Magic Knight, Blader, Sorcerer and Trainee trees. To train the other first job, switch to it at
   a Keeper first.
+- A **second job** also trains every other first job it earned (`trainTrees`): a Wizard who walked
+  the Blader's path can still raise Blader skills. For a one-path second job (BladeMaster, Wizard,
+  Windrunner) another first job's tree can never pass the path's own: a Wizard's Blader points stay
+  at or under its Sorcerer points (`learnBlock`).
 - Skill points earned: 9 from the Trainee, plus the first-job level (Job 1 counts: a Job 50 Blader
   has 50), plus the second-job level once in a second job (the owner's call; the Trainee's stay 9). Every point spent in any tree counts against that pool.
 - Everything learnt in any earned tree stays usable whatever the current job:
@@ -90,8 +94,7 @@ Focus, Hunter's Mark, Leap Back.
 - **Two paths, 20 each first:** for the Magic Knight, Moon Ranger and Beastmaster, once one path's
   tree has 20 points it takes no more until the other path's tree has 20 too (`learnBlock`).
 - **Retraining a second job** (Liv, Ingrid, Sven: Reset my job skills) unlearns the second job's
-  skills and those of the first jobs it stands on (the Trainee's stay, and so does a first job walked
-  outside it, e.g. a BladeMaster's Sorcerer skills, since that tree can't be trained again). The rule above then makes the hero rebuild the first jobs
+  skills and every first-job tree it trains (the Trainee's stay). The rule above then makes the hero rebuild the first jobs
   before the second job's skills open again, so a reset never dodges it.
 - **Quitting a trial** (Quit quest in the Quest View) before it is finished starts that trial over
   from its first step and lifts the choice. The hero may then pick any second-job trial they
