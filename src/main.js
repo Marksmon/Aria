@@ -157,6 +157,7 @@ inv.dropUnwearable(); // gear rules can change between versions
 // timed buffs, in seconds left: aspd (Quickening Draught), warcry (War Cry's ATK bonus)
 const buffs = { aspd: 0, warcry: 0, ward: 0, aegis: 0, momentum: 0, focus: 0, tailwind: 0, rush: 0, gust: 0, rhythm: 0, veil: 0, frenzy: 0 };
 let warcryLv = 0, wardLv = 0, endureGuard = 0, aegisLv = 0, focusLv = 0, tailLv = 0, gustHaste = 0;
+let endureFrom = null, endureLv = 0; // what set player.endureT (Guard or Stand Firm), for the buff bar
 // the Windrunner: Gale Rhythm's stacks (each arrow that lands), Skirmisher's empowered arrows left
 let galeStacks = 0, skirmish = 0;
 // the Moon Ranger: whether the moon is up (dayNight's night, kept here so applyStats can run before
@@ -1385,7 +1386,7 @@ function useSkill(id) {
   const y = world.heightAt(player.x, player.z);
   if (id === 'rest') { if (player.state === 'sit') player.standUp(); else player.sit('sit'); return; }
   if (id === 'guard') {
-    if (player.state === 'normal' && pay()) { player.endureT = 4; endureGuard = 0.15; say('Guard'); audio.play('block'); }
+    if (player.state === 'normal' && pay()) { player.endureT = 4; endureGuard = 0.15; endureFrom = 'guard'; endureLv = 1; say('Guard'); audio.play('block'); }
     return;
   }
   if (sk.magic && !sk.edge) { castSpell(id, lv, pay, sp); return; }
@@ -1521,7 +1522,7 @@ function useSkill(id) {
     return;
   }
   if (id === 'standfirm') {
-    if (pay()) { player.endureT = 6 + Math.floor(lv / 2); endureGuard = lv / 100; say('Stand Firm'); audio.play('block'); }
+    if (pay()) { player.endureT = 6 + Math.floor(lv / 2); endureGuard = lv / 100; endureFrom = 'standfirm'; endureLv = lv; say('Stand Firm'); audio.play('block'); }
     return;
   }
   if (id === 'warcry') {
@@ -2226,6 +2227,70 @@ function persist() {
 // second jobs glow: a soft aura behind the hero and a ring at their feet, in the job's colour
 const AURA = { blademaster: '#ff7a4a', wizard: '#b48aff', magicknight: '#6ad8ff', windrunner: '#8af0c8', moonranger: '#b8c8ff', beastmaster: '#ff9a5a' };
 // a small moon by the hotbar while the Moon Ranger's night passives work
+// ---------- the buff bar: what is on the hero, with the time left; hold an icon for what it does ----------
+const buffBar = document.createElement('div');
+buffBar.id = 'buffbar';
+buffBar.className = 'ui-click';
+document.getElementById('hud').appendChild(buffBar);
+const buffTip = document.createElement('div');
+buffTip.id = 'bufftip';
+buffTip.hidden = true;
+document.getElementById('hud').appendChild(buffTip);
+// every buff showing now: { key, icon, name, left (s), stacks, desc }
+function buffList() {
+  const out = [];
+  const sk = (key, id, lv, left, extra = '') => SKILLS[id] && out.push({ key, icon: SKILLS[id].icon, name: SKILLS[id].name, left, desc: SKILLS[id].desc(Math.max(1, lv)) + extra });
+  if (buffs.warcry > 0) sk('warcry', 'warcry', warcryLv, buffs.warcry);
+  if (player.endureT > 0 && endureFrom) sk('endure', endureFrom, endureLv, player.endureT);
+  if (buffs.ward > 0) sk('ward', 'ward', wardLv, buffs.ward);
+  if (buffs.aegis > 0) sk('aegis', 'aegis', aegisLv, buffs.aegis, ` Barrier left: ${Math.ceil(player.barrier)}.`);
+  if (buffs.focus > 0) sk('focus', 'focus', focusLv, buffs.focus);
+  if (buffs.tailwind > 0) sk('tailwind', 'tailwind', tailLv, buffs.tailwind);
+  if (buffs.rush > 0) out.push({ key: 'rush', icon: SKILLS.tailwind.icon, name: 'Tailwind Rush', left: buffs.rush, desc: 'The wind at your back: you run faster for a moment.' });
+  if (buffs.gust > 0) out.push({ key: 'gust', icon: SKILLS.galestep.icon, name: 'Gale Step', left: buffs.gust, desc: 'Light on your feet after Gale Step: you run faster for a moment.' });
+  if (buffs.rhythm > 0 && galeStacks) { sk('rhythm', 'galerhythm', skillLv(prog, 'galerhythm'), buffs.rhythm); out.at(-1).stacks = galeStacks; }
+  if (buffs.veil > 0) sk('veil', 'moonveil', veilLv, buffs.veil);
+  if (buffs.frenzy > 0) sk('frenzy', 'packfrenzy', frenzyLv, buffs.frenzy);
+  if (buffs.imbue > 0 && imbueEl) sk('imbue', 'elemblade', skillLv(prog, 'elemblade'), buffs.imbue, ` Now: ${imbueEl[0].toUpperCase()}${imbueEl.slice(1)}.`);
+  if (buffs.momentum > 0 && momentum) { sk('momentum', 'momentum', skillLv(prog, 'momentum'), buffs.momentum); out.at(-1).stacks = momentum; }
+  if (buffs.aspd > 0) out.push({ key: 'aspd', icon: 'quick', name: ITEMS.quick.name, left: buffs.aspd, desc: 'Your hands are faster: +10% attack speed.' });
+  return out;
+}
+const buffTime = (s) => (s >= 60 ? `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}` : `${Math.ceil(s)}s`);
+let buffHeld = null, buffHoldT = 0, buffShown = '';
+function drawBuffs() {
+  const list = started ? buffList() : [];
+  const sig = list.map((b) => `${b.key}:${b.stacks || ''}`).join(',');
+  if (sig !== buffShown) { // the icons change only when a buff comes or goes; the timers every tick
+    buffShown = sig;
+    buffBar.innerHTML = list.map((b) => `<div class="buff" data-buff="${b.key}"><img src="${iconURL(b.icon)}" alt="">${b.stacks ? `<b>${b.stacks}</b>` : ''}<span></span></div>`).join('');
+  }
+  for (const b of list) {
+    const el = buffBar.querySelector(`[data-buff="${b.key}"]`);
+    if (el) { el.lastChild.textContent = buffTime(b.left); el.classList.toggle('ending', b.left < 5); }
+  }
+  const held = buffHeld && list.find((b) => b.key === buffHeld);
+  if (!held) { buffTip.hidden = true; return; }
+  buffTip.hidden = false;
+  buffTip.innerHTML = `<b>${esc(held.name)}${held.stacks ? ` ×${held.stacks}` : ''}</b><span>${esc(held.desc)}</span><small>${buffTime(held.left)} left</small>`;
+  const r = buffBar.querySelector(`[data-buff="${held.key}"]`)?.getBoundingClientRect();
+  if (r) { buffTip.style.top = `${r.bottom + 6}px`; buffTip.style.left = `${Math.max(8, Math.min(window.innerWidth - buffTip.offsetWidth - 8, r.left + r.width / 2 - buffTip.offsetWidth / 2))}px`; }
+}
+setInterval(drawBuffs, 200);
+// hold an icon (or point at it with a mouse) for what it does
+const buffAt = (e) => e.target.closest?.('.buff')?.dataset.buff || null;
+buffBar.addEventListener('pointerdown', (e) => {
+  const k = buffAt(e);
+  if (!k) return;
+  clearTimeout(buffHoldT);
+  if (e.pointerType === 'mouse') { buffHeld = k; drawBuffs(); return; }
+  buffHoldT = setTimeout(() => { buffHeld = k; drawBuffs(); }, 300);
+});
+buffBar.addEventListener('pointerover', (e) => { if (e.pointerType === 'mouse' && buffAt(e)) { buffHeld = buffAt(e); drawBuffs(); } });
+buffBar.addEventListener('pointerout', (e) => { if (e.pointerType === 'mouse') { buffHeld = null; drawBuffs(); } });
+for (const ev of ['pointerup', 'pointercancel']) window.addEventListener(ev, (e) => { if (e.pointerType !== 'mouse') { clearTimeout(buffHoldT); buffHeld = null; drawBuffs(); } });
+buffBar.addEventListener('contextmenu', (e) => e.preventDefault());
+
 const moonMark = document.createElement('div');
 moonMark.id = 'moonmark';
 moonMark.title = 'Moonlit Hunter: the moon is up';
