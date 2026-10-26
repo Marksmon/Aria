@@ -99,10 +99,11 @@ function ponytail(base, dir) {
   c.width = cw; c.height = h;
   const g = c.getContext('2d');
   if (view === 'front') { g.drawImage(F.toCanvas(), 0, 0); g.drawImage(base, 0, 0); } // the tuft behind the hair
-  else { g.drawImage(base, 0, 0); g.drawImage(F.toCanvas(), 0, 0); }
+  else { g.drawImage(base, 0, 0); g.drawImage(F.toCanvas(), 0, 0); c.keep = F.toCanvas(); } // the tail, kept under a hat
   return c;
 }
-// hairstyles made in code: { from: the packed row they start from, make(base, dir) -> canvas }
+// hairstyles made in code: { from: the packed row they start from, make(base, dir) -> canvas, whose
+// keep (if any) marks the pixels a hat doesn't cut: a tail that comes out from under its brim }
 const MADE = { pony: { from: 'long', make: ponytail } };
 
 // one cell of the heads sheet as a texture: row (bald or a hairstyle), direction, dye. A hairstyle
@@ -121,7 +122,17 @@ export function headTexture(row, dir, dyeId = 'brown') {
   const g = c.getContext('2d');
   const ramp = row !== 'bald' && DYES[dyeId]?.ramp;
   if (ramp) g.putImageData(dye(g.getImageData(0, 0, c.width, c.height), ramp), 0, 0);
+  let keep = null;
+  if (c.keep) { // the kept pixels, cut from the dyed hair so their colours match
+    keep = document.createElement('canvas');
+    keep.width = c.width; keep.height = c.height;
+    const k = keep.getContext('2d');
+    k.drawImage(c, 0, 0);
+    k.globalCompositeOperation = 'destination-in';
+    k.drawImage(c.keep, 0, 0);
+  }
   const t = new THREE.CanvasTexture(c);
+  t.userData.keep = keep;
   t.colorSpace = THREE.SRGBColorSpace;
   t.magFilter = t.minFilter = THREE.NearestFilter;
   t.generateMipmaps = false;
@@ -147,6 +158,7 @@ export function paintHead(g, at, dir, look, cut = null, cutBy = '') {
       const t = c.getContext('2d');
       t.drawImage(img, 0, 0);
       cut.forEach((row, x) => { if (row > 0) t.clearRect(x, 0, 1, row); });
+      if (hair.userData.keep) t.drawImage(hair.userData.keep, 0, 0); // a ponytail comes out from under the brim
       trimmed[key] = c;
     }
     img = trimmed[key];
