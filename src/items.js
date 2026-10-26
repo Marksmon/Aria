@@ -114,10 +114,10 @@ const BASE_ITEMS = {
   // Veidheim's beasts' rare finds, the Elder Willow's and the Ancient Treant's
   snake_boots:  { type: 'equip', slot: 'shoes', rare: true, name: 'Snakeskin Boots', def: 3, flee: 5, stats: { qkn: 1 }, icon: 'boots_snake', desc: 'Boots of green and gold scales. You slip through a fight like a snake through grass.', from: 'Snakes (0.25%)' },
   wolf_cape:    { type: 'equip', slot: 'garment', rare: true, name: 'Wolf Cape', def: 3, flee: 3, stats: { pow: 1, qkn: 1 }, icon: 'r_wolfcape', desc: 'A whole Wolf pelt, the head for a hood. The pack ran with it once; now you do.', from: 'Wolves (0.2%)' },
-  willow_staff: { type: 'equip', slot: 'weapon', el: 'earth', jobs: ['mage'], kind: 'staff', rare: true, name: 'Willow Staff', atk: 36, wlv: 3, matk: 36, stats: { knl: 3 }, icon: 'staff_willow', desc: 'A walking Willow\'s branch that never stopped growing leaves. It sways when you chant, as if in a breeze.', from: 'Willows (0.2%), the Elder Willow (3%)' },
+  willow_staff: { type: 'equip', slot: 'weapon', el: 'earth', jobs: ['mage'], kind: 'staff', rare: true, name: 'Willow Staff', atk: 28, wlv: 2, matk: 26, stats: { knl: 2 }, icon: 'staff_willow', desc: 'A walking Willow\'s branch that never stopped growing leaves. It sways when you chant, as if in a breeze.', from: 'Willows (0.2%), the Elder Willow (3%)' },
   bear_hide:    { type: 'equip', slot: 'armor', jobs: ['swordman'], rare: true, name: 'Bear Hide', def: 9, mhp: 120, icon: 'armor_bear', desc: 'A Bear\'s hide worn over mail. Heavy and warm, and blows sink into it like into a snowdrift.', from: 'Bears (0.15%)' },
-  treant_shield: { type: 'equip', slot: 'shield', rare: true, name: 'Bark Shield', def: 5, mhp: 100, icon: 'r_barkshield', desc: 'A round of Treant bark, moss and all. It grows back where it is cut.', from: 'Treants (0.2%)' },
-  willow_charm: { type: 'equip', slot: 'acc', rare: true, name: 'Willow Charm', stats: { fns: 2, knl: 1 }, msp: 30, icon: 'r_willow', desc: 'A loop of Elder Willow twig with a firefly asleep in it. Your songs come quicker.', from: 'the Elder Willow (4%)' },
+  treant_shield: { type: 'equip', slot: 'shield', rare: true, name: 'Bark Shield', def: 3, mhp: 60, icon: 'r_barkshield', desc: 'A round of Treant bark, moss and all. It grows back where it is cut.', from: 'Treants (0.2%)' },
+  willow_charm: { type: 'equip', slot: 'acc', rare: true, name: 'Willow Charm', stats: { fns: 1, knl: 1 }, msp: 20, icon: 'r_willow', desc: 'A loop of Elder Willow twig with a firefly asleep in it. Your songs come quicker.', from: 'the Elder Willow (4%)' },
   oak_ring:     { type: 'equip', slot: 'acc', rare: true, name: 'Oak Ring', stats: { end: 3, pow: 1 }, mhp: 80, icon: 'r_oak', desc: 'A ring grown from the Ancient Treant\'s finger. It is a little warm, like a tree in the sun.', from: 'the Ancient Treant (5%)' },
   grove_blade:  { type: 'equip', slot: 'weapon', jobs: ['swordman'], el: 'earth', rare: true, name: 'Grove Sword', atk: 125, wlv: 4, stats: { pow: 2, end: 2 }, icon: 'weapon_grove', desc: 'A sword of living heartwood, harder than steel, with leaves on its hilt that never fall.', from: 'the Ancient Treant (1%)' },
   // gear from the hunters' own leatherworks (Leif in Veidheim)
@@ -134,7 +134,7 @@ const BASE_ITEMS = {
   goblin_card:  { type: 'misc', rare: true, name: 'Goblin King Card', icon: 'card_goblin', card: { on: 'weapon', atk: 100, aspd: 15, stats: { pow: 10, qkn: 10 } }, desc: 'The Goblin King on a gilded card, grinning. In a weapon with a slot: ATK +100, POW +10, QKN +10, attacks 15% faster.', from: 'the Goblin King (1%)' },
   treant_card:  { type: 'misc', rare: true, name: 'Ancient Treant Card', icon: 'card_treant', card: { on: 'weapon', atk: 40, def: 15, mhpRate: 30, stats: { pow: 8, end: 10 } }, desc: 'The Ancient Treant on a card of pressed bark, blossoms in its crown. In a weapon with a slot: ATK +40, DEF +15, Max HP +30%, POW +8, END +10.', from: 'the Ancient Treant (1%)' },
   // mini-boss cards: a step above an ordinary piece of gear, well below an MVP's
-  willow_card:  { type: 'misc', rare: true, name: 'Elder Willow Card', icon: 'card_willow', card: { on: 'weapon', matk: 12, stats: { fns: 4, knl: 2 } }, desc: 'The Elder Willow on a card that smells of the marsh. In a weapon with a slot: MATK +12%, FNS +4 (quicker casting), KNL +2.', from: 'the Elder Willow (1%)' },
+  willow_card:  { type: 'misc', rare: true, name: 'Elder Willow Card', icon: 'card_willow', card: { on: 'weapon', matk: 10, stats: { fns: 3 } }, desc: 'The Elder Willow on a card that smells of the marsh. In a weapon with a slot: MATK +10%, FNS +3 (quicker casting).', from: 'the Elder Willow (1%)' },
   sprout_card:  { type: 'misc', rare: true, name: 'Giant Sprout Card', icon: 'card_sprout', card: { on: 'weapon', mhpRate: 10, stats: { end: 4 } }, desc: 'The Giant Sprout on a leafy card. In a weapon with a slot: Max HP +10%, END +4.', from: 'the Giant Sprout (1%)' },
   crab_card:    { type: 'misc', rare: true, name: 'King Crab Card', icon: 'card_crab', card: { on: 'weapon', flee: 8, aspd: 5, stats: { qkn: 4 } }, desc: 'The King Crab on a sea-stained card. In a weapon with a slot: QKN +4, FLEE +8, attacks 5% faster.', from: 'the King Crab (1%)' },
   mushroom_card: { type: 'misc', rare: true, name: 'Giant Mushroom Card', icon: 'card_mushroom', card: { on: 'weapon', matk: 15, mspRate: 10, stats: { knl: 4 } }, desc: 'The Giant Mushroom on a violet card that smells of rain. In a weapon with a slot: MATK +15%, KNL +4, Max SP +10%.', from: 'the Giant Mushroom (1%)' },
@@ -279,9 +279,9 @@ export const PRICES = {
   sprout_charm: 700, spore_charm: 1000, shell_charm: 1000, glow_charm: 1200,
   heartwood: 3000, king_pearl: 4000, gloom_heart: 5000, cinder_core: 6000, jarl_horn: 8000,
   thorn_mantle: 12000, tidebreaker: 20000, gloom_staff: 22000, cinder_greaves: 16000, jarl_mantle: 30000,
-  snake_skin: 420, wolf_pelt: 460, wolf_fang: 900, willow_twig: 480, bear_claw: 560, old_bark: 620, honey: 300,
-  willow_heart: 7000, ancient_heartwood: 10000, ancient_seed: 5000, willow_card: 22000, treant_card: 60000,
-  snake_boots: 12000, wolf_cape: 14000, willow_staff: 16000, bear_hide: 18000, treant_shield: 16000, willow_charm: 22000, oak_ring: 26000, grove_blade: 50000,
+  snake_skin: 420, wolf_pelt: 460, wolf_fang: 900, willow_twig: 80, bear_claw: 560, old_bark: 120, honey: 300,
+  willow_heart: 3000, ancient_heartwood: 10000, ancient_seed: 5000, willow_card: 16000, treant_card: 60000,
+  snake_boots: 12000, wolf_cape: 14000, willow_staff: 6000, bear_hide: 18000, treant_shield: 7000, willow_charm: 9000, oak_ring: 26000, grove_blade: 50000,
   hunter_cape: 6000, hunter_boots: 6000, claw_charm: 9000, bark_armor: 12000, verdant_staff: 48000,
   heartwood_staff: 14000, frostbite: 5200, gale_blade: 9000, birch_staff: 1800, frost_staff: 3600, tide_staff: 12000, ember_staff: 20000, shade_staff: 16000, jarl_staff: 42000, runeking_staff: 50000, pearl_mail: 12000, gloom_robe: 14000, cinderfang: 24000, hornblade: 45000, prism_ring: 8000, slime_band: 12000,
 };

@@ -70,12 +70,13 @@ const SPAWNS = {
   burnt: [['goblinWarrior', 10], ['goblinArcher', 6], ['goblinAssassin', 2], ['goblinWarrior', 2, true]],
   bloop: [], // the raid spawns its own (tickRaid)
   serpent: [['goblinAssassin', 7], ['goblinWarrior', 5], ['goblinArcher', 5], ['goblinKing', 1], ['goblinAssassin', 2, true]],
-  // Veidheim's lands: they hunt by night too, and the packs grow after dark
+  // Veidheim's lands: the gentle willows and treants round the village (and Yellow Bloops in the marsh),
+  // the predators far off past Black Wood and Ash Heath, more of them at night
   hunt: [],
+  marsh: [['willow', 9], ['yellowSlime', 8], ['elderWillow', 1], ['willow', 2, true], ['wisp', 3, true]],
+  oldwood: [['treant', 9], ['willow', 4], ['treant', 2, true], ['wisp', 2, true]],
   farm: [['snake', 10], ['wolf', 6], ['snake', 2, true], ['wolf', 3, true]],
-  wolfhill: [['wolf', 10], ['bear', 5], ['snake', 2], ['wolf', 3, true]],
-  marsh: [['willow', 10], ['snake', 6], ['elderWillow', 1], ['willow', 2, true], ['wisp', 2, true]],
-  oldwood: [['treant', 8], ['bear', 5], ['willow', 3], ['ancientTreant', 1], ['treant', 2, true]],
+  wolfhill: [['wolf', 10], ['bear', 5], ['snake', 2], ['ancientTreant', 1], ['wolf', 3, true]],
 };
 
 // which build this is, on the title screen (matches the APK's version, 1.0.<build>)

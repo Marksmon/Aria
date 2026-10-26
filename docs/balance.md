@@ -64,10 +64,14 @@ Trainee, not a Sorcerer.
 | Blue Bloop | 6 | 100% win · 4 s · 80% HP left | 99% win · 12 s · 42% HP left |
 | Crab | 9 | 89% win · 12 s · 24% HP left | 0% win · 12 s · boss at 58% |
 | Wisp | 11 | 88% win · 13 s · 23% HP left | 0% win · 12 s · boss at 58% |
+| Yellow Bloop | 12 | 99% win · 11 s · 38% HP left | 26% win · 13 s · 0% HP left |
 | Mushroom | 14 | 96% win · 22 s · 25% HP left | 100% win · 10 s · 55% HP left |
 | Lantern Wisp | 16 | 1% win · 18 s · 0% HP left | 0% win · 12 s · boss at 38% |
+| Willow | 17 | 99% win · 8 s · 59% HP left | 100% win · 8 s · 50% HP left |
 | Red Sprout | 18 | 98% win · 5 s · 73% HP left | 100% win · 6 s · 52% HP left |
 | Sea Bloop | 22 | 100% win · 3 s · 80% HP left | 62% win · 10 s · 6% HP left |
+| Elder Willow | 23 | 100% win · 84 s · 58% HP left · 12 pots | 91% win · 56 s · 66% HP left · 8 pots |
+| Treant | 24 | 100% win · 5 s · 77% HP left | 100% win · 8 s · 37% HP left |
 | Giant Sprout | 25 | 100% win · 89 s · 58% HP left · 15 pots | 91% win · 44 s · 66% HP left · 6 pots |
 | Blue Crab | 26 | 100% win · 3 s · 79% HP left | 44% win · 8 s · 0% HP left |
 | Kobold | 28 | 100% win · 4 s · 76% HP left | 100% win · 4 s · 77% HP left |
@@ -86,10 +90,7 @@ Trainee, not a Sorcerer.
 | Giant Beetle | 48 | 99% win · 111 s · 48% HP left · 14 pots | 100% win · 42 s · 53% HP left · 8 pots |
 | Snake | 46 | 100% win · 6 s · 71% HP left | 100% win · 4 s · 80% HP left |
 | Wolf | 48 | 99% win · 8 s · 59% HP left | 100% win · 4 s · 62% HP left |
-| Willow | 50 | 100% win · 6 s · 81% HP left | 100% win · 6 s · 66% HP left |
 | Bear | 53 | 100% win · 10 s · 67% HP left | 100% win · 8 s · 28% HP left |
-| Elder Willow | 55 | 100% win · 125 s · 48% HP left · 16 pots | 100% win · 40 s · 52% HP left · 7 pots |
-| Treant | 56 | 100% win · 10 s · 68% HP left | 100% win · 7 s · 46% HP left |
 
 ## Mini-bosses at their hinted level, 20 Orange Potions
 
@@ -99,7 +100,7 @@ Trainee, not a Sorcerer.
 | King Crab at Base 34 | 100% win · 83 s · 52% HP left · 10 pots | 99% win · 82 s · 59% HP left · 12 pots |
 | Giant Mushroom at Base 43 | 100% win · 84 s · 50% HP left · 8 pots | 100% win · 73 s · 54% HP left · 12 pots |
 | Giant Beetle at Base 50 | 100% win · 84 s · 49% HP left · 5 pots | 100% win · 41 s · 51% HP left · 7 pots |
-| Elder Willow at Base 58 | 100% win · 91 s · 48% HP left · 4 pots | 100% win · 36 s · 50% HP left · 5 pots |
+| Elder Willow at Base 26 | 100% win · 66 s · 57% HP left · 8 pots | 99% win · 47 s · 64% HP left · 6 pots |
 | Lantern Wisp at Base 16 | 100% win · 33 s · 65% HP left · 3 pots | 100% win · 22 s · 88% HP left · 3 pots |
 
 ## Raids: whole runs (`node build-tools/raid-sim.mjs`)
@@ -120,13 +121,15 @@ Bloop Island: 120 runs each, the hero at the advised level
 | Hard | Base 50, second job, 30 White | 30 pots: 100% (2.2 min, 8 used) · 15 pots: 100% (2.2 min, 8 used) · 0 pots: 54% (2.1 min) | 30 pots: 100% (1.6 min, 24 used) · 15 pots: 7% (1.6 min, 15 used) · 0 pots: 0% |
 | Hell | Base 60, second job, 50 White | 50 pots: 100% (3.1 min, 26 used) · 25 pots: 94% (3.0 min, 25 used) · 0 pots: 0% | 50 pots: 100% (1.7 min, 45 used) · 25 pots: 0% · 0 pots: 0% |
 
-## Veidheim's lands (Base 46-62)
+## Veidheim and its lands
 
-The farms and woods east of Black Wood are made for a hero near and past the second job. Their field
-monsters sit on the same curve as the goblins and fire beasts (a first-job reference hero at their
-level wins with 60-80% HP left; the Sorcerer is shorter against the Bear, which is Neutral and hits
-hard). The Elder Willow is a mini-boss like the others (about 1.5 minutes at its hinted Base 58).
-The Ancient Treant (Lv 62) is the strongest MVP: like the Goblin King, a first-job hero cannot finish
-it (`node build-tools/sim.mjs ancientTreant 62`: the Blader gets it to about half with 20 Orange
-Potions), a second job hitting 2-4x as hard can. Its guards are the lighter beasts (2 Wolves, a
-Willow, a Snake), not Treants and Bears, which would make it a wall.
+The gentle lands on the road to the village sit with Birch Grove: the Willow (Lv 17) next to the
+Red Sprout, the Treant (Lv 24) between the Giant Sprout and the Blue Crab, and the Elder Willow
+(Lv 23) a mini-boss like the Giant Sprout (about a minute at its hinted Base 26 with 20 Orange
+Potions). The Yellow Bloop (Lv 12, Wind) keeps the raid's stats and is a tough bloop for its level
+(at Base 12 the Sorcerer is still a Trainee); in Willow Marsh heroes meet it at 16 and up.
+The predators' lands (Snake 46, Wolf 48, Bear 53) sit on the same curve as the goblins and fire
+beasts; the Sorcerer is shorter against the Bear, which is Neutral and hits hard. The Ancient
+Treant (Lv 62) is the strongest MVP: like the Goblin King, a first-job hero cannot finish it
+(`node build-tools/sim.mjs ancientTreant 62`), a second job hitting 2-4x as hard can. Its guards
+are Wolves and Snakes, not Treants and Bears, which would make it a wall.

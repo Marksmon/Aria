@@ -49,22 +49,22 @@ portals leave the camp (Moss Field to the north, Fen Shore to the west); every o
 reached by travelling on. The fields have plain names; the towns' are Old Norse in style.
 
 ```
-                               Serpent Wood                              Willow Marsh - Old Forest
-                                  |                                           |              |
-                              Burnt Wood                                      |              |
-                                  |                                           |              |
-                              Galdrheim    Steinborg - Birch Grove            |              |
-                                  |            |           |                  |              |
-                                  |        Moss Field  -  Dark Dale  -  Black Wood - Veidheim - Barley Field
-                                  |            |           |           |           |
+                               Serpent Wood
+                                  |
+                              Burnt Wood                                            Old Forest
+                                  |                                                      |
+                              Galdrheim    Steinborg - Birch Grove - Willow Marsh - Veidheim
+                                  |            |           |
+                                  |        Moss Field  -  Dark Dale  -  Black Wood - Barley Field
+                                  |            |           |           |                 |
 Coal Pit - Stone Field - Salt Bay - Fen Shore - Eldrun Camp   Ember Hill  -  Ash Heath - Wolf Hills
 ```
 
 Goblin country (Burnt Wood, then Serpent Wood) lies beyond Galdrheim's north gate; the kobolds' hills
-(Stone Field, then Coal Pit) lie west of Salt Bay, along the road round its bay. East of Black Wood
-is **Veidheim**, the hunters' village, with its four lands for heroes near their second job: Barley
-Field (east), Wolf Hills (south, also reached from Ash Heath), Willow Marsh (north) and the Old
-Forest (north-east, between the marsh and the barley).
+(Stone Field, then Coal Pit) lie west of Salt Bay, along the road round its bay. East of Birch
+Grove, through Willow Marsh, is **Veidheim**, the hunters' village, with the gentle Old Forest north
+of its gate. Far from it, east of Black Wood and Ash Heath, lie the predators' lands, Barley Field
+and Wolf Hills, for heroes near their second job.
 
 | Map | Level | Monsters | Boss |
 |---|---|---|---|
@@ -80,10 +80,10 @@ Forest (north-east, between the marsh and the barley).
 | Coal Pit | 30–50 | Kobold Assassin, Kobold, Kobold Archer | **Kobold King (50, MVP)** |
 | Burnt Wood | 38–44 | Goblin (38), Goblin Archer (41), Goblin Assassin (44) | |
 | Serpent Wood | 40–55 | Goblin Assassin, Goblin, Goblin Archer | **Goblin King (55, MVP)** |
+| Willow Marsh | 12–24 | Yellow Bloop (12), Willow (17, slowing seeds) | Elder Willow (23) |
+| Old Forest | 16–26 | Treant (24), Willow | |
 | Barley Field | 44–50 | Snake (46), Wolf (48) | |
-| Wolf Hills | 46–54 | Wolf, Bear (53), Snake | |
-| Willow Marsh | 46–56 | Willow (50, slowing seeds), Snake | Elder Willow (55) |
-| Old Forest | 50–62 | Treant (56), Bear, Willow | **Ancient Treant (62, MVP)** |
+| Wolf Hills | 46–62 | Wolf, Bear (53), Snake | **Ancient Treant (62, MVP)** |
 | Any field in the valley, more at night (Moss Field only at night) | | Wisp (11) | |
 
 **Passive monsters.** Most field monsters leave you alone until you hit
@@ -100,19 +100,23 @@ warriors close in and hit hard, **archers** keep about five paces away and shoot
 and they back off), and **assassins** are quick, dart the last few steps and sometimes strike twice.
 They drop Kobold Fur and Goblin Teeth, ores for refining, and now and then Hard Ore or Armor Ore.
 
-**Veidheim's beasts** (painted in code, `src/beasts.js`) come out of the farms and woods: Snakes lie
-in the barley and dart in to bite, sometimes twice; Wolves run in packs, attack on sight and are as
-quick as Snakes; Willows, weeping willow spirits with branch antlers and long green hair, shake
-their seeds over you (you slow down) and only fight back; Bears and Treants, great oak giants with
-mossy beards, are slow, heavy and hit hard. Wolves and Bears attack on sight. They drop pelts,
-skins, claws, twigs and bark for Leif's leatherworks, Honey, and their own rare gear.
+**Veidheim's beasts** (painted in code, `src/beasts.js`). Round the village the gentle ones, which
+only fight back: Willows, weeping willow spirits with branch antlers and long green hair, shake
+their seeds over you (you slow down), and Treants, great oak giants with mossy beards, are slow and
+heavy. Yellow Bloops hop about Willow Marsh too. Far off, the predators attack on sight: Snakes dart
+in to bite, sometimes twice; Wolves run in packs and are as quick; Bears are slow, heavy and hit
+hard. They drop twigs, bark, pelts, skins and claws for Leif's leatherworks, Honey, and their own
+rare gear.
 
 **Bosses.** Each new field has a mini-boss: big, stomping the ground around it, back 5–8
 minutes after it falls (its timer holds when you leave the map or close the game, as an MVP's does). Like the MVPs, each calls 2 guards of its own kind below 60% HP (Red
 Sprouts, Blue Crabs, Dark Mushrooms, Fire Beetles), and again 2 minutes after the last one falls. They drop a rare material (30%) that forges the best gear, and a rare
-equip of their own (2–3%). Each wears something of its own over its head (the Giant Sprout a ring of
-burning roots, the King Crab a coral crown, the Giant Mushroom a halo of spores, the Giant Beetle
-two burning horns). Their guards are lesser servants of their kind (half the HP, 60% of
+equip of their own (2–3%). Each is a boss of its own, not a big copy of its kind: the Giant Sprout
+rust-red with a thorny vine round its bulb, the King Crab sea-blue and crusted with barnacles with
+gold claw tips, the Giant Mushroom near-black with glowing magenta spots and drips, the Giant Beetle
+charcoal with its cracks glowing like embers. Every boss of this kind (and the Elder Willow and the
+Ancient Treant) has an **aura**: a glow pulsing on the ground under it and motes rising round it, in
+its colour. Their guards are lesser servants of their kind (half the HP, 60% of
 the ATK): cut them down first. At the level their quests suggest (Giant Sprout 28, King Crab 34,
 Giant Mushroom 43, Giant Beetle 50) each is about a two-minute fight on a dozen or so Orange
 Potions; see `docs/balance.md`.
@@ -124,11 +128,13 @@ moving needs far fewer, but Blue Potions too). Whoever brings it down gets **MVP
 head, bonus Base EXP and MVP items straight to the bag, plus its drops (its horn, crown, cape or
 sword). It comes back 15 minutes later, even if you leave the map or close the game.
 
-The **Elder Willow** of Willow Marsh (Lv 55, a ring of fireflies over its antlers) is the mini-boss
-of Veidheim's lands, calling Willows out of the reeds; the **Ancient Treant** (Lv 62, 26,000 HP,
-Earth, a crown of blossoms), the oldest tree in Aria, is the MVP of the Old Forest: it stomps,
-hurls stones and charges, and calls 2 Wolves, a Willow and a Snake. It is made for a Base 60 hero
-with a second job, and it comes back 35 minutes after it falls.
+The **Elder Willow** of Willow Marsh (Lv 23: silvery, wide antlers with fireflies on their tips,
+water-lilies in its hair) is the mini-boss on the road to Veidheim, a step after the Giant Sprout,
+calling Willows out of the reeds. The **Ancient Treant** (Lv 62, 26,000 HP, Earth: pale with age,
+glowing runes carved down its body, blossoms in its crown), the oldest tree in Aria, has walked
+out of the Old Forest into Wolf Hills and is its MVP: it stomps, hurls stones and charges, and calls
+2 Wolves and 2 Snakes. It is made for a Base 60 hero with a second job, and it comes back 35 minutes
+after it falls.
 
 Two more MVPs rule the new lands: the **Kobold King** (Lv 50, 18,000 HP, Earth) in
 Coal Pit, and the **Goblin King** (Lv 55, 21,000 HP, Wind) in Serpent Wood. Both
@@ -180,14 +186,15 @@ tower stands to the north, the library to the west, the Staffwright's workshop t
 Watcher runestones and the stargazer's observatory to the south. Sorcerers take their job trial
 here, and their gear is made here. It has a storehouse too (the same chest).
 
-**Veidheim.** The hunters' village east of Black Wood: a palisade of sharpened logs with wooden
-watchtowers and four gates, dirt lanes crossing on a green round the well, thatched and turf roofs
+**Veidheim.** The hunters' village east of Birch Grove and Willow Marsh: a palisade of sharpened
+logs with wooden watchtowers and two gates (west to the marsh, north to the Old Forest), dirt lanes crossing on a green round the well, thatched and turf roofs
 among the pines. Nearly everyone is an archer and carries a longbow and a quiver on their back. The
 hunters' lodge has antlers over its door; the archery range has three targets and a fence; a
 windmill turns over the village's wheat and cabbage plots, beside the red barn; Leif's leatherworks
 hangs its hides on drying racks. The fields outside are farmland and forest: fenced plots of barley,
-cabbages and pumpkins with haystacks and scarecrows in Barley Field, pines and hunters' camps in Wolf
-Hills, willows round a pond in Willow Marsh, and huge old oaks in the Old Forest.
+cabbages and pumpkins with haystacks and scarecrows in Barley Field (the old farms the wolves took),
+pines and hunters' camps in Wolf Hills, willows round a pond in Willow Marsh, and huge old oaks in
+the Old Forest.
 
 ## Raids
 
@@ -195,7 +202,7 @@ A raid is a timed run in an arena of its own: **three waves** of monsters that a
 never stop following you, then a **boss**, all within the time limit. The first is **Bloop Island**,
 a small round island out in Salt Bay; the **Boatman** by the water rows you out (`src/raid.js`).
 
-- **Bloop Island:** wave 1 is Green and Blue Bloops, wave 2 Blue and **Yellow Bloops**, wave 3 Yellow
+- **Bloop Island:** wave 1 is Green and Blue Bloops, wave 2 Blue and **Yellow Bloops** (also met in Willow Marsh), wave 3 Yellow
   and **Red Bloops**. Then comes **BleepBloop**, a giant orange bloop general with a white beard, a plumed general's hat and a mantle. He
   belly-flops onto you, charges and stomps, and calls Red Bloops at 60% HP. A big health bar shows his
   HP while you fight him.
@@ -432,10 +439,10 @@ bursts gold on the ground and shows in gold in your bag.
 | Giant Cape | Garment | DEF 4, Max HP +100, END +2 | Fire Giant, 3% |
 | Snakeskin Boots | Shoes | DEF 3, FLEE +5, QKN +1 | Snake, 0.25% |
 | Wolf Cape | Garment | DEF 3, FLEE +3, POW +1, QKN +1 | Wolf, 0.2% |
-| Willow Staff | Weapon (staff) | ATK 36, MATK +36%, weapon Lv 3, Earth, KNL +3 | Willow, 0.2%; Elder Willow, 3% |
+| Willow Staff | Weapon (staff) | ATK 28, MATK +26%, weapon Lv 2, Earth, KNL +2 | Willow, 0.2%; Elder Willow, 3% |
 | Bear Hide | Armor (Blader) | DEF 9, Max HP +120 | Bear, 0.15% |
-| Bark Shield | Shield | DEF 5, Max HP +100 | Treant, 0.2% |
-| Willow Charm | Accessory | FNS +2, KNL +1, Max SP +30 | Elder Willow, 4% |
+| Bark Shield | Shield | DEF 3, Max HP +60 | Treant, 0.2% |
+| Willow Charm | Accessory | FNS +1, KNL +1, Max SP +20 | Elder Willow, 4% |
 | Oak Ring | Accessory | END +3, POW +1, Max HP +80 | Ancient Treant, 5% |
 | Grove Sword | Weapon | ATK 125, weapon Lv 4, Earth, POW +2, END +2 | Ancient Treant, 1% |
 | Thorn Ring · Coral Shield · Dark Hood · Fire Armor · Fire Charm | | | the new lands' monsters, 0.2–0.3% |
@@ -487,7 +494,7 @@ free slot. It stays there for good, unless the weapon later breaks at Holger's.
 | King Crab Card | Weapon | QKN +4, FLEE +8, attacks 5% faster | King Crab, 1% |
 | Giant Mushroom Card | Weapon | MATK +15%, KNL +4, Max SP +10% | Giant Mushroom, 1% |
 | Giant Beetle Card | Weapon | ATK +25, POW +4 | Giant Beetle, 1% |
-| Elder Willow Card | Weapon | MATK +12%, FNS +4, KNL +2 | Elder Willow, 1% |
+| Elder Willow Card | Weapon | MATK +10%, FNS +3 | Elder Willow, 1% |
 | Ancient Treant Card | Weapon | ATK +40, DEF +15, Max HP +30%, POW +8, END +10 | Ancient Treant, 1% |
 | Fire Giant Card | Weapon (a sorcerer's card) | MATK +60%, KNL +12, FNS +8, Max SP +30%, Max HP +15%, weapon turns Fire (+15% Fire spells with a staff) | Fire Giant, 1% |
 
@@ -608,13 +615,14 @@ leads to each.
 | Torvald the Runecarver | Galdrheim | Shadows in Black Wood (38): take rubbings of 3 Watcher stones in Black Wood |
 | Hrafn the Stargazer, Signy the Apprentice | Galdrheim | tales of the city, the stars and the jotnar |
 | Runa the Gatewarden | Galdrheim | the rune-gate: to any land you have walked, 300–3,000 perz |
-| Huntmaster Sigrid | Veidheim, at the archery range | The Pack in the Hills (48): 25 Wolves · The Elder Willow (55) · The Waking Wood (60): the Ancient Treant |
-| Ottar the Farmer | Veidheim, by the barn | Snakes in the Barley (46): 20 Snakes · The Lost Lambs (47): find 3 lambs in Barley Field |
+| Huntmaster Sigrid | Veidheim, at the archery range | The Elder Willow (26) · The Pack in the Hills (48): 25 Wolves · The Waking Wood (60): the Ancient Treant |
+| Ottar the Farmer | Veidheim, by the barn | The Lost Lambs (16): find 3 lambs in Willow Marsh · Snakes in the Barley (46): 20 Snakes |
 | Leif the Tanner | Veidheim | makes hunters' gear (Hunter's Cloak and Boots, Claw Charm, Bark Armor) · Pelts for the Winter (50): 10 Wolf Pelts, 5 Bear Claws |
-| Asa the Fletcher | Veidheim | Wood for Bows (52): 12 Willow Twigs, 4 Old Bark |
+| Asa the Fletcher | Veidheim | Wood for Bows (22): 12 Willow Twigs, 4 Old Bark |
 | Eydis the Trader | Veidheim | shop: potions (White too), Honey, Speed Potions, feathers, torches |
 | Halla the Healer | Veidheim | heals HP and SP for free |
-| Bodil the Sentry, Kalf the Gate Archer, Finn the Young Archer | Veidheim | tales of the village, the beasts and the Elder Willow |
+| Kalf the Gate Archer | Veidheim, at the north gate | Walking Trees (22): 15 Treants in the Old Forest |
+| Bodil the Sentry, Finn the Young Archer | Veidheim | tales of the village and its lands |
 | Tove the Carter | Veidheim | carts to any land you have walked |
 
 People without a PixelLab sprite of their own are dressed from a bald hero body (Trainee, Blader,

@@ -22,9 +22,11 @@ export const MOB_DEFS = {
   wisp: { name: 'Wisp', ai: 'wisp', art: 'wisp', el: 'wind', lv: 11, hp: 290, atk: [20, 25], def: 4, vit: 8, agi: 20, dex: 22, exp: [26, 19], adelay: 1292, passive: true, walk: 150, aggro: 6, reach: 0.75, w: 0.7, r: 0.3, fly: true, glow: true, drops: [['glow', 1, 1, 1], ['wander', 1, 1, 0.15], ['wisp_lantern', 1, 1, 0.004]] },
   // Sigrun's rare hunt: a great golden Wisp over Fen Shore's pond, out only at night while the quest is on
   lanternWisp: { name: 'Lantern Wisp', ai: 'wisp', art: 'wisp', el: 'wind', tint: '#ffd86a', lv: 16, hp: 1000, atk: [26, 34], def: 6, vit: 12, agi: 22, dex: 30, exp: [320, 220], adelay: 1250, passive: false, walk: 150, aggro: 7, chase: 10, reach: 0.85, w: 1.15, r: 0.42, fly: true, glow: true, noRespawn: true, drops: [['wisp_lantern', 1, 1, 1], ['glow', 3, 5, 1], ['wander', 1, 2, 0.5]] },
-  // the raid's bloops (Bloop Island, raid.js; raid: only met there): stronger colours of the Bloop, recoloured sheets (sprites.js).
-  // These are their own stats; in the raid each is rebuilt at the difficulty's level (raidDef)
-  yellowSlime: { raid: true, name: 'Yellow Bloop', ai: 'hopper', art: 'slimeYellow', el: 'wind', lv: 12, hp: 330, atk: [22, 28], def: 2, vit: 10, agi: 12, dex: 20, exp: [30, 21], adelay: 1500, walk: 400, aggro: 5, chase: 5, reach: 0.8, w: 1.0, r: 0.38, drops: [['gel', 1, 2, 1], ['dew', 1, 1, 0.4], ['shiny_gel', 1, 1, 0.01]] },
+  // the raid's bloops (Bloop Island, raid.js): stronger colours of the Bloop, recoloured sheets (sprites.js).
+  // These are their own stats; in the raid each is rebuilt at the difficulty's level (raidDef).
+  // The Yellow Bloop also lives in Willow Marsh (passive there, like the valley's bloops); the Red
+  // Bloop is only met in the raid (raid: true)
+  yellowSlime: { name: 'Yellow Bloop', ai: 'hopper', art: 'slimeYellow', el: 'wind', lv: 12, hp: 330, atk: [22, 28], def: 2, vit: 10, agi: 12, dex: 20, exp: [30, 21], adelay: 1500, passive: true, walk: 400, aggro: 5, chase: 5, reach: 0.8, w: 1.0, r: 0.38, drops: [['gel', 1, 2, 1], ['dew', 1, 1, 0.4], ['berry', 1, 1, 0.15], ['potion', 1, 1, 0.06], ['shiny_gel', 1, 1, 0.01]] },
   redSlime: { raid: true, name: 'Red Bloop', ai: 'hopper', art: 'slimeRed', el: 'fire', lv: 18, hp: 560, atk: [36, 46], def: 4, vit: 16, agi: 16, dex: 30, exp: [75, 52], adelay: 1450, walk: 300, aggro: 5, chase: 6, reach: 0.8, w: 1.05, r: 0.4, drops: [['gel', 1, 2, 1], ['cinder', 1, 1, 0.1], ['shiny_gel', 1, 1, 0.01]] },
   // the raid's boss: BleepBloop, a giant old bloop general (white beard, plumed hat, mantle), painted
   // in code (bleepbloop.js). It belly-flops onto you, charges, stomps, and calls Red Bloops; only ever
@@ -43,10 +45,10 @@ export const MOB_DEFS = {
   // mini-bosses: one on each new field, big and slow, they stomp like the Fire Giant, call two of
   // their own kind as guards (summon: see SUMMON_CD) and come back after `respawn` seconds. A hard fight for their own level: 2-4 minutes and a bag of potions
   // (a few levels above them is wiser). Their rare materials craft the best gear.
-  matron: { crown: 'roots', name: 'Giant Sprout', ai: 'boss', art: 'sprout', el: 'earth', tint: '#ff9a6a', boss: true, lv: 25, hp: 7200, atk: [44, 59], def: 10, vit: 25, agi: 18, dex: 40, exp: [4200, 2940], adelay: 1700, walk: 300, moves: [{ kind: 'throw', name: 'Seed Pod', mult: 1.5, r: 1.5 }], aggro: 5.5, chase: 12, reach: 1.3, w: 2.0, r: 0.75, heavy: true, summon: ['russet', 'russet'], summonText: 'The Giant Sprout shakes its leaves, and Red Sprouts come running!', respawn: 300, drops: [['heartwood', 1, 1, 0.3], ['thorn', 3, 5, 1], ['potion2', 1, 2, 0.5], ['thorn_mantle', 1, 1, 0.03], ['bramble_ring', 1, 1, 0.05], ['sprout_card', 1, 1, 0.01]] },
-  tideKing: { crown: 'coral', name: 'King Crab', ai: 'boss', art: 'crab', el: 'water', tint: '#8ab8ff', boss: true, lv: 32, hp: 8900, atk: [41, 54], def: 18, vit: 32, agi: 22, dex: 48, exp: [8400, 5880], adelay: 1600, walk: 200, moves: [{ kind: 'charge', mult: 1.5 }], aggro: 5.5, chase: 12, reach: 1.4, w: 2.3, r: 0.85, heavy: true, summon: ['tidecrab', 'tidecrab'], summonText: 'The King Crab clacks its claws, and Blue Crabs scuttle in!', respawn: 300, drops: [['king_pearl', 1, 1, 0.3], ['pearl', 1, 2, 0.6], ['crableg', 2, 3, 1], ['tidebreaker', 1, 1, 0.02], ['coral_shield', 1, 1, 0.05], ['crab_card', 1, 1, 0.01]] },
-  gloomMother: { crown: 'gloom', name: 'Giant Mushroom', ai: 'boss', art: 'mushling', el: 'shadow', tint: '#9a7cff', boss: true, lv: 40, hp: 11200, atk: [55, 71], def: 14, vit: 40, agi: 28, dex: 60, exp: [17000, 11900], adelay: 1700, walk: 250, moves: [{ kind: 'throw', mult: 1.5, r: 1.8 }], aggro: 5.5, chase: 12, reach: 1.4, w: 2.2, r: 0.8, heavy: true, mdef: 30, summon: ['gloomcap', 'gloomcap'], summonText: 'The Giant Mushroom puffs, and Dark Mushrooms sprout around it!', respawn: 420, drops: [['gloom_heart', 1, 1, 0.3], ['gloom', 2, 4, 1], ['potion3', 1, 2, 0.4], ['gloom_staff', 1, 1, 0.02], ['gloom_hood', 1, 1, 0.05], ['mushroom_card', 1, 1, 0.01]] },
-  cinderLord: { crown: 'embers', name: 'Giant Beetle', ai: 'boss', art: 'beetle', el: 'fire', tint: '#ff7a4a', boss: true, lv: 48, hp: 10800, atk: [56, 73], def: 22, vit: 48, agi: 32, dex: 70, exp: [28000, 19600], adelay: 1600, walk: 200, moves: [{ kind: 'charge', mult: 1.6 }], aggro: 5.5, chase: 12, reach: 1.5, w: 2.4, r: 0.9, heavy: true, summon: ['cinderBeetle', 'cinderBeetle'], summonText: 'The Giant Beetle roars, and Fire Beetles answer!', respawn: 480, drops: [['cinder_core', 1, 1, 0.3], ['cinder', 2, 4, 1], ['potion3', 1, 2, 0.5], ['cinder_greaves', 1, 1, 0.03], ['cinder_mail', 1, 1, 0.04], ['beetle_card', 1, 1, 0.01]] },
+  matron: { name: 'Giant Sprout', ai: 'boss', art: 'sproutBoss', aura: '#ff9a4a', el: 'earth', boss: true, lv: 25, hp: 7200, atk: [44, 59], def: 10, vit: 25, agi: 18, dex: 40, exp: [4200, 2940], adelay: 1700, walk: 300, moves: [{ kind: 'throw', name: 'Seed Pod', mult: 1.5, r: 1.5 }], aggro: 5.5, chase: 12, reach: 1.3, w: 2.0, r: 0.75, heavy: true, summon: ['russet', 'russet'], summonText: 'The Giant Sprout shakes its leaves, and Red Sprouts come running!', respawn: 300, drops: [['heartwood', 1, 1, 0.3], ['thorn', 3, 5, 1], ['potion2', 1, 2, 0.5], ['thorn_mantle', 1, 1, 0.03], ['bramble_ring', 1, 1, 0.05], ['sprout_card', 1, 1, 0.01]] },
+  tideKing: { name: 'King Crab', ai: 'boss', art: 'crabBoss', aura: '#5ac8ff', el: 'water', boss: true, lv: 32, hp: 8900, atk: [41, 54], def: 18, vit: 32, agi: 22, dex: 48, exp: [8400, 5880], adelay: 1600, walk: 200, moves: [{ kind: 'charge', mult: 1.5 }], aggro: 5.5, chase: 12, reach: 1.4, w: 2.3, r: 0.85, heavy: true, summon: ['tidecrab', 'tidecrab'], summonText: 'The King Crab clacks its claws, and Blue Crabs scuttle in!', respawn: 300, drops: [['king_pearl', 1, 1, 0.3], ['pearl', 1, 2, 0.6], ['crableg', 2, 3, 1], ['tidebreaker', 1, 1, 0.02], ['coral_shield', 1, 1, 0.05], ['crab_card', 1, 1, 0.01]] },
+  gloomMother: { name: 'Giant Mushroom', ai: 'boss', art: 'mushBoss', aura: '#c87aff', el: 'shadow', boss: true, lv: 40, hp: 11200, atk: [55, 71], def: 14, vit: 40, agi: 28, dex: 60, exp: [17000, 11900], adelay: 1700, walk: 250, moves: [{ kind: 'throw', mult: 1.5, r: 1.8 }], aggro: 5.5, chase: 12, reach: 1.4, w: 2.2, r: 0.8, heavy: true, mdef: 30, summon: ['gloomcap', 'gloomcap'], summonText: 'The Giant Mushroom puffs, and Dark Mushrooms sprout around it!', respawn: 420, drops: [['gloom_heart', 1, 1, 0.3], ['gloom', 2, 4, 1], ['potion3', 1, 2, 0.4], ['gloom_staff', 1, 1, 0.02], ['gloom_hood', 1, 1, 0.05], ['mushroom_card', 1, 1, 0.01]] },
+  cinderLord: { name: 'Giant Beetle', ai: 'boss', art: 'beetleBoss', aura: '#ff7a2a', el: 'fire', boss: true, lv: 48, hp: 10800, atk: [56, 73], def: 22, vit: 48, agi: 32, dex: 70, exp: [28000, 19600], adelay: 1600, walk: 200, moves: [{ kind: 'charge', mult: 1.6 }], aggro: 5.5, chase: 12, reach: 1.5, w: 2.4, r: 0.9, heavy: true, summon: ['cinderBeetle', 'cinderBeetle'], summonText: 'The Giant Beetle roars, and Fire Beetles answer!', respawn: 480, drops: [['cinder_core', 1, 1, 0.3], ['cinder', 2, 4, 1], ['potion3', 1, 2, 0.5], ['cinder_greaves', 1, 1, 0.03], ['cinder_mail', 1, 1, 0.04], ['beetle_card', 1, 1, 0.01]] },
   // MVP boss of Ember Hill: one at a time, back 15 minutes after it falls. Its slayer gets the MVP
   // reward on top of the drops. Stomps the ground around it every few seconds (stomp: x its ATK),
   // and calls 2 Fire Wisps and 3 Fire Beetles (summon: see SUMMON_CD).
@@ -76,24 +78,26 @@ export const MOB_DEFS = {
     mvp: true, respawn: 1800, mvpExp: 24000, stomp: 1.7, moves: [{ kind: 'leap', mult: 1.7, r: 1.8 }, { kind: 'throw', mult: 1.4, r: 1.3 }, { kind: 'frenzy' }], summon: ['goblinWarrior', 'goblinWarrior', 'goblinArcher', 'goblinAssassin'], mvpDrops: [['potion3', 3], ['hard_ore', 3]],
     wake: 'Horns in the dark wood… the Goblin King rides out in Serpent Wood!',
     drops: [['potion3', 1, 2, 0.6], ['goblin_tooth', 4, 6, 1], ['hard_ore', 1, 3, 0.45], ['armor_ore', 1, 3, 0.45], ['goblin_charm', 1, 1, 0.05], ['goblin_card', 1, 1, 0.01]] },
-  // ---------- Veidheim's lands: the farms and woods east of Black Wood (beasts.js) ----------
-  // Made for a hero near the second job (Base 46-60). Snakes lie in the grass and wolves hunt in
-  // packs (quick, they dart in and bite twice now and then); willow spirits shake their seeds
-  // over you (puff: a cloud that slows) and only fight back; bears and oak treants are slow, heavy
-  // and hard.
-  snake: { name: 'Snake', ai: 'assassin', art: 'snake', el: 'earth', lv: 46, hp: 2600, atk: [164, 205], def: 10, vit: 30, agi: 44, dex: 72, exp: [930, 650], adelay: 1400, passive: true, walk: 200, aggro: 5, chase: 8, reach: 0.8, double: 0.2, w: 0.95, r: 0.36, drops: [['snake_skin', 1, 1, 0.5], ['herb', 1, 1, 0.2], ['potion2', 1, 1, 0.08], ['snake_boots', 1, 1, 0.0025]] },
+  // ---------- Veidheim and its lands (beasts.js) ----------
+  // Round the village, reached from Birch Grove, the gentle ones: willow spirits shake their seeds
+  // over you (puff: a cloud that slows) and oak treants are slow and heavy; both only fight back.
+  // Far off, east of Black Wood and Ash Heath, the predators for a hero near the second job (Base
+  // 46-56): snakes, wolves and bears attack on sight; snakes and wolves dart in and bite twice now and
+  // then (the packs are quick), bears are slow, heavy and hard.
+  willow: { name: 'Willow', ai: 'puffer', art: 'willow', el: 'earth', lv: 17, hp: 560, atk: [34, 44], def: 6, vit: 16, agi: 14, dex: 30, mdef: 10, exp: [72, 50], adelay: 1700, passive: true, walk: 200, aggro: 4.5, chase: 7, reach: 1.0, puff: 'Willow seeds fill the air! You feel sluggish', w: 0.85, r: 0.4, drops: [['willow_twig', 1, 1, 0.55], ['leaf', 1, 2, 0.6], ['herb', 1, 1, 0.25], ['potion', 1, 1, 0.08], ['willow_staff', 1, 1, 0.002]] },
+  treant: { name: 'Treant', ai: 'tank', art: 'treant', el: 'earth', lv: 24, hp: 1500, atk: [62, 78], def: 16, vit: 26, agi: 14, dex: 40, mdef: 10, exp: [160, 112], adelay: 1800, passive: true, walk: 250, aggro: 4.5, chase: 8, reach: 1.1, w: 1.7, r: 0.65, heavy: true, drops: [['old_bark', 1, 1, 0.5], ['leaf', 1, 2, 0.5], ['potion2', 1, 1, 0.05], ['treant_shield', 1, 1, 0.002]] },
+  snake: { name: 'Snake', ai: 'assassin', art: 'snake', el: 'earth', lv: 46, hp: 2600, atk: [164, 205], def: 10, vit: 30, agi: 44, dex: 72, exp: [930, 650], adelay: 1400, walk: 200, aggro: 5, chase: 8, reach: 0.8, double: 0.2, w: 0.95, r: 0.36, drops: [['snake_skin', 1, 1, 0.5], ['herb', 1, 1, 0.2], ['potion2', 1, 1, 0.08], ['snake_boots', 1, 1, 0.0025]] },
   wolf: { name: 'Wolf', ai: 'assassin', art: 'wolf', el: 'earth', lv: 48, hp: 2800, atk: [168, 210], def: 10, vit: 32, agi: 52, dex: 76, exp: [1050, 735], adelay: 1200, walk: 150, aggro: 6, chase: 10, reach: 0.85, double: 0.2, w: 0.8, r: 0.36, drops: [['wolf_pelt', 1, 1, 0.5], ['wolf_fang', 1, 1, 0.12], ['potion3', 1, 1, 0.03], ['wolf_cape', 1, 1, 0.002]] },
-  willow: { name: 'Willow', ai: 'puffer', art: 'willow', el: 'earth', lv: 50, hp: 3500, atk: [165, 208], def: 18, vit: 40, agi: 26, dex: 66, mdef: 15, exp: [1200, 840], adelay: 1700, passive: true, walk: 200, aggro: 4.5, chase: 7, reach: 1.0, puff: 'Willow seeds fill the air! You feel sluggish', w: 0.85, r: 0.4, drops: [['willow_twig', 1, 1, 0.5], ['leaf', 1, 2, 0.6], ['herb', 1, 1, 0.25], ['potion3', 1, 1, 0.03], ['willow_staff', 1, 1, 0.002]] },
   bear: { name: 'Bear', ai: 'tank', art: 'bear', el: 'neutral', lv: 53, hp: 4300, atk: [185, 232], def: 24, vit: 52, agi: 34, dex: 70, exp: [1420, 995], adelay: 1500, walk: 155, aggro: 5, chase: 9, reach: 1.0, w: 1.35, r: 0.55, heavy: true, drops: [['bear_claw', 1, 1, 0.5], ['honey', 1, 1, 0.15], ['potion3', 1, 1, 0.05], ['bear_hide', 1, 1, 0.0015]] },
-  treant: { name: 'Treant', ai: 'tank', art: 'treant', el: 'earth', lv: 56, hp: 5200, atk: [205, 256], def: 28, vit: 56, agi: 30, dex: 74, mdef: 20, exp: [1680, 1175], adelay: 1800, passive: true, walk: 250, aggro: 4.5, chase: 8, reach: 1.1, w: 1.7, r: 0.65, heavy: true, drops: [['old_bark', 1, 1, 0.5], ['leaf', 1, 2, 0.5], ['potion3', 1, 1, 0.06], ['armor_ore', 1, 1, 0.012], ['treant_shield', 1, 1, 0.002]] },
-  // Willow Marsh's mini-boss: an old willow by the water, with its willows round it
-  elderWillow: { crown: 'willow', name: 'Elder Willow', ai: 'boss', art: 'willow', el: 'earth', tint: '#d8c8a0', boss: true, lv: 55, hp: 16500, atk: [64, 82], def: 22, vit: 50, agi: 30, dex: 72, mdef: 25, exp: [40000, 28000], adelay: 1700, walk: 250, moves: [{ kind: 'throw', name: 'Seed Cloud', mult: 1.5, r: 1.8 }], aggro: 5.5, chase: 12, reach: 1.5, w: 1.5, r: 0.75, heavy: true, summon: ['willow', 'willow'], summonText: 'The Elder Willow creaks, and Willows shuffle out of the reeds!', respawn: 540, drops: [['willow_heart', 1, 1, 0.3], ['willow_twig', 3, 5, 1], ['potion3', 1, 2, 0.5], ['willow_staff', 1, 1, 0.03], ['willow_charm', 1, 1, 0.04], ['willow_card', 1, 1, 0.01]] },
-  // the MVP of the Old Forest: the oldest tree in Aria, woken by the jotnar's stirring. Stomps,
-  // hurls stones from its roots, and calls wolves, a willow and a snake (summon: see SUMMON_CD).
-  // Made for a Base 60 second job: about 3 minutes and a bag of White Potions.
-  ancientTreant: { crown: 'blossom', name: 'Ancient Treant', ai: 'boss', art: 'treant', el: 'earth', tint: '#c8b89a', lv: 62, hp: 26000, atk: [145, 190], def: 20, vit: 45, agi: 30, dex: 78, mdef: 35, exp: [76000, 53200], adelay: 1700, walk: 200, aggro: 7, chase: 25, reach: 2.0, w: 2.8, r: 1.15, heavy: true,
-    mvp: true, respawn: 2100, mvpExp: 36000, stomp: 1.7, moves: [{ kind: 'throw', name: 'Root Stone', mult: 1.8, r: 1.8 }, { kind: 'charge', name: 'Uprooting Charge', mult: 1.7 }], summon: ['wolf', 'wolf', 'willow', 'snake'], summonText: 'The Ancient Treant groans, and the forest answers!', mvpDrops: [['potion3', 3], ['ancient_seed', 1]],
-    wake: 'The old trees whisper… the Ancient Treant walks in the Old Forest!',
+  // Willow Marsh's mini-boss: the oldest willow by the water, with its willows round it (a step
+  // after the Giant Sprout of Birch Grove)
+  elderWillow: { name: 'Elder Willow', ai: 'boss', art: 'elderWillow', aura: '#d8f070', el: 'earth', boss: true, lv: 23, hp: 6600, atk: [40, 54], def: 8, vit: 22, agi: 16, dex: 38, mdef: 15, exp: [3600, 2520], adelay: 1700, walk: 250, moves: [{ kind: 'throw', name: 'Seed Cloud', mult: 1.5, r: 1.8 }], aggro: 5.5, chase: 12, reach: 1.5, w: 1.5, r: 0.75, heavy: true, summon: ['willow', 'willow'], summonText: 'The Elder Willow creaks, and Willows shuffle out of the reeds!', respawn: 300, drops: [['willow_heart', 1, 1, 0.3], ['willow_twig', 3, 5, 1], ['potion2', 1, 2, 0.5], ['willow_staff', 1, 1, 0.03], ['willow_charm', 1, 1, 0.04], ['willow_card', 1, 1, 0.01]] },
+  // the MVP of Wolf Hills: the oldest tree in Aria, woken by the jotnar's stirring, has walked out of
+  // the Old Forest, and the beasts follow it. Stomps, hurls stones from its roots, and calls wolves
+  // and snakes (summon: see SUMMON_CD). Made for a Base 60 second job: about 3 minutes and a bag of White Potions.
+  ancientTreant: { name: 'Ancient Treant', ai: 'boss', art: 'ancientTreant', aura: '#ff9ac8', el: 'earth', lv: 62, hp: 26000, atk: [145, 190], def: 20, vit: 45, agi: 30, dex: 78, mdef: 35, exp: [76000, 53200], adelay: 1700, walk: 200, aggro: 7, chase: 25, reach: 2.0, w: 2.8, r: 1.15, heavy: true,
+    mvp: true, respawn: 2100, mvpExp: 36000, stomp: 1.7, moves: [{ kind: 'throw', name: 'Root Stone', mult: 1.8, r: 1.8 }, { kind: 'charge', name: 'Uprooting Charge', mult: 1.7 }], summon: ['wolf', 'wolf', 'snake', 'snake'], summonText: 'The Ancient Treant groans, and the pack answers!', mvpDrops: [['potion3', 3], ['ancient_seed', 1]],
+    wake: 'The hills shake… the Ancient Treant walks in Wolf Hills!',
     drops: [['potion3', 1, 2, 0.6], ['old_bark', 4, 6, 1], ['ancient_heartwood', 1, 1, 0.25], ['hard_ore', 1, 2, 0.4], ['armor_ore', 1, 2, 0.4], ['oak_ring', 1, 1, 0.05], ['grove_blade', 1, 1, 0.01], ['treant_card', 1, 1, 0.01]] },
 };
 // walk: ms a tile, as Ragnarok's monster database has it (Poring 400, Kobold 200, Goblin 150,
@@ -154,43 +158,27 @@ export function raidDef(type, lv, s = { hp: 1, atk: 1 }, guard = null) {
     };
   })());
 }
-// each mini-boss wears something of its own over its head, so it never looks like a big tinted
-// copy of its kind: painted once, in code (crown: the def's key)
-const CROWNS = {
-  roots: (g) => { // the Giant Sprout: a ring of glowing roots and thorns
-    g.strokeStyle = '#5a2a0e'; g.lineWidth = 7; g.beginPath(); g.ellipse(32, 44, 24, 9, 0, 0, Math.PI * 2); g.stroke();
-    g.strokeStyle = '#ff8a3a'; g.lineWidth = 3; g.stroke();
-    for (const x of [12, 22, 32, 42, 52]) { g.fillStyle = '#ffb04a'; g.beginPath(); g.moveTo(x - 4, 42); g.quadraticCurveTo(x - 2, 20, x + (x % 20 ? 4 : -4), 10); g.quadraticCurveTo(x + 1, 24, x + 4, 42); g.fill(); }
-  },
-  coral: (g) => { // the King Crab: a coral crown studded with pearls
-    g.fillStyle = '#e8607a';
-    for (const [x, h] of [[14, 20], [24, 30], [32, 36], [40, 30], [50, 20]]) { g.beginPath(); g.moveTo(x - 4, 50); g.lineTo(x - 2, 50 - h); g.lineTo(x + 2, 50 - h + 6); g.lineTo(x + 4, 50); g.fill(); }
-    g.fillStyle = '#c8405a'; g.fillRect(10, 44, 44, 8);
-    for (const x of [16, 32, 48]) { g.fillStyle = '#fff8f0'; g.beginPath(); g.arc(x, 48, 3.5, 0, 7); g.fill(); }
-  },
-  gloom: (g) => { // the Giant Mushroom: a halo of drifting violet spores
-    for (let i = 0; i < 9; i++) { const a = (i / 9) * Math.PI * 2, r = 5 + (i % 3) * 2; g.fillStyle = i % 2 ? '#c8a8ff' : '#8a5aff'; g.beginPath(); g.arc(32 + Math.cos(a) * 22, 38 + Math.sin(a) * 9, r, 0, 7); g.fill(); }
-    g.fillStyle = '#f0e0ff'; g.beginPath(); g.arc(32, 30, 6, 0, 7); g.fill();
-  },
-  embers: (g) => { // the Giant Beetle: two burning horns
-    for (const s of [-1, 1]) { g.fillStyle = '#3a1408'; g.beginPath(); g.moveTo(32 + s * 6, 52); g.quadraticCurveTo(32 + s * 26, 40, 32 + s * 20, 8); g.quadraticCurveTo(32 + s * 16, 34, 32 + s * 2, 52); g.fill(); g.fillStyle = '#ffb02a'; g.beginPath(); g.arc(32 + s * 20, 10, 6, 0, 7); g.fill(); g.fillStyle = '#fff0a0'; g.beginPath(); g.arc(32 + s * 20, 10, 2.5, 0, 7); g.fill(); }
-  },
-  willow: (g) => { // the Elder Willow: a ring of fireflies over its crown
-    for (let i = 0; i < 8; i++) { const a = (i / 8) * Math.PI * 2; g.fillStyle = 'rgba(255,240,140,.35)'; g.beginPath(); g.arc(32 + Math.cos(a) * 24, 40 + Math.sin(a) * 9, 5, 0, 7); g.fill(); g.fillStyle = '#fff6a8'; g.beginPath(); g.arc(32 + Math.cos(a) * 24, 40 + Math.sin(a) * 9, 2.2, 0, 7); g.fill(); }
-  },
-  blossom: (g) => { // the Ancient Treant: a crown of pink blossoms and two antler-like boughs
-    for (const s of [-1, 1]) { g.strokeStyle = '#4a3020'; g.lineWidth = 4; g.beginPath(); g.moveTo(32 + s * 8, 50); g.quadraticCurveTo(32 + s * 22, 36, 32 + s * 24, 12); g.moveTo(32 + s * 20, 30); g.lineTo(32 + s * 30, 22); g.stroke(); }
-    for (const [x, y] of [[14, 44], [22, 38], [32, 36], [42, 38], [50, 44], [8, 14], [56, 14], [2, 22], [62, 22]]) { g.fillStyle = '#f2b8d0'; g.beginPath(); g.arc(x, y, 4.5, 0, 7); g.fill(); g.fillStyle = '#fff0f6'; g.beginPath(); g.arc(x, y, 1.8, 0, 7); g.fill(); }
-  },
-};
-const crownTex = {};
-function crownTexture(key) {
-  if (crownTex[key]) return crownTex[key];
-  const c = document.createElement('canvas'); c.width = c.height = 64;
-  CROWNS[key](c.getContext('2d'));
-  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace;
-  return (crownTex[key] = t);
+// The bosses that once wore a crown have a look of their own instead (boss sets in sprites.js and
+// beasts.js) and an aura: a glow pulsing on the ground under them and motes drifting up round them,
+// in their colour (def.aura). The glow and mote textures are drawn once and shared.
+let auraTex = null;
+function auraTextures() {
+  if (auraTex) return auraTex;
+  const mk = (draw) => { const c = document.createElement('canvas'); c.width = c.height = 64; draw(c.getContext('2d')); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t; };
+  const glow = mk((g) => {
+    const rg = g.createRadialGradient(32, 32, 2, 32, 32, 31);
+    rg.addColorStop(0, 'rgba(255,255,255,.75)'); rg.addColorStop(0.55, 'rgba(255,255,255,.3)'); rg.addColorStop(1, 'rgba(255,255,255,0)');
+    g.fillStyle = rg; g.fillRect(0, 0, 64, 64);
+    g.strokeStyle = 'rgba(255,255,255,.55)'; g.lineWidth = 2; g.beginPath(); g.arc(32, 32, 24, 0, Math.PI * 2); g.stroke(); // a ring at its edge
+  });
+  const mote = mk((g) => {
+    const rg = g.createRadialGradient(32, 32, 1, 32, 32, 30);
+    rg.addColorStop(0, 'rgba(255,255,255,1)'); rg.addColorStop(0.3, 'rgba(255,255,255,.6)'); rg.addColorStop(1, 'rgba(255,255,255,0)');
+    g.fillStyle = rg; g.fillRect(0, 0, 64, 64);
+  });
+  return (auraTex = { glow, mote });
 }
+const AURA_MOTES = 9;
 const ATTACK_ANIM = 0.5; // PixelLab monsters play their attack animation for this long
 const STRIDE = 1.5;      // walk cycle length in body widths: legs keep pace with the ground
 
@@ -211,11 +199,20 @@ class Mob {
     this.shadow = new THREE.Mesh(mgr.shadowGeo, mgr.shadowMat);
     this.shadow.scale.setScalar(this.def.w * 0.9);
     mgr.scene.add(this.sprite, this.shadow);
-    if (this.def.crown) {
-      this.crown = new THREE.Sprite(new THREE.SpriteMaterial({ map: crownTexture(this.def.crown), alphaTest: 0.3 }));
-      this.crown.renderOrder = 2.7;
-      this.crown.scale.setScalar(0.9 * this.def.w);
-      mgr.scene.add(this.crown);
+    if (this.def.aura) {
+      const tx = auraTextures(), col = new THREE.Color(this.def.aura);
+      const add = { transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, color: col };
+      const disc = new THREE.Mesh(new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ map: tx.glow, ...add, polygonOffset: true, polygonOffsetFactor: -3 }));
+      disc.renderOrder = 1.5;
+      const moteMat = new THREE.SpriteMaterial({ map: tx.mote, ...add });
+      const motes = Array.from({ length: AURA_MOTES }, (_, i) => {
+        const m = new THREE.Sprite(moteMat);
+        m.renderOrder = 2.8;
+        mgr.scene.add(m);
+        return { s: m, a: (i / AURA_MOTES) * Math.PI * 2, t: i / AURA_MOTES, r: 0.55 + (i % 3) * 0.18 };
+      });
+      mgr.scene.add(disc);
+      this.aura = { disc, motes };
     }
     this.home = { x, z };
     this.reset(x, z);
@@ -676,10 +673,19 @@ class Mob {
     const y = this.mgr.world.heightAt(this.x, this.z);
     this.sprite.position.set(this.x, y + lift, this.z);
     this.shadow.position.set(this.x, y + 0.03, this.z);
-    if (this.crown) { // sits over the head, bobbing a little
-      this.crown.visible = this.sprite.visible;
+    if (this.aura) { // the glow pulses under the boss; motes rise round it, over its whole height
+      const { disc, motes } = this.aura, on = this.sprite.visible, w = this.def.w;
       const top = this.sprite.scale.y * (this.art.body[1] / this.art.fh); // the top of the body, above the feet
-      this.crown.position.set(this.x, y + lift + top + this.crown.scale.y * 0.2 + Math.sin(this.t * 2.2) * 0.05, this.z);
+      disc.visible = on;
+      disc.position.set(this.x, y + 0.05, this.z);
+      disc.scale.setScalar(w * (1.9 + Math.sin(this.t * 2.4) * 0.12));
+      disc.material.opacity = 0.75 + Math.sin(this.t * 2.4) * 0.2;
+      for (const m of motes) {
+        const k = (m.t + this.t * 0.32) % 1, a = m.a + this.t * 0.9, r = m.r * w * (1 - k * 0.35);
+        m.s.visible = on;
+        m.s.position.set(this.x + Math.cos(a) * r, y + 0.1 + k * top * 1.05, this.z + Math.sin(a) * r * 0.7);
+        m.s.scale.setScalar(w * 0.16 * Math.sin(k * Math.PI));
+      }
     }
   }
 
@@ -809,7 +815,7 @@ export class MobManager {
   remove(m) {
     this.list = this.list.filter((o) => o !== m);
     this.scene.remove(m.sprite, m.shadow);
-    if (m.crown) this.scene.remove(m.crown);
+    if (m.aura) { this.scene.remove(m.aura.disc); for (const q of m.aura.motes) this.scene.remove(q.s); }
     m.mat.dispose();
     this.tint = this.tint.filter((t) => t !== m.mat);
   }
@@ -817,7 +823,7 @@ export class MobManager {
   kill(m) {
     m.alive = false;
     m.sprite.visible = m.shadow.visible = false;
-    if (m.crown) m.crown.visible = false;
+    if (m.aura) { m.aura.disc.visible = false; for (const q of m.aura.motes) q.s.visible = false; }
     const y = this.world.heightAt(m.x, m.z) + (m.def.fly ? 0.7 : 0.3);
     this.fx.puff(m.x, y, m.z, m.def.w);
     const drops = [];

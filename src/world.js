@@ -3,16 +3,17 @@
 // and Fen Shore (west) open from the camp; everything else is reached by travelling on:
 //
 //                                Serpent Wood
-//                                   |                                      Willow Marsh - Old Forest
-//                               Burnt Wood                                      |             |
-//                                   |                                           |             |
-//                               Galdrheim    Steinborg - Birch Grove            |             |
-//                                   |            |           |                  |             |
-//                                   |        Moss Field  -  Dark Dale  -  Black Wood - Veidheim - Barley Field
-//                                   |            |           |           |          |
+//                                   |
+//                               Burnt Wood                                           Old Forest
+//                                   |                                                     |
+//                               Galdrheim    Steinborg - Birch Grove - Willow Marsh - Veidheim
+//                                   |            |           |
+//                                   |        Moss Field  -  Dark Dale  -  Black Wood - Barley Field
+//                                   |            |           |           |                   |
 // Coal Pit - Stone Field - Salt Bay - Fen Shore - Eldrun Camp   Ember Hill  -  Ash Heath - Wolf Hills
 //
-// (Dark Dale's east portal is Black Wood; Veidheim, the hunters' village, is east of Black Wood.)
+// (Dark Dale's east portal is Black Wood. Veidheim, the hunters' village, is reached from Birch
+// Grove through Willow Marsh; the predators' lands lie east of Black Wood and Ash Heath.)
 //
 // Every map is built once, at load, into its own group; only the current one is shown.
 import * as THREE from 'three';
@@ -43,10 +44,10 @@ export const ZONE_NAMES = {
   serpent: 'Serpent Wood', // the Goblin King's wood
   bloop: 'Bloop Island',   // the first raid (raid.js): a small round island out in Salt Bay
   hunt: 'Veidheim',        // "hunt-home": the hunters' village, farms and archers
-  farm: 'Barley Field',    // Veidheim's farmland, where the snakes and wolves come for the sheep
-  wolfhill: 'Wolf Hills',  // the packs' green hills, south of the village
-  marsh: 'Willow Marsh',   // the walking willows' pond, north of the village
-  oldwood: 'Old Forest',   // the oldest wood in Aria: treants, bears, and the Ancient Treant
+  farm: 'Barley Field',    // the old farms past Black Wood, lost to the snakes and wolves
+  wolfhill: 'Wolf Hills',  // the packs' green hills, east of Ash Heath
+  marsh: 'Willow Marsh',   // the walking willows' pond, between Birch Grove and the village
+  oldwood: 'Old Forest',   // the great oaks north of the village, where the gentle treants walk
 };
 
 const CAMP_R = 17;   // the camp clearing's walkable radius
@@ -61,12 +62,12 @@ export const MAPS = {
   fen:    { portals: [{ to: 'camp', ...E }, { to: 'coast', ...W }, { to: 'magic', ...N }], lake: { x: 30, z: 37, rx: 8, rz: 6 } },
   city:   { portals: [{ to: 'grove', x: 32, z: 59 }, { to: 'birch', x: 59, z: 32 }], city: 'city' },
   magic:  { portals: [{ to: 'fen', x: 32, z: 59 }, { to: 'burnt', x: 36.5, z: 5 }], city: 'magic' }, // the north gate opens on goblin country
-  birch:  { portals: [{ to: 'city', ...W }, { to: 'hollow', ...S }], clear: { x: 40, z: 22, r: 5 } },
+  birch:  { portals: [{ to: 'city', ...W }, { to: 'hollow', ...S }, { to: 'marsh', ...E }], clear: { x: 40, z: 22, r: 5 } },
   hollow: { portals: [{ to: 'grove', ...W }, { to: 'birch', ...N }, { to: 'deep', ...E }, { to: 'ridge', ...S }], lift: [-0.15, 0] },
   // an open bowl in the south of Ember Hill (the Fire Giant roams the whole map; see mobs.js roam)
   ridge:  { portals: [{ to: 'hollow', ...N }, { to: 'heath', ...E }], clear: { x: 32, z: 48, r: 6 }, lift: [1.3, 1.8] },
   coast:  { portals: [{ to: 'fen', ...E }, { to: 'stones', ...W }], lake: { x: 20, z: 31, rx: 11, rz: 17 }, clear: { x: 44, z: 46, r: 5 } },
-  deep:   { portals: [{ to: 'hollow', ...W }, { to: 'heath', ...S }, { to: 'hunt', ...E }], lift: [-0.1, 0.5], clear: { x: 40, z: 40, r: 5 } },
+  deep:   { portals: [{ to: 'hollow', ...W }, { to: 'heath', ...S }, { to: 'farm', ...E }], lift: [-0.1, 0.5], clear: { x: 40, z: 40, r: 5 } },
   heath:  { portals: [{ to: 'ridge', ...W }, { to: 'deep', ...N }, { to: 'wolfhill', ...E }], lift: [0.8, 1.2], clear: { x: 40, z: 44, r: 5 } },
   // the kobolds' hills and the Kobold King's quarry, west of Salt Bay (open ground in the south), and
   // goblin country and the Goblin King's wood, north of Galdrheim's north gate (a clearing in the
@@ -78,16 +79,17 @@ export const MAPS = {
   // the raid's arena: a round island of radius r in the middle of the map, the sea all round it. No
   // portals: the Boatman rows you in and out (raid.js)
   bloop:   { portals: [], arena: { r: 13 } },
-  // Veidheim, the hunters' village east of Black Wood, and its four lands. plots: farmland
-  // (farm.js), crops in rows inside a rail fence; farms: [x, z] of a haystack, a scarecrow and a
-  // woodpile; camps with hunt: a hunters' camp (a tent, a drying rack, a woodpile, a log seat)
-  hunt:     { portals: [{ to: 'deep', x: 5, z: 32 }, { to: 'farm', x: 59, z: 32 }, { to: 'wolfhill', x: 32, z: 59 }, { to: 'marsh', x: 32, z: 5 }], city: 'hunt' },
-  farm:     { portals: [{ to: 'hunt', ...W }, { to: 'oldwood', ...N }], lift: [0, 0.3],
-    plots: [{ x0: 12, z0: 12, x1: 24, z1: 20, crop: 'wheat', gate: 's' }, { x0: 38, z0: 40, x1: 52, z1: 50, crop: 'wheat', gate: 'w' }, { x0: 40, z0: 14, x1: 50, z1: 22, crop: 'cabbage', gate: 's' }, { x0: 12, z0: 42, x1: 22, z1: 50, crop: 'pumpkin', gate: 'n' }, { x0: 26, z0: 46, x1: 34, z1: 54, crop: 'wheat', gate: 'n' }],
+  // Veidheim, the hunters' village east of Willow Marsh, with the gentle willows and treants round it;
+  // the predators' lands (Barley Field, Wolf Hills) lie far off, east of Black Wood and Ash Heath.
+  // plots: farmland (farm.js), crops in rows inside a rail fence; farms: [x, z] of a haystack, a
+  // scarecrow and a woodpile; camps with hunt: a hunters' camp (a tent, a drying rack, a woodpile, a log seat)
+  hunt:     { portals: [{ to: 'marsh', x: 5, z: 32 }, { to: 'oldwood', x: 32, z: 5 }], city: 'hunt' },
+  farm:     { portals: [{ to: 'deep', ...W }, { to: 'wolfhill', ...S }], lift: [0, 0.3],
+    plots: [{ x0: 12, z0: 12, x1: 24, z1: 20, crop: 'wheat', gate: 's' }, { x0: 38, z0: 40, x1: 52, z1: 50, crop: 'wheat', gate: 'w' }, { x0: 40, z0: 14, x1: 50, z1: 22, crop: 'cabbage', gate: 's' }, { x0: 12, z0: 42, x1: 22, z1: 50, crop: 'pumpkin', gate: 'n' }, { x0: 18, z0: 52, x1: 28, z1: 57, crop: 'wheat', gate: 'n' }],
     farms: [[16, 25], [44, 30], [24, 38]] },
-  wolfhill: { portals: [{ to: 'hunt', ...N }, { to: 'heath', ...W }], lift: [0.8, 1.6], camps: [[20, 20], [46, 44], [44, 18]], hunt: true },
-  marsh:    { portals: [{ to: 'hunt', ...S }, { to: 'oldwood', ...E }], lake: { x: 28, z: 30, rx: 10, rz: 7 }, clear: { x: 44, z: 44, r: 5 } },
-  oldwood:  { portals: [{ to: 'marsh', ...W }, { to: 'farm', ...S }], lift: [-0.1, 0.6], clear: { x: 34, z: 26, r: 7 } },
+  wolfhill: { portals: [{ to: 'farm', ...N }, { to: 'heath', ...W }], lift: [0.8, 1.6], camps: [[20, 20], [46, 44], [44, 18]], hunt: true, clear: { x: 32, z: 44, r: 6 } },
+  marsh:    { portals: [{ to: 'birch', ...W }, { to: 'hunt', ...E }], lake: { x: 28, z: 30, rx: 10, rz: 7 }, clear: { x: 44, z: 44, r: 5 } },
+  oldwood:  { portals: [{ to: 'hunt', ...S }], lift: [-0.1, 0.6], clear: { x: 34, z: 26, r: 7 } },
 };
 const SEG = 128; // terrain vertices per side - 1 (0.5 unit spacing)
 

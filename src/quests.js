@@ -319,11 +319,11 @@ export const NPCS = {
     greet: (c) => ({ blademaster: 'A BladeMaster. Pity about the sword; you would have made a fine archer.',
       wizard: 'A Wizard! Try not to set the targets on fire. Again.',
       magicknight: 'Sword and spell. Out here we would add a bow, but nobody is perfect.' })[c.jobId] || null,
-    quests: ['wolfpack', 'elderwillow', 'ancienttreant'],
+    quests: ['elderwillow', 'wolfpack', 'ancienttreant'],
     lore: [
-      'Veidheim was a hunting camp once, a few tents at the edge of Black Wood. Then the farmers came for the soil, and the hunters stayed to keep the beasts off it.',
-      'The wolves run in packs in the hills south of here. Alone they would not trouble you. They are never alone.',
-      'The Old Forest north-east of here is older than anything. The trees there walk, and the oldest of them, the Ancient Treant, is waking. The beasts feel it.',
+      'Veidheim was a hunting camp once, a few tents past Birch Grove. Then the farmers came for the soil, and the hunters stayed to keep the beasts off it.',
+      'We had farms past Black Wood too: Barley Field, and the hills beyond it. The snakes and the wolves took them. The packs are never alone, and they come for you on sight.',
+      'The trees of the Old Forest, north of the gate, walk, but they are gentle if you leave them be. The oldest of them, the Ancient Treant, walked away into Wolf Hills, and the beasts there follow it now.',
     ],
   },
   eydis: {
@@ -346,7 +346,7 @@ export const NPCS = {
     hello: 'Barley in the field, cabbages in the yard and a windmill that never stops. Or it would be a good year, if it were not for the beasts.',
     later: (lv) => `There is always farm work. Come back at Base Level ${lv}.`,
     bye: 'Good soil and good neighbours. That is all a man needs.',
-    quests: ['snakes', 'lambs'],
+    quests: ['lambs', 'snakes'],
     lore: ['The archers keep the wolves off us. I keep the archers fed. It is a fair trade.'],
   },
   asa: {
@@ -359,15 +359,16 @@ export const NPCS = {
   },
   bodil: {
     name: 'Bodil the Sentry', map: 'hunt', x: 49.4, z: 29.6, dress: ROLE.sentry,
-    hello: 'From the tower you can see the Barley Field to the east and the hills to the south. Wolves by night, mostly. Snakes in the barley by day.',
+    hello: 'From the tower you can see the Old Forest to the north and the marsh to the west. Quiet country, if you leave the trees alone. The wolves are far off, past Black Wood.',
     later: () => '', bye: 'I will be up there if you need me.', quests: [],
     lore: ['Every archer in Veidheim stands a watch on the tower. Even the Huntmaster. Especially the Huntmaster.'],
   },
   kalf: {
     name: 'Kalf the Gate Archer', map: 'hunt', x: 35.6, z: 12.6, dress: { ...ROLE.sentry, main: [80, 0.35, 0.7], dye: 'blonde' },
-    hello: 'North is Willow Marsh. Pretty by day. At night the willows walk, and they sing. Do not listen.',
-    later: () => '', bye: 'Watch your feet in the marsh.', quests: [],
-    lore: ['There is an old willow by the water, bigger than the rest. The Elder Willow, we call it. Even the wolves go round.'],
+    hello: 'North is the Old Forest. The Treants there walk about like old men looking for their pipes. They will not touch you unless you start it.',
+    later: (lv) => `The Treants hit like falling trees. Come back at Base Level ${lv}.`,
+    bye: 'Mind the roots.', quests: ['treants'],
+    lore: ['West is Willow Marsh, the way you came in. There is an old willow by the water, bigger than the rest: the Elder Willow, we call it. It does not like visitors.'],
   },
   halla: {
     name: 'Halla the Healer', map: 'hunt', x: 28.8, z: 36.8, heal: true, dress: { body: 'sorc', main: [150, 0.3, 1.2], accent: [40, 0.5, 1.1], hair: 'long', dye: 'green', top: 'flower_wreath' },
@@ -388,16 +389,17 @@ export const NPCS = {
   },
   bjorn: {
     name: 'Bjorn the Gate Guard', map: 'city', x: 55.2, z: 29.4, dress: { body: 'blader', main: [100, 0.35, 0.9], accent: [30, 0.7, 1], hair: 'messy', dye: 'blonde', top: 'horned_helm' },
-    hello: 'Most beasts out there leave you be until you strike first. Not in Black Wood and Ash Heath: the dark wisps and the fire beasts come for you on sight.',
+    hello: 'Most beasts out there leave you be until you strike first. Not in Black Wood and Ash Heath: the dark wisps and the fire beasts come for you on sight. Nor past them, where the wolves run.',
     later: () => '', bye: 'Keep your guard up past the gate.',
     quests: [],
+    lore: ['East through Birch Grove, past Willow Marsh, is Veidheim, the hunters\' village. Good folk, and every one of them can shoot the eye out of a sparrow.'],
   },
 
 };
 
 // the Ferryman's fares, by map (only lands you have already walked)
 export const FARES = { camp: 300, city: 500, magic: 500, grove: 300, fen: 400, hollow: 600, birch: 700, coast: 900, ridge: 1200, deep: 1500, heath: 1800, stones: 2000, coalpit: 2400, burnt: 2600, serpent: 3000,
-  hunt: 2200, farm: 2400, wolfhill: 2400, marsh: 2600, oldwood: 3000 };
+  marsh: 800, hunt: 900, oldwood: 1000, farm: 2400, wolfhill: 2400 };
 
 // reward: { xp (Base EXP; Job EXP is 70% of it), perz, items: { id: n } }. Levels and EXP follow
 // the Ragnarok curve at 1x: a quest is a big job, worth a fair share of a level.
@@ -641,19 +643,19 @@ export const QUESTS = {
   // ---------- Veidheim ----------
   snakes: {
     title: 'Snakes in the Barley', kind: 'kill', mob: 'snake', n: 20, lv: 46,
-    intro: 'The Barley Field east of the village is crawling with Snakes. My reapers will not go in, and the barley will not cut itself. Kill twenty of them.',
+    intro: 'Our old farm past Black Wood, the Barley Field, is crawling with Snakes, and they strike at anyone on sight. I want my barley back. Kill twenty of them.',
     thanks: 'Twenty! The reapers are already sharpening their scythes. Here, for your trouble, and a loaf when the barley is in.',
     reward: { xp: 130000, perz: 12000, items: { potion3: 8, honey: 4 } },
   },
   lambs: {
-    title: 'The Lost Lambs', kind: 'search', map: 'farm', thing: 'Lost lamb', spots: [[36, 30], [54, 36], [18, 55]], verb: 'Lamb found', lv: 47,
-    intro: 'The wolves scattered my flock in the night. Three lambs are still out in the Barley Field, hiding somewhere. Find them and send them home before the wolves do.',
+    title: 'The Lost Lambs', kind: 'search', map: 'marsh', thing: 'Lost lamb', spots: [[46, 16], [14, 50], [48, 50]], verb: 'Lamb found', lv: 16,
+    intro: 'Something spooked my flock in the night, and three lambs ran off into Willow Marsh, west of the gate. The Willows will not hurt them, but the reeds are deep. Find them and send them home.',
     thanks: 'All three, bleating their heads off. You have a farmer\'s ear. Here, and thank you.',
-    reward: { xp: 110000, perz: 10000, items: { honey: 6 } },
+    reward: { xp: 5000, perz: 2000, items: { potion2: 4, honey: 2 } },
   },
   wolfpack: {
     title: 'The Pack in the Hills', kind: 'kill', mob: 'wolf', n: 25, lv: 48,
-    intro: 'The packs in Wolf Hills are bigger every week, and bolder. They came right up to the south gate last night. Thin them out: twenty-five Wolves.',
+    intro: 'The packs in Wolf Hills, past Ash Heath, are bigger every week, and bolder: they hunt the Barley Field now. Thin them out: twenty-five Wolves. They will come for you on sight.',
     thanks: 'Twenty-five. The hills will be quiet for a while, and the night watch will thank you. Hunt with us any time.',
     reward: { xp: 170000, perz: 15000, items: { potion3: 10 } },
   },
@@ -664,20 +666,26 @@ export const QUESTS = {
     reward: { xp: 150000, perz: 14000, items: { hunter_cape: 1 } },
   },
   bowstaves: {
-    title: 'Wood for Bows', kind: 'fetch', items: { willow_twig: 12, old_bark: 4 }, lv: 52,
+    title: 'Wood for Bows', kind: 'fetch', items: { willow_twig: 12, old_bark: 4 }, lv: 22,
     intro: 'Bows need willow that still wants to bend, and the bow-grips need bark that will not crack. Bring me twelve Willow Twigs from the marsh and four slabs of Old Bark from the Treants.',
     thanks: 'Lovely wood. Still twitching, too. Every archer in the village will shoot a little straighter because of you.',
-    reward: { xp: 180000, perz: 16000, items: { potion3: 10, quick: 3 } },
+    reward: { xp: 9000, perz: 4000, items: { potion2: 6, quick: 2 } },
   },
   elderwillow: {
-    title: 'The Elder Willow', kind: 'kill', mob: 'elderWillow', n: 1, lv: 55,
-    intro: 'The Elder Willow of Willow Marsh is calling the willows out of the water, and they walk farther every night. Cut it down before they reach the fields.',
+    title: 'The Elder Willow', kind: 'kill', mob: 'elderWillow', n: 1, lv: 26,
+    intro: 'The Elder Willow of Willow Marsh, west of the gate, is calling the willows out of the water, and they walk farther every night. Cut it down before they reach the fields.',
     thanks: 'The marsh is still at last. Even the frogs are quieter. Veidheim owes you a great deal.',
-    reward: { xp: 300000, perz: 20000, items: { potion3: 15 } },
+    reward: { xp: 15000, perz: 6000, items: { potion2: 10 } },
+  },
+  treants: {
+    title: 'Walking Trees', kind: 'kill', mob: 'treant', n: 15, lv: 22,
+    intro: 'The Treants of the Old Forest have started wandering up to the north gate and leaning on the palisade. It creaks. Fell fifteen of them and the rest will keep their distance.',
+    thanks: 'Fifteen! The palisade has stopped groaning, and so have I. Here, from the watch.',
+    reward: { xp: 8000, perz: 3500, items: { potion2: 6 } },
   },
   ancienttreant: {
     title: 'The Waking Wood', kind: 'kill', mob: 'ancientTreant', n: 1, lv: 60,
-    intro: 'The Ancient Treant walks in the Old Forest, and the whole forest walks with it. If it reaches the fields, there will be no Veidheim. It has stood a thousand years. Bring it down.',
+    intro: 'The Ancient Treant has walked out of the Old Forest into Wolf Hills, and the packs follow it like hounds. If it turns this way, there will be no Veidheim. It has stood a thousand years. Bring it down.',
     thanks: 'You felled the Ancient Treant. The songs will call you the Woodcutter, whether you like it or not. Veidheim is yours, hunter.',
     reward: { xp: 600000, perz: 40000, items: { potion3: 20 } },
   },

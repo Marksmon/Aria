@@ -13,6 +13,11 @@ export const BEASTS = {
   snake: { kind: 'snake', size: [52, 40], body: [22, 22], skin: '#5f9440', belly: '#e0d07a', spot: '#2f5a2a', eye: '#ffd23a', tongue: '#d8303a' },
   willow: { kind: 'willow', size: [56, 80], body: [22, 68], bark: '#9aae94', horn: '#8a8070', leaf: '#6aa848', leafLt: '#a8d870', leafDk: '#3f7a3a', eye: '#e8f8ff' },
   treant: { kind: 'treant', size: [84, 96], body: [46, 86], bark: '#5e4430', moss: '#6a8a3a', leaf: '#3f7a35', leaf2: '#6aa848', eye: '#ffcf4a', mouth: '#24180e', cap: '#e8c890' },
+  // the bosses, the same painters with more to them (boss: true): the Elder Willow, silvery and old,
+  // wide antlers with fireflies on their tips and water-lilies in its teal hair; the Ancient Treant,
+  // pale with age, glowing runes carved down its chest, a long beard, blossoms in its crown
+  elderWillow: { kind: 'willow', boss: true, size: [56, 80], body: [22, 68], bark: '#c4c8bc', horn: '#a89878', leaf: '#3f8a72', leafLt: '#9ae0c0', leafDk: '#245a4a', eye: '#ffd23a', fly: '#fff6a0', lily: '#f4f0f8', lilyHeart: '#f2a8c8' },
+  ancientTreant: { kind: 'treant', boss: true, size: [84, 96], body: [46, 86], bark: '#8a7a66', moss: '#7aa04a', leaf: '#3f8040', leaf2: '#78b85a', eye: '#b8ff7a', mouth: '#24180e', cap: '#f0d8a0', rune: '#8affc0', blossom: '#f6b8d4' },
 };
 export const beastSize = (id) => BEASTS[id].size;
 
@@ -226,11 +231,16 @@ function willow(F, P, dir, { G, W, step, walk, f, atk }) {
   hair(veil.map(([x, k], i) => [cx + x * 0.5, hy - 4, G - 12 - k * 2 + (i % 3) * 3, x * 0.6 + sway * 2 + (side ? -lash * 0.5 - 3 : 0)]));
   // the antlers: two forked branches out of the crown
   const antler = (s, near) => {
-    const col = near ? P.horn : dark(P.horn), bx = cx + s * 2, by = hy - 4;
-    F.part(line(bx, by, bx + s * 6, by - 9, 1), col, flatOut);
-    F.part(line(bx + s * 3, by - 4, bx + s * 1, by - 10, 1), col, flatOut);
-    F.part(line(bx + s * 6, by - 9, bx + s * 9, by - 11, 1), col, flatOut);
-    F.part(line(bx + s * 6, by - 9, bx + s * 5, by - 13, 1), col, flatOut);
+    const col = near ? P.horn : dark(P.horn), bx = cx + s * 2, by = hy - 4, k = P.boss ? 1.35 : 1; // the Elder Willow's spread wider
+    const tips = [[bx + s * 9 * k, by - 11 * k], [bx + s * 5 * k, by - 13 * k], [bx + s * 1, by - 10 * k]];
+    F.part(line(bx, by, bx + s * 6 * k, by - 9 * k, 1), col, flatOut);
+    F.part(line(bx + s * 3, by - 4, ...tips[2], 1), col, flatOut);
+    F.part(line(bx + s * 6 * k, by - 9 * k, ...tips[0], 1), col, flatOut);
+    F.part(line(bx + s * 6 * k, by - 9 * k, ...tips[1], 1), col, flatOut);
+    if (P.boss) {
+      F.part(line(bx + s * 4 * k, by - 6 * k, bx + s * 8 * k, by - 5 * k, 1), col, flatOut); // a third tine
+      for (const [tx, ty] of tips) { F.dot(tx, ty - 1, P.fly); F.dot(tx - 1, ty - 1, light(P.fly)); F.dot(tx + 1, ty - 1, light(P.fly)); F.dot(tx, ty - 2, light(P.fly)); } // fireflies
+    }
   };
   if (side) antler(-1, false); else { antler(-1, true); antler(1, true); }
   // legs: slender, a little bent, feet like roots
@@ -273,6 +283,10 @@ function willow(F, P, dir, { G, W, step, walk, f, atk }) {
   hair(front.map(([x, k], i) => [cx + x, hy - 5, (back ? G - 16 : wy + 2) - k * 2 + (i % 2) * 3, x * 0.5 + sway + (side ? -2 : 0)]));
   F.part(ellipse(cx + (side ? 0 : 0), hy - 4, side ? 4 : 5, 2.2), P.leaf); // the crown of the head
   F.part(ellipse(cx - 1, hy - 5, 2, 1), P.leafLt, flatOut);
+  if (P.boss) { // water-lilies tucked into the hair, one at the crown and down each side
+    const lily = (x, y) => { F.part(both(rect(x - 1, y, x + 1, y), rect(x, y - 1, x, y + 1)), P.lily); F.dot(x, y, P.lilyHeart); };
+    for (const [x, y] of back ? [[-3, -3], [3, -3], [0, 6], [-4, 14], [4, 14]] : side ? [[-3, -3], [-4, 4], [-6, 12]] : [[-4, -4], [4, -4], [-6, 4], [6, 4], [-6, 13], [6, 13]]) lily(cx + x, hy + y);
+  }
   if (side) { antler(1, true); arm(1, true); }
   else { arm(-1, true); arm(1, true); }
 }
@@ -333,11 +347,17 @@ function treant(F, P, dir, { G, W, step, walk, f, atk }) {
     F.part(line(cx + x, sh + 3, cx + x * 0.6 + (x % 2 ? 1 : -1), hip, 1), grain, flatOut);
     F.part(line(cx + x + 1, sh + 4, cx + x * 0.6 + 2, waist, 1), ridge, flatOut);
   }
-  if (!back && !side) for (const y of [waist - 6, waist - 2]) F.part(line(cx - 5, y, cx + 5, y, 1), grain, flatOut); // the ridges of a belly
+  if (!back && !side && !P.boss) for (const y of [waist - 6, waist - 2]) F.part(line(cx - 5, y, cx + 5, y, 1), grain, flatOut); // the ridges of a belly
+  if (P.boss) { // glowing runes carved in two rows down the body (on the back too)
+    const glyphs = [[[0, 0], [0, 1], [0, 2], [1, 0], [-1, 2]], [[0, 0], [1, 1], [0, 2], [-1, 1]], [[-1, 0], [0, 1], [1, 2], [0, 2], [-1, 2]], [[0, 0], [0, 1], [0, 2], [1, 1], [-1, 1]]];
+    const cols = side ? [cx - 2] : [cx - 8, cx + 8];
+    cols.forEach((x, c) => { for (let i = 0; i < 4; i++) for (const [dx, dy] of glyphs[(i + c) % 4]) F.dot(x + dx, sh + 4 + i * 5 + dy, P.rune); });
+  }
   // moss and mushrooms on the shoulders and hips
   for (const s of side ? [1] : [-1, 1]) {
     F.part(ellipse(cx + s * (bw - 4), sh + 1, 5, 2.5), P.moss);
     mushroom(cx + s * (bw - 2), sh - 2); mushroom(cx + s * (bw - 6), sh - 1);
+    if (P.boss) mushroom(cx + s * (bw - 4), hip - 3);
     F.part(both(line(cx + s * (bw - 3), sh, cx + s * (bw + 2), sh - 8, 1), line(cx + s * (bw + 1), sh - 6, cx + s * (bw + 4), sh - 7, 1)), grain, { flat: true }); // a broken bough
   }
   // the head, grown out of the shoulders, and the crown's boughs
@@ -347,7 +367,8 @@ function treant(F, P, dir, { G, W, step, walk, f, atk }) {
   if (!back) {
     // the mossy beard first, from the cheeks down over the chest; then the face over its top
     const bx = side ? hx + 3 : hx;
-    F.part(poly(side ? [[bx - 3, hy + 3], [bx + 6, hy + 3], [bx + 5, hy + 12], [bx + 1, hy + 19], [bx - 2, hy + 10]] : [[bx - 8, hy + 1], [bx - 4, hy + 4], [bx + 4, hy + 4], [bx + 8, hy + 1], [bx + 7, hy + 10], [bx + 2, hy + 18], [bx, hy + 21], [bx - 2, hy + 18], [bx - 7, hy + 10]]), P.moss);
+    const bl = P.boss ? 7 : 0; // the Ancient Treant's beard reaches its belly
+    F.part(poly(side ? [[bx - 3, hy + 3], [bx + 6, hy + 3], [bx + 5, hy + 12 + bl], [bx + 1, hy + 19 + bl], [bx - 2, hy + 10]] : [[bx - 8, hy + 1], [bx - 4, hy + 4], [bx + 4, hy + 4], [bx + 8, hy + 1], [bx + 7, hy + 10 + bl * 0.5], [bx + 2, hy + 18 + bl], [bx, hy + 21 + bl], [bx - 2, hy + 18 + bl], [bx - 7, hy + 10 + bl * 0.5]]), P.moss);
     for (const x of side ? [0, 3] : [-5, -2, 1, 4]) F.part(line(bx + x, hy + 7, bx + x * 0.5, hy + 16, 1), dark(P.moss), flatOut);
     for (const x of side ? [1] : [-3, 3]) F.part(line(bx + x, hy + 6, bx + x * 0.6, hy + 12, 1), light(P.moss), flatOut);
     // a heavy, stern brow; deep sockets with glowing eyes under it; a long nose of bark
@@ -363,6 +384,10 @@ function treant(F, P, dir, { G, W, step, walk, f, atk }) {
   for (const [x, y, rx, ry] of clumps) F.part(ellipse(hx + x, cy + y, rx, ry), P.leaf);
   for (const [x, y, rx, ry] of clumps) F.part(ellipse(hx + x - rx * 0.25, cy + y - ry * 0.35, rx * 0.5, ry * 0.38), P.leaf2, flatOut);
   for (const [x, y] of side ? [[-6, 8], [8, 6], [-12, 3]] : [[-12, 9], [6, 7], [18, 8], [-4, 2], [14, 0]]) { F.dot(hx + x, cy + y, '#8a5a2a'); F.dot(hx + x, cy + y + 1, '#b07a3a'); F.dot(hx + x, cy + y - 1, '#5a3a1a'); } // acorns
+  if (P.boss) for (const [x, y] of side ? [[-10, -2], [-2, -8], [6, -4], [2, 2], [-8, 5], [11, 1]] : [[-18, -1], [-10, -6], [-2, -10], [7, -7], [15, -3], [21, 1], [-15, 5], [2, 1], [11, 4]]) { // blossoms
+    F.part(both(rect(hx + x - 1, cy + y, hx + x + 1, cy + y), rect(hx + x, cy + y - 1, hx + x, cy + y + 1)), P.blossom);
+    F.dot(hx + x, cy + y, '#fff0f6');
+  }
   // the near arms last, over the body (raised over the crown when it slams)
   if (side) arm(1, true); else { arm(-1, true); arm(1, true); }
 }

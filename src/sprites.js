@@ -601,6 +601,84 @@ const GREEN_BODY = (h, s) => h > 50 && h < 150 && s > 0.08;
 const BLUE_BODY = (h, s, l) => h > 160 && h < 235 && s > 0.2 && l > 0.28;
 const bloopColour = (hue, sat, light, lift = 0, body = GREEN_BODY) => recolorer([[body, (h, s, l) => [hue, Math.min(1, s * sat), Math.min(0.88, l * light + lift)]]]);
 
+// The PixelLab bosses (Giant Sprout, King Crab, Giant Mushroom, Giant Beetle): their kind's sheet
+// redone as a boss of its own, not a tinted copy. Each part is found by its colour and given a ramp
+// of its own (parts: [test(h, s, l), to(h, s, l)], the first that fits), then marks(px, w, part,
+// box) paints details over chosen parts (part: each pixel's part index, -1 for none; box: the
+// figure's bounds), and the upper rim of the silhouette catches the light of the boss's aura.
+function bossLook(parts, rim, marks) {
+  const [rr, rg, rb] = [1, 3, 5].map((i) => parseInt(rim.slice(i, i + 2), 16));
+  return (px, w) => {
+    const n = px.length / 4, part = new Int8Array(n).fill(-1);
+    let x0 = w, y0 = 1e9, x1 = -1, y1 = -1;
+    for (let k = 0; k < n; k++) {
+      if (px[k * 4 + 3] < 8) continue;
+      const x = k % w, y = (k / w) | 0;
+      if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y;
+      const [h, s, l] = rgb2hsl(px[k * 4], px[k * 4 + 1], px[k * 4 + 2]);
+      for (let p = 0; p < parts.length; p++) {
+        if (!parts[p][0](h, s, l)) continue;
+        const [r, g, b] = hsl2rgb(...parts[p][1](h, s, l));
+        px[k * 4] = r; px[k * 4 + 1] = g; px[k * 4 + 2] = b;
+        part[k] = p;
+        break;
+      }
+    }
+    if (x1 < 0) return;
+    const set = (k, hex) => { px[k * 4] = parseInt(hex.slice(1, 3), 16); px[k * 4 + 1] = parseInt(hex.slice(3, 5), 16); px[k * 4 + 2] = parseInt(hex.slice(5, 7), 16); };
+    marks?.(px, w, part, { x0, y0, x1, y1 }, set);
+    // the rim: the first pixel inside the outline, along the top of the figure
+    for (let k = 2 * w; k < n; k++) {
+      if (px[k * 4 + 3] < 8 || px[(k - w) * 4 + 3] < 8 || px[(k - 2 * w) * 4 + 3] >= 8) continue;
+      px[k * 4] = (px[k * 4] + rr) / 2; px[k * 4 + 1] = (px[k * 4 + 1] + rg) / 2; px[k * 4 + 2] = (px[k * 4 + 2] + rb) / 2;
+    }
+  };
+}
+const BOSS_LOOKS = {
+  // the Giant Sprout: a rust-red bulb with dark ribs, deep green leaves, a thorny vine round its middle
+  sproutBoss: ['sprout', bossLook([
+    [(h, s, l) => h >= 12 && h < 66 && l > 0.38, (h, s, l) => [6 + (l - 0.4) * 24, 0.7, Math.min(0.62, l * 0.6)]],
+    [(h, s, l) => h >= 66 && h < 140 && s > 0.25, (h, s, l) => [135, 0.55, l * 0.7]],
+  ], '#ffb05a', (px, w, part, b, set) => {
+    const vy = b.y0 + Math.round((b.y1 - b.y0) * 0.56);
+    for (let x = b.x0; x <= b.x1; x++) {
+      const y = vy + Math.round(Math.sin(x * 0.55) * 1.5), k = y * w + x;
+      if (part[k] !== 0) continue;
+      set(k, '#2f5a2a'); if (part[k + w] === 0) set(k + w, '#1f3e1c');
+      if (x % 5 === 0 && part[k - w] === 0) set(k - w, '#e8c86a'); // thorns, catching the light
+    }
+  })],
+  // the King Crab: a deep sea-blue shell crusted with pale barnacles, a royal blue body, gold claw tips
+  crabBoss: ['crab', bossLook([
+    [(h, s, l) => h >= 10 && h < 50 && s >= 0.2 && l >= 0.15 && l < 0.6, (h, s, l) => [200, 0.55, Math.min(0.7, l * 0.95)]],
+    [(h, s, l) => (h >= 315 || h < 10) && s > 0.3 && l > 0.2, (h, s, l) => [222, 0.62, Math.min(0.8, l * 0.85)]],
+  ], '#8adcff', (px, w, part, b, set) => {
+    for (let k = 0; k < part.length; k++) {
+      const x = k % w, y = (k / w) | 0;
+      if (part[k] === 0 && (x * 7 + y * 13) % 23 === 0 && part[k + 1] === 0 && part[k + w] === 0) { set(k, '#e8f0f2'); set(k + 1, '#b8c8cc'); } // barnacles
+      if (part[k] === 1 && (x - b.x0 < 4 || b.x1 - x < 4)) set(k, (x + y) % 3 ? '#e8b83a' : '#fff0a0'); // gold claw tips
+    }
+  })],
+  // the Giant Mushroom: a near-black violet cap with glowing magenta spots and drips, a lilac-grey stem
+  mushBoss: ['mushling', bossLook([
+    [(h, s, l) => h >= 235 && h < 295 && s >= 0.4 && l < 0.62, (h, s, l) => [278, 0.55, l * 0.55]],
+    [(h, s, l) => h >= 255 && h < 310 && l >= 0.62, () => [318, 0.95, 0.7]],
+    [(h, s, l) => h >= 12 && h < 55 && s >= 0.3 && l >= 0.5, (h, s, l) => [268, 0.18, Math.min(0.85, l * 0.92)]],
+  ], '#e08aff', (px, w, part, b, set) => {
+    for (let k = 0; k < part.length - 3 * w; k++) {
+      const x = k % w;
+      if (part[k] !== 0 || part[k + w] === 0 || part[k + w] === 1 || px[(k + w) * 4 + 3] < 8 || x % 4) continue;
+      set(k + w, '#ff6ae8'); if (px[(k + 2 * w) * 4 + 3] >= 8) set(k + 2 * w, '#c83ab8'); // drips under the cap's rim
+    }
+  })],
+  // the Giant Beetle: a charcoal shell, its cracks glowing ember orange, dark red-brown legs
+  beetleBoss: ['beetle', bossLook([
+    [(h, s, l) => s < 0.22 && l >= 0.25 && l < 0.43, () => [22, 1, 0.55]],
+    [(h, s, l) => s < 0.22 && l >= 0.43 && l < 0.85, (h, s, l) => [18, 0.12, l * 0.48]],
+    [(h, s, l) => h >= 8 && h < 45 && s > 0.45 && l > 0.2 && l < 0.6, (h, s, l) => [6, 0.55, l * 0.62]],
+  ], '#ff9a4a')],
+};
+
 // People with no sheet of their own are dressed from a bald body (see person() below): its cloth in
 // their colours. Each body's cloth, by colour: the Trainee's browns, the Blader's navy gambeson and
 // crimson sash (steel stays), the Sorcerer's navy robe and silver trims, the Magic Knight's purple
@@ -894,6 +972,8 @@ export function createSprites() {
     slimeRed: sheet('blueslime', { recolor: bloopColour(354, 1.05, 1, 0, BLUE_BODY) }), // the Blue Bloop's drop, in red
     bleepBloop: codeSet(paintBleepBloop(), BBW, BBH, BB_BODY, 3 / BBH), // the raid boss, painted in code (bleepbloop.js)
   };
+  // the mini-bosses drawn with PixelLab: their kind's sheet redone as a boss of its own (BOSS_LOOKS)
+  for (const [id, [base, recolor]] of Object.entries(BOSS_LOOKS)) mobs[id] = sheet(base, { recolor });
   // kobolds and goblins, painted in code (painted.js) until they get PixelLab art
   for (const id of ['koboldWarrior', 'koboldArcher', 'koboldAssassin', 'goblinWarrior', 'goblinArcher', 'goblinAssassin']) mobs[id] = paintedSet(id, [16, 30]);
   for (const id of ['koboldKing', 'goblinKing']) mobs[id] = paintedSet(id, [26, 48]);
