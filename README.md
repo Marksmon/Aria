@@ -625,7 +625,9 @@ feathered collar and a long teal cape, the Moon Ranger's silver over navy with a
 Beastmaster's horned skulls, war paint and wolf-pelt cape; on her a fitted bodice, a short skirt
 and thigh-high boots), the BladeMaster's black and gold armour, the
 Wizard's navy and red robe or the Magic Knight's orange coat, each holding its weapon (the Trainee
-a dagger) and each with its own walk and attack. Headgear snaps to the head layer, so hats sit on the crown and
+a dagger) and each with its own walk and attack. A heroine's outfits are cut to suit her in every
+job: short skirts or shorts, bare thighs above over-knee or thigh-high boots, a slimmer waist, and
+for the Trainee, Blader, Sorcerer, Archer, Windrunner and Beastmaster a bare midriff. Headgear snaps to the head layer, so hats sit on the crown and
 glasses and masks sit on the eyes, in every direction and every frame. See
 `docs/character-standard.md`.
 

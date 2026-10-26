@@ -38,7 +38,7 @@ const edge = (F, pts, col) => { for (let i = 0; i < pts.length - 1; i++) F.part(
 
 function build(o) {
   const f = o.sex === 'f';
-  return { f, W: f ? 11 : 12, waist: f ? 7 : 9, hip: f ? 10 : 9, legs: [[-7, -2], [2, 7]], knee: f ? 34 : 42, hem: f ? 50 : 54 };
+  return { f, W: f ? 11 : 12, waist: f ? 6 : 9, hip: f ? 10 : 9, legs: [[-7, -2], [2, 7]], knee: f ? 40 : 42, hem: f ? 50 : 54 }; // (her thighs bare above her boots)
 }
 
 // the compass star: four long points, four short ones, a glowing middle
@@ -111,7 +111,7 @@ function legs(F, o, cx, cy, r, toe) {
   L.forEach(([a, b], i) => {
     const sh = i ? -Math.round(r / 2) : 0, mid = cx + (a + b) / 2 + sh;
     const cyl = cy - Math.round(Math.max(0, i ? -P.step : P.step) * 2); // the stepping leg lifts
-    F.part(rect(cx + a + sh, cy + 30, cx + b + sh, cyl + 58), C.pants);
+    F.part(rect(cx + a + sh, cy + 30, cx + b + sh, cyl + 58), f ? C.skin : C.pants);
     F.part(rect(cx + a - (f ? 0 : 1) + sh, cyl + knee, cx + b + (f ? 0 : 1) + sh, cyl + 58), C.boot);
     F.part(ellipse(mid + toe + (i ? 0.5 : -0.5), cyl + 60.5, f ? 4 : 4.5, 2.5), C.boot);
     F.part(line(cx + a - (f ? 0 : 1) + sh, cyl + knee, cx + b + (f ? 0 : 1) + sh, cyl + knee, 1), C.trim, flat);
@@ -173,10 +173,11 @@ function frontView(F, o, cx, cy, s, r) {
   F.part(poly([[cx - W, cy + 3], [R(cx + W), cy + 3], [R(cx + W + 1), cy + 8], [R(cx + waist), cy + 22], [R(cx + hip), cy + 30], [cx - hip, cy + 30], [cx - waist, cy + 22], [cx - W - 1, cy + 8]]), C.shirt);
   if (f) {
     F.part(poly([[cx - 7 + s, cy + 3], [cx + 7 + s, cy + 3], [cx + 7 + s, cy + 14], [cx + s, cy + 16], [cx - 7 + s, cy + 14]]), C.blouse);
+    F.part(poly([[cx - 3 + s, cy + 3], [cx + 3 + s, cy + 3], [cx + s, cy + 8]]), C.skin); // a low neckline
     for (const y of [17, 20]) F.part(line(cx - waist + 1, cy + y, R(cx + waist - 1), cy + y, 1), C.trim, flat); // the corset's straps
   }
   // below the belt: long white panels (a short white skirt on her)
-  if (f) F.part(poly([[cx - hip, cy + 27], [R(cx + hip), cy + 27], [R(cx + hip + 2), cy + 35], [cx - hip - 2, cy + 35]]), C.lining);
+  if (f) F.part(poly([[cx - hip, cy + 27], [R(cx + hip), cy + 27], [R(cx + hip + 2), cy + 31], [cx - hip - 2, cy + 31]]), C.lining);
   else {
     F.part(poly([[cx - hip, cy + 27], [cx - 3 + s, cy + 27], [cx - 4 + s, cy + 46], [cx - hip + 1, cy + 50], [cx - hip - 2, cy + 47]]), C.lining);
     F.part(poly([[R(cx + hip), cy + 27], [cx + 3 + s, cy + 27], [cx + 4 + s, cy + 46], [R(cx + hip - 1), cy + 50], [R(cx + hip + 2), cy + 47]]), C.lining);
@@ -302,7 +303,7 @@ function side(F, o, cx, cy) {
   edge(F, tails.map(([x, y]) => [x, y - 1]), C.trim);
   const cy0 = cy - P.bob; // the legs stay on the ground
   const leg = (x) => {
-    F.part(rect(x - 3, cy0 + 30, x + 2, cy0 + 58), C.pants);
+    F.part(rect(x - 3, cy0 + 30, x + 2, cy0 + 58), f ? C.skin : C.pants);
     F.part(rect(x - 3, cy0 + knee, x + 2, cy0 + 58), C.boot);
     F.part(ellipse(x + 1, cy0 + 60.5, 4.5, 2.5), C.boot);
     F.part(line(x - 3, cy0 + knee, x + 2, cy0 + knee, 1), C.trim, flat);
@@ -314,7 +315,7 @@ function side(F, o, cx, cy) {
   leg(cx - 2 - Math.round(3 * P.step)); // the far leg, then the near one, striding
   leg(cx + 2 + Math.round(3 * P.step));
   // the white layer, the coat's front edge
-  F.part(poly([[cx - 4, cy + 27], [cx + 6, cy + 27], [cx + 6, cy + (f ? 35 : 48)], [cx - 6, cy + (f ? 36 : 50)]]), C.lining);
+  F.part(poly([[cx - 4, cy + 27], [cx + 6, cy + 27], [cx + 6, cy + (f ? 31 : 48)], [cx - 6, cy + (f ? 31 : 50)]]), C.lining);
   if (!f) {
     const pts = [[cx + 3, cy + 26], [cx + 7, cy + 26], [cx + 6, cy + hem - 2], [cx + 2, cy + hem + 1]];
     F.part(poly(pts), C.coat);
