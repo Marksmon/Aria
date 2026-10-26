@@ -642,8 +642,8 @@ Core) and 50,000 perz. The second works a quarter of the time and costs twice as
 boss materials in any mix, 100,000 perz). A failed try breaks the weapon; any card in it comes
 back to you.
 
-**Cards.** Each MVP drops its card (1%), and like classic MVP cards they are overpowered.
-Each mini-boss drops one too (1%): a good step up, but nothing like an MVP's. The Goblin King's, the
+**Cards.** Each MVP drops its card (0.1%), and like classic MVP cards they are overpowered.
+Each mini-boss drops one too (0.1%): a good step up, but nothing like an MVP's. The Goblin King's, the
 Fire Giant's, the Great Bear's and the Giant Beetle's go in weapons; the rest in other gear.
 Every other monster drops a card too (0.1%), for every kind of gear, smaller but welcome (all but the
 Little Bloops a Blue Bloop splits into: they drop neither gear nor cards).
@@ -684,17 +684,17 @@ free slot. It stays there for good, unless the piece later breaks at Holger's.
 
 | Card | Goes in | Effect | From |
 |---|---|---|---|
-| Kobold King Card | Armor | Max HP +40%, DEF +10, FLEE +10, END +10 | Kobold King, 1% |
-| Goblin King Card | Weapon | ATK +100, POW +10, QKN +10, attacks 15% faster | Goblin King, 1% |
-| Giant Sprout Card | Accessory | Max HP +10%, END +4 | Giant Sprout, 1% |
-| King Crab Card | Garment | QKN +5, FLEE +8 | King Crab, 1% |
-| Giant Mushroom Card | Head or face | KNL +6, Max SP +10% | Giant Mushroom, 1% |
-| Giant Beetle Card | Weapon | ATK +25, POW +4 | Giant Beetle, 1% |
-| Elder Willow Card | Wings | FNS +3, KNL +3 | Elder Willow, 1% |
-| Alpha Wolf Card | Shoes | QKN +6, FLEE +10 | Alpha Wolf, 1% |
-| Great Bear Card | Weapon | ATK +30, POW +5, Max HP +10% | Great Bear, 1% |
-| Ancient Treant Card | Shield | DEF +15, Max HP +30%, POW +8, END +10 | Ancient Treant, 1% |
-| Fire Giant Card | Weapon (a sorcerer's card) | MATK +60%, KNL +12, FNS +8, Max SP +30%, Max HP +15%, weapon turns Fire (+15% Fire spells with a staff) | Fire Giant, 1% |
+| Kobold King Card | Armor | Max HP +40%, DEF +10, FLEE +10, END +10 | Kobold King, 0.1% |
+| Goblin King Card | Weapon | ATK +100, POW +10, QKN +10, attacks 15% faster | Goblin King, 0.1% |
+| Giant Sprout Card | Accessory | Max HP +10%, END +4 | Giant Sprout, 0.1% |
+| King Crab Card | Garment | QKN +5, FLEE +8 | King Crab, 0.1% |
+| Giant Mushroom Card | Head or face | KNL +6, Max SP +10% | Giant Mushroom, 0.1% |
+| Giant Beetle Card | Weapon | ATK +25, POW +4 | Giant Beetle, 0.1% |
+| Elder Willow Card | Wings | FNS +3, KNL +3 | Elder Willow, 0.1% |
+| Alpha Wolf Card | Shoes | QKN +6, FLEE +10 | Alpha Wolf, 0.1% |
+| Great Bear Card | Weapon | ATK +30, POW +5, Max HP +10% | Great Bear, 0.1% |
+| Ancient Treant Card | Shield | DEF +15, Max HP +30%, POW +8, END +10 | Ancient Treant, 0.1% |
+| Fire Giant Card | Weapon (a sorcerer's card) | MATK +60%, KNL +12, FNS +8, Max SP +30%, Max HP +15%, weapon turns Fire (+15% Fire spells with a staff) | Fire Giant, 0.1% |
 
 **Who can wear what.** Swords up to the Iron Sword: Trainee and Blader; rare and elemental
 swords: Blader only. Staves: Sorcerer only (the Wooden Staff also Trainees). Bows and arrows:
