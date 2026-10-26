@@ -2236,24 +2236,25 @@ const buffTip = document.createElement('div');
 buffTip.id = 'bufftip';
 buffTip.hidden = true;
 document.getElementById('hud').appendChild(buffTip);
-// every buff showing now: { key, icon, name, left (s), stacks, desc }
+// every buff showing now: { key, icon, name, left (s), stacks, fx: its effect in a few words }
 function buffList() {
   const out = [];
-  const sk = (key, id, lv, left, extra = '') => SKILLS[id] && out.push({ key, icon: SKILLS[id].icon, name: SKILLS[id].name, left, desc: SKILLS[id].desc(Math.max(1, lv)) + extra });
-  if (buffs.warcry > 0) sk('warcry', 'warcry', warcryLv, buffs.warcry);
-  if (player.endureT > 0 && endureFrom) sk('endure', endureFrom, endureLv, player.endureT);
-  if (buffs.ward > 0) sk('ward', 'ward', wardLv, buffs.ward);
-  if (buffs.aegis > 0) sk('aegis', 'aegis', aegisLv, buffs.aegis, ` Barrier left: ${Math.ceil(player.barrier)}.`);
-  if (buffs.focus > 0) sk('focus', 'focus', focusLv, buffs.focus);
-  if (buffs.tailwind > 0) sk('tailwind', 'tailwind', tailLv, buffs.tailwind);
-  if (buffs.rush > 0) out.push({ key: 'rush', icon: SKILLS.tailwind.icon, name: 'Tailwind Rush', left: buffs.rush, desc: 'The wind at your back: you run faster for a moment.' });
-  if (buffs.gust > 0) out.push({ key: 'gust', icon: SKILLS.galestep.icon, name: 'Gale Step', left: buffs.gust, desc: 'Light on your feet after Gale Step: you run faster for a moment.' });
-  if (buffs.rhythm > 0 && galeStacks) { sk('rhythm', 'galerhythm', skillLv(prog, 'galerhythm'), buffs.rhythm); out.at(-1).stacks = galeStacks; }
-  if (buffs.veil > 0) sk('veil', 'moonveil', veilLv, buffs.veil);
-  if (buffs.frenzy > 0) sk('frenzy', 'packfrenzy', frenzyLv, buffs.frenzy);
-  if (buffs.imbue > 0 && imbueEl) sk('imbue', 'elemblade', skillLv(prog, 'elemblade'), buffs.imbue, ` Now: ${imbueEl[0].toUpperCase()}${imbueEl.slice(1)}.`);
-  if (buffs.momentum > 0 && momentum) { sk('momentum', 'momentum', skillLv(prog, 'momentum'), buffs.momentum); out.at(-1).stacks = momentum; }
-  if (buffs.aspd > 0) out.push({ key: 'aspd', icon: 'quick', name: ITEMS.quick.name, left: buffs.aspd, desc: 'Your hands are faster: +10% attack speed.' });
+  const sk = (key, id, left, fx) => SKILLS[id] && out.push({ key, icon: SKILLS[id].icon, name: SKILLS[id].name, left, fx });
+  const lvOf = (id) => skillLv(prog, id);
+  if (buffs.warcry > 0) sk('warcry', 'warcry', buffs.warcry, `ATK +${warcryLv}%`);
+  if (player.endureT > 0 && endureFrom) sk('endure', endureFrom, player.endureT, `Damage taken −${Math.round(endureGuard * 100)}% · no flinching`);
+  if (buffs.ward > 0) sk('ward', 'ward', buffs.ward, `Damage taken −${2 * wardLv}% · casting can't be broken`);
+  if (buffs.aegis > 0) sk('aegis', 'aegis', buffs.aegis, `Barrier ${Math.ceil(player.barrier)} · DEF +${aegisLv}`);
+  if (buffs.focus > 0) sk('focus', 'focus', buffs.focus, `FNS +${focusLv} · QKN +${focusLv}`);
+  if (buffs.tailwind > 0) sk('tailwind', 'tailwind', buffs.tailwind, `Bow attack speed +${2 * tailLv}%`);
+  if (buffs.rush > 0) out.push({ key: 'rush', icon: SKILLS.tailwind.icon, name: 'Tailwind Rush', left: buffs.rush, fx: 'Walk speed +30%' });
+  if (buffs.gust > 0) sk('gust', 'galestep', buffs.gust, `Walk speed +${gustHaste}%`);
+  if (buffs.rhythm > 0 && galeStacks) { sk('rhythm', 'galerhythm', buffs.rhythm, `Bow attack speed +${lvOf('galerhythm') * galeStacks}%`); out.at(-1).stacks = galeStacks; }
+  if (buffs.veil > 0) sk('veil', 'moonveil', buffs.veil, `Damage taken −${4 * veilLv}%${nightUp ? ' · Multishot +2 arrows' : ''}`);
+  if (buffs.frenzy > 0) sk('frenzy', 'packfrenzy', buffs.frenzy, `Beasts: attack speed +${3 * frenzyLv}% · damage +${3 * frenzyLv}%`);
+  if (buffs.imbue > 0 && imbueEl) sk('imbue', 'elemblade', buffs.imbue, `Element: ${imbueEl[0].toUpperCase()}${imbueEl.slice(1)}`);
+  if (buffs.momentum > 0 && momentum) { sk('momentum', 'momentum', buffs.momentum, `ATK +${momentum * lvOf('momentum')}%`); out.at(-1).stacks = momentum; }
+  if (buffs.aspd > 0) out.push({ key: 'aspd', icon: 'quick', name: ITEMS.quick.name, left: buffs.aspd, fx: 'Attack speed +10%' });
   return out;
 }
 const buffTime = (s) => (s >= 60 ? `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}` : `${Math.ceil(s)}s`);
@@ -2272,7 +2273,7 @@ function drawBuffs() {
   const held = buffHeld && list.find((b) => b.key === buffHeld);
   if (!held) { buffTip.hidden = true; return; }
   buffTip.hidden = false;
-  buffTip.innerHTML = `<b>${esc(held.name)}${held.stacks ? ` ×${held.stacks}` : ''}</b><span>${esc(held.desc)}</span><small>${buffTime(held.left)} left</small>`;
+  buffTip.innerHTML = `<b>${esc(held.name)}${held.stacks ? ` ×${held.stacks}` : ''}</b><span>${esc(held.fx)}</span>`;
   const r = buffBar.querySelector(`[data-buff="${held.key}"]`)?.getBoundingClientRect();
   if (r) { buffTip.style.top = `${r.bottom + 6}px`; buffTip.style.left = `${Math.max(8, Math.min(window.innerWidth - buffTip.offsetWidth - 8, r.left + r.width / 2 - buffTip.offsetWidth / 2))}px`; }
 }
