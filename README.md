@@ -588,6 +588,27 @@ bursts gold on the ground and shows in gold in your bag.
 
 Two accessory slots, a shield, a garment and an arrows slot join head, face, armor, weapon, shoes and wings.
 
+**Shields, garments and shoes.** Between the first pieces from Gunnar's shop and the rare drops:
+
+| Piece | Slot | Effect | Where |
+|---|---|---|---|
+| Leaf Cape | Garment | DEF 1, FLEE +2 | Gunnar crafts it (Base 8): 12 Leaves, 4 Seeds |
+| Traveler's Cloak | Garment | DEF 2, FLEE +1, Max HP +30 | Gunnar's shop (2,600 perz) |
+| Shell Boots | Shoes | DEF 2, Max HP +40 | Gunnar crafts them (Base 12): 8 Shells, 2 Crab Legs, 2 Leaves |
+| Iron Buckler | Shield | DEF 3, Max HP +30 | Gunnar crafts it (Base 16): 6 Iron Ore, 4 Shells |
+| Rune Slippers | Shoes (Sorcerer) | DEF 1, KNL +1, Max SP +30 | Orm crafts them (Base 16): 6 Glow Dust, 6 Water Drops, 4 Leaves |
+| Rune Mantle | Garment (Sorcerer) | DEF 1, KNL +1, Max SP +40 | Orm crafts it (Base 18): 10 Glow Dust, 4 Dark Crystals, 4 Water Drops |
+| Rune Shield | Shield (Sorcerer) | DEF 2, KNL +1, Max SP +60 | Orm crafts it (Base 22): 5 Dark Crystals, 8 Glow Dust, 3 Salt |
+| Iron Greaves | Shoes (Blader) | DEF 4, Max HP +50 | Gunnar crafts them (Base 24): 8 Iron Ore, 6 Stones, 4 Shells |
+| Beetle Shield | Shield | DEF 5, Max HP +5% | Gunnar crafts it (Base 38): 6 Burnt Shells, 10 Stones, 3 Steel Ore |
+| Tower Shield | Shield (Blader) | DEF 7, Max HP +120 | Gunnar crafts it (Base 48): 8 Steel Ore, 2 Hard Ore, 6 Kobold Fur |
+| Sea Cloak ✦ | Garment | DEF 2, FLEE +2, Max SP +30 | Sea Bloop, 0.25% |
+| Kobold Shield ✦ | Shield | DEF 4, END +1, Max HP +50 | Kobold, 0.25% |
+| Kobold Sandals ✦ | Shoes | DEF 2, FNS +1, FLEE +3 | Kobold Archer, 0.25% |
+| Goblin Shield ✦ | Shield | DEF 5, POW +1 | Goblin, 0.2% |
+| Goblin Shroud ✦ | Garment | DEF 2, QKN +1, FLEE +6 | Goblin Assassin, 0.2% |
+| Bear Paws ✦ | Shoes | DEF 4, POW +1, Max HP +80 | Bear, 0.15% |
+
 **Wings.** The Wings slot holds wings, worn on the back (they flap gently, and cover your back when
 you turn away), or a light that floats at your shoulder and glows: a Wisp, a little flame of light
 with a face and fluttering wings, or the Lantern, iron and gilt, swaying on its ring with its flame
@@ -700,7 +721,8 @@ free slot. It stays there for good, unless the piece later breaks at Holger's.
 swords: Blader only. Staves: Sorcerer only (the Wooden Staff also Trainees). Bows and arrows:
 Archer only. Heavy armor
 (Beetle Armor, Chain Mail, Fire Armor): Blader only; robes: Sorcerer only; Pearl Armor:
-Blader and Sorcerer. Bucklers and round shields: Trainee and Blader. Everything else: any job.
+Blader and Sorcerer. The Round Shield and Shell Buckler: Trainee and Blader. The Tower Shield and Iron
+Greaves: Blader only. The Rune Shield, Rune Mantle and Rune Slippers: Sorcerer only. Everything else: any job.
 A job change puts away what the new job can't use.
 
 **Headgear you can see.** Two slots, Head and Face. Hats hide the hair they cover: Horned Helm,

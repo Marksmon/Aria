@@ -115,6 +115,23 @@ const BASE_ITEMS = {
   spore_cloak:  { type: 'equip', slot: 'garment', rare: true, name: 'Mushroom Cloak', def: 1, flee: 4, icon: 'r_cloak', desc: 'Woven from mushroom threads, light as mist. Blows aside like it was never there.', from: 'Mushrooms (0.25%)' },
   horn_blade:   { type: 'equip', slot: 'weapon', jobs: ['swordman'], el: 'earth', rare: true, name: 'Horn Sword', atk: 68, wlv: 3, stats: { pow: 1 }, icon: 'weapon_horn', desc: 'A sword ground from a Beetle\'s horn, harder than iron. Beetles rarely give one up.', from: 'Beetles (0.15%)' },
   pebble_ring:  { type: 'equip', slot: 'acc', rare: true, name: 'Stone Ring', stats: { end: 2 }, def: 1, icon: 'r_pebble', desc: 'A plain stone band from a Beetle\'s back. It makes you feel as heavy as a hill.', from: 'Beetles (0.3%)' },
+  // more shields, garments and shoes: crafted and bought for the road between the first gear and the rare drops
+  iron_buckler:   { type: 'equip', slot: 'shield', name: 'Iron Buckler', def: 3, mhp: 30, icon: 'shield_iron', desc: 'A small iron buckler, riveted round the rim. Light enough for anyone to carry.' },
+  rune_shield:    { type: 'equip', slot: 'shield', jobs: ['mage'], name: 'Rune Shield', def: 2, msp: 60, stats: { knl: 1 }, icon: 'shield_rune', desc: 'A violet kite shield cut with a single rune. It hums when a spell is near.' },
+  beetle_shield:  { type: 'equip', slot: 'shield', name: 'Beetle Shield', def: 5, mhpRate: 5, icon: 'shield_beetle', desc: 'A kite shield faced with Burnt Shell, still faintly warm. Blows skid off it.' },
+  tower_shield:   { type: 'equip', slot: 'shield', jobs: ['swordman'], name: 'Tower Shield', def: 7, mhp: 120, icon: 'shield_tower', desc: 'A wall of steel as tall as a Kobold. Only a Blader has the shoulders for it.' },
+  kobold_shield:  { type: 'equip', slot: 'shield', rare: true, name: 'Kobold Shield', def: 4, mhp: 50, stats: { end: 1 }, icon: 'shield_kobold', desc: 'A round wooden shield trimmed with fur, dented by a hundred blows it shrugged off.' },
+  goblin_shield:  { type: 'equip', slot: 'shield', rare: true, name: 'Goblin Shield', def: 5, stats: { pow: 1 }, icon: 'shield_goblin', desc: 'A spiked green kite shield. Goblins hit with these as often as they hide behind them.' },
+  leaf_cape:      { type: 'equip', slot: 'garment', name: 'Leaf Cape', def: 1, flee: 2, icon: 'cape_leaf', desc: 'Sprout leaves stitched over a light cloth. It rustles, and blows slide off it.' },
+  travel_cloak:   { type: 'equip', slot: 'garment', name: "Traveler's Cloak", def: 2, flee: 1, mhp: 30, icon: 'cape_travel', desc: 'A thick brown cloak with a deep hem, for long roads and cold nights.' },
+  rune_mantle:    { type: 'equip', slot: 'garment', jobs: ['mage'], name: 'Rune Mantle', def: 1, msp: 40, stats: { knl: 1 }, icon: 'cape_rune', desc: 'A deep blue mantle with runes sewn in silver along the hem.' },
+  sea_cloak:      { type: 'equip', slot: 'garment', rare: true, name: 'Sea Cloak', def: 2, flee: 2, msp: 30, icon: 'cape_sea', desc: 'A cloak of salt-stiff weed, sea green and always a little damp. It cools a busy mind.' },
+  goblin_shroud:  { type: 'equip', slot: 'garment', rare: true, name: 'Goblin Shroud', def: 2, flee: 6, stats: { qkn: 1 }, icon: 'hood_goblin', desc: 'A ragged dark green hood a Goblin Assassin crept about in. You feel harder to see.' },
+  shell_boots:    { type: 'equip', slot: 'shoes', name: 'Shell Boots', def: 2, mhp: 40, icon: 'boots_shell', desc: 'Boots with Crab shell plates over the toes and shins.' },
+  rune_slippers:  { type: 'equip', slot: 'shoes', jobs: ['mage'], name: 'Rune Slippers', def: 1, msp: 30, stats: { knl: 1 }, icon: 'boots_rune', desc: 'Soft blue slippers with silver runes at the heel. Quiet on a library floor.' },
+  iron_greaves:   { type: 'equip', slot: 'shoes', jobs: ['swordman'], name: 'Iron Greaves', def: 4, mhp: 50, icon: 'boots_iron', desc: 'Iron boots with jointed greaves. Heavy, and very hard to knock over.' },
+  kobold_sandals: { type: 'equip', slot: 'shoes', rare: true, name: 'Kobold Sandals', def: 2, flee: 3, stats: { fns: 1 }, icon: 'boots_kobold', desc: 'Kobold Archers walk the hills in these, quiet as foxes.' },
+  bear_paws:      { type: 'equip', slot: 'shoes', rare: true, name: 'Bear Paws', def: 4, mhp: 80, stats: { pow: 1 }, icon: 'boots_bear', desc: 'Boots of bear hide, claws and all. You stand like a Bear.' },
   wisp_lantern: { type: 'equip', slot: 'wings', rare: true, name: 'Lantern', look: { kind: 'float', art: 'lantern', glow: '#ffd27a' }, stats: { knl: 1, fns: 1 }, icon: 'r_lantern', desc: 'A Wisp sleeps inside, glowing softly. It floats at your shoulder and clears the mind.', from: 'Wisps (0.4%)' },
   // the Wings slot: wings behind the hero (look.kind 'wings') or a light floating beside them ('float'); wings.js draws them
   wisp_orb:     { type: 'equip', slot: 'wings', name: 'Wisp', look: { kind: 'float', art: 'orb', core: '#f4fbff', glow: '#9fdcff' }, msp: 20, stats: { knl: 1 }, icon: 'wisp_orb', desc: 'A tame little Wisp, coaxed out of Glow Dust. It bobs beside you and hums when you cast.' },
@@ -351,6 +368,9 @@ export const PRICES = {
   ember_crown: 30000, flame_circlet: 20000, round_glasses: 600, raven_mask: 400, woven_cap: 300, flower_wreath: 200, horned_helm: 1800,
   clothes: 10, leaf_tunic: 300, shell_mail: 1100, beetle_plate: 2800, chain_mail: 3200, mage_robe: 2600,
   round_shield: 1200, wool_cape: 700, leather_boots: 500, swift_boots: 1000, torch: 100,
+  iron_buckler: 3000, rune_shield: 5000, beetle_shield: 9000, tower_shield: 18000, kobold_shield: 9000, goblin_shield: 12000,
+  leaf_cape: 1200, travel_cloak: 2600, rune_mantle: 4500, sea_cloak: 8000, goblin_shroud: 14000,
+  shell_boots: 1800, rune_slippers: 3000, iron_greaves: 5000, kobold_sandals: 9000, bear_paws: 16000,
   wisp_orb: 6000, dark_wisp: 16000, leaf_wings: 2400, fairy_wings: 12000, ember_wings: 24000, angel_wings: 40000, devil_wings: 40000,
   sprout_charm: 700, spore_charm: 1000, shell_charm: 1000, glow_charm: 1200,
   heartwood: 3000, king_pearl: 4000, gloom_heart: 5000, cinder_core: 6000, jarl_horn: 8000,
@@ -371,7 +391,7 @@ export const sellPrice = (id) => Math.floor((PRICES[baseOf(id)] || 0) / 2); // u
 export const SHOPS = {
   hild: ['potion', 'potion2', 'tonic', 'herb', 'berry', 'wander', 'homeward'],
   holger: ['iron_ore', 'steel_ore'], // the refiner's ores (Hard and Armor Ore only drop)
-  gunnar: ['twig_sword', 'stone_blade', 'iron_sword', 'clothes', 'chain_mail', 'round_shield', 'wool_cape', 'leather_boots'],
+  gunnar: ['twig_sword', 'stone_blade', 'iron_sword', 'clothes', 'chain_mail', 'round_shield', 'wool_cape', 'travel_cloak', 'leather_boots'],
   // Galdrheim: Kari's curios (like Hild's, and Speed Potions), Orm's staves and robes
   kari: ['potion', 'potion2', 'tonic', 'herb', 'berry', 'quick', 'wander', 'homeward'],
   // Veidheim: Asa's bows and arrows, Eydis's hunting supplies (White Potions and Honey for the long hunts)
@@ -436,6 +456,16 @@ export const RECIPES = [
   { item: 'potion3', lv: 18, cost: { gloom: 2, potion2: 1 } },
   { item: 'wander', lv: 2, cost: { glow: 1, leaf: 1 } },
   { item: 'homeward', lv: 2, cost: { glow: 2, seed: 1 } },
+  // shields, garments and shoes: Gunnar's, and Orm's for sorcerers (jobs: mage)
+  { item: 'leaf_cape', lv: 8, cost: { leaf: 12, seed: 4 } },
+  { item: 'shell_boots', lv: 12, cost: { shell: 8, crableg: 2, leaf: 2 } },
+  { item: 'iron_buckler', lv: 16, cost: { iron_ore: 6, shell: 4 } },
+  { item: 'rune_slippers', lv: 16, cost: { glow: 6, dew: 6, leaf: 4 } },
+  { item: 'rune_mantle', lv: 18, cost: { glow: 10, shade: 4, dew: 4 } },
+  { item: 'rune_shield', lv: 22, cost: { shade: 5, glow: 8, salt: 3 } },
+  { item: 'iron_greaves', lv: 24, cost: { iron_ore: 8, stone: 6, shell: 4 } },
+  { item: 'beetle_shield', lv: 38, cost: { cinder: 6, stone: 10, steel_ore: 3 } },
+  { item: 'tower_shield', lv: 48, cost: { steel_ore: 8, hard_ore: 2, kobold_fur: 6 } },
   // wings: Gunnar binds the leaf ones; Orm coaxes the Wisp and spins the Fairy Wings
   { item: 'leaf_wings', lv: 8, cost: { leaf: 12, seed: 6, shell: 2 } },
   { item: 'wisp_orb', lv: 14, by: 'magic', cost: { glow: 12, dew: 6 } },
@@ -568,6 +598,27 @@ function bowIcon(g, wood, grip, tip = wood) {
   g.beginPath(); g.moveTo(-2, -26); g.lineTo(-2, 26); g.strokeStyle = '#efe6d0'; g.lineWidth = 1.5; g.stroke();
   shape(g, () => g.roundRect(4, -5, 6, 10, 2), grip, 2);
   g.restore();
+}
+// shared shapes for shields, capes and boots: the shape, then the colours
+function shieldIcon(g, kind, body, rim, boss) {
+  if (kind === 'round') shape(g, () => g.arc(32, 32, 23, 0, Math.PI * 2), body);
+  if (kind === 'kite') shape(g, () => { g.moveTo(14, 12); g.lineTo(50, 12); g.lineTo(50, 30); g.quadraticCurveTo(48, 48, 32, 58); g.quadraticCurveTo(16, 48, 14, 30); g.closePath(); }, body);
+  if (kind === 'tower') shape(g, () => g.roundRect(14, 6, 36, 54, 5), body);
+  g.lineWidth = 3; g.strokeStyle = rim;
+  if (kind === 'round') { g.beginPath(); g.arc(32, 32, 18, 0, Math.PI * 2); g.stroke(); }
+  if (kind === 'kite') { g.beginPath(); g.moveTo(18, 16); g.lineTo(46, 16); g.lineTo(46, 30); g.quadraticCurveTo(44, 45, 32, 53); g.quadraticCurveTo(20, 45, 18, 30); g.closePath(); g.stroke(); }
+  if (kind === 'tower') { g.strokeRect(18, 10, 28, 46); g.beginPath(); g.moveTo(32, 10); g.lineTo(32, 56); g.moveTo(18, 30); g.lineTo(46, 30); g.stroke(); }
+  if (kind !== 'tower') shape(g, () => g.arc(32, kind === 'kite' ? 30 : 32, 5, 0, Math.PI * 2), boss, 2);
+  else for (const [x, y] of [[22, 14], [42, 14], [22, 52], [42, 52]]) { g.beginPath(); g.arc(x, y, 1.8, 0, 7); g.fillStyle = boss; g.fill(); }
+}
+function capeIcon(g, body, clasp) {
+  shape(g, () => { g.moveTo(20, 10); g.lineTo(44, 10); g.quadraticCurveTo(56, 34, 52, 56); g.lineTo(12, 56); g.quadraticCurveTo(8, 34, 20, 10); g.closePath(); }, body);
+  shape(g, () => g.arc(32, 12, 4, 0, Math.PI * 2), clasp, 2);
+}
+function bootIcon(g, body, band, toe) {
+  shape(g, () => { g.moveTo(18, 10); g.lineTo(34, 10); g.lineTo(34, 40); g.lineTo(52, 44); g.quadraticCurveTo(56, 54, 48, 56); g.lineTo(14, 56); g.lineTo(18, 34); g.closePath(); }, body);
+  g.beginPath(); g.moveTo(18, 20); g.lineTo(34, 20); g.strokeStyle = band; g.lineWidth = 4; g.stroke();
+  if (toe) shape(g, () => { g.moveTo(40, 42); g.lineTo(52, 44); g.quadraticCurveTo(56, 54, 48, 56); g.lineTo(40, 56); g.closePath(); }, toe, 2);
 }
 // a pair of wings, spread: the same shapes the hero wears (wingart.js), shrunk to the icon
 function wingIcon(g, art) {
@@ -1006,6 +1057,22 @@ const PAINT = {
   wings_ember: (g) => wingIcon(g, 'ember'),
   wings_angel: (g) => wingIcon(g, 'angel'),
   wings_devil: (g) => wingIcon(g, 'devil'),
+  shield_iron: (g) => shieldIcon(g, 'round', '#9aa0a8', '#5a6070', '#d8dee6'),
+  shield_rune: (g) => { shieldIcon(g, 'kite', '#6a4aa8', '#3a2a6a', '#e8d8ff'); g.beginPath(); g.moveTo(32, 20); g.lineTo(32, 40); g.moveTo(26, 26); g.lineTo(38, 34); g.strokeStyle = '#c8b0ff'; g.lineWidth = 2.5; g.stroke(); },
+  shield_beetle: (g) => shieldIcon(g, 'kite', '#3a2a2a', '#ff7a3a', '#ffb35a'),
+  shield_tower: (g) => shieldIcon(g, 'tower', '#8a9098', '#4a4e58', '#e3b341'),
+  shield_kobold: (g) => { shieldIcon(g, 'round', '#8a6a3a', '#5a4026', '#d8c090'); for (let a = 0; a < 7; a += 0.6) { g.beginPath(); g.moveTo(32 + Math.cos(a) * 22, 32 + Math.sin(a) * 22); g.lineTo(32 + Math.cos(a) * 26, 32 + Math.sin(a) * 26); g.strokeStyle = '#c8a878'; g.lineWidth = 2; g.stroke(); } },
+  shield_goblin: (g) => { shieldIcon(g, 'kite', '#5a7a3a', '#2f4a22', '#c8b848'); for (const [x, y] of [[20, 18], [44, 18], [32, 50]]) shape(g, () => { g.moveTo(x - 3, y); g.lineTo(x, y - 7); g.lineTo(x + 3, y); g.closePath(); }, '#d8d0c0', 1.5); },
+  cape_leaf: (g) => { capeIcon(g, '#5aa83a', '#9cdc76'); for (const y of [28, 40]) { g.beginPath(); g.moveTo(18, y); g.quadraticCurveTo(32, y + 6, 46, y); g.strokeStyle = '#3f7a2a'; g.lineWidth = 2; g.stroke(); } },
+  cape_travel: (g) => capeIcon(g, '#7a5a3a', '#c8a060'),
+  cape_rune: (g) => { capeIcon(g, '#2a3a8a', '#d8dee6'); for (const x of [22, 32, 42]) { g.beginPath(); g.moveTo(x, 46); g.lineTo(x, 52); g.moveTo(x - 3, 49); g.lineTo(x + 3, 49); g.strokeStyle = '#c8d0ff'; g.lineWidth = 1.8; g.stroke(); } },
+  cape_sea: (g) => capeIcon(g, '#2a8a7a', '#9fe0d8'),
+  hood_goblin: (g) => { shape(g, () => { g.moveTo(32, 6); g.quadraticCurveTo(54, 14, 52, 56); g.lineTo(12, 56); g.quadraticCurveTo(10, 14, 32, 6); g.closePath(); }, '#3a4a2a'); shape(g, () => g.ellipse(32, 32, 11, 13, 0, 0, Math.PI * 2), '#1a2214', 2.5); for (const x of [27, 37]) { g.beginPath(); g.arc(x, 31, 2, 0, 7); g.fillStyle = '#ffe27a'; g.fill(); } },
+  boots_shell: (g) => bootIcon(g, '#c9726a', '#f2a8a0', '#f2a8a0'),
+  boots_rune: (g) => bootIcon(g, '#3a5ab8', '#d8dee6'),
+  boots_iron: (g) => bootIcon(g, '#8a9098', '#4a4e58', '#d8dee6'),
+  boots_kobold: (g) => bootIcon(g, '#b08a5a', '#6a4a2a'),
+  boots_bear: (g) => { bootIcon(g, '#6a4a2e', '#a87a4e'); for (const x of [44, 49, 54]) shape(g, () => { g.moveTo(x - 2, 54); g.lineTo(x, 60); g.lineTo(x + 2, 54); g.closePath(); }, '#efe6cc', 1.2); },
   r_lantern: (g) => paintLantern(g, 0.6),
 
   shiny_gel: (g) => {
