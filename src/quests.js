@@ -685,8 +685,8 @@ export const QUESTS = {
     reward: { xp: 15000, perz: 3000 },
   },
   wizard_trial2: {
-    title: 'Wizard Trial 2: Arrows in the Wind', job: true, kind: 'kill', mob: 'goblinArcher', n: 25, lv: 1,
-    intro: 'The Goblin Archers of Burnt Wood shoot from range, as we do. Out-cast twenty-five of them.',
+    title: 'Wizard Trial 2: Fire on the Hills', job: true, kind: 'kill', mob: 'koboldWarrior', n: 20, lv: 1,
+    intro: 'A Wizard picks the element before the fight. Kobolds are of the earth, and fire burns earth. Twenty Kobolds in the hills of Stone Field, west of Salt Bay: burn them before they reach you.',
     thanks: 'They never came close. That is the point. One more.',
     reward: { xp: 20000, perz: 4000 },
   },

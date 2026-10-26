@@ -373,7 +373,7 @@ points stay. Second jobs wear their first job's outfit in new colours and glow w
 (the Magic Knight, the Windrunner, the Moon Ranger and the Beastmaster have their own).
 
 - **BladeMaster** (Captain Ulfr): 30 Goblins, 20 Kobold Assassins, the Giant Beetle.
-- **Wizard** (Archmage Vigdis): 10 Fire Dust and 10 Dark Crystals, 25 Goblin Archers, the Giant Mushroom.
+- **Wizard** (Archmage Vigdis): 10 Fire Dust and 10 Dark Crystals, 20 Kobolds in Stone Field (Earth: fire burns them), the Giant Mushroom.
 - **Magic Knight** (Sir Eirik the Runeblade, Steinborg, beside Ulfr): 30 Kobolds, 10 Dark Crystals and
   15 Glow Dust, the King Crab. Only for heroes who walked both paths with **at least 20 skill
   points in each tree**.
