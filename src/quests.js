@@ -316,10 +316,13 @@ export const NPCS = {
     name: 'Huntmaster Sigrid', map: 'hunt', x: 45, z: 21.2, dress: { body: 'blader', main: [110, 0.45, 0.8], accent: [35, 0.7, 1], hair: 'long', dye: 'red', top: 'woven_cap', bow: true },
     hello: 'Mind the line: arrows fly here. I am Sigrid, Huntmaster of Veidheim. Every one of us can put an arrow through a ring at fifty paces, and lately we need to.',
     trial: ['archer_trial', 'archer_trial2', 'archer_trial3'], job: 'archer',
+    trial2: ['windrunner_trial', 'windrunner_trial2', 'windrunner_trial3'], job2: 'windrunner',
+    trial2Hint: 'At Job Level 40 an Archer may take the Windrunner\'s trial with me. If you walk other paths too, the bow must have the most of your skill points.',
     trialHint: 'Trainees who have learnt all their basics can take the Archer\'s Trial with me: Trainee Job Level 10 and Basic Training 9.',
     later: (lv) => `The wilds out there would eat you alive. Come back at Base Level ${lv}.`,
     bye: 'Keep your eyes open and your string dry.',
     greet: (c) => ({ archer: 'One of mine. Shoulders down, elbow up, and breathe out as you loose.',
+      windrunner: 'Windrunner. I blinked and you were somewhere else. Show-off.',
       swordman: 'A Blader. You walk right up to them? Brave. Strange, but brave.',
       mage: 'A Sorcerer. Your bolts fly well enough; ours just do not need a song.',
       blademaster: 'A BladeMaster. Pity about the sword; you would have made a fine archer.',
@@ -570,6 +573,24 @@ export const QUESTS = {
     reward: { xp: 250, perz: 300 },
   },
   // ---------- the second jobs: three harder steps each, from Job Level 40 of a first job ----------
+  windrunner_trial: {
+    title: 'Windrunner Trial 1: Run with the Pack', job: true, kind: 'kill', mob: 'wolf', n: 20, lv: 1,
+    intro: 'A Windrunner is never where the claws land. The Wolves of Barley Field, past Black Wood, run in packs and come on sight. Twenty of them, and do not let them corner you: shoot, step, shoot.',
+    thanks: 'Twenty, and not a scratch on your back. Next, something that waits instead of running.',
+    reward: { xp: 15000, perz: 3000 },
+  },
+  windrunner_trial2: {
+    title: 'Windrunner Trial 2: Grass that Bites', job: true, kind: 'kill', mob: 'snake', n: 10, lv: 1,
+    intro: 'The Snakes in the barley strike from where you cannot see them. Ten of them. Keep moving and keep your distance; a Windrunner who stands still is a Snake\'s supper.',
+    thanks: 'Quick feet, quicker string. One last hunt.',
+    reward: { xp: 20000, perz: 4000 },
+  },
+  windrunner_trial3: {
+    title: 'Windrunner Trial 3: The Leader of the Pack', job: true, kind: 'kill', mob: 'alphaWolf', n: 1, lv: 1,
+    intro: 'The Alpha Wolf leads the packs of Barley Field. It pounces from afar and calls its Wolves. Outrun it, outshoot it, and come back to me.',
+    thanks: 'The Alpha, down. The wind has chosen you. Rise, Windrunner.',
+    reward: { xp: 30000, perz: 6000 },
+  },
   blademaster_trial: {
     title: 'BladeMaster Trial 1: The Goblin Line', job: true, kind: 'kill', mob: 'goblinWarrior', n: 30, lv: 1,
     intro: 'A BladeMaster ends a fight before it begins. Thirty Goblins hold the burnt wood of Burnt Wood, beyond Galdrheim\'s north gate. Cut through them.',

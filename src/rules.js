@@ -39,6 +39,7 @@ export const JOB_RULES = {
   blademaster: { hpFactor: 150, hpIncrease: 500, spIncrease: 300, delay: { fist: 380, sword: 480 }, weight: 3200 },
   wizard:      { hpFactor: 55, hpIncrease: 500, spIncrease: 900, delay: { fist: 500, sword: 620 }, weight: 2400 },
   magicknight: { hpFactor: 110, hpIncrease: 700, spIncrease: 600, delay: { fist: 420, sword: 520 }, weight: 3000 },
+  windrunner:  { hpFactor: 85, hpIncrease: 500, spIncrease: 350, delay: { fist: 450, sword: 620, bow: 470 }, weight: 2800 }, // the Hunter's quick bow
 };
 
 function baseHp(lv, j) {
@@ -55,7 +56,8 @@ export function derive(prog, gear) {
   const s = (k) => prog.total(k) + (gear.stats?.[k] || 0), lv = prog.baseLv, j = JOB_RULES[prog.job];
   const pow = s('pow'), qkn = s('qkn'), end = s('end'), knl = s('knl'), fns = s('fns'), ftn = s('ftn');
   // a bow draws at its own pace (a job with no bow delay of its own draws like it swings)
-  const delay = (gear.wlv ? (gear.bow ? j.delay.bow ?? j.delay.sword * 1.15 : j.delay.sword) : j.delay.fist) * (1 - (4 * qkn + fns) / 1000) * (gear.aspdRate ?? 1);
+  // (never under 100 ms: Ragnarok's ASPD 190 cap)
+  const delay = Math.max(100, (gear.wlv ? (gear.bow ? j.delay.bow ?? j.delay.sword * 1.15 : j.delay.sword) : j.delay.fist) * (1 - (4 * qkn + fns) / 1000) * (gear.aspdRate ?? 1));
   return {
     maxHp: Math.floor((Math.floor(baseHp(lv, j) * (100 + end) / 100) + (gear.mhp || 0)) * (100 + (gear.mhpRate || 0)) / 100),
     maxSp: Math.floor((Math.floor((10 + Math.floor(lv * j.spIncrease / 100)) * (100 + knl) / 100) + (gear.msp || 0)) * (100 + (gear.mspRate || 0)) / 100),

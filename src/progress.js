@@ -31,6 +31,7 @@ export const JOBS = {
   blademaster: { name: 'BladeMaster', tier: 2, from: ['swordman'] },
   wizard: { name: 'Wizard', tier: 2, from: ['mage'] },
   magicknight: { name: 'Magic Knight', tier: 2, from: ['swordman', 'mage'] }, // needs both first jobs
+  windrunner: { name: 'Windrunner', tier: 2, from: ['archer'] },
 };
 export const SECOND_AT = 40; // the first-job Job Level a second job's trial asks for
 // the skill trees a job stands on: its own and those of the jobs before it
@@ -38,6 +39,7 @@ export const TREES = {
   novice: ['novice'], swordman: ['swordman', 'novice'], mage: ['mage', 'novice'], archer: ['archer', 'novice'],
   blademaster: ['blademaster', 'swordman', 'novice'], wizard: ['wizard', 'mage', 'novice'],
   magicknight: ['magicknight', 'swordman', 'mage', 'novice'],
+  windrunner: ['windrunner', 'archer', 'novice'],
 };
 // hidden stats a job adds at certain job levels: [job level, stat]
 const JOB_BONUS = {
@@ -58,6 +60,9 @@ const JOB_BONUS = {
   magicknight: [[1, 'pow'], [3, 'knl'], [5, 'end'], [7, 'pow'], [9, 'knl'], [11, 'fns'], [13, 'pow'], [15, 'knl'], [17, 'end'], [19, 'pow'],
     [21, 'knl'], [23, 'fns'], [25, 'pow'], [27, 'knl'], [29, 'end'], [31, 'pow'], [33, 'knl'], [35, 'qkn'], [37, 'pow'], [39, 'knl'],
     [41, 'end'], [43, 'pow'], [45, 'knl'], [47, 'fns'], [49, 'pow'], [50, 'knl']],
+  windrunner: [[1, 'qkn'], [3, 'fns'], [5, 'qkn'], [7, 'fns'], [9, 'qkn'], [11, 'end'], [13, 'fns'], [15, 'qkn'], [17, 'fns'], [19, 'ftn'],
+    [21, 'qkn'], [23, 'fns'], [25, 'qkn'], [27, 'end'], [29, 'fns'], [31, 'qkn'], [33, 'fns'], [35, 'qkn'], [37, 'pow'], [39, 'fns'],
+    [41, 'qkn'], [43, 'end'], [45, 'fns'], [47, 'qkn'], [49, 'fns'], [50, 'qkn']],
 };
 
 export class Progress {

@@ -12,7 +12,8 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   - Learnt skills stay usable with the right weapon (sword, staff or bow).
   - The Archer (Huntmaster Sigrid, Veidheim) shoots from 5 paces with ATK from FNS; a bow needs
     arrows in the Arrows slot, bought once and never used up (an elemental arrow sets the shot's
-    element).
+    element). Its second job, the Windrunner (also Sigrid's), is about attack speed and short
+    bursts of movement.
   - Second jobs open at Job 40. The Magic Knight needs 20+ points in both the Blader and
     Sorcerer trees. BladeMaster/Wizard open only for the first job with the most points (a tie
     opens each tied one). Only one second job can be taken; quitting a trial midway starts it over and
@@ -20,13 +21,14 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
 - **Damage balance:** second jobs hit about 2–4x their first job; Blader and Sorcerer stay close.
   Do not even out the BladeMaster and the Wizard: the BladeMaster is not elemental and keeps the
   higher steady damage, while the Wizard's elements make up the gap (see `docs/job-rules.md`).
-- **Second-job skills:** the BladeMaster and Magic Knight keep to 3–4 active skills each (add
+- **Second-job skills:** the BladeMaster, Magic Knight and Windrunner keep to 3–4 active skills each (add
   passives, not actives). Area and multi-hit skills work Ragnarok style; their freeze, paralyze, stun
   and burn work on bosses too, at a third of the chance for half as long.
 - **Walking speed:** Ragnarok's walk times (ms a tile: hero 150, monsters from Ragnarok's monster
   database) taken twice as long for Aria's smaller maps (`WALK_SCALE` in `rules.js`). Haste and slow
   follow Ragnarok's rule: only the strongest of each counts, never under 40%. No gear or skill hastes the walk
-  (the owner's call: speed is a big buff in Aria).
+  (the owner's call: speed is a big buff in Aria), except the Windrunner's short bursts: Tailwind's
+  4 s rush and the 2 s after Gale Step (the owner's call: bursts only, never a lasting haste).
 - **Bosses and MVPs** spawn at random spots and roam their whole map; each has a respawn timer
   (`mvpAt`, saved) that holds across map changes and restarts.
 - **Quests:** side quests and job trials can be quit from the Quest View; the main story quest

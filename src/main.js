@@ -90,7 +90,7 @@ mobs.bossHp = save?.bossHp || {};
 const prog = new Progress();
 prog.load(save?.prog);
 // the hero's body follows the job and the look's body (male or female), painted in code (sprites.js designSet)
-const JOB_BODY = { novice: 'trainee', swordman: 'blader', mage: 'sorc', archer: 'archer', blademaster: 'master', wizard: 'wiz', magicknight: 'mknight' };
+const JOB_BODY = { novice: 'trainee', swordman: 'blader', mage: 'sorc', archer: 'archer', blademaster: 'master', wizard: 'wiz', magicknight: 'mknight', windrunner: 'wind' };
 const bodyArt = (look) => lib.design(`${JOB_BODY[prog.job] || 'blader'}${look.body === 'f' ? 'F' : 'M'}`);
 const player = new Player(scene, world, bodyArt({ ...save?.look }), lib.shadow, fx);
 player.setPos(save?.x ?? world.spawn.x, save?.z ?? world.spawn.z);
@@ -149,8 +149,10 @@ inv.load(save?.inv);
 inv.dropUnwearable(); // gear rules can change between versions
 // stats + gear -> the player's battle numbers (Ragnarok rules); HP/SP stay put, capped by the new max
 // timed buffs, in seconds left: aspd (Quickening Draught), warcry (War Cry's ATK bonus)
-const buffs = { aspd: 0, warcry: 0, ward: 0, aegis: 0, momentum: 0, focus: 0 };
-let warcryLv = 0, wardLv = 0, endureGuard = 0, aegisLv = 0, focusLv = 0;
+const buffs = { aspd: 0, warcry: 0, ward: 0, aegis: 0, momentum: 0, focus: 0, tailwind: 0, rush: 0, gust: 0, rhythm: 0 };
+let warcryLv = 0, wardLv = 0, endureGuard = 0, aegisLv = 0, focusLv = 0, tailLv = 0, gustHaste = 0;
+// the Windrunner: Gale Rhythm's stacks (each arrow that lands), Skirmisher's empowered arrows left
+let galeStacks = 0, skirmish = 0;
 let nav = null; // auto-navigation: { quest, map, npc, why } while walking to a quest by itself
 // second-job synergies: the BladeMaster's Momentum stacks, the last spell's element (Resonance),
 // the last Edge's element (Elemental Chain)
@@ -189,8 +191,18 @@ function bowMul(m) {
   let k = 1;
   if (m.markT > skillClock) k *= 1 + 0.04 * m.markLv;
   if (weaponKind() === 'bow' && skillLv(prog, 'steadyaim') && Math.hypot(m.x - player.x, m.z - player.z) - m.def.r >= 4) k *= 1.1;
+  if (skirmish > 0 && weaponKind() === 'bow') { skirmish--; k *= 1 + 0.08 * skillLv(prog, 'skirmisher'); }
   return k;
 }
+// an arrow landed: Gale Rhythm adds a stack (up to 5, for 6 s)
+function arrowLanded() {
+  const lv = skillLv(prog, 'galerhythm');
+  if (!lv) return;
+  buffs.rhythm = 6;
+  if (galeStacks < 5) { galeStacks++; applyStats(); }
+}
+// a burst of speed (Gale Step, Tailwind's rush): Skirmisher readies the next 3 arrows
+const burstOfSpeed = () => { if (skillLv(prog, 'skirmisher')) skirmish = 3; };
 function applyStats() {
   const gear = inv.gearStats();
   const hide = skillLv(prog, 'ironhide');
@@ -204,6 +216,7 @@ function applyStats() {
   gear.flee += skillLv(prog, 'footwork') ? 3 : 0;
   gear.def += hide + (buffs.aegis > 0 && player.barrier > 0 ? aegisLv : 0);
   if (buffs.aspd > 0) gear.aspdRate *= 0.9;
+  if (bow) gear.aspdRate *= (1 - 0.02 * skillLv(prog, 'windborne')) * (buffs.tailwind > 0 ? 1 - 0.02 * tailLv : 1) * (1 - skillLv(prog, 'galerhythm') * galeStacks / 100);
   if (buffs.imbue > 0 && imbueEl && sword) gear.el = imbueEl; // Elemental Blade
   const ps = derive(prog, gear);
   ps.maxHp = Math.floor(ps.maxHp * (1 + hide / 100));
@@ -213,7 +226,9 @@ function applyStats() {
   player.maxSp = ps.maxSp;
   player.hp = Math.min(player.hp, ps.maxHp);
   player.sp = Math.min(player.sp, ps.maxSp);
-  player.haste = 0; // nothing hastes the walk for now: walking speed is a big buff in Aria
+  // walking speed is a big buff in Aria: only the Windrunner's short bursts haste the walk, and only
+  // the strongest of them counts (Ragnarok's rule)
+  player.haste = Math.max(buffs.rush > 0 ? 30 : 0, buffs.gust > 0 ? gustHaste : 0);
   // a bow shoots from afar, with arrows (their element colours the shot)
   player.bow = bow;
   player.noAmmo = bow && !inv.gear.ammo;
@@ -317,6 +332,7 @@ player.on('strike', (m, res) => {
     fx.number(m.x, y, m.z, res.dmg, res.crit || res.el > 1 ? 'crit' : res.el < 1 ? 'miss' : 'dealt');
     if (res.el < 1) weakTip(m, player.ps.el);
     audio.play('hit');
+    if (player.bow) arrowLanded();
     // Battle Rhythm: every third hit that lands gives back 3 SP, so a Blader keeps swinging skills
     if (skillLv(prog, 'rhythm') && ++rhythm % 3 === 0) player.healSp(3);
   }
@@ -1357,6 +1373,42 @@ function useSkill(id) {
     if (keep) player.command({ mob: keep }); // keep shooting from the new spot
     return;
   }
+  // ---- Windrunner ----
+  if (id === 'tailwind') {
+    if (!pay()) return;
+    buffs.tailwind = sk.dur(lv); buffs.rush = 4; tailLv = lv;
+    burstOfSpeed();
+    applyStats();
+    say('Tailwind'); audio.play('dodge');
+    for (let i = 0; i < 12; i++) { const a = (i / 12) * Math.PI * 2; fx.sparkle(player.x + Math.cos(a) * 0.9, y + 0.3 + i * 0.08, player.z + Math.sin(a) * 0.9, '#bff4dc', 1); }
+    return;
+  }
+  if (id === 'galestep') { // a dash away from the nearest monster (or ahead), untouchable, then a short burst
+    const near = mobs.nearest(player.x, player.z, 8);
+    let ax = near ? player.x - near.x : player.face.x, az = near ? player.z - near.z : player.face.z;
+    const d = Math.hypot(ax, az) || 1;
+    ax /= d; az /= d;
+    let bx = player.x, bz = player.z;
+    for (let k = 0.5; k <= 4; k += 0.5) {
+      const x = player.x + ax * k, z = player.z + az * k, t = player.tiles.tileAt(x, z);
+      if (!player.tiles.free(t[0], t[1]) || !world.walkable(x, z)) break;
+      bx = x; bz = z;
+    }
+    if (bx === player.x && bz === player.z) { menus.message('No room to dash'); return; }
+    if (!pay()) return;
+    const keep = player.goal?.mob?.alive ? player.goal.mob : null;
+    fx.zap({ x: player.x, y: y + 0.6, z: player.z }, { x: bx, y: world.heightAt(bx, bz) + 0.6, z: bz }, '#bff4dc');
+    player.stop();
+    player.setPos(bx, bz);
+    player.iframes = Math.max(player.iframes, 0.5);
+    buffs.gust = 2; gustHaste = sk.haste(lv);
+    burstOfSpeed();
+    applyStats();
+    fx.puff(bx, world.heightAt(bx, bz) + 0.2, bz, 0.9);
+    audio.play('dodge');
+    if (keep) player.command({ mob: keep });
+    return;
+  }
   if (id === 'standfirm') {
     if (pay()) { player.endureT = 6 + Math.floor(lv / 2); endureGuard = lv / 100; say('Stand Firm'); audio.play('block'); }
     return;
@@ -1482,6 +1534,39 @@ function useSkill(id) {
     const m = sk.power(lv) / 100;
     strike(m, 1, (t) => { say('Double Shot'); later(sk.every, () => arrowHit(t, m)); });
   }
+  // ---- Windrunner: Hurricane Volley (a stream of arrows), Cyclone Arrow (a whirlwind where it lands) ----
+  if (id === 'volley') {
+    const m = sk.power(lv) / 100;
+    strike(m, 1, (t) => { say('Hurricane Volley'); repeat(sk, lv, (i) => { if (i && t.alive) arrowHit(t, m, null, 0.15); }); });
+  }
+  if (id === 'cyclone') {
+    const m = sk.power(lv) / 100;
+    strike(m, 1, (t) => {
+      say('Cyclone Arrow');
+      const cx = t.x, cz = t.z;
+      repeat(sk, lv, (i) => {
+        const gy = world.heightAt(cx, cz), n = 14;
+        for (let j = 0; j < n; j++) { const a = (j / n) * Math.PI * 2 + i * 0.7, r = 0.6 + ((j * 7) % 5) * 0.4; fx.sparkle(cx + Math.cos(a) * r, gy + 0.2 + (j % 4) * 0.35, cz + Math.sin(a) * r, j % 3 ? '#bff4dc' : '#ffffff', 1); }
+        if (i === 0) fx.puff(cx, gy + 0.2, cz, 1.6);
+        audio.play('swing');
+        for (const o of [...mobs.list]) {
+          if (!o.alive) continue;
+          const dx = cx - o.x, dz = cz - o.z, d = Math.hypot(dx, dz);
+          if (d > sk.area + o.def.r) continue;
+          const res = playerAttack(player.ps, o.effDef(), m * player.atkMul * bowMul(o), 1, true);
+          const yy = overHead(o, o.sprite.scale.y * 0.8);
+          if (res.miss) { fx.number(o.x, yy, o.z, 'Miss', 'miss'); continue; }
+          fx.number(o.x, yy, o.z, res.dmg, res.el > 1 ? 'crit' : 'dealt');
+          o.hit(res.dmg, 0, 0);
+          if (!o.def.boss && !o.def.mvp && d > 0.5) { // pulled into the eye of the wind
+            const k = Math.min(0.35, d - 0.4), nx = o.x + (dx / d) * k, nz = o.z + (dz / d) * k;
+            if (world.walkable(nx, nz)) { o.x = nx; o.z = nz; }
+          }
+          inflict(o, sk.status, lv, res.dmg);
+        }
+      });
+    });
+  }
   if (id === 'arrowrain') {
     const m = sk.power(lv) / 100;
     strike(m, 1, (t) => {
@@ -1598,7 +1683,7 @@ function edgeHit(m, atkMult, matkMult, el) {
 }
 // one more arrow at a monster (Double Shot's second, Arrow Rain's): it flies from `from` (else the
 // hero's bow) and the hit is rolled when it lands; push = how hard it pushes the monster back
-function arrowHit(t, mult, from, push = 0.4) {
+function arrowHit(t, mult, from, push = 0.4, then = null) {
   if (!t.alive) return;
   const f = from || { x: player.x + player.face.x * 0.4, y: world.heightAt(player.x, player.z) + 0.85, z: player.z + player.face.z * 0.4 };
   audio.play('swing');
@@ -1611,6 +1696,8 @@ function arrowHit(t, mult, from, push = 0.4) {
     const dx = t.x - player.x, dz = t.z - player.z, d = Math.hypot(dx, dz) || 1;
     t.hit(res.dmg, dx / d * push, dz / d * push);
     audio.play('hit');
+    arrowLanded();
+    then?.(res);
   }, 0.2);
 }
 // one more blade hit on a monster (Twin Fang's second cut, a Combo): a skill hit, so no crit
@@ -1812,7 +1899,8 @@ function tickSkills(dt) {
     if (buffs[k] <= 0 && k === 'momentum') momentum = 0;
     if (buffs[k] <= 0 && k === 'imbue') { imbueEl = null; applyStats(); menus.message('Your blade loses its element'); }
     if (buffs[k] <= 0 && k === 'aegis') { player.barrier = 0; applyStats(); }
-    if (buffs[k] <= 0 && k === 'focus') applyStats();
+    if (buffs[k] <= 0 && ['focus', 'tailwind', 'rush', 'gust'].includes(k)) applyStats();
+    if (buffs[k] <= 0 && k === 'rhythm') { galeStacks = 0; applyStats(); }
   }
   if (buffs.aegis > 0 && player.barrier <= 0) { buffs.aegis = 0; applyStats(); menus.message('Stone Aegis breaks'); }
   if (player.endureT <= 0) endureGuard = 0;
@@ -1948,7 +2036,7 @@ function persist() {
 }
 
 // second jobs glow: a soft aura behind the hero and a ring at their feet, in the job's colour
-const AURA = { blademaster: '#ff7a4a', wizard: '#b48aff', magicknight: '#6ad8ff' };
+const AURA = { blademaster: '#ff7a4a', wizard: '#b48aff', magicknight: '#6ad8ff', windrunner: '#8af0c8' };
 const aura = (() => {
   const c = document.createElement('canvas');
   c.width = c.height = 64;

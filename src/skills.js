@@ -175,6 +175,42 @@ export const SKILLS = {
     desc: () => '+10% damage with a bow to a monster 4 or more paces away.',
   },
 
+  // ---------- Windrunner (from the Archer): quick shots, and short bursts of speed to reposition.
+  // Walking speed is a big buff in Aria: only these bursts haste the walk, a few seconds at a time ----------
+  windborne: {
+    name: 'Windborne', job: 'windrunner', kind: 'passive', max: 10, icon: 'skill_windborne',
+    desc: (lv) => `Your bow shoots ${2 * lv}% faster.`,
+  },
+  galerhythm: {
+    name: 'Gale Rhythm', job: 'windrunner', kind: 'passive', max: 5, needs: { windborne: 3 }, icon: 'skill_rhythm2',
+    desc: (lv) => `Every arrow that lands adds a stack of Rhythm (up to 5, for 6 s): your bow shoots ${lv}% faster per stack.`,
+  },
+  skirmisher: {
+    name: 'Skirmisher', job: 'windrunner', kind: 'passive', max: 5, icon: 'skill_skirmisher',
+    desc: (lv) => `After a burst of speed (Gale Step, Tailwind's rush) your next 3 arrows deal ${8 * lv}% more.`,
+  },
+  tailwind: {
+    name: 'Tailwind', job: 'windrunner', kind: 'active', max: 10, cd: 30, icon: 'skill_tailwind',
+    sp: (lv) => 20 + 2 * lv, dur: (lv) => 20 + 2 * lv,
+    desc: (lv) => `The wind at your back for ${SKILLS.tailwind.dur(lv)} s: your bow shoots ${2 * lv}% faster. For its first 4 s you rush, walking 30% quicker.`,
+  },
+  galestep: {
+    name: 'Gale Step', job: 'windrunner', kind: 'active', max: 5, cd: 6, icon: 'skill_galestep',
+    sp: () => 12, haste: (lv) => 20 + 4 * lv,
+    desc: (lv) => `Dash 4 paces away from the nearest monster (or ahead): nothing can touch you on the way. Then walk ${SKILLS.galestep.haste(lv)}% quicker for 2 s.`,
+  },
+  volley: {
+    name: 'Hurricane Volley', job: 'windrunner', kind: 'active', max: 10, needs: { windborne: 5 }, target: 'mob', range: 'bow', weapon: 'bow', icon: 'skill_volley',
+    sp: (lv) => 18 + 2 * lv, power: (lv) => 60 + 8 * lv, hits: (lv) => 5 + Math.floor(lv / 2), every: 0.09,
+    desc: (lv) => `A stream of ${SKILLS.volley.hits(lv)} arrows, one on the heels of the next: ${SKILLS.volley.power(lv)}% damage each.`,
+  },
+  cyclone: {
+    name: 'Cyclone Arrow', job: 'windrunner', kind: 'active', max: 10, needs: { volley: 3, tailwind: 3 }, target: 'mob', range: 'bow', weapon: 'bow', cd: 4, icon: 'skill_cyclone',
+    sp: (lv) => 26 + 2 * lv, power: (lv) => 35 + 4 * lv, hits: () => 7, every: 0.43, area: 2.5,
+    status: { kind: 'paralyze', chance: (lv) => 2 * lv, dur: 1.2 },
+    desc: (lv) => `An arrow that bursts into a whirlwind where it lands, for 3 s: 7 gusts of ${SKILLS.cyclone.power(lv)}% damage to every monster within 2.5 paces, pulling them in; each gust ${2 * lv}% to paralyze for 1.2 s.`,
+  },
+
   // ---------- BladeMaster (from the Blader): one target, cut down fast. Blade skills may Combo
   // (a free extra strike); each Combo adds a Momentum stack; Final Blade spends the stacks ----------
   blademastery: {

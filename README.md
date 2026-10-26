@@ -359,15 +359,16 @@ Focus, Hunter's Mark, Leap Back.
 From **Job Level 40** of a first job (it goes to 50), a three-step trial opens a second job. Job
 Level starts again at 1 (up to 50, on the second-job EXP table); your first-job skills and
 points stay. Second jobs wear their first job's outfit in new colours and glow with a small aura
-(the Magic Knight has its own sprite).
+(the Magic Knight and the Windrunner have their own).
 
 - **BladeMaster** (Captain Ulfr): 30 Goblins, 20 Kobold Assassins, the Giant Beetle.
 - **Wizard** (Archmage Vigdis): 10 Fire Dust and 10 Dark Crystals, 25 Goblin Archers, the Giant Mushroom.
 - **Magic Knight** (Sir Eirik the Runeblade, Steinborg, beside Ulfr): 30 Kobolds, 10 Dark Crystals and
   15 Glow Dust, the King Crab. Only for heroes who walked both paths with **at least 20 skill
   points in each tree**.
-- A hero of several paths may take the BladeMaster or Wizard trial only for the first job with the
-  most points (a tie opens each tied one). A Job 50 hero with 30 points as a Blader and 20 as a Sorcerer may
+- **Windrunner** (Huntmaster Sigrid, Veidheim): 20 Wolves and 10 Snakes in Barley Field, the Alpha Wolf.
+- A hero of several paths may take the BladeMaster, Wizard or Windrunner trial only for the first
+  job with the most points (a tie opens each tied one). A Job 50 hero with 30 points as a Blader and 20 as a Sorcerer may
   become a BladeMaster or a Magic Knight; with 25 and 25, any of the three; with 35 and 15, only a
   BladeMaster. Only one second job can be taken: once you accept a step of one trial, the other
   trials close. Quit a trial midway (Quit quest in the Quest View) and it starts over, and you may
@@ -403,6 +404,19 @@ points stay. Second jobs wear their first job's outfit in new colours and glow w
 | Elemental Blade | 5, needs Spellblade 1: imbue your sword for 90–210 s; normal attacks, Edges and Novas strike as its element. Use it again to switch, free while it lasts: Fire → Water → Wind → Earth |
 | Elemental Nova | 5, needs Elemental Edge 3 and Elemental Chain 1: three waves of your blade's element roll out around you to 2.5, 4 and 5.5 paces, 116–180% ATK plus 70–110% MATK each; 4% per level each to burn, freeze, paralyze or stun by element |
 | Stone Aegis | 10: 20 s barrier soaking 60–150% of your ATK plus as much of your MATK, +1 DEF per level |
+
+| Windrunner: quick shots and bursts of speed | |
+|---|---|
+| Windborne | passive, 10: your bow shoots 2% faster per level |
+| Gale Rhythm | passive, 5, needs Windborne 3: every arrow that lands adds a stack (up to 5, 6 s), shots 1% faster per level per stack |
+| Skirmisher | passive, 5: after a burst of speed, your next 3 arrows deal 8% more per level |
+| Tailwind | 10: 22–40 s of bow shots 2–20% faster; for its first 4 s you rush, walking 30% quicker |
+| Gale Step | 5: dash 4 paces away from the nearest monster, untouchable on the way, then walk 24–40% quicker for 2 s. 6 s cooldown |
+| Hurricane Volley | 10, needs Windborne 5: a stream of 5–10 arrows, 68–140% each |
+| Cyclone Arrow | 10, needs Hurricane Volley 3 and Tailwind 3: a whirlwind where the arrow lands, 7 gusts over 3 s of 39–75% to everything within 2.5 paces, pulling them in; 2% per level each to paralyze for 1.2 s |
+
+Walking speed is never raised for long in Aria: the Windrunner's bursts (Tailwind's rush, the
+moment after Gale Step) are the only haste, a few seconds at a time.
 
 **Status effects.** Some skills may **freeze**, **paralyze** or **stun** a monster (it stands
 helpless, tinted blue, yellow or grey) or set it **burning** (it loses a fifth of the hit that lit it

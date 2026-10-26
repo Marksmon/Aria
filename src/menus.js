@@ -76,6 +76,7 @@ const JOB_PITCH = {
   blademaster: 'One target, cut down fast: Twin Fang, Piercing Edge, Final Blade, and Blade Dance to dash through a crowd. Blade skills may Combo, and Combos build Momentum.',
   wizard: 'The elements over an area: Stone Spike, Earthquake, Meteor Storm, Storm Gust and Thunderstorm. Changing element builds Resonance.',
   magicknight: 'Sword and spell as one: imbue your blade with an element, cut with Elemental Edge, sweep the field with Elemental Nova; Stone Aegis is a barrier of both.',
+  windrunner: 'The quickest bow in Aria: Windborne and Gale Rhythm speed every shot, Tailwind and Gale Step give short bursts of speed to reposition, Hurricane Volley and Cyclone Arrow finish the work.',
 };
 
 // the crafters: Gunnar's forge (gear), Ragna's herbs (usables), Orm's workshop (sorcerers' gear),
