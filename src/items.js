@@ -185,7 +185,7 @@ const BASE_ITEMS = {
   goblinassassin_card: { type: 'misc', rare: true, name: 'Goblin Assassin Card', icon: 'card_goblinassassin', card: { on: 'acc', flee: 2, stats: { qkn: 2 } }, desc: 'A Goblin Assassin on a card, knife between its teeth. Your hands get quicker. In an accessory with a slot: QKN +2, FLEE +2.', from: 'Goblin Assassins (0.1%)' },
   willow_n_card: { type: 'misc', rare: true, name: 'Willow Card', icon: 'card_willow_n', card: { on: 'wings', msp: 40, stats: { knl: 1 } }, desc: 'A walking Willow on a card that sways when you are not looking. In wings with a slot: KNL +1, Max SP +40.', from: 'Willows (0.1%)' },
   bear_n_card: { type: 'misc', rare: true, name: 'Bear Card', icon: 'card_bear_n', card: { on: 'armor', mhpRate: 8, stats: { pow: 1 } }, desc: 'A Bear on a heavy card, mid-roar. You feel broader across the shoulders. In an armor with a slot: Max HP +8%, POW +1.', from: 'Bears (0.1%)' },
-  alpha_card:   { type: 'misc', rare: true, name: 'Alpha Wolf Card', icon: 'card_alpha', card: { on: 'weapon', flee: 10, aspd: 8, stats: { qkn: 5 } }, desc: 'The Alpha Wolf on a card with a torn edge. In a weapon with a slot: QKN +5, FLEE +10, attacks 8% faster.', from: 'the Alpha Wolf (1%)' },
+  alpha_card:   { type: 'misc', rare: true, name: 'Alpha Wolf Card', icon: 'card_alpha', card: { on: 'shoes', flee: 10, stats: { qkn: 6 } }, desc: 'The Alpha Wolf on a card with a torn edge. In shoes with a slot: QKN +6, FLEE +10.', from: 'the Alpha Wolf (1%)' },
   bear_card:    { type: 'misc', rare: true, name: 'Great Bear Card', icon: 'card_bear', card: { on: 'weapon', atk: 30, mhpRate: 10, stats: { pow: 5 } }, desc: 'The Great Bear on a card with claw marks across it. In a weapon with a slot: ATK +30, POW +5, Max HP +10%.', from: 'the Great Bear (1%)' },
   // gear from the hunters' own leatherworks (Leif in Veidheim)
   alpha_cloak:  { type: 'equip', slot: 'garment', name: 'Alpha Cloak', def: 5, flee: 6, stats: { qkn: 2 }, icon: 'r_alphacloak', desc: 'The Alpha Wolf\'s pelt over a hunter\'s cloak, the silver ruff at the collar. The pack gives way to whoever wears it.' },
@@ -199,14 +199,14 @@ const BASE_ITEMS = {
   // slotted weapon for good (a weapon that breaks at Holger's gives its cards back), see Seyla and
   // the Insert button. card: where it goes and what it adds: atk, def, matk (% MATK), hit, flee,
   // mhpRate / mspRate (% Max HP / SP), aspd (% faster attacks), el (the weapon's element) and stats
-  kobold_card:  { type: 'misc', rare: true, name: 'Kobold King Card', icon: 'card_kobold', card: { on: 'weapon', mhpRate: 40, def: 10, flee: 10, stats: { end: 10 } }, desc: 'The Kobold King on a gilded card, too stubborn to fall. In a weapon with a slot: Max HP +40%, DEF +10, FLEE +10, END +10.', from: 'the Kobold King (1%)' },
+  kobold_card:  { type: 'misc', rare: true, name: 'Kobold King Card', icon: 'card_kobold', card: { on: 'armor', mhpRate: 40, def: 10, flee: 10, stats: { end: 10 } }, desc: 'The Kobold King on a gilded card, too stubborn to fall. In an armor with a slot: Max HP +40%, DEF +10, FLEE +10, END +10.', from: 'the Kobold King (1%)' },
   goblin_card:  { type: 'misc', rare: true, name: 'Goblin King Card', icon: 'card_goblin', card: { on: 'weapon', atk: 100, aspd: 15, stats: { pow: 10, qkn: 10 } }, desc: 'The Goblin King on a gilded card, grinning. In a weapon with a slot: ATK +100, POW +10, QKN +10, attacks 15% faster.', from: 'the Goblin King (1%)' },
-  treant_card:  { type: 'misc', rare: true, name: 'Ancient Treant Card', icon: 'card_treant', card: { on: 'weapon', atk: 40, def: 15, mhpRate: 30, stats: { pow: 8, end: 10 } }, desc: 'The Ancient Treant on a card of pressed bark, blossoms in its crown. In a weapon with a slot: ATK +40, DEF +15, Max HP +30%, POW +8, END +10.', from: 'the Ancient Treant (1%)' },
+  treant_card:  { type: 'misc', rare: true, name: 'Ancient Treant Card', icon: 'card_treant', card: { on: 'shield', def: 15, mhpRate: 30, stats: { pow: 8, end: 10 } }, desc: 'The Ancient Treant on a card of pressed bark, blossoms in its crown. In a shield with a slot: DEF +15, Max HP +30%, POW +8, END +10.', from: 'the Ancient Treant (1%)' },
   // mini-boss cards: a step above an ordinary piece of gear, well below an MVP's
-  willow_card:  { type: 'misc', rare: true, name: 'Elder Willow Card', icon: 'card_willow', card: { on: 'weapon', matk: 10, stats: { fns: 3 } }, desc: 'The Elder Willow on a card that smells of the marsh. In a weapon with a slot: MATK +10%, FNS +3 (quicker casting).', from: 'the Elder Willow (1%)' },
-  sprout_card:  { type: 'misc', rare: true, name: 'Giant Sprout Card', icon: 'card_sprout', card: { on: 'weapon', mhpRate: 10, stats: { end: 4 } }, desc: 'The Giant Sprout on a leafy card. In a weapon with a slot: Max HP +10%, END +4.', from: 'the Giant Sprout (1%)' },
-  crab_card:    { type: 'misc', rare: true, name: 'King Crab Card', icon: 'card_crab', card: { on: 'weapon', flee: 8, aspd: 5, stats: { qkn: 4 } }, desc: 'The King Crab on a sea-stained card. In a weapon with a slot: QKN +4, FLEE +8, attacks 5% faster.', from: 'the King Crab (1%)' },
-  mushroom_card: { type: 'misc', rare: true, name: 'Giant Mushroom Card', icon: 'card_mushroom', card: { on: 'weapon', matk: 15, mspRate: 10, stats: { knl: 4 } }, desc: 'The Giant Mushroom on a violet card that smells of rain. In a weapon with a slot: MATK +15%, KNL +4, Max SP +10%.', from: 'the Giant Mushroom (1%)' },
+  willow_card:  { type: 'misc', rare: true, name: 'Elder Willow Card', icon: 'card_willow', card: { on: 'wings', stats: { fns: 3, knl: 3 } }, desc: 'The Elder Willow on a card that smells of the marsh. In wings with a slot: FNS +3 (quicker casting), KNL +3.', from: 'the Elder Willow (1%)' },
+  sprout_card:  { type: 'misc', rare: true, name: 'Giant Sprout Card', icon: 'card_sprout', card: { on: 'acc', mhpRate: 10, stats: { end: 4 } }, desc: 'The Giant Sprout on a leafy card. In an accessory with a slot: Max HP +10%, END +4.', from: 'the Giant Sprout (1%)' },
+  crab_card:    { type: 'misc', rare: true, name: 'King Crab Card', icon: 'card_crab', card: { on: 'garment', flee: 8, stats: { qkn: 5 } }, desc: 'The King Crab on a sea-stained card. In a garment with a slot: QKN +5, FLEE +8.', from: 'the King Crab (1%)' },
+  mushroom_card: { type: 'misc', rare: true, name: 'Giant Mushroom Card', icon: 'card_mushroom', card: { on: ['head', 'face'], mspRate: 10, stats: { knl: 6 } }, desc: 'The Giant Mushroom on a violet card that smells of rain. In head or face gear with a slot: KNL +6, Max SP +10%.', from: 'the Giant Mushroom (1%)' },
   beetle_card:  { type: 'misc', rare: true, name: 'Giant Beetle Card', icon: 'card_beetle', card: { on: 'weapon', atk: 25, stats: { pow: 4 } }, desc: 'The Giant Beetle on a scorched card. In a weapon with a slot: ATK +25, POW +4.', from: 'the Giant Beetle (1%)' },
   jarl_card:    { type: 'misc', rare: true, name: 'Fire Giant Card', icon: 'card_jarl', card: { on: 'weapon', matk: 60, mspRate: 30, mhpRate: 15, el: 'fire', stats: { knl: 12, fns: 8 } }, desc: 'The Fire Giant on a scorched card, still warm: a sorcerer\'s treasure. In a weapon with a slot: MATK +60%, KNL +12, FNS +8 (quicker casting), Max SP +30%, Max HP +15%, and the weapon turns to Fire (a staff then adds 15% to Fire spells).', from: 'the Fire Giant (1%)' },
   // Bloop Island (the raid, raid.js): its clear reward and rare finds
@@ -332,9 +332,10 @@ export const canInsert = (card, key) => {
   return !!cd && !!it && it.type === 'equip' && cardOn(cd).includes(it.slot) && (it.slots || 0) > (it.cards?.length || 0);
 };
 // slotted gear is rarer: a piece dropped, crafted or won comes with a card slot this often (shops
-// sell them plain). Arrows never have one.
+// sell them plain). Arrows never have one, and Lv 4 weapons only get theirs from Seyla.
 export const SLOTTED_CHANCE = 0.1;
-export const maybeSlotted = (id, roll = Math.random()) => (ITEMS[id]?.type === 'equip' && ITEMS[id].slot !== 'ammo' && !String(id).includes('|') && roll < SLOTTED_CHANCE ? makeKey(id, { slots: 1 }) : id);
+export const canBeSlotted = (id) => { const it = ITEMS[id]; return it?.type === 'equip' && it.slot !== 'ammo' && !(it.slot === 'weapon' && it.wlv === 4) && !String(id).includes('|'); };
+export const maybeSlotted = (id, roll = Math.random()) => (canBeSlotted(id) && roll < SLOTTED_CHANCE ? makeKey(id, { slots: 1 }) : id);
 
 // Prices in perz (Aria's coin, like Ragnarok's zeny): what a shop asks; any shop buys for half. 0 = can't be sold.
 export const PRICES = {

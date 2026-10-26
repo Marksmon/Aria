@@ -596,12 +596,12 @@ no torch is needed.
 
 | Wings | Look | Effect | Where |
 |---|---|---|---|
-| Leaf Wings | two great leaves a side | FLEE +2 | Gunnar crafts them (Base 8): 12 Leaves, 6 Seeds, 2 Shells |
+| Leaf Wings | a curling vine hung with leaves, a flower at the tip, swaying | FLEE +2 | Gunnar crafts them (Base 8): 12 Leaves, 6 Seeds, 2 Shells |
 | Wisp | a pale blue Wisp at your shoulder | KNL +1, Max SP +20 | Orm crafts it (Base 14): 12 Glow Dust, 6 Water Drops |
-| Fairy Wings | a butterfly's, thin and sky blue | FLEE +3, QKN +1 | Orm crafts them (Base 26): 15 Glow Dust, 10 Water Drops, a Shiny Gel |
+| Fairy Wings | a dragonfly's: long, slim and clear as glass, shimmering | FLEE +3, QKN +1 | Orm crafts them (Base 26): 15 Glow Dust, 10 Water Drops, a Shiny Gel |
 | Lantern | a lantern at your shoulder | KNL +1, FNS +1 | Wisp, 0.4% |
 | Dark Wisp | a violet Wisp at your shoulder | KNL +2, Max SP +30 | Dark Wisp, 0.25% |
-| Ember Wings | tongues of flame | POW +1, KNL +1, Max HP +50 | Fire Wisp, 0.25% |
+| Ember Wings | flames rising from the shoulders, flickering, sparks flying up | POW +1, KNL +1, Max HP +50 | Fire Wisp, 0.25% |
 | Angel Wings | white feathers edged in gold | KNL +2, FTN +2, FLEE +2, Max SP +40 | Bloop Island raid, a rare reward |
 | Devil Wings | a bat's leathery wings | POW +2, END +1, Max HP +80 | Fire Giant, 3% |
 
@@ -632,7 +632,8 @@ their kings.
 **Slotted gear.** Any piece of gear (weapons, armor, shields, garments, shoes, head and face gear,
 accessories and wings; not arrows) also comes in a slotted version with one card slot, written
 "Wolf Cape [1]". Slotted pieces are rarer: one in ten pieces of gear that drop, are crafted or come
-from a raid has a slot. Shops sell the plain ones.
+from a raid has a slot, except Lv 4 weapons: they always come plain, and only Seyla opens their
+slots. Shops sell the plain ones.
 
 **Seyla the Enchanter** (Galdrheim, east of the square) opens **card slots** in Lv 4 weapons, up
 to two: "+7 Giant Sword [1]", then "[2]". The first slot works half the time; each try costs 5
@@ -642,7 +643,8 @@ boss materials in any mix, 100,000 perz). A failed try breaks the weapon; any ca
 back to you.
 
 **Cards.** Each MVP drops its card (1%), and like classic MVP cards they are overpowered.
-Each mini-boss drops one too (1%): a good step up, but nothing like an MVP's. These go in weapons.
+Each mini-boss drops one too (1%): a good step up, but nothing like an MVP's. The Goblin King's, the
+Fire Giant's, the Great Bear's and the Giant Beetle's go in weapons; the rest in other gear.
 Every other monster drops a card too (0.1%), for every kind of gear, smaller but welcome.
 Select a card in the Miscs tab and tap **Insert** to press it into a piece of its kind with a
 free slot. It stays there for good, unless the piece later breaks at Holger's.
@@ -682,16 +684,16 @@ free slot. It stays there for good, unless the piece later breaks at Holger's.
 
 | Card | Goes in | Effect | From |
 |---|---|---|---|
-| Kobold King Card | Weapon | Max HP +40%, DEF +10, FLEE +10, END +10 | Kobold King, 1% |
+| Kobold King Card | Armor | Max HP +40%, DEF +10, FLEE +10, END +10 | Kobold King, 1% |
 | Goblin King Card | Weapon | ATK +100, POW +10, QKN +10, attacks 15% faster | Goblin King, 1% |
-| Giant Sprout Card | Weapon | Max HP +10%, END +4 | Giant Sprout, 1% |
-| King Crab Card | Weapon | QKN +4, FLEE +8, attacks 5% faster | King Crab, 1% |
-| Giant Mushroom Card | Weapon | MATK +15%, KNL +4, Max SP +10% | Giant Mushroom, 1% |
+| Giant Sprout Card | Accessory | Max HP +10%, END +4 | Giant Sprout, 1% |
+| King Crab Card | Garment | QKN +5, FLEE +8 | King Crab, 1% |
+| Giant Mushroom Card | Head or face | KNL +6, Max SP +10% | Giant Mushroom, 1% |
 | Giant Beetle Card | Weapon | ATK +25, POW +4 | Giant Beetle, 1% |
-| Elder Willow Card | Weapon | MATK +10%, FNS +3 | Elder Willow, 1% |
-| Alpha Wolf Card | Weapon | QKN +5, FLEE +10, attacks 8% faster | Alpha Wolf, 1% |
+| Elder Willow Card | Wings | FNS +3, KNL +3 | Elder Willow, 1% |
+| Alpha Wolf Card | Shoes | QKN +6, FLEE +10 | Alpha Wolf, 1% |
 | Great Bear Card | Weapon | ATK +30, POW +5, Max HP +10% | Great Bear, 1% |
-| Ancient Treant Card | Weapon | ATK +40, DEF +15, Max HP +30%, POW +8, END +10 | Ancient Treant, 1% |
+| Ancient Treant Card | Shield | DEF +15, Max HP +30%, POW +8, END +10 | Ancient Treant, 1% |
 | Fire Giant Card | Weapon (a sorcerer's card) | MATK +60%, KNL +12, FNS +8, Max SP +30%, Max HP +15%, weapon turns Fire (+15% Fire spells with a staff) | Fire Giant, 1% |
 
 **Who can wear what.** Swords up to the Iron Sword: Trainee and Blader; rare and elemental

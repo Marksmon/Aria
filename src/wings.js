@@ -3,7 +3,7 @@
 // walk, and glows. The look comes from the item (items.js look: { kind: 'wings' | 'float', art, ... }).
 import * as THREE from 'three';
 import { ITEMS } from './items.js';
-import { paintWisp, paintLantern, paintWings } from './wingart.js';
+import { paintWisp, paintLantern, paintWings, WING_FRAMES } from './wingart.js';
 
 const tex = (c, smooth) => {
   const t = new THREE.CanvasTexture(c);
@@ -14,12 +14,23 @@ const tex = (c, smooth) => {
 const canvas = (w, h) => { const c = document.createElement('canvas'); c.width = w; c.height = h; return [c, c.getContext('2d')]; };
 
 // a pair of wings, each art its own shape (wingart.js), on a 192 x 112 canvas (twice the painter's box)
-function wingsTexture(art) {
-  const [c, g] = canvas(192, 112);
-  g.scale(2, 2);
-  paintWings(g, art);
-  return tex(c, true);
+function wingsFrames(art) {
+  return Array.from({ length: WING_FRAMES[art] || 1 }, (_, f) => {
+    const [c, g] = canvas(192, 112);
+    g.scale(2, 2);
+    paintWings(g, art, f);
+    return tex(c, true);
+  });
 }
+// how each kind sits and moves: its size and height on the back, and its motion (sway: a vine
+// swaying; flutter: a dragonfly's quick shimmer; flicker: flames dancing; flap: a slow wingbeat)
+const WING_MOVE = {
+  leaf: { w: 1.4, h: 0.82, y: 0.98, move: 'sway' },
+  fairy: { w: 1.25, h: 0.74, y: 1.06, move: 'flutter' },
+  ember: { w: 1.3, h: 0.92, y: 1.05, move: 'flicker' },
+  angel: { w: 1.55, h: 0.9, y: 1.0, move: 'flap', speed: 2.2, amp: 0.14 },
+  devil: { w: 1.5, h: 0.88, y: 0.98, move: 'flap', speed: 1.7, amp: 0.2 },
+};
 // the frames of a floating light (wingart.js): a Wisp's wings beating, a Lantern's flame flickering
 const FRAMES = 6;
 function floatFrames(look) {
@@ -63,7 +74,8 @@ export class Wings {
     if (!look) return;
     const key = `${id}`;
     if (look.kind === 'wings') {
-      this.wing.material.map = this.cache[key] ||= wingsTexture(look.art);
+      this.wingFrames = this.cache[key] ||= wingsFrames(look.art);
+      this.wing.material.map = this.wingFrames[0];
       this.wing.material.needsUpdate = true;
       this.wing.visible = true;
     } else {
@@ -85,9 +97,17 @@ export class Wings {
     if (look.kind === 'wings') {
       // on the hero's back: behind them facing us, in front when they turn away (and sideways a bit smaller)
       const away = p.dir.startsWith('up'), side = p.dir === 'left' || p.dir === 'right';
-      const k = (away ? -1 : 1) * 0.12, flap = 0.88 + 0.12 * Math.sin(t * 3.2);
-      this.wing.position.set(p.x + fwd.x * k, ground + 0.98 + Math.sin(t * 3.2 + 1) * 0.02, p.z + fwd.z * k);
-      this.wing.scale.set(1.36 * flap * (side ? 0.7 : 1), 0.8, 1);
+      const M = WING_MOVE[look.art] || WING_MOVE.angel, k = (away ? -1 : 1) * 0.12;
+      let sx = 1, sy = 1, bob = 0, rot = 0;
+      if (M.move === 'sway') { sx = 0.97 + 0.03 * Math.sin(t * 1.5); rot = Math.sin(t * 1.1) * 0.04; bob = Math.sin(t * 1.5) * 0.015; }
+      if (M.move === 'flutter') { sx = 0.72 + 0.28 * Math.abs(Math.sin(t * 13)); bob = Math.sin(t * 3) * 0.02; }
+      if (M.move === 'flicker') { sy = 0.94 + 0.06 * Math.sin(t * 9) + 0.03 * Math.sin(t * 23); }
+      if (M.move === 'flap') { sx = 1 - M.amp + M.amp * Math.sin(t * M.speed); bob = Math.sin(t * M.speed + 1) * 0.03; }
+      const f = this.wingFrames[Math.floor(t * 9) % this.wingFrames.length];
+      if (this.wing.material.map !== f) { this.wing.material.map = f; this.wing.material.needsUpdate = true; }
+      this.wing.material.rotation = rot;
+      this.wing.position.set(p.x + fwd.x * k, ground + M.y + bob, p.z + fwd.z * k);
+      this.wing.scale.set(M.w * sx * (side ? 0.7 : 1), M.h * sy, 1);
       this.wing.renderOrder = away ? 5 : 1;
       this.wing.visible = true;
       return;
