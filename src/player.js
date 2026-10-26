@@ -54,7 +54,7 @@ export class Player {
     this.iframes = 0;
     this.slowT = 0;
     this.knock = { x: 0, z: 0 };
-    this.events = { swing: [], hurt: [], faint: [], strike: [], block: [], interrupt: [], noammo: [] };
+    this.events = { swing: [], hurt: [], faint: [], strike: [], block: [], soak: [], interrupt: [], noammo: [] };
 
     // Ragnarok-style orders: walk tile to tile along a path towards a goal
     // goal: { x, z, reach, arrive() } for a spot, or { mob } to fight it until it falls
@@ -149,7 +149,7 @@ export class Player {
   }
 
   on(name, fn) { this.events[name].push(fn); }
-  emit(name, ...a) { for (const fn of this.events[name]) fn(...a); }
+  emit(name, ...a) { for (const fn of this.events[name] || []) fn(...a); } // an event nobody listens for must never stop the game
 
   // tiles a second: Ragnarok's walk time per tile, with the slow (spores) and the haste
   walkSpeed() {

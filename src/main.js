@@ -405,6 +405,11 @@ player.on('block', () => {
   fx.sparkle(player.x, world.heightAt(player.x, player.z) + 0.8, player.z, '#e8eef5', 5);
   fx.number(player.x, overHead(player, 1.3), player.z, 'Block', 'miss');
 });
+// Stone Aegis takes the blow: the barrier's own number, in its stone colour
+player.on('soak', (n) => {
+  fx.sparkle(player.x, world.heightAt(player.x, player.z) + 0.8, player.z, '#c8a06a', 4);
+  fx.number(player.x, overHead(player, 1.3), player.z, `-${n}`, 'miss');
+});
 player.on('faint', () => {
   audio.play('faint');
   const lost = prog.deathPenalty();
@@ -2272,6 +2277,7 @@ let started = false;
 let stepT = 0;
 const tmpV = new THREE.Vector3();
 function frame() {
+  requestAnimationFrame(frame); // first: an error in one frame must never stop the game
   const dt = Math.min(clock.getDelta(), 0.05);
   const t = clock.elapsedTime;
 
@@ -2341,7 +2347,6 @@ function frame() {
 
   if (live) mobLabels();
   renderer.render(scene, camera);
-  requestAnimationFrame(frame);
 }
 
 // monster names, like Ragnarok: over the one the mouse is on, and over the one you are fighting
