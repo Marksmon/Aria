@@ -40,6 +40,19 @@ export class Villagers {
       mark.visible = false;
       this.groups[map].add(s, shadow, mark);
       where.addSolid(n.x, n.z, 0.35);
+      if (n.pet) { // a tame beast sitting by them, that never fights (Bjarki's wolf)
+        const pa = lib.mobs[n.pet.art], pm = new THREE.SpriteMaterial({ map: pa.anims.down.idle[0], alphaTest: 0.5 });
+        world.tintMats.push(pm);
+        const ps = new THREE.Sprite(pm), pu = 0.68 / pa.body[0], px = n.x + n.pet.dx, pz = n.z + n.pet.dz;
+        ps.scale.set(pa.fw * pu, pa.fh * pu, 1);
+        ps.center.set(0.5, pa.anchor);
+        ps.position.set(px, where.heightAt(px, pz), pz);
+        ps.renderOrder = 2;
+        const pshadow = new THREE.Mesh(sg, shadowMat);
+        pshadow.position.set(px, where.heightAt(px, pz) + 0.03, pz);
+        this.groups[map].add(ps, pshadow);
+        where.addSolid(px, pz, 0.3);
+      }
       this.list.push({ id, map, x: n.x, z: n.z, y, h, top: HEIGHT, art, mat, s, mark, face: { x: 0, z: 1 }, t: Math.random() * 6 });
     }
   }

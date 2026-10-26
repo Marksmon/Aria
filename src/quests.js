@@ -341,6 +341,20 @@ export const NPCS = {
       'The trees of the Old Forest, north of the gate, walk, but they are gentle if you leave them be. The oldest of them, the Ancient Treant, walked away into Wolf Hills, and the beasts there follow it now.',
     ],
   },
+  // the Beastmaster: sword and bow and three beasts, for heroes who walked the Blader's and the Archer's paths
+  bjarki: {
+    name: 'Bjarki the Beastmaster', map: 'hunt', x: 22.6, z: 20.6, pet: { art: 'allyWolfG', dx: 1.3, dz: 0.4 },
+    dress: { body: 'blader', main: [25, 0.3, 0.55], accent: [30, 0.25, 0.9], hair: 'mane', dye: 'black' },
+    trial2: ['beastmaster_trial', 'beastmaster_trial2', 'beastmaster_trial3'], job2: 'beastmaster',
+    trial2Hint: 'Sword and bow both, and beasts at your side that answer you. Walk the Blader\'s path and the Archer\'s, put at least 20 skill points into each, reach Job Level 40, and come back to me. Grimr here will wait.',
+    hello: 'Easy. Grimr does not bite, unless I ask him. I am Bjarki. The beasts out there are not all enemies; some of them only want someone worth following.',
+    later: () => '', bye: 'Run with the pack.',
+    greet: (c) => ({ beastmaster: 'Beastmaster. Your bear grows fat; you feed it too well. Good.',
+      swordman: 'A Blader. Strong arm. Now find something to stand beside you.',
+      archer: 'An Archer. You watch them from afar. Try walking with them.' })[c.jobId] || null,
+    quests: [],
+    lore: ['Grimr came to me as a cub, half dead in the snow past Black Wood. Now he eats better than I do.', 'A bear will stand in front of you, a wolf beside you, a hawk above you. Learn which you need, and when.'],
+  },
   eydis: {
     name: 'Eydis the Trader', map: 'hunt', x: 38, z: 29, shop: 'eydis', dress: { body: 'trainee', main: [95, 0.35, 0.9], accent: [30, 0.6, 1.05], hair: 'long', dye: 'blonde' },
     hello: 'Asa sells the bows and arrows; everything else a hunter needs is here: White Potions, Honey, Speed Potions, feathers. And I buy pelts.',
@@ -579,6 +593,24 @@ export const QUESTS = {
     reward: { xp: 250, perz: 300 },
   },
   // ---------- the second jobs: three harder steps each, from Job Level 40 of a first job ----------
+  beastmaster_trial: {
+    title: 'Beastmaster Trial 1: Know the Pack', job: true, kind: 'kill', mob: 'wolf', n: 15, lv: 1,
+    intro: 'To lead a pack you must know one. Fifteen Wolves, in Barley Field or Wolf Hills. Watch how they circle before they bite, and do it first.',
+    thanks: 'You have their smell on you now. Good. Next, the bigger beasts.',
+    reward: { xp: 15000, perz: 3000 },
+  },
+  beastmaster_trial2: {
+    title: 'Beastmaster Trial 2: The Weight of a Bear', job: true, kind: 'kill', mob: 'bear', n: 10, lv: 1,
+    intro: 'Ten Bears of Wolf Hills. A bear does not hurry and does not stop. Learn to stand against that, because one day one will stand for you.',
+    thanks: 'Ten. And you are still standing. A bear would respect that. One more.',
+    reward: { xp: 20000, perz: 4000 },
+  },
+  beastmaster_trial3: {
+    title: 'Beastmaster Trial 3: The Great Bear', job: true, kind: 'kill', mob: 'greatBear', n: 1, lv: 1,
+    intro: 'The Great Bear rules Wolf Hills. Beat it, and every beast in the hills will know your name. Come back to me after.',
+    thanks: 'The hills are quiet. Listen: that is the sound of beasts deciding to follow you. Rise, Beastmaster.',
+    reward: { xp: 30000, perz: 6000 },
+  },
   moonranger_trial: {
     title: 'Moon Ranger Trial 1: Shadows under the Moon', job: true, kind: 'kill', mob: 'shadeWisp', n: 20, lv: 1,
     intro: 'The moon\'s light falls hardest on what hides from it. Twenty Dark Wisps drift in Black Wood, east of Dark Dale. Put them out, arrow and spell together.',

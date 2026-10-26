@@ -253,6 +253,7 @@ class Mob {
     this.rageT = 0;          // frenzy left
     this.status = null;      // why it is helpless while stunT lasts: freeze, paralyze, stun
     this.burnT = 0;          // burning (main.js inflict)
+    this.foe = null;         // a companion beast it has turned on (allies.js), else it fights the hero
     this.mat.userData.fx = null;
     this.guardsGoneT = -1e9; // when (its own clock, this.t) its last guard fell
     this.sprite.visible = this.shadow.visible = true;
@@ -879,7 +880,13 @@ export class MobManager {
       }
       this.emit('mvpSpawn', m);
     }
-    for (const m of this.list) if (m.alive) m.update(dt, player);
+    // each monster fights its foe: the hero, or a companion beast that drew it (allies.js) while that
+    // beast is out and near
+    for (const m of this.list) {
+      if (!m.alive) continue;
+      if (m.foe && (!m.foe.alive || Math.hypot(m.foe.x - m.x, m.foe.z - m.z) > 12)) m.foe = null;
+      m.update(dt, m.foe || player);
+    }
     // keep monsters from stacking on top of each other
     const alive = this.list.filter((m) => m.alive);
     for (let i = 0; i < alive.length; i++) for (let j = i + 1; j < alive.length; j++) {

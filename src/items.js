@@ -334,7 +334,7 @@ export const recipeKind = (r) => {
 export const JOB_NAMES = { novice: 'Trainee', swordman: 'Blader', mage: 'Sorcerer', archer: 'Archer' };
 // job: one job id, or the list of jobs a hero has earned (any of them will do); second jobs wear
 // what the jobs before them wear
-const WEARS_AS = { blademaster: ['swordman'], wizard: ['mage'], magicknight: ['swordman', 'mage'], windrunner: ['archer'], moonranger: ['mage', 'archer'] };
+const WEARS_AS = { blademaster: ['swordman'], wizard: ['mage'], magicknight: ['swordman', 'mage'], windrunner: ['archer'], moonranger: ['mage', 'archer'], beastmaster: ['swordman', 'archer'] };
 export const canWear = (id, job) => {
   const it = ITEMS[id], jobs = [job].flat().flatMap((j) => [j, ...(WEARS_AS[j] || [])]);
   return !it?.jobs || jobs.some((j) => it.jobs.includes(j));
@@ -713,6 +713,15 @@ const PAINT = {
   skill_starfall: (g) => skillIcon(g, '#2a2a6a', () => { for (const [x, y] of [[20, 16], [36, 22], [48, 12], [28, 34]]) { g.beginPath(); g.moveTo(x - 6, y - 8); g.lineTo(x, y); g.lineWidth = 2; g.stroke(); g.beginPath(); g.arc(x, y, 3, 0, 7); g.fill(); } g.fillRect(12, 46, 40, 3); }),
   skill_crescent: (g) => skillIcon(g, '#3a3a8a', () => { g.beginPath(); g.arc(30, 32, 16, -Math.PI / 2, Math.PI / 2); g.arc(24, 32, 16, Math.PI / 2, -Math.PI / 2, true); g.fill(); iconArrow(g, 10, 32, 54, 32, 2); }),
   skill_moonveil: (g) => skillIcon(g, '#4a4a9a', () => { g.beginPath(); g.moveTo(32, 12); g.lineTo(48, 18); g.lineTo(46, 36); g.quadraticCurveTo(40, 48, 32, 52); g.quadraticCurveTo(24, 48, 18, 36); g.lineTo(16, 18); g.closePath(); g.lineWidth = 3; g.stroke(); g.beginPath(); g.arc(30, 30, 8, 0, 7); g.fill(); g.fillStyle = '#4a4a9a'; g.beginPath(); g.arc(34, 27, 7, 0, 7); g.fill(); }),
+  // the Beastmaster's: earth browns and blood reds
+  skill_sbear: (g) => skillIcon(g, '#6a4a2a', () => { g.beginPath(); g.arc(32, 36, 13, 0, 7); g.fill(); for (const x of [21, 43]) { g.beginPath(); g.arc(x, 22, 6, 0, 7); g.fill(); } g.fillStyle = '#ffd04a'; g.fillRect(30, 30, 2, 9); g.fillRect(32, 32, 4, 2); }),
+  skill_swolves: (g) => skillIcon(g, '#3a3e4a', () => { for (const [x, y, k] of [[24, 34, 1], [40, 30, 0.85]]) { g.beginPath(); g.moveTo(x - 9 * k, y + 8 * k); g.lineTo(x - 7 * k, y - 10 * k); g.lineTo(x - 2 * k, y - 4 * k); g.lineTo(x + 2 * k, y - 4 * k); g.lineTo(x + 7 * k, y - 10 * k); g.lineTo(x + 9 * k, y + 8 * k); g.lineTo(x, y + 12 * k); g.closePath(); g.fill(); } }),
+  skill_shawk: (g) => skillIcon(g, '#7a5a2a', () => { g.beginPath(); g.moveTo(32, 26); g.lineTo(8, 16); g.lineTo(14, 30); g.lineTo(32, 36); g.lineTo(50, 30); g.lineTo(56, 16); g.closePath(); g.fill(); g.beginPath(); g.arc(32, 26, 5, 0, 7); g.fill(); g.beginPath(); g.moveTo(28, 36); g.lineTo(36, 36); g.lineTo(32, 48); g.closePath(); g.fill(); }),
+  skill_frenzy: (g) => skillIcon(g, '#8a2a1a', () => { for (const x of [18, 28, 38]) { g.beginPath(); g.moveTo(x, 14); g.quadraticCurveTo(x + 8, 32, x + 4, 50); g.lineWidth = 4; g.stroke(); } }),
+  skill_bond: (g) => skillIcon(g, '#6a3a2a', () => { g.beginPath(); g.ellipse(32, 38, 9, 7, 0, 0, 7); g.fill(); for (const [x, y] of [[20, 26], [27, 20], [37, 20], [44, 26]]) { g.beginPath(); g.arc(x, y, 4, 0, 7); g.fill(); } }),
+  skill_hide: (g) => skillIcon(g, '#5a4028', () => { g.beginPath(); g.moveTo(32, 12); g.lineTo(48, 18); g.lineTo(46, 36); g.quadraticCurveTo(40, 48, 32, 52); g.quadraticCurveTo(24, 48, 18, 36); g.lineTo(16, 18); g.closePath(); g.fill(); g.fillStyle = '#5a4028'; g.fillRect(24, 26, 16, 3); g.fillRect(26, 34, 12, 3); }),
+  skill_tactics: (g) => skillIcon(g, '#4a4a5a', () => { for (const [x, y] of [[18, 22], [46, 22], [32, 46]]) { g.beginPath(); g.arc(x, y, 6, 0, 7); g.fill(); } g.beginPath(); g.arc(32, 30, 4, 0, 7); g.lineWidth = 2; g.stroke(); }),
+  skill_talons: (g) => skillIcon(g, '#8a6a2a', () => { for (const x of [20, 32, 44]) { g.beginPath(); g.moveTo(x - 4, 14); g.quadraticCurveTo(x + 6, 30, x - 2, 50); g.lineWidth = 4; g.stroke(); } }),
   skill_swiftchant: (g) => skillIcon(g, '#5a7ac8', () => { g.beginPath(); g.arc(32, 32, 15, -Math.PI / 2, Math.PI); g.lineWidth = 4; g.stroke(); g.beginPath(); g.moveTo(32, 32); g.lineTo(32, 20); g.moveTo(32, 32); g.lineTo(40, 36); g.lineWidth = 3; g.stroke(); }),
   heartwood: (g) => { shape(g, () => g.roundRect(12, 20, 40, 26, 10), '#7a5232'); shape(g, () => g.ellipse(46, 33, 8, 13, 0, 0, Math.PI * 2), '#9fd060', 2.5); g.beginPath(); g.ellipse(46, 33, 3.5, 6, 0, 0, 7); g.strokeStyle = '#4a8a36'; g.lineWidth = 2; g.stroke(); },
   king_pearl: (g) => { shape(g, () => g.arc(32, 34, 20, 0, Math.PI * 2), '#f2cf6a'); gloss(g, 25, 27, 7, 5); },

@@ -11,7 +11,7 @@ quests. Code: `src/progress.js` (jobs, levels, points), `src/skills.js` (trees, 
 |---|---|---|
 | 0 | Trainee (`novice`) | 1–10 |
 | 1 | Blader (`swordman`), Sorcerer (`mage`), Archer (`archer`) | 1–50, one level shared by all |
-| 2 | BladeMaster (`blademaster`, from Blader), Wizard (`wizard`, from Sorcerer), Magic Knight (`magicknight`, from Blader and Sorcerer), Windrunner (`windrunner`, from Archer), Moon Ranger (`moonranger`, from Sorcerer and Archer) | 1–50, starts again at 1 |
+| 2 | BladeMaster (`blademaster`, from Blader), Wizard (`wizard`, from Sorcerer), Magic Knight (`magicknight`, from Blader and Sorcerer), Windrunner (`windrunner`, from Archer), Moon Ranger (`moonranger`, from Sorcerer and Archer), Beastmaster (`beastmaster`, from Blader and Archer) | 1–50, starts again at 1 |
 
 ## First jobs: walking several paths
 
@@ -74,7 +74,7 @@ Focus, Hunter's Mark, Leap Back.
 - **Magic Knight:** both first jobs earned, and **at least 20 skill points spent in each**
   first-job tree (Blader and Sorcerer).
 - **Moon Ranger:** the Sorcerer and the Archer earned, and **at least 20 skill points spent in
-  each** of their trees. The two-path rule (`secondJobOpen`) takes the pair from the job's `from`,
+  each** of their trees. **Beastmaster:** the same with the Blader and the Archer. The two-path rule (`secondJobOpen`) takes the pair from the job's `from`,
   so the Magic Knight and the Moon Ranger follow the same rule.
 - **BladeMaster / Wizard / Windrunner (one path):** for a hero who earned only one first job, the matching
   second job. For a hero who earned several, only the second job of the first job with the **most
@@ -102,7 +102,24 @@ Focus, Hunter's Mark, Leap Back.
 
 - **Three or four active skills per second job** (the owner's rule). Windrunner: Tailwind, Gale
   Step, Hurricane Volley, Cyclone Arrow. Moon Ranger: Lunar Multishot, Starfall, Crescent Arrow,
-  Moonveil. BladeMaster: Twin Fang,
+  Moonveil. Beastmaster: Summon Bear, Summon Wolves, Summon Hawk, Pack Frenzy.
+
+## The Beastmaster and its beasts (the owner's rules)
+
+- Uses **swords and bows** (it wears Blader and Archer gear and keeps their skills); its look
+  follows the weapon in hand (cleaver or horned bow).
+- Its own tree holds **only beast skills**: three summons, Pack Frenzy, and passives for the beasts.
+- **All three beasts can be out together** (Bear, two Wolves, Hawk). **The hero's stats feed
+  theirs** (`beastStats` in `main.js`): the Bear from END and Max HP (HP, DEF), the Wolves from FNS
+  (ATK, HIT), the Hawk from QKN (attack speed, FLEE, ATK). A summon's level sets the share, 40% at
+  Lv 1 to 80% at Lv 5, plus 2% a level of Beast Bond. Raising a stat updates the beasts at once.
+- Companions (`src/allies.js`): they follow, take the hero's target or the nearest monster coming
+  for the hero, and fight. Monsters fight back: one a beast bites may turn on it (35%), and the
+  Bear's roar (every 6 s) turns the monsters round it on it. A monster's AI aims at one foe
+  (`Mob.update(dt, foe)`): the hero, or the beast in `m.foe`. Beasts don't block tiles, follow
+  through portals, vanish when the hero faints, and a fallen one can be called again after 20 s.
+- Damage aimed: the hero's own hits plus the pack about the other bow second jobs' (Base 60, a Lv 55
+  boss: the pack about 490 a second, the hero's Double Shot on top while SP lasts). BladeMaster: Twin Fang,
   Piercing Edge, Final Blade, Blade Dance. Magic Knight: Elemental Edge, Elemental Blade,
   Elemental Nova, Stone Aegis. Wizard: Stone Spike, Earthquake, Meteor Storm, Storm Gust,
   Thunderstorm (its area spells were asked for by name). Add passives rather than more actives.
@@ -155,7 +172,8 @@ MATK part), used by both the damage and the skill text.
   - Captain Ulfr (Blader, BladeMaster), Steinborg.
   - Archmage Vigdis (Sorcerer, Wizard), Galdrheim.
   - Hrafn the Stargazer (Moon Ranger), Galdrheim: 20 Dark Wisps, 10 Fire Wisps, the Giant Mushroom.
-  - Huntmaster Sigrid (Archer, Windrunner), Veidheim. The Windrunner's trial: 20 Wolves, 10 Snakes,
+  - Huntmaster Sigrid (Archer, Windrunner), Veidheim.
+  - Bjarki the Beastmaster (Beastmaster), Veidheim: 15 Wolves, 10 Bears, the Great Bear. The Windrunner's trial: 20 Wolves, 10 Snakes,
     the Alpha Wolf (all in Barley Field).
   - Sir Eirik the Runeblade (Magic Knight), Steinborg.
 - Taking a second job:

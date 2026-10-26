@@ -359,7 +359,7 @@ Focus, Hunter's Mark, Leap Back.
 From **Job Level 40** of a first job (it goes to 50), a three-step trial opens a second job. Job
 Level starts again at 1 (up to 50, on the second-job EXP table); your first-job skills and
 points stay. Second jobs wear their first job's outfit in new colours and glow with a small aura
-(the Magic Knight, the Windrunner and the Moon Ranger have their own).
+(the Magic Knight, the Windrunner, the Moon Ranger and the Beastmaster have their own).
 
 - **BladeMaster** (Captain Ulfr): 30 Goblins, 20 Kobold Assassins, the Giant Beetle.
 - **Wizard** (Archmage Vigdis): 10 Fire Dust and 10 Dark Crystals, 25 Goblin Archers, the Giant Mushroom.
@@ -370,6 +370,9 @@ points stay. Second jobs wear their first job's outfit in new colours and glow w
 - **Moon Ranger** (Hrafn the Stargazer, Galdrheim): 20 Dark Wisps in Black Wood, 10 Fire Wisps in
   Ash Heath, the Giant Mushroom. Only for heroes who walked the Sorcerer's and the Archer's paths
   with **at least 20 skill points in each tree**.
+- **Beastmaster** (Bjarki, by Veidheim's lodge, his wolf Grimr at his side): 15 Wolves, 10 Bears,
+  the Great Bear. Only for heroes who walked the Blader's and the Archer's paths with **at least 20
+  skill points in each tree**.
 - A hero of several paths may take the BladeMaster, Wizard or Windrunner trial only for the first
   job with the most points (a tie opens each tied one). A Job 50 hero with 30 points as a Blader and 20 as a Sorcerer may
   become a BladeMaster or a Magic Knight; with 25 and 25, any of the three; with 35 and 15, only a
@@ -431,6 +434,24 @@ points stay. Second jobs wear their first job's outfit in new colours and glow w
 The Moon Ranger's arrows hit with ATK and MATK together (KNL matters as much as FNS), in the
 arrows' element. Night is when the sky is darkest; a small moon by the hotbar shows when its night
 passives are at work.
+
+| Beastmaster: sword or bow, and three beasts | |
+|---|---|
+| Summon Bear | 5: a Bear with gold runes and a spiked collar. Its HP grows with your Max HP and END, its DEF with END; it soaks blows and roars every 6 s so the monsters round it turn on it |
+| Summon Wolves | 5: two Wolves in skull barding, one black, one grey. They bite with your FNS, quickly, sometimes twice |
+| Summon Hawk | 5: a brown and gold Hawk. It dives with your QKN, fast, and most blows pass under it |
+| Pack Frenzy | 10, needs Summon Wolves 1: for 15 s every beast attacks 3% faster and hits 3% harder per level. 30 s cooldown |
+| Beast Bond | passive, 10: your beasts take 2% more of your stats per level, and you get +1 DEF per level for each beast out |
+| Thick Hide | passive, 5, needs Summon Bear 3: the Bear takes 4% less damage per level, and its roar reaches further |
+| Pack Tactics | passive, 5, needs Summon Wolves 3: the Wolves bite 6% harder per level while both are on the same monster |
+| Wind Talons | passive, 5, needs Summon Hawk 3: the Hawk strikes 3% faster per level, and each dive has 2% per level to stun for 1 s |
+
+All three beasts can be out together. Each takes a share of your stats (40% at a summon's Lv 1 to
+80% at Lv 5), so raising END, FNS or QKN makes them stronger at once. They follow you, take your
+target (or the nearest monster coming for you), and come with you through portals; a monster they
+bite may turn on them. One that falls can be called again after 20 s, and they all go home if you
+faint. The Beastmaster keeps every Blader and Archer skill, and holds a cleaver or a bow (its look
+changes with the weapon).
 
 Walking speed is never raised for long in Aria: the Windrunner's bursts (Tailwind's rush, the
 moment after Gale Step) are the only haste, a few seconds at a time.
@@ -599,7 +620,8 @@ name (up to 16 letters, shown over your job and in Status), a male or female bod
 Stylist** by Steinborg's fountain changes them for 1,000 perz. Your hair stays
 the same through job changes, and the job changes your outfit: the Trainee's browns, the Blader's
 navy capelet, the Sorcerer's purple coat, the Archer's leather vest over green (blue on her) with a quiver on
-the back, then the BladeMaster's black and gold armour, the
+the back, then the second jobs' (the Windrunner's green and gold with a teal cape, the Moon
+Ranger's silver and starry navy, the Beastmaster's skull pauldrons and furs), the BladeMaster's black and gold armour, the
 Wizard's navy and red robe or the Magic Knight's orange coat, each holding its weapon (the Trainee
 a dagger) and each with its own walk and attack. Headgear snaps to the head layer, so hats sit on the crown and
 glasses and masks sit on the eyes, in every direction and every frame. See
@@ -703,6 +725,7 @@ leads to each.
 | Huntmaster Sigrid | Veidheim, at the archery range | The Archer's Trial · The Elder Willow (26) · The Pack in the Hills (48): 25 Wolves · The Leader of the Pack (54): the Alpha Wolf · The Waking Wood (60): the Ancient Treant |
 | Ottar the Farmer | Veidheim, by the barn | The Lost Lambs (16): find 3 lambs in Willow Marsh · Snakes in the Barley (46): 20 Snakes |
 | Leif the Tanner | Veidheim | makes hunters' gear (Hunter's Cloak and Boots, Claw Charm, Bark Armor, Alpha Cloak, Bear Heart Charm) · Pelts for the Winter (50): 10 Wolf Pelts, 5 Bear Claws · The Great Bear (59) |
+| Bjarki the Beastmaster | Veidheim, by the lodge | the Beastmaster's trial; his wolf Grimr never bites (unless asked) |
 | Asa the Fletcher | Veidheim | shop: bows and arrows · Wood for Bows (22): 12 Willow Twigs, 4 Old Bark |
 | Eydis the Trader | Veidheim | shop: potions (White too), Honey, Speed Potions, feathers, torches |
 | Halla the Healer | Veidheim | heals HP and SP for free |

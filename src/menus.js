@@ -77,6 +77,7 @@ const JOB_PITCH = {
   wizard: 'The elements over an area: Stone Spike, Earthquake, Meteor Storm, Storm Gust and Thunderstorm. Changing element builds Resonance.',
   magicknight: 'Sword and spell as one: imbue your blade with an element, cut with Elemental Edge, sweep the field with Elemental Nova; Stone Aegis is a barrier of both.',
   moonranger: 'Bow and spell under the moon: arrows that hit with ATK and MATK together. Lunar Multishot fans arrows over a pack, Starfall rains stars, Crescent Arrow pierces a line; Moonveil guards you. Stronger at night.',
+  beastmaster: 'Sword or bow, and three beasts at your side: Summon Bear (it grows with END), Summon Wolves (FNS) and Summon Hawk (QKN), all out together, and Pack Frenzy to drive them on. Your own tree is beasts only; your Blader and Archer skills stay.',
   windrunner: 'The quickest bow in Aria: Windborne and Gale Rhythm speed every shot, Tailwind and Gale Step give short bursts of speed to reposition, Hurricane Volley and Cyclone Arrow finish the work.',
 };
 

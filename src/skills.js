@@ -247,6 +247,46 @@ export const SKILLS = {
     desc: (lv) => `A veil of moonlight for 15 s: ${4 * lv}% less damage taken; at night every Lunar Multishot looses 2 more arrows.`,
   },
 
+  // ---------- Beastmaster (Blader and Archer both walked): sword or bow, and three beasts (allies.js).
+  // Its own tree holds only beast skills: three summons and Pack Frenzy, and passives for the beasts.
+  // A summon's level sets the share of the hero's stats its beast takes (main.js beastStats) ----------
+  summonbear: {
+    name: 'Summon Bear', job: 'beastmaster', kind: 'active', max: 5, cd: 3, icon: 'skill_sbear', beast: 'bear',
+    sp: (lv) => 30 + 5 * lv,
+    desc: (lv) => `Call your Bear, marked with gold runes. It grows with your END and Max HP (${30 + 10 * lv}% of your stats), soaks blows and roars every 6 s so the monsters round it turn on it. Called again, it comes back fresh.`,
+  },
+  summonwolves: {
+    name: 'Summon Wolves', job: 'beastmaster', kind: 'active', max: 5, cd: 3, icon: 'skill_swolves', beast: 'wolf',
+    sp: (lv) => 30 + 5 * lv,
+    desc: (lv) => `Call your two Wolves in skull barding. They bite with your FNS (${30 + 10 * lv}% of your stats), quickly, sometimes twice.`,
+  },
+  summonhawk: {
+    name: 'Summon Hawk', job: 'beastmaster', kind: 'active', max: 5, cd: 3, icon: 'skill_shawk', beast: 'hawk',
+    sp: (lv) => 25 + 5 * lv,
+    desc: (lv) => `Call your Hawk. It dives with your QKN (${30 + 10 * lv}% of your stats), fast, and most blows pass under it.`,
+  },
+  packfrenzy: {
+    name: 'Pack Frenzy', job: 'beastmaster', kind: 'active', max: 10, needs: { summonwolves: 1 }, cd: 30, icon: 'skill_frenzy',
+    sp: (lv) => 30 + 2 * lv,
+    desc: (lv) => `For 15 s every beast you have out attacks ${3 * lv}% faster and hits ${3 * lv}% harder.`,
+  },
+  beastbond: {
+    name: 'Beast Bond', job: 'beastmaster', kind: 'passive', max: 10, icon: 'skill_bond',
+    desc: (lv) => `Your beasts take ${2 * lv}% more of your stats, and you get +${lv} DEF for each beast out.`,
+  },
+  thickhide: {
+    name: 'Thick Hide', job: 'beastmaster', kind: 'passive', max: 5, needs: { summonbear: 3 }, icon: 'skill_hide',
+    desc: (lv) => `Your Bear takes ${4 * lv}% less damage and its roar reaches ${(3 + 0.5 * lv).toFixed(1)} paces.`,
+  },
+  packtactics: {
+    name: 'Pack Tactics', job: 'beastmaster', kind: 'passive', max: 5, needs: { summonwolves: 3 }, icon: 'skill_tactics',
+    desc: (lv) => `Your Wolves bite ${6 * lv}% harder while both are on the same monster.`,
+  },
+  windtalons: {
+    name: 'Wind Talons', job: 'beastmaster', kind: 'passive', max: 5, needs: { summonhawk: 3 }, icon: 'skill_talons',
+    desc: (lv) => `Your Hawk strikes ${3 * lv}% faster, and each dive has ${2 * lv}% to stun for 1 s (bosses resist).`,
+  },
+
   // ---------- BladeMaster (from the Blader): one target, cut down fast. Blade skills may Combo
   // (a free extra strike); each Combo adds a Momentum stack; Final Blade spends the stacks ----------
   blademastery: {

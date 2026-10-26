@@ -21,6 +21,13 @@ export const BEASTS = {
   // Bear, a grizzly with a silver-tipped hump, amber eyes, scars and long pale claws
   alphaWolf: { kind: 'quad', boss: true, size: [56, 44], body: [20, 26], fur: '#4a4e5a', back: '#2e3038', belly: '#9aa0b0', muzzle: '#7a8090', eye: '#ff4a3a', mouth: '#8a2a2a', tail: 'bush', mane: '#c8ccd8', scar: '#e8b8b0' },
   greatBear: { kind: 'quad', boss: true, size: [64, 56], body: [28, 34], fur: '#5a3a24', back: '#3e2818', belly: '#8a6040', muzzle: '#a87a50', eye: '#ffb03a', mouth: '#8a2a2a', claw: '#fff6e0', tail: 'stub', bear: true, mane: '#c8b8a0', scar: '#d8a890' },
+  // the Beastmaster's companions (allies.js), never met in the wild: a brown bear marked with glowing
+  // gold runes in a spiked collar; wolves, one black and one grey, in skull-plated barding; a brown
+  // and gold hawk with its wings spread
+  allyBear: { kind: 'quad', size: [64, 56], body: [28, 34], fur: '#6e4a2c', back: '#4e3220', belly: '#9a7048', muzzle: '#c89a6a', eye: '#ffd04a', mouth: '#8a2a2a', claw: '#efe6cc', tail: 'stub', bear: true, runes: '#ffd04a', collar: '#2a1e1a', spike: '#d8dce4' },
+  allyWolfB: { kind: 'quad', size: [56, 44], body: [20, 26], fur: '#34363e', back: '#1e2026', belly: '#6a6e78', muzzle: '#5a5e68', eye: '#ffb03a', mouth: '#8a2a2a', tail: 'bush', skull: '#e8e0c8', strap: '#4a2e1c' },
+  allyWolfG: { kind: 'quad', size: [56, 44], body: [20, 26], fur: '#9a9ea8', back: '#6e727c', belly: '#dcdcd8', muzzle: '#c8c8c4', eye: '#ffb03a', mouth: '#8a2a2a', tail: 'bush', skull: '#e8e0c8', strap: '#4a2e1c' },
+  hawk: { kind: 'hawk', size: [52, 44], body: [22, 18], feather: '#6e4a2a', dark: '#4a2e18', gold: '#d8a84a', chest: '#efe2c4', streak: '#8a6a40', beak: '#e8b84a', talon: '#e8c050', eye: '#ffd23a' },
   ancientTreant: { kind: 'treant', boss: true, size: [84, 96], body: [46, 86], bark: '#8a7a66', moss: '#7aa04a', leaf: '#3f8040', leaf2: '#78b85a', eye: '#b8ff7a', mouth: '#24180e', cap: '#f0d8a0', rune: '#8affc0', blossom: '#f6b8d4' },
 };
 export const beastSize = (id) => BEASTS[id].size;
@@ -40,8 +47,108 @@ export function beastFrame(id, dir, anim, f) {
   const P = BEASTS[id], [W, H] = P.size;
   const F = new Frame(W, H);
   const a = { G: H - 3, W, H, step: anim === 'walk' ? [1, 0, -1, 0][f] : 0, walk: anim === 'walk', f, atk: anim === 'attack' ? f : -1 };
-  ({ quad, snake, willow, treant })[P.kind](F, P, dir, a);
+  ({ quad, snake, willow, treant, hawk })[P.kind](F, P, dir, a);
+  if (P.runes || P.skull) allyGear(F, P, dir, a);
   return F;
+}
+
+// ---------- the companions' gear, over a wolf or bear (where quad() put its body and head) ----------
+function allyGear(F, P, dir, { G, W, walk, f, atk }) {
+  const B = P.bear, k = B ? 1.3 : 1, bob = walk && (f === 1 || f === 3) ? -1 : 0;
+  const rune = (x, y, i) => { // a little rune: a stave and a branch, glowing gold
+    F.part(line(x, y - 2, x, y + 2, 1), P.runes, flat);
+    F.part(line(x, y - (i % 2 ? 1 : 0), x + (i % 3 ? 2 : -2), y - 2 + (i % 2 ? 2 : 0), 1), P.runes, flat);
+    F.dot(x, y - 2, light(P.runes));
+  };
+  const skull = (x, y, s = 1) => { // a bone skull plate, two dark eyes and a nose
+    F.part(ellipse(x, y, 3.6 * s, 3 * s), P.skull);
+    F.part(rect(x - 2 * s, y + 2 * s, x + 2 * s, y + 3.5 * s), P.skull);
+    F.dot(x - 1.4 * s, y - 0.2, '#2a2018'); F.dot(x + 1.4 * s, y - 0.2, '#2a2018'); F.dot(x, y + 1.5 * s, '#2a2018');
+  };
+  if (dir === 'right' || dir === 'left') {
+    const lunge = B ? 0 : [-2, 4, 3, 0][atk] ?? 0, rear = B ? [2, 5, 3, 1][atk] ?? 0 : 0;
+    const bx = W / 2 - 3 + lunge, by = G - Math.round(12 * k) + bob - (atk === 0 && !B ? -1 : 0), rx = 13 * k, ry = 6.5 * k;
+    const hx = bx + rx + (B ? 3 : 4), hy = by - (B ? 5 : 7) * k - rear + (atk === 0 && !B ? 2 : 0) + (atk === 1 && !B ? 2 : 0);
+    if (B) {
+      F.part(line(hx - 6, hy - 4, hx - 4, hy + 6, 3), P.collar); // the spiked collar
+      for (const t of [0.15, 0.5, 0.85]) F.dot(hx - 6 + 2 * t - 2, hy - 4 + 10 * t, P.spike);
+      [[bx - 8, by - 1], [bx - 2, by - 3], [bx + 4, by - 2 - rear * 0.4]].forEach(([x, y], i) => rune(x, y, i));
+    } else {
+      F.part(line(bx + rx * 0.55, by - ry, bx + rx * 0.7, by + ry * 0.8, 2), P.strap, flat); // the barding's strap
+      skull(bx + rx * 0.3, by - ry + 1.5);
+      F.part(ellipse(bx - rx * 0.45, by - ry + 1.5, 3.5, 1.8), P.skull); // a bone plate on the hips
+      F.dot(bx - rx * 0.45, by - ry + 1.5, '#2a2018');
+    }
+    return;
+  }
+  const cx = W / 2, by = G - Math.round(10 * k) + bob;
+  if (dir === 'up') {
+    const hy = by - 9 * k + (!B ? [-1, 3, 2, 0][atk] ?? 0 : 0);
+    if (B) {
+      F.part(line(cx - 6 * k, hy + 5 * k, cx + 6 * k, hy + 5 * k, 2), P.collar, flat);
+      [[cx - 5, by - 2], [cx, by + 1], [cx + 5, by - 2]].forEach(([x, y], i) => rune(x, y, i));
+    } else { skull(cx, by - 2); F.part(line(cx - 8, by + 3, cx + 8, by + 3, 1), P.strap, flat); }
+    return;
+  }
+  const raise = B ? [6, 10, 2, 0][atk] ?? 0 : 0, dip = !B ? [-1, 3, 2, 0][atk] ?? 0 : 0;
+  const hy = by - 8 * k + dip - raise * 0.4;
+  if (B) {
+    F.part(line(cx - 6 * k, hy + 6 * k, cx + 6 * k, hy + 6 * k, 3), P.collar);
+    for (let i = -2; i <= 2; i++) F.dot(cx + i * 3.2, hy + 6 * k + 2, P.spike);
+    rune(cx - 3, by + 3, 0); rune(cx + 3, by + 3, 1);
+  } else skull(cx, by + 1.5, 0.9);
+}
+
+// ---------- the hawk: wings spread, flapping as it flies (walk), diving talons first (attack) ----------
+function hawk(F, P, dir, { G, W, walk, f, atk }) {
+  const flap = atk >= 0 ? [-0.6, -0.9, -0.3, 0.2][atk] : [1, 0.2, -0.7, 0.2][walk ? f : 1]; // 1 = wings up
+  const cy = G - 22 + (atk === 1 || atk === 2 ? 3 : 0), cx = W / 2;
+  const talons = (x, y, out) => { for (const s of [-1.5, 1.5]) { F.part(line(x + s, y, x + s + out, y + 4, 1), P.talon, flat); F.dot(x + s + out, y + 5, '#2a1e14'); F.dot(x + s + out + 1, y + 5, '#2a1e14'); } };
+  if (dir === 'right' || dir === 'left') {
+    const bx = cx - 2, by = cy;
+    F.part(poly([[bx - 7, by], [bx - 16, by - 2], [bx - 17, by + 2], [bx - 15, by + 5], [bx - 7, by + 3]]), P.feather); // the fanned tail
+    F.part(line(bx - 16, by + 1, bx - 9, by + 2, 1), P.gold, flat);
+    // the far wing, then the body, the near wing
+    const wing = (dx, col) => {
+      const tipY = by - 3 - 13 * flap, tipX = bx - 6 + dx;
+      F.part(poly([[bx + 4, by - 2], [tipX + 4, tipY], [tipX - 4, tipY + (flap > 0 ? 2 : -2)], [bx - 6, by + 1]]), col);
+      F.part(line(bx + 3, by - 2, tipX + 3, tipY, 1), P.gold, flat);
+      for (let i = 1; i <= 3; i++) F.dot(tipX - 1 + i, tipY + (flap > 0 ? 1 : -1) * i, P.dark);
+    };
+    wing(-3, P.dark);
+    F.part(ellipse(bx, by, 8, 4.5), P.feather);
+    F.part(ellipse(bx + 2, by + 1.5, 4, 2.4), P.chest, flat);
+    for (let i = 0; i < 3; i++) F.dot(bx + i * 2, by + 1 + (i % 2), P.streak);
+    F.part(ellipse(bx + 8, by - 4, 3.6, 3.2), P.feather); // the head
+    F.part(poly([[bx + 11, by - 5], [bx + 14, by - 4], [bx + 13, by - 2], [bx + 11, by - 3]]), P.beak);
+    F.dot(bx + 9, by - 5, P.eye); F.dot(bx + 10, by - 5, '#1e1410');
+    F.part(line(bx + 6, by - 7, bx + 10, by - 6, 1), P.gold, flat); // a gold brow
+    talons(bx + 2, by + 4, atk >= 0 ? 3 : 0);
+    wing(1, P.feather);
+    return;
+  }
+  const back = dir === 'up';
+  // wings spread to both sides, the tail below, the body, the head
+  for (const s of [-1, 1]) {
+    const tipY = cy - 4 - 12 * flap, tipX = cx + s * 22;
+    const pts = [[cx + s * 4, cy - 3], [tipX, tipY], [tipX - s * 2, tipY + 4], [cx + s * 12, cy + 4], [cx + s * 4, cy + 3]];
+    F.part(poly(pts), back ? P.dark : P.feather);
+    F.part(line(cx + s * 4, cy - 3, tipX, tipY, 1), P.gold, flat);
+    for (let i = 1; i <= 4; i++) F.part(line(cx + s * (6 + i * 3), cy + 2 - (i * 4 + 4) * flap * 0.35, cx + s * (6 + i * 3), cy + 4 - i * flap, 1), back ? P.feather : P.dark, flat);
+  }
+  F.part(poly([[cx - 3, cy + 5], [cx + 3, cy + 5], [cx + 5, cy + 12], [cx, cy + 13], [cx - 5, cy + 12]]), P.feather); // the tail
+  F.part(line(cx - 4, cy + 12, cx + 4, cy + 12, 1), P.gold, flat);
+  F.part(ellipse(cx, cy + 1, 5, 6.5), P.feather);
+  if (!back) {
+    F.part(ellipse(cx, cy + 2, 3.2, 4.5), P.chest, flat);
+    for (const [x, y] of [[-1, 0], [1, 2], [-1, 4], [1, 5]]) F.dot(cx + x, cy + y, P.streak);
+    talons(cx, cy + 6, 0);
+  }
+  F.part(ellipse(cx, cy - 7, 4, 3.6), P.feather);
+  if (back) { F.part(line(cx - 2, cy - 9, cx + 2, cy - 9, 1), P.gold, flat); return; }
+  F.part(poly([[cx - 1.5, cy - 6], [cx + 1.5, cy - 6], [cx, cy - 2]]), P.beak);
+  for (const s of [-1, 1]) { F.dot(cx + s * 2, cy - 8, P.eye); F.dot(cx + s * 2, cy - 8 + 0, s < 0 ? P.eye : P.eye); F.dot(cx + s * 2 + (s < 0 ? 1 : -1), cy - 8, '#1e1410'); }
+  F.part(line(cx - 3, cy - 10, cx + 3, cy - 10, 1), P.gold, flat);
 }
 
 // ---------- wolves and bears ----------

@@ -15,13 +15,16 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
     element). Its second job, the Windrunner (also Sigrid's), is about attack speed and short
     bursts of movement.
   - Second jobs open at Job 40. The Magic Knight needs 20+ points in both the Blader and
-    Sorcerer trees; the Moon Ranger (Hrafn the Stargazer) 20+ in both the Sorcerer and Archer trees. BladeMaster/Wizard open only for the first job with the most points (a tie
+    Sorcerer trees; the Moon Ranger (Hrafn the Stargazer) 20+ in both the Sorcerer and Archer trees;
+    the Beastmaster (Bjarki, Veidheim) 20+ in both the Blader and Archer trees. The Beastmaster uses
+    swords and bows, and its own tree holds only beast skills: the Bear (END), the Wolves (FNS) and
+    the Hawk (QKN) can all be out together, and the hero's stats feed theirs (`src/allies.js`). BladeMaster/Wizard open only for the first job with the most points (a tie
     opens each tied one). Only one second job can be taken; quitting a trial midway starts it over and
     lets the hero pick again. Job trials pay only when the whole series is done.
 - **Damage balance:** second jobs hit about 2–4x their first job; Blader and Sorcerer stay close.
   Do not even out the BladeMaster and the Wizard: the BladeMaster is not elemental and keeps the
   higher steady damage, while the Wizard's elements make up the gap (see `docs/job-rules.md`).
-- **Second-job skills:** the BladeMaster, Magic Knight, Windrunner and Moon Ranger keep to 3–4 active skills each (add
+- **Second-job skills:** every second job keeps to 3–4 active skills (the Beastmaster's are its three summons and Pack Frenzy) (add
   passives, not actives). Area and multi-hit skills work Ragnarok style; their freeze, paralyze, stun
   and burn work on bosses too, at a third of the chance for half as long.
 - **Walking speed:** Ragnarok's walk times (ms a tile: hero 150, monsters from Ragnarok's monster

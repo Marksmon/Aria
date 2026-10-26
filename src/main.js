@@ -9,6 +9,7 @@ import { Input } from './input.js';
 import { UI } from './ui.js';
 import { FX } from './fx.js';
 import { MobManager, MOB_DEFS, MOVES, guardDef, raidDef } from './mobs.js';
+import { Allies } from './allies.js';
 import { RAIDS, rollReward } from './raid.js';
 import { loadSave, writeSave } from './save.js';
 import { Inventory } from './inventory.js';
@@ -51,6 +52,7 @@ const lib = createSprites();
 const world = buildWorld(scene, lib);
 const fx = new FX(scene, world, lib);
 const mobs = new MobManager(scene, world, lib, fx);
+const allies = new Allies(scene, world, lib, mobs.shadowGeo, mobs.shadowMat); // the Beastmaster's beasts
 // monsters per map: [type, count, nightOnly]. Wisps drift about by day too; night brings more of them and ~20% more of the rest
 const SPAWNS = {
   camp: [],
@@ -90,8 +92,11 @@ mobs.bossHp = save?.bossHp || {};
 const prog = new Progress();
 prog.load(save?.prog);
 // the hero's body follows the job and the look's body (male or female), painted in code (sprites.js designSet)
-const JOB_BODY = { novice: 'trainee', swordman: 'blader', mage: 'sorc', archer: 'archer', blademaster: 'master', wizard: 'wiz', magicknight: 'mknight', windrunner: 'wind', moonranger: 'moon' };
-const bodyArt = (look) => lib.design(`${JOB_BODY[prog.job] || 'blader'}${look.body === 'f' ? 'F' : 'M'}`);
+const JOB_BODY = { novice: 'trainee', swordman: 'blader', mage: 'sorc', archer: 'archer', blademaster: 'master', wizard: 'wiz', magicknight: 'mknight', windrunner: 'wind', moonranger: 'moon', beastmaster: 'beast' };
+// (the Beastmaster's follows the weapon in hand: the cleaver, or the bow; held() is set once the
+// inventory is loaded)
+let held = () => save?.inv?.gear?.weapon;
+const bodyArt = (look) => lib.design(`${JOB_BODY[prog.job] || 'blader'}${prog.job === 'beastmaster' && ITEMS[held()]?.kind !== 'bow' ? 'sw' : ''}${look.body === 'f' ? 'F' : 'M'}`);
 const player = new Player(scene, world, bodyArt({ ...save?.look }), lib.shadow, fx);
 player.setPos(save?.x ?? world.spawn.x, save?.z ?? world.spawn.z);
 if (save?.look) player.setLook(save.look);
@@ -144,18 +149,42 @@ inv.level = () => prog.baseLv;
 inv.job = () => prog.wearJobs; // every job earned: a Blader who passed the Sorcerer's trial may hold a staff
 // the player's look follows the job: the Trainee's clothes, then the first and second jobs'
 const jobArt = () => bodyArt(player.look);
+held = () => inv.gear.weapon;
 player.setArt(jobArt());
 inv.load(save?.inv);
 inv.dropUnwearable(); // gear rules can change between versions
 // stats + gear -> the player's battle numbers (Ragnarok rules); HP/SP stay put, capped by the new max
 // timed buffs, in seconds left: aspd (Quickening Draught), warcry (War Cry's ATK bonus)
-const buffs = { aspd: 0, warcry: 0, ward: 0, aegis: 0, momentum: 0, focus: 0, tailwind: 0, rush: 0, gust: 0, rhythm: 0, veil: 0 };
+const buffs = { aspd: 0, warcry: 0, ward: 0, aegis: 0, momentum: 0, focus: 0, tailwind: 0, rush: 0, gust: 0, rhythm: 0, veil: 0, frenzy: 0 };
 let warcryLv = 0, wardLv = 0, endureGuard = 0, aegisLv = 0, focusLv = 0, tailLv = 0, gustHaste = 0;
 // the Windrunner: Gale Rhythm's stacks (each arrow that lands), Skirmisher's empowered arrows left
 let galeStacks = 0, skirmish = 0;
 // the Moon Ranger: whether the moon is up (dayNight's night, kept here so applyStats can run before
 // dayNight exists), Moonveil's level
-let nightUp = false, veilLv = 0;
+let nightUp = false, veilLv = 0, frenzyLv = 0;
+// the Beastmaster's beasts: which summon calls each, and their numbers from the hero's. A beast takes a
+// share of the hero's stats, 40% at a summon's Lv 1 to 80% at Lv 5, plus Beast Bond: the Bear
+// grows with END and Max HP, the Wolves with FNS, the Hawk with QKN
+const SUMMONS = { bear: 'summonbear', wolf: 'summonwolves', hawk: 'summonhawk' };
+function beastStats(kind) {
+  const g = inv.gearStats().stats, st = (k) => prog.total(k) + (g[k] || 0), base = prog.baseLv;
+  const s = 0.3 + 0.1 * skillLv(prog, SUMMONS[kind]) + 0.02 * skillLv(prog, 'beastbond');
+  const quick = buffs.frenzy > 0 ? 1 - 0.03 * frenzyLv : 1, R = Math.round;
+  const common = { crit: 5, dodge: 3, mastery: 0, el: 'neutral', wlv: 2 };
+  if (kind === 'bear') {
+    const hide = skillLv(prog, 'thickhide');
+    return { ...common, maxHp: R(player.maxHp * 0.9 * s + st('end') * 15 * s), def: Math.min(60, R(10 + st('end') * 0.6 * s)), end: R(st('end') * s), flee: R(base * 0.6),
+      batk: R((st('pow') + st('end')) * 1.3 * s + base * 1.2), watk: R(30 + base * 1.2), fns: R(base * 0.8), hit: base + 25, interval: 1.6 * quick, taunt: 3 + 0.5 * hide, guard: 0.04 * hide };
+  }
+  if (kind === 'wolf') return { ...common, maxHp: R(player.maxHp * 0.35 * s + base * 5), def: 8, end: R(base * 0.3), flee: R(base + st('fns') * 0.5 * s),
+    batk: R(st('fns') * 1.4 * s + base * 0.5), watk: R(20 + base), fns: st('fns'), hit: R(base + st('fns') * s * 2), interval: 1.0 * quick, double: 0.25 };
+  return { ...common, maxHp: R(player.maxHp * 0.3 * s + base * 4), def: 4, end: 0, flee: R(base + st('qkn') * 2 * s),
+    batk: R(st('qkn') * 2.2 * s + base * 0.6), watk: R(15 + base * 0.8), fns: R(base * 0.8), hit: R(base + st('qkn') * s + 30),
+    interval: Math.max(0.45, 1.3 - st('qkn') * 0.008 * s) * quick * (1 - 0.03 * skillLv(prog, 'windtalons')) };
+}
+// a beast's damage rate on a monster: Pack Frenzy, and Pack Tactics when both wolves bite the same one
+allies.mult = (b, m) => (buffs.frenzy > 0 ? 1 + 0.03 * frenzyLv : 1)
+  * (b.kind === 'wolf' && allies.of('wolf').filter((w) => w.foe === m).length > 1 ? 1 + 0.06 * skillLv(prog, 'packtactics') : 1);
 const moonSkill = () => (nightUp ? 1 + 0.02 * skillLv(prog, 'moonlit') : 1); // Moonlit Hunter, on every skill
 let nav = null; // auto-navigation: { quest, map, npc, why } while walking to a quest by itself
 // second-job synergies: the BladeMaster's Momentum stacks, the last spell's element (Resonance),
@@ -218,7 +247,7 @@ function applyStats() {
   gear.mastery = skillLv(prog, 'basics') + (sword ? 2 * skillLv(prog, 'discipline') + 3 * skillLv(prog, 'blademastery') : 0);
   gear.hit += sword ? skillLv(prog, 'blademastery') : 0;
   gear.flee += (skillLv(prog, 'footwork') ? 3 : 0) + (nightUp ? skillLv(prog, 'moonlit') : 0);
-  gear.def += hide + (buffs.aegis > 0 && player.barrier > 0 ? aegisLv : 0);
+  gear.def += hide + (buffs.aegis > 0 && player.barrier > 0 ? aegisLv : 0) + skillLv(prog, 'beastbond') * allies.list.length; // Beast Bond
   if (buffs.aspd > 0) gear.aspdRate *= 0.9;
   if (bow) gear.aspdRate *= (1 - 0.02 * skillLv(prog, 'windborne')) * (buffs.tailwind > 0 ? 1 - 0.02 * tailLv : 1) * (1 - skillLv(prog, 'galerhythm') * galeStacks / 100);
   if (buffs.imbue > 0 && imbueEl && sword) gear.el = imbueEl; // Elemental Blade
@@ -239,6 +268,8 @@ function applyStats() {
   player.reach = bow ? BOW_RANGE + 0.2 * skillLv(prog, 'longsight') : 1.35;
   player.arrowCol = bow && gear.el ? ELEMENTS[gear.el].color : '#efe2c0';
   player.dmgMod = bowMul;
+  for (const kind of Object.keys(SUMMONS)) if (allies.of(kind).length) allies.restat(kind, beastStats(kind)); // the beasts follow the hero's stats
+  if (prog.job === 'beastmaster') { const art = jobArt(); if (player.art !== art) player.setArt(art); } // sword or bow in hand
   player.setHeadgear(inv.gear.head && baseOf(inv.gear.head), inv.gear.face && baseOf(inv.gear.face)); // refined headgear looks like the plain piece
   player.blockChance = inv.wearing('block') ? 0.2 : 0;
   // Spellblade: normal sword hits carry some of the MATK
@@ -275,6 +306,7 @@ function enterMap(id, from, at) {
   fx.clearPickups();
   player.stop();
   player.setPos(pos.x, pos.z);
+  allies.carry(player); // the beasts come along
   cam.target.set(player.x, world.heightAt(player.x, player.z), player.z);
 }
 // saves from before the maps were split only know the camp
@@ -345,7 +377,28 @@ player.on('hurt', (n) => {
   ui.hurt(); cam.shake = 0.2; audio.play('hurt');
   fx.number(player.x, overHead(player, 1.3), player.z, n, 'taken');
 });
-mobs.on('miss', (m, res) => fx.number(player.x, overHead(player, 1.3), player.z, res.dodge ? 'Lucky!' : 'Miss', 'miss'));
+mobs.on('miss', (m, res) => { const t = m.foe || player; fx.number(t.x, overHead(t, 1.3), t.z, res.dodge ? 'Lucky!' : 'Miss', 'miss'); });
+// the beasts: their bites and dives, the blows they take, the Bear's roar, a beast that falls
+allies.on('strike', (b, m, res) => {
+  if (!m.alive) return;
+  const y = overHead(m, m.sprite.scale.y * 0.8);
+  if (res.miss) { fx.number(m.x, y, m.z, 'Miss', 'miss'); return; }
+  fx.number(m.x, y, m.z, res.dmg, res.crit ? 'crit' : 'dealt');
+  const dx = m.x - b.x, dz = m.z - b.z, d = Math.hypot(dx, dz) || 1;
+  m.hit(res.dmg, dx / d * 0.3, dz / d * 0.3);
+  audio.play('hit');
+  if (b.kind === 'hawk') { const wt = skillLv(prog, 'windtalons'); if (wt) inflict(m, { kind: 'stun', chance: () => 2 * wt, dur: 1 }, wt, res.dmg); }
+  if (m.alive && m.foe?.kind !== 'bear' && Math.random() < 0.35) m.foe = b; // it may turn on the beast that bit it
+});
+allies.on('hurt', (b, n) => fx.number(b.x, overHead(b, b.sprite.scale.y * 0.7), b.z, n, 'taken'));
+allies.on('taunt', (b) => { fx.number(b.x, overHead(b, b.sprite.scale.y * 0.9), b.z, 'Roar!', 'skill'); audio.play('night'); });
+allies.on('fall', (b) => {
+  fx.puff(b.x, world.heightAt(b.x, b.z) + 0.4, b.z, b.K.w);
+  const id = SUMMONS[b.kind];
+  skillCd[id] = Math.max(skillCd[id] || 0, 20); // a fallen beast can be called back after a rest
+  menus.message(`Your ${b.K.name} falls back to the wild to lick its wounds. Call it again in 20 s.`);
+  applyStats();
+});
 player.on('block', () => {
   audio.play('block');
   fx.sparkle(player.x, world.heightAt(player.x, player.z) + 0.8, player.z, '#e8eef5', 5);
@@ -357,6 +410,8 @@ player.on('faint', () => {
   const home = savePoint ? ZONE_NAMES[savePoint.map] : 'camp';
   ui.faint(true, lost.base || lost.job ? `Returning to ${home} · lost ${lost.base} Base EXP, ${lost.job} Job EXP` : `Returning to ${home}`);
   setTimeout(() => {
+    allies.clear(); // the beasts go home when the hero faints
+    applyStats();
     enterMap(savePoint ? savePoint.map : 'camp', null);
     if (savePoint) player.revive(savePoint.x, savePoint.z);
     else player.revive(world.spawn.x, world.spawn.z);
@@ -468,12 +523,13 @@ const playerMark = { get x() { return player.x; }, get z() { return player.z; },
 mobs.on('shoot', (m) => {
   audio.play('swing');
   const y = world.heightAt(m.x, m.z) + m.sprite.scale.y * 0.45;
-  fx.bolt(m.x, y, m.z, playerMark, '#efe2c0', () => {
+  const foe = m.foe || player; // a beast it turned on, or the hero
+  fx.bolt(m.x, y, m.z, foe === player ? playerMark : foe, '#efe2c0', () => {
     if (!m.alive && !mobs.list.includes(m)) return;
-    if (!player.canBeHit() || player.state === 'down') return;
-    const res = mobAttack(m.def, player.ps);
-    if (res.miss) fx.number(player.x, overHead(player, 1.3), player.z, res.dodge ? 'Lucky!' : 'Miss', 'miss');
-    else player.takeDamage(res.dmg, m.x, m.z);
+    if (!foe.canBeHit() || foe.state === 'down') return;
+    const res = mobAttack(m.def, foe.ps);
+    if (res.miss) fx.number(foe.x, overHead(foe, 1.3), foe.z, res.dodge ? 'Lucky!' : 'Miss', 'miss');
+    else foe.takeDamage(res.dmg, m.x, m.z);
   }, 0.2);
 });
 mobs.on('dash', (m) => { audio.play('dodge'); fx.puff(m.x, world.heightAt(m.x, m.z) + 0.15, m.z, 0.5); });
@@ -1413,6 +1469,24 @@ function useSkill(id) {
     if (keep) player.command({ mob: keep });
     return;
   }
+  // ---- Beastmaster: the summons, and Pack Frenzy ----
+  if (sk.beast) {
+    if (!pay()) return;
+    allies.summon(sk.beast, sk.beast === 'wolf' ? 2 : 1, beastStats(sk.beast), player);
+    applyStats();
+    say(sk.name); audio.play('night');
+    for (const b of allies.of(sk.beast)) fx.sparkle(b.x, world.heightAt(b.x, b.z) + 0.6, b.z, b.K.aura, 14);
+    return;
+  }
+  if (id === 'packfrenzy') {
+    if (!allies.list.length) { menus.message('Call your beasts first'); return; }
+    if (!pay()) return;
+    buffs.frenzy = 15; frenzyLv = lv;
+    applyStats();
+    say('Pack Frenzy'); audio.play('night');
+    for (const b of allies.list) fx.sparkle(b.x, world.heightAt(b.x, b.z) + 0.6, b.z, '#ff7a4a', 10);
+    return;
+  }
   // ---- Moon Ranger ----
   if (id === 'moonveil') {
     if (!pay()) return;
@@ -1979,7 +2053,7 @@ function tickSkills(dt) {
     if (buffs[k] <= 0 && k === 'momentum') momentum = 0;
     if (buffs[k] <= 0 && k === 'imbue') { imbueEl = null; applyStats(); menus.message('Your blade loses its element'); }
     if (buffs[k] <= 0 && k === 'aegis') { player.barrier = 0; applyStats(); }
-    if (buffs[k] <= 0 && ['focus', 'tailwind', 'rush', 'gust'].includes(k)) applyStats();
+    if (buffs[k] <= 0 && ['focus', 'tailwind', 'rush', 'gust', 'frenzy'].includes(k)) applyStats();
     if (buffs[k] <= 0 && k === 'rhythm') { galeStacks = 0; applyStats(); }
   }
   if (buffs.aegis > 0 && player.barrier <= 0) { buffs.aegis = 0; applyStats(); menus.message('Stone Aegis breaks'); }
@@ -2123,7 +2197,7 @@ function persist() {
 }
 
 // second jobs glow: a soft aura behind the hero and a ring at their feet, in the job's colour
-const AURA = { blademaster: '#ff7a4a', wizard: '#b48aff', magicknight: '#6ad8ff', windrunner: '#8af0c8', moonranger: '#b8c8ff' };
+const AURA = { blademaster: '#ff7a4a', wizard: '#b48aff', magicknight: '#6ad8ff', windrunner: '#8af0c8', moonranger: '#b8c8ff', beastmaster: '#ff9a5a' };
 // a small moon by the hotbar while the Moon Ranger's night passives work
 const moonMark = document.createElement('div');
 moonMark.id = 'moonmark';
@@ -2201,7 +2275,9 @@ function frame() {
   audio.update(dt, dayNight.night);
   if (!started) cam.yaw += dt * 0.05; // slow orbit behind the title screen
   mobs.cam = b;
+  allies.cam = b;
   if (live) mobs.update(dt, player);
+  if (live) allies.update(dt, player, mobs, player.goal?.mob || player.cast?.target);
   if (live) dayNight.update(dt, t); else if (!started) dayNight.update(0, t);
   world.update(dt, t);
   villagers.update(dt, player, b);
@@ -2345,4 +2421,4 @@ tContinue.addEventListener('click', () => {
   }, 450);
 });
 
-window.__aria = { lib, warp, enterMap, useSkill, useItem, story, SPOTS, player, world, cam, camera, mobs, fx, inv, prog, quests, villagers, menus, hotbar, dayNight, audio, stats: world.stats, raid: () => raid, raidAt: () => raidAt, gainExp };
+window.__aria = { lib, warp, enterMap, useSkill, useItem, story, SPOTS, player, world, cam, camera, mobs, allies, fx, inv, prog, quests, villagers, menus, hotbar, dayNight, audio, stats: world.stats, raid: () => raid, raidAt: () => raidAt, gainExp };
