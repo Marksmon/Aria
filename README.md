@@ -350,9 +350,9 @@ drop rare bows.
 A Blader can also take the Sorcerer's trial with Archmage Vigdis or the Archer's with Huntmaster
 Sigrid (and so on, for any of the three). Every first job then shares **one Job Level and one pool
 of skill points**: at Job 40 you have the same points whichever you are, and could put 20 into two
-trees. Switch between them at any **Keeper** you have signed with. Points only go into the
-**active job's** trees; to train another path, switch to it first. A second job trains every first
-job you earned, but a BladeMaster, Wizard or Windrunner never puts more points into another path
+trees. Points go into any path you earned, whichever job you are wearing; switch between them at
+any **Keeper** you have signed with to change the job you wear. A second job trains every first
+job you earned too, but a BladeMaster, Wizard or Windrunner never puts more points into another path
 than into its own (a Wizard's Blader tree stays at or under its Sorcerer tree).
 
 Every skill you have learnt keeps working, whatever job you wear. Passives always apply; actives

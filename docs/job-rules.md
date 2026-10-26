@@ -44,12 +44,10 @@ quests. Code: `src/progress.js` (jobs, levels, points), `src/skills.js` (trees, 
 
 ## Skill points
 
-- Points can only be put into the **active job's** trees: the current job and the jobs before it.
-  For example, a Blader's points go to the Blader and Trainee trees; a Magic Knight's go to the
-  Magic Knight, Blader, Sorcerer and Trainee trees. To train the other first job, switch to it at
-  a Keeper first.
-- A **second job** also trains every other first job it earned (`trainTrees`): a Wizard who walked
-  the Blader's path can still raise Blader skills. For a one-path second job (BladeMaster, Wizard,
+- Points go into **any tree the hero earned**, active job or not (`trainTrees`, the owner's call): a
+  Blader who also earned the Sorcerer raises Sorcerer skills without switching at a Keeper, and a
+  Wizard who walked the Blader's path can still raise Blader skills. Switching first jobs at a Keeper
+  still changes the job worn (its name, look and job bonus stats). For a one-path second job (BladeMaster, Wizard,
   Windrunner) another first job's tree can never pass the path's own: a Wizard's Blader points stay
   at or under its Sorcerer points (`learnBlock`).
 - Skill points earned: 9 from the Trainee, plus the first-job level (Job 1 counts: a Job 50 Blader

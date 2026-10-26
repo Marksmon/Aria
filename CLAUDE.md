@@ -8,7 +8,8 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
 - **Jobs, skill points and second jobs:** read `docs/job-rules.md` before touching jobs, skills
   or job quests. In short:
   - The first jobs (Blader, Sorcerer, Archer) share one Job Level and one pool of skill points.
-    Points go only into the active job's trees; switch first jobs at a Keeper. Job Lv 1 of a first
+    Points go into any tree the hero earned, active or not (`trainTrees`); switching first jobs at
+    a Keeper changes the job worn. Job Lv 1 of a first
     or second job counts: a Job 50 Blader has 50 points (the Trainee's stay 9).
   - Learnt skills stay usable with the right weapon (sword, staff or bow).
   - The Archer (Huntmaster Sigrid, Veidheim) shoots from 5 paces with ATK from FNS; a bow needs

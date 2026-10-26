@@ -7,8 +7,8 @@
 //
 // A hero who has walked several paths (see progress.js) keeps every tree they earned: passives work
 // whatever job they wear, and actives too, as long as the right weapon is in hand (weapon: 'sword'
-// = a sword (or bare hands), 'staff' = a staff, 'bow' = a bow). range: 'bow' = the bow's reach. Skill points only go into the active job's trees:
-// to train the other path, switch to it at a Keeper.
+// = a sword (or bare hands), 'staff' = a staff, 'bow' = a bow). range: 'bow' = the bow's reach. Skill points go into any tree the
+// hero earned, active job or not (trainTrees).
 //
 // kind: active (goes on the hotbar) | passive
 // target: 'mob' for skills aimed at a monster; range = how close you must be (world units)
@@ -416,18 +416,18 @@ export const WEAPON_NAMES = { sword: 'a sword', staff: 'a staff', bow: 'a bow' }
 export const BOW_RANGE = 5; // paces a bow reaches, before Long Sight
 export const weaponOk = (id, weaponKind) => !SKILLS[id].weapon || SKILLS[id].weapon === weaponKind;
 
-// the trees this hero's points may go into: the active job's (the current job and the jobs before
-// it); a second job also trains every other first job it earned (the owner's call)
+// the trees this hero's points may go into: every tree earned, the active job's first (the owner's
+// call: a Blader who also earned the Sorcerer trains both without switching at a Keeper)
 export function trainTrees(prog) {
   const own = TREES[prog.job];
-  return prog.tier === 2 ? [...own, ...prog.unlocked.filter((j) => JOBS[j]?.tier === 1 && !own.includes(j))] : own;
+  return [...own, ...[...prog.trees].filter((j) => !own.includes(j))];
 }
 
 // why a skill can't be raised right now, or null if it can
 export function learnBlock(prog, id) {
   const s = SKILLS[id];
   if (s.free || s.granted) return 'free';
-  if (!trainTrees(prog).includes(s.job)) return 'job'; // points only go to the active job's trees (switch at a Keeper)
+  if (!trainTrees(prog).includes(s.job)) return 'job'; // a tree not earned (yet)
   if (skillLv(prog, id) >= s.max) return 'max';
   for (const [k, n] of Object.entries(s.needs || {})) if (skillLv(prog, k) < n) return `Needs ${SKILLS[k].name} ${n}`;
   if (JOBS[s.job].tier === 2) { const why = secondJobBlock(prog); if (why) return why; }
