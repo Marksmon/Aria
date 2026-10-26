@@ -453,11 +453,16 @@ export function unlearnFirstJob(prog) {
   prog.resets.skills++;
   return true;
 }
-// a second job's retraining: its own tree and the first jobs' trees (the Trainee's stays). The
-// points come back to be placed again, and secondJobBlock makes sure the first jobs are rebuilt first
+// a second job's retraining: its own tree and the first jobs' trees it stands on (the Trainee's
+// stays, and so does a first job walked outside it, such as a BladeMaster's Sorcerer skills: that tree
+// could never be trained again). The points come back, and secondJobBlock makes sure the first jobs
+// are rebuilt first
 export function unlearnSecondJob(prog) {
   if (prog.tier !== 2) return false;
-  for (const id of Object.keys(prog.skills)) if (JOBS[SKILLS[id]?.job]?.tier >= 1) delete prog.skills[id];
+  for (const id of Object.keys(prog.skills)) {
+    const job = SKILLS[id]?.job;
+    if (JOBS[job]?.tier >= 1 && TREES[prog.job].includes(job)) delete prog.skills[id];
+  }
   prog.resets.skills++;
   return true;
 }

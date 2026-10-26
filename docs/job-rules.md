@@ -89,8 +89,9 @@ Focus, Hunter's Mark, Leap Back.
   Windrunner) **and every Trainee and first-job skill point has been spent** in those trees.
 - **Two paths, 20 each first:** for the Magic Knight, Moon Ranger and Beastmaster, once one path's
   tree has 20 points it takes no more until the other path's tree has 20 too (`learnBlock`).
-- **Retraining a second job** (Liv, Ingrid, Sven: Reset my job skills) unlearns the first-job and
-  second-job skills (the Trainee's stay). The rule above then makes the hero rebuild the first jobs
+- **Retraining a second job** (Liv, Ingrid, Sven: Reset my job skills) unlearns the second job's
+  skills and those of the first jobs it stands on (the Trainee's stay, and so does a first job walked
+  outside it, e.g. a BladeMaster's Sorcerer skills, since that tree can't be trained again). The rule above then makes the hero rebuild the first jobs
   before the second job's skills open again, so a reset never dodges it.
 - **Quitting a trial** (Quit quest in the Quest View) before it is finished starts that trial over
   from its first step and lifts the choice. The hero may then pick any second-job trial they
