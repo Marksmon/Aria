@@ -802,7 +802,7 @@ function raidNext(R, D) {
   } else {
     const [type, off] = R.boss;
     raid.boss = raidSpawn(R, type, D.lv + off, D.boss, D.wave);
-    menus.message(`${raid.boss.def.name} rises out of the surf, an old war bloop in a dented helm!`);
+    menus.message(`${raid.boss.def.name} rises out of the surf: the old bloop general, beard, plume and all!`);
     audio.play('night');
     cam.shake = 0.6;
   }

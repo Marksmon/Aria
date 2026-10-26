@@ -165,7 +165,7 @@ never stop following you, then a **boss**, all within the time limit. The first 
 a small round island out in Salt Bay; the **Boatman** by the water rows you out (`src/raid.js`).
 
 - **Bloop Island:** wave 1 is Green and Blue Bloops, wave 2 Blue and **Yellow Bloops**, wave 3 Yellow
-  and **Red Bloops**. Then comes **BleepBloop**, a giant orange war-veteran bloop in a dented helm. He
+  and **Red Bloops**. Then comes **BleepBloop**, a giant orange bloop general with a white beard, a plumed general's hat and a mantle. He
   belly-flops onto you, charges and stomps, and calls Red Bloops at 60% HP. A big health bar shows his
   HP while you fight him.
 - **10 minutes** for the lot. After each wave you get back half your HP and SP, and before the boss

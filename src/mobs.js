@@ -26,12 +26,12 @@ export const MOB_DEFS = {
   // These are their own stats; in the raid each is rebuilt at the difficulty's level (raidDef)
   yellowSlime: { raid: true, name: 'Yellow Bloop', ai: 'hopper', art: 'slimeYellow', el: 'wind', lv: 12, hp: 330, atk: [22, 28], def: 2, vit: 10, agi: 12, dex: 20, exp: [30, 21], adelay: 1500, walk: 400, aggro: 5, chase: 5, reach: 0.8, w: 1.0, r: 0.38, drops: [['gel', 1, 2, 1], ['dew', 1, 1, 0.4], ['shiny_gel', 1, 1, 0.01]] },
   redSlime: { raid: true, name: 'Red Bloop', ai: 'hopper', art: 'slimeRed', el: 'fire', lv: 18, hp: 560, atk: [36, 46], def: 4, vit: 16, agi: 16, dex: 30, exp: [75, 52], adelay: 1450, walk: 300, aggro: 5, chase: 6, reach: 0.8, w: 1.05, r: 0.4, drops: [['gel', 1, 2, 1], ['cinder', 1, 1, 0.1], ['shiny_gel', 1, 1, 0.01]] },
-  // the raid's boss: BleepBloop, a giant, scarred old war bloop with an eyepatch, a beard and a dented
-  // helm, painted in code (bleepbloop.js). It belly-flops
-  // onto you, charges, stomps, and calls Red Bloops; only ever met in the raid, at the raid's level
+  // the raid's boss: BleepBloop, a giant old bloop general (white beard, plumed hat, mantle), painted
+  // in code (bleepbloop.js). It belly-flops onto you, charges, stomps, and calls Red Bloops; only ever
+  // met in the raid, at the raid's level
   bleepBloop: { raid: true, name: 'BleepBloop', ai: 'boss', art: 'bleepBloop', el: 'neutral', boss: true, lv: 35, hp: 9600, atk: [62, 80], def: 14, vit: 35, agi: 24, dex: 52, exp: [9000, 6300], adelay: 1600, walk: 300,
     moves: [{ kind: 'leap', name: 'Belly Flop', mult: 1.6, r: 2.0 }, { kind: 'charge', name: "Veteran's Charge", mult: 1.5 }], stomp: 1.5,
-    aggro: 99, chase: 99, reach: 1.4, w: 2.6, r: 0.95, heavy: true, summon: ['redSlime', 'redSlime', 'redSlime'], summonText: 'BleepBloop bellows an old war cry, and Red Bloops come bouncing!', drops: [] },
+    aggro: 99, chase: 99, reach: 2.0, w: 4.0, r: 1.4, heavy: true, summon: ['redSlime', 'redSlime', 'redSlime'], summonText: 'BleepBloop bellows an old war cry, and Red Bloops come bouncing!', drops: [] },
   // ---------- the new lands: palette swaps of the valley's monsters, Ragnarok style (tint) ----------
   russet: { name: 'Red Sprout', ai: 'tank', art: 'sprout', el: 'earth', tint: '#ffb47a', lv: 18, hp: 520, atk: [35, 46], def: 5, vit: 18, agi: 18, dex: 34, exp: [80, 56], adelay: 1500, passive: true, walk: 200, aggro: 4.5, chase: 6, reach: 0.8, w: 1.0, r: 0.36, drops: [['thorn', 1, 1, 0.55], ['seed', 1, 1, 0.6], ['leaf', 1, 1, 0.4], ['berry', 1, 1, 0.2], ['bramble_ring', 1, 1, 0.003]] },
   brine: { name: 'Sea Bloop', ai: 'hopper', art: 'slimeBlue', el: 'water', tint: '#a8ffd8', lv: 22, hp: 880, atk: [50, 65], def: 4, vit: 22, agi: 20, dex: 40, exp: [125, 88], adelay: 1500, passive: true, walk: 400, aggro: 5, chase: 5, reach: 0.8, w: 1.1, r: 0.4, drops: [['salt', 1, 1, 0.55], ['gel', 1, 1, 0.8], ['tonic', 1, 1, 0.05], ['shiny_gel', 1, 1, 0.01]] },

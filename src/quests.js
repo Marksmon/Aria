@@ -121,7 +121,7 @@ export const NPCS = {
   boatman: {
     name: 'Boatman', map: 'coast', x: 33.5, z: 40.5, raid: 'bloop',
     dress: { body: 'trainee', main: [28, 0.45, 0.7], accent: [205, 0.5, 1], hair: 'mane', dye: 'silver' }, // an old salt: oilskin browns, sea-blue trim
-    hello: 'Out there, past the reeds: Bloop Island. The bloops have swarmed it under old BleepBloop, a war bloop with a helm and a temper. Nobody fishes those waters now.',
+    hello: 'Out there, past the reeds: Bloop Island. The bloops have swarmed it under old BleepBloop, a bloop general with a white beard and a temper. Nobody fishes those waters now.',
     later: () => '', bye: 'Mind the tide.', quests: [],
   },
   // the Magic Knight's trainer: for heroes who have walked both the Blader's and the Sorcerer's path
