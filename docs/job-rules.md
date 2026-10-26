@@ -19,7 +19,7 @@ quests. Code: `src/progress.js` (jobs, levels, points), `src/skills.js` (trees, 
 - A first-job hero may also take **another** first job's trial (a Blader the Sorcerer's or the
   Archer's, and so on). They then hold each one earned.
 - The first jobs share **one Job Level and one pool of skill points**. Example: at Job 40 there
-  are 39 first-job points (plus the Trainee's 9), which may be split, e.g. 20 as a Blader and 19
+  are 40 first-job points (plus the Trainee's 9), which may be split, e.g. 20 as a Blader and 20
   as a Sorcerer.
 - Switching between first jobs is done at a **Keeper** (the Keepers' ledger must be signed).
   Trainers do not switch jobs.
@@ -48,8 +48,8 @@ quests. Code: `src/progress.js` (jobs, levels, points), `src/skills.js` (trees, 
   For example, a Blader's points go to the Blader and Trainee trees; a Magic Knight's go to the
   Magic Knight, Blader, Sorcerer and Trainee trees. To train the other first job, switch to it at
   a Keeper first.
-- Skill points earned: 9 from the Trainee, plus (first-job level − 1), plus (second-job level − 1)
-  once in a second job. Every point spent in any tree counts against that pool.
+- Skill points earned: 9 from the Trainee, plus the first-job level (Job 1 counts: a Job 50 Blader
+  has 50), plus the second-job level once in a second job (the owner's call; the Trainee's stay 9). Every point spent in any tree counts against that pool.
 - Everything learnt in any earned tree stays usable whatever the current job:
   - **passives** always apply;
   - **actives** need the right weapon in hand (`weapon` on the skill in `skills.js`).

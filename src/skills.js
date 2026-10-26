@@ -469,7 +469,7 @@ export function secondJobBlock(prog) {
   }
   // the first-tier pool, as far as the trees open to this job can hold it
   const room = Object.values(SKILLS).reduce((a, s) => a + (!s.free && !s.granted && JOBS[s.job].tier <= 1 && TREES[prog.job].includes(s.job) ? s.max : 0), 0);
-  const pool = Math.min(room, (MAX_JOB.novice - 1) + (prog.levelOf('swordman') - 1));
+  const pool = Math.min(room, (MAX_JOB.novice - 1) + prog.levelOf('swordman'));
   const spent = Object.entries(prog.skills).reduce((a, [id, n]) => a + (JOBS[SKILLS[id]?.job]?.tier <= 1 ? n : 0), 0);
   if (spent < pool) return `Needs every Trainee and first-job skill point spent first (${pool - spent} left)`;
   return null;

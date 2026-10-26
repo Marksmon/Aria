@@ -118,12 +118,13 @@ export class Progress {
   }
   // the jobs whose gear this hero may wear: the current job and every first or second job earned
   get wearJobs() { return this.job === 'novice' ? ['novice'] : [...new Set([this.job, ...this.unlocked, ...(JOBS[this.job].from || [])])]; }
-  // skill points: one per job level after the first in every tier walked (the first jobs share
-  // theirs), minus skill levels learnt in any tree
+  // skill points: one per job level in every tier walked (the Trainee's from Job 2; the first jobs
+  // share theirs), minus skill levels learnt in any tree
   get skillPoints() {
     const learnt = Object.values(this.skills).reduce((a, b) => a + b, 0);
     if (this.tier === 0) return this.jobLv - 1 - learnt;
-    const earned = (MAX_JOB.novice - 1) + (this.levelOf('swordman') - 1) + (this.tier === 2 ? this.jobLv - 1 : 0);
+    // a first or second job counts its Job Lv 1 too (Job 50 = 50 points); the Trainee's are 9, all Basic Training
+    const earned = (MAX_JOB.novice - 1) + this.levelOf('swordman') + (this.tier === 2 ? this.jobLv : 0);
     return earned - learnt;
   }
   // a first job taken (or switched to): the Job Level is shared, so it carries over

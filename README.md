@@ -250,7 +250,8 @@ a small round island out in Salt Bay; the **Boatman** by the water rows you out 
 
 Classic MMORPG rules with Aria's own stat names (see the mechanics notes in `docs/`):
 POW (STR), QKN (AGI), END (VIT), KNL (INT), FNS (DEX), FTN (LUK). Base Level and Job Level
-gain EXP separately; stat points come from Base Levels, skill points from Job Levels. HP does
+gain EXP separately; stat points come from Base Levels, skill points from Job Levels (one a level: a Trainee earns 9 by
+Job 10, a Job 50 Blader has 50 more, and a second job adds one for each of its own). HP does
 not recover while you walk. Resting (sitting, or standing in a town) doubles it and also gives
 back 5% of Max HP and 6% of Max SP a tick, so a full rest takes about a minute. Fainting sends
 you to your save point with half your HP and SP and costs 1% of the EXP to the next level.
