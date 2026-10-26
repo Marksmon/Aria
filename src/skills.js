@@ -211,6 +211,42 @@ export const SKILLS = {
     desc: (lv) => `An arrow that bursts into a whirlwind where it lands, for 3 s: 7 gusts of ${SKILLS.cyclone.power(lv)}% damage to every monster within 2.5 paces, pulling them in; each gust ${2 * lv}% to paralyze for 1.2 s.`,
   },
 
+  // ---------- Moon Ranger (Sorcerer and Archer both walked): arrows that hit with ATK and MATK
+  // together (power + mpower, a bow in hand, the arrows' element), stronger at night ----------
+  moonlit: {
+    name: 'Moonlit Hunter', job: 'moonranger', kind: 'passive', max: 10, icon: 'skill_moonlit',
+    desc: (lv) => `At night: every skill deals ${2 * lv}% more, and +${lv} FLEE.`,
+  },
+  lunartide: {
+    name: 'Lunar Tide', job: 'moonranger', kind: 'passive', max: 5, needs: { moonlit: 3 }, icon: 'skill_lunartide',
+    desc: (lv) => `At night: SP comes back ${10 * lv}% faster, and Starfall costs ${4 * lv}% less SP.`,
+  },
+  starsight: {
+    name: 'Star Sight', job: 'moonranger', kind: 'passive', max: 5, icon: 'skill_starsight',
+    desc: (lv) => `Lunar Multishot and Starfall reach ${(0.5 * lv).toFixed(1)} paces further.`,
+  },
+  multishot: {
+    name: 'Lunar Multishot', job: 'moonranger', kind: 'active', max: 10, target: 'mob', range: 'bow', weapon: 'bow', icon: 'skill_multishot',
+    sp: (lv) => 16 + 2 * lv, power: (lv) => 70 + 8 * lv, mpower: (lv) => 40 + 6 * lv, arrows: (lv) => 3 + Math.floor(lv / 3),
+    desc: (lv) => `A fan of ${SKILLS.multishot.arrows(lv)} moonlit arrows: one at your target, the rest at the monsters nearest it (all at the target if it is alone). Each ${SKILLS.multishot.power(lv)}% ATK + ${SKILLS.multishot.mpower(lv)}% MATK.`,
+  },
+  starfall: {
+    name: 'Starfall', job: 'moonranger', kind: 'active', max: 10, needs: { multishot: 3 }, target: 'mob', range: 'bow', weapon: 'bow', cd: 3, icon: 'skill_starfall',
+    sp: (lv) => 30 + 3 * lv, power: (lv) => 30 + 4 * lv, mpower: (lv) => 45 + 6 * lv, hits: (lv) => 2 + Math.floor(lv / 2), every: 0.6, area: 3,
+    status: { kind: 'stun', chance: (lv) => 1.5 * lv, dur: 1.5 },
+    desc: (lv) => `Stars fall round your target for ${SKILLS.starfall.hits(lv)} waves: each ${SKILLS.starfall.power(lv)}% ATK + ${SKILLS.starfall.mpower(lv)}% MATK to every monster within 3 paces, ${1.5 * lv}% to stun it for 1.5 s.`,
+  },
+  crescent: {
+    name: 'Crescent Arrow', job: 'moonranger', kind: 'active', max: 10, needs: { multishot: 5 }, target: 'mob', range: 'bow', weapon: 'bow', cd: 3, icon: 'skill_crescent',
+    sp: (lv) => 20 + 2 * lv, power: (lv) => 150 + 18 * lv, mpower: (lv) => 80 + 10 * lv,
+    desc: (lv) => `A charged arrow that flies 8 paces through your target and every monster in its line: ${SKILLS.crescent.power(lv)}% ATK + ${SKILLS.crescent.mpower(lv)}% MATK to each.`,
+  },
+  moonveil: {
+    name: 'Moonveil', job: 'moonranger', kind: 'active', max: 5, needs: { moonlit: 1 }, cd: 30, icon: 'skill_moonveil',
+    sp: (lv) => 25 + 5 * lv,
+    desc: (lv) => `A veil of moonlight for 15 s: ${4 * lv}% less damage taken; at night every Lunar Multishot looses 2 more arrows.`,
+  },
+
   // ---------- BladeMaster (from the Blader): one target, cut down fast. Blade skills may Combo
   // (a free extra strike); each Combo adds a Momentum stack; Final Blade spends the stacks ----------
   blademastery: {

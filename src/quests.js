@@ -282,6 +282,12 @@ export const NPCS = {
     name: 'Hrafn the Stargazer', map: 'magic', x: 45.6, z: 52.2, dress: { body: 'sorc', main: [248, 0.6, 0.85], accent: [200, 0.3, 1.15], hair: 'messy', dye: 'black', face: 'raven_mask' },
     hello: 'Ah, a visitor. Have you looked up lately? Nobody looks up.',
     later: () => '', bye: 'Clear skies to you.',
+    // the Moon Ranger: bow and spell under the moon, for heroes who walked the Sorcerer's and the Archer's paths
+    trial2: ['moonranger_trial', 'moonranger_trial2', 'moonranger_trial3'], job2: 'moonranger',
+    trial2Hint: 'I teach the Moon Ranger\'s way: the bow and the song together, under the moon. Walk the Sorcerer\'s path and the Archer\'s, put at least 20 skill points into each, reach Job Level 40, and come back to me at night or day; the stars keep.',
+    greet: (c) => ({ moonranger: 'Moon Ranger. The sky has been brighter since you took up the bow. I am sure of it.',
+      archer: 'An Archer who looks up! The stars are the best targets: they never move.',
+      mage: 'A Sorcerer. Do your runes sing at night? Mine do.' })[c.jobId] || null,
     quests: [],
     lore: [
       'That red star low in the south is the Wolf\'s Eye. It burns brightest when the jotnar dream. It has never been as bright as it is this year.',
@@ -573,6 +579,24 @@ export const QUESTS = {
     reward: { xp: 250, perz: 300 },
   },
   // ---------- the second jobs: three harder steps each, from Job Level 40 of a first job ----------
+  moonranger_trial: {
+    title: 'Moon Ranger Trial 1: Shadows under the Moon', job: true, kind: 'kill', mob: 'shadeWisp', n: 20, lv: 1,
+    intro: 'The moon\'s light falls hardest on what hides from it. Twenty Dark Wisps drift in Black Wood, east of Dark Dale. Put them out, arrow and spell together.',
+    thanks: 'Twenty little shadows, gone out. Now the opposite: the things that burn too bright.',
+    reward: { xp: 15000, perz: 3000 },
+  },
+  moonranger_trial2: {
+    title: 'Moon Ranger Trial 2: Embers that Fly', job: true, kind: 'kill', mob: 'emberWisp', n: 10, lv: 1,
+    intro: 'Ten Fire Wisps of Ash Heath. They burn like small suns, and the moon has no love for suns. Cool them.',
+    thanks: 'Well shot. The heath is a little darker, and that is no bad thing. One more.',
+    reward: { xp: 20000, perz: 4000 },
+  },
+  moonranger_trial3: {
+    title: 'Moon Ranger Trial 3: The Spore Mother', job: true, kind: 'kill', mob: 'gloomMother', n: 1, lv: 1,
+    intro: 'The Giant Mushroom of Black Wood clouds the sky with its spores, and I cannot see my stars. Bring it down and come back to me.',
+    thanks: 'Clear skies again. Kneel... no, look up. There. Rise, Moon Ranger.',
+    reward: { xp: 30000, perz: 6000 },
+  },
   windrunner_trial: {
     title: 'Windrunner Trial 1: Run with the Pack', job: true, kind: 'kill', mob: 'wolf', n: 20, lv: 1,
     intro: 'A Windrunner is never where the claws land. The Wolves of Barley Field, past Black Wood, run in packs and come on sight. Twenty of them, and do not let them corner you: shoot, step, shoot.',

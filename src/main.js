@@ -90,7 +90,7 @@ mobs.bossHp = save?.bossHp || {};
 const prog = new Progress();
 prog.load(save?.prog);
 // the hero's body follows the job and the look's body (male or female), painted in code (sprites.js designSet)
-const JOB_BODY = { novice: 'trainee', swordman: 'blader', mage: 'sorc', archer: 'archer', blademaster: 'master', wizard: 'wiz', magicknight: 'mknight', windrunner: 'wind' };
+const JOB_BODY = { novice: 'trainee', swordman: 'blader', mage: 'sorc', archer: 'archer', blademaster: 'master', wizard: 'wiz', magicknight: 'mknight', windrunner: 'wind', moonranger: 'moon' };
 const bodyArt = (look) => lib.design(`${JOB_BODY[prog.job] || 'blader'}${look.body === 'f' ? 'F' : 'M'}`);
 const player = new Player(scene, world, bodyArt({ ...save?.look }), lib.shadow, fx);
 player.setPos(save?.x ?? world.spawn.x, save?.z ?? world.spawn.z);
@@ -149,10 +149,14 @@ inv.load(save?.inv);
 inv.dropUnwearable(); // gear rules can change between versions
 // stats + gear -> the player's battle numbers (Ragnarok rules); HP/SP stay put, capped by the new max
 // timed buffs, in seconds left: aspd (Quickening Draught), warcry (War Cry's ATK bonus)
-const buffs = { aspd: 0, warcry: 0, ward: 0, aegis: 0, momentum: 0, focus: 0, tailwind: 0, rush: 0, gust: 0, rhythm: 0 };
+const buffs = { aspd: 0, warcry: 0, ward: 0, aegis: 0, momentum: 0, focus: 0, tailwind: 0, rush: 0, gust: 0, rhythm: 0, veil: 0 };
 let warcryLv = 0, wardLv = 0, endureGuard = 0, aegisLv = 0, focusLv = 0, tailLv = 0, gustHaste = 0;
 // the Windrunner: Gale Rhythm's stacks (each arrow that lands), Skirmisher's empowered arrows left
 let galeStacks = 0, skirmish = 0;
+// the Moon Ranger: whether the moon is up (dayNight's night, kept here so applyStats can run before
+// dayNight exists), Moonveil's level
+let nightUp = false, veilLv = 0;
+const moonSkill = () => (nightUp ? 1 + 0.02 * skillLv(prog, 'moonlit') : 1); // Moonlit Hunter, on every skill
 let nav = null; // auto-navigation: { quest, map, npc, why } while walking to a quest by itself
 // second-job synergies: the BladeMaster's Momentum stacks, the last spell's element (Resonance),
 // the last Edge's element (Elemental Chain)
@@ -213,7 +217,7 @@ function applyStats() {
   gear.hit += bow ? skillLv(prog, 'longsight') : 0;
   gear.mastery = skillLv(prog, 'basics') + (sword ? 2 * skillLv(prog, 'discipline') + 3 * skillLv(prog, 'blademastery') : 0);
   gear.hit += sword ? skillLv(prog, 'blademastery') : 0;
-  gear.flee += skillLv(prog, 'footwork') ? 3 : 0;
+  gear.flee += (skillLv(prog, 'footwork') ? 3 : 0) + (nightUp ? skillLv(prog, 'moonlit') : 0);
   gear.def += hide + (buffs.aegis > 0 && player.barrier > 0 ? aegisLv : 0);
   if (buffs.aspd > 0) gear.aspdRate *= 0.9;
   if (bow) gear.aspdRate *= (1 - 0.02 * skillLv(prog, 'windborne')) * (buffs.tailwind > 0 ? 1 - 0.02 * tailLv : 1) * (1 - skillLv(prog, 'galerhythm') * galeStacks / 100);
@@ -1409,6 +1413,14 @@ function useSkill(id) {
     if (keep) player.command({ mob: keep });
     return;
   }
+  // ---- Moon Ranger ----
+  if (id === 'moonveil') {
+    if (!pay()) return;
+    buffs.veil = 15; veilLv = lv;
+    say('Moonveil'); audio.play('craft');
+    fx.sparkle(player.x, y + 0.9, player.z, '#c8d4ff', 18);
+    return;
+  }
   if (id === 'standfirm') {
     if (pay()) { player.endureT = 6 + Math.floor(lv / 2); endureGuard = lv / 100; say('Stand Firm'); audio.play('block'); }
     return;
@@ -1533,6 +1545,60 @@ function useSkill(id) {
   if (id === 'doubleshot') {
     const m = sk.power(lv) / 100;
     strike(m, 1, (t) => { say('Double Shot'); later(sk.every, () => arrowHit(t, m)); });
+  }
+  // ---- Moon Ranger: from bow range (Star Sight reaches further), each arrow ATK and MATK together ----
+  if (id === 'multishot' || id === 'starfall' || id === 'crescent') {
+    const far = player.reach + (id === 'crescent' ? 0 : 0.5 * skillLv(prog, 'starsight'));
+    const cost = id === 'starfall' && nightUp ? Math.ceil(sp * (1 - 0.04 * skillLv(prog, 'lunartide'))) : sp;
+    const paid = () => {
+      if (player.sp < cost) { menus.message('Not enough SP'); return false; }
+      player.sp -= cost;
+      if (sk.cd) skillCd[id] = sk.cd;
+      return true;
+    };
+    const run = (t) => {
+      if (!t.alive || !paid()) return;
+      say(sk.name);
+      const k = moonSkill(), atk = sk.power(lv) / 100 * k, matk = sk.mpower(lv) / 100 * k;
+      const from = () => ({ x: player.x + player.face.x * 0.4, y: world.heightAt(player.x, player.z) + 0.85, z: player.z + player.face.z * 0.4 });
+      if (id === 'multishot') {
+        const n = sk.arrows(lv) + (buffs.veil > 0 && nightUp ? 2 : 0);
+        const near = mobs.list.filter((m) => m.alive && m !== t && Math.hypot(m.x - t.x, m.z - t.z) < 4).sort((a, b) => Math.hypot(a.x - t.x, a.z - t.z) - Math.hypot(b.x - t.x, b.z - t.z));
+        const aims = [t, ...near].slice(0, n);
+        for (let i = aims.length; i < n; i++) aims.push(t); // alone: the rest at the target too
+        aims.forEach((m, i) => later(i * 0.05, () => { const f = from(); fx.bolt(f.x, f.y, f.z, m, '#dfe6ff', () => moonHit(m, atk, matk), 0.22); }));
+        audio.play('swing');
+      } else if (id === 'starfall') {
+        const cx = t.x, cz = t.z;
+        repeat(sk, lv, (i) => {
+          const gy = world.heightAt(cx, cz);
+          for (let j = 0; j < 5; j++) {
+            const a = Math.random() * Math.PI * 2, r = Math.random() * 2.4, spot = { x: cx + Math.cos(a) * r, z: cz + Math.sin(a) * r, alive: true };
+            fx.bolt(spot.x + 0.8, gy + 6, spot.z - 0.8, spot, j % 2 ? '#fff6c8' : '#c8d8ff', () => fx.sparkle(spot.x, gy + 0.3, spot.z, '#fff6c8', 4), 0.35);
+          }
+          later(0.42, () => {
+            cam.shake = 0.12 + i * 0.02;
+            audio.play('hit');
+            for (const m of [...mobs.list]) if (m.alive && Math.hypot(m.x - cx, m.z - cz) < sk.area + m.def.r) inflict(m, sk.status, lv, moonHit(m, atk, matk));
+          });
+        });
+      } else { // Crescent Arrow: through the target, 8 paces in a line
+        const dx = t.x - player.x, dz = t.z - player.z, d = Math.hypot(dx, dz) || 1, ux = dx / d, uz = dz / d;
+        const f = from(), end = { x: player.x + ux * 8, y: f.y, z: player.z + uz * 8 };
+        fx.zap(f, end, '#e8eeff');
+        for (let j = 1; j <= 8; j++) fx.sparkle(player.x + ux * j, f.y, player.z + uz * j, j % 2 ? '#c8d8ff' : '#ffffff', 2);
+        cam.shake = 0.15;
+        audio.play('hit');
+        for (const m of [...mobs.list]) {
+          if (!m.alive) continue;
+          const px = m.x - player.x, pz = m.z - player.z, along = px * ux + pz * uz, off = Math.abs(px * uz - pz * ux);
+          if (along > -0.3 && along < 8 + m.def.r && off < 0.7 + m.def.r) moonHit(m, atk, matk);
+        }
+      }
+      player.command({ mob: t }); // and keep shooting
+    };
+    player.command({ mob: target, spell: { range: far, time: 0, run, name: sk.name } });
+    return;
   }
   // ---- Windrunner: Hurricane Volley (a stream of arrows), Cyclone Arrow (a whirlwind where it lands) ----
   if (id === 'volley') {
@@ -1699,6 +1765,20 @@ function arrowHit(t, mult, from, push = 0.4, then = null) {
     arrowLanded();
     then?.(res);
   }, 0.2);
+}
+// a Moon Ranger's arrow: ATK and MATK together, in the arrows' element, shown as one number;
+// returns the damage done
+function moonHit(m, atkMult, matkMult) {
+  if (!m.alive) return 0;
+  const md = m.effDef(), el = player.ps.el;
+  const r = playerAttack(player.ps, md, atkMult * player.atkMul * bowMul(m), 1, true);
+  const g = magicAttack(player.ps, md, matkMult, el || 'neutral');
+  const dmg = (r.miss ? 0 : r.dmg) + g.dmg;
+  fx.number(m.x, overHead(m, m.sprite.scale.y * 0.8), m.z, dmg, g.el > 1 ? 'crit' : g.el < 1 ? 'miss' : 'dealt');
+  const dx = m.x - player.x, dz = m.z - player.z, d = Math.hypot(dx, dz) || 1;
+  m.hit(dmg, dx / d * 0.3, dz / d * 0.3);
+  arrowLanded();
+  return dmg;
 }
 // one more blade hit on a monster (Twin Fang's second cut, a Combo): a skill hit, so no crit
 function bladeHit(t, mult, opts = {}) {
@@ -1904,7 +1984,14 @@ function tickSkills(dt) {
   }
   if (buffs.aegis > 0 && player.barrier <= 0) { buffs.aegis = 0; applyStats(); menus.message('Stone Aegis breaks'); }
   if (player.endureT <= 0) endureGuard = 0;
-  player.guard = Math.max(endureGuard, buffs.ward > 0 ? wardLv * 0.02 : 0);
+  player.guard = Math.max(endureGuard, buffs.ward > 0 ? wardLv * 0.02 : 0, buffs.veil > 0 ? veilLv * 0.04 : 0);
+  // the moon rises and sets: the Moon Ranger's night passives follow it
+  if (!!dayNight.isNight !== nightUp) {
+    nightUp = !!dayNight.isNight;
+    applyStats();
+    if (skillLv(prog, 'moonlit')) menus.message(nightUp ? 'The moon is up: Moonlit Hunter wakes.' : 'The moon sets: Moonlit Hunter sleeps.');
+  }
+  moonMark.classList.toggle('on', nightUp && skillLv(prog, 'moonlit') > 0 && player.state !== 'down');
   player.steady = buffs.ward > 0;
   const low = player.hp < player.maxHp * 0.25 && skillLv(prog, 'laststand');
   player.atkMul = (buffs.warcry > 0 ? 1 + warcryLv / 100 : 1) * (low ? 1.15 : 1) * (1 + momentum * skillLv(prog, 'momentum') / 100);
@@ -2005,7 +2092,7 @@ function naturalRegen(dt) {
   const walking = player.moving;
   const low = player.hp < player.maxHp * 0.25 && skillLv(prog, 'secondwind') ? 3 : 1;
   if (!walking) hpT += dt * fast * low * (inv.wearing('regen') ? 2 : 1);
-  spT += dt * fast;
+  spT += dt * fast * (nightUp ? 1 + 0.1 * skillLv(prog, 'lunartide') : 1); // Lunar Tide
   // resting (sitting, or in a town) also gives back a share of the whole bar, so a full rest takes
   // about a minute at any level instead of minutes early on
   if (hpT >= 6) { hpT -= 6; player.heal(player.ps.hpRegen + (resting ? Math.ceil(player.maxHp * 0.05) : 0)); }
@@ -2036,7 +2123,12 @@ function persist() {
 }
 
 // second jobs glow: a soft aura behind the hero and a ring at their feet, in the job's colour
-const AURA = { blademaster: '#ff7a4a', wizard: '#b48aff', magicknight: '#6ad8ff', windrunner: '#8af0c8' };
+const AURA = { blademaster: '#ff7a4a', wizard: '#b48aff', magicknight: '#6ad8ff', windrunner: '#8af0c8', moonranger: '#b8c8ff' };
+// a small moon by the hotbar while the Moon Ranger's night passives work
+const moonMark = document.createElement('div');
+moonMark.id = 'moonmark';
+moonMark.title = 'Moonlit Hunter: the moon is up';
+document.body.appendChild(moonMark);
 const aura = (() => {
   const c = document.createElement('canvas');
   c.width = c.height = 64;

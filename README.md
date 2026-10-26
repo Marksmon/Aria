@@ -359,7 +359,7 @@ Focus, Hunter's Mark, Leap Back.
 From **Job Level 40** of a first job (it goes to 50), a three-step trial opens a second job. Job
 Level starts again at 1 (up to 50, on the second-job EXP table); your first-job skills and
 points stay. Second jobs wear their first job's outfit in new colours and glow with a small aura
-(the Magic Knight and the Windrunner have their own).
+(the Magic Knight, the Windrunner and the Moon Ranger have their own).
 
 - **BladeMaster** (Captain Ulfr): 30 Goblins, 20 Kobold Assassins, the Giant Beetle.
 - **Wizard** (Archmage Vigdis): 10 Fire Dust and 10 Dark Crystals, 25 Goblin Archers, the Giant Mushroom.
@@ -367,6 +367,9 @@ points stay. Second jobs wear their first job's outfit in new colours and glow w
   15 Glow Dust, the King Crab. Only for heroes who walked both paths with **at least 20 skill
   points in each tree**.
 - **Windrunner** (Huntmaster Sigrid, Veidheim): 20 Wolves and 10 Snakes in Barley Field, the Alpha Wolf.
+- **Moon Ranger** (Hrafn the Stargazer, Galdrheim): 20 Dark Wisps in Black Wood, 10 Fire Wisps in
+  Ash Heath, the Giant Mushroom. Only for heroes who walked the Sorcerer's and the Archer's paths
+  with **at least 20 skill points in each tree**.
 - A hero of several paths may take the BladeMaster, Wizard or Windrunner trial only for the first
   job with the most points (a tie opens each tied one). A Job 50 hero with 30 points as a Blader and 20 as a Sorcerer may
   become a BladeMaster or a Magic Knight; with 25 and 25, any of the three; with 35 and 15, only a
@@ -414,6 +417,20 @@ points stay. Second jobs wear their first job's outfit in new colours and glow w
 | Gale Step | 5: dash 4 paces away from the nearest monster, untouchable on the way, then walk 24–40% quicker for 2 s. 6 s cooldown |
 | Hurricane Volley | 10, needs Windborne 5: a stream of 5–10 arrows, 68–140% each |
 | Cyclone Arrow | 10, needs Hurricane Volley 3 and Tailwind 3: a whirlwind where the arrow lands, 7 gusts over 3 s of 39–75% to everything within 2.5 paces, pulling them in; 2% per level each to paralyze for 1.2 s |
+
+| Moon Ranger: bow and spell, stronger at night | |
+|---|---|
+| Moonlit Hunter | passive, 10: at night, every skill +2% per level and +1 FLEE per level |
+| Lunar Tide | passive, 5, needs Moonlit Hunter 3: at night, SP comes back 10% faster per level and Starfall costs 4% less SP per level |
+| Star Sight | passive, 5: Lunar Multishot and Starfall reach 0.5 paces further per level |
+| Lunar Multishot | 10: a fan of 3–6 arrows, one at the target and the rest at the monsters nearest it (all at the target if alone), each 78–150% ATK + 46–100% MATK |
+| Starfall | 10, needs Lunar Multishot 3: 2–7 waves of falling stars round the target, each 34–70% ATK + 51–105% MATK to everything within 3 paces; 1.5% per level each to stun for 1.5 s |
+| Crescent Arrow | 10, needs Lunar Multishot 5: a charged arrow through every monster in an 8-pace line, 168–330% ATK + 90–180% MATK |
+| Moonveil | 5, needs Moonlit Hunter 1: 15 s of 4–20% less damage taken; at night every Lunar Multishot looses 2 more arrows |
+
+The Moon Ranger's arrows hit with ATK and MATK together (KNL matters as much as FNS), in the
+arrows' element. Night is when the sky is darkest; a small moon by the hotbar shows when its night
+passives are at work.
 
 Walking speed is never raised for long in Aria: the Windrunner's bursts (Tailwind's rush, the
 moment after Gale Step) are the only haste, a few seconds at a time.

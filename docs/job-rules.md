@@ -11,7 +11,7 @@ quests. Code: `src/progress.js` (jobs, levels, points), `src/skills.js` (trees, 
 |---|---|---|
 | 0 | Trainee (`novice`) | 1–10 |
 | 1 | Blader (`swordman`), Sorcerer (`mage`), Archer (`archer`) | 1–50, one level shared by all |
-| 2 | BladeMaster (`blademaster`, from Blader), Wizard (`wizard`, from Sorcerer), Magic Knight (`magicknight`, from Blader and Sorcerer), Windrunner (`windrunner`, from Archer) | 1–50, starts again at 1 |
+| 2 | BladeMaster (`blademaster`, from Blader), Wizard (`wizard`, from Sorcerer), Magic Knight (`magicknight`, from Blader and Sorcerer), Windrunner (`windrunner`, from Archer), Moon Ranger (`moonranger`, from Sorcerer and Archer) | 1–50, starts again at 1 |
 
 ## First jobs: walking several paths
 
@@ -73,6 +73,9 @@ Focus, Hunter's Mark, Leap Back.
 - A second-job trial opens from **Job Level 40** of the first job (first jobs go to 50).
 - **Magic Knight:** both first jobs earned, and **at least 20 skill points spent in each**
   first-job tree (Blader and Sorcerer).
+- **Moon Ranger:** the Sorcerer and the Archer earned, and **at least 20 skill points spent in
+  each** of their trees. The two-path rule (`secondJobOpen`) takes the pair from the job's `from`,
+  so the Magic Knight and the Moon Ranger follow the same rule.
 - **BladeMaster / Wizard / Windrunner (one path):** for a hero who earned only one first job, the matching
   second job. For a hero who earned several, only the second job of the first job with the **most
   points spent** of all those walked. A tie opens each tied one.
@@ -98,7 +101,8 @@ Focus, Hunter's Mark, Leap Back.
 ## Second-job skills
 
 - **Three or four active skills per second job** (the owner's rule). Windrunner: Tailwind, Gale
-  Step, Hurricane Volley, Cyclone Arrow. BladeMaster: Twin Fang,
+  Step, Hurricane Volley, Cyclone Arrow. Moon Ranger: Lunar Multishot, Starfall, Crescent Arrow,
+  Moonveil. BladeMaster: Twin Fang,
   Piercing Edge, Final Blade, Blade Dance. Magic Knight: Elemental Edge, Elemental Blade,
   Elemental Nova, Stone Aegis. Wizard: Stone Spike, Earthquake, Meteor Storm, Storm Gust,
   Thunderstorm (its area spells were asked for by name). Add passives rather than more actives.
@@ -128,6 +132,10 @@ MATK part), used by both the damage and the skill text.
   Ragnarok's 190) and moving to a better spot, not a burst. **Walking haste only in bursts** (the
   owner's call): Tailwind's first 4 s (30%) and 2 s after Gale Step (24–40%); only the strongest
   counts. Nothing else hastes the walk.
+- **Moon Ranger:** arrows of ATK and MATK together (`power` + `mpower`, like the Magic Knight's
+  sword). About 1.05x the Windrunner on one target by day and 1.2x at night (Moonlit Hunter), the
+  best of the bow jobs on packs (Lunar Multishot, Starfall). "Night" is `dayNight.isNight`
+  (`night > 0.6`), the same test as the night monsters.
 - **Magic Knight:** between the two on one target, close to the BladeMaster on packs, with the most
   HP and its Stone Aegis barrier.
 
@@ -146,6 +154,7 @@ MATK part), used by both the damage and the skill text.
 - Trainers:
   - Captain Ulfr (Blader, BladeMaster), Steinborg.
   - Archmage Vigdis (Sorcerer, Wizard), Galdrheim.
+  - Hrafn the Stargazer (Moon Ranger), Galdrheim: 20 Dark Wisps, 10 Fire Wisps, the Giant Mushroom.
   - Huntmaster Sigrid (Archer, Windrunner), Veidheim. The Windrunner's trial: 20 Wolves, 10 Snakes,
     the Alpha Wolf (all in Barley Field).
   - Sir Eirik the Runeblade (Magic Knight), Steinborg.

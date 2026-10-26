@@ -186,7 +186,7 @@ export const STORY = [
     reward: { xp: 8000 } },
 
   // ---------- Chapter 7: the second path ----------
-  { id: 'secondpath', ch: 'Chapter 7: The Second Path', title: 'Beyond the First Path', kind: 'job2', goal: 'Take a second job: BladeMaster (Captain Ulfr), Wizard (Archmage Vigdis), Magic Knight (Sir Eirik, Steinborg) or Windrunner (Huntmaster Sigrid, Veidheim)',
+  { id: 'secondpath', ch: 'Chapter 7: The Second Path', title: 'Beyond the First Path', kind: 'job2', goal: 'Take a second job: BladeMaster (Captain Ulfr), Wizard (Archmage Vigdis), Magic Knight (Sir Eirik, Steinborg), Windrunner (Huntmaster Sigrid, Veidheim) or Moon Ranger (Hrafn the Stargazer, Galdrheim)',
     hint: 'A second-job trial opens at Job Level 40. Which trials you may take depends on where your skill points went.',
     say: [[null, 'Your power has taken a new shape. The aura around you is faint, but every monster in Aria can feel it.'],
       ['vigdis', 'Now you are ready. Go to Ash Heath and put out the Giant Beetle\'s furnace.']],

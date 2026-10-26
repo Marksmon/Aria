@@ -334,7 +334,7 @@ export const recipeKind = (r) => {
 export const JOB_NAMES = { novice: 'Trainee', swordman: 'Blader', mage: 'Sorcerer', archer: 'Archer' };
 // job: one job id, or the list of jobs a hero has earned (any of them will do); second jobs wear
 // what the jobs before them wear
-const WEARS_AS = { blademaster: ['swordman'], wizard: ['mage'], magicknight: ['swordman', 'mage'], windrunner: ['archer'] };
+const WEARS_AS = { blademaster: ['swordman'], wizard: ['mage'], magicknight: ['swordman', 'mage'], windrunner: ['archer'], moonranger: ['mage', 'archer'] };
 export const canWear = (id, job) => {
   const it = ITEMS[id], jobs = [job].flat().flatMap((j) => [j, ...(WEARS_AS[j] || [])]);
   return !it?.jobs || jobs.some((j) => it.jobs.includes(j));
@@ -705,6 +705,14 @@ const PAINT = {
   skill_galestep: (g) => skillIcon(g, '#3a8a6a', () => { g.beginPath(); g.ellipse(40, 40, 7, 4, -0.3, 0, 7); g.fill(); for (const [y, w] of [[30, 16], [38, 22], [46, 14]]) { g.beginPath(); g.moveTo(10, y); g.lineTo(10 + w, y); g.lineWidth = 2.5; g.stroke(); } }),
   skill_volley: (g) => skillIcon(g, '#1a7a8a', () => { for (const [dx, dy] of [[0, 0], [6, -8], [-6, 8], [12, -16], [-12, 16]]) iconArrow(g, 14 + dx, 44 + dy, 40 + dx, 30 + dy, 2); }),
   skill_cyclone: (g) => skillIcon(g, '#2a6a8a', () => { g.lineWidth = 3; for (let i = 0; i < 4; i++) { g.beginPath(); g.ellipse(32, 18 + i * 9, 16 - i * 3, 4, 0, 0, Math.PI * 1.6); g.stroke(); } iconArrow(g, 10, 12, 30, 22, 2); }),
+  // the Moon Ranger's: night blues, silver
+  skill_moonlit: (g) => skillIcon(g, '#2a3a7a', () => { g.beginPath(); g.arc(30, 32, 15, 0, 7); g.fill(); g.fillStyle = '#2a3a7a'; g.beginPath(); g.arc(37, 27, 13, 0, 7); g.fill(); g.fillStyle = '#fff4dc'; for (const [x, y] of [[46, 44], [50, 34], [42, 50]]) { g.beginPath(); g.arc(x, y, 1.6, 0, 7); g.fill(); } }),
+  skill_lunartide: (g) => skillIcon(g, '#24407a', () => { g.beginPath(); g.arc(32, 22, 8, 0, 7); g.fill(); g.lineWidth = 3; for (const y of [38, 46]) { g.beginPath(); g.moveTo(12, y); g.quadraticCurveTo(22, y - 6, 32, y); g.quadraticCurveTo(42, y + 6, 52, y); g.stroke(); } }),
+  skill_starsight: (g) => skillIcon(g, '#34307a', () => { const st = (x, y, r) => { g.beginPath(); for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, k = i % 2 ? r * 0.42 : r; g.lineTo(x + Math.cos(a) * k, y + Math.sin(a) * k); } g.closePath(); g.fill(); }; st(24, 36, 12); st(44, 22, 7); st(46, 44, 5); }),
+  skill_multishot: (g) => skillIcon(g, '#3a4a8a', () => { for (const a of [-0.5, -0.25, 0, 0.25, 0.5]) iconArrow(g, 14, 32, 14 + Math.cos(a) * 36, 32 + Math.sin(a) * 36, 2); }),
+  skill_starfall: (g) => skillIcon(g, '#2a2a6a', () => { for (const [x, y] of [[20, 16], [36, 22], [48, 12], [28, 34]]) { g.beginPath(); g.moveTo(x - 6, y - 8); g.lineTo(x, y); g.lineWidth = 2; g.stroke(); g.beginPath(); g.arc(x, y, 3, 0, 7); g.fill(); } g.fillRect(12, 46, 40, 3); }),
+  skill_crescent: (g) => skillIcon(g, '#3a3a8a', () => { g.beginPath(); g.arc(30, 32, 16, -Math.PI / 2, Math.PI / 2); g.arc(24, 32, 16, Math.PI / 2, -Math.PI / 2, true); g.fill(); iconArrow(g, 10, 32, 54, 32, 2); }),
+  skill_moonveil: (g) => skillIcon(g, '#4a4a9a', () => { g.beginPath(); g.moveTo(32, 12); g.lineTo(48, 18); g.lineTo(46, 36); g.quadraticCurveTo(40, 48, 32, 52); g.quadraticCurveTo(24, 48, 18, 36); g.lineTo(16, 18); g.closePath(); g.lineWidth = 3; g.stroke(); g.beginPath(); g.arc(30, 30, 8, 0, 7); g.fill(); g.fillStyle = '#4a4a9a'; g.beginPath(); g.arc(34, 27, 7, 0, 7); g.fill(); }),
   skill_swiftchant: (g) => skillIcon(g, '#5a7ac8', () => { g.beginPath(); g.arc(32, 32, 15, -Math.PI / 2, Math.PI); g.lineWidth = 4; g.stroke(); g.beginPath(); g.moveTo(32, 32); g.lineTo(32, 20); g.moveTo(32, 32); g.lineTo(40, 36); g.lineWidth = 3; g.stroke(); }),
   heartwood: (g) => { shape(g, () => g.roundRect(12, 20, 40, 26, 10), '#7a5232'); shape(g, () => g.ellipse(46, 33, 8, 13, 0, 0, Math.PI * 2), '#9fd060', 2.5); g.beginPath(); g.ellipse(46, 33, 3.5, 6, 0, 0, 7); g.strokeStyle = '#4a8a36'; g.lineWidth = 2; g.stroke(); },
   king_pearl: (g) => { shape(g, () => g.arc(32, 34, 20, 0, Math.PI * 2), '#f2cf6a'); gloss(g, 25, 27, 7, 5); },

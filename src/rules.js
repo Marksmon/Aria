@@ -39,6 +39,7 @@ export const JOB_RULES = {
   blademaster: { hpFactor: 150, hpIncrease: 500, spIncrease: 300, delay: { fist: 380, sword: 480 }, weight: 3200 },
   wizard:      { hpFactor: 55, hpIncrease: 500, spIncrease: 900, delay: { fist: 500, sword: 620 }, weight: 2400 },
   magicknight: { hpFactor: 110, hpIncrease: 700, spIncrease: 600, delay: { fist: 420, sword: 520 }, weight: 3000 },
+  moonranger:  { hpFactor: 70, hpIncrease: 500, spIncrease: 600, delay: { fist: 480, sword: 640, bow: 540 }, weight: 2600 }, // bow and spell
   windrunner:  { hpFactor: 85, hpIncrease: 500, spIncrease: 350, delay: { fist: 450, sword: 620, bow: 470 }, weight: 2800 }, // the Hunter's quick bow
 };
 

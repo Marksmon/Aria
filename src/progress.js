@@ -21,7 +21,8 @@ export const STATS = {
 // Aria's own job names (the ids of the first jobs stay Ragnarok's): the Trainee becomes a Blader, a
 // Sorcerer or an Archer (tier 1), and any can later take a second job (tier 2). A hero may walk
 // several first paths: they share one Job Level and one pool of skill points, and switch between
-// them at a Keeper. Walking the Blader's and the Sorcerer's opens the Magic Knight.
+// them at a Keeper. Walking the Blader's and the Sorcerer's opens the Magic Knight; the Sorcerer's
+// and the Archer's, the Moon Ranger.
 export const OLD_EDGES = ['flameedge', 'frostedge', 'thunderedge'];
 export const JOBS = {
   novice: { name: 'Trainee', tier: 0 },
@@ -32,6 +33,7 @@ export const JOBS = {
   wizard: { name: 'Wizard', tier: 2, from: ['mage'] },
   magicknight: { name: 'Magic Knight', tier: 2, from: ['swordman', 'mage'] }, // needs both first jobs
   windrunner: { name: 'Windrunner', tier: 2, from: ['archer'] },
+  moonranger: { name: 'Moon Ranger', tier: 2, from: ['mage', 'archer'] }, // needs both, like the Magic Knight
 };
 export const SECOND_AT = 40; // the first-job Job Level a second job's trial asks for
 // the skill trees a job stands on: its own and those of the jobs before it
@@ -40,6 +42,7 @@ export const TREES = {
   blademaster: ['blademaster', 'swordman', 'novice'], wizard: ['wizard', 'mage', 'novice'],
   magicknight: ['magicknight', 'swordman', 'mage', 'novice'],
   windrunner: ['windrunner', 'archer', 'novice'],
+  moonranger: ['moonranger', 'mage', 'archer', 'novice'],
 };
 // hidden stats a job adds at certain job levels: [job level, stat]
 const JOB_BONUS = {
@@ -63,6 +66,9 @@ const JOB_BONUS = {
   windrunner: [[1, 'qkn'], [3, 'fns'], [5, 'qkn'], [7, 'fns'], [9, 'qkn'], [11, 'end'], [13, 'fns'], [15, 'qkn'], [17, 'fns'], [19, 'ftn'],
     [21, 'qkn'], [23, 'fns'], [25, 'qkn'], [27, 'end'], [29, 'fns'], [31, 'qkn'], [33, 'fns'], [35, 'qkn'], [37, 'pow'], [39, 'fns'],
     [41, 'qkn'], [43, 'end'], [45, 'fns'], [47, 'qkn'], [49, 'fns'], [50, 'qkn']],
+  moonranger: [[1, 'fns'], [3, 'knl'], [5, 'fns'], [7, 'qkn'], [9, 'knl'], [11, 'fns'], [13, 'knl'], [15, 'end'], [17, 'fns'], [19, 'knl'],
+    [21, 'fns'], [23, 'qkn'], [25, 'knl'], [27, 'fns'], [29, 'knl'], [31, 'end'], [33, 'fns'], [35, 'knl'], [37, 'qkn'], [39, 'fns'],
+    [41, 'knl'], [43, 'fns'], [45, 'knl'], [47, 'end'], [49, 'fns'], [50, 'knl']],
 };
 
 export class Progress {
