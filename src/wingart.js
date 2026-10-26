@@ -86,63 +86,43 @@ export function paintWings(g, art, frame = 0) {
     g.restore();
   }
 }
-// how many frames each art has (the ember's flames flicker)
-export const WING_FRAMES = { ember: 4 };
+// how many frames each art has (one each, for now)
+export const WING_FRAMES = {};
 const path = (g, pts) => { g.beginPath(); g.moveTo(...pts[0]); for (const p of pts.slice(1)) p.length === 4 ? g.quadraticCurveTo(...p) : g.bezierCurveTo(...p); g.closePath(); };
 const WING_ART = {
-  // a vine: a curling stem arcing up and out from the back, leaves hanging along it, a flower at the curl
+  // a big leaf up and out, a smaller one down; midribs and veins
   leaf(g) {
-    const vine = (k) => [3 + 40 * k, -2 - 30 * Math.sin(k * Math.PI * 0.55) + 6 * k * k];
-    g.beginPath(); g.moveTo(...vine(0));
-    for (let k = 0.05; k <= 1.001; k += 0.05) g.lineTo(...vine(k));
-    const [ex, ey] = vine(1);
-    g.quadraticCurveTo(ex + 6, ey - 2, ex + 3, ey - 7); g.quadraticCurveTo(ex - 1, ey - 8, ex, ey - 4); // the curl
-    g.lineWidth = 3.2; g.strokeStyle = '#4a3220'; g.stroke(); g.lineWidth = 1.6; g.strokeStyle = '#7a5a34'; g.stroke();
-    const leaf = ([x, y], len, ang, fill) => {
-      g.save(); g.translate(x, y); g.rotate(ang);
-      g.beginPath(); g.moveTo(0, 0); g.quadraticCurveTo(len * 0.5, -len * 0.42, len, 0); g.quadraticCurveTo(len * 0.5, len * 0.42, 0, 0); g.closePath();
-      g.fillStyle = fill; g.fill(); g.lineWidth = 1.3; g.strokeStyle = '#2f5a22'; g.stroke();
-      g.beginPath(); g.moveTo(1, 0); g.lineTo(len - 2, 0); g.lineWidth = 0.8; g.strokeStyle = '#9cdc76'; g.stroke();
+    for (const [len, wid, ang, fill] of [[42, 15, -0.55, '#6fbf4a'], [28, 11, 0.45, '#5aa83a']]) {
+      g.save(); g.rotate(ang);
+      g.beginPath(); g.moveTo(2, 0); g.quadraticCurveTo(len * 0.45, -wid, len, 0); g.quadraticCurveTo(len * 0.45, wid, 2, 0); g.closePath();
+      g.fillStyle = fill; g.fill(); g.lineWidth = 1.8; g.strokeStyle = '#2f5a22'; g.stroke();
+      g.beginPath(); g.moveTo(3, 0); g.lineTo(len - 3, 0);
+      for (let x = 10; x < len - 6; x += 7) { g.moveTo(x, 0); g.lineTo(x + 5, -wid * 0.55); g.moveTo(x, 0); g.lineTo(x + 5, wid * 0.55); }
+      g.lineWidth = 1; g.strokeStyle = '#3f7a2a'; g.stroke();
+      g.beginPath(); g.moveTo(8, -3); g.quadraticCurveTo(len * 0.45, -wid * 0.8, len - 6, -2); g.lineWidth = 1.4; g.strokeStyle = '#9cdc76'; g.stroke();
       g.restore();
-    };
-    // leaves hang under the vine and stand above it by turns, bigger towards the tip
-    [[0.16, 15, 1.9], [0.3, 18, -0.9], [0.44, 20, 1.7], [0.58, 21, -1.1], [0.72, 22, 1.4], [0.88, 18, -0.4]]
-      .forEach(([k, len, ang], i) => leaf(vine(k), len, ang, i % 2 ? '#7ccf52' : '#5aa83a'));
-    // a little flower where the vine curls
-    for (let i = 0; i < 5; i++) { const a = (i / 5) * Math.PI * 2; g.beginPath(); g.arc(ex + 3 + Math.cos(a) * 2.6, ey - 4 + Math.sin(a) * 2.6, 2, 0, Math.PI * 2); g.fillStyle = '#ffb8d0'; g.fill(); }
-    g.beginPath(); g.arc(ex + 3, ey - 4, 1.6, 0, Math.PI * 2); g.fillStyle = '#ffe27a'; g.fill();
+    }
   },
-  // a dragonfly's: two long slim wings a side, clear as glass, finely veined, a dark spot near each tip
+  // a butterfly's: a broad upper wing and a rounder lower one, see-through
   fairy(g) {
-    for (const [len, wid, ang] of [[42, 9, -0.62], [34, 8, -0.08]]) {
-      g.save(); g.translate(3, -2); g.rotate(ang);
-      g.beginPath(); g.moveTo(0, -1); g.bezierCurveTo(len * 0.3, -wid, len * 0.85, -wid * 0.9, len, -wid * 0.2); g.bezierCurveTo(len * 0.9, wid * 0.6, len * 0.35, wid * 0.7, 0, 1); g.closePath();
-      g.fillStyle = 'rgba(190, 240, 255, .42)'; g.fill(); g.lineWidth = 1.2; g.strokeStyle = '#4aa8c8'; g.stroke();
-      // the veins: three along, many small ones across
-      g.beginPath();
-      for (const y of [-wid * 0.45, 0, wid * 0.35]) { g.moveTo(2, y * 0.3); g.quadraticCurveTo(len * 0.5, y, len * 0.92, y * 0.4); }
-      for (let x = 6; x < len - 4; x += 3.2) { g.moveTo(x, -wid * 0.55); g.lineTo(x + 1, wid * 0.45); }
-      g.lineWidth = 0.45; g.strokeStyle = 'rgba(70, 150, 190, .7)'; g.stroke();
-      g.beginPath(); g.ellipse(len * 0.86, -wid * 0.25, 3, 1.6, 0, 0, Math.PI * 2); g.fillStyle = '#2a6a8a'; g.fill(); // the tip spot
+    path(g, [[2, -2], [10, -26, 34, -30, 44, -20], [46, -10, 34, -2, 24, 0], [30, 8, 30, 20, 18, 24], [8, 22, 4, 10, 2, 2]]);
+    g.fillStyle = 'rgba(170, 235, 255, .62)'; g.fill(); g.lineWidth = 2; g.strokeStyle = '#5aa8d8'; g.stroke();
+    g.beginPath(); g.moveTo(4, -2); g.quadraticCurveTo(20, -18, 40, -19); g.moveTo(4, 0); g.quadraticCurveTo(18, -6, 30, -6); g.moveTo(4, 3); g.quadraticCurveTo(14, 12, 18, 20);
+    g.lineWidth = 1.2; g.strokeStyle = 'rgba(255, 255, 255, .8)'; g.stroke();
+    for (const [x, y, r] of [[30, -18, 3], [20, 12, 2.2]]) { g.beginPath(); g.arc(x, y, r, 0, Math.PI * 2); g.fillStyle = 'rgba(255, 255, 255, .55)'; g.fill(); }
+  },
+  // flames licking out and up from the back, red at the tips
+  ember(g) {
+    const fire = g.createLinearGradient(0, 0, 46, 0);
+    fire.addColorStop(0, '#ffe27a'); fire.addColorStop(0.45, '#ff9a2a'); fire.addColorStop(1, '#d8321e');
+    for (const [len, ang, w] of [[44, -0.75, 9], [40, -0.3, 8], [32, 0.15, 7], [24, 0.6, 6]]) {
+      g.save(); g.rotate(ang);
+      g.beginPath(); g.moveTo(2, -w * 0.5); g.bezierCurveTo(len * 0.4, -w * 1.2, len * 0.7, w * 0.2, len, -w * 0.9);
+      g.bezierCurveTo(len * 0.75, w * 0.9, len * 0.4, w * 1.1, 2, w * 0.5); g.closePath();
+      g.fillStyle = fire; g.fill(); g.lineWidth = 1.5; g.strokeStyle = '#8a2414'; g.stroke();
+      g.beginPath(); g.moveTo(4, 0); g.quadraticCurveTo(len * 0.5, -w * 0.3, len * 0.8, -w * 0.5); g.lineWidth = 1.4; g.strokeStyle = '#fff2b0'; g.stroke();
       g.restore();
     }
-    for (const [x, y] of [[20, -30], [38, -18], [30, 6]]) { g.beginPath(); g.arc(x, y, 1, 0, Math.PI * 2); g.fillStyle = '#ffffff'; g.fill(); }
-  },
-  // flames rising from the shoulders, tall tongues leaning out, red at the tips; frame moves the tips
-  ember(g, frame) {
-    const fire = g.createLinearGradient(0, 8, 0, -30);
-    fire.addColorStop(0, '#ffe27a'); fire.addColorStop(0.4, '#ff9a2a'); fire.addColorStop(0.85, '#e8421e'); fire.addColorStop(1, '#a8200e');
-    const wob = (i) => Math.sin(frame * 1.6 + i * 2.1) * 3;
-    for (const [x, h, lean, w, i] of [[24, 18, 10, 7, 0], [17, 26, 8, 8, 1], [9, 32, 6, 8, 2], [3, 24, 3, 6, 3]]) {
-      const tx = x + lean + wob(i), ty = 4 - h - Math.abs(wob(i + 1)) * 0.6;
-      g.beginPath(); g.moveTo(x - w, 6);
-      g.bezierCurveTo(x - w - 2, -h * 0.3, tx - 6, ty + h * 0.35, tx, ty);
-      g.bezierCurveTo(tx - 1, ty + h * 0.4, x + w + 3, -h * 0.2, x + w, 6); g.closePath();
-      g.fillStyle = fire; g.fill(); g.lineWidth = 1.3; g.strokeStyle = '#8a2414'; g.stroke();
-      g.beginPath(); g.moveTo(x, 5); g.quadraticCurveTo(x + lean * 0.3, -h * 0.4, tx - 2, ty + 6); g.lineWidth = 1.6; g.strokeStyle = '#fff2b0'; g.stroke(); // the hot core
-    }
-    // sparks flying up
-    for (let i = 0; i < 4; i++) { const y = -24 - ((frame * 5 + i * 9) % 14), x = 8 + i * 9 + Math.sin(frame + i) * 2; g.beginPath(); g.arc(x, y, 1.1, 0, Math.PI * 2); g.fillStyle = i % 2 ? '#ffe27a' : '#ff8a3a'; g.fill(); }
   },
   // white feathers: the arm curves up and out from the back; long flight feathers hang from it,
   // longest at the tip, with a row of short coverts over their roots and a golden leading edge

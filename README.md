@@ -596,12 +596,12 @@ no torch is needed.
 
 | Wings | Look | Effect | Where |
 |---|---|---|---|
-| Leaf Wings | a curling vine hung with leaves, a flower at the tip, swaying | FLEE +2 | Gunnar crafts them (Base 8): 12 Leaves, 6 Seeds, 2 Shells |
+| Leaf Wings | two great leaves a side, swaying | FLEE +2 | Gunnar crafts them (Base 8): 12 Leaves, 6 Seeds, 2 Shells |
 | Wisp | a pale blue Wisp at your shoulder | KNL +1, Max SP +20 | Orm crafts it (Base 14): 12 Glow Dust, 6 Water Drops |
-| Fairy Wings | a dragonfly's: long, slim and clear as glass, shimmering | FLEE +3, QKN +1 | Orm crafts them (Base 26): 15 Glow Dust, 10 Water Drops, a Shiny Gel |
+| Fairy Wings | a butterfly's, thin and sky blue, fluttering | FLEE +3, QKN +1 | Orm crafts them (Base 26): 15 Glow Dust, 10 Water Drops, a Shiny Gel |
 | Lantern | a lantern at your shoulder | KNL +1, FNS +1 | Wisp, 0.4% |
 | Dark Wisp | a violet Wisp at your shoulder | KNL +2, Max SP +30 | Dark Wisp, 0.25% |
-| Ember Wings | flames rising from the shoulders, flickering, sparks flying up | POW +1, KNL +1, Max HP +50 | Fire Wisp, 0.25% |
+| Ember Wings | tongues of flame fanning out, flickering | POW +1, KNL +1, Max HP +50 | Fire Wisp, 0.25% |
 | Angel Wings | white feathers edged in gold | KNL +2, FTN +2, FLEE +2, Max SP +40 | Bloop Island raid, a rare reward |
 | Devil Wings | a bat's leathery wings | POW +2, END +1, Max HP +80 | Fire Giant, 3% |
 

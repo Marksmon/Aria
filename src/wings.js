@@ -23,11 +23,11 @@ function wingsFrames(art) {
   });
 }
 // how each kind sits and moves: its size and height on the back, and its motion (sway: a vine
-// swaying; flutter: a dragonfly's quick shimmer; flicker: flames dancing; flap: a slow wingbeat)
+// swaying; flutter: a butterfly's quick beat; flicker: flames dancing; flap: a slow wingbeat)
 const WING_MOVE = {
-  leaf: { w: 1.4, h: 0.82, y: 0.98, move: 'sway' },
-  fairy: { w: 1.25, h: 0.74, y: 1.06, move: 'flutter' },
-  ember: { w: 1.3, h: 0.92, y: 1.05, move: 'flicker' },
+  leaf: { w: 1.36, h: 0.8, y: 0.98, move: 'sway' },
+  fairy: { w: 1.36, h: 0.8, y: 0.98, move: 'flutter' },
+  ember: { w: 1.36, h: 0.8, y: 0.98, move: 'flicker' },
   angel: { w: 1.55, h: 0.9, y: 1.0, move: 'flap', speed: 2.2, amp: 0.14 },
   devil: { w: 1.5, h: 0.88, y: 0.98, move: 'flap', speed: 1.7, amp: 0.2 },
 };
