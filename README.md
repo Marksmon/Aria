@@ -619,9 +619,11 @@ name (up to 16 letters, shown over your job and in Status), a male or female bod
 (Tousled, Long, Straight or Ponytail, a heroine's first pick) and a hair dye (8 colours) when you start a new game; **Embla the
 Stylist** by Steinborg's fountain changes them for 1,000 perz. Your hair stays
 the same through job changes, and the job changes your outfit: the Trainee's browns, the Blader's
-navy capelet, the Sorcerer's purple coat, the Archer's leather vest over green (blue on her) with a quiver on
-the back, then the second jobs' (the Windrunner's green and gold with a teal cape, the Moon
-Ranger's silver and starry navy, the Beastmaster's skull pauldrons and furs), the BladeMaster's black and gold armour, the
+navy capelet, the Sorcerer's purple coat, the Archer's leather vest over green with a quiver on the back (on her a blue crop top, a laced
+corset, shorts and over-knee boots), then the second jobs' (the Windrunner's green and gold with a
+feathered collar and a long teal cape, the Moon Ranger's silver over navy with a starry cape, the
+Beastmaster's horned skulls, war paint and wolf-pelt cape; on her a fitted bodice, a short skirt
+and thigh-high boots), the BladeMaster's black and gold armour, the
 Wizard's navy and red robe or the Magic Knight's orange coat, each holding its weapon (the Trainee
 a dagger) and each with its own walk and attack. Headgear snaps to the head layer, so hats sit on the crown and
 glasses and masks sit on the eyes, in every direction and every frame. See

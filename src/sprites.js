@@ -14,6 +14,7 @@ import { drawBlader } from './bladers.js';
 import { drawMage } from './mages.js';
 import { drawMKnight } from './mknights.js';
 import { drawArcher } from './archers.js';
+import { drawRanger } from './rangers.js';
 import { drawBeastmaster } from './beastmasters.js';
 
 const SHEETS = import.meta.glob('./art/*.png', { eager: true, import: 'default' });
@@ -799,7 +800,7 @@ function codeSet(frames, fw, fh, body, anchor) {
 // painted at once, the rest a few at a time in the background, and a frame shown before its turn
 // (ensure, from the Player) is painted right then.
 const DESIGNS = {
-  trainee: drawTrainee, blader: drawBlader, master: drawBlader, sorc: drawMage, wiz: drawMage, mknight: drawMKnight, archer: drawArcher, wind: drawArcher, moon: drawArcher, beast: drawBeastmaster, beastsw: drawBeastmaster,
+  trainee: drawTrainee, blader: drawBlader, master: drawBlader, sorc: drawMage, wiz: drawMage, mknight: drawMKnight, archer: drawArcher, wind: drawRanger, moon: drawRanger, beast: drawBeastmaster, beastsw: drawBeastmaster,
 };
 function designSet(id) {
   const L = LAYOUTS['./art/trainee.json'];
