@@ -4,13 +4,43 @@
 // Pickup toasts and messages live here too. Plain DOM over the canvas.
 import { ITEMS, RECIPES, SLOTS, SHOPS, PRICES, sellPrice, equipLine, iconURL, canWear, jobLine, recipeKind, upgradeLine, refineInfo, canEnchant, canInsert, ENCHANT, MAX_REFINE, enchantStep } from './items.js';
 import { BAG_SLOTS, CHEST_SLOTS } from './inventory.js';
-import { STATS, STAT_KEYS, JOBS, QUEST_RATE } from './progress.js';
+import { STATS, STAT_KEYS, JOBS, TREES, QUEST_RATE } from './progress.js';
 import { statCost } from './ro-tables.js';
 import { HAIRSTYLES, DYES, hairstyles, lookPortrait } from './hair.js';
 import { NPCS, QUESTS, giverOf, rewardOf, SERIES } from './quests.js';
 import { ZONE_NAMES } from './world.js';
 import { RAIDS, waitText } from './raid.js';
-import { SKILLS, skillList, skillLv, learnBlock, spCost, WEAPON_NAMES, RETRAIN_COST } from './skills.js';
+import { SKILLS, skillList, skillLv, learnBlock, spCost, castTime, pointsIn, WEAPON_NAMES, RETRAIN_COST } from './skills.js';
+
+// the Skills window's trees: every tree the hero has earned, the current job's first, then the jobs it
+// stands on, then the rest
+const TREES_OF = (job) => TREES[job] || [job];
+function skillTrees(p) {
+  const own = TREES_OF(p.job), all = [...p.trees];
+  return [...own, ...all.filter((t) => !own.includes(t))].filter((t) => Object.values(SKILLS).some((s) => s.job === t));
+}
+// where each skill of a tree sits: rows by prerequisite depth (in this tree), a skill under its
+// need where there is room, otherwise in the next free column. { at: { id: { x, y } }, w, h }
+const NODE = 40, COL = 56, ROW = 62, PAD = 10;
+const layouts = {};
+function treeLayout(job) {
+  if (layouts[job]) return layouts[job];
+  const ids = Object.keys(SKILLS).filter((id) => SKILLS[id].job === job), depth = {};
+  const deep = (id) => (depth[id] ??= Math.max(0, ...Object.keys(SKILLS[id].needs || {}).filter((k) => SKILLS[k]?.job === job).map((k) => deep(k) + 1)));
+  ids.forEach(deep);
+  const col = {}, taken = new Set();
+  for (const id of [...ids].sort((a, b) => depth[a] - depth[b])) {
+    const parent = Object.keys(SKILLS[id].needs || {}).find((k) => SKILLS[k]?.job === job);
+    let c = parent !== undefined ? col[parent] : 0;
+    while (taken.has(`${depth[id]}:${c}`)) c++;
+    col[id] = c;
+    taken.add(`${depth[id]}:${c}`);
+  }
+  const at = {};
+  for (const id of ids) at[id] = { x: PAD + col[id] * COL, y: PAD + depth[id] * ROW };
+  const w = PAD * 2 + Math.max(...ids.map((id) => col[id])) * COL + NODE, h = PAD * 2 + Math.max(...ids.map((id) => depth[id])) * ROW + NODE + 8;
+  return (layouts[job] = { at, w, h });
+}
 
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const icon = (id, cls = '') => `<img class="ico ${cls}" src="${iconURL(id)}" alt="">`;
@@ -19,7 +49,7 @@ const icon = (id, cls = '') => `<img class="ico ${cls}" src="${iconURL(id)}" alt
 const WINDOWS = {
   items:  { title: 'Items',      at: [0.80, 0.30], w: 271 },
   equip:  { title: 'Equipment',  at: [0.50, 0.16], w: 299 },
-  skills: { title: 'Skills',     at: [0.80, 0.18], w: 334 },
+  skills: { title: 'Skills',     at: [0.70, 0.12], w: 560 },
   status: { title: 'Status',     at: [0.19, 0.30], w: 345 },
   craft:  { title: 'Crafting',   at: [0.50, 0.14], w: 345 },
   chest:  { title: 'Storage',    at: [0.50, 0.16], w: 368 },
@@ -68,6 +98,8 @@ export class Menus {
     this.npc = null;
     this.selected = null;   // item picked in the Items window
     this.tab = 'use';       // Items window tab: use, equip or misc
+    this.skTab = null;      // Skills window: the tree shown (a job id), and the skill picked in it
+    this.skSel = null;
     this.craftKind = 'gear'; // crafting window: Gunnar's gear or Ragna's usables
     this.shopId = null;     // the shop open in the Shop window
     this.shopTab = 'buy';
@@ -381,28 +413,71 @@ export class Menus {
       <div class="rfoot"><span>Double-tap a piece to take it off</span></div>`;
   }
 
-  // Ragnarok's skill window: the job's tree with levels, SP costs and a raise button
+  // The skill window: a tab for each tree the hero has earned (the current job's first), the tree
+  // itself (each skill a node, rows by prerequisite, lines from each need to what it opens),
+  // scrollable, and on the side the picked skill: what it does now and at the next level, what it
+  // costs and needs, and the Raise button (or why it can't be raised). Actives drag to the hotbar.
   skills() {
-    const p = this.prog;
-    let h = '', group = null;
-    for (const id of skillList(p)) {
-      const sk = SKILLS[id], lv = skillLv(p, id), block = learnBlock(p, id);
-      if (sk.job !== group) { group = sk.job; h += `<div class="rsub">${esc(JOBS[group].name)}</div>`; }
-      const active = sk.kind === 'active';
-      let tag = '';
-      if (sk.free && !lv) tag = `Job Lv ${sk.free.jobLv}`;
-      else if (sk.granted && !lv) tag = Object.entries(sk.needs).map(([k, n]) => `${SKILLS[k].name} ${n}`).join(', ');
-      else if (active && lv) tag = this.hotbar?.has('skill', id) ? 'On hotbar' : 'Drag to hotbar';
-      else if (block === 'job' && !lv) tag = `Switch to ${JOBS[sk.job]?.name || 'that job'} at a Keeper to train`;
-      else if (block === 'job') tag = `Train as a ${JOBS[sk.job]?.name || 'that job'} (switch at a Keeper)`;
-      else if (block && block !== 'points' && block !== 'max' && block !== 'free') tag = block;
-      const cost = (active && spCost(id, Math.max(1, lv)) ? ` · SP ${spCost(id, Math.max(1, lv))}` : '') + (sk.weapon ? ` · needs ${WEAPON_NAMES[sk.weapon]}` : '');
-      const lvTxt = sk.max > 1 ? `Lv ${lv} / ${sk.max}` : lv ? 'Learnt' : '';
-      h += `<div class="ritem skill ${lv ? '' : 'off'}"${active && lv ? ` data-drag="skill:${id}"` : ''}>${icon(sk.icon, 'sm')}
-        <div><b>${esc(sk.name)} <span class="lvl">${lvTxt}</span></b><small>${esc(sk.desc(Math.max(1, lv)))}${sk.kind === 'passive' ? ' (passive)' : ''}${cost}</small>${tag ? `<span class="rtag">${esc(tag)}</span>` : ''}</div>
-        ${!block ? `<button class="splus big" data-act="learn" data-id="${id}" aria-label="Raise ${esc(sk.name)}">▲</button>` : ''}</div>`;
+    const p = this.prog, trees = skillTrees(p);
+    if (!trees.includes(this.skTab)) this.skTab = trees[0];
+    const tree = this.skTab, ids = Object.keys(SKILLS).filter((id) => SKILLS[id].job === tree);
+    if (!ids.includes(this.skSel)) this.skSel = ids[0];
+    const lay = treeLayout(tree);
+    const tabs = trees.map((j) => {
+      const n = j === 'novice' ? pointsIn(p, 'novice') : pointsIn(p, j);
+      return `<button class="rtab${j === tree ? ' on' : ''}" data-act="sktab" data-id="${j}">${esc(JOBS[j].name)}${n ? ` <small>${n}</small>` : ''}</button>`;
+    }).join('');
+    // the connectors: from the bottom of each need to the top of what it opens, lit once met
+    const lines = [];
+    for (const id of ids) for (const [k, n] of Object.entries(SKILLS[id].needs || {})) {
+      const a = lay.at[k], b = lay.at[id];
+      if (!a) continue;
+      const met = skillLv(p, k) >= n, x1 = a.x + NODE / 2, y1 = a.y + NODE, x2 = b.x + NODE / 2, y2 = b.y, my = (y1 + y2) / 2;
+      lines.push(`<path class="${met ? 'met' : ''}" d="M${x1} ${y1} V${my} H${x2} V${y2}"/>`);
     }
-    return `<div class="rlist">${h}</div><div class="rfoot"><span>${esc(JOBS[p.job].name)} · Job Lv ${p.jobLv}</span><span>Skill Points <b>${p.skillPoints}</b></span></div>`;
+    const nodes = ids.map((id) => {
+      const sk = SKILLS[id], lv = skillLv(p, id), block = learnBlock(p, id), at = lay.at[id], active = sk.kind === 'active';
+      const badge = sk.max > 1 ? `${lv}/${sk.max}` : lv ? '✓' : sk.free || sk.granted ? '🔒' : '0/1';
+      const cls = ['sknode', lv ? '' : 'off', id === this.skSel ? 'sel' : '', !block ? 'can' : '', active ? 'act' : 'pas'].filter(Boolean).join(' ');
+      return `<button class="${cls}" style="left:${at.x}px;top:${at.y}px" data-act="sksel" data-id="${id}"${active && lv ? ` data-drag="skill:${id}"` : ''} title="${esc(sk.name)}">${icon(sk.icon)}<b>${badge}</b></button>`;
+    }).join('');
+    const train = TREES_OF(p.job).includes(tree) ? '' : `<div class="sknote">Switch to ${esc(JOBS[tree].name)} at a Keeper to train this tree.</div>`;
+    return `<div class="rtabs sktabs">${tabs}</div>${train}
+      <div class="skwrap"><div class="sktree"><div class="skcanvas" style="width:${lay.w}px;height:${lay.h}px"><svg width="${lay.w}" height="${lay.h}">${lines.join('')}</svg>${nodes}</div></div>
+      <div class="skdetail">${this.skillDetail(this.skSel)}</div></div>
+      <div class="rfoot"><span>${esc(JOBS[p.job].name)} · Job Lv ${p.jobLv}</span><span>Skill Points <b>${p.skillPoints}</b></span></div>`;
+  }
+
+  // the picked skill, in full
+  skillDetail(id) {
+    const p = this.prog, sk = SKILLS[id];
+    if (!sk) return '';
+    const lv = skillLv(p, id), block = learnBlock(p, id), active = sk.kind === 'active', next = Math.min(sk.max, lv + 1);
+    const facts = [];
+    if (active && spCost(id, Math.max(1, lv))) facts.push(`SP ${spCost(id, Math.max(1, lv))}`);
+    if (castTime(id, Math.max(1, lv))) facts.push(`Cast ${castTime(id, Math.max(1, lv)).toFixed(1)} s`);
+    if (sk.cd) facts.push(`Cooldown ${sk.cd} s`);
+    if (sk.weapon) facts.push(`Needs ${WEAPON_NAMES[sk.weapon]}`);
+    const needs = Object.entries(sk.needs || {}).map(([k, n]) => {
+      const ok = skillLv(p, k) >= n, other = SKILLS[k].job !== sk.job ? ` (${JOBS[SKILLS[k].job].name})` : '';
+      return `<li class="${ok ? 'ok' : ''}">${ok ? '✓' : '✗'} ${esc(SKILLS[k].name)} ${n}${esc(other)}</li>`;
+    }).join('');
+    let how = '';
+    if (sk.free) how = lv ? 'Learnt by itself at Job Lv ' + sk.free.jobLv + '.' : `Learnt by itself at ${JOBS[sk.job].name} Job Lv ${sk.free.jobLv}.`;
+    else if (sk.granted) how = lv ? 'Learnt by itself.' : 'Learnt by itself once its needs are met.';
+    else if (block === 'job') how = `Switch to ${JOBS[sk.job].name} at a Keeper to raise it.`;
+    else if (block === 'max') how = 'Mastered.';
+    else if (block === 'points') how = 'No skill points left: they come with Job Levels.';
+    else if (block && block.startsWith('Needs')) how = block + '.';
+    const hot = active && lv ? (this.hotbar?.has('skill', id) ? 'On the hotbar.' : 'Drag it onto the hotbar to use it.') : '';
+    const text = (l) => esc(sk.desc(l)) + (sk.kind === 'passive' ? ' <i>(passive)</i>' : '');
+    return `<div class="skhead">${icon(sk.icon)}<div><b>${esc(sk.name)}</b><small>${active ? 'Active' : 'Passive'} · ${esc(JOBS[sk.job].name)} · ${sk.max > 1 ? `Lv ${lv} / ${sk.max}` : lv ? 'Learnt' : 'Not learnt'}</small></div></div>
+      ${facts.length ? `<div class="skfacts">${esc(facts.join(' · '))}</div>` : ''}
+      ${needs ? `<ul class="skneeds">${needs}</ul>` : ''}
+      ${lv ? `<div class="sklv"><b>Now (Lv ${lv})</b><p>${text(lv)}</p></div>` : ''}
+      ${lv < sk.max ? `<div class="sklv next"><b>${lv ? `Next (Lv ${next})` : 'At Lv 1'}</b><p>${text(next)}</p></div>` : ''}
+      ${how || hot ? `<div class="sknote">${esc([how, hot].filter(Boolean).join(' '))}</div>` : ''}
+      ${!block ? `<button class="rbtn skraise" data-act="learn" data-id="${id}">Raise ▲</button>` : ''}`;
   }
 
   // The status window, top to bottom: who you are (job and levels), the six stats with their
@@ -753,6 +828,8 @@ export class Menus {
       this.render();
     }
     if (act === 'learn') this.hooks.learn?.(t.dataset.id);
+    if (act === 'sktab') { this.skTab = t.dataset.id; this.skSel = null; this.render(id); }
+    if (act === 'sksel') { this.skSel = t.dataset.id; this.render(id); }
     if (act === 'jobchange') { this.hooks.jobChange?.(t.dataset.id); this.close('talk'); }
     if (act === 'shop') { this.close('talk'); this.openShop(this.npc); }
     if (act === 'craftwin') { this.close('talk'); this.openCraft(t.dataset.id); }

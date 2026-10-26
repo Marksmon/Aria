@@ -256,6 +256,14 @@ you will get.
 
 ## Jobs and skills
 
+**The Skills window** is a skill tree: a tab for each tree you have earned (your current job's
+first, with the points spent in it), the tree itself (each skill a node, square for actives and
+round for passives, its level on a badge; lines run from each skill to what it opens and turn gold
+once the need is met; it scrolls when it is bigger than the window), and beside it the skill you
+tap: what it does now and at the next level, its SP, cast time, cooldown and weapon, what it
+needs (other trees' skills too), and **Raise**, or why it can't be raised yet. Drag a learnt active
+from the tree onto the hotbar.
+
 Aria's own jobs and skills, kept modest. A **Trainee** puts points into **Basic Training**; the
 other Trainee skills come free with Job Levels. At Trainee Job 10 with Basic Training 9, a job
 trial opens: three short steps a Trainee of Base Level ~10 can do, each needing one trip to the
