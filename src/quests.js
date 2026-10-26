@@ -364,7 +364,7 @@ export const NPCS = {
   },
   leif: {
     name: 'Leif the Tanner', map: 'hunt', x: 46, z: 42.6, craft: 'hunt', dress: { body: 'blader', main: [28, 0.5, 0.75], accent: [45, 0.4, 0.9], hair: 'messy', dye: 'black' },
-    hello: 'Pelts, skins and bark: bring them to me and I make them into hunters\' gear. Cloaks, boots, charms, armor. It smells, but it holds.',
+    hello: 'Pelts, skins and bark: bring them to me and I make them into hunters\' gear. Cloaks, boots, charms, armor. It smells, but it holds. Bows are Asa\'s work: the fletcher\'s bench.',
     later: (lv) => `I will have work for you at Base Level ${lv}.`,
     bye: 'Wear it in the rain. Leather likes the rain.',
     quests: ['pelts', 'greatbear'],
@@ -379,8 +379,8 @@ export const NPCS = {
     lore: ['The archers keep the wolves off us. I keep the archers fed. It is a fair trade.'],
   },
   asa: {
-    name: 'Asa the Fletcher', map: 'hunt', x: 35.4, z: 40.2, dress: { body: 'trainee', main: [140, 0.4, 0.85], accent: [10, 0.6, 1], hair: 'pony', dye: 'brown', bow: true },
-    hello: 'I make the bows and arrows for the whole village, and sell them to anyone who can draw one. Willow for the bowstaves, goose feathers for the fletching, and patience for the rest. A quiver lasts: we pick our arrows up again.',
+    name: 'Asa the Fletcher', map: 'hunt', x: 35.4, z: 40.2, craft: 'bow', dress: { body: 'trainee', main: [140, 0.4, 0.85], accent: [10, 0.6, 1], hair: 'pony', dye: 'brown', bow: true },
+    hello: 'I make the bows and arrows for the whole village, and sell them to anyone who can draw one. Bring me vines, shells, willow or steel and I will make you a better bow at my bench. A quiver lasts: we pick our arrows up again.',
     later: (lv) => `My wood is running low, but the woods are too dangerous for you yet. Base Level ${lv}, then.`,
     bye: 'Straight shafts, true flights.',
     quests: ['bowstaves'],

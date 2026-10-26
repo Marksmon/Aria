@@ -89,6 +89,7 @@ const CRAFTERS = {
   use: { title: "Ragna's Herbs", note: 'Ragna brews potions and feathers.', button: 'Brew usables' },
   magic: { title: "Orm's Workshop", note: 'Orm carves staves and stitches robes for sorcerers.', button: 'Craft sorcerer gear' },
   hunt: { title: "Leif's Leatherworks", note: 'Leif tans pelts and skins into hunters\' gear.', button: 'Make hunting gear' },
+  bow: { title: "Asa's Workbench", note: 'Asa makes bows from wood, vine, shell and whatever the hunt brings back.', button: 'Make bows' },
 };
 
 export class Menus {
@@ -772,7 +773,8 @@ export class Menus {
       for (const j of p.unlocked) if (JOBS[j].tier === 1 && j !== p.job) btns = `<button class="rbtn" data-act="jobchange" data-id="${j}">Switch to ${JOBS[j].name}</button>` + btns;
     }
     if (n.job2 && p.tier === 1 && !p.unlocked.includes(n.job2) && st.state === 'finished') text = n.trial2Hint || n.trialHint;
-    if (extra && !quizzing && st.state !== 'job' && st.state !== 'offer' && st.state !== 'ready') btns = extra + btns;
+    // a quest on offer never hides the shop or the workbench (turning the quest down must not lock them away)
+    if (extra && !quizzing && st.state !== 'job' && st.state !== 'ready') btns = extra + btns;
     // people with tales to tell: each 'Tell me more' is the next one
     if (n.lore && !quizzing && st.state !== 'job' && st.state !== 'offer' && st.state !== 'ready') {
       if (this.loreAt > 0) text = n.lore[(this.loreAt - 1) % n.lore.length];

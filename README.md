@@ -329,8 +329,9 @@ FNS instead of POW, and FNS also brings the HIT that lets arrows find quick mons
 **arrows** in the Arrows slot of the Equipment window: they are bought once and never run out.
 Elemental arrows (Fire, Ice, Wind, Earth) give every shot their element and a little ATK; Iron
 Arrows hit harder. A bow takes both hands, so no shield. A new Archer is handed a Hunting Bow and
-Wooden Arrows, already worn. Asa the Fletcher in Veidheim sells bows and arrows; Leif crafts the
-Willow Longbow, the Gale Bow and the Heartwood Bow.
+Wooden Arrows, already worn. Asa the Fletcher in Veidheim sells bows and arrows and makes better
+ones at her workbench (**Make bows**); Kobold and Goblin Archers, the Goblin King and the Fire Giant
+drop rare bows.
 
 | Archer | | |
 |---|---|---|
@@ -520,9 +521,14 @@ never used up; an elemental arrow sets every shot's element.
 |---|---|---|
 | Hunting Bow | 30, weapon Lv 1 | Asa's shop (600 perz); a new Archer is given one |
 | Composite Bow | 55, weapon Lv 2 | Asa's shop (3,800 perz) |
-| Willow Longbow | 75, weapon Lv 3, FNS +1 | Leif crafts it (Base 20): 10 Willow Twigs, 4 Old Bark, 4 Thorns |
-| Gale Bow | 92, weapon Lv 3, Wind, QKN +2 | Leif crafts it (Base 50): the Alpha Pelt, 4 Wolf Fangs, 8 Willow Twigs |
-| Heartwood Bow | 120, weapon Lv 4, FNS +3, QKN +1 | Leif crafts it (Base 58): Ancient Heartwood, the Bear Heart, 6 Old Bark |
+| Vine Bow | 42, weapon Lv 2, Earth | Asa makes it (Base 6): 8 Leaves, 6 Seeds, 3 Shells |
+| Ice Bow | 62, weapon Lv 2, Water | Asa makes it (Base 12): 4 Salt, 6 Water Drops, 6 Shells |
+| Willow Longbow | 75, weapon Lv 3, FNS +1 | Asa makes it (Base 20): 10 Willow Twigs, 4 Old Bark, 4 Thorns |
+| Fire Bow | 82, weapon Lv 3, Fire | Asa makes it (Base 22): 6 Burnt Shells, 6 Glow Dust, 6 Willow Twigs |
+| Steel Bow | 88, weapon Lv 3, FNS +1 | Asa makes it (Base 32): 4 Steel Ore, 6 Kobold Fur, 6 Willow Twigs |
+| Gale Bow | 92, weapon Lv 3, Wind, QKN +2 | Asa makes it (Base 50): the Alpha Pelt, 4 Wolf Fangs, 8 Willow Twigs |
+| Heartwood Bow | 120, weapon Lv 4, FNS +3, QKN +1 | Asa makes it (Base 58): Ancient Heartwood, the Bear Heart, 6 Old Bark |
+| Kobold Bow · Goblin Bow · Flame Bow · Great Bow | 74 · 95 · 110 · 115 | rare drops (below) |
 | Wooden Arrows · Iron Arrows | +2 · +10 | Asa's shop (20 · 1,500 perz) |
 | Fire · Ice · Wind · Earth Arrows | +5, and their element | Asa's shop (2,500 perz each) |
 
@@ -557,13 +563,17 @@ bursts gold on the ground and shows in gold in your bag.
 | Willow Charm | Accessory | FNS +1, KNL +1, Max SP +20 | Elder Willow, 4% |
 | Oak Ring | Accessory | END +3, POW +1, Max HP +80 | Ancient Treant, 5% |
 | Grove Sword | Weapon | ATK 125, weapon Lv 4, Earth, POW +2, END +2 | Ancient Treant, 1% |
+| Kobold Bow | Weapon (bow) | ATK 74, weapon Lv 3, Earth, FNS +1, QKN +1 | Kobold Archer, 0.25% |
+| Goblin Bow | Weapon (bow) | ATK 95, weapon Lv 3, HIT +5, FNS +2 | Goblin Archer, 0.2% |
+| Flame Bow | Weapon (bow) | ATK 110, weapon Lv 4, Fire, FNS +2 | Fire Giant, 1% |
+| Great Bow | Weapon (bow) | ATK 115, weapon Lv 4, Wind, QKN +2, FNS +1 | Goblin King, 2% |
 | Thorn Ring · Coral Shield · Dark Hood · Fire Armor · Fire Charm | | | the new lands' monsters, 0.2–0.3% |
 | Thorn Cape · Sea Sword · Mushroom Staff · Fire Boots | | | the mini-bosses, 2–3% |
 
 Two accessory slots, a shield, a garment and an arrows slot join head, face, armor, weapon, shoes and light.
 
 **Weapon levels.** Lv 4 weapons are the best there are: the Giant Sword, Flame Sword, Lava Sword
-and Sea Sword, the Great, Flame, Fire and Mushroom Staves, and the Heartwood Bow. They refine for the most ATK
+and Sea Sword, the Great, Flame, Fire and Mushroom Staves, and the Heartwood, Great and Flame Bows. They refine for the most ATK
 (+7 a level) and are the only gear that can take a card slot.
 
 ## Refining, slots and cards
@@ -740,7 +750,7 @@ leads to each.
 | Ottar the Farmer | Veidheim, by the barn | The Lost Lambs (16): find 3 lambs in Willow Marsh · Snakes in the Barley (46): 20 Snakes |
 | Leif the Tanner | Veidheim | makes hunters' gear (Hunter's Cloak and Boots, Claw Charm, Bark Armor, Alpha Cloak, Bear Heart Charm) · Pelts for the Winter (50): 10 Wolf Pelts, 5 Bear Claws · The Great Bear (59) |
 | Bjarki the Beastmaster | Veidheim, by the lodge | the Beastmaster's trial; his wolf Grimr never bites (unless asked) |
-| Asa the Fletcher | Veidheim | shop: bows and arrows · Wood for Bows (22): 12 Willow Twigs, 4 Old Bark |
+| Asa the Fletcher | Veidheim | shop: bows and arrows · makes bows (Vine, Ice, Willow, Fire, Steel, Gale, Heartwood) · Wood for Bows (22): 12 Willow Twigs, 4 Old Bark |
 | Eydis the Trader | Veidheim | shop: potions (White too), Honey, Speed Potions, feathers, torches |
 | Halla the Healer | Veidheim | heals HP and SP for free |
 | Kalf the Gate Archer | Veidheim, at the north gate | Walking Trees (22): 15 Treants in the Old Forest |

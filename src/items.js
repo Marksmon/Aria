@@ -76,6 +76,15 @@ const BASE_ITEMS = {
   willow_longbow: { type: 'equip', slot: 'weapon', kind: 'bow', jobs: ['archer'], name: 'Willow Longbow', atk: 75, wlv: 3, stats: { fns: 1 }, icon: 'bow_willow', desc: 'A long bow of walking-Willow wood. It still bends a little towards the moon at night.' },
   gale_bow:     { type: 'equip', slot: 'weapon', kind: 'bow', el: 'wind', jobs: ['archer'], name: 'Gale Bow', atk: 92, wlv: 3, stats: { qkn: 2 }, icon: 'bow_gale', desc: 'Strung with sinew from the Alpha Wolf, its grip wrapped in the silver ruff. Its arrows whistle like wind through a pass.' },
   heartwood_bow: { type: 'equip', slot: 'weapon', kind: 'bow', jobs: ['archer'], name: 'Heartwood Bow', atk: 120, wlv: 4, stats: { fns: 3, qkn: 1 }, icon: 'bow_heart', desc: 'Ancient Heartwood and the Great Bear\'s heart-cord. The finest bow in Aria; the string hums before you draw it.' },
+  // more bows, from Asa's workbench and as rare finds: a bow for every stretch of the road
+  vine_bow:     { type: 'equip', slot: 'weapon', kind: 'bow', el: 'earth', jobs: ['archer'], name: 'Vine Bow', atk: 42, wlv: 2, icon: 'bow_vine', desc: 'A green bow of Sprout vines, braided and dried. It still smells of spring, and its arrows carry the earth.' },
+  ice_bow:      { type: 'equip', slot: 'weapon', kind: 'bow', el: 'water', jobs: ['archer'], name: 'Ice Bow', atk: 62, wlv: 2, icon: 'bow_ice', desc: 'Salt-cured wood that is always cold to the touch. Frost creeps along the arrow as you draw.' },
+  fire_bow:     { type: 'equip', slot: 'weapon', kind: 'bow', el: 'fire', jobs: ['archer'], name: 'Fire Bow', atk: 82, wlv: 3, icon: 'bow_fire', desc: 'Willow wood cased in a Fire Beetle\'s burnt shell. The string smoulders, and the arrows leave it burning.' },
+  steel_bow:    { type: 'equip', slot: 'weapon', kind: 'bow', jobs: ['archer'], name: 'Steel Bow', atk: 88, wlv: 3, stats: { fns: 1 }, icon: 'bow_steel', desc: 'A bow with steel-shod limbs and a grip of Kobold fur. Heavy to draw, and it never warps in the wet.' },
+  kobold_bow:   { type: 'equip', slot: 'weapon', kind: 'bow', el: 'earth', jobs: ['archer'], rare: true, name: 'Kobold Bow', atk: 74, wlv: 3, stats: { fns: 1, qkn: 1 }, icon: 'bow_kobold', desc: 'A short, ugly bow a Kobold Archer swore by. It shoots far straighter than it looks.' },
+  goblin_bow:   { type: 'equip', slot: 'weapon', kind: 'bow', jobs: ['archer'], rare: true, name: 'Goblin Bow', atk: 95, wlv: 3, hit: 5, stats: { fns: 2 }, icon: 'bow_goblin', desc: 'Strung with gut and hung with goblin teeth. Goblin Archers do not miss with it, and neither will you.' },
+  flame_bow:    { type: 'equip', slot: 'weapon', kind: 'bow', el: 'fire', jobs: ['archer'], rare: true, name: 'Flame Bow', atk: 110, wlv: 4, stats: { fns: 2 }, icon: 'bow_flame', desc: 'A bow the Fire Giant used as a toothpick. In your hands its arrows go up like sparks from a forge.' },
+  great_bow:    { type: 'equip', slot: 'weapon', kind: 'bow', el: 'wind', jobs: ['archer'], rare: true, name: 'Great Bow', atk: 115, wlv: 4, stats: { qkn: 2, fns: 1 }, icon: 'bow_great', desc: 'The Goblin King\'s own war bow, taller than a goblin. Its arrows ride the wind like hawks.' },
   // arrows: the Arrows slot. Bought once and never used up; an elemental one sets the shot's element
   wooden_arrow: { type: 'equip', slot: 'ammo', jobs: ['archer'], name: 'Wooden Arrows', atk: 2, icon: 'arrow_wood', desc: 'A quiver of plain wooden arrows with goose fletching. Asa makes them by the hundred.' },
   iron_arrow:   { type: 'equip', slot: 'ammo', jobs: ['archer'], name: 'Iron Arrows', atk: 10, icon: 'arrow_iron', desc: 'Iron-headed arrows, heavier and harder-hitting. They punch through a Snake\'s scales.' },
@@ -304,6 +313,7 @@ export const PRICES = {
   snake_boots: 12000, wolf_cape: 14000, willow_staff: 6000, bear_hide: 18000, treant_shield: 7000, willow_charm: 9000, oak_ring: 26000, grove_blade: 50000,
   alpha_pelt: 5000, bear_heart: 6000, alpha_card: 20000, bear_card: 22000, alpha_cloak: 20000, bear_charm: 22000,
   hunting_bow: 600, composite_bow: 3800, willow_longbow: 9000, gale_bow: 22000, heartwood_bow: 45000,
+  vine_bow: 2400, ice_bow: 5200, fire_bow: 11000, steel_bow: 16000, kobold_bow: 15000, goblin_bow: 24000, flame_bow: 42000, great_bow: 48000,
   wooden_arrow: 20, iron_arrow: 1500, fire_arrow: 2500, ice_arrow: 2500, wind_arrow: 2500, earth_arrow: 2500,
   hunter_cape: 6000, hunter_boots: 6000, claw_charm: 9000, bark_armor: 12000, verdant_staff: 48000,
   heartwood_staff: 14000, frostbite: 5200, gale_blade: 9000, birch_staff: 1800, frost_staff: 3600, tide_staff: 12000, ember_staff: 20000, shade_staff: 16000, jarl_staff: 42000, runeking_staff: 50000, pearl_mail: 12000, gloom_robe: 14000, cinderfang: 24000, hornblade: 45000, prism_ring: 8000, slime_band: 12000,
@@ -324,7 +334,7 @@ export const SHOPS = {
 };
 // who crafts a recipe: 'use' (Ragna's brews), 'magic' (Orm's staves and sorcerers' gear), 'gear' (Gunnar's forge)
 export const recipeKind = (r) => {
-  if (r.by) return r.by; // a crafter's own line (Leif's leatherworks: 'hunt')
+  if (r.by) return r.by; // a crafter's own line (Leif's leatherworks: 'hunt', Asa's bows: 'bow')
   const it = ITEMS[r.item];
   if (it.type !== 'equip') return 'use';
   return it.kind === 'staff' || (it.jobs && it.jobs.every((j) => j === 'mage')) ? 'magic' : 'gear';
@@ -410,9 +420,14 @@ export const RECIPES = [
   { item: 'hunter_boots', lv: 46, by: 'hunt', cost: { snake_skin: 8, wolf_pelt: 2 } },
   { item: 'claw_charm', lv: 50, by: 'hunt', cost: { bear_claw: 6, wolf_fang: 3 } },
   { item: 'bark_armor', lv: 52, by: 'hunt', cost: { old_bark: 10, willow_twig: 6, bear_claw: 2 } },
-  { item: 'willow_longbow', lv: 20, by: 'hunt', cost: { willow_twig: 10, old_bark: 4, thorn: 4 } },
-  { item: 'gale_bow', lv: 50, by: 'hunt', cost: { alpha_pelt: 1, wolf_fang: 4, willow_twig: 8 } },
-  { item: 'heartwood_bow', lv: 58, by: 'hunt', cost: { ancient_heartwood: 1, bear_heart: 1, old_bark: 6 } },
+  // Asa's workbench (Veidheim): bows
+  { item: 'vine_bow', lv: 6, by: 'bow', cost: { leaf: 8, seed: 6, shell: 3 } },
+  { item: 'ice_bow', lv: 12, by: 'bow', cost: { salt: 4, dew: 6, shell: 6 } },
+  { item: 'willow_longbow', lv: 20, by: 'bow', cost: { willow_twig: 10, old_bark: 4, thorn: 4 } },
+  { item: 'fire_bow', lv: 22, by: 'bow', cost: { cinder: 6, glow: 6, willow_twig: 6 } },
+  { item: 'steel_bow', lv: 32, by: 'bow', cost: { steel_ore: 4, kobold_fur: 6, willow_twig: 6 } },
+  { item: 'gale_bow', lv: 50, by: 'bow', cost: { alpha_pelt: 1, wolf_fang: 4, willow_twig: 8 } },
+  { item: 'heartwood_bow', lv: 58, by: 'bow', cost: { ancient_heartwood: 1, bear_heart: 1, old_bark: 6 } },
   { item: 'alpha_cloak', lv: 52, by: 'hunt', cost: { alpha_pelt: 1, wolf_pelt: 10, wolf_fang: 4 } },
   { item: 'bear_charm', lv: 56, by: 'hunt', cost: { bear_heart: 1, bear_claw: 8, honey: 4 } },
   { item: 'verdant_staff', lv: 55, cost: { ancient_heartwood: 1, willow_heart: 1, willow_twig: 8 } },
@@ -780,6 +795,14 @@ const PAINT = {
   bow_willow: (g) => bowIcon(g, '#9a8a5a', '#3f7a3a', '#c8dc6a'),
   bow_gale: (g) => bowIcon(g, '#c8d8e0', '#8a8e96', '#fff6a0'),
   bow_heart: (g) => bowIcon(g, '#c8a050', '#8a2a20', '#f2cf6a'),
+  bow_vine: (g) => bowIcon(g, '#5a9a3a', '#3a5a22', '#9cdc76'),
+  bow_ice: (g) => bowIcon(g, '#a8d8f0', '#3a6ccc', '#eef8ff'),
+  bow_fire: (g) => bowIcon(g, '#3a2a2a', '#ff7a3a', '#ffb35a'),
+  bow_steel: (g) => bowIcon(g, '#9aa0a8', '#3a3e48', '#e0e6ee'),
+  bow_kobold: (g) => bowIcon(g, '#7a5a3a', '#a07848', '#d8c090'),
+  bow_goblin: (g) => bowIcon(g, '#6a7a3a', '#5a3a22', '#f0e6b0'),
+  bow_flame: (g) => bowIcon(g, '#a8321e', '#2a1e1e', '#ffb04a'),
+  bow_great: (g) => bowIcon(g, '#e0d0a0', '#4a6aa8', '#fff6a0'),
   arrow_wood: (g) => arrowIcon(g, '#a0703c'),
   arrow_iron: (g) => arrowIcon(g, '#b8c0ca'),
   arrow_fire: (g) => arrowIcon(g, '#ff7a2a', '#ffd06a'),
