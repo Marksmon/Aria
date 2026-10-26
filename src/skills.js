@@ -15,6 +15,7 @@
 // cast: seconds to cast (spells), before FNS shortens it; magic: the spell's element (damage from MATK)
 // free: { jobLv } learnt automatically; granted: learnt once its needs are met; else bought with points
 import { TREES, JOBS, SECOND_AT } from './progress.js';
+import { MAX_JOB } from './ro-tables.js';
 
 // status: a spell (or sword sweep) may freeze, paralyze or stun a monster (it stands helpless) or set
 // it burning (damage each second). chance(lv) in %, dur in s; bosses resist: a third of the chance
@@ -422,6 +423,7 @@ export function learnBlock(prog, id) {
   if (!TREES[prog.job].includes(s.job)) return 'job'; // points only go to the active job's trees (switch at a Keeper)
   if (skillLv(prog, id) >= s.max) return 'max';
   for (const [k, n] of Object.entries(s.needs || {})) if (skillLv(prog, k) < n) return `Needs ${SKILLS[k].name} ${n}`;
+  if (JOBS[s.job].tier === 2) { const why = secondJobBlock(prog); if (why) return why; }
   if (prog.skillPoints <= 0) return 'points';
   return null;
 }
@@ -444,12 +446,33 @@ export function unlearnFirstJob(prog) {
   prog.resets.skills++;
   return true;
 }
-// a second job's retraining: only its own tree (the first-job points that opened it stay put)
+// a second job's retraining: its own tree and the first jobs' trees (the Trainee's stays). The
+// points come back to be placed again, and secondJobBlock makes sure the first jobs are rebuilt first
 export function unlearnSecondJob(prog) {
   if (prog.tier !== 2) return false;
-  for (const id of Object.keys(prog.skills)) if (SKILLS[id]?.job === prog.job) delete prog.skills[id];
+  for (const id of Object.keys(prog.skills)) if (JOBS[SKILLS[id]?.job]?.tier >= 1) delete prog.skills[id];
   prog.resets.skills++;
   return true;
+}
+// Ragnarok's rule for a second job's own skills: every point the Trainee and first-job levels earned
+// is spent in those trees first, and the job's opening rule (secondJobOpen) still holds: the Magic
+// Knight's 20 Blader and 20 Sorcerer points, the Wizard's most points in the Sorcerer tree... So a
+// retraining can never dodge them. Why not, or null if the second job's skills may be raised
+export function secondJobBlock(prog) {
+  const from = JOBS[prog.job].from || [];
+  if (from.length > 1) {
+    for (const j of from) if (pointsIn(prog, j) < MK_POINTS) return `Needs ${MK_POINTS} points in the ${JOBS[j].name} tree (${pointsIn(prog, j)} now)`;
+  } else if (from.length === 1) {
+    const firsts = prog.unlocked.filter((j) => JOBS[j]?.tier === 1);
+    const most = Math.max(...firsts.map((j) => pointsIn(prog, j)));
+    if (pointsIn(prog, from[0]) < most) return `Needs the most points in the ${JOBS[from[0]].name} tree`;
+  }
+  // the first-tier pool, as far as the trees open to this job can hold it
+  const room = Object.values(SKILLS).reduce((a, s) => a + (!s.free && !s.granted && JOBS[s.job].tier <= 1 && TREES[prog.job].includes(s.job) ? s.max : 0), 0);
+  const pool = Math.min(room, (MAX_JOB.novice - 1) + (prog.levelOf('swordman') - 1));
+  const spent = Object.entries(prog.skills).reduce((a, [id, n]) => a + (JOBS[SKILLS[id]?.job]?.tier <= 1 ? n : 0), 0);
+  if (spent < pool) return `Needs every Trainee and first-job skill point spent first (${pool - spent} left)`;
+  return null;
 }
 export const pointsIn = (prog, job) => Object.entries(prog.skills).reduce((a, [id, n]) => a + (SKILLS[id]?.job === job ? n : 0), 0);
 export const MK_POINTS = 20; // a second job of two paths (the Magic Knight) wants this many points in each path's tree

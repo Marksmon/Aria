@@ -1228,7 +1228,7 @@ const menus = new Menus(inv, prog, player, {
     refreshQuests();
   },
   // the trainers' retraining (Liv, Ingrid, Sven): the first of each kind is free. Skills: a first
-  // job's trees, or a second job's own tree (its beasts go home with their summons)
+  // job's trees, or a second job's and its first jobs' (its beasts go home with their summons)
   retrain(kind) {
     const cost = prog.resets[kind] ? RETRAIN_COST : 0;
     if (inv.perz < cost) { menus.message('Not enough perz'); return; }
@@ -1239,7 +1239,7 @@ const menus = new Menus(inv, prog, player, {
     applyStats();
     hotbar.render?.();
     audio.play('craft');
-    menus.message(kind === 'stats' ? 'Your stats are back to 1: place your points again in the Status window.' : `Your ${prog.tier === 2 ? JOBS[prog.job].name : 'first-job'} skills are unlearnt: spend the points again in the Skills window.`);
+    menus.message(kind === 'stats' ? 'Your stats are back to 1: place your points again in the Status window.' : prog.tier === 2 ? `Your job skills are unlearnt. Rebuild your first jobs in the Skills window: ${JOBS[prog.job].name} skills open again once every first-job point is spent.` : 'Your first-job skills are unlearnt: spend the points again in the Skills window.');
     persist();
   },
   // a delivery handed over: back to whoever sent it

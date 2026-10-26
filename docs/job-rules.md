@@ -83,6 +83,13 @@ Focus, Hunter's Mark, Leap Back.
 - The current job does not matter; only the points do.
 - **Only one second job can be taken.** Once a step of one second-job trial is accepted, the other
   trials close.
+- **A second job's own skills** (`secondJobBlock` in `skills.js`) can only be raised while the
+  job's opening rule still holds (the Magic Knight's 20 Blader and 20 Sorcerer points, the Moon
+  Ranger's and the Beastmaster's pairs, the most points in the path for BladeMaster, Wizard and
+  Windrunner) **and every Trainee and first-job skill point has been spent** in those trees.
+- **Retraining a second job** (Liv, Ingrid, Sven: Reset my job skills) unlearns the first-job and
+  second-job skills (the Trainee's stay). The rule above then makes the hero rebuild the first jobs
+  before the second job's skills open again, so a reset never dodges it.
 - **Quitting a trial** (Quit quest in the Quest View) before it is finished starts that trial over
   from its first step and lifts the choice. The hero may then pick any second-job trial they
   qualify for, again, by going to its quest giver.

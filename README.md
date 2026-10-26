@@ -392,6 +392,9 @@ points stay. Second jobs wear their first job's outfit in new colours and glow w
   pick any trial you qualify for again.
 - Job trials pay nothing for the steps on the way: the whole trial's reward comes with its last
   step.
+- A second job's own skills can be raised only once **every Trainee and first-job skill point is
+  spent**, and while the job's own rule still holds (a Magic Knight keeps 20 points in Blader and 20
+  in Sorcerer). The Skills window says what is missing.
 
 | BladeMaster: one target, cut down fast | |
 |---|---|
@@ -733,7 +736,7 @@ leads to each.
 | Saeunn the Seeress | Steinborg | the story; lore of the Fire Giant and Galdrheim |
 | Embla the Stylist | Steinborg | hairstyle and dye, 1,000 perz |
 | Ivar the Ferryman | Steinborg | carts to any land you have walked, 300–3,000 perz |
-| Liv the Guide | Steinborg | who does what in the city · **Reset stats / skills**: one free stat reset and one free skill reset (a first job's skills, or a second job's own skills), then 20,000 perz each |
+| Liv the Guide | Steinborg | who does what in the city · **Reset stats / skills**: one free stat reset and one free skill reset, then 20,000 perz each. A second job's reset unlearns its first-job skills too: rebuild those first (a Magic Knight: 20 points in Blader and 20 in Sorcerer, and every first-job point spent) before its own skills open again |
 | Ingrid the Tutor · Sven the Trainer | Galdrheim · Veidheim (beside the Keeper) | **Reset stats / skills**, as Liv does |
 | Bjorn the Gate Guard | Steinborg | which monsters attack on sight |
 | Hakon the Carter | Salt Bay, by the west road | the story (Chapter 5) |

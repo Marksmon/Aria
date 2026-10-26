@@ -10,7 +10,7 @@ import { HAIRSTYLES, DYES, hairstyles, lookPortrait } from './hair.js';
 import { NPCS, QUESTS, giverOf, rewardOf, SERIES } from './quests.js';
 import { ZONE_NAMES } from './world.js';
 import { RAIDS, waitText } from './raid.js';
-import { SKILLS, skillList, skillLv, learnBlock, spCost, castTime, pointsIn, WEAPON_NAMES, RETRAIN_COST } from './skills.js';
+import { SKILLS, skillList, skillLv, learnBlock, spCost, castTime, pointsIn, WEAPON_NAMES, RETRAIN_COST, MK_POINTS } from './skills.js';
 
 // the Skills window's trees: every tree the hero has earned, the current job's first, then the jobs it
 // stands on, then the rest
@@ -474,7 +474,7 @@ export class Menus {
     else if (block === 'job') how = `Switch to ${JOBS[sk.job].name} at a Keeper to raise it.`;
     else if (block === 'max') how = 'Mastered.';
     else if (block === 'points') how = 'No skill points left: they come with Job Levels.';
-    else if (block && block.startsWith('Needs')) how = block + '.';
+    else if (block && block.startsWith('Needs')) how = block + '.'; // a skill it builds on, or a second job's first-job rule (skills.js secondJobBlock)
     const hot = active && lv ? (this.hotbar?.has('skill', id) ? 'On the hotbar.' : 'Drag it onto the hotbar to use it.') : '';
     const text = (l) => esc(sk.desc(l)) + (sk.kind === 'passive' ? ' <i>(passive)</i>' : '');
     return `<div class="skhead">${icon(sk.icon)}<div><b>${esc(sk.name)}</b><small>${active ? 'Active' : 'Passive'} · ${esc(JOBS[sk.job].name)} · ${sk.max > 1 ? `Lv ${lv} / ${sk.max}` : lv ? 'Learnt' : 'Not learnt'}</small></div></div>
@@ -519,6 +519,12 @@ export class Menus {
         <button class="rbtn soft" data-act="statreset" ${n ? '' : 'disabled'}>Reset</button><button class="rbtn" data-act="statconfirm" ${n ? '' : 'disabled'}>Confirm</button></div>
       <div class="rsub stsub"><span>Battle</span></div>
       <table class="stt battle"><tbody>${battle.map((r) => `<tr>${r[0]}<td class="gap"></td>${r[1]}</tr>`).join('')}</tbody></table>`;
+  }
+
+  // what a second job's own skills wait on, in words (skills.js secondJobBlock)
+  secondRule(job) {
+    const from = JOBS[job].from || [];
+    return from.length > 1 ? from.map((j) => `${MK_POINTS} points in ${JOBS[j].name}`).join(' and ') : `the most points in ${JOBS[from[0]]?.name}`;
   }
 
   // the ⚙ window: sound, and back to the title screen (the game saves first) to play another hero
@@ -716,8 +722,8 @@ export class Menus {
       this.wins.talk.querySelector('.rw-title').textContent = n.name;
       return `<div class="talkwrap"><img class="portrait" src="${this.portrait(this.npc)}" alt="">
         <div class="say"><p>Not happy with how you trained? The first time is on me. After that, the masters charge ${RETRAIN_COST.toLocaleString()} perz.</p>
-        <div class="qbox"><small>Stats: every stat back to 1, and all your points to place again.</small><small>${second ? `Skills: every ${esc(second)} skill unlearnt, and the points back. Your first-job and Trainee skills stay.` : 'Skills: every Blader, Sorcerer and Archer skill unlearnt, and the points back. Your Trainee skills stay.'}</small></div>
-        <div class="btnrow wrap retrain">${row('stats', 'Reset my stats', true, '')}${row('skills', second ? `Reset my ${esc(second)} skills` : 'Reset my first-job skills', skillsOk, p.tier === 1 ? 'Not during a second-job trial.' : 'Choose a first job first.')}</div>
+        <div class="qbox"><small>Stats: every stat back to 1, and all your points to place again.</small><small>${second ? `Skills: every first-job and ${esc(second)} skill unlearnt, and the points back. Your Trainee skills stay. ${esc(second)} skills can be raised again once the first jobs are rebuilt: ${esc(this.secondRule(p.job))}, and every first-job point spent.` : 'Skills: every Blader, Sorcerer and Archer skill unlearnt, and the points back. Your Trainee skills stay.'}</small></div>
+        <div class="btnrow wrap retrain">${row('stats', 'Reset my stats', true, '')}${row('skills', second ? 'Reset my job skills' : 'Reset my first-job skills', skillsOk, p.tier === 1 ? 'Not during a second-job trial.' : 'Choose a first job first.')}</div>
         <div class="btnrow"><button class="rbtn soft" data-act="close">Bye</button></div></div></div>`;
     }
     const parcel = this.quests.deliveryFor(this.npc);
