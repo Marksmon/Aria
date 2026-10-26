@@ -14,8 +14,8 @@ const hex = (c) => [parseInt(c.slice(1, 3), 16), parseInt(c.slice(3, 5), 16), pa
 const mix = (c, to, k) => { const a = hex(c), b = hex(to); return `rgb(${a.map((v, i) => Math.round(v + (b[i] - v) * k)).join(',')})`; };
 const shades = new Map(); // colour -> [light, dark], worked out once
 const shade = (c) => shades.get(c) || (shades.set(c, [mix(c, '#ffffff', 0.28), mix(c, '#000000', 0.32)]), shades.get(c));
-const light = (c) => shade(c)[0];
-const dark = (c) => shade(c)[1];
+export const light = (c) => shade(c)[0];
+export const dark = (c) => shade(c)[1];
 
 // any CSS colour as [r, g, b], read once through a canvas (which writes it back as #rrggbb)
 const rgbs = new Map();
@@ -108,7 +108,7 @@ export const line = (x0, y0, x1, y1, w = 1) => (set) => {
     for (let a = 0; a < w; a++) for (let b = 0; b < w; b++) set(x - (w - 1) / 2 + a, y - (w - 1) / 2 + b);
   }
 };
-const both = (...shapes) => (set) => shapes.forEach((s) => s(set));
+export const both = (...shapes) => (set) => shapes.forEach((s) => s(set));
 
 // ---------- the monsters ----------
 // race: kobold (dog-headed, furry, a tail) or goblin (green, long ears, big nose)

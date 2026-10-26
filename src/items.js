@@ -36,6 +36,16 @@ const BASE_ITEMS = {
   steel_ore:    { type: 'misc', name: 'Steel Ore', desc: 'Dark ore with a blue shine. Holger uses it to refine Lv 2 weapons.', from: 'Kobolds and Goblins, and Holger sells it' },
   hard_ore:     { type: 'misc', name: 'Hard Ore', desc: 'Ore so hard it rings when you tap it. Holger refines Lv 3 and Lv 4 weapons with it, and Seyla wants it for her enchanting.', from: 'Kobolds, Goblins and their kings (1-2%)' },
   armor_ore:    { type: 'misc', name: 'Armor Ore', desc: 'A heavy grey ore that never seems to scratch. Holger refines armor, shields, capes, boots and head gear with it.', from: 'Kobolds, Goblins and their kings (1-2%)' },
+  // Veidheim's lands: the farms and woods east of Black Wood
+  snake_skin:   { type: 'misc', name: 'Snake Skin', desc: 'A shed Snake skin, green and gold, light as paper and tough as leather. The tanners of Veidheim make boots of it.', from: 'Snakes' },
+  wolf_pelt:    { type: 'misc', name: 'Wolf Pelt', desc: 'A thick grey Wolf pelt. Veidheim\'s hunters line their cloaks with it for the long night watches.', from: 'Wolves' },
+  wolf_fang:    { type: 'misc', name: 'Wolf Fang', desc: 'A long Wolf fang. Hunters wear one on a cord to show their first kill; the rest go into charms.', from: 'Wolves' },
+  willow_twig:  { type: 'misc', name: 'Willow Twig', desc: 'A bendy twig from a walking Willow, still twitching. It makes good bowstaves and better staves.', from: 'Willows' },
+  bear_claw:    { type: 'misc', name: 'Bear Claw', desc: 'A Bear\'s claw as long as a finger. Charm-makers set them in silver; nobody else wants to hold one.', from: 'Bears' },
+  old_bark:     { type: 'misc', name: 'Old Bark', desc: 'A slab of bark from a Treant, mossy and hard as a shield. It still creaks now and then.', from: 'Treants' },
+  willow_heart: { type: 'misc', rare: true, name: 'Willow Heart', desc: 'A knot of pale wood from the Elder Willow\'s heart. It hums like a bee. Staffwrights and enchanters both want it.', from: 'the Elder Willow (30%)' },
+  ancient_heartwood: { type: 'misc', rare: true, name: 'Ancient Heartwood', desc: 'Golden wood from the heart of the Ancient Treant, a thousand rings deep. Nothing in Aria is harder, or older.', from: 'the Ancient Treant (25%)' },
+  ancient_seed: { type: 'misc', name: 'Ancient Seed', desc: 'A seed as big as a fist from the Ancient Treant. Plant it, and in a thousand years there will be another: proof that you were the one who felled it.', from: 'the Ancient Treant (MVP reward)' },
   ember_heart: { type: 'misc', name: 'Fire Heart', desc: 'The Fire Giant\'s smouldering heart, still beating: proof that you were the one who brought it down.', from: 'the Fire Giant (MVP reward)' },
 
   // usables, like Ragnarok's potions and wings. use: hp/sp [min, max], warp (random | camp),
@@ -49,6 +59,7 @@ const BASE_ITEMS = {
   herb:    { type: 'use', usable: true, name: 'Green Herb', use: { hp: [5, 8], cure: true }, desc: 'A bitter green herb that clears the head. Cures spore sickness and restores a little HP.', from: 'Sprouts and Mushrooms' },
   quick:   { type: 'use', usable: true, name: 'Speed Potion', use: { buff: 'aspd', t: 180 }, desc: 'A fizzing potion that makes your hands faster than your thoughts. +10% attack speed for 3 minutes.' },
   wander:  { type: 'use', usable: true, name: 'Teleport Feather', use: { warp: 'random' }, desc: 'A feather a Wisp left behind. Throw it up and the wind whisks you to a random spot on this map.', from: 'Wisps' },
+  honey:   { type: 'use', usable: true, name: 'Honey', use: { hp: [150, 210] }, desc: 'Wild honey from a Bear\'s stolen hive, still on the comb. Sweet, sticky and strong. Restores 150–210 HP.', from: 'Bears' },
   homeward: { type: 'use', usable: true, name: 'Return Feather', use: { warp: 'camp' }, desc: 'A feather that remembers where you saved. Hold it tight and it carries you back to your save point (the camp, until you save with a Keeper).' },
 
   // one-handed swords (Ragnarok rules, see rules.js)
@@ -100,13 +111,30 @@ const BASE_ITEMS = {
   ember_charm:  { type: 'equip', slot: 'acc', rare: true, name: 'Fire Charm', stats: { pow: 1, knl: 1 }, mhp: 30, icon: 'r_ember', desc: 'A Fire Wisp curled up asleep in a glass bead. Warm and strangely cheerful.', from: 'Fire Wisps (0.3%)' },
   kobold_ring:  { type: 'equip', slot: 'acc', rare: true, name: 'King\'s Ring', stats: { pow: 2, end: 1 }, mhp: 50, icon: 'r_kobold', desc: 'A heavy gold ring from the Kobold King\'s paw, much too big for a person. It feels like a fist.', from: 'the Kobold King (5%)' },
   goblin_charm: { type: 'equip', slot: 'acc', rare: true, name: 'Tooth Necklace', stats: { qkn: 2, fns: 1 }, hit: 5, icon: 'r_goblin', desc: 'The Goblin King\'s necklace of teeth. It rattles when you move, and you move faster.', from: 'the Goblin King (5%)' },
+  // Veidheim's beasts' rare finds, the Elder Willow's and the Ancient Treant's
+  snake_boots:  { type: 'equip', slot: 'shoes', rare: true, name: 'Snakeskin Boots', def: 3, flee: 5, stats: { qkn: 1 }, icon: 'boots_snake', desc: 'Boots of green and gold scales. You slip through a fight like a snake through grass.', from: 'Snakes (0.25%)' },
+  wolf_cape:    { type: 'equip', slot: 'garment', rare: true, name: 'Wolf Cape', def: 3, flee: 3, stats: { pow: 1, qkn: 1 }, icon: 'r_wolfcape', desc: 'A whole Wolf pelt, the head for a hood. The pack ran with it once; now you do.', from: 'Wolves (0.2%)' },
+  willow_staff: { type: 'equip', slot: 'weapon', el: 'earth', jobs: ['mage'], kind: 'staff', rare: true, name: 'Willow Staff', atk: 36, wlv: 3, matk: 36, stats: { knl: 3 }, icon: 'staff_willow', desc: 'A walking Willow\'s branch that never stopped growing leaves. It sways when you chant, as if in a breeze.', from: 'Willows (0.2%), the Elder Willow (3%)' },
+  bear_hide:    { type: 'equip', slot: 'armor', jobs: ['swordman'], rare: true, name: 'Bear Hide', def: 9, mhp: 120, icon: 'armor_bear', desc: 'A Bear\'s hide worn over mail. Heavy and warm, and blows sink into it like into a snowdrift.', from: 'Bears (0.15%)' },
+  treant_shield: { type: 'equip', slot: 'shield', rare: true, name: 'Bark Shield', def: 5, mhp: 100, icon: 'r_barkshield', desc: 'A round of Treant bark, moss and all. It grows back where it is cut.', from: 'Treants (0.2%)' },
+  willow_charm: { type: 'equip', slot: 'acc', rare: true, name: 'Willow Charm', stats: { fns: 2, knl: 1 }, msp: 30, icon: 'r_willow', desc: 'A loop of Elder Willow twig with a firefly asleep in it. Your songs come quicker.', from: 'the Elder Willow (4%)' },
+  oak_ring:     { type: 'equip', slot: 'acc', rare: true, name: 'Oak Ring', stats: { end: 3, pow: 1 }, mhp: 80, icon: 'r_oak', desc: 'A ring grown from the Ancient Treant\'s finger. It is a little warm, like a tree in the sun.', from: 'the Ancient Treant (5%)' },
+  grove_blade:  { type: 'equip', slot: 'weapon', jobs: ['swordman'], el: 'earth', rare: true, name: 'Grove Sword', atk: 125, wlv: 4, stats: { pow: 2, end: 2 }, icon: 'weapon_grove', desc: 'A sword of living heartwood, harder than steel, with leaves on its hilt that never fall.', from: 'the Ancient Treant (1%)' },
+  // gear from the hunters' own leatherworks (Leif in Veidheim)
+  hunter_cape:  { type: 'equip', slot: 'garment', name: "Hunter's Cloak", def: 2, flee: 4, stats: { fns: 1 }, icon: 'r_huntcape', desc: 'Green wool lined with Wolf pelt, the cloak every Veidheim hunter wears. It hides you in the long grass.' },
+  hunter_boots: { type: 'equip', slot: 'shoes', name: "Hunter's Boots", def: 3, flee: 3, mhp: 40, icon: 'boots_hunter', desc: 'Soft Snake skin boots that make no sound on a forest floor.' },
+  claw_charm:   { type: 'equip', slot: 'acc', name: 'Claw Charm', stats: { pow: 2 }, hit: 4, icon: 'charm_claw', desc: 'A Bear claw and two Wolf fangs set in silver. It makes your arm feel heavy and sure.' },
+  bark_armor:   { type: 'equip', slot: 'armor', name: 'Bark Armor', def: 7, mhp: 60, msp: 30, icon: 'armor_bark', desc: 'Old Bark plates over a padded tunic, bound with Willow twigs. Anyone can wear it, and it smells of the forest.' },
+  verdant_staff: { type: 'equip', slot: 'weapon', el: 'earth', jobs: ['mage'], kind: 'staff', name: 'Green Staff', atk: 50, wlv: 4, matk: 52, stats: { knl: 4, fns: 2 }, icon: 'staff_verdant', desc: 'Ancient Heartwood round a Willow Heart. Moss grows on it overnight, and the earth listens when it sings.' },
   // MVP cards (Ragnarok's monster cards, and like its MVP cards, overpowered): pressed into a
   // slotted weapon for good (a weapon that breaks at Holger's gives its cards back), see Seyla and
   // the Insert button. card: where it goes and what it adds: atk, def, matk (% MATK), hit, flee,
   // mhpRate / mspRate (% Max HP / SP), aspd (% faster attacks), el (the weapon's element) and stats
   kobold_card:  { type: 'misc', rare: true, name: 'Kobold King Card', icon: 'card_kobold', card: { on: 'weapon', mhpRate: 40, def: 10, flee: 10, stats: { end: 10 } }, desc: 'The Kobold King on a gilded card, too stubborn to fall. In a weapon with a slot: Max HP +40%, DEF +10, FLEE +10, END +10.', from: 'the Kobold King (1%)' },
   goblin_card:  { type: 'misc', rare: true, name: 'Goblin King Card', icon: 'card_goblin', card: { on: 'weapon', atk: 100, aspd: 15, stats: { pow: 10, qkn: 10 } }, desc: 'The Goblin King on a gilded card, grinning. In a weapon with a slot: ATK +100, POW +10, QKN +10, attacks 15% faster.', from: 'the Goblin King (1%)' },
+  treant_card:  { type: 'misc', rare: true, name: 'Ancient Treant Card', icon: 'card_treant', card: { on: 'weapon', atk: 40, def: 15, mhpRate: 30, stats: { pow: 8, end: 10 } }, desc: 'The Ancient Treant on a card of pressed bark, blossoms in its crown. In a weapon with a slot: ATK +40, DEF +15, Max HP +30%, POW +8, END +10.', from: 'the Ancient Treant (1%)' },
   // mini-boss cards: a step above an ordinary piece of gear, well below an MVP's
+  willow_card:  { type: 'misc', rare: true, name: 'Elder Willow Card', icon: 'card_willow', card: { on: 'weapon', matk: 12, stats: { fns: 4, knl: 2 } }, desc: 'The Elder Willow on a card that smells of the marsh. In a weapon with a slot: MATK +12%, FNS +4 (quicker casting), KNL +2.', from: 'the Elder Willow (1%)' },
   sprout_card:  { type: 'misc', rare: true, name: 'Giant Sprout Card', icon: 'card_sprout', card: { on: 'weapon', mhpRate: 10, stats: { end: 4 } }, desc: 'The Giant Sprout on a leafy card. In a weapon with a slot: Max HP +10%, END +4.', from: 'the Giant Sprout (1%)' },
   crab_card:    { type: 'misc', rare: true, name: 'King Crab Card', icon: 'card_crab', card: { on: 'weapon', flee: 8, aspd: 5, stats: { qkn: 4 } }, desc: 'The King Crab on a sea-stained card. In a weapon with a slot: QKN +4, FLEE +8, attacks 5% faster.', from: 'the King Crab (1%)' },
   mushroom_card: { type: 'misc', rare: true, name: 'Giant Mushroom Card', icon: 'card_mushroom', card: { on: 'weapon', matk: 15, mspRate: 10, stats: { knl: 4 } }, desc: 'The Giant Mushroom on a violet card that smells of rain. In a weapon with a slot: MATK +15%, KNL +4, Max SP +10%.', from: 'the Giant Mushroom (1%)' },
@@ -223,7 +251,7 @@ export function refineInfo(key) {
 // For now only Lv 4 weapons take slots (and every card is a weapon card).
 export const SLOTTABLE = ['weapon'];
 export const MAX_SLOTS = 2;
-export const ENCHANT = { chance: [50, 25], perz: 50000, items: { hard_ore: 5, shade: 5 }, boss: ['heartwood', 'king_pearl', 'gloom_heart', 'cinder_core'] };
+export const ENCHANT = { chance: [50, 25], perz: 50000, items: { hard_ore: 5, shade: 5 }, boss: ['heartwood', 'king_pearl', 'gloom_heart', 'cinder_core', 'willow_heart'] };
 // the next enchant of a piece: { slots (after it), chance %, mult (x the materials) }
 export const enchantStep = (key) => { const n = ITEMS[key]?.slots || 0; return { slots: n + 1, chance: ENCHANT.chance[n], mult: n + 1 }; };
 export const canEnchant = (key) => { const it = ITEMS[key]; return !!it && it.type === 'equip' && SLOTTABLE.includes(it.slot) && it.wlv === 4 && (it.slots || 0) < MAX_SLOTS; };
@@ -251,6 +279,10 @@ export const PRICES = {
   sprout_charm: 700, spore_charm: 1000, shell_charm: 1000, glow_charm: 1200,
   heartwood: 3000, king_pearl: 4000, gloom_heart: 5000, cinder_core: 6000, jarl_horn: 8000,
   thorn_mantle: 12000, tidebreaker: 20000, gloom_staff: 22000, cinder_greaves: 16000, jarl_mantle: 30000,
+  snake_skin: 420, wolf_pelt: 460, wolf_fang: 900, willow_twig: 480, bear_claw: 560, old_bark: 620, honey: 300,
+  willow_heart: 7000, ancient_heartwood: 10000, ancient_seed: 5000, willow_card: 22000, treant_card: 60000,
+  snake_boots: 12000, wolf_cape: 14000, willow_staff: 16000, bear_hide: 18000, treant_shield: 16000, willow_charm: 22000, oak_ring: 26000, grove_blade: 50000,
+  hunter_cape: 6000, hunter_boots: 6000, claw_charm: 9000, bark_armor: 12000, verdant_staff: 48000,
   heartwood_staff: 14000, frostbite: 5200, gale_blade: 9000, birch_staff: 1800, frost_staff: 3600, tide_staff: 12000, ember_staff: 20000, shade_staff: 16000, jarl_staff: 42000, runeking_staff: 50000, pearl_mail: 12000, gloom_robe: 14000, cinderfang: 24000, hornblade: 45000, prism_ring: 8000, slime_band: 12000,
 };
 export const sellPrice = (id) => Math.floor((PRICES[baseOf(id)] || 0) / 2); // upgraded gear sells at its base price
@@ -262,10 +294,13 @@ export const SHOPS = {
   gunnar: ['twig_sword', 'stone_blade', 'iron_sword', 'clothes', 'chain_mail', 'round_shield', 'wool_cape', 'leather_boots'],
   // Galdrheim: Kari's curios (like Hild's, and Speed Potions), Orm's staves and robes
   kari: ['potion', 'potion2', 'tonic', 'herb', 'berry', 'quick', 'wander', 'homeward', 'torch'],
+  // Veidheim: Eydis's hunting supplies (White Potions and Honey for the long hunts)
+  eydis: ['potion', 'potion2', 'potion3', 'tonic', 'honey', 'herb', 'quick', 'wander', 'homeward', 'torch'],
   orm: ['oak_staff', 'birch_staff', 'frost_staff', 'rune_staff', 'mage_robe', 'wool_cape', 'leather_boots'],
 };
 // who crafts a recipe: 'use' (Ragna's brews), 'magic' (Orm's staves and sorcerers' gear), 'gear' (Gunnar's forge)
 export const recipeKind = (r) => {
+  if (r.by) return r.by; // a crafter's own line (Leif's leatherworks: 'hunt')
   const it = ITEMS[r.item];
   if (it.type !== 'equip') return 'use';
   return it.kind === 'staff' || (it.jobs && it.jobs.every((j) => j === 'mage')) ? 'magic' : 'gear';
@@ -346,6 +381,12 @@ export const RECIPES = [
   { item: 'hornblade', lv: 25, cost: { jarl_horn: 1, ember_heart: 1, cinder_core: 1 } },
   { item: 'prism_ring', lv: 10, cost: { shiny_gel: 3, pearl: 1 } },
   { item: 'slime_band', lv: 12, cost: { gooey_ring: 1, tide_pendant: 1, shiny_gel: 1 } },
+  // Leif's leatherworks in Veidheim
+  { item: 'hunter_cape', lv: 46, by: 'hunt', cost: { wolf_pelt: 8, leaf: 6 } },
+  { item: 'hunter_boots', lv: 46, by: 'hunt', cost: { snake_skin: 8, wolf_pelt: 2 } },
+  { item: 'claw_charm', lv: 50, by: 'hunt', cost: { bear_claw: 6, wolf_fang: 3 } },
+  { item: 'bark_armor', lv: 52, by: 'hunt', cost: { old_bark: 10, willow_twig: 6, bear_claw: 2 } },
+  { item: 'verdant_staff', lv: 55, cost: { ancient_heartwood: 1, willow_heart: 1, willow_twig: 8 } },
   { item: 'sprout_charm', lv: 2, cost: { seed: 5, leaf: 3 } },
   { item: 'spore_charm',  lv: 4, cost: { spore: 5, gel: 3 } },
   { item: 'shell_charm',  lv: 4, cost: { shell: 5, stone: 2 } },
@@ -638,6 +679,54 @@ const PAINT = {
   card_crab: (g) => cardIcon(g, '#8ab8ff', '#f2a8a0'),
   card_mushroom: (g) => cardIcon(g, '#9a7cff', '#efe2c4'),
   card_beetle: (g) => cardIcon(g, '#ff7a4a', '#6a6a72'),
+  card_willow: (g) => cardIcon(g, '#d8c8a0', '#9cbc4a'),
+  card_treant: (g) => cardIcon(g, '#8a6a4a', '#f2b8d0'),
+  snake_skin: (g) => {
+    shape(g, () => { g.moveTo(10, 50); g.bezierCurveTo(18, 20, 40, 52, 46, 22); g.lineTo(56, 14); g.lineTo(50, 28); g.bezierCurveTo(44, 58, 22, 30, 16, 54); g.closePath(); }, '#7fae4e');
+    for (const [x, y] of [[20, 40], [30, 38], [40, 36], [48, 26]]) { g.beginPath(); g.arc(x, y, 2.5, 0, 7); g.fillStyle = '#e0d07a'; g.fill(); }
+  },
+  wolf_pelt: (g) => {
+    shape(g, () => { g.moveTo(14, 16); g.lineTo(50, 16); g.quadraticCurveTo(56, 34, 50, 52); g.lineTo(40, 46); g.lineTo(32, 54); g.lineTo(24, 46); g.lineTo(14, 52); g.quadraticCurveTo(8, 34, 14, 16); g.closePath(); }, '#8a8e96');
+    for (const x of [22, 32, 42]) { g.beginPath(); g.moveTo(x, 22); g.lineTo(x + 2, 40); g.strokeStyle = '#b8bcc4'; g.lineWidth = 2; g.stroke(); }
+  },
+  wolf_fang: (g) => {
+    shape(g, () => { g.moveTo(22, 10); g.quadraticCurveTo(34, 6, 42, 12); g.quadraticCurveTo(40, 34, 30, 58); g.quadraticCurveTo(26, 34, 22, 10); }, '#f4ecd8');
+    gloss(g, 30, 20, 3, 6);
+  },
+  willow_twig: (g) => {
+    g.beginPath(); g.moveTo(10, 56); g.quadraticCurveTo(26, 20, 54, 10); g.strokeStyle = OUT; g.lineWidth = 8; g.stroke(); g.strokeStyle = '#7a6a4a'; g.lineWidth = 4; g.stroke();
+    for (const t of [0.3, 0.5, 0.7, 0.9]) { const x = 10 + t * 42, y = 56 - t * 44; shape(g, () => g.ellipse(x + 2, y + 9, 3, 8, 0.2, 0, 7), '#9cbc4a', 2); }
+  },
+  bear_claw: (g) => {
+    for (const [x, a] of [[18, -0.3], [32, 0], [46, 0.3]]) { g.save(); g.translate(x, 52); g.rotate(a); shape(g, () => { g.moveTo(-5, 0); g.quadraticCurveTo(-6, -26, 6, -38); g.quadraticCurveTo(2, -20, 5, 0); g.closePath(); }, '#efe6cc', 2.5); g.restore(); }
+    shape(g, () => g.roundRect(10, 48, 44, 10, 4), '#7a5232', 2.5);
+  },
+  old_bark: (g) => {
+    shape(g, () => { g.moveTo(14, 10); g.lineTo(48, 14); g.lineTo(52, 54); g.lineTo(12, 52); g.closePath(); }, '#6a4a2e');
+    for (const x of [22, 32, 42]) { g.beginPath(); g.moveTo(x, 14); g.lineTo(x + 2, 50); g.strokeStyle = '#3e2a18'; g.lineWidth = 2.5; g.stroke(); }
+    shape(g, () => g.ellipse(24, 18, 9, 5, 0, 0, 7), '#5f8f3a', 2);
+  },
+  honey: (g) => {
+    shape(g, () => { g.moveTo(16, 24); g.lineTo(48, 24); g.quadraticCurveTo(56, 40, 46, 56); g.lineTo(18, 56); g.quadraticCurveTo(8, 40, 16, 24); g.closePath(); }, '#c8862a');
+    shape(g, () => g.roundRect(14, 16, 36, 9, 3), '#8a5a33', 2.5);
+    g.beginPath(); g.moveTo(22, 25); g.quadraticCurveTo(24, 36, 20, 40); g.strokeStyle = '#ffd06a'; g.lineWidth = 4; g.stroke();
+  },
+  willow_heart: (g) => { shape(g, () => { g.moveTo(32, 54); g.bezierCurveTo(4, 34, 14, 8, 32, 22); g.bezierCurveTo(50, 8, 60, 34, 32, 54); }, '#d8c8a0'); g.beginPath(); g.arc(32, 34, 5, 0, 7); g.fillStyle = '#fff6a8'; g.fill(); gloss(g, 22, 28, 4, 3); },
+  ancient_heartwood: (g) => { shape(g, () => g.roundRect(10, 20, 44, 26, 10), '#8a6a3a'); shape(g, () => g.ellipse(46, 33, 8, 13, 0, 0, Math.PI * 2), '#f2cf6a', 2.5); for (const r of [3, 6]) { g.beginPath(); g.ellipse(46, 33, r * 0.6, r, 0, 0, 7); g.strokeStyle = '#b8862a'; g.lineWidth = 1.5; g.stroke(); } },
+  ancient_seed: (g) => { shape(g, () => g.ellipse(32, 38, 17, 14, 0, 0, Math.PI * 2), '#c8a050'); shape(g, () => g.ellipse(36, 16, 10, 5, -0.4, 0, Math.PI * 2), '#9cdc76', 2.5); gloss(g, 25, 33, 5, 4); },
+  boots_snake: (g) => { shape(g, () => { g.moveTo(18, 10); g.lineTo(34, 10); g.lineTo(34, 40); g.lineTo(52, 44); g.quadraticCurveTo(56, 54, 48, 56); g.lineTo(14, 56); g.lineTo(18, 34); g.closePath(); }, '#5f9440'); for (const [x, y] of [[24, 18], [28, 28], [24, 38], [38, 48]]) { g.beginPath(); g.arc(x, y, 2.5, 0, 7); g.fillStyle = '#e0d07a'; g.fill(); } },
+  boots_hunter: (g) => { shape(g, () => { g.moveTo(18, 10); g.lineTo(34, 10); g.lineTo(34, 40); g.lineTo(52, 44); g.quadraticCurveTo(56, 54, 48, 56); g.lineTo(14, 56); g.lineTo(18, 34); g.closePath(); }, '#7a6a3a'); g.beginPath(); g.moveTo(18, 18); g.lineTo(34, 18); g.strokeStyle = '#8a8e96'; g.lineWidth = 5; g.stroke(); },
+  r_wolfcape: (g) => { shape(g, () => { g.moveTo(22, 14); g.lineTo(42, 14); g.quadraticCurveTo(54, 34, 52, 56); g.lineTo(12, 56); g.quadraticCurveTo(10, 34, 22, 14); g.closePath(); }, '#8a8e96'); for (const s of [-1, 1]) shape(g, () => { g.moveTo(32 + s * 4, 16); g.lineTo(32 + s * 9, 4); g.lineTo(32 + s * 12, 16); g.closePath(); }, '#8a8e96', 2.5); g.beginPath(); g.arc(28, 22, 2, 0, 7); g.arc(36, 22, 2, 0, 7); g.fillStyle = '#ffd23a'; g.fill(); },
+  r_huntcape: (g) => { shape(g, () => { g.moveTo(22, 10); g.lineTo(42, 10); g.quadraticCurveTo(54, 34, 52, 56); g.lineTo(12, 56); g.quadraticCurveTo(10, 34, 22, 10); g.closePath(); }, '#4f6e3a'); shape(g, () => g.rect(18, 8, 28, 7), '#b8bcc4', 2.5); },
+  staff_willow: (g) => staffIcon(g, '#9a8a5a', '#c8dc6a'),
+  staff_verdant: (g) => staffIcon(g, '#5f8f3a', '#f2cf6a'),
+  armor_bear: (g) => armorIcon(g, '#7a5232', '#a87a4e'),
+  armor_bark: (g) => armorIcon(g, '#6a4a2e', '#5f8f3a'),
+  r_barkshield: (g) => { shape(g, () => g.arc(32, 32, 24, 0, Math.PI * 2), '#6a4a2e'); for (const r of [8, 15]) { g.beginPath(); g.arc(32, 32, r, 0, 7); g.strokeStyle = '#3e2a18'; g.lineWidth = 2; g.stroke(); } shape(g, () => g.ellipse(22, 18, 8, 4, -0.4, 0, 7), '#5f8f3a', 2); },
+  r_willow: (g) => charmIcon(g, '#fff6a8', '#9cbc4a'),
+  r_oak: (g) => { g.beginPath(); g.arc(32, 38, 16, 0, Math.PI * 2); g.strokeStyle = OUT; g.lineWidth = 10; g.stroke(); g.strokeStyle = '#8a6a3a'; g.lineWidth = 6; g.stroke(); shape(g, () => g.ellipse(32, 18, 9, 5, 0, 0, 7), '#5aa848', 2.5); },
+  charm_claw: (g) => { charmIcon(g, '#efe6cc', '#b8bcc4'); },
+  weapon_grove: (g) => swordIcon(g, '#c8a050', '#3f8a3a', '#f2cf6a'),
   kobold_fur: (g) => {
     for (const [x, y, a] of [[24, 40, -0.5], [32, 36, 0], [40, 40, 0.5]]) shape(g, () => g.ellipse(x, y, 7, 18, a, 0, Math.PI * 2), '#9a6a3c', 3);
     for (const [x, y] of [[26, 30], [34, 26]]) { g.beginPath(); g.moveTo(x, y); g.lineTo(x + 3, y + 14); g.strokeStyle = '#c49260'; g.lineWidth = 2; g.stroke(); }

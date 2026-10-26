@@ -84,6 +84,12 @@ Trainee, not a Sorcerer.
 | Goblin Assassin | 44 | 97% win · 6 s · 66% HP left | 100% win · 4 s · 62% HP left |
 | Fire Wisp | 45 | 98% win · 7 s · 66% HP left | 100% win · 6 s · 27% HP left |
 | Giant Beetle | 48 | 99% win · 111 s · 48% HP left · 14 pots | 100% win · 42 s · 53% HP left · 8 pots |
+| Snake | 46 | 100% win · 6 s · 71% HP left | 100% win · 4 s · 80% HP left |
+| Wolf | 48 | 99% win · 8 s · 59% HP left | 100% win · 4 s · 62% HP left |
+| Willow | 50 | 100% win · 6 s · 81% HP left | 100% win · 6 s · 66% HP left |
+| Bear | 53 | 100% win · 10 s · 67% HP left | 100% win · 8 s · 28% HP left |
+| Elder Willow | 55 | 100% win · 125 s · 48% HP left · 16 pots | 100% win · 40 s · 52% HP left · 7 pots |
+| Treant | 56 | 100% win · 10 s · 68% HP left | 100% win · 7 s · 46% HP left |
 
 ## Mini-bosses at their hinted level, 20 Orange Potions
 
@@ -93,6 +99,7 @@ Trainee, not a Sorcerer.
 | King Crab at Base 34 | 100% win · 83 s · 52% HP left · 10 pots | 99% win · 82 s · 59% HP left · 12 pots |
 | Giant Mushroom at Base 43 | 100% win · 84 s · 50% HP left · 8 pots | 100% win · 73 s · 54% HP left · 12 pots |
 | Giant Beetle at Base 50 | 100% win · 84 s · 49% HP left · 5 pots | 100% win · 41 s · 51% HP left · 7 pots |
+| Elder Willow at Base 58 | 100% win · 91 s · 48% HP left · 4 pots | 100% win · 36 s · 50% HP left · 5 pots |
 | Lantern Wisp at Base 16 | 100% win · 33 s · 65% HP left · 3 pots | 100% win · 22 s · 88% HP left · 3 pots |
 
 ## Raids: whole runs (`node build-tools/raid-sim.mjs`)
@@ -112,3 +119,14 @@ Bloop Island: 120 runs each, the hero at the advised level
 | Normal | Base 40, first job, 20 Orange | 20 pots: 100% (5.1 min, 6 used) · 10 pots: 100% (5.0 min, 6 used) · 0 pots: 43% (4.8 min) | 20 pots: 100% (2.6 min, 19 used) · 10 pots: 0% · 0 pots: 0% |
 | Hard | Base 50, second job, 30 White | 30 pots: 100% (2.2 min, 8 used) · 15 pots: 100% (2.2 min, 8 used) · 0 pots: 54% (2.1 min) | 30 pots: 100% (1.6 min, 24 used) · 15 pots: 7% (1.6 min, 15 used) · 0 pots: 0% |
 | Hell | Base 60, second job, 50 White | 50 pots: 100% (3.1 min, 26 used) · 25 pots: 94% (3.0 min, 25 used) · 0 pots: 0% | 50 pots: 100% (1.7 min, 45 used) · 25 pots: 0% · 0 pots: 0% |
+
+## Veidheim's lands (Base 46-62)
+
+The farms and woods east of Black Wood are made for a hero near and past the second job. Their field
+monsters sit on the same curve as the goblins and fire beasts (a first-job reference hero at their
+level wins with 60-80% HP left; the Sorcerer is shorter against the Bear, which is Neutral and hits
+hard). The Elder Willow is a mini-boss like the others (about 1.5 minutes at its hinted Base 58).
+The Ancient Treant (Lv 62) is the strongest MVP: like the Goblin King, a first-job hero cannot finish
+it (`node build-tools/sim.mjs ancientTreant 62`: the Blader gets it to about half with 20 Orange
+Potions), a second job hitting 2-4x as hard can. Its guards are the lighter beasts (2 Wolves, a
+Willow, a Snake), not Treants and Bears, which would make it a wall.

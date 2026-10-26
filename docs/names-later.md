@@ -6,7 +6,7 @@ the code never changed, so saves are not affected.
 
 ## Field maps
 
-The fields went to plain names too; the towns (Eldrun Camp, Steinborg, Galdrheim) kept theirs.
+The fields went to plain names too; the towns (Eldrun Camp, Steinborg, Galdrheim, Veidheim) kept theirs.
 
 | Now | Kept for later |
 |---|---|
@@ -22,6 +22,10 @@ The fields went to plain names too; the towns (Eldrun Camp, Steinborg, Galdrheim
 | Coal Pit | Kolgrof |
 | Burnt Wood | Brennholt |
 | Serpent Wood | Ormholt |
+| Barley Field | Byggvangr |
+| Wolf Hills | Ulfhaugar |
+| Willow Marsh | Pilmyrr |
+| Old Forest | Fornskogr |
 
 ## Monsters
 
@@ -46,6 +50,10 @@ The fields went to plain names too; the towns (Eldrun Camp, Steinborg, Galdrheim
 | Giant Mushroom | Gloom Mother |
 | Giant Beetle | Cinder Lord |
 | Fire Giant | Ember Jarl |
+| Willow | Weeping Willow Spirit |
+| Treant | Oak Treant |
+| Elder Willow | Grandmother Willow |
+| Ancient Treant | Ancient Oak Treant |
 
 ## Items
 

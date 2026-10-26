@@ -5,6 +5,7 @@
 import * as THREE from 'three';
 import { mulberry32 } from './noise.js';
 import { paintSet, frameSize } from './painted.js';
+import { beastSet, BEASTS } from './beasts.js';
 import { paintButler, BW, BH } from './butler.js';
 import { paintBleepBloop, BW as BBW, BH as BBH, BODY as BB_BODY } from './bleepbloop.js';
 import { POSES, LEGS, framePainter } from './design-anim.js';
@@ -102,6 +103,7 @@ const PAL = {
   dry: ['#86391f', '#b5562a', '#dd873a', '#f6c46a'],
   bush: ['#3c7034', '#579739', '#7eba4a', '#b9dc75'],
   birch: ['#5f8f2e', '#86b440', '#b2d65a', '#e6f29a'],
+  oak: ['#24402a', '#335a34', '#4a7a42', '#86b06a'],
 };
 
 function treeRound(rng, pal, opts = {}) {
@@ -330,6 +332,121 @@ function logSeat() {
   rrect(g, 14, 32, 80, 10, 5, '#6d4426', null);
   ell(g, 98, 31, 9, 15, '#c99a63');
   ell(g, 98, 31, 4, 7, null, '#9a7044', 2);
+  return c;
+}
+
+// ---------- Veidheim and its lands: woods, farms and the hunters' things ----------
+// a pine: tiers of dark needles on a straight trunk
+function treePine(rng) {
+  const { c, g } = mk(130, 220);
+  trunk(g, 65, 150, 214, 16, '#6a4a2e', '#4a3220');
+  const tiers = [[176, 58], [140, 50], [106, 42], [74, 32], [46, 22]];
+  const cols = ['#24503a', '#2f6446', '#3f7a52'];
+  for (const [y, w] of tiers) {
+    const j = (rng() - 0.5) * 4;
+    poly(g, [[65 - w + j, y], [65 + j * 0.3, y - 52], [65 + w + j, y]], cols[0], OUT, 3.5);
+    poly(g, [[65 - w * 0.75 + j, y - 6], [65 + j * 0.3, y - 48], [65 + j * 0.3 + 4, y - 8]], cols[1], null);
+    poly(g, [[65 - w * 0.45 + j, y - 14], [65 + j * 0.3 - 1, y - 44], [65 + j * 0.3, y - 16]], cols[2], null);
+  }
+  return c;
+}
+// an old oak: a thick, gnarled trunk and a wide dark crown
+function treeOak(rng) {
+  const { c, g } = mk(190, 220);
+  trunk(g, 95, 110, 212, 34, '#5e4430', '#3e2c1e');
+  for (const s of [-1, 1]) { g.beginPath(); g.moveTo(95, 140); g.quadraticCurveTo(95 + s * 30, 120, 95 + s * 52, 96); g.strokeStyle = OUT; g.lineWidth = 14; g.stroke(); g.strokeStyle = '#5e4430'; g.lineWidth = 9; g.stroke(); }
+  canopy(g, rng, 95, 76, 84, 62, PAL.oak, 22);
+  ell(g, 72, 170, 7, 5, '#5f8f3a', null); // moss on the trunk
+  return c;
+}
+// a clump of ripe wheat (or barley): golden stalks with heavy ears
+function wheat(rng) {
+  const { c, g } = mk(64, 72);
+  const cols = ['#d8b04a', '#e8c860', '#c8983a'];
+  for (let i = 0; i < 11; i++) {
+    const x = 10 + rng() * 44, h = 40 + rng() * 26, bend = (rng() - 0.3) * 12;
+    g.beginPath(); g.moveTo(x, 72); g.quadraticCurveTo(x, 72 - h * 0.6, x + bend, 72 - h);
+    g.strokeStyle = OUT; g.lineWidth = 4.5; g.stroke();
+    g.strokeStyle = cols[i % 3]; g.lineWidth = 2.5; g.stroke();
+    ell(g, x + bend, 72 - h - 4, 3.2, 7, cols[(i + 1) % 3], OUT, 2);
+  }
+  return c;
+}
+// green rows: cabbages and leeks
+function cabbage(rng) {
+  const { c, g } = mk(72, 44);
+  for (let i = 0; i < 3; i++) {
+    const x = 14 + i * 22 + (rng() - 0.5) * 4;
+    ell(g, x, 30, 12, 9, '#5f9a3e', OUT, 2.5);
+    ell(g, x - 1, 28, 7, 5.5, '#9ccc6a', null);
+    g.beginPath(); g.moveTo(x, 34); g.lineTo(x, 24); g.strokeStyle = '#4a7a30'; g.lineWidth = 1.5; g.stroke();
+  }
+  return c;
+}
+function pumpkin(rng) {
+  const { c, g } = mk(64, 48);
+  const n = 1 + Math.floor(rng() * 2);
+  for (let i = 0; i < n; i++) {
+    const x = n === 1 ? 32 : 20 + i * 24, r = n === 1 ? 18 : 13;
+    ell(g, x, 46 - r * 0.8, r, r * 0.8, '#e8862a', OUT, 2.5);
+    for (const dx of [-0.45, 0, 0.45]) ell(g, x + dx * r, 46 - r * 0.8, r * 0.28, r * 0.75, null, '#b85a1a', 1.5);
+    rrect(g, x - 2, 46 - r * 1.6 - 4, 4, 8, 2, '#5a7a30', OUT, 1.5);
+  }
+  return c;
+}
+function haystack() {
+  const { c, g } = mk(112, 96);
+  g.beginPath(); g.moveTo(8, 92); g.quadraticCurveTo(10, 14, 56, 8); g.quadraticCurveTo(102, 14, 104, 92); g.closePath();
+  g.fillStyle = '#d8b04a'; g.fill(); g.strokeStyle = OUT; g.lineWidth = 4; g.stroke();
+  for (let i = 0; i < 14; i++) { const x = 18 + i * 6; g.beginPath(); g.moveTo(x, 88); g.quadraticCurveTo(x + 2, 50, 56 + (x - 56) * 0.4, 20); g.strokeStyle = i % 2 ? '#b8903a' : '#ecc868'; g.lineWidth = 2; g.stroke(); }
+  rrect(g, 10, 58, 92, 6, 3, '#8a5a33', OUT, 2); // the binding rope
+  return c;
+}
+function scarecrow() {
+  const { c, g } = mk(96, 150);
+  rrect(g, 44, 40, 8, 108, 3, '#7a5232');
+  rrect(g, 8, 56, 80, 7, 3, '#7a5232');
+  poly(g, [[22, 58], [74, 58], [68, 104], [28, 104]], '#4a78b5', OUT, 3);            // a patched shirt
+  rrect(g, 52, 70, 10, 10, 2, '#c8463c', OUT, 1.5);
+  for (const x of [10, 86]) for (let i = -1; i <= 1; i++) { g.beginPath(); g.moveTo(x, 60); g.lineTo(x + (x < 48 ? -6 : 6), 60 + i * 6); g.strokeStyle = '#d8b04a'; g.lineWidth = 2.5; g.stroke(); }
+  ell(g, 48, 40, 15, 14, '#e8d6a0', OUT, 3);                                       // a sack head
+  g.fillStyle = OUT; g.fillRect(41, 37, 4, 4); g.fillRect(52, 37, 4, 4); g.fillRect(42, 46, 13, 2);
+  poly(g, [[22, 30], [74, 30], [62, 24], [56, 6], [40, 6], [34, 24]], '#c8a050', OUT, 3); // a straw hat
+  return c;
+}
+// an archery target on a little stand: straw boss, painted rings
+function target() {
+  const { c, g } = mk(96, 120);
+  for (const [x0, x1] of [[26, 18], [70, 78]]) { g.beginPath(); g.moveTo(x0, 60); g.lineTo(x1, 118); g.strokeStyle = OUT; g.lineWidth = 8; g.stroke(); g.strokeStyle = '#7a5232'; g.lineWidth = 4.5; g.stroke(); }
+  ell(g, 48, 52, 38, 38, '#d8b04a', OUT, 4);
+  for (const [r, col] of [[30, '#f4ecd8'], [22, '#3a6aa8'], [14, '#c8463c'], [6, '#f2cf3a']]) ell(g, 48, 52, r, r, col, OUT, 1.5);
+  g.beginPath(); g.moveTo(52, 50); g.lineTo(76, 34); g.strokeStyle = '#5a3a22'; g.lineWidth = 2.5; g.stroke(); // an arrow in it
+  poly(g, [[74, 30], [82, 30], [78, 38]], '#f4ecd8', OUT, 1.5);
+  return c;
+}
+// a drying rack: two posts, a pole, hides stretched on it
+function rack() {
+  const { c, g } = mk(130, 110);
+  for (const x of [14, 116]) rrect(g, x - 4, 14, 8, 94, 3, '#7a5232');
+  rrect(g, 6, 12, 118, 8, 3, '#8a5a33');
+  const hides = [['#8a8e96', 22], ['#7a5232', 50], ['#c8a878', 80]];
+  for (const [col, x] of hides) {
+    poly(g, [[x, 20], [x + 26, 20], [x + 30, 40], [x + 24, 72], [x + 13, 66], [x + 2, 72], [x - 4, 40]], col, OUT, 3);
+    for (const [px, py] of [[x + 2, 22], [x + 24, 22]]) circleFill(g, px, py, 2, '#3e2c20');
+  }
+  return c;
+}
+function woodpile() {
+  const { c, g } = mk(112, 72);
+  const rows = [[60, 5], [42, 4], [24, 3]];
+  rows.forEach(([y, n], r) => {
+    for (let i = 0; i < n; i++) {
+      const x = 56 - (n - 1) * 10 + i * 20;
+      ell(g, x, y, 10, 10, '#c99a63', OUT, 2.5);
+      ell(g, x, y, 5, 5, null, '#9a7044', 1.5);
+      void r;
+    }
+  });
   return c;
 }
 
@@ -733,6 +850,17 @@ const PROP_DEFS = {
   barrel: { w: 0.75, coll: 0.35, shadow: 0.5, space: 0, variants: 1, make: () => barrel() },
   crate: { w: 0.85, coll: 0.4, shadow: 0.5, space: 0, variants: 1, make: () => crate() },
   anvil: { w: 0.9, coll: 0.35, shadow: 0.5, space: 0, variants: 1, make: () => anvil() },
+  // Veidheim and its lands
+  tree_pine: { w: 2.4, coll: 0.35, shadow: 1.1, space: 1.5, variants: 3, make: (r) => treePine(r) },
+  tree_oak: { w: 3.8, coll: 0.6, shadow: 1.9, space: 2.2, variants: 3, make: (r) => treeOak(r) },
+  wheat: { w: 0.9, coll: 0, shadow: 0, space: 0.5, variants: 3, make: (r) => wheat(r) },
+  cabbage: { w: 0.9, coll: 0, shadow: 0, space: 0.5, variants: 2, make: (r) => cabbage(r) },
+  pumpkin: { w: 0.8, coll: 0, shadow: 0.3, space: 0.7, variants: 2, make: (r) => pumpkin(r) },
+  haystack: { w: 1.8, coll: 0.75, shadow: 1.0, space: 1.8, variants: 1, make: () => haystack() },
+  scarecrow: { w: 1.2, coll: 0.2, shadow: 0.4, space: 1.5, variants: 1, make: () => scarecrow() },
+  target: { w: 1.2, coll: 0.4, shadow: 0.5, space: 0, variants: 1, make: () => target() },
+  rack: { w: 2.0, coll: 0.5, shadow: 0.8, space: 0, variants: 1, make: () => rack() },
+  woodpile: { w: 1.4, coll: 0.55, shadow: 0.7, space: 0, variants: 1, make: () => woodpile() },
 };
 
 export function createSprites() {
@@ -769,6 +897,8 @@ export function createSprites() {
   // kobolds and goblins, painted in code (painted.js) until they get PixelLab art
   for (const id of ['koboldWarrior', 'koboldArcher', 'koboldAssassin', 'goblinWarrior', 'goblinArcher', 'goblinAssassin']) mobs[id] = paintedSet(id, [16, 30]);
   for (const id of ['koboldKing', 'goblinKing']) mobs[id] = paintedSet(id, [26, 48]);
+  // Veidheim's beasts: wolves, bears, snakes, willows and treants, painted in code (beasts.js)
+  for (const [id, B] of Object.entries(BEASTS)) mobs[id] = codeSet(beastSet(id), ...B.size, B.body, 2 / B.size[1]);
   // the camp's and Steinborg's people (one still being drawn borrows the Elder's look)
   const villagers = {};
   for (const id of ['bram', 'tilly', 'wren', 'hild', 'gunnar', 'ragna', 'ulfr', 'saeunn', 'embla']) villagers[id] = SHEETS[`./art/${id}.png`] ? sheet(id) : null;

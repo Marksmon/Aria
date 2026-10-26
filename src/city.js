@@ -1,4 +1,5 @@
-// Aria's walled cities. Steinborg, the market city: grey stone walls with towers and two gates,
+// Aria's walled cities (and Veidheim, the hunters' village behind its log palisade, below).
+// Steinborg, the market city: grey stone walls with towers and two gates,
 // timber houses with steep roofs round a fountain square, a forge, market stalls and the
 // seeress's tower. Galdrheim, the city of sorcerers: pale lavender stone, purple and teal roofs,
 // a glowing rune circle with a floating crystal, the Archmage's tower, a library and the
@@ -6,8 +7,12 @@
 // meshes (lit by the same sun and sky, so it darkens at night) while its people stay sprites.
 // Painted canvas textures throughout. Buildings between the camera and the player fade, like the
 // tall trees. Each city shares the walls, houses and stalls; its layout is its own (LAYOUTS).
+// Veidheim: a palisade of sharpened logs with wooden watchtowers and four gates, grass and dirt
+// lanes, thatched roofs, the hunters' lodge with its antlers, an archery range, a windmill turning
+// over the wheat, and a well on the green.
 import * as THREE from 'three';
 import { mulberry32 } from './noise.js';
+import { SOIL, cropSpots, fences } from './farm.js';
 
 export const WALL = { x0: 9, x1: 55, z0: 9, z1: 55, t: 1.1, h: 2.8 };
 export const GATE = 2.5; // half the width of a gateway
@@ -16,6 +21,14 @@ export const CITY = {
   fountain: { x: 32, z: 31, r: 2.3 },
   chest: { x: 22.6, z: 30.4 },
   stall: { x: 26.6, z: 25.4 },
+};
+export const HUNT = {
+  well: { x: 32, z: 31, r: 1.3 },
+  chest: { x: 21.8, z: 26.2 },
+  stall: { x: 38, z: 27 },
+  // the village's farm plots and the archery range's fence (farm.js; the range has no crop)
+  plots: [{ x0: 12, z0: 37, x1: 24, z1: 45, crop: 'wheat', gate: 'e' }, { x0: 12, z0: 47, x1: 20, z1: 53, crop: 'cabbage', gate: 'e' }],
+  range: { x0: 37, z0: 11.5, x1: 53, z1: 23, gate: 's' },
 };
 export const MAGIC = {
   circle: { x: 32, z: 33, r: 3 },
@@ -109,6 +122,37 @@ function houseFace(rng, w, front, plaster = '#e8dcc0', timber = '#5a3a22', door 
     } else for (let i = 0; i < panes; i++) win((W / panes) * (i + 0.5));
   });
 }
+// a palisade: upright logs, rounded with light and shade, bound by a rope
+function logTex(rng, base = '#8a6a44') {
+  return canvasTex(64, 64, (g) => {
+    for (let i = 0; i < 4; i++) {
+      const x = i * 16;
+      g.fillStyle = vary(rng, base, 26); g.fillRect(x, 0, 16, 64);
+      g.fillStyle = 'rgba(255,255,255,.14)'; g.fillRect(x + 3, 0, 4, 64);
+      g.fillStyle = 'rgba(0,0,0,.28)'; g.fillRect(x + 12, 0, 4, 64);
+      g.fillStyle = 'rgba(0,0,0,.18)'; for (let k = 0; k < 3; k++) g.fillRect(x + 4 + rng() * 6, rng() * 60, 2, 4);
+    }
+    g.fillStyle = '#5a4630'; g.fillRect(0, 20, 64, 3);
+  }, true);
+}
+// the village green: grass with darker tufts and a few flowers
+function grassTex(rng) {
+  return canvasTex(128, 128, (g) => {
+    g.fillStyle = '#6f9a48'; g.fillRect(0, 0, 128, 128);
+    for (let i = 0; i < 260; i++) { g.fillStyle = rng() < 0.5 ? '#5f8a3e' : '#84ae58'; g.fillRect(rng() * 128, rng() * 128, 2, 3); }
+    for (let i = 0; i < 8; i++) { g.fillStyle = ['#f4e8a0', '#ffffff', '#e8a8c8'][i % 3]; g.fillRect(rng() * 128, rng() * 128, 2, 2); }
+  }, true);
+}
+function dirtTex(rng) {
+  return canvasTex(64, 64, (g) => {
+    g.fillStyle = '#a88a5c'; g.fillRect(0, 0, 64, 64);
+    for (let i = 0; i < 120; i++) { g.fillStyle = rng() < 0.5 ? '#97794e' : '#b89a6c'; g.fillRect(rng() * 64, rng() * 64, 2, 2); }
+  }, true);
+}
+// ploughed soil: a furrow and a ridge each pace (one texture tile = 2 paces)
+function soilTex() {
+  return canvasTex(32, 32, (g) => { for (let i = 0; i < 4; i++) { g.fillStyle = SOIL[i % 2]; g.fillRect(0, i * 8, 32, 8); } }, true);
+}
 function stripeTex(a, b) {
   return canvasTex(64, 32, (g) => { for (let i = 0; i < 8; i++) { g.fillStyle = i % 2 ? b : a; g.fillRect(i * 8, 0, 8, 32); } g.fillStyle = 'rgba(0,0,0,.2)'; g.fillRect(0, 26, 64, 6); }, true);
 }
@@ -163,23 +207,36 @@ const THEMES = {
       for (let i = 0; i < 16; i++) { const a = (i / 16) * Math.PI * 2, r = i % 2 ? 4 : 10; g.lineTo(16 + Math.sin(a) * r, 20 - Math.cos(a) * r); }
       g.fill();
     } },
+  // Veidheim: log palisade, thatch and turf roofs, a green banner with a white bow
+  hunt: { stone: ['#8a6a44', '#5a4630'], stoneDark: '#6a5034', cobble: ['#a88a5c', '#7a6040'], wood: true, green: true,
+    roofs: ['#c8a050', '#b8903a', '#5f7a3a', '#a8483a'], towerRoof: '#7a5a3a',
+    plaster: ['#e8dcc0', '#efe4cc', '#dccfb0', '#e6d6c2'], timber: '#5a3a22',
+    banner: (g) => {
+      g.fillStyle = '#3f6a3a'; g.fillRect(0, 0, 32, 40); g.beginPath(); g.moveTo(0, 40); g.lineTo(16, 48); g.lineTo(32, 40); g.fill();
+      g.strokeStyle = '#f2ead8'; g.lineWidth = 2.5; g.beginPath(); g.arc(10, 20, 11, -1.1, 1.1); g.stroke(); // the bow
+      g.lineWidth = 1; g.beginPath(); g.moveTo(10 + Math.cos(-1.1) * 11, 20 + Math.sin(-1.1) * 11); g.lineTo(10 + Math.cos(1.1) * 11, 20 + Math.sin(1.1) * 11); g.stroke();
+      g.lineWidth = 2; g.beginPath(); g.moveTo(8, 20); g.lineTo(27, 20); g.stroke(); // the arrow
+      g.fillStyle = '#f2ead8'; g.beginPath(); g.moveTo(29, 20); g.lineTo(25, 17); g.lineTo(25, 23); g.fill();
+    } },
 };
 
 // ctx: { group, lib, heightAt, place(type, x, z, force), addBox(x0, z0, x1, z1, kind), addSolid(x, z, r), boxes,
 //   gates: the gateways, [{ side: 'n' | 's' | 'e' | 'w', c: where along that wall }] (or just 's' for the middle) };
-//   variant: 'city' (Steinborg) | 'magic' (Galdrheim)
+//   variant: 'city' (Steinborg) | 'magic' (Galdrheim) | 'hunt' (Veidheim)
 export function buildCity(ctx, variant = 'city') {
   const { group, place, addBox, addSolid } = ctx;
   const T = THEMES[variant];
-  const rng = mulberry32(variant === 'city' ? 512 : 733);
+  const rng = mulberry32({ city: 512, magic: 733, hunt: 911 }[variant]);
   const fades = []; // { meshes, x, z, r, h }
   const fadeMats = new Map();
   const spin = []; // meshes that turn and bob: floating crystals
+  const turn = []; // meshes that turn on their own axis: windmill sails
   const lam = (opts) => new THREE.MeshLambertMaterial(opts);
   const M = {
-    stone: lam({ map: stoneTex(rng, ...T.stone) }),
-    stoneDark: lam({ map: stoneTex(rng, T.stoneDark, T.stone[1]) }),
-    cobble: lam({ map: cobbleTex(rng, ...T.cobble), polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1 }),
+    stone: lam({ map: T.wood ? logTex(rng, T.stone[0]) : stoneTex(rng, ...T.stone) }),
+    stoneDark: lam({ map: T.wood ? logTex(rng, T.stoneDark) : stoneTex(rng, T.stoneDark, T.stone[1]) }),
+    cobble: lam({ map: T.wood ? dirtTex(rng) : cobbleTex(rng, ...T.cobble), polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1 }),
+    floor: T.green ? lam({ map: grassTex(rng), polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1 }) : null,
     roofs: T.roofs.map((c) => lam({ map: roofTex(rng, c) })),
     towerRoof: lam({ map: roofTex(rng, T.towerRoof) }),
     roofPurple: lam({ map: roofTex(rng, '#5a3a7a') }),
@@ -219,7 +276,7 @@ export function buildCity(ctx, variant = 'city') {
   pave.rotateX(-Math.PI / 2);
   const puv = pave.attributes.uv;
   for (let i = 0; i < puv.count; i++) puv.setXY(i, puv.getX(i) * pw / 2, puv.getY(i) * pd / 2);
-  mesh(pave, M.cobble, (WALL.x0 + WALL.x1) / 2, Y + 0.02, (WALL.z0 + WALL.z1) / 2).renderOrder = 0;
+  mesh(pave, M.floor || M.cobble, (WALL.x0 + WALL.x1) / 2, Y + 0.02, (WALL.z0 + WALL.z1) / 2).renderOrder = 0;
   // paved roads out through the gates
   const G = gateAt;
   for (const [x, z, w, d] of [G.s !== undefined && [G.s, 58.5, GATE * 2, 7], G.n !== undefined && [G.n, 5.5, GATE * 2, 7],
@@ -240,7 +297,7 @@ export function buildCity(ctx, variant = 'city') {
     ...side(x0, z0, z1, G.w).map((r) => ['z', ...r]),
     ...side(x1, z0, z1, G.e).map((r) => ['z', ...r]),
   ];
-  const merlon = new THREE.BoxGeometry(0.55, 0.55, 0.55);
+  const merlon = T.wood ? new THREE.ConeGeometry(0.2, 0.7, 5) : new THREE.BoxGeometry(0.55, 0.55, 0.55);
   for (const [axis, fixed, a, b] of runs) {
     const n = Math.ceil((b - a) / 6);
     for (let i = 0; i < n; i++) {
@@ -249,11 +306,11 @@ export function buildCity(ctx, variant = 'city') {
       const [cx, cz] = axis === 'x' ? [mid, fixed] : [fixed, mid];
       const wall = mesh(boxUV(new THREE.BoxGeometry(w, h, d), w, h, d, 2), M.stone, cx, Y + h / 2, cz);
       const parts = [wall];
-      // battlements on the outer edge of the walkway
-      const out = (fixed < 32 ? -1 : 1) * (t / 2 - 0.28);
-      for (let k = 0.5; k < len; k += 1.1) {
+      // battlements on the outer edge of the walkway (a palisade: a sharpened point on every log)
+      const out = T.wood ? 0 : (fixed < 32 ? -1 : 1) * (t / 2 - 0.28);
+      for (let k = T.wood ? 0.25 : 0.5; k < len; k += T.wood ? 0.5 : 1.1) {
         const p = s + k;
-        parts.push(mesh(merlon, M.stoneDark, axis === 'x' ? p : fixed + out, Y + h + 0.27, axis === 'x' ? fixed + out : p));
+        parts.push(mesh(merlon, M.stoneDark, axis === 'x' ? p : fixed + out, Y + h + (T.wood ? 0.35 : 0.27), axis === 'x' ? fixed + out : p));
       }
       addBox(cx - w / 2, cz - d / 2, cx + w / 2, cz + d / 2, 'wall');
       fadeable(parts, cx, cz, len / 2, h + 0.6);
@@ -268,9 +325,14 @@ export function buildCity(ctx, variant = 'city') {
   const orb = variant === 'magic' ? new THREE.MeshBasicMaterial({ color: '#9fe8ff' }) : null;
   for (const [tx, tz] of towers) {
     const r = 1.25, th = h + 1.5;
-    const body = mesh(cylUV(new THREE.CylinderGeometry(r, r * 1.08, th, 14), r, th, 2), M.stone, tx, Y + th / 2, tz);
-    const roof = mesh(new THREE.ConeGeometry(r * 1.3, variant === 'magic' ? 2.6 : 1.8, 14), M.towerRoof, tx, Y + th + (variant === 'magic' ? 1.3 : 0.9), tz);
+    // a watchtower of logs: square, a pyramid roof on four posts over the platform
+    const body = T.wood ? mesh(boxUV(new THREE.BoxGeometry(r * 1.7, th, r * 1.7), r * 1.7, th, r * 1.7, 2), M.stone, tx, Y + th / 2, tz)
+      : mesh(cylUV(new THREE.CylinderGeometry(r, r * 1.08, th, 14), r, th, 2), M.stone, tx, Y + th / 2, tz);
+    const roofGeo = T.wood ? new THREE.ConeGeometry(r * 1.45, 1.5, 4) : new THREE.ConeGeometry(r * 1.3, variant === 'magic' ? 2.6 : 1.8, 14);
+    if (T.wood) roofGeo.rotateY(Math.PI / 4);
+    const roof = mesh(roofGeo, M.towerRoof, tx, Y + th + (T.wood ? 1.55 : variant === 'magic' ? 1.3 : 0.9), tz);
     const parts = [body, roof];
+    if (T.wood) for (const [sx, sz] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) parts.push(mesh(new THREE.BoxGeometry(0.14, 0.85, 0.14), M.plankDark, tx + sx * r * 0.75, Y + th + 0.42, tz + sz * r * 0.75));
     if (orb) { const o = mesh(new THREE.OctahedronGeometry(0.28), orb, tx, Y + th + 3.2, tz); spin.push(o); parts.push(o); } // a crystal over each tower
     addSolid(tx, tz, r);
     fadeable(parts, tx, tz, r, th + 3);
@@ -326,13 +388,14 @@ export function buildCity(ctx, variant = 'city') {
     return [body, roof, door];
   }
   const P = (type, x, z) => place(type, x, z, true);
-  const api = { M, Y, rng, mesh, lam, house, stall, tower, fadeable, spin, P, addBox, addSolid, group };
+  const api = { M, Y, rng, mesh, lam, house, stall, tower, fadeable, spin, turn, P, addBox, addSolid, group };
   const extra = LAYOUTS[variant](api);
 
   // ---------- minimap ----------
   function minimap(mg) {
-    mg.fillStyle = variant === 'magic' ? '#b6b0c8' : '#b3ab9c';
+    mg.fillStyle = { magic: '#b6b0c8', hunt: '#7aa050' }[variant] || '#b3ab9c';
     mg.fillRect(x0 * 2, z0 * 2, (x1 - x0) * 2, (z1 - z0) * 2);
+    extra?.underlay?.(mg);
     mg.fillStyle = variant === 'magic' ? '#5a3a7a' : '#8a5a3a';
     for (const b of ctx.boxes) if (b.kind !== 'wall') mg.fillRect(b.x0 * 2, b.z0 * 2, (b.x1 - b.x0) * 2, (b.z1 - b.z0) * 2);
     mg.fillStyle = '#5a5650';
@@ -344,6 +407,7 @@ export function buildCity(ctx, variant = 'city') {
   function occlude(px, pz, cam) {
     const now = performance.now() / 1000;
     for (const m of spin) { m.rotation.y = now * 0.8; m.position.y = (m.userData.y0 ??= m.position.y) + Math.sin(now * 1.6 + m.position.x) * 0.12; }
+    for (const m of turn) m.rotation.z = now * 0.7;
     for (const f of fades) {
       const dx = f.x - px, dz = f.z - pz;
       let fade = false;
@@ -361,6 +425,143 @@ export function buildCity(ctx, variant = 'city') {
 }
 
 const LAYOUTS = {
+  // ---------- Veidheim, the hunters' village ----------
+  hunt({ M, Y, rng, mesh, lam, house, stall, tower, fadeable, turn, P, addBox, addSolid, group }) {
+    const [thatch, thatch2, turf, barnRed] = M.roofs;
+    const flatPlane = (w, d, mat, x, z, y = Y + 0.03) => {
+      const g = new THREE.PlaneGeometry(w, d);
+      g.rotateX(-Math.PI / 2);
+      const u = g.attributes.uv;
+      for (let i = 0; i < u.count; i++) u.setXY(i, u.getX(i) * w / 2, u.getY(i) * d / 2);
+      return mesh(g, mat, x, y, z);
+    };
+    // dirt lanes from gate to gate, crossing on the green round the well
+    flatPlane(4, 46, M.cobble, 32, 32);
+    flatPlane(46, 4, M.cobble, 32, 32, Y + 0.035);
+    {
+      const g = new THREE.CircleGeometry(4.6, 24);
+      g.rotateX(-Math.PI / 2);
+      const u = g.attributes.uv;
+      for (let i = 0; i < u.count; i++) u.setXY(i, u.getX(i) * 4.6, u.getY(i) * 4.6);
+      mesh(g, M.cobble, HUNT.well.x, Y + 0.04, HUNT.well.z);
+    }
+
+    // the hunters' lodge: a long hall with a turf roof, antlers over its door
+    house(19, 15.2, 12, 6, { h: 3.0, roof: 2.6, roofMat: turf, plaster: '#d8c8a8', chimney: true });
+    {
+      const antlers = canvasTex(64, 40, (g) => {
+        g.strokeStyle = '#2e2118'; g.lineWidth = 6; g.lineCap = 'round';
+        const draw = (col, lw) => {
+          g.strokeStyle = col; g.lineWidth = lw; g.beginPath();
+          for (const s of [-1, 1]) {
+            g.moveTo(32, 32); g.quadraticCurveTo(32 + s * 20, 30, 32 + s * 26, 6);
+            g.moveTo(32 + s * 14, 28); g.lineTo(32 + s * 12, 12);
+            g.moveTo(32 + s * 22, 20); g.lineTo(32 + s * 30, 16);
+          }
+          g.stroke();
+        };
+        draw('#2e2118', 6); draw('#e8dcc0', 3);
+        g.fillStyle = '#7a5232'; g.beginPath(); g.ellipse(32, 33, 7, 6, 0, 0, 7); g.fill(); // the shield board
+      });
+      const a = new THREE.Mesh(new THREE.PlaneGeometry(1.8, 1.1), lam({ map: antlers, transparent: true, alphaTest: 0.5 }));
+      a.position.set(19, Y + 3.5, 18.25);
+      group.add(a);
+    }
+    house(13.8, 24.2, 5, 5, { roofMat: thatch, chimney: true });
+    P('chest', HUNT.chest.x, HUNT.chest.z); // the storehouse chest, by the Keeper
+    P('woodpile', 26.8, 13.2); P('rack', 27, 20.6); P('barrel', 11.4, 19.6); P('crate', 12.4, 19.2);
+
+    // the archery range: a fenced yard, three targets at the far end, hay behind them
+    const fenceMesh = fences([HUNT.range], () => Y, (x0, z0, x1, z1) => addBox(x0, z0, x1, z1, 'fence'));
+    group.add(fenceMesh);
+    for (const x of [40.5, 45, 49.5]) P('target', x, 13.6);
+    P('haystack', 38.6, 12.6); P('haystack', 51.6, 12.8);
+    P('rack', 51, 20.6);
+    // the watchtower by the east gate, where a sentry keeps watch
+    {
+      const tx = 51.6, tz = 27.4, s2 = 2.2, th = 5.2;
+      const body = mesh(boxUV(new THREE.BoxGeometry(s2, th, s2), s2, th, s2, 2), M.stone, tx, Y + th / 2, tz);
+      const deck = mesh(new THREE.BoxGeometry(s2 + 0.8, 0.25, s2 + 0.8), M.plank, tx, Y + th + 0.1, tz);
+      const posts = [[-1, -1], [1, -1], [-1, 1], [1, 1]].map(([sx, sz]) => mesh(new THREE.BoxGeometry(0.16, 1.4, 0.16), M.plankDark, tx + sx * (s2 / 2 + 0.25), Y + th + 0.8, tz + sz * (s2 / 2 + 0.25)));
+      const rg = new THREE.ConeGeometry(s2 * 1.05, 1.5, 4); rg.rotateY(Math.PI / 4);
+      const roof = mesh(rg, turf, tx, Y + th + 2.2, tz);
+      addSolid(tx, tz, s2 * 0.62);
+      fadeable([body, deck, ...posts, roof], tx, tz, s2 * 0.7, th + 3);
+    }
+    // Eydis's stall on the green: the hunters' supplies
+    stall(HUNT.stall.x, HUNT.stall.z, stripeTex('#3f6a3a', '#f2ead8'));
+    P('crate', 40.4, 26.4); P('barrel', 35.8, 26.2);
+
+    // the farm: wheat and cabbages behind a rail fence, the windmill turning over them, the barn
+    for (const p of HUNT.plots) {
+      flatPlane(p.x1 - p.x0, p.z1 - p.z0, lam({ map: soilTex(), polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 }), (p.x0 + p.x1) / 2, (p.z0 + p.z1) / 2, Y + 0.045);
+      for (const [x, z] of cropSpots(p, rng)) P(p.crop, x, z);
+    }
+    group.add(fences(HUNT.plots, () => Y, (x0, z0, x1, z1) => addBox(x0, z0, x1, z1, 'fence')));
+    {
+      const [, roof] = tower(27.2, 40.4, 1.7, 5.4, thatch2, '#7a5232', '#e3b341');
+      roof.geometry.dispose(); // a low cap, so the sails stand clear of it
+      roof.geometry = new THREE.ConeGeometry(2.0, 1.9, 14);
+      roof.position.y = Y + 5.4 + 0.95;
+      // the sails: four slatted arms on a hub, facing south, turning in the wind
+      const hub = new THREE.Group();
+      hub.position.set(27.2, Y + 5.2, 40.4 + 2.05);
+      const sailTex = canvasTex(16, 64, (g) => { g.fillStyle = '#5a3a22'; g.fillRect(6, 0, 4, 64); g.fillStyle = '#efe4cc'; for (let y = 4; y < 60; y += 8) g.fillRect(0, y, 16, 6); });
+      const sailMat = lam({ map: sailTex, transparent: true, alphaTest: 0.5, side: THREE.DoubleSide });
+      for (let i = 0; i < 4; i++) {
+        const arm = new THREE.Mesh(new THREE.PlaneGeometry(0.7, 2.6), sailMat);
+        arm.position.set(0, 1.4, 0);
+        const pivot = new THREE.Group();
+        pivot.rotation.z = (i * Math.PI) / 2;
+        pivot.add(arm);
+        hub.add(pivot);
+      }
+      hub.add(new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.22, 0.3, 10).rotateX(Math.PI / 2), M.plankDark));
+      group.add(hub);
+      turn.push(hub);
+    }
+    house(25.6, 50.6, 6.4, 5, { h: 2.8, roof: 2.2, roofMat: barnRed, plaster: '#a8483a' }); // the barn
+    P('haystack', 22.6, 46.2); P('pumpkin', 29.6, 47.6); P('pumpkin', 30, 49.4); P('scarecrow', 18, 46);
+
+    // the south-east: Leif's leatherworks with its drying racks, the smokehouse, homes
+    house(46, 38.6, 6, 4.6, { roofMat: thatch, plaster: '#d8c8a8', chimney: true });
+    P('rack', 40.2, 38.4); P('rack', 52, 45.4); P('woodpile', 51.8, 41);
+    house(38.6, 44.2, 4, 4, { roof: 1.4, roofMat: turf, plaster: '#cfc2a8', chimney: true }); // the smokehouse
+    house(39, 51, 5, 4.4, { roofMat: thatch2 });
+    house(47.2, 51, 5, 4.4, { roofMat: thatch, chimney: true });
+
+    // the well on the green: a stone ring, two posts and a little roof with a bucket
+    {
+      const { x, z, r } = HUNT.well;
+      const ring = new THREE.Shape(); ring.absarc(0, 0, r, 0, Math.PI * 2, false);
+      const hole = new THREE.Path(); hole.absarc(0, 0, r - 0.3, 0, Math.PI * 2, true); ring.holes.push(hole);
+      const rim = new THREE.ExtrudeGeometry(ring, { depth: 0.7, bevelEnabled: false, curveSegments: 20 });
+      rim.rotateX(-Math.PI / 2);
+      const stoneMat = lam({ map: stoneTex(rng, '#9c958a', '#4e4840') });
+      stoneMat.map.repeat.set(0.6, 0.6);
+      mesh(rim, stoneMat, x, Y, z);
+      const water = new THREE.CircleGeometry(r - 0.3, 18); water.rotateX(-Math.PI / 2);
+      mesh(water, lam({ map: waterTex(), color: '#6a9ab0' }), x, Y + 0.3, z);
+      const parts = [];
+      for (const s of [-1, 1]) parts.push(mesh(new THREE.BoxGeometry(0.16, 2.0, 0.16), M.plankDark, x + s * (r - 0.1), Y + 1.0, z));
+      const roofG = gable(r * 2 + 0.2, 1.4, 0.6, 0.15);
+      parts.push(mesh(roofG, [M.plankDark, thatch], x, Y + 2.0, z));
+      parts.push(mesh(new THREE.CylinderGeometry(0.18, 0.15, 0.3, 8), M.plank, x, Y + 1.2, z));
+      addSolid(x, z, r + 0.1);
+      fadeable(parts, x, z, r, 2.8);
+    }
+    // pines and flowers, lamps along the lanes
+    for (const [x, z] of [[12.2, 32.6 - 3.4], [52.4, 33.6 + 2.6], [27.2, 26.6], [36.8, 37.4], [12, 55 - 20.6]]) P('tree_pine', x, z);
+    for (const [x, z] of [[28.4, 28.4], [35.6, 28.4], [28.4, 35.6], [35.6, 35.6], [24.6, 22.4], [43, 33.6 + 1]]) P('flowers', x, z);
+    for (const [x, z] of [[29.4, 20.2], [34.6, 20.2], [29.4, 44.6], [34.6, 44.6], [20.6, 29.4], [43.4, 29.4], [20.6, 34.6], [43.4, 34.6]]) P('lamp', x, z);
+    void addBox; void rng;
+    return {
+      underlay: (mg) => { mg.fillStyle = '#a88a5c'; mg.fillRect(60, 18, 8, 92); mg.fillRect(18, 60, 92, 8); mg.fillStyle = SOIL[1]; for (const p of HUNT.plots) mg.fillRect(p.x0 * 2, p.z0 * 2, (p.x1 - p.x0) * 2, (p.z1 - p.z0) * 2); },
+      minimap: (mg) => { mg.fillStyle = '#4f9cc0'; mg.beginPath(); mg.arc(HUNT.well.x * 2, HUNT.well.z * 2, 3, 0, Math.PI * 2); mg.fill(); },
+    };
+  },
+
+
   // ---------- Steinborg ----------
   city({ M, Y, rng, mesh, lam, house, stall, tower, P, addSolid }) {
     const [roofRed, roofBlue, roofBrown, roofSlate] = M.roofs;

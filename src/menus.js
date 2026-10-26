@@ -47,11 +47,13 @@ const JOB_PITCH = {
   magicknight: 'Sword and spell as one: imbue your blade with an element, cut with Elemental Edge, sweep the field with Elemental Nova; Stone Aegis is a barrier of both.',
 };
 
-// the crafters: Gunnar's forge (gear), Ragna's herbs (usables), Orm's workshop (sorcerers' gear)
+// the crafters: Gunnar's forge (gear), Ragna's herbs (usables), Orm's workshop (sorcerers' gear),
+// Leif's leatherworks (Veidheim's hunting gear)
 const CRAFTERS = {
   gear: { title: "Gunnar's Forge", note: 'Gunnar forges weapons, armor and charms.', button: 'Forge gear' },
   use: { title: "Ragna's Herbs", note: 'Ragna brews potions and feathers.', button: 'Brew usables' },
   magic: { title: "Orm's Workshop", note: 'Orm carves staves and stitches robes for sorcerers.', button: 'Craft sorcerer gear' },
+  hunt: { title: "Leif's Leatherworks", note: 'Leif tans pelts and skins into hunters\' gear.', button: 'Make hunting gear' },
 };
 
 export class Menus {

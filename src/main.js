@@ -2,7 +2,8 @@ import * as THREE from 'three';
 import './style.css';
 import { createSprites } from './sprites.js';
 import { buildWorld, ZONE_NAMES, MAPS, WATER_Y } from './world.js';
-import { CITY, MAGIC } from './city.js';
+import { CITY, MAGIC, HUNT } from './city.js';
+import { paintBow } from './bow.js';
 import { Player } from './player.js';
 import { Input } from './input.js';
 import { UI } from './ui.js';
@@ -69,6 +70,12 @@ const SPAWNS = {
   burnt: [['goblinWarrior', 10], ['goblinArcher', 6], ['goblinAssassin', 2], ['goblinWarrior', 2, true]],
   bloop: [], // the raid spawns its own (tickRaid)
   serpent: [['goblinAssassin', 7], ['goblinWarrior', 5], ['goblinArcher', 5], ['goblinKing', 1], ['goblinAssassin', 2, true]],
+  // Veidheim's lands: they hunt by night too, and the packs grow after dark
+  hunt: [],
+  farm: [['snake', 10], ['wolf', 6], ['snake', 2, true], ['wolf', 3, true]],
+  wolfhill: [['wolf', 10], ['bear', 5], ['snake', 2], ['wolf', 3, true]],
+  marsh: [['willow', 10], ['snake', 6], ['elderWillow', 1], ['willow', 2, true], ['wisp', 2, true]],
+  oldwood: [['treant', 8], ['bear', 5], ['willow', 3], ['ancientTreant', 1], ['treant', 2, true]],
 };
 
 // which build this is, on the title screen (matches the APK's version, 1.0.<build>)
@@ -112,6 +119,7 @@ function dressPeople() {
       paintHead(g, at, dir, { hair, dye }, gearCut(top, dir), top);
       paintGear(g, at, dir, face, 0);
       paintGear(g, at, dir, top, 0);
+      if (art.person.bow) paintBow(g, ud.head, dir); // Veidheim's archers (bow.js)
     });
     for (const [id, n] of Object.entries(NPCS)) if (n.dress === art.person) delete portraits[id]; // drawn again, dressed
     return false;
@@ -341,7 +349,7 @@ mobs.on('spore', (m) => {
   const y = world.heightAt(m.x, m.z) + 0.4;
   fx.cloud(m.x, y, m.z);
   if (Math.hypot(player.x - m.x, player.z - m.z) < 2.6) {
-    if (player.slowT <= 0) menus.message('Spores! You feel sluggish');
+    if (player.slowT <= 0) menus.message(m.def.puff || 'Spores! You feel sluggish');
     player.slowT = 2.2;
   }
 });
@@ -1187,6 +1195,7 @@ const SPOTS = [
   { map: 'camp', ...world.camp.tent, label: 'Tent', h: 2.2, run: () => rest() },
   { map: 'city', ...CITY.chest, label: 'Storage', h: 0.8, run: () => menus.show('chest') }, // Steinborg's storehouse: the same chest
   { map: 'magic', ...MAGIC.chest, label: 'Storage', h: 0.8, run: () => menus.show('chest') }, // and Galdrheim's
+  { map: 'hunt', ...HUNT.chest, label: 'Storage', h: 0.8, run: () => menus.show('chest') }, // and Veidheim's
   ...villagers.list.map((v) => ({ npc: v.id, map: v.map, x: v.x, z: v.z, h: v.top, run: () => { if (menus.isOpen('story')) return; if (story.talkStep(v.id) && storyLive()) storyDone(); else menus.talkTo(v.id); } })),
 ];
 

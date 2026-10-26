@@ -49,19 +49,22 @@ portals leave the camp (Moss Field to the north, Fen Shore to the west); every o
 reached by travelling on. The fields have plain names; the towns' are Old Norse in style.
 
 ```
-                               Serpent Wood
-                                  |
-                              Burnt Wood
-                                  |
-                              Galdrheim    Steinborg - Birch Grove
-                                  |            |           |
-                                  |        Moss Field  -  Dark Dale  -  Black Wood
-                                  |            |           |           |
-Coal Pit - Stone Field - Salt Bay - Fen Shore - Eldrun Camp   Ember Hill  -  Ash Heath
+                               Serpent Wood                              Willow Marsh - Old Forest
+                                  |                                           |              |
+                              Burnt Wood                                      |              |
+                                  |                                           |              |
+                              Galdrheim    Steinborg - Birch Grove            |              |
+                                  |            |           |                  |              |
+                                  |        Moss Field  -  Dark Dale  -  Black Wood - Veidheim - Barley Field
+                                  |            |           |           |           |
+Coal Pit - Stone Field - Salt Bay - Fen Shore - Eldrun Camp   Ember Hill  -  Ash Heath - Wolf Hills
 ```
 
 Goblin country (Burnt Wood, then Serpent Wood) lies beyond Galdrheim's north gate; the kobolds' hills
-(Stone Field, then Coal Pit) lie west of Salt Bay, along the road round its bay.
+(Stone Field, then Coal Pit) lie west of Salt Bay, along the road round its bay. East of Black Wood
+is **Veidheim**, the hunters' village, with its four lands for heroes near their second job: Barley
+Field (east), Wolf Hills (south, also reached from Ash Heath), Willow Marsh (north) and the Old
+Forest (north-east, between the marsh and the barley).
 
 | Map | Level | Monsters | Boss |
 |---|---|---|---|
@@ -77,6 +80,10 @@ Goblin country (Burnt Wood, then Serpent Wood) lies beyond Galdrheim's north gat
 | Coal Pit | 30–50 | Kobold Assassin, Kobold, Kobold Archer | **Kobold King (50, MVP)** |
 | Burnt Wood | 38–44 | Goblin (38), Goblin Archer (41), Goblin Assassin (44) | |
 | Serpent Wood | 40–55 | Goblin Assassin, Goblin, Goblin Archer | **Goblin King (55, MVP)** |
+| Barley Field | 44–50 | Snake (46), Wolf (48) | |
+| Wolf Hills | 46–54 | Wolf, Bear (53), Snake | |
+| Willow Marsh | 46–56 | Willow (50, slowing seeds), Snake | Elder Willow (55) |
+| Old Forest | 50–62 | Treant (56), Bear, Willow | **Ancient Treant (62, MVP)** |
 | Any field in the valley, more at night (Moss Field only at night) | | Wisp (11) | |
 
 **Passive monsters.** Most field monsters leave you alone until you hit
@@ -92,6 +99,13 @@ after they fall, twice as fast at night.
 warriors close in and hit hard, **archers** keep about five paces away and shoot arrows (step in
 and they back off), and **assassins** are quick, dart the last few steps and sometimes strike twice.
 They drop Kobold Fur and Goblin Teeth, ores for refining, and now and then Hard Ore or Armor Ore.
+
+**Veidheim's beasts** (painted in code, `src/beasts.js`) come out of the farms and woods: Snakes lie
+in the barley and dart in to bite, sometimes twice; Wolves run in packs, attack on sight and are as
+quick as Snakes; Willows, weeping willow spirits with branch antlers and long green hair, shake
+their seeds over you (you slow down) and only fight back; Bears and Treants, great oak giants with
+mossy beards, are slow, heavy and hit hard. Wolves and Bears attack on sight. They drop pelts,
+skins, claws, twigs and bark for Leif's leatherworks, Honey, and their own rare gear.
 
 **Bosses.** Each new field has a mini-boss: big, stomping the ground around it, back 5–8
 minutes after it falls (its timer holds when you leave the map or close the game, as an MVP's does). Like the MVPs, each calls 2 guards of its own kind below 60% HP (Red
@@ -109,6 +123,12 @@ minutes and a bag of potions (a Blader drinks around 50 White Potions; a Sorcere
 moving needs far fewer, but Blue Potions too). Whoever brings it down gets **MVP** over their
 head, bonus Base EXP and MVP items straight to the bag, plus its drops (its horn, crown, cape or
 sword). It comes back 15 minutes later, even if you leave the map or close the game.
+
+The **Elder Willow** of Willow Marsh (Lv 55, a ring of fireflies over its antlers) is the mini-boss
+of Veidheim's lands, calling Willows out of the reeds; the **Ancient Treant** (Lv 62, 26,000 HP,
+Earth, a crown of blossoms), the oldest tree in Aria, is the MVP of the Old Forest: it stomps,
+hurls stones and charges, and calls 2 Wolves, a Willow and a Snake. It is made for a Base 60 hero
+with a second job, and it comes back 35 minutes after it falls.
 
 Two more MVPs rule the new lands: the **Kobold King** (Lv 50, 18,000 HP, Earth) in
 Coal Pit, and the **Goblin King** (Lv 55, 21,000 HP, Wind) in Serpent Wood. Both
@@ -142,6 +162,8 @@ fills up until it hits: step out of it.
 | Fire Giant | **Fireball** (wide) · **Leap** |
 | Giant Sprout · Giant Mushroom | **Seed Pod** · **Spore Pod**, thrown at you |
 | King Crab · Giant Beetle | **Charge** |
+| Elder Willow | **Seed Cloud**, thrown at you |
+| Ancient Treant | **Root Stone** (thrown) · **Uprooting Charge** |
 
 Each move hits for 1.4–2x the boss's ATK. Staying far away no longer keeps you safe: spells reach
 5 paces, and every boss has a move for 3–9 paces.
@@ -157,6 +179,15 @@ runes glows over the rune-well, with a crystal floating above it; the Archmage's
 tower stands to the north, the library to the west, the Staffwright's workshop to the east, the
 Watcher runestones and the stargazer's observatory to the south. Sorcerers take their job trial
 here, and their gear is made here. It has a storehouse too (the same chest).
+
+**Veidheim.** The hunters' village east of Black Wood: a palisade of sharpened logs with wooden
+watchtowers and four gates, dirt lanes crossing on a green round the well, thatched and turf roofs
+among the pines. Nearly everyone is an archer and carries a longbow and a quiver on their back. The
+hunters' lodge has antlers over its door; the archery range has three targets and a fence; a
+windmill turns over the village's wheat and cabbage plots, beside the red barn; Leif's leatherworks
+hangs its hides on drying racks. The fields outside are farmland and forest: fenced plots of barley,
+cabbages and pumpkins with haystacks and scarecrows in Barley Field, pines and hunters' camps in Wolf
+Hills, willows round a pond in Willow Marsh, and huge old oaks in the Old Forest.
 
 ## Raids
 
@@ -374,6 +405,7 @@ to take it off. Shops sell 1, 10 or all, and "Sell all" keeps what an active que
 | Speed Potion | +10% attack speed for 3 minutes | Ragna |
 | Teleport Feather | random spot on this map | Hild's shop, Ragna; Wisps |
 | Return Feather | back to your save point (the camp until you save with a Keeper) | Hild's shop, Ragna |
+| Honey | 150–210 HP | Eydis's shop (Veidheim); Bears |
 
 **Rare drops.** Each monster has a rare equip it drops very seldom. A rare find
 bursts gold on the ground and shows in gold in your bag.
@@ -398,6 +430,14 @@ bursts gold on the ground and shows in gold in your bag.
 | King's Ring | Accessory | POW +2, END +1, Max HP +50 | Kobold King, 5% |
 | Tooth Necklace | Accessory | QKN +2, FNS +1, HIT +5 | Goblin King, 5% |
 | Giant Cape | Garment | DEF 4, Max HP +100, END +2 | Fire Giant, 3% |
+| Snakeskin Boots | Shoes | DEF 3, FLEE +5, QKN +1 | Snake, 0.25% |
+| Wolf Cape | Garment | DEF 3, FLEE +3, POW +1, QKN +1 | Wolf, 0.2% |
+| Willow Staff | Weapon (staff) | ATK 36, MATK +36%, weapon Lv 3, Earth, KNL +3 | Willow, 0.2%; Elder Willow, 3% |
+| Bear Hide | Armor (Blader) | DEF 9, Max HP +120 | Bear, 0.15% |
+| Bark Shield | Shield | DEF 5, Max HP +100 | Treant, 0.2% |
+| Willow Charm | Accessory | FNS +2, KNL +1, Max SP +30 | Elder Willow, 4% |
+| Oak Ring | Accessory | END +3, POW +1, Max HP +80 | Ancient Treant, 5% |
+| Grove Sword | Weapon | ATK 125, weapon Lv 4, Earth, POW +2, END +2 | Ancient Treant, 1% |
 | Thorn Ring · Coral Shield · Dark Hood · Fire Armor · Fire Charm | | | the new lands' monsters, 0.2–0.3% |
 | Thorn Cape · Sea Sword · Mushroom Staff · Fire Boots | | | the mini-bosses, 2–3% |
 
@@ -447,6 +487,8 @@ free slot. It stays there for good, unless the weapon later breaks at Holger's.
 | King Crab Card | Weapon | QKN +4, FLEE +8, attacks 5% faster | King Crab, 1% |
 | Giant Mushroom Card | Weapon | MATK +15%, KNL +4, Max SP +10% | Giant Mushroom, 1% |
 | Giant Beetle Card | Weapon | ATK +25, POW +4 | Giant Beetle, 1% |
+| Elder Willow Card | Weapon | MATK +12%, FNS +4, KNL +2 | Elder Willow, 1% |
+| Ancient Treant Card | Weapon | ATK +40, DEF +15, Max HP +30%, POW +8, END +10 | Ancient Treant, 1% |
 | Fire Giant Card | Weapon (a sorcerer's card) | MATK +60%, KNL +12, FNS +8, Max SP +30%, Max HP +15%, weapon turns Fire (+15% Fire spells with a staff) | Fire Giant, 1% |
 
 **Who can wear what.** Swords up to the Iron Sword: Trainee and Blader; rare and elemental
@@ -543,7 +585,7 @@ leads to each.
 | Astrid the Cook | camp | A Feast for Eldrun (10): bring 10 Bloop Gel, 5 Crab Legs, 5 Spores, then cook it with her |
 | Sigrun the Scout | camp | The Lantern Wisp (14): hunt the golden Wisp that rises over Fen Shore's pond at night |
 | Gyda the Healer | camp | heals HP and SP for free |
-| The Keepers (butlers in black) | camp, Steinborg, Galdrheim | sign the ledger, then: storage, healing, Save here (where you wake after fainting, and where Return Feathers go), switch first jobs, and teleport to any other Keeper you signed with (300–500 perz) |
+| The Keepers (butlers in black) | camp, Steinborg, Galdrheim, Veidheim | sign the ledger, then: storage, healing, Save here (where you wake after fainting, and where Return Feathers go), switch first jobs, and teleport to any other Keeper you signed with (300–500 perz) |
 | Sir Eirik the Runeblade | Steinborg | the Magic Knight's trial |
 | Hild the Trader | Steinborg | shop · Hild's Crate (24): take a crate of potions to Hakon in Salt Bay |
 | Gunnar the Gear Crafter | Steinborg | shop, forge · Stone for the Forge (34): 30 Stone, 15 Burnt Shells |
@@ -566,12 +608,21 @@ leads to each.
 | Torvald the Runecarver | Galdrheim | Shadows in Black Wood (38): take rubbings of 3 Watcher stones in Black Wood |
 | Hrafn the Stargazer, Signy the Apprentice | Galdrheim | tales of the city, the stars and the jotnar |
 | Runa the Gatewarden | Galdrheim | the rune-gate: to any land you have walked, 300–3,000 perz |
+| Huntmaster Sigrid | Veidheim, at the archery range | The Pack in the Hills (48): 25 Wolves · The Elder Willow (55) · The Waking Wood (60): the Ancient Treant |
+| Ottar the Farmer | Veidheim, by the barn | Snakes in the Barley (46): 20 Snakes · The Lost Lambs (47): find 3 lambs in Barley Field |
+| Leif the Tanner | Veidheim | makes hunters' gear (Hunter's Cloak and Boots, Claw Charm, Bark Armor) · Pelts for the Winter (50): 10 Wolf Pelts, 5 Bear Claws |
+| Asa the Fletcher | Veidheim | Wood for Bows (52): 12 Willow Twigs, 4 Old Bark |
+| Eydis the Trader | Veidheim | shop: potions (White too), Honey, Speed Potions, feathers, torches |
+| Halla the Healer | Veidheim | heals HP and SP for free |
+| Bodil the Sentry, Kalf the Gate Archer, Finn the Young Archer | Veidheim | tales of the village, the beasts and the Elder Willow |
+| Tove the Carter | Veidheim | carts to any land you have walked |
 
 People without a PixelLab sprite of their own are dressed from a bald hero body (Trainee, Blader,
 Sorcerer or Magic Knight) in their own colours, with the shared head, a hairstyle, a dye and
 headgear (`dress` in `src/quests.js`). No one's look repeats except a role every town can have: the
 Keepers share theirs, as do the smiths (Holger, Seyla) and the carters and gate-wardens (Ivar,
-Runa); Galdrheim's Orm and Kari dress like Steinborg's Gunnar and Hild. People with tales to tell have a **Tell me more** button.
+Runa, Tove) and Veidheim's sentries; Galdrheim's Orm and Kari dress like Steinborg's Gunnar and Hild.
+Veidheim's archers wear a longbow and a quiver on their backs (`src/bow.js`), painted onto their frames. People with tales to tell have a **Tell me more** button.
 
 **Quest list.** Tap a quest under the clock (or the story step) for its **Quest View**: who gave
 it, the goal, your progress, the reward and where to go. **Go there** walks you to it by itself,

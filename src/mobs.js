@@ -76,6 +76,25 @@ export const MOB_DEFS = {
     mvp: true, respawn: 1800, mvpExp: 24000, stomp: 1.7, moves: [{ kind: 'leap', mult: 1.7, r: 1.8 }, { kind: 'throw', mult: 1.4, r: 1.3 }, { kind: 'frenzy' }], summon: ['goblinWarrior', 'goblinWarrior', 'goblinArcher', 'goblinAssassin'], mvpDrops: [['potion3', 3], ['hard_ore', 3]],
     wake: 'Horns in the dark wood… the Goblin King rides out in Serpent Wood!',
     drops: [['potion3', 1, 2, 0.6], ['goblin_tooth', 4, 6, 1], ['hard_ore', 1, 3, 0.45], ['armor_ore', 1, 3, 0.45], ['goblin_charm', 1, 1, 0.05], ['goblin_card', 1, 1, 0.01]] },
+  // ---------- Veidheim's lands: the farms and woods east of Black Wood (beasts.js) ----------
+  // Made for a hero near the second job (Base 46-60). Snakes lie in the grass and wolves hunt in
+  // packs (quick, they dart in and bite twice now and then); willow spirits shake their seeds
+  // over you (puff: a cloud that slows) and only fight back; bears and oak treants are slow, heavy
+  // and hard.
+  snake: { name: 'Snake', ai: 'assassin', art: 'snake', el: 'earth', lv: 46, hp: 2600, atk: [164, 205], def: 10, vit: 30, agi: 44, dex: 72, exp: [930, 650], adelay: 1400, passive: true, walk: 200, aggro: 5, chase: 8, reach: 0.8, double: 0.2, w: 0.95, r: 0.36, drops: [['snake_skin', 1, 1, 0.5], ['herb', 1, 1, 0.2], ['potion2', 1, 1, 0.08], ['snake_boots', 1, 1, 0.0025]] },
+  wolf: { name: 'Wolf', ai: 'assassin', art: 'wolf', el: 'earth', lv: 48, hp: 2800, atk: [168, 210], def: 10, vit: 32, agi: 52, dex: 76, exp: [1050, 735], adelay: 1200, walk: 150, aggro: 6, chase: 10, reach: 0.85, double: 0.2, w: 0.8, r: 0.36, drops: [['wolf_pelt', 1, 1, 0.5], ['wolf_fang', 1, 1, 0.12], ['potion3', 1, 1, 0.03], ['wolf_cape', 1, 1, 0.002]] },
+  willow: { name: 'Willow', ai: 'puffer', art: 'willow', el: 'earth', lv: 50, hp: 3500, atk: [165, 208], def: 18, vit: 40, agi: 26, dex: 66, mdef: 15, exp: [1200, 840], adelay: 1700, passive: true, walk: 200, aggro: 4.5, chase: 7, reach: 1.0, puff: 'Willow seeds fill the air! You feel sluggish', w: 0.85, r: 0.4, drops: [['willow_twig', 1, 1, 0.5], ['leaf', 1, 2, 0.6], ['herb', 1, 1, 0.25], ['potion3', 1, 1, 0.03], ['willow_staff', 1, 1, 0.002]] },
+  bear: { name: 'Bear', ai: 'tank', art: 'bear', el: 'neutral', lv: 53, hp: 4300, atk: [185, 232], def: 24, vit: 52, agi: 34, dex: 70, exp: [1420, 995], adelay: 1500, walk: 155, aggro: 5, chase: 9, reach: 1.0, w: 1.35, r: 0.55, heavy: true, drops: [['bear_claw', 1, 1, 0.5], ['honey', 1, 1, 0.15], ['potion3', 1, 1, 0.05], ['bear_hide', 1, 1, 0.0015]] },
+  treant: { name: 'Treant', ai: 'tank', art: 'treant', el: 'earth', lv: 56, hp: 5200, atk: [205, 256], def: 28, vit: 56, agi: 30, dex: 74, mdef: 20, exp: [1680, 1175], adelay: 1800, passive: true, walk: 250, aggro: 4.5, chase: 8, reach: 1.1, w: 1.7, r: 0.65, heavy: true, drops: [['old_bark', 1, 1, 0.5], ['leaf', 1, 2, 0.5], ['potion3', 1, 1, 0.06], ['armor_ore', 1, 1, 0.012], ['treant_shield', 1, 1, 0.002]] },
+  // Willow Marsh's mini-boss: an old willow by the water, with its willows round it
+  elderWillow: { crown: 'willow', name: 'Elder Willow', ai: 'boss', art: 'willow', el: 'earth', tint: '#d8c8a0', boss: true, lv: 55, hp: 16500, atk: [64, 82], def: 22, vit: 50, agi: 30, dex: 72, mdef: 25, exp: [40000, 28000], adelay: 1700, walk: 250, moves: [{ kind: 'throw', name: 'Seed Cloud', mult: 1.5, r: 1.8 }], aggro: 5.5, chase: 12, reach: 1.5, w: 1.5, r: 0.75, heavy: true, summon: ['willow', 'willow'], summonText: 'The Elder Willow creaks, and Willows shuffle out of the reeds!', respawn: 540, drops: [['willow_heart', 1, 1, 0.3], ['willow_twig', 3, 5, 1], ['potion3', 1, 2, 0.5], ['willow_staff', 1, 1, 0.03], ['willow_charm', 1, 1, 0.04], ['willow_card', 1, 1, 0.01]] },
+  // the MVP of the Old Forest: the oldest tree in Aria, woken by the jotnar's stirring. Stomps,
+  // hurls stones from its roots, and calls wolves, a willow and a snake (summon: see SUMMON_CD).
+  // Made for a Base 60 second job: about 3 minutes and a bag of White Potions.
+  ancientTreant: { crown: 'blossom', name: 'Ancient Treant', ai: 'boss', art: 'treant', el: 'earth', tint: '#c8b89a', lv: 62, hp: 26000, atk: [145, 190], def: 20, vit: 45, agi: 30, dex: 78, mdef: 35, exp: [76000, 53200], adelay: 1700, walk: 200, aggro: 7, chase: 25, reach: 2.0, w: 2.8, r: 1.15, heavy: true,
+    mvp: true, respawn: 2100, mvpExp: 36000, stomp: 1.7, moves: [{ kind: 'throw', name: 'Root Stone', mult: 1.8, r: 1.8 }, { kind: 'charge', name: 'Uprooting Charge', mult: 1.7 }], summon: ['wolf', 'wolf', 'willow', 'snake'], summonText: 'The Ancient Treant groans, and the forest answers!', mvpDrops: [['potion3', 3], ['ancient_seed', 1]],
+    wake: 'The old trees whisper… the Ancient Treant walks in the Old Forest!',
+    drops: [['potion3', 1, 2, 0.6], ['old_bark', 4, 6, 1], ['ancient_heartwood', 1, 1, 0.25], ['hard_ore', 1, 2, 0.4], ['armor_ore', 1, 2, 0.4], ['oak_ring', 1, 1, 0.05], ['grove_blade', 1, 1, 0.01], ['treant_card', 1, 1, 0.01]] },
 };
 // walk: ms a tile, as Ragnarok's monster database has it (Poring 400, Kobold 200, Goblin 150,
 // Goblin Leader 120, Ifrit 130; the hero 150), taken WALK_SCALE times as long. speed: tiles a second.
@@ -155,6 +174,13 @@ const CROWNS = {
   },
   embers: (g) => { // the Giant Beetle: two burning horns
     for (const s of [-1, 1]) { g.fillStyle = '#3a1408'; g.beginPath(); g.moveTo(32 + s * 6, 52); g.quadraticCurveTo(32 + s * 26, 40, 32 + s * 20, 8); g.quadraticCurveTo(32 + s * 16, 34, 32 + s * 2, 52); g.fill(); g.fillStyle = '#ffb02a'; g.beginPath(); g.arc(32 + s * 20, 10, 6, 0, 7); g.fill(); g.fillStyle = '#fff0a0'; g.beginPath(); g.arc(32 + s * 20, 10, 2.5, 0, 7); g.fill(); }
+  },
+  willow: (g) => { // the Elder Willow: a ring of fireflies over its crown
+    for (let i = 0; i < 8; i++) { const a = (i / 8) * Math.PI * 2; g.fillStyle = 'rgba(255,240,140,.35)'; g.beginPath(); g.arc(32 + Math.cos(a) * 24, 40 + Math.sin(a) * 9, 5, 0, 7); g.fill(); g.fillStyle = '#fff6a8'; g.beginPath(); g.arc(32 + Math.cos(a) * 24, 40 + Math.sin(a) * 9, 2.2, 0, 7); g.fill(); }
+  },
+  blossom: (g) => { // the Ancient Treant: a crown of pink blossoms and two antler-like boughs
+    for (const s of [-1, 1]) { g.strokeStyle = '#4a3020'; g.lineWidth = 4; g.beginPath(); g.moveTo(32 + s * 8, 50); g.quadraticCurveTo(32 + s * 22, 36, 32 + s * 24, 12); g.moveTo(32 + s * 20, 30); g.lineTo(32 + s * 30, 22); g.stroke(); }
+    for (const [x, y] of [[14, 44], [22, 38], [32, 36], [42, 38], [50, 44], [8, 14], [56, 14], [2, 22], [62, 22]]) { g.fillStyle = '#f2b8d0'; g.beginPath(); g.arc(x, y, 4.5, 0, 7); g.fill(); g.fillStyle = '#fff0f6'; g.beginPath(); g.arc(x, y, 1.8, 0, 7); g.fill(); }
   },
 };
 const crownTex = {};

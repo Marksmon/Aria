@@ -22,6 +22,7 @@ const ROLE = {
   keeper: { body: 'butler', hair: 'mane', dye: 'black' },                                                              // the Keepers: a butler in black (butler.js)
   smith: { body: 'blader', main: [24, 0.55, 0.9], accent: [40, 0.85, 1.05], hair: 'messy', dye: 'black', face: 'round_glasses' }, // Holger and Seyla: forge leather and brass
   ferry: { body: 'trainee', main: [200, 0.5, 1], accent: [180, 0.5, 1.1], hair: 'messy', dye: 'blue', top: 'woven_cap' },   // the carters and gate-wardens who send you on
+  sentry: { body: 'blader', main: [100, 0.4, 0.75], accent: [30, 0.55, 0.9], hair: 'messy', dye: 'brown', top: 'woven_cap', bow: true }, // Veidheim's archers on watch
 };
 export const NPCS = {
   bram: {
@@ -303,16 +304,100 @@ export const NPCS = {
     later: () => '', bye: 'Step lightly through the gate.',
     quests: [],
   },
+  // ---------- Veidheim, the hunters' village east of Black Wood ----------
+  // Archers to a man and woman: most carry a longbow and a quiver on their backs (dress bow: bow.js)
+  keeper_hunt: {
+    name: 'Keeper', map: 'hunt', x: 24.2, z: 27.2, dress: ROLE.keeper, keeper: true,
+    hello: 'Veidheim\'s Keeper. Even hunters need somewhere to come home to. Sign, and the village remembers you.',
+    later: () => '', bye: 'Veidheim remembers.', quests: [],
+  },
+  sigrid: {
+    name: 'Huntmaster Sigrid', map: 'hunt', x: 45, z: 21.2, dress: { body: 'blader', main: [110, 0.45, 0.8], accent: [35, 0.7, 1], hair: 'long', dye: 'red', top: 'woven_cap', bow: true },
+    hello: 'Mind the line: arrows fly here. I am Sigrid, Huntmaster of Veidheim. Every one of us can put an arrow through a ring at fifty paces, and lately we need to.',
+    later: (lv) => `The wilds out there would eat you alive. Come back at Base Level ${lv}.`,
+    bye: 'Keep your eyes open and your string dry.',
+    greet: (c) => ({ blademaster: 'A BladeMaster. Pity about the sword; you would have made a fine archer.',
+      wizard: 'A Wizard! Try not to set the targets on fire. Again.',
+      magicknight: 'Sword and spell. Out here we would add a bow, but nobody is perfect.' })[c.jobId] || null,
+    quests: ['wolfpack', 'elderwillow', 'ancienttreant'],
+    lore: [
+      'Veidheim was a hunting camp once, a few tents at the edge of Black Wood. Then the farmers came for the soil, and the hunters stayed to keep the beasts off it.',
+      'The wolves run in packs in the hills south of here. Alone they would not trouble you. They are never alone.',
+      'The Old Forest north-east of here is older than anything. The trees there walk, and the oldest of them, the Ancient Treant, is waking. The beasts feel it.',
+    ],
+  },
+  eydis: {
+    name: 'Eydis the Trader', map: 'hunt', x: 38, z: 29, shop: 'eydis', dress: { body: 'trainee', main: [95, 0.35, 0.9], accent: [30, 0.6, 1.05], hair: 'long', dye: 'blonde' },
+    hello: 'Arrows I keep for the village, but everything else a hunter needs is here: White Potions, Honey, Speed Potions, feathers. And I buy pelts.',
+    later: () => '', bye: 'Good hunting! Bring me back something furry.',
+    quests: [],
+    lore: ['Honey from the hills is the best medicine in Aria. The Bears agree, which is the trouble.'],
+  },
+  leif: {
+    name: 'Leif the Tanner', map: 'hunt', x: 46, z: 42.6, craft: 'hunt', dress: { body: 'blader', main: [28, 0.5, 0.75], accent: [45, 0.4, 0.9], hair: 'messy', dye: 'black' },
+    hello: 'Pelts, skins and bark: bring them to me and I make them into hunters\' gear. Cloaks, boots, charms, armor. It smells, but it holds.',
+    later: (lv) => `I will have work for you at Base Level ${lv}.`,
+    bye: 'Wear it in the rain. Leather likes the rain.',
+    quests: ['pelts'],
+    lore: ['A Wolf pelt for the warmth, a Snake skin for the quiet. A hunter wants both.', 'Old Bark from a Treant makes armor that grows back. I once had a breastplate sprout a leaf.'],
+  },
+  ottar: {
+    name: 'Ottar the Farmer', map: 'hunt', x: 27.2, z: 46.2, dress: { body: 'trainee', main: [40, 0.35, 0.95], accent: [200, 0.35, 0.9], hair: 'messy', dye: 'silver', top: 'woven_cap' },
+    hello: 'Barley in the field, cabbages in the yard and a windmill that never stops. Or it would be a good year, if it were not for the beasts.',
+    later: (lv) => `There is always farm work. Come back at Base Level ${lv}.`,
+    bye: 'Good soil and good neighbours. That is all a man needs.',
+    quests: ['snakes', 'lambs'],
+    lore: ['The archers keep the wolves off us. I keep the archers fed. It is a fair trade.'],
+  },
+  asa: {
+    name: 'Asa the Fletcher', map: 'hunt', x: 35.4, z: 40.2, dress: { body: 'trainee', main: [140, 0.4, 0.85], accent: [10, 0.6, 1], hair: 'pony', dye: 'brown', bow: true },
+    hello: 'I make the bows and arrows for the whole village. Willow for the bowstaves, goose feathers for the fletching, and patience for the rest.',
+    later: (lv) => `My wood is running low, but the woods are too dangerous for you yet. Base Level ${lv}, then.`,
+    bye: 'Straight shafts, true flights.',
+    quests: ['bowstaves'],
+    lore: ['A walking Willow\'s twigs make the best bows: they still want to bend. You just have to catch the Willow first.', 'Sigrid shoots the farthest. I shoot the straightest. We do not talk about who wins.'],
+  },
+  bodil: {
+    name: 'Bodil the Sentry', map: 'hunt', x: 49.4, z: 29.6, dress: ROLE.sentry,
+    hello: 'From the tower you can see the Barley Field to the east and the hills to the south. Wolves by night, mostly. Snakes in the barley by day.',
+    later: () => '', bye: 'I will be up there if you need me.', quests: [],
+    lore: ['Every archer in Veidheim stands a watch on the tower. Even the Huntmaster. Especially the Huntmaster.'],
+  },
+  kalf: {
+    name: 'Kalf the Gate Archer', map: 'hunt', x: 35.6, z: 12.6, dress: { ...ROLE.sentry, main: [80, 0.35, 0.7], dye: 'blonde' },
+    hello: 'North is Willow Marsh. Pretty by day. At night the willows walk, and they sing. Do not listen.',
+    later: () => '', bye: 'Watch your feet in the marsh.', quests: [],
+    lore: ['There is an old willow by the water, bigger than the rest. The Elder Willow, we call it. Even the wolves go round.'],
+  },
+  halla: {
+    name: 'Halla the Healer', map: 'hunt', x: 28.8, z: 36.8, heal: true, dress: { body: 'sorc', main: [150, 0.3, 1.2], accent: [40, 0.5, 1.1], hair: 'long', dye: 'green', top: 'flower_wreath' },
+    hello: 'Bites, scratches, splinters from a Treant? Sit. Hunters come back in pieces, and I sew them together again.',
+    later: () => '', bye: 'There. Try to keep the rest of your blood inside you.', quests: [],
+  },
+  finn: {
+    name: 'Finn the Young Archer', map: 'hunt', x: 42.6, z: 24.8, dress: { body: 'trainee', main: [60, 0.5, 1.1], accent: [120, 0.5, 1], hair: 'messy', dye: 'red', bow: true },
+    hello: 'I hit the middle ring yesterday! Well, the second ring. Well, the target.',
+    later: () => '', bye: 'One day I will be Huntmaster!', quests: [],
+    lore: ['Sigrid says a good archer breathes out before she shoots. I tried breathing in. It did not help.', 'Do you think the Ancient Treant is really a thousand years old? I bet it is more.'],
+  },
+  tove: {
+    name: 'Tove the Carter', map: 'hunt', x: 35.6, z: 53, dress: ROLE.ferry, warp: true,
+    hello: 'My cart runs to any land you have walked, for a fee. The oxen do not mind wolves. The wolves mind the oxen.',
+    later: () => '', bye: 'Hold on to your hat.',
+    quests: [],
+  },
   bjorn: {
     name: 'Bjorn the Gate Guard', map: 'city', x: 55.2, z: 29.4, dress: { body: 'blader', main: [100, 0.35, 0.9], accent: [30, 0.7, 1], hair: 'messy', dye: 'blonde', top: 'horned_helm' },
     hello: 'Most beasts out there leave you be until you strike first. Not in Black Wood and Ash Heath: the dark wisps and the fire beasts come for you on sight.',
     later: () => '', bye: 'Keep your guard up past the gate.',
     quests: [],
   },
+
 };
 
 // the Ferryman's fares, by map (only lands you have already walked)
-export const FARES = { camp: 300, city: 500, magic: 500, grove: 300, fen: 400, hollow: 600, birch: 700, coast: 900, ridge: 1200, deep: 1500, heath: 1800, stones: 2000, coalpit: 2400, burnt: 2600, serpent: 3000 };
+export const FARES = { camp: 300, city: 500, magic: 500, grove: 300, fen: 400, hollow: 600, birch: 700, coast: 900, ridge: 1200, deep: 1500, heath: 1800, stones: 2000, coalpit: 2400, burnt: 2600, serpent: 3000,
+  hunt: 2200, farm: 2400, wolfhill: 2400, marsh: 2600, oldwood: 3000 };
 
 // reward: { xp (Base EXP; Job EXP is 70% of it), perz, items: { id: n } }. Levels and EXP follow
 // the Ragnarok curve at 1x: a quest is a big job, worth a fair share of a level.
@@ -553,6 +638,49 @@ export const QUESTS = {
     reward: { xp: 45000, perz: 6000, items: { tonic: 8 } },
   },
 
+  // ---------- Veidheim ----------
+  snakes: {
+    title: 'Snakes in the Barley', kind: 'kill', mob: 'snake', n: 20, lv: 46,
+    intro: 'The Barley Field east of the village is crawling with Snakes. My reapers will not go in, and the barley will not cut itself. Kill twenty of them.',
+    thanks: 'Twenty! The reapers are already sharpening their scythes. Here, for your trouble, and a loaf when the barley is in.',
+    reward: { xp: 130000, perz: 12000, items: { potion3: 8, honey: 4 } },
+  },
+  lambs: {
+    title: 'The Lost Lambs', kind: 'search', map: 'farm', thing: 'Lost lamb', spots: [[36, 30], [54, 36], [18, 55]], verb: 'Lamb found', lv: 47,
+    intro: 'The wolves scattered my flock in the night. Three lambs are still out in the Barley Field, hiding somewhere. Find them and send them home before the wolves do.',
+    thanks: 'All three, bleating their heads off. You have a farmer\'s ear. Here, and thank you.',
+    reward: { xp: 110000, perz: 10000, items: { honey: 6 } },
+  },
+  wolfpack: {
+    title: 'The Pack in the Hills', kind: 'kill', mob: 'wolf', n: 25, lv: 48,
+    intro: 'The packs in Wolf Hills are bigger every week, and bolder. They came right up to the south gate last night. Thin them out: twenty-five Wolves.',
+    thanks: 'Twenty-five. The hills will be quiet for a while, and the night watch will thank you. Hunt with us any time.',
+    reward: { xp: 170000, perz: 15000, items: { potion3: 10 } },
+  },
+  pelts: {
+    title: 'Pelts for the Winter', kind: 'fetch', items: { wolf_pelt: 10, bear_claw: 5 }, lv: 50,
+    intro: 'Winter comes early this side of Black Wood. I need ten Wolf Pelts for the watch\'s cloaks, and five Bear Claws for the charms that keep them brave.',
+    thanks: 'Good thick pelts. The watch will be warm, and the charms will rattle. Here is your share.',
+    reward: { xp: 150000, perz: 14000, items: { hunter_cape: 1 } },
+  },
+  bowstaves: {
+    title: 'Wood for Bows', kind: 'fetch', items: { willow_twig: 12, old_bark: 4 }, lv: 52,
+    intro: 'Bows need willow that still wants to bend, and the bow-grips need bark that will not crack. Bring me twelve Willow Twigs from the marsh and four slabs of Old Bark from the Treants.',
+    thanks: 'Lovely wood. Still twitching, too. Every archer in the village will shoot a little straighter because of you.',
+    reward: { xp: 180000, perz: 16000, items: { potion3: 10, quick: 3 } },
+  },
+  elderwillow: {
+    title: 'The Elder Willow', kind: 'kill', mob: 'elderWillow', n: 1, lv: 55,
+    intro: 'The Elder Willow of Willow Marsh is calling the willows out of the water, and they walk farther every night. Cut it down before they reach the fields.',
+    thanks: 'The marsh is still at last. Even the frogs are quieter. Veidheim owes you a great deal.',
+    reward: { xp: 300000, perz: 20000, items: { potion3: 15 } },
+  },
+  ancienttreant: {
+    title: 'The Waking Wood', kind: 'kill', mob: 'ancientTreant', n: 1, lv: 60,
+    intro: 'The Ancient Treant walks in the Old Forest, and the whole forest walks with it. If it reaches the fields, there will be no Veidheim. It has stood a thousand years. Bring it down.',
+    thanks: 'You felled the Ancient Treant. The songs will call you the Woodcutter, whether you like it or not. Veidheim is yours, hunter.',
+    reward: { xp: 600000, perz: 40000, items: { potion3: 20 } },
+  },
 };
 
 // quests that come in a series (the job trials): each step's next one, accepted as soon as it is

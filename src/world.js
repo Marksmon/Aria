@@ -3,19 +3,22 @@
 // and Fen Shore (west) open from the camp; everything else is reached by travelling on:
 //
 //                                Serpent Wood
-//                                   |
-//                               Burnt Wood
-//                                   |
-//                               Galdrheim    Steinborg - Birch Grove
-//                                   |            |           |
-//                                   |        Moss Field  -  Dark Dale  -  Black Wood
-//                                   |            |           |           |
-// Coal Pit - Stone Field - Salt Bay - Fen Shore - Eldrun Camp   Ember Hill  -  Ash Heath
+//                                   |                                      Willow Marsh - Old Forest
+//                               Burnt Wood                                      |             |
+//                                   |                                           |             |
+//                               Galdrheim    Steinborg - Birch Grove            |             |
+//                                   |            |           |                  |             |
+//                                   |        Moss Field  -  Dark Dale  -  Black Wood - Veidheim - Barley Field
+//                                   |            |           |           |          |
+// Coal Pit - Stone Field - Salt Bay - Fen Shore - Eldrun Camp   Ember Hill  -  Ash Heath - Wolf Hills
+//
+// (Dark Dale's east portal is Black Wood; Veidheim, the hunters' village, is east of Black Wood.)
 //
 // Every map is built once, at load, into its own group; only the current one is shown.
 import * as THREE from 'three';
 import { makeNoise, mulberry32, sstep, lerp, clamp } from './noise.js';
 import { buildCity, WALL } from './city.js';
+import { SOIL, soilAt, cropSpots, fences } from './farm.js';
 
 export const SIZE = 64;
 export const CENTER = 32;
@@ -39,6 +42,11 @@ export const ZONE_NAMES = {
   burnt: 'Burnt Wood',   // goblin country
   serpent: 'Serpent Wood', // the Goblin King's wood
   bloop: 'Bloop Island',   // the first raid (raid.js): a small round island out in Salt Bay
+  hunt: 'Veidheim',        // "hunt-home": the hunters' village, farms and archers
+  farm: 'Barley Field',    // Veidheim's farmland, where the snakes and wolves come for the sheep
+  wolfhill: 'Wolf Hills',  // the packs' green hills, south of the village
+  marsh: 'Willow Marsh',   // the walking willows' pond, north of the village
+  oldwood: 'Old Forest',   // the oldest wood in Aria: treants, bears, and the Ancient Treant
 };
 
 const CAMP_R = 17;   // the camp clearing's walkable radius
@@ -58,8 +66,8 @@ export const MAPS = {
   // an open bowl in the south of Ember Hill (the Fire Giant roams the whole map; see mobs.js roam)
   ridge:  { portals: [{ to: 'hollow', ...N }, { to: 'heath', ...E }], clear: { x: 32, z: 48, r: 6 }, lift: [1.3, 1.8] },
   coast:  { portals: [{ to: 'fen', ...E }, { to: 'stones', ...W }], lake: { x: 20, z: 31, rx: 11, rz: 17 }, clear: { x: 44, z: 46, r: 5 } },
-  deep:   { portals: [{ to: 'hollow', ...W }, { to: 'heath', ...S }], lift: [-0.1, 0.5], clear: { x: 40, z: 40, r: 5 } },
-  heath:  { portals: [{ to: 'ridge', ...W }, { to: 'deep', ...N }], lift: [0.8, 1.2], clear: { x: 40, z: 44, r: 5 } },
+  deep:   { portals: [{ to: 'hollow', ...W }, { to: 'heath', ...S }, { to: 'hunt', ...E }], lift: [-0.1, 0.5], clear: { x: 40, z: 40, r: 5 } },
+  heath:  { portals: [{ to: 'ridge', ...W }, { to: 'deep', ...N }, { to: 'wolfhill', ...E }], lift: [0.8, 1.2], clear: { x: 40, z: 44, r: 5 } },
   // the kobolds' hills and the Kobold King's quarry, west of Salt Bay (open ground in the south), and
   // goblin country and the Goblin King's wood, north of Galdrheim's north gate (a clearing in the
   // north); the kings roam their whole map. camps: [x, z] of a tent with crates and barrels round a log seat.
@@ -70,6 +78,16 @@ export const MAPS = {
   // the raid's arena: a round island of radius r in the middle of the map, the sea all round it. No
   // portals: the Boatman rows you in and out (raid.js)
   bloop:   { portals: [], arena: { r: 13 } },
+  // Veidheim, the hunters' village east of Black Wood, and its four lands. plots: farmland
+  // (farm.js), crops in rows inside a rail fence; farms: [x, z] of a haystack, a scarecrow and a
+  // woodpile; camps with hunt: a hunters' camp (a tent, a drying rack, a woodpile, a log seat)
+  hunt:     { portals: [{ to: 'deep', x: 5, z: 32 }, { to: 'farm', x: 59, z: 32 }, { to: 'wolfhill', x: 32, z: 59 }, { to: 'marsh', x: 32, z: 5 }], city: 'hunt' },
+  farm:     { portals: [{ to: 'hunt', ...W }, { to: 'oldwood', ...N }], lift: [0, 0.3],
+    plots: [{ x0: 12, z0: 12, x1: 24, z1: 20, crop: 'wheat', gate: 's' }, { x0: 38, z0: 40, x1: 52, z1: 50, crop: 'wheat', gate: 'w' }, { x0: 40, z0: 14, x1: 50, z1: 22, crop: 'cabbage', gate: 's' }, { x0: 12, z0: 42, x1: 22, z1: 50, crop: 'pumpkin', gate: 'n' }, { x0: 26, z0: 46, x1: 34, z1: 54, crop: 'wheat', gate: 'n' }],
+    farms: [[16, 25], [44, 30], [24, 38]] },
+  wolfhill: { portals: [{ to: 'hunt', ...N }, { to: 'heath', ...W }], lift: [0.8, 1.6], camps: [[20, 20], [46, 44], [44, 18]], hunt: true },
+  marsh:    { portals: [{ to: 'hunt', ...S }, { to: 'oldwood', ...E }], lake: { x: 28, z: 30, rx: 10, rz: 7 }, clear: { x: 44, z: 44, r: 5 } },
+  oldwood:  { portals: [{ to: 'marsh', ...W }, { to: 'farm', ...S }], lift: [-0.1, 0.6], clear: { x: 34, z: 26, r: 7 } },
 };
 const SEG = 128; // terrain vertices per side - 1 (0.5 unit spacing)
 
@@ -90,6 +108,11 @@ const GROUND = {
   burnt: ['#4a4036', '#62533f'],
   serpent: ['#2c4230', '#3a5236'],
   bloop: ['#7fb64e', '#9cc85e'],
+  hunt: ['#6f9a48', '#88b058'],
+  farm: ['#8aa848', '#a8bc5a'],
+  wolfhill: ['#5f9444', '#7cac56'],
+  marsh: ['#5a7a40', '#768e4a'],
+  oldwood: ['#2f4a2c', '#3e5a34'],
   dirt: '#b49a6c',
   sand: '#c6b483',
 };
@@ -109,9 +132,14 @@ const TABLE = {
   coalpit: [['rock_grey', 24], ['rock', 8], ['rock_small', 28], ['tree_dead', 14], ['grass_dark', 12], ['shrub_dry', 8]],
   burnt: [['tree_dead', 34], ['stump', 16], ['rock_small', 14], ['grass_dry', 18], ['shrub_dry', 10], ['rock_grey', 5]],
   bloop: [['grass', 40], ['flowers', 28], ['bush', 8], ['rock_small', 14], ['rock_grey', 4]],
+  hunt: [['grass', 8], ['flowers', 5]],
+  farm: [['grass', 30], ['flowers', 16], ['bush', 10], ['tree_grove', 6], ['haystack', 3], ['pumpkin', 3], ['stump', 3], ['rock_small', 4]],
+  wolfhill: [['tree_pine', 22], ['grass', 30], ['flowers', 10], ['rock_grey', 10], ['bush', 8], ['stump', 4], ['rock_small', 8]],
+  marsh: [['tree_willow', 20], ['reeds', 26], ['grass', 26], ['bush', 8], ['stump', 6], ['mushrooms', 4], ['flowers', 6]],
+  oldwood: [['tree_oak', 30], ['tree_pine', 6], ['bush', 10], ['mushrooms', 10], ['grass_dark', 22], ['stump', 6], ['flowers', 4], ['mushroom_big', 3], ['rock_grey', 4]],
   serpent: [['tree_dark', 36], ['mushroom_big', 10], ['mushrooms', 18], ['grass_dark', 22], ['stump', 6], ['tree_dead', 6]],
 };
-const BORDER = { grove: 'tree_grove', hollow: 'tree_dark', ridge: 'rock', fen: 'tree_willow', camp: 'tree_grove', city: 'tree_grove', magic: 'tree_birch', birch: 'tree_birch', coast: 'rock_grey', deep: 'tree_dark', heath: 'tree_dead', stones: 'rock', coalpit: 'rock_grey', burnt: 'tree_dead', serpent: 'tree_dark' };
+const BORDER = { grove: 'tree_grove', hollow: 'tree_dark', ridge: 'rock', fen: 'tree_willow', camp: 'tree_grove', city: 'tree_grove', magic: 'tree_birch', birch: 'tree_birch', coast: 'rock_grey', deep: 'tree_dark', heath: 'tree_dead', stones: 'rock', coalpit: 'rock_grey', burnt: 'tree_dead', serpent: 'tree_dark', hunt: 'tree_pine', farm: 'tree_grove', wolfhill: 'tree_pine', marsh: 'tree_willow', oldwood: 'tree_oak' };
 // inside the city walls (and a step beyond them)
 const inWalls = (x, z, m = 0) => x > WALL.x0 - m && x < WALL.x1 + m && z > WALL.z0 - m && z < WALL.z1 + m;
 
@@ -128,7 +156,8 @@ function buildMap(id, scene, lib, shared) {
   for (const [k, v] of Object.entries(GROUND)) {
     groundCols[k] = Array.isArray(v) ? v.map((h) => new THREE.Color(h)) : new THREE.Color(v);
   }
-  const LAKE = def.lake, ARENA = def.arena;
+  const LAKE = def.lake, ARENA = def.arena, PLOTS = def.plots || [];
+  const soilCols = SOIL.map((c) => new THREE.Color(c));
   const edgeDist = (x, z) => Math.min(x, z, SIZE - x, SIZE - z);
   const lakeD = (x, z) => (LAKE ? Math.hypot((x - LAKE.x) / LAKE.rx, (z - LAKE.z) / LAKE.rz) : 9);
   const campR = (x, z) => Math.hypot(x - CENTER, z - CENTER);
@@ -193,8 +222,10 @@ function buildMap(id, scene, lib, shared) {
       out.lerp(grass, sstep(9, 15, campR(x, z) + (noise.n(x * 0.3, z * 0.3) - 0.5) * 3));
       out.lerp(groundCols.dirt, sstep(4.5, 2.5, campR(x, z)) * 0.8);
     }
+    const so = PLOTS.length ? soilAt(PLOTS, x, z) : -1;
+    if (so >= 0) out.copy(soilCols[so]);
     const pd = pathDist(x, z);
-    if (pd < 1.4) out.lerp(groundCols.dirt, sstep(1.4, 0.5, pd + (noise.n(x * 0.9, z * 0.9) - 0.5) * 0.6) * 0.9);
+    if (pd < 1.4 && so < 0) out.lerp(groundCols.dirt, sstep(1.4, 0.5, pd + (noise.n(x * 0.9, z * 0.9) - 0.5) * 0.6) * 0.9);
     if ((ARENA || lakeD(x, z) < 1.6) && h < WATER_Y + 0.45) out.lerp(groundCols.sand, sstep(WATER_Y + 0.45, WATER_Y + 0.05, h) * 0.85);
     const e = Math.min(edgeDist(x, z), isCamp ? CAMP_R + 3 - campR(x, z) : 99);
     if (e < 6) out.multiplyScalar(1 - 0.3 * sstep(6, 1.5, e));
@@ -267,14 +298,27 @@ function buildMap(id, scene, lib, shared) {
     }, def.city);
   }
 
-  // kobold and goblin camps: a tent, crates and barrels round a log seat
+  // kobold and goblin camps: a tent, crates and barrels round a log seat (hunters: a drying rack and a woodpile)
   for (const [x, z] of def.camps || []) {
     place('tent', x, z, true);
-    place('crate', x + 2.4, z + 0.9, true);
-    place('barrel', x + 2.6, z - 0.9, true);
-    place('barrel', x - 2.4, z + 1.3, true);
+    if (def.hunt) { place('rack', x + 3, z + 0.6, true); place('woodpile', x - 2.6, z + 1.2, true); } else {
+      place('crate', x + 2.4, z + 0.9, true);
+      place('barrel', x + 2.6, z - 0.9, true);
+      place('barrel', x - 2.4, z + 1.3, true);
+    }
     place('log', x + 0.3, z + 2.9, true);
   }
+  // farmland: crops in rows, a fence round each plot; farmsteads: a haystack, a scarecrow, a woodpile
+  for (const p of PLOTS) for (const [x, z] of cropSpots(p, rng)) place(p.crop, x, z, true);
+  for (const [x, z] of def.farms || []) {
+    place('haystack', x, z, true);
+    place('haystack', x + 2.2, z + 0.8, true);
+    place('scarecrow', x - 2.4, z + 1.4, true);
+    place('woodpile', x + 0.6, z - 2.2, true);
+    place('barrel', x + 2.6, z - 1.4, true);
+  }
+  const fenceMesh = fences(PLOTS, (x, z) => heightAt(x, z), (x0, z0, x1, z1) => boxes.push({ x0, z0, x1, z1, kind: 'fence' }));
+  if (fenceMesh) group.add(fenceMesh);
 
   // treeline framing the map (camp: a ring of forest around the clearing; city: outside the walls)
   for (let i = 0; i < (isCamp ? 1400 : ARENA ? 0 : 900); i++) { // (the arena has the sea for a border)
@@ -294,6 +338,7 @@ function buildMap(id, scene, lib, shared) {
     if (isCamp && (campR(x, z) < 7.5 || campR(x, z) > CAMP_R - 1)) continue;
     const h = heightAt(x, z);
     if (h < WATER_Y + 0.15) continue;
+    if (PLOTS.length && soilAt(PLOTS, x, z) >= 0 || PLOTS.some((p) => x > p.x0 - 1 && x < p.x1 + 1 && z > p.z0 - 1 && z < p.z1 + 1)) continue;
     let type = pick(TABLE[id]);
     const pd = lib.props[type];
     const pdist = pathDist(x, z);
