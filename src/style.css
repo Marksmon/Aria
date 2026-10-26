@@ -761,3 +761,23 @@ button.eq:active { background: var(--w-sel); }
   color: var(--w-text); font: 12px/1.35 system-ui, sans-serif; display: flex; flex-direction: column; gap: 2px; pointer-events: none; }
 #bufftip[hidden] { display: none; }
 #bufftip b { color: var(--w-gold); font-size: 13px; }
+
+/* the attack button, right of the hotbar: the weapon in hand on a round red-gold button */
+#atkbtn {
+  position: absolute;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  border: 3px solid #2e2118;
+  background: radial-gradient(circle at 35% 30%, #e86a4a, #a8321e 70%);
+  box-shadow: inset 0 0 0 2px rgba(255, 220, 160, .55), 0 4px 10px rgba(0, 0, 0, .45);
+  display: grid;
+  place-items: center;
+  padding: 0;
+  pointer-events: auto;
+  touch-action: none;
+  z-index: 2;
+}
+#atkbtn img { width: 40px; height: 40px; image-rendering: pixelated; filter: drop-shadow(0 1px 1px rgba(0, 0, 0, .6)); pointer-events: none; }
+#atkbtn span { font-size: 26px; line-height: 1; pointer-events: none; }
+#atkbtn.pressed { transform: scale(.92); filter: brightness(1.2); }

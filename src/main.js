@@ -1349,6 +1349,37 @@ const hotbar = new Hotbar(document.getElementById('hotbar'), inv, {
   changed() { if (menus.open) menus.render(); persist(); },
 });
 hotbar.load(save?.hotbar);
+
+// ---------- the attack button, beside the hotbar: a normal attack on the target, or the nearest monster ----------
+let selMob = null; // the monster last tapped: still the target after walking away from it
+const atkBtn = document.createElement('button');
+atkBtn.id = 'atkbtn';
+atkBtn.dataset.btn = 'attack';
+atkBtn.setAttribute('aria-label', 'Attack');
+atkBtn.title = 'Attack the target, or the nearest monster';
+document.getElementById('hud').appendChild(atkBtn);
+// it shows the weapon in hand (a fist with none)
+const atkFace = () => { const w = inv.gear.weapon; atkBtn.innerHTML = w ? `<img src="${iconURL(w)}" alt="">` : '<span>✊</span>'; };
+inv.onChange(atkFace);
+atkFace();
+// it sits just right of the hotbar, whose width changes with its pages
+function placeAtkBtn() {
+  const hb = document.getElementById('hotbar').getBoundingClientRect();
+  if (!hb.width) return;
+  atkBtn.style.left = `${Math.min(window.innerWidth - atkBtn.offsetWidth - 6, hb.right + 8)}px`;
+  atkBtn.style.top = `${hb.top + (hb.height - atkBtn.offsetHeight) / 2}px`;
+}
+window.addEventListener('resize', placeAtkBtn);
+setInterval(placeAtkBtn, 500);
+function attackNow() {
+  if (player.state === 'down') return;
+  const near = (m) => m?.alive && m.sprite.visible && mobs.list.includes(m) && Math.hypot(m.x - player.x, m.z - player.z) < 12; // (not one left on another map)
+  const t = (near(player.goal?.mob) && player.goal.mob) || (near(selMob) && selMob) || mobs.nearest(player.x, player.z, 9);
+  if (!t) { menus.message('No monster nearby'); return; }
+  stopNav();
+  selMob = t;
+  player.command({ mob: t });
+}
 menus.hotbar = hotbar;
 
 // ---------- items and skills in use ----------
@@ -2129,7 +2160,7 @@ function tap(cx, cy) {
   if (player.state === 'down') return;
   stopNav(); // taking the reins again
   const hit = pick(cx, cy);
-  if (hit?.mob) player.command({ mob: hit.mob });
+  if (hit?.mob) { selMob = hit.mob; player.command({ mob: hit.mob }); }
   else if (hit?.item) {
     const p = hit.item;
     player.command({ x: p.tx, z: p.tz, reach: 0.7, arrive: () => { if (fx.pickups.includes(p) && collect(p)) fx.take(p); } }); // where it lands
@@ -2358,6 +2389,7 @@ function frame() {
   const b = camBasis();
   // windows never pause the game, like Ragnarok
   for (const w of ['items', 'equip', 'skills', 'status', 'settings']) if (input.tapped(w) && started) menus.toggle(w);
+  if (input.tapped('attack') && started) attackNow();
   if (input.tapped('close')) { if (bigmap.open) bigmap.close(); else menus.close(); }
   bigmap.update(dt);
   const live = started;

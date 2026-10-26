@@ -46,6 +46,7 @@ Classic MMORPG style: no on-screen controller. Landscape.
 | Hotbar (bottom): tap a slot to use a skill or item; the button at its end flips between 3 pages | 1–6 · Tab: next page |
 | Drag active skills (Skills window) and usable items (Items window) onto the hotbar; drag a slot off to clear it | Drag |
 | Hold a buff icon (left of the minimap: each buff on you, with its time left) to see what it does | Hover |
+| Attack button (right of the hotbar, showing your weapon): attack your target, or the nearest monster if you have none | Click |
 | Drag one finger: turn the camera · pinch: zoom | Drag or Q / E · mouse wheel |
 | Window buttons under the HP / SP box: Status, Equip, Items, Skills | Alt+A, Alt+Q, Alt+E (or I / B), Alt+S · Esc closes |
 
