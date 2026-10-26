@@ -3,7 +3,7 @@
 // walk, and glows. The look comes from the item (items.js look: { kind: 'wings' | 'float', art, ... }).
 import * as THREE from 'three';
 import { ITEMS } from './items.js';
-import { paintWisp, paintLantern } from './wingart.js';
+import { paintWisp, paintLantern, paintWings } from './wingart.js';
 
 const tex = (c, smooth) => {
   const t = new THREE.CanvasTexture(c);
@@ -13,25 +13,12 @@ const tex = (c, smooth) => {
 };
 const canvas = (w, h) => { const c = document.createElement('canvas'); c.width = w; c.height = h; return [c, c.getContext('2d')]; };
 
-// a pair of wings on a 96 x 56 canvas, spread from the middle (the hero's back)
-const WINGS = {
-  leaf: { fill: '#6fbf4a', edge: '#2f5a22', vein: '#3f7a2a', hi: '#9cdc76' },
-  fairy: { fill: 'rgba(170, 235, 255, .62)', edge: '#5aa8d8', vein: 'rgba(255, 255, 255, .8)', hi: 'rgba(255, 255, 255, .5)' },
-  ember: { fill: '#ff7a2a', edge: '#8a2414', vein: '#ffe27a', hi: '#ffd060' },
-};
+// a pair of wings, each art its own shape (wingart.js), on a 192 x 112 canvas (twice the painter's box)
 function wingsTexture(art) {
-  const P = WINGS[art] || WINGS.leaf, [c, g] = canvas(96, 56);
-  for (const s of [-1, 1]) {
-    g.save(); g.translate(48, 30); g.scale(s, 1);
-    // the upper wing, sweeping up and out, then the smaller lower one
-    g.beginPath(); g.moveTo(2, -2); g.bezierCurveTo(10, -26, 34, -30, 44, -20); g.bezierCurveTo(46, -10, 34, -2, 24, 0); g.bezierCurveTo(30, 8, 30, 20, 18, 24); g.bezierCurveTo(8, 22, 4, 10, 2, 2); g.closePath();
-    g.fillStyle = P.fill; g.fill(); g.lineWidth = 2; g.strokeStyle = P.edge; g.stroke();
-    g.beginPath(); g.moveTo(4, -2); g.quadraticCurveTo(20, -18, 40, -19); g.moveTo(4, 0); g.quadraticCurveTo(18, -6, 30, -6); g.moveTo(4, 3); g.quadraticCurveTo(14, 12, 18, 20);
-    g.lineWidth = 1.2; g.strokeStyle = P.vein; g.stroke();
-    g.beginPath(); g.moveTo(12, -14); g.quadraticCurveTo(24, -24, 36, -22); g.lineWidth = 2; g.strokeStyle = P.hi; g.stroke();
-    g.restore();
-  }
-  return tex(c);
+  const [c, g] = canvas(192, 112);
+  g.scale(2, 2);
+  paintWings(g, art);
+  return tex(c, true);
 }
 // the frames of a floating light (wingart.js): a Wisp's wings beating, a Lantern's flame flickering
 const FRAMES = 6;

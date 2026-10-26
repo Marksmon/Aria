@@ -40,7 +40,7 @@ export const RAIDS = {
     // the clear reward at x1 (times the difficulty's mult): perz and [item, count, chance]
     reward: { perz: 3000, items: [['gel', 6, 1], ['dew', 4, 1], ['bloop_core', 2, 1], ['shiny_gel', 1, 0.3]] },
     // the rare roll: one of these, at the difficulty's chance
-    rares: ['veteran_boots', 'bloop_buckler', 'bleep_ring', 'gooey_ring', 'tide_pendant'],
+    rares: ['veteran_boots', 'bloop_buckler', 'bleep_ring', 'gooey_ring', 'tide_pendant', 'angel_wings'],
   },
 };
 

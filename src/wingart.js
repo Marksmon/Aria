@@ -75,3 +75,83 @@ export function paintLantern(g, flame = 0.5) {
   g.fillStyle = IRON;
   for (const x of [24, 38]) g.fillRect(x, 57, 3, 3);
 }
+
+// Wings, spread from the hero's back, in a 96 x 56 box (the back at 48, 30). Each art its own shape:
+// leaf (two great leaves a side), fairy (a butterfly's, thin as glass), ember (tongues of flame),
+// angel (white feathers in rows), devil (a bat's, bones and a scalloped membrane).
+export function paintWings(g, art) {
+  for (const s of [-1, 1]) {
+    g.save(); g.translate(48, 30); g.scale(s, 1);
+    (WING_ART[art] || WING_ART.fairy)(g);
+    g.restore();
+  }
+}
+const path = (g, pts) => { g.beginPath(); g.moveTo(...pts[0]); for (const p of pts.slice(1)) p.length === 4 ? g.quadraticCurveTo(...p) : g.bezierCurveTo(...p); g.closePath(); };
+const WING_ART = {
+  // a big leaf up and out, a smaller one down; midribs and veins
+  leaf(g) {
+    for (const [len, wid, ang, fill] of [[42, 15, -0.55, '#6fbf4a'], [28, 11, 0.45, '#5aa83a']]) {
+      g.save(); g.rotate(ang);
+      g.beginPath(); g.moveTo(2, 0); g.quadraticCurveTo(len * 0.45, -wid, len, 0); g.quadraticCurveTo(len * 0.45, wid, 2, 0); g.closePath();
+      g.fillStyle = fill; g.fill(); g.lineWidth = 1.8; g.strokeStyle = '#2f5a22'; g.stroke();
+      g.beginPath(); g.moveTo(3, 0); g.lineTo(len - 3, 0);
+      for (let x = 10; x < len - 6; x += 7) { g.moveTo(x, 0); g.lineTo(x + 5, -wid * 0.55); g.moveTo(x, 0); g.lineTo(x + 5, wid * 0.55); }
+      g.lineWidth = 1; g.strokeStyle = '#3f7a2a'; g.stroke();
+      g.beginPath(); g.moveTo(8, -3); g.quadraticCurveTo(len * 0.45, -wid * 0.8, len - 6, -2); g.lineWidth = 1.4; g.strokeStyle = '#9cdc76'; g.stroke();
+      g.restore();
+    }
+  },
+  // a butterfly's: a broad upper wing and a rounder lower one, see-through
+  fairy(g) {
+    path(g, [[2, -2], [10, -26, 34, -30, 44, -20], [46, -10, 34, -2, 24, 0], [30, 8, 30, 20, 18, 24], [8, 22, 4, 10, 2, 2]]);
+    g.fillStyle = 'rgba(170, 235, 255, .62)'; g.fill(); g.lineWidth = 2; g.strokeStyle = '#5aa8d8'; g.stroke();
+    g.beginPath(); g.moveTo(4, -2); g.quadraticCurveTo(20, -18, 40, -19); g.moveTo(4, 0); g.quadraticCurveTo(18, -6, 30, -6); g.moveTo(4, 3); g.quadraticCurveTo(14, 12, 18, 20);
+    g.lineWidth = 1.2; g.strokeStyle = 'rgba(255, 255, 255, .8)'; g.stroke();
+    for (const [x, y, r] of [[30, -18, 3], [20, 12, 2.2]]) { g.beginPath(); g.arc(x, y, r, 0, Math.PI * 2); g.fillStyle = 'rgba(255, 255, 255, .55)'; g.fill(); }
+  },
+  // flames licking out and up from the back, red at the tips
+  ember(g) {
+    const fire = g.createLinearGradient(0, 0, 46, 0);
+    fire.addColorStop(0, '#ffe27a'); fire.addColorStop(0.45, '#ff9a2a'); fire.addColorStop(1, '#d8321e');
+    for (const [len, ang, w] of [[44, -0.75, 9], [40, -0.3, 8], [32, 0.15, 7], [24, 0.6, 6]]) {
+      g.save(); g.rotate(ang);
+      g.beginPath(); g.moveTo(2, -w * 0.5); g.bezierCurveTo(len * 0.4, -w * 1.2, len * 0.7, w * 0.2, len, -w * 0.9);
+      g.bezierCurveTo(len * 0.75, w * 0.9, len * 0.4, w * 1.1, 2, w * 0.5); g.closePath();
+      g.fillStyle = fire; g.fill(); g.lineWidth = 1.5; g.strokeStyle = '#8a2414'; g.stroke();
+      g.beginPath(); g.moveTo(4, 0); g.quadraticCurveTo(len * 0.5, -w * 0.3, len * 0.8, -w * 0.5); g.lineWidth = 1.4; g.strokeStyle = '#fff2b0'; g.stroke();
+      g.restore();
+    }
+  },
+  // white feathers: the arm curves up and out from the back; long flight feathers hang from it,
+  // longest at the tip, with a row of short coverts over their roots and a golden leading edge
+  angel(g) {
+    const arm = (k) => [2 + 44 * k, -4 - 26 * Math.sin(k * Math.PI * 0.62)]; // along the arm, k 0..1
+    const feather = ([x, y], len, ang, wid, fill) => {
+      g.save(); g.translate(x, y); g.rotate(ang);
+      g.beginPath(); g.moveTo(0, -wid * 0.5); g.quadraticCurveTo(len * 0.55, -wid, len, 0); g.quadraticCurveTo(len * 0.55, wid * 0.9, 0, wid * 0.5); g.closePath();
+      g.fillStyle = fill; g.fill(); g.lineWidth = 1; g.strokeStyle = '#9aa4c0'; g.stroke();
+      g.beginPath(); g.moveTo(1, 0); g.lineTo(len - 3, 0); g.lineWidth = 0.6; g.strokeStyle = '#c8d0e4'; g.stroke();
+      g.restore();
+    };
+    for (let i = 7; i >= 0; i--) { const k = i / 7; feather(arm(k), 18 + 16 * k, 1.55 - 0.75 * k, 7, '#ffffff'); } // flight feathers, hanging down and out
+    for (let i = 6; i >= 0; i--) { const k = i / 6; feather(arm(k * 0.92), 10 + 5 * k, 1.35 - 0.6 * k, 6, '#f0f2fa'); } // the coverts
+    g.beginPath(); g.moveTo(...arm(0));
+    for (let k = 0.1; k <= 1.001; k += 0.1) g.lineTo(...arm(k));
+    g.lineWidth = 3; g.strokeStyle = '#e8c86a'; g.stroke(); g.lineWidth = 1; g.strokeStyle = '#a8862e'; g.stroke();
+  },
+  // a bat's: the arm up to a clawed wrist, fingers fanning down, the membrane scalloped between them
+  devil(g) {
+    const wrist = [26, -22], tips = [[46, -14], [44, 4], [32, 16], [12, 18]];
+    g.beginPath(); g.moveTo(2, -4); g.lineTo(...wrist);
+    let prev = wrist;
+    for (const t of tips) { const mx = (prev[0] + t[0]) / 2, my = (prev[1] + t[1]) / 2; g.quadraticCurveTo(mx - (t[1] - prev[1]) * 0.22 - 4, my + 2, ...t); prev = t; }
+    g.quadraticCurveTo(6, 12, 2, 4); g.closePath();
+    const skin = g.createLinearGradient(0, -20, 0, 18);
+    skin.addColorStop(0, '#5a1e3a'); skin.addColorStop(1, '#2a0e1e');
+    g.fillStyle = skin; g.fill(); g.lineWidth = 1.6; g.strokeStyle = '#140810'; g.stroke();
+    g.beginPath(); g.moveTo(2, -4); g.lineTo(...wrist); for (const t of tips) { g.moveTo(...wrist); g.lineTo(...t); }
+    g.lineWidth = 2; g.strokeStyle = '#1a0e16'; g.stroke();
+    g.beginPath(); g.moveTo(...wrist); g.lineTo(wrist[0] + 3, wrist[1] - 5); g.lineWidth = 2; g.strokeStyle = '#d8d0c0'; g.stroke(); // the claw
+    g.beginPath(); g.moveTo(8, -2); g.lineTo(22, -16); g.lineWidth = 1; g.strokeStyle = 'rgba(200, 60, 80, .7)'; g.stroke();
+  },
+};

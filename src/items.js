@@ -1,5 +1,5 @@
 // Items (materials, usables and equipment) and recipes, plus the painted icons used both on the ground and in menus.
-import { paintWisp, paintLantern } from './wingart.js';
+import { paintWisp, paintLantern, paintWings } from './wingart.js';
 import * as THREE from 'three';
 import { headgearIcon, headgearReady } from './headgear.js';
 
@@ -121,6 +121,8 @@ const BASE_ITEMS = {
   dark_wisp:    { type: 'equip', slot: 'wings', rare: true, name: 'Dark Wisp', look: { kind: 'float', art: 'orb', core: '#f0d8ff', glow: '#a45cff' }, msp: 30, stats: { knl: 2 }, icon: 'dark_wisp', desc: 'A Dark Wisp that chose to follow you home. It whispers spells you almost understand.' },
   leaf_wings:   { type: 'equip', slot: 'wings', name: 'Leaf Wings', look: { kind: 'wings', art: 'leaf' }, flee: 2, icon: 'wings_leaf', desc: 'Two great Sprout leaves bound to a harness. They will not lift you, but they catch the wind.' },
   fairy_wings:  { type: 'equip', slot: 'wings', name: 'Fairy Wings', look: { kind: 'wings', art: 'fairy' }, flee: 3, stats: { qkn: 1 }, icon: 'wings_fairy', desc: 'Wings of Glow Dust and water, thin as a soap bubble. They shimmer when you move.' },
+  angel_wings:  { type: 'equip', slot: 'wings', rare: true, name: 'Angel Wings', look: { kind: 'wings', art: 'angel' }, flee: 2, msp: 40, stats: { knl: 2, ftn: 2 }, icon: 'wings_angel', desc: 'White feathers edged in gold, from no bird anyone has seen. The Boatman found them washed up on Bloop Island.' },
+  devil_wings:  { type: 'equip', slot: 'wings', rare: true, name: 'Devil Wings', look: { kind: 'wings', art: 'devil' }, mhp: 80, stats: { pow: 2, end: 1 }, icon: 'wings_devil', desc: 'Leathery wings torn from the smoke around the Fire Giant. They twitch when something nearby is afraid.' },
   ember_wings:  { type: 'equip', slot: 'wings', rare: true, name: 'Ember Wings', look: { kind: 'wings', art: 'ember' }, mhp: 50, stats: { pow: 1, knl: 1 }, icon: 'wings_ember', desc: 'Wings of living fire, shed by a Fire Wisp. Warm to the touch, and they never singe your cape.' },
   // boss drops
   thorn_mantle: { type: 'equip', slot: 'garment', rare: true, name: 'Thorn Cape', def: 3, flee: 2, stats: { pow: 1 }, icon: 'r_thorncloak', desc: 'Briars from the Giant Sprout, woven tight as mail. Hug it at your peril.', from: 'the Giant Sprout (3%)' },
@@ -168,6 +170,21 @@ const BASE_ITEMS = {
   yellowbloop_card: { type: 'misc', rare: true, name: 'Yellow Bloop Card', icon: 'card_yellowbloop', card: { on: 'acc', stats: { ftn: 3 } }, desc: 'A Yellow Bloop on a card, grinning. Luck seems to bounce your way. In an accessory with a slot: FTN +3.', from: 'Yellow Bloops (0.1%)' },
   shadewisp_card: { type: 'misc', rare: true, name: 'Dark Wisp Card', icon: 'card_shadewisp', card: { on: 'wings', mspRate: 5, stats: { knl: 2 } }, desc: 'A Dark Wisp on a card that is cold to hold. It whispers to whatever flies beside you. In wings with a slot: KNL +2, Max SP +5%.', from: 'Dark Wisps (0.1%)' },
   emberwisp_card: { type: 'misc', rare: true, name: 'Fire Wisp Card', icon: 'card_emberwisp', card: { on: 'wings', stats: { pow: 1, knl: 1 }, mhp: 50 }, desc: 'A Fire Wisp on a scorched card. Whatever flies beside you burns a little brighter. In wings with a slot: POW +1, KNL +1, Max HP +50.', from: 'Fire Wisps (0.1%)' },
+  bluebloop_card: { type: 'misc', rare: true, name: 'Blue Bloop Card', icon: 'card_bluebloop', card: { on: ['head', 'face'], msp: 40 }, desc: 'A Blue Bloop on a damp card. Your thoughts run cool and clear. In head or face gear with a slot: Max SP +40.', from: 'Blue Bloops (0.1%)' },
+  littlebloop_card: { type: 'misc', rare: true, name: 'Little Bloop Card', icon: 'card_littlebloop', card: { on: 'acc', mhp: 40, stats: { ftn: 1 } }, desc: 'A Little Bloop on a very small card. It brings very small luck, which adds up. In an accessory with a slot: Max HP +40, FTN +1.', from: 'Little Bloops (0.1%)' },
+  beetle_n_card: { type: 'misc', rare: true, name: 'Beetle Card', icon: 'card_beetle_n', card: { on: 'armor', def: 2, stats: { end: 1 } }, desc: 'A Beetle on a card as hard as its shell. In an armor with a slot: DEF +2, END +1.', from: 'Beetles (0.1%)' },
+  lanternwisp_card: { type: 'misc', rare: true, name: 'Lantern Wisp Card', icon: 'card_lanternwisp', card: { on: 'wings', stats: { fns: 2, knl: 1 } }, desc: 'The golden Lantern Wisp on a card that never quite stops glowing. In wings with a slot: FNS +2, KNL +1.', from: 'Lantern Wisps (0.1%)' },
+  redbloop_card: { type: 'misc', rare: true, name: 'Red Bloop Card', icon: 'card_redbloop', card: { on: 'weapon', atk: 10 }, desc: 'A Red Bloop on a warm card, cheeks puffed. It puts a little heat behind each swing. In a weapon with a slot: ATK +10.', from: 'Red Bloops (0.1%)' },
+  bleep_card: { type: 'misc', rare: true, name: 'BleepBloop Card', icon: 'card_bleep', card: { on: 'weapon', atk: 20, mhpRate: 10, stats: { ftn: 5 } }, desc: 'BleepBloop himself, crowned and smug, on a card the Boatman swears he never saw before. In a weapon with a slot: ATK +20, Max HP +10%, FTN +5.', from: 'BleepBloop (0.1%)' },
+  redsprout_card: { type: 'misc', rare: true, name: 'Red Sprout Card', icon: 'card_redsprout', card: { on: 'garment', mhpRate: 5, flee: 2 }, desc: 'A Red Sprout on a card, thorns and all. It wraps you like a hedge. In a garment with a slot: Max HP +5%, FLEE +2.', from: 'Red Sprouts (0.1%)' },
+  seabloop_card: { type: 'misc', rare: true, name: 'Sea Bloop Card', icon: 'card_seabloop', card: { on: 'shield', def: 1, mspRate: 5 }, desc: 'A Sea Bloop on a card crusted with salt. The tide keeps your mind full. In a shield with a slot: DEF +1, Max SP +5%.', from: 'Sea Bloops (0.1%)' },
+  firebeetle_card: { type: 'misc', rare: true, name: 'Fire Beetle Card', icon: 'card_firebeetle', card: { on: 'armor', def: 2, stats: { pow: 1 } }, desc: 'A Fire Beetle on a scorched card. Its burning shell lends you a little of its fight. In an armor with a slot: DEF +2, POW +1.', from: 'Fire Beetles (0.1%)' },
+  koboldarcher_card: { type: 'misc', rare: true, name: 'Kobold Archer Card', icon: 'card_koboldarcher', card: { on: ['head', 'face'], stats: { fns: 2 } }, desc: 'A Kobold Archer on a card, squinting down an arrow. You see a little further. In head or face gear with a slot: FNS +2.', from: 'Kobold Archers (0.1%)' },
+  koboldassassin_card: { type: 'misc', rare: true, name: 'Kobold Assassin Card', icon: 'card_koboldassassin', card: { on: 'shoes', flee: 4, stats: { qkn: 1 } }, desc: 'A Kobold Assassin on a card, half in shadow. Your steps go quiet. In shoes with a slot: QKN +1, FLEE +4.', from: 'Kobold Assassins (0.1%)' },
+  goblin_n_card: { type: 'misc', rare: true, name: 'Goblin Card', icon: 'card_goblin_n', card: { on: 'weapon', atk: 12, hit: 3 }, desc: 'A Goblin on a card, teeth bared. A little of its spite goes into every blow. In a weapon with a slot: ATK +12, HIT +3.', from: 'Goblins (0.1%)' },
+  goblinassassin_card: { type: 'misc', rare: true, name: 'Goblin Assassin Card', icon: 'card_goblinassassin', card: { on: 'acc', flee: 2, stats: { qkn: 2 } }, desc: 'A Goblin Assassin on a card, knife between its teeth. Your hands get quicker. In an accessory with a slot: QKN +2, FLEE +2.', from: 'Goblin Assassins (0.1%)' },
+  willow_n_card: { type: 'misc', rare: true, name: 'Willow Card', icon: 'card_willow_n', card: { on: 'wings', msp: 40, stats: { knl: 1 } }, desc: 'A walking Willow on a card that sways when you are not looking. In wings with a slot: KNL +1, Max SP +40.', from: 'Willows (0.1%)' },
+  bear_n_card: { type: 'misc', rare: true, name: 'Bear Card', icon: 'card_bear_n', card: { on: 'armor', mhpRate: 8, stats: { pow: 1 } }, desc: 'A Bear on a heavy card, mid-roar. You feel broader across the shoulders. In an armor with a slot: Max HP +8%, POW +1.', from: 'Bears (0.1%)' },
   alpha_card:   { type: 'misc', rare: true, name: 'Alpha Wolf Card', icon: 'card_alpha', card: { on: 'weapon', flee: 10, aspd: 8, stats: { qkn: 5 } }, desc: 'The Alpha Wolf on a card with a torn edge. In a weapon with a slot: QKN +5, FLEE +10, attacks 8% faster.', from: 'the Alpha Wolf (1%)' },
   bear_card:    { type: 'misc', rare: true, name: 'Great Bear Card', icon: 'card_bear', card: { on: 'weapon', atk: 30, mhpRate: 10, stats: { pow: 5 } }, desc: 'The Great Bear on a card with claw marks across it. In a weapon with a slot: ATK +30, POW +5, Max HP +10%.', from: 'the Great Bear (1%)' },
   // gear from the hunters' own leatherworks (Leif in Veidheim)
@@ -334,7 +351,7 @@ export const PRICES = {
   ember_crown: 30000, flame_circlet: 20000, round_glasses: 600, raven_mask: 400, woven_cap: 300, flower_wreath: 200, horned_helm: 1800,
   clothes: 10, leaf_tunic: 300, shell_mail: 1100, beetle_plate: 2800, chain_mail: 3200, mage_robe: 2600,
   round_shield: 1200, wool_cape: 700, leather_boots: 500, swift_boots: 1000, torch: 100,
-  wisp_orb: 6000, dark_wisp: 16000, leaf_wings: 2400, fairy_wings: 12000, ember_wings: 24000,
+  wisp_orb: 6000, dark_wisp: 16000, leaf_wings: 2400, fairy_wings: 12000, ember_wings: 24000, angel_wings: 40000, devil_wings: 40000,
   sprout_charm: 700, spore_charm: 1000, shell_charm: 1000, glow_charm: 1200,
   heartwood: 3000, king_pearl: 4000, gloom_heart: 5000, cinder_core: 6000, jarl_horn: 8000,
   thorn_mantle: 12000, tidebreaker: 20000, gloom_staff: 22000, cinder_greaves: 16000, jarl_mantle: 30000,
@@ -552,14 +569,9 @@ function bowIcon(g, wood, grip, tip = wood) {
   shape(g, () => g.roundRect(4, -5, 6, 10, 2), grip, 2);
   g.restore();
 }
-// a pair of wings, spread
-function wingIcon(g, fill, edge, vein = edge) {
-  for (const s of [-1, 1]) {
-    g.save(); g.translate(32, 34); g.scale(s, 1);
-    shape(g, () => { g.moveTo(2, -2); g.quadraticCurveTo(14, -26, 28, -20); g.quadraticCurveTo(30, -6, 20, 2); g.quadraticCurveTo(24, 14, 12, 18); g.quadraticCurveTo(4, 10, 2, 2); g.closePath(); }, fill, 2.5);
-    g.beginPath(); g.moveTo(3, 0); g.lineTo(22, -14); g.moveTo(3, 2); g.lineTo(14, 12); g.strokeStyle = vein; g.lineWidth = 1.5; g.stroke();
-    g.restore();
-  }
+// a pair of wings, spread: the same shapes the hero wears (wingart.js), shrunk to the icon
+function wingIcon(g, art) {
+  g.save(); g.translate(2, 16); g.scale(0.625, 0.625); paintWings(g, art); g.restore();
 }
 // a bundle of arrows, its heads in the arrows' colour
 function arrowIcon(g, head, fletch = '#f4ecd8') {
@@ -831,6 +843,21 @@ const PAINT = {
   card_mushroom: (g) => cardIcon(g, '#9a7cff', '#efe2c4'),
   card_beetle: (g) => cardIcon(g, '#ff7a4a', '#6a6a72'),
   card_willow: (g) => cardIcon(g, '#d8c8a0', '#9cbc4a'),
+  card_bluebloop: (g) => cardIcon(g, '#5aa8ff', '#9fdcff'),
+  card_littlebloop: (g) => cardIcon(g, '#9fdcff', '#5aa8d8'),
+  card_beetle_n: (g) => cardIcon(g, '#8c8478', '#e3b341'),
+  card_lanternwisp: (g) => cardIcon(g, '#ffe37a', '#ffd23a'),
+  card_redbloop: (g) => cardIcon(g, '#ff7a5a', '#c8463c'),
+  card_bleep: (g) => cardIcon(g, '#7ed957', '#ffd23a'),
+  card_redsprout: (g) => cardIcon(g, '#c8463c', '#9cbc4a'),
+  card_seabloop: (g) => cardIcon(g, '#3a8cc8', '#e8f6ff'),
+  card_firebeetle: (g) => cardIcon(g, '#3a2a2a', '#ff8a3a'),
+  card_koboldarcher: (g) => cardIcon(g, '#a07848', '#d8c090'),
+  card_koboldassassin: (g) => cardIcon(g, '#5a4a3a', '#c8b89a'),
+  card_goblin_n: (g) => cardIcon(g, '#6a8a3a', '#c8b848'),
+  card_goblinassassin: (g) => cardIcon(g, '#3a4a2a', '#8a9a5a'),
+  card_willow_n: (g) => cardIcon(g, '#9a8a5a', '#c8dc6a'),
+  card_bear_n: (g) => cardIcon(g, '#7a5a3a', '#d8b878'),
   card_bloop: (g) => cardIcon(g, '#7ed957', '#4f9a35'),
   card_bluecrab: (g) => cardIcon(g, '#5aa8d8', '#e8a0a0'),
   card_shellcrab: (g) => cardIcon(g, '#f2a8a0', '#c9726a'),
@@ -975,9 +1002,11 @@ const PAINT = {
   },
   wisp_orb: (g) => paintWisp(g, { core: '#f4fbff', glow: '#9fdcff' }),
   dark_wisp: (g) => paintWisp(g, { core: '#f0d8ff', glow: '#a45cff' }),
-  wings_leaf: (g) => wingIcon(g, '#6fbf4a', '#3f7a2a'),
-  wings_fairy: (g) => wingIcon(g, 'rgba(170, 235, 255, .85)', '#5aa8d8'),
-  wings_ember: (g) => wingIcon(g, '#ff8a3a', '#b8321e', '#ffe27a'),
+  wings_leaf: (g) => wingIcon(g, 'leaf'),
+  wings_fairy: (g) => wingIcon(g, 'fairy'),
+  wings_ember: (g) => wingIcon(g, 'ember'),
+  wings_angel: (g) => wingIcon(g, 'angel'),
+  wings_devil: (g) => wingIcon(g, 'devil'),
   r_lantern: (g) => paintLantern(g, 0.6),
 
   shiny_gel: (g) => {

@@ -596,12 +596,14 @@ no torch is needed.
 
 | Wings | Look | Effect | Where |
 |---|---|---|---|
-| Leaf Wings | two great green leaves | FLEE +2 | Gunnar crafts them (Base 8): 12 Leaves, 6 Seeds, 2 Shells |
+| Leaf Wings | two great leaves a side | FLEE +2 | Gunnar crafts them (Base 8): 12 Leaves, 6 Seeds, 2 Shells |
 | Wisp | a pale blue Wisp at your shoulder | KNL +1, Max SP +20 | Orm crafts it (Base 14): 12 Glow Dust, 6 Water Drops |
-| Fairy Wings | thin, shimmering, sky blue | FLEE +3, QKN +1 | Orm crafts them (Base 26): 15 Glow Dust, 10 Water Drops, a Shiny Gel |
+| Fairy Wings | a butterfly's, thin and sky blue | FLEE +3, QKN +1 | Orm crafts them (Base 26): 15 Glow Dust, 10 Water Drops, a Shiny Gel |
 | Lantern | a lantern at your shoulder | KNL +1, FNS +1 | Wisp, 0.4% |
 | Dark Wisp | a violet Wisp at your shoulder | KNL +2, Max SP +30 | Dark Wisp, 0.25% |
-| Ember Wings | wings of fire | POW +1, KNL +1, Max HP +50 | Fire Wisp, 0.25% |
+| Ember Wings | tongues of flame | POW +1, KNL +1, Max HP +50 | Fire Wisp, 0.25% |
+| Angel Wings | white feathers edged in gold | KNL +2, FTN +2, FLEE +2, Max SP +40 | Bloop Island raid, a rare reward |
+| Devil Wings | a bat's leathery wings | POW +2, END +1, Max HP +80 | Fire Giant, 3% |
 
 **Weapon levels.** Lv 4 weapons are the best there are: the Giant Sword, Flame Sword, Lava Sword
 and Sea Sword, the Great, Flame, Fire and Mushroom Staves, and the Heartwood, Great and Flame Bows. They refine for the most ATK
@@ -641,7 +643,7 @@ back to you.
 
 **Cards.** Each MVP drops its card (1%), and like classic MVP cards they are overpowered.
 Each mini-boss drops one too (1%): a good step up, but nothing like an MVP's. These go in weapons.
-Ordinary monsters drop cards for every other kind of gear (0.1%), smaller but welcome.
+Every other monster drops a card too (0.1%), for every kind of gear, smaller but welcome.
 Select a card in the Miscs tab and tap **Insert** to press it into a piece of its kind with a
 free slot. It stays there for good, unless the piece later breaks at Holger's.
 
@@ -662,6 +664,21 @@ free slot. It stays there for good, unless the piece later breaks at Holger's.
 | Yellow Bloop Card | Accessory | FTN +3 | Yellow Bloop, 0.1% |
 | Dark Wisp Card | Wings | KNL +2, Max SP +5% | Dark Wisp, 0.1% |
 | Fire Wisp Card | Wings | POW +1, KNL +1, Max HP +50 | Fire Wisp, 0.1% |
+| Blue Bloop Card | Head or face | Max SP +40 | Blue Bloop, 0.1% |
+| Little Bloop Card | Accessory | Max HP +40, FTN +1 | Little Bloop, 0.1% |
+| Beetle Card | Armor | DEF +2, END +1 | Beetle, 0.1% |
+| Lantern Wisp Card | Wings | FNS +2, KNL +1 | Lantern Wisp, 0.1% |
+| Red Bloop Card | Weapon | ATK +10 | Red Bloop (Bloop Island), 0.1% |
+| BleepBloop Card | Weapon | ATK +20, Max HP +10%, FTN +5 | BleepBloop, 0.1% |
+| Red Sprout Card | Garment | Max HP +5%, FLEE +2 | Red Sprout, 0.1% |
+| Sea Bloop Card | Shield | DEF +1, Max SP +5% | Sea Bloop, 0.1% |
+| Fire Beetle Card | Armor | DEF +2, POW +1 | Fire Beetle, 0.1% |
+| Kobold Archer Card | Head or face | FNS +2 | Kobold Archer, 0.1% |
+| Kobold Assassin Card | Shoes | QKN +1, FLEE +4 | Kobold Assassin, 0.1% |
+| Goblin Card | Weapon | ATK +12, HIT +3 | Goblin, 0.1% |
+| Goblin Assassin Card | Accessory | QKN +2, FLEE +2 | Goblin Assassin, 0.1% |
+| Willow Card | Wings | KNL +1, Max SP +40 | Willow, 0.1% |
+| Bear Card | Armor | Max HP +8%, POW +1 | Bear, 0.1% |
 
 | Card | Goes in | Effect | From |
 |---|---|---|---|
