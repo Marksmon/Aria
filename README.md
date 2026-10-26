@@ -645,7 +645,8 @@ back to you.
 **Cards.** Each MVP drops its card (1%), and like classic MVP cards they are overpowered.
 Each mini-boss drops one too (1%): a good step up, but nothing like an MVP's. The Goblin King's, the
 Fire Giant's, the Great Bear's and the Giant Beetle's go in weapons; the rest in other gear.
-Every other monster drops a card too (0.1%), for every kind of gear, smaller but welcome.
+Every other monster drops a card too (0.1%), for every kind of gear, smaller but welcome (all but the
+Little Bloops a Blue Bloop splits into: they drop neither gear nor cards).
 Select a card in the Miscs tab and tap **Insert** to press it into a piece of its kind with a
 free slot. It stays there for good, unless the piece later breaks at Holger's.
 
@@ -667,7 +668,6 @@ free slot. It stays there for good, unless the piece later breaks at Holger's.
 | Dark Wisp Card | Wings | KNL +2, Max SP +5% | Dark Wisp, 0.1% |
 | Fire Wisp Card | Wings | POW +1, KNL +1, Max HP +50 | Fire Wisp, 0.1% |
 | Blue Bloop Card | Head or face | Max SP +40 | Blue Bloop, 0.1% |
-| Little Bloop Card | Accessory | Max HP +40, FTN +1 | Little Bloop, 0.1% |
 | Beetle Card | Armor | DEF +2, END +1 | Beetle, 0.1% |
 | Lantern Wisp Card | Wings | FNS +2, KNL +1 | Lantern Wisp, 0.1% |
 | Red Bloop Card | Weapon | ATK +10 | Red Bloop (Bloop Island), 0.1% |
