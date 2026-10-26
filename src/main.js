@@ -1351,7 +1351,9 @@ const hotbar = new Hotbar(document.getElementById('hotbar'), inv, {
 hotbar.load(save?.hotbar);
 
 // ---------- the attack button, beside the hotbar: a normal attack on the target, or the nearest monster ----------
-let selMob = null; // the monster last tapped: still the target after walking away from it
+let selMob = null; // the selected monster: the one last tapped, attacked or aimed at, kept after a cast or a walk
+// the selected monster while it is still a fair target: alive, on this map and near enough
+const selected = () => (selMob?.alive && selMob.sprite.visible && mobs.list.includes(selMob) && Math.hypot(selMob.x - player.x, selMob.z - player.z) < 12 ? selMob : null);
 const atkBtn = document.createElement('button');
 atkBtn.id = 'atkbtn';
 atkBtn.dataset.btn = 'attack';
@@ -1373,8 +1375,7 @@ window.addEventListener('resize', placeAtkBtn);
 setInterval(placeAtkBtn, 500);
 function attackNow() {
   if (player.state === 'down') return;
-  const near = (m) => m?.alive && m.sprite.visible && mobs.list.includes(m) && Math.hypot(m.x - player.x, m.z - player.z) < 12; // (not one left on another map)
-  const t = (near(player.goal?.mob) && player.goal.mob) || (near(selMob) && selMob) || mobs.nearest(player.x, player.z, 9);
+  const t = (player.goal?.mob?.alive && mobs.list.includes(player.goal.mob) && player.goal.mob) || selected() || mobs.nearest(player.x, player.z, 9);
   if (!t) { menus.message('No monster nearby'); return; }
   stopNav();
   selMob = t;
@@ -1626,9 +1627,10 @@ function useSkill(id) {
     });
     return;
   }
-  // the rest aim at your current target, or the nearest monster
-  const target = (player.goal?.mob?.alive && player.goal.mob) || mobs.nearest(player.x, player.z, 8);
+  // the rest aim at your current target (the one fought, else the one selected), or the nearest monster
+  const target = (player.goal?.mob?.alive && player.goal.mob) || selected() || mobs.nearest(player.x, player.z, 8);
   if (!target) { menus.message('No monster nearby'); return; }
+  selMob = target;
   // ---- BladeMaster: Blade Dance, dashing from monster to monster, untouchable ----
   if (id === 'bladedance') {
     const run = (t) => {
@@ -1992,8 +1994,10 @@ function castSpell(id, lv, pay, sp) {
     }, null, sk.name);
     return;
   }
-  const target = (player.goal?.mob?.alive && player.goal.mob) || (player.cast?.target?.alive && player.cast.target) || mobs.nearest(player.x, player.z, 9);
+  const target = (player.goal?.mob?.alive && player.goal.mob) || (player.cast?.target?.alive && player.cast.target) || selected() || mobs.nearest(player.x, player.z, 9);
   if (!target) { menus.message('No monster nearby'); return; }
+  selMob = target; // the spell's target stays selected after the cast
+  const fighting = player.goal?.mob === target && !player.goal.spell; // hitting it when the chant began: go back to it after
   const run = (t) => {
     if (!t.alive || !pay()) return;
     say();
@@ -2072,7 +2076,7 @@ function castSpell(id, lv, pay, sp) {
       fx.sparkle(t.x, ty, t.z, SPELL_COL[id], 8);
     });
   };
-  player.command({ mob: target, spell: { range: sk.range, time, run, name: sk.name } });
+  player.command({ mob: target, spell: { range: sk.range, time, run: (t) => { run(t); if (fighting && t.alive && !player.goal) player.command({ mob: t }); }, name: sk.name } });
 }
 const castBar = document.createElement('div');
 castBar.id = 'castbar';
@@ -2456,7 +2460,7 @@ function frame() {
 // monster names, like Ragnarok: over the one the mouse is on, and over the one you are fighting
 const labelEls = { hover: document.querySelector('#moblabels .hover'), target: document.querySelector('#moblabels .target') };
 function mobLabels() {
-  const target = player.goal?.mob?.alive ? player.goal.mob : null;
+  const target = (player.goal?.mob?.alive ? player.goal.mob : null) || selected(); // the one fought, else the one selected
   const over = input.hover ? pick(input.hover.x, input.hover.y)?.mob : null;
   for (const [k, m] of [['target', target], ['hover', over !== target ? over : null]]) {
     const el = labelEls[k];
