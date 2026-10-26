@@ -424,6 +424,13 @@ export function learnBlock(prog, id) {
   if (skillLv(prog, id) >= s.max) return 'max';
   for (const [k, n] of Object.entries(s.needs || {})) if (skillLv(prog, k) < n) return `Needs ${SKILLS[k].name} ${n}`;
   if (JOBS[s.job].tier === 2) { const why = secondJobBlock(prog); if (why) return why; }
+  // a second job of two paths (Magic Knight, Moon Ranger, Beastmaster): once one path's tree has its
+  // 20 points, it waits until the other's has 20 too, so a rebuild can't leave one short
+  const from = prog.tier === 2 ? JOBS[prog.job].from || [] : [];
+  if (from.length > 1 && from.includes(s.job) && pointsIn(prog, s.job) >= MK_POINTS) {
+    const short = from.find((j) => pointsIn(prog, j) < MK_POINTS);
+    if (short) return `Needs ${MK_POINTS} points in the ${JOBS[short].name} tree first (${pointsIn(prog, short)} now)`;
+  }
   if (prog.skillPoints <= 0) return 'points';
   return null;
 }

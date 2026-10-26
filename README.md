@@ -395,7 +395,8 @@ points stay. Second jobs wear their first job's outfit in new colours and glow w
   step.
 - A second job's own skills can be raised only once **every Trainee and first-job skill point is
   spent**, and while the job's own rule still holds (a Magic Knight keeps 20 points in Blader and 20
-  in Sorcerer). The Skills window says what is missing.
+  in Sorcerer). The Skills window says what is missing. For a Magic Knight, Moon Ranger or
+  Beastmaster, a path's tree that has 20 points takes no more until the other path's has 20 too.
 
 | BladeMaster: one target, cut down fast | |
 |---|---|
