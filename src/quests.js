@@ -64,7 +64,7 @@ export const NPCS = {
   // ---------- Steinborg ----------
   hild: {
     name: 'Hild the Trader', map: 'city', x: 26.6, z: 27.4, shop: 'hild',
-    hello: 'Welcome to Steinborg market! Potions, feathers, torches. And I buy whatever you drag in from the wilds.',
+    hello: 'Welcome to Steinborg market! Potions, herbs, feathers. And I buy whatever you drag in from the wilds.',
     later: (lv) => `I will have work for you at Base Level ${lv}. Meanwhile, shop away!`,
     bye: 'Good trading, friend. Mind your purse on the road.',
     greet: (c) => (c.baseLv >= 30 ? 'My best customer! The wilds must be paying you well.' : null),
@@ -254,7 +254,7 @@ export const NPCS = {
   },
   kari: {
     name: 'Kari the Curio Seller', map: 'magic', x: 25.8, z: 28.2, look: 'hild', shop: 'kari',
-    hello: 'Potions, feathers, torches, and a little quickening for the impatient. Galdrheim prices, which is to say fair ones!',
+    hello: 'Potions, feathers, and a little quickening for the impatient. Galdrheim prices, which is to say fair ones!',
     later: () => '', bye: 'Come back before your potions run dry!',
     quests: [],
     lore: [

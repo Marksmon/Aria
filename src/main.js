@@ -28,6 +28,7 @@ import { Menus } from './menus.js';
 import { iconTexture, iconURL, ITEMS, baseOf, canWear } from './items.js';
 import { DayNight } from './daynight.js';
 import { Audio } from './audio.js';
+import { Wings } from './wings.js';
 import { clamp, lerp } from './noise.js';
 
 const canvas = document.getElementById('game');
@@ -97,6 +98,7 @@ const JOB_BODY = { novice: 'trainee', swordman: 'blader', mage: 'sorc', archer: 
 let held = () => save?.inv?.gear?.weapon;
 const bodyArt = (look) => lib.design(`${JOB_BODY[prog.job] || 'blader'}${prog.job === 'beastmaster' && ITEMS[held()]?.kind !== 'bow' ? 'sw' : ''}${look.body === 'f' ? 'F' : 'M'}`);
 const player = new Player(scene, world, bodyArt({ ...save?.look }), lib.shadow, fx);
+const wings = new Wings(scene);
 player.setPos(save?.x ?? world.spawn.x, save?.z ?? world.spawn.z);
 if (save?.look) player.setLook(save.look);
 lookBefore = { ...player.look };
@@ -2412,6 +2414,8 @@ function frame() {
   if (saveT > 3) { saveT = 0; persist(); }
 
   if (live) mobLabels();
+  wings.set(inv.gear.wings); // the Wings slot: wings on the back, or a light at the shoulder
+  wings.update(dt, player, camera, t, world.heightAt(player.x, player.z));
   renderer.render(scene, camera);
 }
 

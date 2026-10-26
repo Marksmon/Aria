@@ -513,7 +513,7 @@ Giant Mushroom 2%), Flame (+50%, MVP 2%) and Great Staff (+55%, from three boss 
 ## Items
 
 The Items window has three tabs: **Usables**, **Equips** and **Miscs**. Weapons, armor, boots,
-torch, headgear and charms are items: equip them from the Equips tab (the piece taken off lands in
+wings, headgear and charms are items: equip them from the Equips tab (the piece taken off lands in
 the same bag slot). In the Equipment window, tap a worn piece to see what it is and double-tap it
 to take it off. Shops sell 1, 10 or all, and "Sell all" keeps what an active quest still needs.
 
@@ -559,7 +559,9 @@ bursts gold on the ground and shows in gold in your bag.
 | Mushroom Cloak | Garment | DEF 1, FLEE +4 | Mushroom, 0.25% |
 | Stone Ring | Accessory | END +2, DEF 1 | Beetle, 0.3% |
 | Horn Sword | Weapon | ATK 68, weapon Lv 3, POW +1 | Beetle, 0.15% |
-| Lantern | Light | lights the night, KNL +1, FNS +1 | Wisp, 0.4% |
+| Lantern | Wings (floats at your shoulder, glowing) | KNL +1, FNS +1 | Wisp, 0.4% |
+| Dark Wisp | Wings (floats at your shoulder, glowing) | KNL +2, Max SP +30 | Dark Wisp, 0.25% |
+| Ember Wings | Wings (fiery wings on your back) | POW +1, KNL +1, Max HP +50 | Fire Wisp, 0.25% |
 | Shiny Gel | Misc | a collector's prize | Green and Blue Bloops, 1% |
 | Veteran's Boots | Shoes | DEF 3, FLEE +3, END +1, Max HP +60 | Bloop Island (a clear: 5–20%) |
 | Bloop Buckler | Shield | DEF 4, Max HP +80 | Bloop Island (a clear: 5–20%) |
@@ -584,7 +586,20 @@ bursts gold on the ground and shows in gold in your bag.
 | Thorn Ring · Coral Shield · Dark Hood · Fire Armor · Fire Charm | | | the new lands' monsters, 0.2–0.3% |
 | Thorn Cape · Sea Sword · Mushroom Staff · Fire Boots | | | the mini-bosses, 2–3% |
 
-Two accessory slots, a shield, a garment and an arrows slot join head, face, armor, weapon, shoes and light.
+Two accessory slots, a shield, a garment and an arrows slot join head, face, armor, weapon, shoes and wings.
+
+**Wings.** The Wings slot holds wings, worn on the back (they flap gently, and cover your back when
+you turn away), or a light that floats at your shoulder and glows. Nights are lit for every hero, so
+no torch is needed.
+
+| Wings | Look | Effect | Where |
+|---|---|---|---|
+| Leaf Wings | two great green leaves | FLEE +2 | Gunnar crafts them (Base 8): 12 Leaves, 6 Seeds, 2 Shells |
+| Wisp | a pale blue Wisp at your shoulder | KNL +1, Max SP +20 | Orm crafts it (Base 14): 12 Glow Dust, 6 Water Drops |
+| Fairy Wings | thin, shimmering, sky blue | FLEE +3, QKN +1 | Orm crafts them (Base 26): 15 Glow Dust, 10 Water Drops, a Shiny Gel |
+| Lantern | a lantern at your shoulder | KNL +1, FNS +1 | Wisp, 0.4% |
+| Dark Wisp | a violet Wisp at your shoulder | KNL +2, Max SP +30 | Dark Wisp, 0.25% |
+| Ember Wings | wings of fire | POW +1, KNL +1, Max HP +50 | Fire Wisp, 0.25% |
 
 **Weapon levels.** Lv 4 weapons are the best there are: the Giant Sword, Flame Sword, Lava Sword
 and Sea Sword, the Great, Flame, Fire and Mushroom Staves, and the Heartwood, Great and Flame Bows. They refine for the most ATK
@@ -666,7 +681,7 @@ glasses and masks sit on the eyes, in every direction and every frame. See
 `docs/character-standard.md`.
 
 **Perz and shops.** Perz is Aria's coin. Monsters don't drop perz: sell your loot. In Steinborg,
-**Hild the Trader** sells potions, herbs, feathers and torches, and **Gunnar** sells swords,
+**Hild the Trader** sells potions, herbs and feathers, and **Gunnar** sells swords,
 armor, shields, capes and boots. In Galdrheim, **Kari** sells the same goods as Hild (and Speed
 Potions), and **Orm the Staffwright** sells staves and robes. Any shop buys anything for half its
 price.
@@ -756,7 +771,7 @@ leads to each.
 | Archmage Vigdis | Galdrheim | The Rune Trial · The Mother of Spores (40): the Giant Mushroom |
 | Orm the Staffwright | Galdrheim | shop, crafts sorcerers' gear (staves, robes) · The Living Wood (26): a Giant Root, 8 Thorns |
 | Seyla the Enchanter | Galdrheim | opens a card slot in a Lv 4 weapon (50%) |
-| Kari the Curio Seller | Galdrheim | shop: potions, feathers, torches, Speed Potions |
+| Kari the Curio Seller | Galdrheim | shop: potions, feathers, Speed Potions |
 | Brynja the Lorekeeper | Galdrheim | The Drowned Tomes (20): find 4 tomes washed up on the Salt Bay shore |
 | Torvald the Runecarver | Galdrheim | Shadows in Black Wood (38): take rubbings of 3 Watcher stones in Black Wood |
 | Hrafn the Stargazer, Signy the Apprentice | Galdrheim | tales of the city, the stars and the jotnar |
@@ -766,7 +781,7 @@ leads to each.
 | Leif the Tanner | Veidheim | makes hunters' gear (Hunter's Cloak and Boots, Claw Charm, Bark Armor, Alpha Cloak, Bear Heart Charm) · Pelts for the Winter (50): 10 Wolf Pelts, 5 Bear Claws · The Great Bear (59) |
 | Bjarki the Beastmaster | Veidheim, by the lodge | the Beastmaster's trial; his wolf Grimr never bites (unless asked) |
 | Asa the Fletcher | Veidheim | shop: bows and arrows · makes bows (Vine, Ice, Willow, Fire, Steel, Gale, Heartwood) · Wood for Bows (22): 12 Willow Twigs, 4 Old Bark |
-| Eydis the Trader | Veidheim | shop: potions (White too), Honey, Speed Potions, feathers, torches |
+| Eydis the Trader | Veidheim | shop: potions (White too), Honey, Speed Potions, feathers |
 | Halla the Healer | Veidheim | heals HP and SP for free |
 | Kalf the Gate Archer | Veidheim, at the north gate | Walking Trees (22): 15 Treants in the Old Forest |
 | Bodil the Sentry, Finn the Young Archer | Veidheim | tales of the village and its lands |

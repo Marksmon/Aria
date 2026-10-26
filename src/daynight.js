@@ -59,11 +59,11 @@ export class DayNight {
     this.player.tint = this.tint;
     this.world.fireBoost = 1 + this.night * 0.8;
 
-    // torch glow around the player at night
+    // a glow around the player at night: every hero carries the light now (the owner's call)
     const p = this.player;
-    const want = this.inv.wearing('light') ? this.night * 7 : this.night * 1.2;
+    const want = this.night * 7;
     this.torch.intensity += (want - this.torch.intensity) * Math.min(1, dt * 3);
-    this.torch.distance = this.inv.wearing('light') ? 10 : 5;
+    this.torch.distance = 10;
     this.torch.position.set(p.x, this.world.heightAt(p.x, p.z) + 1.4 + Math.sin(time * 7) * 0.03, p.z);
 
     const nightNow = this.night > 0.6;

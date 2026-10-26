@@ -66,7 +66,7 @@ export class Inventory {
   constructor() {
     this.bag = new Store(BAG_SLOTS);
     this.chest = new Store(CHEST_SLOTS);
-    this.gear = { head: null, face: null, shield: null, garment: null, weapon: 'twig_sword', armor: 'clothes', shoes: null, light: null, acc: null, acc2: null, ammo: null }; // slot -> item id (two accessories, like Ragnarok)
+    this.gear = { head: null, face: null, shield: null, garment: null, weapon: 'twig_sword', armor: 'clothes', shoes: null, wings: null, acc: null, acc2: null, ammo: null }; // slot -> item id (two accessories, like Ragnarok)
     this.perz = 0;
     this.listeners = [];
     this.level = () => 1; // set by the game: current Base Level, for recipe requirements
@@ -268,6 +268,8 @@ export class Inventory {
     this.bag.load(data.bag);
     const g = data.gear || {};
     if (data.v === 2) {
+      // the Light slot became Wings: the Lantern flies on, a Torch goes back in the bag
+      if (g.light && !g.wings) { if (ITEMS[g.light]?.slot === 'wings') g.wings = g.light; else if (ITEMS[g.light]) this.bag.add(g.light, 1); }
       for (const slot of Object.keys(SLOTS)) {
         const id = g[slot];
         this.gear[slot] = ITEMS[id]?.slot === (slot === 'acc2' ? 'acc' : slot) ? id : null;
@@ -278,7 +280,7 @@ export class Inventory {
     this.gear.weapon = OLD_WEAPONS[Math.min(g.weapon | 0, 2)];
     this.gear.armor = OLD_ARMORS[Math.min(g.armor | 0, 3)];
     this.gear.shoes = g.boots ? 'swift_boots' : null;
-    this.gear.light = g.torch ? 'torch' : null;
+    if (g.torch) this.bag.add('torch', 1);
     const charm = (c) => (ITEMS[c + '_charm'] ? c + '_charm' : null);
     this.gear.acc = charm(g.charm);
     for (const c of g.charms || []) if (c !== g.charm && charm(c)) this.bag.add(charm(c), 1);

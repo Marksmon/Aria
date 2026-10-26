@@ -5,7 +5,7 @@ import { headgearIcon, headgearReady } from './headgear.js';
 // type: use (Usables tab), equip (Equips tab, one per slot, never stacks) or misc (Miscs tab).
 // jobs: who may wear a piece (novice = Trainee, swordman = Blader, mage = Sorcerer); none = anyone.
 // el: a weapon's element: its normal attacks hit with it, and a staff's adds 15% to spells of it.
-// Equipment: slot (weapon, armor, shoes, light, acc), atk + wlv for weapons, def, and fx for a
+// Equipment: slot (weapon, armor, shoes, wings, acc), atk + wlv for weapons, def, and fx for a
 // special effect. icon names the painted icon when it isn't the item's own id.
 const BASE_ITEMS = {
   gel:    { type: 'misc', name: 'Bloop Gel',  desc: 'A wobbly blob left behind by a Bloop. Sticky enough to glue a boot. Cooks, crafters and potion-makers all want it.', from: 'Bloops' },
@@ -114,7 +114,13 @@ const BASE_ITEMS = {
   spore_cloak:  { type: 'equip', slot: 'garment', rare: true, name: 'Mushroom Cloak', def: 1, flee: 4, icon: 'r_cloak', desc: 'Woven from mushroom threads, light as mist. Blows aside like it was never there.', from: 'Mushrooms (0.25%)' },
   horn_blade:   { type: 'equip', slot: 'weapon', jobs: ['swordman'], el: 'earth', rare: true, name: 'Horn Sword', atk: 68, wlv: 3, stats: { pow: 1 }, icon: 'weapon_horn', desc: 'A sword ground from a Beetle\'s horn, harder than iron. Beetles rarely give one up.', from: 'Beetles (0.15%)' },
   pebble_ring:  { type: 'equip', slot: 'acc', rare: true, name: 'Stone Ring', stats: { end: 2 }, def: 1, icon: 'r_pebble', desc: 'A plain stone band from a Beetle\'s back. It makes you feel as heavy as a hill.', from: 'Beetles (0.3%)' },
-  wisp_lantern: { type: 'equip', slot: 'light', rare: true, name: 'Lantern', fx: 'light', stats: { knl: 1, fns: 1 }, icon: 'r_lantern', desc: 'A Wisp sleeps inside, glowing softly. Lights the night, and clears the mind.', from: 'Wisps (0.4%)' },
+  wisp_lantern: { type: 'equip', slot: 'wings', rare: true, name: 'Lantern', look: { kind: 'float', art: 'lantern', glow: '#ffd27a' }, stats: { knl: 1, fns: 1 }, icon: 'r_lantern', desc: 'A Wisp sleeps inside, glowing softly. It floats at your shoulder and clears the mind.', from: 'Wisps (0.4%)' },
+  // the Wings slot: wings behind the hero (look.kind 'wings') or a light floating beside them ('float'); wings.js draws them
+  wisp_orb:     { type: 'equip', slot: 'wings', name: 'Wisp', look: { kind: 'float', art: 'orb', core: '#f4fbff', glow: '#9fdcff' }, msp: 20, stats: { knl: 1 }, icon: 'wisp_orb', desc: 'A tame little Wisp, coaxed out of Glow Dust. It bobs beside you and hums when you cast.' },
+  dark_wisp:    { type: 'equip', slot: 'wings', rare: true, name: 'Dark Wisp', look: { kind: 'float', art: 'orb', core: '#f0d8ff', glow: '#a45cff' }, msp: 30, stats: { knl: 2 }, icon: 'dark_wisp', desc: 'A Dark Wisp that chose to follow you home. It whispers spells you almost understand.' },
+  leaf_wings:   { type: 'equip', slot: 'wings', name: 'Leaf Wings', look: { kind: 'wings', art: 'leaf' }, flee: 2, icon: 'wings_leaf', desc: 'Two great Sprout leaves bound to a harness. They will not lift you, but they catch the wind.' },
+  fairy_wings:  { type: 'equip', slot: 'wings', name: 'Fairy Wings', look: { kind: 'wings', art: 'fairy' }, flee: 3, stats: { qkn: 1 }, icon: 'wings_fairy', desc: 'Wings of Glow Dust and water, thin as a soap bubble. They shimmer when you move.' },
+  ember_wings:  { type: 'equip', slot: 'wings', rare: true, name: 'Ember Wings', look: { kind: 'wings', art: 'ember' }, mhp: 50, stats: { pow: 1, knl: 1 }, icon: 'wings_ember', desc: 'Wings of living fire, shed by a Fire Wisp. Warm to the touch, and they never singe your cape.' },
   // boss drops
   thorn_mantle: { type: 'equip', slot: 'garment', rare: true, name: 'Thorn Cape', def: 3, flee: 2, stats: { pow: 1 }, icon: 'r_thorncloak', desc: 'Briars from the Giant Sprout, woven tight as mail. Hug it at your peril.', from: 'the Giant Sprout (3%)' },
   tidebreaker:  { type: 'equip', slot: 'weapon', jobs: ['swordman'], el: 'water', rare: true, name: 'Sea Sword', atk: 85, wlv: 4, stats: { qkn: 2 }, icon: 'weapon_tide', desc: 'A blade from the King Crab\'s claw, curved like a breaking wave. It feels lighter than it is.', from: 'the King Crab (2%)' },
@@ -196,7 +202,7 @@ const BASE_ITEMS = {
   wool_cape:    { type: 'equip', slot: 'garment', name: 'Wool Cape', def: 1, icon: 'cape', desc: 'Warm, grey and hard-wearing. Every traveller in Aria owns one.' },
   leather_boots: { type: 'equip', slot: 'shoes', name: 'Leather Boots', def: 1, icon: 'boots_leather', desc: 'Good leather soles for long roads. Your feet will thank you.' },
   swift_boots:  { type: 'equip', slot: 'shoes', name: 'Swift Boots', def: 2, flee: 4, stats: { qkn: 1 }, icon: 'boots', desc: 'Light boots soled with shell and laced with leaf. Quick on your feet in a fight.' },
-  torch:        { type: 'equip', slot: 'light', name: 'Torch', fx: 'light', desc: 'A pine torch dipped in pitch. Lights your way at night.' },
+  torch:        { type: 'misc', name: 'Torch', desc: 'An old pine torch. The nights are bright enough without it now, but a trader will still buy it.' },
   // accessories: one can be worn at a time
   sprout_charm: { type: 'equip', slot: 'acc', name: 'Sprout Charm', fx: 'regen', icon: 'charm_sprout', desc: 'A Sprout seed in a woven knot. It keeps growing, and so do your wounds close. HP recovers twice as fast.' },
   spore_charm:  { type: 'equip', slot: 'acc', name: 'Spore Charm',  fx: 'aspd',  icon: 'charm_spore', desc: 'A spore cap in a pouch. Its scent keeps your hands quick. +10% attack speed.' },
@@ -305,6 +311,7 @@ export const PRICES = {
   ember_crown: 30000, flame_circlet: 20000, round_glasses: 600, raven_mask: 400, woven_cap: 300, flower_wreath: 200, horned_helm: 1800,
   clothes: 10, leaf_tunic: 300, shell_mail: 1100, beetle_plate: 2800, chain_mail: 3200, mage_robe: 2600,
   round_shield: 1200, wool_cape: 700, leather_boots: 500, swift_boots: 1000, torch: 100,
+  wisp_orb: 6000, dark_wisp: 16000, leaf_wings: 2400, fairy_wings: 12000, ember_wings: 24000,
   sprout_charm: 700, spore_charm: 1000, shell_charm: 1000, glow_charm: 1200,
   heartwood: 3000, king_pearl: 4000, gloom_heart: 5000, cinder_core: 6000, jarl_horn: 8000,
   thorn_mantle: 12000, tidebreaker: 20000, gloom_staff: 22000, cinder_greaves: 16000, jarl_mantle: 30000,
@@ -322,14 +329,14 @@ export const sellPrice = (id) => Math.floor((PRICES[baseOf(id)] || 0) / 2); // u
 
 // what each Steinborg shop sells
 export const SHOPS = {
-  hild: ['potion', 'potion2', 'tonic', 'herb', 'berry', 'wander', 'homeward', 'torch'],
+  hild: ['potion', 'potion2', 'tonic', 'herb', 'berry', 'wander', 'homeward'],
   holger: ['iron_ore', 'steel_ore'], // the refiner's ores (Hard and Armor Ore only drop)
   gunnar: ['twig_sword', 'stone_blade', 'iron_sword', 'clothes', 'chain_mail', 'round_shield', 'wool_cape', 'leather_boots'],
   // Galdrheim: Kari's curios (like Hild's, and Speed Potions), Orm's staves and robes
-  kari: ['potion', 'potion2', 'tonic', 'herb', 'berry', 'quick', 'wander', 'homeward', 'torch'],
+  kari: ['potion', 'potion2', 'tonic', 'herb', 'berry', 'quick', 'wander', 'homeward'],
   // Veidheim: Asa's bows and arrows, Eydis's hunting supplies (White Potions and Honey for the long hunts)
   asa: ['hunting_bow', 'composite_bow', 'wooden_arrow', 'iron_arrow', 'fire_arrow', 'ice_arrow', 'wind_arrow', 'earth_arrow'],
-  eydis: ['potion', 'potion2', 'potion3', 'tonic', 'honey', 'herb', 'quick', 'wander', 'homeward', 'torch'],
+  eydis: ['potion', 'potion2', 'potion3', 'tonic', 'honey', 'herb', 'quick', 'wander', 'homeward'],
   orm: ['oak_staff', 'birch_staff', 'frost_staff', 'rune_staff', 'mage_robe', 'wool_cape', 'leather_boots'],
 };
 // who crafts a recipe: 'use' (Ragna's brews), 'magic' (Orm's staves and sorcerers' gear), 'gear' (Gunnar's forge)
@@ -353,7 +360,7 @@ export const canWear = (id, job) => {
 export const jobLine = (it) => (it.jobs ? it.jobs.map((j) => JOB_NAMES[j]).join(', ') + ' only' : 'All jobs');
 
 // headgear: Head (hats, on the crown) and Face (glasses and masks, on the eyes)
-export const SLOTS = { head: 'Head', face: 'Face', weapon: 'Weapon', shield: 'Shield', garment: 'Garment', armor: 'Armor', shoes: 'Shoes', light: 'Light', acc: 'Accessory', acc2: 'Accessory', ammo: 'Arrows' };
+export const SLOTS = { head: 'Head', face: 'Face', weapon: 'Weapon', shield: 'Shield', garment: 'Garment', armor: 'Armor', shoes: 'Shoes', wings: 'Wings', acc: 'Accessory', acc2: 'Accessory', ammo: 'Arrows' };
 
 // one line on what a piece of equipment does
 export function equipLine(it) {
@@ -389,7 +396,10 @@ export const RECIPES = [
   { item: 'potion3', lv: 18, cost: { gloom: 2, potion2: 1 } },
   { item: 'wander', lv: 2, cost: { glow: 1, leaf: 1 } },
   { item: 'homeward', lv: 2, cost: { glow: 2, seed: 1 } },
-  { item: 'torch', cost: { glow: 3, leaf: 2 } },
+  // wings: Gunnar binds the leaf ones; Orm coaxes the Wisp and spins the Fairy Wings
+  { item: 'leaf_wings', lv: 8, cost: { leaf: 12, seed: 6, shell: 2 } },
+  { item: 'wisp_orb', lv: 14, by: 'magic', cost: { glow: 12, dew: 6 } },
+  { item: 'fairy_wings', lv: 26, by: 'magic', cost: { glow: 15, dew: 10, shiny_gel: 1 } },
   { item: 'swift_boots', cost: { shell: 4, dew: 3, leaf: 3 } },
   { item: 'flower_wreath', cost: { leaf: 3, seed: 2 } },
   { item: 'woven_cap', lv: 2, cost: { leaf: 5, seed: 2 } },
@@ -518,6 +528,22 @@ function bowIcon(g, wood, grip, tip = wood) {
   g.beginPath(); g.moveTo(-2, -26); g.lineTo(-2, 26); g.strokeStyle = '#efe6d0'; g.lineWidth = 1.5; g.stroke();
   shape(g, () => g.roundRect(4, -5, 6, 10, 2), grip, 2);
   g.restore();
+}
+// a glowing Wisp: a bright core in a soft halo
+function orbIcon(g, core, glow) {
+  const r = g.createRadialGradient(32, 32, 2, 32, 32, 28);
+  r.addColorStop(0, core); r.addColorStop(0.35, glow); r.addColorStop(1, 'rgba(0, 0, 0, 0)');
+  g.fillStyle = r; g.beginPath(); g.arc(32, 32, 28, 0, 7); g.fill();
+  g.beginPath(); g.arc(32, 32, 9, 0, 7); g.fillStyle = core; g.fill(); g.strokeStyle = glow; g.lineWidth = 2; g.stroke();
+}
+// a pair of wings, spread
+function wingIcon(g, fill, edge, vein = edge) {
+  for (const s of [-1, 1]) {
+    g.save(); g.translate(32, 34); g.scale(s, 1);
+    shape(g, () => { g.moveTo(2, -2); g.quadraticCurveTo(14, -26, 28, -20); g.quadraticCurveTo(30, -6, 20, 2); g.quadraticCurveTo(24, 14, 12, 18); g.quadraticCurveTo(4, 10, 2, 2); g.closePath(); }, fill, 2.5);
+    g.beginPath(); g.moveTo(3, 0); g.lineTo(22, -14); g.moveTo(3, 2); g.lineTo(14, 12); g.strokeStyle = vein; g.lineWidth = 1.5; g.stroke();
+    g.restore();
+  }
 }
 // a bundle of arrows, its heads in the arrows' colour
 function arrowIcon(g, head, fletch = '#f4ecd8') {
@@ -916,6 +942,11 @@ const PAINT = {
     g.strokeStyle = '#a09a8e'; g.lineWidth = 6; g.stroke();
     shape(g, () => { g.moveTo(24, 22); g.lineTo(32, 10); g.lineTo(40, 22); g.closePath(); }, '#c4beb2', 2.5);
   },
+  wisp_orb: (g) => orbIcon(g, '#f4fbff', '#9fdcff'),
+  dark_wisp: (g) => orbIcon(g, '#f0d8ff', '#a45cff'),
+  wings_leaf: (g) => wingIcon(g, '#6fbf4a', '#3f7a2a'),
+  wings_fairy: (g) => wingIcon(g, 'rgba(170, 235, 255, .85)', '#5aa8d8'),
+  wings_ember: (g) => wingIcon(g, '#ff8a3a', '#b8321e', '#ffe27a'),
   r_lantern: (g) => {
     shape(g, () => g.roundRect(18, 16, 28, 36, 6), '#3a3a42');
     shape(g, () => g.roundRect(23, 21, 18, 26, 4), '#ffe37a', 2);
