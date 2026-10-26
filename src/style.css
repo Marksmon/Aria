@@ -95,7 +95,22 @@ html, body {
 #title { gap: 18px; cursor: default; }
 #title .logo { text-align: center; animation: rise .9s ease-out both; }
 #title .tagline { margin: 4px 0 0; font-size: 19px; font-style: italic; color: #f1e3c2; text-shadow: 0 0 4px #2e2118; }
-#title .menu { display: flex; flex-direction: column; gap: 8px; align-items: stretch; width: 220px; animation: rise .9s .15s ease-out both; }
+#title .menu { display: flex; flex-direction: column; gap: 8px; align-items: stretch; width: min(520px, calc(100vw - 32px)); animation: rise .9s .15s ease-out both; }
+#title .menu > .tbtn.main { align-self: center; width: 240px; }
+/* the character slots: a card for each hero (or an empty one), the picked one in gold */
+#t-slots { display: flex; gap: 8px; }
+.tslot { flex: 1 1 0; min-width: 0; display: flex; align-items: center; gap: 6px; padding: 6px; border-radius: 10px; border: 3px solid #2e2118; text-align: left;
+  background: rgba(30, 22, 16, .72); color: #f1e3c2; font: 600 13px system-ui, sans-serif; box-shadow: 0 4px 10px rgba(0, 0, 0, .4); cursor: pointer; }
+.tslot.on { border-color: #ffd36a; background: rgba(70, 52, 24, .85); box-shadow: 0 0 0 2px rgba(255, 211, 106, .35), 0 4px 10px rgba(0, 0, 0, .4); }
+.tslot:focus-visible { outline: 3px solid #ffe6a8; outline-offset: 2px; }
+.tslot .tpic { flex: none; width: 40px; height: 40px; border-radius: 8px; background: rgba(255, 255, 255, .08); image-rendering: pixelated;
+  display: flex; align-items: center; justify-content: center; font-size: 22px; color: #ffe6a8; }
+.tslot > span:last-child { min-width: 0; display: flex; flex-direction: column; }
+.tslot b, .tslot small { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tslot b { color: #ffe6a8; font-size: 14px; }
+.tslot small { font-size: 11px; opacity: .85; }
+.tslot.empty { opacity: .75; }
+.tslot.on.empty { opacity: 1; }
 .tbtn {
   font: 700 19px system-ui, sans-serif;
   padding: 10px 16px;
@@ -113,7 +128,8 @@ html, body {
 #title .ver { font-size: 13px; opacity: .6; letter-spacing: .12em; text-transform: uppercase; }
 @keyframes rise { from { opacity: 0; transform: translateY(10px); } }
 @media (prefers-reduced-motion: reduce) { #title .logo, #title .menu { animation: none; } }
-@media (max-height: 360px) { #title h1 { font-size: 42px; } #title { gap: 10px; } }
+@media (max-height: 360px) { #title h1 { font-size: 42px; } #title { gap: 10px; } #title .menu { gap: 6px; } .tbtn.main { padding: 6px 16px; } }
+@media (max-width: 420px) { .tslot { flex-direction: column; text-align: center; } .tslot > span:last-child { align-items: center; max-width: 100%; } }
 
 /* ---------- M2: combat HUD ---------- */
 #hint { right: auto; left: 50%; transform: translateX(-50%); white-space: nowrap; }
@@ -213,6 +229,7 @@ html, body {
 #clock.night i { background: transparent; box-shadow: inset -4px -1px 0 0 #dfe6ff; }
 
 #hud.pre { opacity: 0; }
+#hud.pre * { pointer-events: none !important; } /* hidden behind the title screen: it must not take its taps */
 #hud { transition: opacity .5s; }
 
 /* ---------- M8: level, stats, charms ---------- */

@@ -3,7 +3,7 @@
 import { ITEMS, RECIPES, SLOTS, PRICES, sellPrice, canWear, parseKey, makeKey, refineInfo, canEnchant, canInsert, ENCHANT, MAX_SLOTS, enchantStep } from './items.js';
 
 export const BAG_SLOTS = 48;
-export const CHEST_SLOTS = 48;
+export const CHEST_SLOTS = 96; // the Keepers' storage, shared by every hero (save.js)
 const STACK = 99;
 const stackOf = (id) => (ITEMS[id].type === 'equip' ? 1 : STACK);
 
@@ -16,7 +16,7 @@ class Store {
   // room for n more of id (fills stacks first, then empty slots)
   room(id) {
     const max = stackOf(id);
-    return this.slots.reduce((a, s) => a + (s.id === id ? max - s.n : 0), 0) + (this.size - this.slots.length) * max;
+    return this.slots.reduce((a, s) => a + (s.id === id ? max - s.n : 0), 0) + Math.max(0, this.size - this.slots.length) * max;
   }
   add(id, n) {
     const max = stackOf(id);
@@ -46,9 +46,15 @@ class Store {
   }
   ofType(type) { return this.slots.filter((s) => ITEMS[s.id].type === type); }
   toJSON() { return this.slots.map((s) => [s.id, s.n]); }
+  // nothing is lost on loading: what doesn't fit (two heroes' chests joining the storage) stays,
+  // over the limit, until it is taken out
   load(arr) {
     this.slots = [];
-    for (const [id, n] of arr || []) if (ITEMS[id]) this.add(id, n | 0);
+    for (const [id, n] of arr || []) {
+      if (!ITEMS[id]) continue;
+      let left = (n | 0) - this.add(id, n | 0);
+      for (const max = stackOf(id); left > 0; left -= max) this.slots.push({ id, n: Math.min(left, max) });
+    }
   }
 }
 
@@ -254,12 +260,12 @@ export class Inventory {
     return { atk: (w?.atk || 0) + (arrows?.atk || 0), wlv: w?.wlv || 0, matk: w?.matk || 0, el: arrows?.el || w?.el, bow, def, hit, flee, mhp, msp, mhpRate, mspRate, stats, mastery: 0, aspdRate: (this.wearing('aspd') ? 0.9 : 1) * (1 - (w?.aspd || 0) / 100) };
   }
 
-  toJSON() { return { v: 2, perz: this.perz, bag: this.bag.toJSON(), chest: this.chest.toJSON(), gear: this.gear }; }
+  // the chest is not the hero's: it is the shared storage, saved on its own (save.js)
+  toJSON() { return { v: 2, perz: this.perz, bag: this.bag.toJSON(), gear: this.gear }; }
   load(data) {
     if (!data) return;
     this.perz = Math.max(0, (data.perz ?? data.zeny) | 0); // saves from before the rename kept it as zeny
     this.bag.load(data.bag);
-    this.chest.load(data.chest);
     const g = data.gear || {};
     if (data.v === 2) {
       for (const slot of Object.keys(SLOTS)) {

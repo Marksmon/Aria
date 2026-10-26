@@ -46,6 +46,9 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   potions, Normal with 20 Orange, Hard and Hell for a second job with 30 and 50 White. Clear rewards
   x1/x3/x6/x9 and a rare chance of 5/10/15/20%. Raid EXP is held and paid at the end: x1.5 on a clear,
   the kills alone on a failure.
+- **Character slots and storage** (`src/save.js`): three heroes, picked on the title screen (slot 1
+  keeps the old save key). The Keepers' storage is one chest shared by every hero, saved apart from
+  them; a save code backs up every hero and the storage together.
 - **Character art:** bodies are bald to the standard in `docs/character-standard.md`; the game
   paints the shared head, hair and headgear.
 - **Names:** plain common names in game; the cooler Old Norse names wait in `docs/names-later.md`.

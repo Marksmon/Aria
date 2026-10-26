@@ -13,8 +13,17 @@ code and all sound is synthesized, so the game ships as one offline HTML file.
 
 Every push to `main` builds a new APK automatically (about 3–5 minutes).
 Every APK is signed with the same key (`build-tools/debug.keystore`), so a new build installs over
-the old one and keeps your save. On the title screen, **Back up save** shows your save as a code to
-copy somewhere safe, and **Restore save** puts one back (on this phone or another).
+the old one and keeps your save. On the title screen, **Back up save** shows your save (every hero
+and the shared storage) as a code to copy somewhere safe, and **Restore save** puts one back (on
+this phone or another).
+
+## Heroes and storage
+
+The title screen has three character slots. Tap a hero and **Continue** (or **Play**), or tap an
+empty slot to make a new one; **Delete** removes the picked hero (it asks twice). **Characters**, at
+the foot of the Status window, saves and goes back to the title screen to play another hero. Every
+hero keeps their own level, job, bag, gear, perz and quests, but the Keepers' storage (96 slots) is
+shared: what one hero puts away, the others can take out.
 Download it from **Releases → "Aria — latest build"** → `Aria.apk`.
 New builds install over old ones as an **update**: they share the signing key, and each build's
 version (1.0.*build number*, shown on the title screen) is higher than the last. Just open the new
@@ -703,7 +712,7 @@ leads to each.
 | Astrid the Cook | camp | A Feast for Eldrun (10): bring 10 Bloop Gel, 5 Crab Legs, 5 Spores, then cook it with her |
 | Sigrun the Scout | camp | The Lantern Wisp (14): hunt the golden Wisp that rises over Fen Shore's pond at night |
 | Gyda the Healer | camp | heals HP and SP for free |
-| The Keepers (butlers in black) | camp, Steinborg, Galdrheim, Veidheim | sign the ledger, then: storage, healing, Save here (where you wake after fainting, and where Return Feathers go), switch first jobs, and teleport to any other Keeper you signed with (300–500 perz) |
+| The Keepers (butlers in black) | camp, Steinborg, Galdrheim, Veidheim | sign the ledger, then: storage (shared by all your heroes), healing, Save here (where you wake after fainting, and where Return Feathers go), switch first jobs, and teleport to any other Keeper you signed with (300–500 perz) |
 | Sir Eirik the Runeblade | Steinborg | the Magic Knight's trial |
 | Hild the Trader | Steinborg | shop · Hild's Crate (24): take a crate of potions to Hakon in Salt Bay |
 | Gunnar the Gear Crafter | Steinborg | shop, forge · Stone for the Forge (34): 30 Stone, 15 Burnt Shells |

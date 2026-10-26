@@ -11,7 +11,7 @@ import { FX } from './fx.js';
 import { MobManager, MOB_DEFS, MOVES, guardDef, raidDef } from './mobs.js';
 import { Allies } from './allies.js';
 import { RAIDS, rollReward } from './raid.js';
-import { loadSave, writeSave } from './save.js';
+import { loadSave, writeSave, loadStorage, writeStorage, clearSave, saveCode, loadCode, SLOTS, activeSlot, setActiveSlot } from './save.js';
 import { Inventory } from './inventory.js';
 import { Progress, JOBS, RATES, QUEST_RATE } from './progress.js';
 import { Quests, QUESTS, NPCS, FARES, NEXT, SERIES, giverOf } from './quests.js';
@@ -20,7 +20,7 @@ import { Villagers } from './villagers.js';
 import { Tiles } from './tiles.js';
 import { Hotbar } from './hotbar.js';
 import { BigMap } from './bigmap.js';
-import { headsReady, paintHead } from './hair.js';
+import { headsReady, paintHead, lookPortrait } from './hair.js';
 import { headgearReady, gearCut, paintGear } from './headgear.js';
 import { derive, playerAttack, mobAttack, magicAttack, elementMod, ELEMENTS } from './rules.js';
 import { SKILLS, EDGE_FX, skillLv, spCost, castTime, learn, skillList, weaponOk, WEAPON_NAMES, BOW_RANGE, unlearnFirstJob, RETRAIN_COST } from './skills.js';
@@ -28,7 +28,6 @@ import { Menus } from './menus.js';
 import { iconTexture, iconURL, ITEMS, baseOf } from './items.js';
 import { DayNight } from './daynight.js';
 import { Audio } from './audio.js';
-import { clearSave, saveCode, loadCode } from './save.js';
 import { clamp, lerp } from './noise.js';
 
 const canvas = document.getElementById('game');
@@ -152,6 +151,7 @@ const jobArt = () => bodyArt(player.look);
 held = () => inv.gear.weapon;
 player.setArt(jobArt());
 inv.load(save?.inv);
+inv.chest.load(loadStorage()); // the Keepers' storage: every hero's, saved apart from them
 inv.dropUnwearable(); // gear rules can change between versions
 // stats + gear -> the player's battle numbers (Ragnarok rules); HP/SP stay put, capped by the new max
 // timed buffs, in seconds left: aspd (Quickening Draught), warcry (War Cry's ATK bonus)
@@ -1268,6 +1268,13 @@ const menus = new Menus(inv, prog, player, {
   soundOn: () => audio.enabled,
   toggleSound() { audio.setEnabled(!audio.enabled); },
   closed() { persist(); },
+  // the Status window's Characters: save, and back to the title to pick a hero (not in a raid)
+  toTitle() {
+    if (raidOf(world.id)) { menus.message('Finish the raid first.'); return; }
+    persist();
+    resetting = true;
+    location.reload();
+  },
   // the hair picker tries looks on as you choose; lookDone keeps one (the stylist charges for it)
   look(l) { player.setLook(l); player.setArt(jobArt()); }, // a new body when trying the other one on
   currentLook: () => ({ ...player.look }),
@@ -2194,6 +2201,7 @@ function persist() {
   if (!started || resetting) return;
   const isle = raidOf(world.id), at = isle ? boatSpot(isle) : player; // a run is never saved: back on the shore
   writeSave({ story: story.toJSON(), look: player.look, visited: [...visited], keepers: [...keepers], savePoint, raidAt, map: isle ? isle.from : world.id, mvpAt: mobs.mvpAt, bossHp: mobs.bossSnapshot(), x: at.x, z: at.z, yaw: cam.yaw, dist: cam.dist, hp: player.hp, sp: player.sp, inv: inv.toJSON(), prog: prog.toJSON(), quests: quests.toJSON(), hotbar: hotbar.toJSON(), time: dayNight.t });
+  writeStorage(inv.chest.toJSON());
 }
 
 // second jobs glow: a soft aura behind the hero and a ring at their feet, in the job's colour
@@ -2346,7 +2354,33 @@ const title = document.getElementById('title');
 const tContinue = document.getElementById('t-continue');
 const tNew = document.getElementById('t-new');
 const tSound = document.getElementById('t-sound');
-if (save) { tContinue.textContent = 'Continue'; tNew.hidden = false; }
+// character slots: the game loads the hero played last; picking another and pressing Play loads
+// that one (the page starts again with it) and goes straight in. An empty slot makes a new hero.
+const slotHere = activeSlot(), slotsEl = document.getElementById('t-slots');
+const heroes = Array.from({ length: SLOTS }, (_, i) => (i === slotHere ? save : loadSave(i)));
+let picked = slotHere;
+const heroName = (d) => d.look?.name || 'Hero';
+function drawSlots() {
+  slotsEl.innerHTML = heroes.map((d, i) => {
+    const on = i === picked ? ' on' : '';
+    if (!d) return `<button class="tslot empty${on}" data-i="${i}"><span class="tpic">+</span><span><b>Empty</b><small>A new hero</small></span></button>`;
+    const p = d.prog || {}, lv = p.v === 2 ? `Lv ${p.baseLv}/${p.jobLv}` : `Lv ${p.level | 0 || 1}`;
+    const pic = headsReady() ? `<img class="tpic" src="${lookPortrait({ hair: 'messy', dye: 'brown', ...d.look }, 48)}" alt="">` : '<span class="tpic"></span>';
+    return `<button class="tslot${on}" data-i="${i}">${pic}<span><b>${esc(heroName(d))}</b><small>${esc(JOBS[p.job]?.name || JOBS.novice.name)} · ${lv}</small><small>${esc(ZONE_NAMES[d.map] || ZONE_NAMES.camp)}</small></span></button>`;
+  }).join('');
+  tContinue.textContent = !heroes[picked] ? 'New Hero' : picked === slotHere ? 'Continue' : 'Play';
+  tNew.hidden = !heroes[picked];
+  tBackup.hidden = !heroes.some(Boolean);
+  if (!headsReady() && heroes.some(Boolean) && !started) setTimeout(drawSlots, 300); // the portraits, once the heads have loaded
+}
+slotsEl.addEventListener('click', (e) => {
+  const b = e.target.closest('.tslot');
+  if (!b || +b.dataset.i === picked) return;
+  picked = +b.dataset.i;
+  confirmNew = false; tNew.textContent = 'Delete'; tNew.classList.remove('warn');
+  audio.play('ui');
+  drawSlots();
+});
 const soundLabel = () => { tSound.textContent = `Sound: ${audio.enabled ? 'On' : 'Off'}`; };
 soundLabel();
 tSound.addEventListener('click', () => { audio.start(); audio.setEnabled(!audio.enabled); soundLabel(); audio.play('ui'); });
@@ -2355,7 +2389,6 @@ const tBackup = document.getElementById('t-backup'), tRestore = document.getElem
 const codeBox = document.getElementById('t-code'), codeMsg = document.getElementById('t-code-msg');
 const codeText = document.getElementById('t-code-text'), codeGo = document.getElementById('t-code-go');
 let codeMode = null;
-if (save) tBackup.hidden = false;
 const openCode = (mode) => {
   codeMode = mode;
   codeBox.hidden = false;
@@ -2363,12 +2396,12 @@ const openCode = (mode) => {
   if (mode === 'backup') {
     codeText.value = saveCode();
     codeText.readOnly = true;
-    codeMsg.textContent = 'Your save as a code. Copy it and keep it somewhere safe (notes, a chat). Restore save puts it back, on this phone or another.';
+    codeMsg.textContent = 'All your heroes and the shared storage as a code. Copy it and keep it somewhere safe (notes, a chat). Restore save puts it back, on this phone or another.';
     codeGo.textContent = 'Copy';
   } else {
     codeText.value = '';
     codeText.readOnly = false;
-    codeMsg.textContent = 'Paste a save code here. It replaces the save in this game.';
+    codeMsg.textContent = 'Paste a save code here. It replaces all your heroes and the storage (a code from before the slots replaces only the chosen slot).';
     codeGo.textContent = 'Load';
   }
 };
@@ -2383,25 +2416,44 @@ codeGo.addEventListener('click', async () => {
     codeMsg.textContent = ok ? 'Copied! Paste it somewhere safe.' : 'Select the code and copy it by hand.';
     return;
   }
-  if (!loadCode(codeText.value)) { codeMsg.textContent = 'That is not a save code. Check it was copied whole.'; return; }
+  const got = loadCode(codeText.value, picked);
+  if (!got) { codeMsg.textContent = 'That is not a save code. Check it was copied whole.'; return; }
+  if (got === 'slot') setActiveSlot(picked);
   codeMsg.textContent = 'Save restored. Starting…';
   resetting = true; // don't let the running game write over it
   setTimeout(() => location.reload(), 600);
 });
-let confirmNew = false;
+// Delete: the picked hero is gone for good (the shared storage stays), so it asks twice
+let confirmNew = false, confirmT = 0;
 tNew.addEventListener('click', () => {
   if (!confirmNew) {
     confirmNew = true;
-    tNew.textContent = 'Tap again to start over';
+    tNew.textContent = `Tap again to delete ${heroName(heroes[picked])}`;
     tNew.classList.add('warn');
-    setTimeout(() => { confirmNew = false; tNew.textContent = 'New Game'; tNew.classList.remove('warn'); }, 3000);
+    clearTimeout(confirmT);
+    confirmT = setTimeout(() => { confirmNew = false; tNew.textContent = 'Delete'; tNew.classList.remove('warn'); }, 3000);
     return;
   }
-  resetting = true;
-  clearSave();
-  location.reload();
+  clearTimeout(confirmT);
+  confirmNew = false; tNew.textContent = 'Delete'; tNew.classList.remove('warn');
+  clearSave(picked);
+  heroes[picked] = null;
+  if (picked === slotHere) { resetting = true; location.reload(); return; } // the hero in the game: start the page over without it
+  audio.play('ui');
+  drawSlots();
 });
 tContinue.addEventListener('click', () => {
+  if (picked !== slotHere) { // another slot: load it and come straight back in
+    setActiveSlot(picked);
+    try { sessionStorage.setItem(GO_KEY, '1'); } catch { /* it waits on the title screen instead */ }
+    resetting = true;
+    location.reload();
+    return;
+  }
+  begin();
+});
+function begin() {
+  setActiveSlot(slotHere);
   audio.start();
   audio.play('ui');
   title.classList.add('hide');
@@ -2419,6 +2471,14 @@ tContinue.addEventListener('click', () => {
     hint.classList.add('show');
     setTimeout(() => hint.classList.remove('show'), 6000);
   }, 450);
-});
+}
+const GO_KEY = 'aria.go';
+drawSlots();
+let go = false;
+try { go = sessionStorage.getItem(GO_KEY) === '1'; sessionStorage.removeItem(GO_KEY); } catch { /* storage unavailable */ }
+if (go) { // picked on the title screen before the page started over: the sound waits for a tap
+  window.addEventListener('pointerdown', () => audio.start(), { once: true });
+  begin();
+}
 
 window.__aria = { lib, warp, enterMap, useSkill, useItem, story, SPOTS, player, world, cam, camera, mobs, allies, fx, inv, prog, quests, villagers, menus, hotbar, dayNight, audio, stats: world.stats, raid: () => raid, raidAt: () => raidAt, gainExp };

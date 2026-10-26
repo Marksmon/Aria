@@ -516,7 +516,8 @@ export class Menus {
       <div class="strow"><span class="rtag">${n ? `${n} point${n === 1 ? '' : 's'} placed, not locked in yet` : 'Tap ▲ to place points, then Confirm'}</span>
         <button class="rbtn soft" data-act="statreset" ${n ? '' : 'disabled'}>Reset</button><button class="rbtn" data-act="statconfirm" ${n ? '' : 'disabled'}>Confirm</button></div>
       <div class="rsub stsub"><span>Battle</span></div>
-      <table class="stt battle"><tbody>${battle.map((r) => `<tr>${r[0]}<td class="gap"></td>${r[1]}</tr>`).join('')}</tbody></table>`;
+      <table class="stt battle"><tbody>${battle.map((r) => `<tr>${r[0]}<td class="gap"></td>${r[1]}</tr>`).join('')}</tbody></table>
+      <div class="strow"><span class="rtag">Saved as you play</span><button class="rbtn soft" data-act="totitle">Characters</button></div>`;
   }
 
   // Holger's refining, Seyla's slots and card inserting: pick a piece (worn or in the bag), see the
@@ -589,9 +590,9 @@ export class Menus {
 
   chest() {
     const inv = this.inv;
-    return `<div class="rnote">Tap an item to move the whole stack.</div><div class="chestwrap2">
+    return `<div class="rnote">Tap an item to move the whole stack. Storage is shared by all your heroes.</div><div class="chestwrap2">
       <div><div class="rsub">Bag ${inv.bag.slots.length}/${BAG_SLOTS}</div>${this.grid(inv.bag.slots, 'bag', 18)}</div>
-      <div><div class="rsub">Chest ${inv.chest.slots.length}/${CHEST_SLOTS}</div>${this.grid(inv.chest.slots, 'chest', 18)}</div></div>`;
+      <div><div class="rsub">Storage ${inv.chest.slots.length}/${CHEST_SLOTS}</div>${this.grid(inv.chest.slots, 'chest', 18)}</div></div>`;
   }
 
   // a quest's reward line; a job trial's steps on the way pay nothing, its last step the lot
@@ -824,6 +825,7 @@ export class Menus {
       const k = t.dataset.stat, v = this.prog.stats[k] + (this.pend[k] || 0);
       if (v < 99 && statCost(v) <= this.prog.statPoints - this.pendCost()) { this.pend[k] = (this.pend[k] || 0) + 1; this.hooks.ui?.(); this.render(id); }
     }
+    if (act === 'totitle') this.hooks.toTitle?.(); // back to the title screen, to play another hero
     if (act === 'statreset') { this.pend = {}; this.hooks.ui?.(); this.render(id); }
     if (act === 'statconfirm') {
       for (const [k, n] of Object.entries(this.pend)) for (let i = 0; i < n; i++) this.prog.raise(k);
