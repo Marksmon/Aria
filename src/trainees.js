@@ -9,7 +9,7 @@
 // right ones mirrored. The game paints the hero's body from these (sprites.js designSet). Plain
 // canvas, no three.js.
 import { Frame, ellipse, rect, poly, line } from './painted.js';
-import { REST, SWING, SLASH, behind, swordArm, slashArc, animFrames, VIEWS } from './design-anim.js';
+import { REST, SWING, SLASH, behind, swordArm, slashArc, animFrames, VIEWS, turn, STRIDE, ARM_SWING, ARM_SWAY, LIFT } from './design-anim.js';
 
 export const BW = 106, BH = 108; // the bald bodies' frame (src/art/trainee.json)
 
@@ -55,7 +55,7 @@ function legs(F, o, cx, cy, r, toe) {
   const { f, knee } = build(o);
   [[-7, -2], [2, 7]].forEach(([a, b], i) => {
     const sh = i ? -Math.round(r / 2) : 0, mid = cx + (a + b) / 2 + sh;
-    const cyl = cy - Math.round(Math.max(0, i ? -P.step : P.step) * 2); // the stepping leg lifts
+    const cyl = cy - Math.round(Math.max(0, i ? -P.step : P.step) * LIFT); // the stepping leg lifts
     if (f) F.part(rect(cx + a + sh, cy + 30, cx + b + sh, cyl + 58), C.skin); // bare legs to the boots
     else F.part(rect(cx + a - 1 + sh, cy + 30, cx + b + 1 + sh, cyl + knee + 2), C.pants); // baggy trousers
     F.part(rect(cx + a - (f ? 0 : 1) + sh, cyl + knee, cx + b + (f ? 0 : 1) + sh, cyl + 58), C.boot);
@@ -139,10 +139,11 @@ function frontView(F, o, cx, cy, s, r) {
 
   // the arms; the near hand holds the dagger (swinging it while attacking)
   const atk = P.atk >= 0;
-  const [hx, hy] = atk ? [0, 0] : arm(F, cx - W - 4, cx - W, cy, -1);
-  arm(F, R(cx + W), R(cx + W + 4), cy, 1);
+  const sway = -ARM_SWAY * P.step, GL = turn(F, cx - W - 2, cy + 8, sway); // walking, the arms sway from the shoulders
+  const [hx, hy] = atk ? [0, 0] : arm(GL, cx - W - 4, cx - W, cy, -1);
+  arm(turn(F, R(cx + W + 2), cy + 8, sway), R(cx + W), R(cx + W + 4), cy, 1);
   if (atk) slash(F, cx - W - 2, cy + 6, 'front');
-  else { dagger(F, hx, hy, -1); F.part(ellipse(hx, hy, 2.7, 2.5), C.glove); }
+  else { dagger(GL, hx, hy, -1); GL.part(ellipse(hx, hy, 2.7, 2.5), C.glove); }
   return F;
 }
 
@@ -173,8 +174,9 @@ function backView(F, o, cx, cy, s, r) {
   F.part(rect(cx - hip - 5, cy + 25, cx - hip + 2, cy + 33), C.leather); // the satchel, on the viewer's left from behind
   F.part(rect(cx - hip - 5, cy + 25, cx - hip + 2, cy + 28), C.strap, soft);
   F.part(rect(cx - 3 + s, cy - 1, cx + 3 + s, cy + 2), C.shirt); // the collar
-  arm(F, cx - W - 4, cx - W, cy, -1);
-  if (P.atk < 0) { const [hx, hy] = arm(F, R(cx + W), R(cx + W + 4), cy, 1); dagger(F, hx, hy, 1); F.part(ellipse(hx, hy, 2.7, 2.5), C.glove); }
+  const sway = ARM_SWAY * P.step, GR = turn(F, R(cx + W + 2), cy + 8, sway); // walking, the arms sway from the shoulders
+  arm(turn(F, cx - W - 2, cy + 8, sway), cx - W - 4, cx - W, cy, -1);
+  if (P.atk < 0) { const [hx, hy] = arm(GR, R(cx + W), R(cx + W + 4), cy, 1); dagger(GR, hx, hy, 1); GR.part(ellipse(hx, hy, 2.7, 2.5), C.glove); }
   else if (!behind(P.atk)) slash(F, R(cx + W + 2), cy + 6, 'front', true);
   return F;
 }
@@ -183,17 +185,17 @@ function backView(F, o, cx, cy, s, r) {
 function side(F, o, cx, cy) {
   const { f, knee, crop } = build(o);
   const cy0 = cy - P.bob; // the legs stay on the ground
-  const leg = (x) => {
-    if (f) F.part(rect(x - 2, cy0 + 30, x + 2, cy0 + 58), C.skin);
-    else F.part(rect(x - 4, cy0 + 30, x + 3, cy0 + knee + 2), C.pants);
-    F.part(rect(x - 3, cy0 + knee, x + 2, cy0 + 58), C.boot);
-    F.part(rect(x - 4, cy0 + knee, x + 3, cy0 + knee + 2), C.boot);
-    F.part(line(x - 4, cy0 + knee, x + 3, cy0 + knee, 1), C.trim, flat);
-    F.part(line(x - 3, cy0 + 51, x + 2, cy0 + 51, 1), C.strap, flat);
-    F.part(ellipse(x + 1, cy0 + 60.5, 4.5, 2.5), C.boot);
+  const leg = (x, G) => {
+    if (f) G.part(rect(x - 2, cy0 + 30, x + 2, cy0 + 58), C.skin);
+    else G.part(rect(x - 4, cy0 + 30, x + 3, cy0 + knee + 2), C.pants);
+    G.part(rect(x - 3, cy0 + knee, x + 2, cy0 + 58), C.boot);
+    G.part(rect(x - 4, cy0 + knee, x + 3, cy0 + knee + 2), C.boot);
+    G.part(line(x - 4, cy0 + knee, x + 3, cy0 + knee, 1), C.trim, flat);
+    G.part(line(x - 3, cy0 + 51, x + 2, cy0 + 51, 1), C.strap, flat);
+    G.part(ellipse(x + 1, cy0 + 60.5, 4.5, 2.5), C.boot);
   };
-  leg(cx - 2 - Math.round(3 * P.step)); // the far leg, then the near one, striding
-  leg(cx + 2 + Math.round(3 * P.step));
+  leg(cx - 2, turn(F, cx - 2, cy0 + 30, -STRIDE * P.step)); // the far leg, then the near one, striding
+  leg(cx + 2, turn(F, cx + 2, cy0 + 30, STRIDE * P.step));
   if (f) {
     F.part(poly([[cx - 7, cy + 24], [cx + 7, cy + 24], [cx + 9, cy + 33], [cx - 9, cy + 33]]), C.shirt);
     F.part(poly([[cx - 7, cy + 24], [cx + 7, cy + 24], [cx + 8, cy + 31], [cx - 8, cy + 31]]), C.vest);
@@ -218,18 +220,19 @@ function side(F, o, cx, cy) {
   F.part(rect(cx - 10, cy + 24, cx - 4, cy + 32), C.leather); // the satchel
   F.part(rect(cx - 10, cy + 24, cx - 4, cy + 27), C.strap, soft);
   F.part(poly([[cx + 1, cy - 1], [cx + 5, cy + 2], [cx + 1, cy + 3]]), C.shirt); // the collar's point
+  const A = turn(F, cx - 1, cy + 6, -ARM_SWING * 0.6 * P.step); // the arm swings as the hero walks
   // the near arm, the hand forward holding the dagger
-  F.part((set) => { ellipse(cx - 1, cy + 7, 3.5, 3.5)(set); rect(cx - 4, cy + 7, cx + 2, cy + 13)(set); }, C.shirt);
-  F.part(line(cx - 4, cy + 13, cx + 2, cy + 13, 1), C.shirtDk, flat);
+  A.part((set) => { ellipse(cx - 1, cy + 7, 3.5, 3.5)(set); rect(cx - 4, cy + 7, cx + 2, cy + 13)(set); }, C.shirt);
+  A.part(line(cx - 4, cy + 13, cx + 2, cy + 13, 1), C.shirtDk, flat);
   if (P.atk >= 0) { slash(F, cx - 1, cy + 6, 'side'); return F; }
-  F.part(poly([[cx - 3, cy + 14], [cx + 2, cy + 14], [cx + 7, cy + 21], [cx + 4, cy + 24]]), C.skin);
-  F.part(poly([[cx + 2, cy + 18], [cx + 5, cy + 18], [cx + 8, cy + 22], [cx + 5, cy + 24]]), C.leather); // the bracer
+  A.part(poly([[cx - 3, cy + 14], [cx + 2, cy + 14], [cx + 7, cy + 21], [cx + 4, cy + 24]]), C.skin);
+  A.part(poly([[cx + 2, cy + 18], [cx + 5, cy + 18], [cx + 8, cy + 22], [cx + 5, cy + 24]]), C.leather); // the bracer
   const hx = cx + 8, hy = cy + 24;
-  F.part(line(hx, hy, hx + 7, hy + 6, 2), C.blade);
-  F.part(line(hx + 2, hy + 1, hx + 7, hy + 6, 1), C.edge, flat);
-  F.part(line(hx - 1, hy + 3, hx + 2, hy - 1, 1), C.trim, flat);
-  F.part(ellipse(hx, hy, 2.6, 2.5), C.glove);
-  F.dot(hx + 1, hy + 2, C.skin);
+  A.part(line(hx, hy, hx + 7, hy + 6, 2), C.blade);
+  A.part(line(hx + 2, hy + 1, hx + 7, hy + 6, 1), C.edge, flat);
+  A.part(line(hx - 1, hy + 3, hx + 2, hy - 1, 1), C.trim, flat);
+  A.part(ellipse(hx, hy, 2.6, 2.5), C.glove);
+  A.dot(hx + 1, hy + 2, C.skin);
   return F;
 }
 

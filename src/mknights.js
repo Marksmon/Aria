@@ -13,7 +13,7 @@
 // directions: the left ones are the right ones mirrored.
 // The game paints the hero's body from these (sprites.js designSet). Plain canvas, no three.js.
 import { Frame, ellipse, rect, poly, line } from './painted.js';
-import { REST, SWING, SLASH, CAST, behind, swordArm, slashArc, burst, animFrames, VIEWS } from './design-anim.js';
+import { REST, SWING, SLASH, CAST, behind, swordArm, slashArc, burst, animFrames, VIEWS, turn, STRIDE, ARM_SWING, ARM_SWAY, LIFT } from './design-anim.js';
 
 export const BW = 106, BH = 108; // the bald bodies' frame (src/art/trainee.json)
 
@@ -110,7 +110,7 @@ function legs(F, o, cx, cy, r, toe) {
   const { f, legs: L, knee } = build(o);
   L.forEach(([a, b], i) => {
     const sh = i ? -Math.round(r / 2) : 0, mid = cx + (a + b) / 2 + sh;
-    const cyl = cy - Math.round(Math.max(0, i ? -P.step : P.step) * 2); // the stepping leg lifts
+    const cyl = cy - Math.round(Math.max(0, i ? -P.step : P.step) * LIFT); // the stepping leg lifts
     F.part(rect(cx + a + sh, cy + 30, cx + b + sh, cyl + 58), f ? C.skin : C.pants);
     F.part(rect(cx + a - (f ? 0 : 1) + sh, cyl + knee, cx + b + (f ? 0 : 1) + sh, cyl + 58), C.boot);
     F.part(ellipse(mid + toe + (i ? 0.5 : -0.5), cyl + 60.5, f ? 4 : 4.5, 2.5), C.boot);
@@ -231,15 +231,16 @@ function frontView(F, o, cx, cy, s, r) {
   // the arms and pauldrons; the near hand holds the sword low, its blade angled out to the ground,
   // the sigil floats by the other
   const atk = P.atk >= 0;
-  const [hx, hy] = atk ? [0, 0] : arm(F, cx - W - 4, cx - W, cy, -1); // while attacking the sword arm swings instead
-  const [fx, fy] = arm(F, R(cx + W), R(cx + W + 4), cy, 1);
+  const sway = -ARM_SWAY * P.step, GL = turn(F, cx - W - 2, cy + 8, sway), GR = turn(F, R(cx + W + 2), cy + 8, sway); // walking, the arms sway
+  const [hx, hy] = atk ? [0, 0] : arm(GL, cx - W - 4, cx - W, cy, -1); // while attacking the sword arm swings instead
+  const [fx, fy] = arm(GR, R(cx + W), R(cx + W + 4), cy, 1);
   pauldron(F, cx - W - 2, cy, -1, f);
   pauldron(F, R(cx + W + 2), cy, 1, f);
   if (atk) swing(F, cx - W - 2, cy + 6, 'front');
   else {
-    sword(F, hx, hy, hx - 10, cy + 58);
-    F.part(ellipse(hx, hy, 2.8, 2.6), C.glove); // the hand over the grip
-    F.dot(hx - 1, hy + 2, C.skin);
+    sword(GL, hx, hy, hx - 10, cy + 58);
+    GL.part(ellipse(hx, hy, 2.8, 2.6), C.glove); // the hand over the grip
+    GL.dot(hx - 1, hy + 2, C.skin);
   }
   sigil(F, fx + 8, fy - 2);
   if (atk) burst(F, fx + 8, fy - 2, CAST.burst[P.atk], { core: '#ffffff', glow: C.glow, spark: C.spark }); // the sigil flares with the cut
@@ -270,11 +271,12 @@ function backView(F, o, cx, cy, s, r) {
   compass(F, cx + s, cy + 13); // and a small one between the shoulders
   edge(F, [[cx - W + 1 + s, cy + 16], [cx + s, cy + 19], [R(cx + W - 1) + s, cy + 16]], C.trim);
   // the arms; the sword in the far hand, on the viewer's right from behind
-  arm(F, cx - W - 4, cx - W, cy, -1);
+  const sway = ARM_SWAY * P.step, GR = turn(F, R(cx + W + 2), cy + 8, sway); // walking, the arms sway
+  arm(turn(F, cx - W - 2, cy + 8, sway), cx - W - 4, cx - W, cy, -1);
   if (P.atk < 0) { // the sword arm swings instead while attacking
-    const [hx, hy] = arm(F, R(cx + W), R(cx + W + 4), cy, 1);
-    sword(F, hx, hy, hx + 10, cy + 58);
-    F.part(ellipse(hx, hy, 2.8, 2.6), C.glove);
+    const [hx, hy] = arm(GR, R(cx + W), R(cx + W + 4), cy, 1);
+    sword(GR, hx, hy, hx + 10, cy + 58);
+    GR.part(ellipse(hx, hy, 2.8, 2.6), C.glove);
   }
   pauldron(F, cx - W - 2, cy, -1, f);
   pauldron(F, R(cx + W + 2), cy, 1, f);
@@ -302,18 +304,18 @@ function side(F, o, cx, cy) {
   F.part(line(cx - 9, cy + 14, cx - 15, cy + hem - 6, 1), C.trim, flat);
   edge(F, tails.map(([x, y]) => [x, y - 1]), C.trim);
   const cy0 = cy - P.bob; // the legs stay on the ground
-  const leg = (x) => {
-    F.part(rect(x - 3, cy0 + 30, x + 2, cy0 + 58), f ? C.skin : C.pants);
-    F.part(rect(x - 3, cy0 + knee, x + 2, cy0 + 58), C.boot);
-    F.part(ellipse(x + 1, cy0 + 60.5, 4.5, 2.5), C.boot);
-    F.part(line(x - 3, cy0 + knee, x + 2, cy0 + knee, 1), C.trim, flat);
-    F.part(poly([[x + 1, cy0 + 39], [x + 5, cy0 + 44], [x + 2, cy0 + 50], [x, cy0 + 44]]), C.trim);
-    F.dot(x + 2, cy0 + 44, C.core);
-    F.part(line(x - 3, cy0 + 53, x + 2, cy0 + 53, 1), C.trim, flat);
-    F.part(ellipse(x + 4, cy0 + 61, 1.5, 1), C.trim, flat);
+  const leg = (x, G) => {
+    G.part(rect(x - 3, cy0 + 30, x + 2, cy0 + 58), f ? C.skin : C.pants);
+    G.part(rect(x - 3, cy0 + knee, x + 2, cy0 + 58), C.boot);
+    G.part(ellipse(x + 1, cy0 + 60.5, 4.5, 2.5), C.boot);
+    G.part(line(x - 3, cy0 + knee, x + 2, cy0 + knee, 1), C.trim, flat);
+    G.part(poly([[x + 1, cy0 + 39], [x + 5, cy0 + 44], [x + 2, cy0 + 50], [x, cy0 + 44]]), C.trim);
+    G.dot(x + 2, cy0 + 44, C.core);
+    G.part(line(x - 3, cy0 + 53, x + 2, cy0 + 53, 1), C.trim, flat);
+    G.part(ellipse(x + 4, cy0 + 61, 1.5, 1), C.trim, flat);
   };
-  leg(cx - 2 - Math.round(3 * P.step)); // the far leg, then the near one, striding
-  leg(cx + 2 + Math.round(3 * P.step));
+  leg(cx - 2, turn(F, cx - 2, cy0 + 30, -STRIDE * P.step)); // the far leg, then the near one, striding
+  leg(cx + 2, turn(F, cx + 2, cy0 + 30, STRIDE * P.step));
   // the white layer, the coat's front edge
   F.part(poly([[cx - 4, cy + 27], [cx + 6, cy + 27], [cx + 6, cy + (f ? 31 : 48)], [cx - 6, cy + (f ? 31 : 50)]]), C.lining);
   if (!f) {
@@ -335,20 +337,21 @@ function side(F, o, cx, cy) {
   // the collar
   F.part(poly([[cx - 4, cy - 3], [cx + 2, cy - 2], [cx + 3, cy + 4], [cx - 6, cy + 4]]), C.shirt);
   F.part(line(cx - 4, cy - 3, cx + 2, cy - 2, 1), C.trim, flat);
+  const A = turn(F, cx - 1, cy + 6, -ARM_SWING * 0.5 * P.step); // the arm swings as the hero walks
   // the near arm, its white over-sleeve hanging behind, the hand forward on the sword
-  F.part(poly([[cx - 4, cy + 12], [cx + 3, cy + 14], [cx + 1, cy + 30], [cx - 7, cy + 26]]), C.lining);
-  F.part(line(cx + 1, cy + 30, cx - 7, cy + 26, 1), C.trim, flat);
-  F.part(poly([[cx - 4, cy + 4], [cx + 1, cy + 4], [cx + 3, cy + 14], [cx - 3, cy + 14]]), C.coat);
-  F.part(line(cx - 3, cy + 14, cx + 3, cy + 14, 1), C.trim, flat);
-  crystal(F, cx - 7, cy + 27, 1);
+  A.part(poly([[cx - 4, cy + 12], [cx + 3, cy + 14], [cx + 1, cy + 30], [cx - 7, cy + 26]]), C.lining);
+  A.part(line(cx + 1, cy + 30, cx - 7, cy + 26, 1), C.trim, flat);
+  A.part(poly([[cx - 4, cy + 4], [cx + 1, cy + 4], [cx + 3, cy + 14], [cx - 3, cy + 14]]), C.coat);
+  A.part(line(cx - 3, cy + 14, cx + 3, cy + 14, 1), C.trim, flat);
+  crystal(A, cx - 7, cy + 27, 1);
   pauldron(F, cx - 1, cy, -1, f);
   if (P.atk >= 0) { swing(F, cx - 1, cy + 6, 'side'); return F; }
-  F.part(poly([[cx - 2, cy + 15], [cx + 3, cy + 15], [cx + 9, cy + 22], [cx + 6, cy + 25]]), C.glove);
-  F.part(line(cx + 1, cy + 18, cx + 5, cy + 21, 1), C.trim, flat);
+  A.part(poly([[cx - 2, cy + 15], [cx + 3, cy + 15], [cx + 9, cy + 22], [cx + 6, cy + 25]]), C.glove);
+  A.part(line(cx + 1, cy + 18, cx + 5, cy + 21, 1), C.trim, flat);
   const hx = cx + 9, hy = cy + 24;
-  sword(F, hx, hy, hx + 13, cy + 54);
-  F.part(ellipse(hx, hy, 2.6, 2.6), C.glove);
-  F.dot(hx + 1, hy + 2, C.skin);
+  sword(A, hx, hy, hx + 13, cy + 54);
+  A.part(ellipse(hx, hy, 2.6, 2.6), C.glove);
+  A.dot(hx + 1, hy + 2, C.skin);
   return F;
 }
 

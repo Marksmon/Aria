@@ -9,6 +9,40 @@ const rad = (d) => (d * Math.PI) / 180;
 // the walk: 8 frames, the step (+1: the right leg ahead), and the body sinking a pixel on the long strides
 export const WALK = [0, 0.7, 1, 0.7, 0, -0.7, -1, -0.7];
 export const bobOf = (step) => (Math.abs(step) > 0.9 ? 1 : 0);
+// how far the walk swings, in degrees at a full step: the legs from the hips (seen from the side),
+// the arms from the shoulders against them (seen from the side, and a little from the front and
+// back); LIFT: the pixels the stepping foot comes off the ground (seen from the front and back)
+export const STRIDE = 24, ARM_SWING = 26, ARM_SWAY = 10, LIFT = 3;
+
+// a view of a frame that turns everything painted through it by deg degrees about (ox, oy):
+// positive swings what hangs below the pivot towards +x. For swinging arms and striding legs: the
+// design paints its arm or leg as usual through it. Each part is turned as a whole (every pixel of
+// the turned shape looks back to the shape), so it stays solid and keeps its outline
+export function turn(F, ox, oy, deg) {
+  if (!deg) return F;
+  const a = (deg * Math.PI) / 180, c = Math.cos(a), sn = Math.sin(a);
+  const fwd = (x, y) => [ox + (x - ox) * c + (y - oy) * sn, oy - (x - ox) * sn + (y - oy) * c];
+  const back = (x, y) => [ox + (x - ox) * c - (y - oy) * sn, oy + (x - ox) * sn + (y - oy) * c];
+  const key = (x, y) => (x + 1024) * 4096 + (y + 1024);
+  const turned = (shape) => (set) => {
+    const px = new Set();
+    let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+    shape((x, y) => {
+      x = Math.round(x); y = Math.round(y);
+      px.add(key(x, y));
+      if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y;
+    });
+    if (!px.size) return;
+    const cs = [fwd(x0, y0), fwd(x1, y0), fwd(x0, y1), fwd(x1, y1)];
+    const tx0 = Math.floor(Math.min(...cs.map((p) => p[0]))) - 1, tx1 = Math.ceil(Math.max(...cs.map((p) => p[0]))) + 1;
+    const ty0 = Math.floor(Math.min(...cs.map((p) => p[1]))) - 1, ty1 = Math.ceil(Math.max(...cs.map((p) => p[1]))) + 1;
+    for (let y = ty0; y <= ty1; y++) for (let x = tx0; x <= tx1; x++) {
+      const [sx, sy] = back(x, y);
+      if (px.has(key(Math.round(sx), Math.round(sy)))) set(x, y);
+    }
+  };
+  return { w: F.w, h: F.h, part: (shape, col, opts) => F.part(turned(shape), col, opts), dot: (x, y, col) => F.dot(...fwd(x, y), col) };
+}
 export const ATTACK = 7; // frames in an attack or cast, like the game's bodies
 
 // the sword swing, frame by frame: [arm angle, blade angle] in degrees (0 = right, 90 = down). front:

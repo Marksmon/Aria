@@ -16,7 +16,7 @@
 // ones are the right ones mirrored.
 // The game paints the hero's body from these (sprites.js designSet). Plain canvas, no three.js.
 import { Frame, ellipse, rect, poly, line } from './painted.js';
-import { REST, SWING, SLASH, behind, swordArm, slashArc, animFrames, VIEWS } from './design-anim.js';
+import { REST, SWING, SLASH, behind, swordArm, slashArc, animFrames, VIEWS, turn, STRIDE, ARM_SWING, ARM_SWAY, LIFT } from './design-anim.js';
 
 export const BW = 106, BH = 108; // the bald bodies' frame (src/art/trainee.json), so heads fit as on theirs
 
@@ -137,7 +137,7 @@ function legs(F, o, cx, cy, r, toe) {
   const knee = m && f ? cy + 39 : m ? cy + 41 : f ? cy + 40 : cy + 44; // where the boots start (hers over the knee, her thighs bare above)
   L.forEach(([a, b], i) => {
     const sh = i ? -Math.round(r / 2) : 0;
-    const cyl = cy - Math.round(Math.max(0, i ? -P.step : P.step) * 2); // the stepping leg lifts
+    const cyl = cy - Math.round(Math.max(0, i ? -P.step : P.step) * LIFT); // the stepping leg lifts
     const kn = knee - cy + cyl;
     F.part(rect(cx + a + sh, cy + 30, cx + b + sh, cyl + 58), f ? C.skin : C.pants);
     F.part(rect(cx + a - (f ? 0 : 1) + sh, kn, cx + b + (f ? 0 : 1) + sh, cyl + 58), C.boot);
@@ -300,20 +300,21 @@ function frontView(F, o, cx, cy, s, r) {
   for (const side of [-1, 1]) {
     if (P.atk >= 0 && side < 0) continue;
     const x0 = side < 0 ? cx - W - 4 : R(cx + W + 0), x1 = side < 0 ? cx - W + 0 : R(cx + W + 4);
-    if (m) F.part(rect(x0, cy + 10, x1, cy + 17), C.armor);
-    else F.part(rect(x0, cy + 18, x1, cy + 20), C.shirt);
-    F.part(rect(x0, m ? cy + 16 : cy + 20, x1, cy + 26), m ? C.armor : C.leather);
-    F.part(line(x0, m ? cy + 16 : cy + 20, x1, m ? cy + 16 : cy + 20, 1), C.trim, flat);
+    const G = turn(F, (x0 + x1) / 2, cy + 8, -ARM_SWAY * P.step); // walking, the arm sways from the shoulder
+    if (m) G.part(rect(x0, cy + 10, x1, cy + 17), C.armor);
+    else G.part(rect(x0, cy + 18, x1, cy + 20), C.shirt);
+    G.part(rect(x0, m ? cy + 16 : cy + 20, x1, cy + 26), m ? C.armor : C.leather);
+    G.part(line(x0, m ? cy + 16 : cy + 20, x1, m ? cy + 16 : cy + 20, 1), C.trim, flat);
     const hx = (x0 + x1) / 2;
     if (m) { // a gold cuff, an elbow point
-      F.part(rect(x0, cy + 21, x1, cy + 23), C.trim, soft);
-      F.dot(hx, cy + 22, C.gem);
+      G.part(rect(x0, cy + 21, x1, cy + 23), C.trim, soft);
+      G.dot(hx, cy + 22, C.gem);
       const ex = side < 0 ? x0 : x1;
-      F.part(poly([[ex, cy + 14], [ex + side * 3, cy + 17], [ex, cy + 19]]), C.trim);
+      G.part(poly([[ex, cy + 14], [ex + side * 3, cy + 17], [ex, cy + 19]]), C.trim);
     }
-    F.part(ellipse(hx, cy + 28, 2.8, 2.6), m ? C.armor : C.strap);
-    if (m) F.part(line(hx - 2, cy + 27, hx + 2, cy + 27, 1), C.trim, flat); // gold knuckles
-    F.dot(hx, cy + 30, C.skin); F.dot(hx + side, cy + 30, C.skin);
+    G.part(ellipse(hx, cy + 28, 2.8, 2.6), m ? C.armor : C.strap);
+    if (m) G.part(line(hx - 2, cy + 27, hx + 2, cy + 27, 1), C.trim, flat); // gold knuckles
+    G.dot(hx, cy + 30, C.skin); G.dot(hx + side, cy + 30, C.skin);
   }
   if (P.atk >= 0) swing(F, o, cx - W - 2, cy + 6, 'front');
   return F;
@@ -341,8 +342,9 @@ function backView(F, o, cx, cy, s, r) {
   for (const side of [-1, 1]) {
     if (P.atk >= 0 && side > 0) continue;
     const x0 = side < 0 ? cx - W - 4 : R(cx + W + 0), x1 = side < 0 ? cx - W + 0 : R(cx + W + 4);
-    F.part(rect(x0, cy + 10, x1, cy + 26), m ? C.armor : C.leather);
-    F.part(ellipse((x0 + x1) / 2, cy + 28, 2.8, 2.6), m ? C.armor : C.strap);
+    const G = turn(F, (x0 + x1) / 2, cy + 8, ARM_SWAY * P.step); // walking, the arm sways from the shoulder
+    G.part(rect(x0, cy + 10, x1, cy + 26), m ? C.armor : C.leather);
+    G.part(ellipse((x0 + x1) / 2, cy + 28, 2.8, 2.6), m ? C.armor : C.strap);
   }
   if (m) {
     // the long cape to the ankles, pointed ends, gold trim and the big crest; a white edge where it folds
@@ -382,18 +384,18 @@ function backView(F, o, cx, cy, s, r) {
 function side(F, o, cx, cy) {
   const { f } = build(o), C = o.C, m = o.master;
   const cy0 = cy - P.bob, knee = (m && f ? 39 : m ? 41 : f ? 40 : 44) + cy0; // the legs stay on the ground
-  const leg = (x, col) => {
-    F.part(rect(x - 3, cy0 + 30, x + 2, cy0 + 58), f ? C.skin : C.pants);
-    F.part(rect(x - 3, knee, x + 2, cy0 + 58), C.boot);
-    F.part(ellipse(x + 1, cy0 + 60.5, 4.5, 2.5), C.boot);
+  const leg = (x, col, G) => {
+    G.part(rect(x - 3, cy0 + 30, x + 2, cy0 + 58), f ? C.skin : C.pants);
+    G.part(rect(x - 3, knee, x + 2, cy0 + 58), C.boot);
+    G.part(ellipse(x + 1, cy0 + 60.5, 4.5, 2.5), C.boot);
     if (m) {
-      F.part(line(x - 3, knee, x + 2, knee, 1), C.trim, flat);
-      F.part(poly([[x + 1, cy0 + 39], [x + 5, cy0 + 44], [x + 2, cy0 + 50], [x, cy0 + 44]]), C.trim);
-      F.dot(x + 2, cy0 + 44, C.gem);
-      F.part(line(x - 3, cy0 + 52, x + 2, cy0 + 52, 1), C.trim, flat);
-      F.part(ellipse(x + 4, cy0 + 61, 1.5, 1), C.trim, flat);
+      G.part(line(x - 3, knee, x + 2, knee, 1), C.trim, flat);
+      G.part(poly([[x + 1, cy0 + 39], [x + 5, cy0 + 44], [x + 2, cy0 + 50], [x, cy0 + 44]]), C.trim);
+      G.dot(x + 2, cy0 + 44, C.gem);
+      G.part(line(x - 3, cy0 + 52, x + 2, cy0 + 52, 1), C.trim, flat);
+      G.part(ellipse(x + 4, cy0 + 61, 1.5, 1), C.trim, flat);
     }
-    else F.part(poly([[x + 1, knee + 1], [x + 4, knee + 2], [x + 2, knee + 6]]), col);
+    else G.part(poly([[x + 1, knee + 1], [x + 4, knee + 2], [x + 2, knee + 6]]), col);
   };
   // the cape behind
   if (m) {
@@ -412,8 +414,8 @@ function side(F, o, cx, cy) {
   // the sword at the far hip, behind
   F.part(line(cx + 3, cy0 + 24, cx - 13, cy0 + 48, 2), C.sheath);
   F.part(line(cx - 11, cy0 + 45, cx - 13, cy0 + 48, 2), C.trim, flat);
-  leg(cx - 2 - Math.round(3 * P.step), f ? C.trim : C.steel); // the far leg, then the near one, striding
-  leg(cx + 2 + Math.round(3 * P.step), f ? C.trim : C.steel);
+  leg(cx - 2, f ? C.trim : C.steel, turn(F, cx - 2, cy0 + 30, -STRIDE * P.step)); // the far leg, then the near one, striding
+  leg(cx + 2, f ? C.trim : C.steel, turn(F, cx + 2, cy0 + 30, STRIDE * P.step));
   // tails or skirt
   if (m) F.part(poly([[cx - 6, cy + 27], [cx + 6, cy + 27], [cx + 5, cy + (f ? 46 : 52)], [cx - 9, cy + (f ? 47 : 53)]]), C.lining);
   else F.part(poly([[cx - 6, cy + 27], [cx + 6, cy + 27], [cx + 7, cy + (f ? 32 : 38)], [cx - 7, cy + (f ? 32 : 38)]]), C.shirt);
@@ -453,12 +455,13 @@ function side(F, o, cx, cy) {
   if (m) pauldron(F, cx - 1, cy, -1, f, C);
   else if (!f) F.part(ellipse(cx - 1, cy + 6, 4.5, 3.5), C.steel);
   if (P.atk >= 0) { swing(F, o, cx - 1, cy + 6, 'side'); return F; }
-  F.part(rect(cx - 3, cy + (m ? 11 : 20), cx + 1, cy + 26), m ? C.armor : C.leather);
-  if (!m) F.part(rect(cx - 3, cy + 18, cx + 1, cy + 19), C.shirt);
-  F.part(line(cx - 3, cy + (m ? 16 : 20), cx + 1, cy + (m ? 16 : 20), 1), C.trim, flat);
-  if (m) { F.part(rect(cx - 3, cy + 21, cx + 1, cy + 23), C.trim, soft); F.part(poly([[cx - 3, cy + 14], [cx - 6, cy + 17], [cx - 3, cy + 19]]), C.trim); }
-  F.part(ellipse(cx, cy + 28, 2.6, 2.6), m ? C.armor : C.strap);
-  F.dot(cx + 2, cy + 29, C.skin);
+  const A = turn(F, cx - 1, cy + 6, -ARM_SWING * P.step); // the arm swings as the hero walks
+  A.part(rect(cx - 3, cy + (m ? 11 : 20), cx + 1, cy + 26), m ? C.armor : C.leather);
+  if (!m) A.part(rect(cx - 3, cy + 18, cx + 1, cy + 19), C.shirt);
+  A.part(line(cx - 3, cy + (m ? 16 : 20), cx + 1, cy + (m ? 16 : 20), 1), C.trim, flat);
+  if (m) { A.part(rect(cx - 3, cy + 21, cx + 1, cy + 23), C.trim, soft); A.part(poly([[cx - 3, cy + 14], [cx - 6, cy + 17], [cx - 3, cy + 19]]), C.trim); }
+  A.part(ellipse(cx, cy + 28, 2.6, 2.6), m ? C.armor : C.strap);
+  A.dot(cx + 2, cy + 29, C.skin);
   return F;
 }
 

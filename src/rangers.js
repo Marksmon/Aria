@@ -16,7 +16,7 @@
 // Standing, walking (8 frames) and shooting (7, design-anim.js SHOOT), 8 directions.
 // The game paints the hero's body from these (sprites.js designSet). Plain canvas, no three.js.
 import { Frame, ellipse, rect, poly, line } from './painted.js';
-import { REST, SHOOT, LOOSE, recurve, burst, animFrames, VIEWS } from './design-anim.js';
+import { REST, SHOOT, LOOSE, recurve, burst, animFrames, VIEWS, turn, STRIDE, ARM_SWING, ARM_SWAY, LIFT } from './design-anim.js';
 
 export const BW = 106, BH = 108; // the bald bodies' frame (src/art/trainee.json)
 
@@ -166,7 +166,7 @@ function legs(F, o, cx, cy, r, toe, front = true) {
   const { f, legs: L, boot } = build(o), C = o.C;
   L.forEach(([a, b], i) => {
     const sh = i ? -Math.round(r / 2) : 0;
-    const cyl = cy - Math.round(Math.max(0, i ? -P.step : P.step) * 2);
+    const cyl = cy - Math.round(Math.max(0, i ? -P.step : P.step) * LIFT);
     const top = cyl + boot, mid = cx + (a + b) / 2 + sh;
     if (f) F.part(rect(cx + a + sh, cy + 28, cx + b + sh, top), C.skin); // bare thighs above the boots
     else F.part(rect(cx + a + sh, cy + 30, cx + b + sh, top), C.pants);
@@ -260,22 +260,24 @@ function arms(F, o, cx, cy, W, R, s, mirror) {
   const C = o.C, f = o.sex === 'f', k = raised(), d = drawn();
   const bowX = mirror ? cx - W - 2 : R(cx + W + 2), drawX = mirror ? R(cx + W + 2) : cx - W - 2, dir = mirror ? -1 : 1;
   const sleeve = f ? C.body : C.coat;
-  const hang = (x0, x1, side) => {
-    F.part(rect(x0, cy + 10, x1, cy + 17), sleeve);
-    F.part(rect(x0, cy + 16, x1, cy + 25), C.silver); // the vambrace
-    F.part(rect(x0, cy + 22, x1, cy + 24), C.trim, soft);
-    F.dot((x0 + x1) / 2, cy + 19, C.gem);
+  // walking, the hanging arms sway from the shoulders (the bow with its hand)
+  const sway = (mirror ? 1 : -1) * ARM_SWAY * P.step, A1 = turn(F, bowX, cy + 8, sway), A2 = turn(F, drawX, cy + 8, sway);
+  const hang = (x0, x1, side, G = F) => {
+    G.part(rect(x0, cy + 10, x1, cy + 17), sleeve);
+    G.part(rect(x0, cy + 16, x1, cy + 25), C.silver); // the vambrace
+    G.part(rect(x0, cy + 22, x1, cy + 24), C.trim, soft);
+    G.dot((x0 + x1) / 2, cy + 19, C.gem);
     const ex = side < 0 ? x0 : x1;
-    F.part(poly([[ex, cy + 15], [ex + side * 3, cy + 18], [ex, cy + 20]]), C.trim); // the elbow fin
-    F.part(ellipse((x0 + x1) / 2, cy + 28, 2.7, 2.5), C.glove);
+    G.part(poly([[ex, cy + 15], [ex + side * 3, cy + 18], [ex, cy + 20]]), C.trim); // the elbow fin
+    G.part(ellipse((x0 + x1) / 2, cy + 28, 2.7, 2.5), C.glove);
   };
   const shooting = P.atk >= 0;
   const bx = lerp(bowX, cx + dir * 6 + s, k), by = lerp(cy + 28, cy + 13, k);
   const ang = mirror ? lerp(-90, 30, k) : lerp(90, 150, k);
   const cheek = [lerp(bx - dir * 4, cx - dir * 5 + s, d), lerp(by - 5, cy + 3, d)];
   const pull = P.atk === LOOSE ? 0 : 2 + 6 * d;
-  const hold = bow(F, o, bx, by, ang, shooting ? pull : 0, shooting && d > 0, P.atk === LOOSE && !mirror, shooting && P.atk !== LOOSE ? cheek : null);
-  if (!shooting) { hang(bowX - 2, bowX + 2, mirror ? -1 : 1); hang(drawX - 2, drawX + 2, mirror ? 1 : -1); return; }
+  const hold = bow(shooting ? F : A1, o, bx, by, ang, shooting ? pull : 0, shooting && d > 0, P.atk === LOOSE && !mirror, shooting && P.atk !== LOOSE ? cheek : null);
+  if (!shooting) { hang(bowX - 2, bowX + 2, mirror ? -1 : 1, A1); hang(drawX - 2, drawX + 2, mirror ? 1 : -1, A2); return; }
   const reach = (x0, y0, x1, y1) => { const mx = lerp(x0, x1, 0.5), my = lerp(y0, y1, 0.5); F.part(line(x0, y0, mx, my, 4), sleeve); F.part(line(mx, my, x1, y1, 4), C.silver); F.part(ellipse(x1, y1, 2.4, 2.2), C.glove); };
   reach(mirror ? cx - W : R(cx + W), cy + 7, bx, by);
   const [hx, hy] = hold, ex = drawX - dir * 2, ey = cy + 3;
@@ -354,16 +356,16 @@ function side(F, o, cx, cy) {
   C.feathers.forEach((c, i) => { const x = cx - 6 + i * 2, y = cy - 5 - (i % 2); F.part(line(x, y, x + 1, y - 4, 1), c, flat); });
   const bx = lerp(cx + 8, cx + 17, k), by = lerp(cy + 27, cy + 8, k);
   if (!shooting) bow(F, o, bx, by, 95, 0, false, false, null);
-  const leg = (x) => {
+  const leg = (x, G) => {
     const top = cy0 + boot;
-    F.part(rect(x - 3, cy0 + 28, x + 2, top), f ? C.skin : C.pants);
-    F.part(rect(x - (f ? 3 : 4), top, x + (f ? 2 : 3), cy0 + 58), f ? C.boot : C.silver);
-    F.part(line(x - (f ? 3 : 4), top, x + (f ? 2 : 3), top, 1), C.trim, flat);
-    F.part(ellipse(x + 1, cy0 + 60.5, 4.5, 2.5), f ? C.boot : C.silver);
-    F.part(poly([[x + 2, cy0 + 41], [x + 5, cy0 + 45], [x + 2, cy0 + 50], [x, cy0 + 45]]), f ? C.silver : C.trim);
+    G.part(rect(x - 3, cy0 + 28, x + 2, top), f ? C.skin : C.pants);
+    G.part(rect(x - (f ? 3 : 4), top, x + (f ? 2 : 3), cy0 + 58), f ? C.boot : C.silver);
+    G.part(line(x - (f ? 3 : 4), top, x + (f ? 2 : 3), top, 1), C.trim, flat);
+    G.part(ellipse(x + 1, cy0 + 60.5, 4.5, 2.5), f ? C.boot : C.silver);
+    G.part(poly([[x + 2, cy0 + 41], [x + 5, cy0 + 45], [x + 2, cy0 + 50], [x, cy0 + 45]]), f ? C.silver : C.trim);
   };
-  leg(cx - 2 - Math.round(3 * P.step));
-  leg(cx + 2 + Math.round(3 * P.step));
+  leg(cx - 2, turn(F, cx - 2, cy0 + 30, -STRIDE * P.step));
+  leg(cx + 2, turn(F, cx + 2, cy0 + 30, STRIDE * P.step));
   // below the waist: his long tails; her short skirt and a long tail behind
   if (f) {
     F.part(poly([[cx - 6, cy + 23], [cx - 2, cy + 23], [cx - 10, cy + 47], [cx - 12, cy + 44]]), C.coat);
@@ -395,11 +397,12 @@ function side(F, o, cx, cy) {
     F.part(line(ex, ey, hx, hy, 4), C.silver);
     F.part(ellipse(hx, hy, 2.4, 2.2), C.glove);
   } else {
-    F.part(rect(cx - 3, cy + 10, cx + 1, cy + 16), f ? C.body : C.coat);
-    F.part(rect(cx - 3, cy + 16, cx + 1, cy + 25), C.silver);
-    F.part(rect(cx - 3, cy + 22, cx + 1, cy + 24), C.trim, soft);
-    F.part(poly([[cx - 3, cy + 15], [cx - 6, cy + 18], [cx - 3, cy + 20]]), C.trim);
-    F.part(ellipse(cx, cy + 28, 2.6, 2.6), C.glove);
+  const A = turn(F, cx - 1, cy + 6, -ARM_SWING * P.step); // the arm swings as the hero walks
+    A.part(rect(cx - 3, cy + 10, cx + 1, cy + 16), f ? C.body : C.coat);
+    A.part(rect(cx - 3, cy + 16, cx + 1, cy + 25), C.silver);
+    A.part(rect(cx - 3, cy + 22, cx + 1, cy + 24), C.trim, soft);
+    A.part(poly([[cx - 3, cy + 15], [cx - 6, cy + 18], [cx - 3, cy + 20]]), C.trim);
+    A.part(ellipse(cx, cy + 28, 2.6, 2.6), C.glove);
   }
   motes(F, cx - 2, cy, 8, o);
   return F;

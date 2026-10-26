@@ -10,7 +10,7 @@
 // (The second jobs, Windrunner and Moon Ranger, are rangers.js.)
 // The game paints the hero's body from these (sprites.js designSet). Plain canvas, no three.js.
 import { Frame, ellipse, rect, poly, line } from './painted.js';
-import { REST, SHOOT, LOOSE, recurve, animFrames, VIEWS } from './design-anim.js';
+import { REST, SHOOT, LOOSE, recurve, animFrames, VIEWS, turn, STRIDE, ARM_SWING, ARM_SWAY, LIFT } from './design-anim.js';
 
 export const BW = 106, BH = 108; // the bald bodies' frame (src/art/trainee.json)
 
@@ -56,7 +56,7 @@ function legs(F, o, cx, cy, r, toe) {
   const { f, legs: L, knee } = build(o), C = o.C;
   L.forEach(([a, b], i) => {
     const sh = i ? -Math.round(r / 2) : 0;
-    const cyl = cy - Math.round(Math.max(0, i ? -P.step : P.step) * 2); // the stepping leg lifts
+    const cyl = cy - Math.round(Math.max(0, i ? -P.step : P.step) * LIFT); // the stepping leg lifts
     F.part(rect(cx + a + sh, cy + 28, cx + b + sh, cyl + 58), f ? C.skin : C.pants); // her bare thighs
     F.part(rect(cx + a - 1 + sh, cyl + knee - 1, cx + b + 1 + sh, cyl + 58), C.boot);
     F.part(rect(cx + a - 1 + sh, cyl + knee - 1, cx + b + 1 + sh, cyl + knee), C.vestDk, soft); // the folded cuff
@@ -135,11 +135,13 @@ function arms(F, o, cx, cy, W, R, s, mirror) {
   // the drawing hand comes back to the right cheek (the viewer's left, from the front)
   const cheek = [lerp(bx - dir * 4, cx - dir * 5 + s, d), lerp(by - 5, cy + 3, d)];
   const pull = P.atk === LOOSE ? 0 : 2 + 6 * d;
-  const hang = (x0, x1, top) => { // an arm hanging at the side: her short sleeves leave the arm bare
-    F.part(rect(x0, top, x1, cy + 17), f ? C.skin : C.tunic);
-    if (f) F.part(rect(x0, top, x1, cy + 11), C.tunic);
-    F.part(rect(x0, cy + 17, x1, cy + 25), C.bracer); F.dot((x0 + x1) / 2, cy + 20, C.lace); F.dot((x0 + x1) / 2, cy + 23, C.lace);
-    F.part(ellipse((x0 + x1) / 2, cy + 28, 2.6, 2.4), C.skin);
+  // walking, the hanging arms sway from the shoulders (the bow with its hand)
+  const sway = (mirror ? 1 : -1) * ARM_SWAY * P.step, A1 = turn(F, bowX, cy + 8, sway), A2 = turn(F, drawX, cy + 8, sway);
+  const hang = (x0, x1, top, G = F) => { // an arm hanging at the side: her short sleeves leave the arm bare
+    G.part(rect(x0, top, x1, cy + 17), f ? C.skin : C.tunic);
+    if (f) G.part(rect(x0, top, x1, cy + 11), C.tunic);
+    G.part(rect(x0, cy + 17, x1, cy + 25), C.bracer); G.dot((x0 + x1) / 2, cy + 20, C.lace); G.dot((x0 + x1) / 2, cy + 23, C.lace);
+    G.part(ellipse((x0 + x1) / 2, cy + 28, 2.6, 2.4), C.skin);
   };
   const upper = f ? C.skin : C.tunic;
   const reach = (x0, y0, x1, y1) => { // an arm reaching from the shoulder (x0, y0) to the hand (x1, y1)
@@ -149,8 +151,8 @@ function arms(F, o, cx, cy, W, R, s, mirror) {
     F.part(ellipse(x1, y1, 2.4, 2.2), C.skin);
   };
   const shooting = P.atk >= 0;
-  const hold = recurve(F, bx, by, ang, 18, C.bow, shooting ? pull : 0, shooting && d > 0, P.atk === LOOSE && !mirror, shooting && P.atk !== LOOSE ? cheek : null);
-  if (!shooting) { hang(bowX - 2, bowX + 2, cy + 8); hang(drawX - 2, drawX + 2, cy + 8); return; }
+  const hold = recurve(shooting ? F : A1, bx, by, ang, 18, C.bow, shooting ? pull : 0, shooting && d > 0, P.atk === LOOSE && !mirror, shooting && P.atk !== LOOSE ? cheek : null);
+  if (!shooting) { hang(bowX - 2, bowX + 2, cy + 8, A1); hang(drawX - 2, drawX + 2, cy + 8, A2); return; }
   reach(mirror ? cx - W : R(cx + W), cy + 7, bx, by); // the bow arm
   // the drawing arm: the elbow lifts and the hand pulls the string to the chin
   const [hx, hy] = hold, ex = drawX - dir * 2, ey = cy + 3;
@@ -205,12 +207,12 @@ function backView(F, o, cx, cy, s, r) {
 function side(F, o, cx, cy) {
   const { f, knee, hem, crop } = build(o), C = o.C, k = raised(), d = drawn(), shooting = P.atk >= 0;
   const cy0 = cy - P.bob;
-  const leg = (x) => {
-    F.part(rect(x - 3, cy0 + 28, x + 2, cy0 + 58), f ? C.skin : C.pants);
-    F.part(rect(x - 4, cy0 + knee - 1, x + 3, cy0 + 58), C.boot);
-    F.part(rect(x - 4, cy0 + knee - 1, x + 3, cy0 + knee), C.vestDk, soft);
-    F.part(ellipse(x + 1, cy0 + 60.5, 4.5, 2.5), C.boot);
-    for (let y = cy0 + knee + 3; y < cy0 + 56; y += 3) F.dot(x + 2, y, C.lace);
+  const leg = (x, G) => {
+    G.part(rect(x - 3, cy0 + 28, x + 2, cy0 + 58), f ? C.skin : C.pants);
+    G.part(rect(x - 4, cy0 + knee - 1, x + 3, cy0 + 58), C.boot);
+    G.part(rect(x - 4, cy0 + knee - 1, x + 3, cy0 + knee), C.vestDk, soft);
+    G.part(ellipse(x + 1, cy0 + 60.5, 4.5, 2.5), C.boot);
+    for (let y = cy0 + knee + 3; y < cy0 + 56; y += 3) G.dot(x + 2, y, C.lace);
   };
   // the quiver on the back, tilted, feathers over the shoulder
   F.part(poly([[cx - 7, cy - 3], [cx - 3, cy - 5], [cx - 6, cy + 20], [cx - 10, cy + 19]]), C.quiver);
@@ -218,8 +220,8 @@ function side(F, o, cx, cy) {
   // the far arm and the bow, at rest hanging in front of the body
   const bx = lerp(cx + 8, cx + 17, k), by = lerp(cy + 27, cy + 8, k);
   if (!shooting) recurve(F, bx, by, 95, 18, C.bow);
-  leg(cx - 2 - Math.round(3 * P.step)); // the far leg, then the near one, striding
-  leg(cx + 2 + Math.round(3 * P.step));
+  leg(cx - 2, turn(F, cx - 2, cy0 + 30, -STRIDE * P.step)); // the far leg, then the near one, striding
+  leg(cx + 2, turn(F, cx + 2, cy0 + 30, STRIDE * P.step));
   if (f) {
     F.part(poly([[cx - 7, cy + 23], [cx + 6, cy + 23], [cx + 7, cy + hem], [cx - 7, cy + hem]]), C.shorts);
     F.part(rect(cx - 5, cy + crop - 1, cx + 5, cy + 23), C.skin);
@@ -254,12 +256,13 @@ function side(F, o, cx, cy) {
     F.part(ellipse(hx, hy, 2.4, 2.2), C.skin);
     return F;
   }
+  const A = turn(F, cx - 1, cy + 6, -ARM_SWING * P.step); // the arm swings as the hero walks
   // the near arm hanging, a bracer on the forearm
-  F.part(rect(cx - 3, cy + 6, cx + 1, cy + 17), upper);
-  if (f) F.part(rect(cx - 3, cy + 6, cx + 1, cy + 11), C.tunic);
-  F.part(rect(cx - 3, cy + 17, cx + 1, cy + 25), C.bracer);
-  F.dot(cx - 1, cy + 20, C.lace); F.dot(cx - 1, cy + 23, C.lace);
-  F.part(ellipse(cx, cy + 28, 2.6, 2.6), C.skin);
+  A.part(rect(cx - 3, cy + 6, cx + 1, cy + 17), upper);
+  if (f) A.part(rect(cx - 3, cy + 6, cx + 1, cy + 11), C.tunic);
+  A.part(rect(cx - 3, cy + 17, cx + 1, cy + 25), C.bracer);
+  A.dot(cx - 1, cy + 20, C.lace); A.dot(cx - 1, cy + 23, C.lace);
+  A.part(ellipse(cx, cy + 28, 2.6, 2.6), C.skin);
   return F;
 }
 

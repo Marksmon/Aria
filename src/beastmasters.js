@@ -11,7 +11,7 @@
 // the archers' shot) and with the heavy cleaver (beastswM/F: the blade swing).
 // The game paints the hero's body from these (sprites.js designSet). Plain canvas, no three.js.
 import { Frame, ellipse, rect, poly, line } from './painted.js';
-import { REST, SHOOT, LOOSE, SWING, SLASH, behind, recurve, swordArm, slashArc, animFrames, VIEWS } from './design-anim.js';
+import { REST, SHOOT, LOOSE, SWING, SLASH, behind, recurve, swordArm, slashArc, animFrames, VIEWS, turn, STRIDE, ARM_SWING, ARM_SWAY, LIFT } from './design-anim.js';
 
 export const BW = 106, BH = 108; // the bald bodies' frame (src/art/trainee.json)
 
@@ -85,7 +85,7 @@ function legs(F, o, cx, cy, r, toe, front = true) {
   const { f, legs: L, knee } = build(o), C = o.C;
   L.forEach(([a, b], i) => {
     const sh = i ? -Math.round(r / 2) : 0;
-    const cyl = cy - Math.round(Math.max(0, i ? -P.step : P.step) * 2);
+    const cyl = cy - Math.round(Math.max(0, i ? -P.step : P.step) * LIFT);
     F.part(rect(cx + a + sh, cy + 28, cx + b + sh, cyl + 58), f ? C.skin : C.pants); // her bare thighs
     F.part(rect(cx + a - 1 + sh, cyl + knee, cx + b + 1 + sh, cyl + 56), C.fur); // fur-wrapped greaves
     F.part(line(cx + a - 1 + sh, cyl + knee, cx + b + 1 + sh, cyl + knee, 1), C.furLt, flat); // the fur's ragged top
@@ -170,26 +170,28 @@ function arms(F, o, cx, cy, W, R, s, mirror) {
   const C = o.C, f = o.sex === 'f';
   const bowX = mirror ? cx - W - 2 : R(cx + W + 2), drawX = mirror ? R(cx + W + 2) : cx - W - 2;
   const dir = mirror ? -1 : 1;
-  const hang = (x0, x1) => {
-    F.part(rect(x0, cy + 8, x1, cy + 17), C.skin);
-    F.part(rect(x0, cy + 12, x1, cy + 13), C.bronze); // the armband
-    if (!f) F.part(line(x0, cy + 15, x1, cy + 16, 1), C.war, flat);
-    F.part(rect(x0, cy + 17, x1, cy + 25), C.leather);
-    for (const y of [18, 21, 24]) F.dot(x0 - 1, cy + y, C.ring), F.dot(x1 + 1, cy + y, C.ring); // the spikes
-    F.part(ellipse((x0 + x1) / 2, cy + 28, 2.6, 2.4), C.skin);
+  // walking, the hanging arms sway from the shoulders (the bow with its hand)
+  const sway = (mirror ? 1 : -1) * ARM_SWAY * P.step, A1 = turn(F, bowX, cy + 8, sway), A2 = turn(F, drawX, cy + 8, sway);
+  const hang = (x0, x1, G = F) => {
+    G.part(rect(x0, cy + 8, x1, cy + 17), C.skin);
+    G.part(rect(x0, cy + 12, x1, cy + 13), C.bronze); // the armband
+    if (!f) G.part(line(x0, cy + 15, x1, cy + 16, 1), C.war, flat);
+    G.part(rect(x0, cy + 17, x1, cy + 25), C.leather);
+    for (const y of [18, 21, 24]) G.dot(x0 - 1, cy + y, C.ring), G.dot(x1 + 1, cy + y, C.ring); // the spikes
+    G.part(ellipse((x0 + x1) / 2, cy + 28, 2.6, 2.4), C.skin);
   };
   const shooting = P.atk >= 0;
   if (o.sword) {
     // the cleaver in the right hand (the viewer's left from the front), hanging, or swung
     if (!shooting) {
-      hang(drawX - 2, drawX + 2);
+      hang(drawX - 2, drawX + 2, A2);
       const hx = drawX, hy = cy + 28;
-      F.part(poly([[hx - 1, hy + 2], [hx + 3 * dir, hy + 2], [hx + 5 * dir, hy + 21], [hx - 2 * dir, hy + 23], [hx - 2 * dir, hy + 4]]), C.blade.blade);
-      F.part(line(hx - 2 * dir, hy + 4, hx - 2 * dir, hy + 22, 1), C.blade.edge, flat);
-      F.part(line(hx - 2, hy + 2, hx + 2, hy + 2, 1), C.blade.guard, flat);
-      F.dot(hx + 2 * dir, hy + 6, C.socket); // a hole through the blade
+      A2.part(poly([[hx - 1, hy + 2], [hx + 3 * dir, hy + 2], [hx + 5 * dir, hy + 21], [hx - 2 * dir, hy + 23], [hx - 2 * dir, hy + 4]]), C.blade.blade);
+      A2.part(line(hx - 2 * dir, hy + 4, hx - 2 * dir, hy + 22, 1), C.blade.edge, flat);
+      A2.part(line(hx - 2, hy + 2, hx + 2, hy + 2, 1), C.blade.guard, flat);
+      A2.dot(hx + 2 * dir, hy + 6, C.socket); // a hole through the blade
     }
-    hang(bowX - 2, bowX + 2);
+    hang(bowX - 2, bowX + 2, A1);
     if (shooting && !mirror) swing(F, o, cx - W - 2, cy + 6, 'front');
     return;
   }
@@ -198,10 +200,10 @@ function arms(F, o, cx, cy, W, R, s, mirror) {
   const ang = mirror ? lerp(-90, 30, k) : lerp(90, 150, k);
   const cheek = [lerp(bx - dir * 4, cx - dir * 5 + s, d), lerp(by - 5, cy + 3, d)];
   const pull = P.atk === LOOSE ? 0 : 2 + 6 * d;
-  const hold = recurve(F, bx, by, ang, 20, C.bow, shooting ? pull : 0, shooting && d > 0, P.atk === LOOSE && !mirror, shooting && P.atk !== LOOSE ? cheek : null);
+  const hold = recurve(shooting ? F : A1, bx, by, ang, 20, C.bow, shooting ? pull : 0, shooting && d > 0, P.atk === LOOSE && !mirror, shooting && P.atk !== LOOSE ? cheek : null);
   const ux = Math.cos((ang * Math.PI) / 180), uy = Math.sin((ang * Math.PI) / 180);
   for (const sd of [-1, 1]) F.part(line(bx + ux * sd * 19, by + uy * sd * 19, bx + ux * sd * 22 + 2, by + uy * sd * 22 - 2, 1), C.bow.light, flat); // the horn tips
-  if (!shooting) { hang(bowX - 2, bowX + 2); hang(drawX - 2, drawX + 2); return; }
+  if (!shooting) { hang(bowX - 2, bowX + 2, A1); hang(drawX - 2, drawX + 2, A2); return; }
   const reach = (x0, y0, x1, y1) => { const mx = lerp(x0, x1, 0.55), my = lerp(y0, y1, 0.55); F.part(line(x0, y0, mx, my, 4), C.skin); F.part(line(mx, my, x1, y1, 4), C.leather); F.part(ellipse(x1, y1, 2.4, 2.2), C.skin); };
   reach(mirror ? cx - W : R(cx + W), cy + 7, bx, by);
   const [hx, hy] = hold, ex = drawX - dir * 2, ey = cy + 3;
@@ -272,22 +274,22 @@ function side(F, o, cx, cy) {
   F.part(poly(cp), C.pelt);
   ragged(F, cp.slice(3, 6), C);
   for (const [x, y] of [[-10, 16], [-13, 28], [-15, 38]]) F.dot(cx + x, cy0 + y, C.peltLt);
-  const leg = (x) => {
-    F.part(rect(x - 3, cy0 + 28, x + 2, cy0 + 58), f ? C.skin : C.pants);
-    F.part(rect(x - 4, cy0 + knee, x + 3, cy0 + 56), C.fur);
-    F.part(line(x - 4, cy0 + knee, x + 3, cy0 + knee, 1), C.furLt, flat);
-    for (let y = cy0 + knee + 3; y < cy0 + 55; y += 4) F.part(line(x - 4, y, x + 3, y + 1, 1), C.strap, flat);
-    F.part(ellipse(x + 1, cy0 + 60.5, 4.5, 2.5), C.boot);
-    F.part(rect(x + 1, cy0 + knee + 2, x + 4, cy0 + knee + 6), C.steel);
-    F.part(poly([[x + 4, cy0 + knee + 3], [x + 7, cy0 + knee + 4], [x + 4, cy0 + knee + 5]]), C.steel);
+  const leg = (x, G) => {
+    G.part(rect(x - 3, cy0 + 28, x + 2, cy0 + 58), f ? C.skin : C.pants);
+    G.part(rect(x - 4, cy0 + knee, x + 3, cy0 + 56), C.fur);
+    G.part(line(x - 4, cy0 + knee, x + 3, cy0 + knee, 1), C.furLt, flat);
+    for (let y = cy0 + knee + 3; y < cy0 + 55; y += 4) G.part(line(x - 4, y, x + 3, y + 1, 1), C.strap, flat);
+    G.part(ellipse(x + 1, cy0 + 60.5, 4.5, 2.5), C.boot);
+    G.part(rect(x + 1, cy0 + knee + 2, x + 4, cy0 + knee + 6), C.steel);
+    G.part(poly([[x + 4, cy0 + knee + 3], [x + 7, cy0 + knee + 4], [x + 4, cy0 + knee + 5]]), C.steel);
   };
   // the quiver on the back
   F.part(poly([[cx - 7, cy - 3], [cx - 3, cy - 5], [cx - 6, cy + 20], [cx - 10, cy + 19]]), C.quiver);
   C.feathers.forEach((c, i) => { const x = cx - 6 + i * 2, y = cy - 5 - (i % 2); F.part(line(x, y, x + 1, y - 4, 1), c, flat); });
   const bx = lerp(cx + 8, cx + 17, k), by = lerp(cy + 27, cy + 8, k);
   if (!o.sword && !shooting) recurve(F, bx, by, 95, 20, C.bow);
-  leg(cx - 2 - Math.round(3 * P.step));
-  leg(cx + 2 + Math.round(3 * P.step));
+  leg(cx - 2, turn(F, cx - 2, cy0 + 30, -STRIDE * P.step));
+  leg(cx + 2, turn(F, cx + 2, cy0 + 30, STRIDE * P.step));
   F.part(poly([[cx - 7, cy + 23], [cx + 7, cy + 23], [cx + 9, cy + hem], [cx + 3, cy + hem - 2], [cx - 3, cy + hem], [cx - 9, cy + hem - 2]]), C.fur);
   F.part(poly([[cx + 3, cy + 23], [cx + 7, cy + 23], [cx + 8, cy + hem + (f ? 1 : 3)], [cx + 4, cy + hem + (f ? 1 : 3)]]), C.leather);
   F.part(poly([[cx - 7, cy + 2], [cx + 4, cy + 2], [cx + (f ? 8 : 7), cy + (f ? 10 : 8)], [cx + 6, cy + 22], [cx + 7, cy + 24], [cx - 7, cy + 24], [cx - 6, cy + 22], [cx - 8, cy + 8]]), C.skin);
@@ -305,18 +307,19 @@ function side(F, o, cx, cy) {
   for (const x of [cx - 4, cx + 1]) F.part(poly([[x - 1, cy + 25], [x + 1, cy + 25], [x, cy + 29]]), C.bone);
   if (f) C.plume.forEach((c, i) => F.part(line(cx + 2 + i * 2, cy + 3, cx + 4 + i * 2, cy - 2 + i, 1), c, flat));
   pauldron(F, cx - 1, cy, 1, C, f);
+  const A = turn(F, cx - 1, cy + 6, -ARM_SWING * (o.sword ? 0.6 : 1) * P.step); // the arm swings as the hero walks
   const arm = () => {
-    F.part(rect(cx - 3, cy + 9, cx + 1, cy + 17), C.skin);
-    F.part(rect(cx - 3, cy + 12, cx + 1, cy + 13), C.bronze);
-    F.part(rect(cx - 3, cy + 17, cx + 1, cy + 25), C.leather);
-    for (const y of [18, 21, 24]) F.dot(cx - 4, cy + y, C.ring);
-    F.part(ellipse(cx, cy + 28, 2.6, 2.6), C.skin);
+    A.part(rect(cx - 3, cy + 9, cx + 1, cy + 17), C.skin);
+    A.part(rect(cx - 3, cy + 12, cx + 1, cy + 13), C.bronze);
+    A.part(rect(cx - 3, cy + 17, cx + 1, cy + 25), C.leather);
+    for (const y of [18, 21, 24]) A.dot(cx - 4, cy + y, C.ring);
+    A.part(ellipse(cx, cy + 28, 2.6, 2.6), C.skin);
   };
   if (o.sword) {
     if (shooting) { swing(F, o, cx - 1, cy + 6, 'side'); return F; }
     arm();
-    F.part(poly([[cx + 1, cy + 29], [cx + 5, cy + 30], [cx + 6, cy + 48], [cx + 1, cy + 50], [cx - 1, cy + 31]]), C.blade.blade); // the cleaver, point down
-    F.part(line(cx + 6, cy + 31, cx + 6, cy + 48, 1), C.blade.edge, flat);
+    A.part(poly([[cx + 1, cy + 29], [cx + 5, cy + 30], [cx + 6, cy + 48], [cx + 1, cy + 50], [cx - 1, cy + 31]]), C.blade.blade); // the cleaver, point down
+    A.part(line(cx + 6, cy + 31, cx + 6, cy + 48, 1), C.blade.edge, flat);
     return F;
   }
   if (shooting) {

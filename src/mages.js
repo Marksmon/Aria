@@ -15,7 +15,7 @@
 // directions: the left ones are the right ones mirrored.
 // The game paints the hero's body from these (sprites.js designSet). Plain canvas, no three.js.
 import { Frame, ellipse, rect, poly, line } from './painted.js';
-import { REST, CAST, burst, animFrames, VIEWS } from './design-anim.js';
+import { REST, CAST, burst, animFrames, VIEWS, turn, STRIDE, ARM_SWING, ARM_SWAY, LIFT } from './design-anim.js';
 
 export const BW = 106, BH = 108; // the bald bodies' frame (src/art/trainee.json)
 
@@ -119,7 +119,7 @@ function legs(F, o, cx, cy, r, toe) {
   const { f, legs: L, knee } = build(o), C = o.C;
   L.forEach(([a, b], i) => {
     const sh = i ? -Math.round(r / 2) : 0, mid = cx + (a + b) / 2 + sh;
-    const cyl = cy - Math.round(Math.max(0, i ? -P.step : P.step) * 2); // the stepping leg lifts
+    const cyl = cy - Math.round(Math.max(0, i ? -P.step : P.step) * LIFT); // the stepping leg lifts
     F.part(rect(cx + a + sh, cy + 30, cx + b + sh, cyl + 58), f ? C.skin : C.pants);
     F.part(rect(cx + a - (f ? 0 : 1) + sh, cyl + knee, cx + b + (f ? 0 : 1) + sh, cyl + 58), C.boot);
     F.part(ellipse(mid + toe + (i ? 0.5 : -0.5), cyl + 60.5, f ? 4 : 4.5, 2.5), C.boot);
@@ -260,15 +260,16 @@ function frontView(F, o, cx, cy, s, r) {
     const x0 = side < 0 ? cx - W - 3 : R(cx + W - 1), x1 = side < 0 ? cx - W + 1 : R(cx + W + 3);
     const out = side < 0 ? x0 - (w ? 8 : 6) : x1 + (w ? 8 : 6), inn = side < 0 ? x1 + 1 : x0 - 1;
     const yi = w ? 24 : 21, yo = w ? 33 : 27; // the opening, from the inner to the outer corner
-    F.part(poly([[x0, cy + 4], [x1, cy + 4], [inn, cy + yi], [out, cy + yo]]), C.coat);
-    F.part(poly([[inn, cy + yi - 2], [out, cy + yo - 2], [out, cy + yo], [inn, cy + yi]]), C.lining, soft);
-    F.part(line(inn, cy + yi + 1, out, cy + yo + 1, 1), C.trim, flat);
-    F.part(line((x0 + x1) / 2, cy + 8, (inn + out) / 2 - side, cy + yi, 1), C.fold, flat);
-    if (w) { F.part(line((x0 + x1) / 2 + side, cy + 6, out + side * -1, cy + yo - 3, 1), C.trim, flat); crystal(F, out, cy + yo + 1, C, 2); }
+    const G = side < 0 ? F : turn(F, (x0 + x1) / 2, cy + 6, -ARM_SWAY * P.step); // the free arm sways as the hero walks (the staff hand holds still)
+    G.part(poly([[x0, cy + 4], [x1, cy + 4], [inn, cy + yi], [out, cy + yo]]), C.coat);
+    G.part(poly([[inn, cy + yi - 2], [out, cy + yo - 2], [out, cy + yo], [inn, cy + yi]]), C.lining, soft);
+    G.part(line(inn, cy + yi + 1, out, cy + yo + 1, 1), C.trim, flat);
+    G.part(line((x0 + x1) / 2, cy + 8, (inn + out) / 2 - side, cy + yi, 1), C.fold, flat);
+    if (w) { G.part(line((x0 + x1) / 2 + side, cy + 6, out + side * -1, cy + yo - 3, 1), C.trim, flat); crystal(G, out, cy + yo + 1, C, 2); }
     const hx = side < 0 ? sx + 1 : (x0 + x1) / 2 + 2;
     const hy = cy + yi + ((yo - yi) * (inn - hx)) / (inn - out) + 2 - (side < 0 ? lift() : 0); // under the opening (raised with the staff)
-    F.part(ellipse(hx, hy, 2.8, 2.6), C.glove);
-    F.dot(hx + side, hy + 1.5, C.skin);
+    G.part(ellipse(hx, hy, 2.8, 2.6), C.glove);
+    G.dot(hx + side, hy + 1.5, C.skin);
   }
   cast(F, sx, cy - 10 - lift() - (w ? 3 : 2), C);
   return F;
@@ -310,12 +311,13 @@ function backView(F, o, cx, cy, s, r) {
     const x0 = side < 0 ? cx - W - 3 : R(cx + W - 1), x1 = side < 0 ? cx - W + 1 : R(cx + W + 3);
     const out = side < 0 ? x0 - (w ? 8 : 6) : x1 + (w ? 8 : 6), inn = side < 0 ? x1 + 1 : x0 - 1;
     const yi = w ? 24 : 21, yo = w ? 33 : 27;
-    F.part(poly([[x0, cy + 4], [x1, cy + 4], [inn, cy + yi], [out, cy + yo]]), C.coat);
-    F.part(line(inn, cy + yi + 1, out, cy + yo + 1, 1), C.trim, flat);
-    F.part(line((x0 + x1) / 2, cy + 8, (inn + out) / 2 - side, cy + yi, 1), C.fold, flat);
-    if (w) crystal(F, out, cy + yo + 1, C, 2);
+    const G = side > 0 ? F : turn(F, (x0 + x1) / 2, cy + 6, ARM_SWAY * P.step); // the free arm sways as the hero walks (the staff hand holds still)
+    G.part(poly([[x0, cy + 4], [x1, cy + 4], [inn, cy + yi], [out, cy + yo]]), C.coat);
+    G.part(line(inn, cy + yi + 1, out, cy + yo + 1, 1), C.trim, flat);
+    G.part(line((x0 + x1) / 2, cy + 8, (inn + out) / 2 - side, cy + yi, 1), C.fold, flat);
+    if (w) crystal(G, out, cy + yo + 1, C, 2);
     const hx = side < 0 ? (x0 + x1) / 2 - 2 : R(cx + W + 8) - 1;
-    F.part(ellipse(hx, cy + yi + ((yo - yi) * (inn - hx)) / (inn - out) + 2 - (side > 0 ? lift() : 0), 2.8, 2.6), C.glove);
+    G.part(ellipse(hx, cy + yi + ((yo - yi) * (inn - hx)) / (inn - out) + 2 - (side > 0 ? lift() : 0), 2.8, 2.6), C.glove);
   }
   // the collar, or the Wizard's mantle with its hood
   if (w) {
@@ -355,16 +357,16 @@ function side(F, o, cx, cy) {
     F.dot(cx - 17, cy - 12, C.gem);
   }
   const cy0 = cy - P.bob; // the legs stay on the ground
-  const leg = (x) => {
-    F.part(rect(x - 3, cy0 + 30, x + 2, cy0 + 58), f ? C.skin : C.pants);
-    F.part(rect(x - 3, cy0 + knee, x + 2, cy0 + 58), C.boot);
-    F.part(ellipse(x + 1, cy0 + 60.5, 4.5, 2.5), C.boot);
-    F.part(line(x - 3, cy0 + knee, x + 2, cy0 + knee, 1), C.trim, flat);
+  const leg = (x, G) => {
+    G.part(rect(x - 3, cy0 + 30, x + 2, cy0 + 58), f ? C.skin : C.pants);
+    G.part(rect(x - 3, cy0 + knee, x + 2, cy0 + 58), C.boot);
+    G.part(ellipse(x + 1, cy0 + 60.5, 4.5, 2.5), C.boot);
+    G.part(line(x - 3, cy0 + knee, x + 2, cy0 + knee, 1), C.trim, flat);
     const ky = cy0 + (w && f ? 45 : knee + 2);
-    F.part(poly([[x + 1, ky], [x + 4, ky + 1], [x + 2, ky + 5]]), C.trim);
+    G.part(poly([[x + 1, ky], [x + 4, ky + 1], [x + 2, ky + 5]]), C.trim);
   };
-  leg(cx - 2 - Math.round(3 * P.step)); // the far leg, then the near one, striding
-  leg(cx + 2 + Math.round(3 * P.step));
+  leg(cx - 2, turn(F, cx - 2, cy0 + 30, -STRIDE * P.step)); // the far leg, then the near one, striding
+  leg(cx + 2, turn(F, cx + 2, cy0 + 30, STRIDE * P.step));
   // the red layer and the coat's front edge
   F.part(poly([[cx - 4, cy + 27], [cx + 6, cy + 27], [cx + 5, cy + (f ? 31 : 48)], [cx - 6, cy + (f ? 31 : 50)]]), f ? C.shirt : C.lining); // (her short skirt)
   if (!(f && !w)) {
@@ -399,19 +401,20 @@ function side(F, o, cx, cy) {
     crystal(F, cx - 2, cy + 20, C, 1);
   }
   // the near sleeve, the staff, the hand on it
+  const A = turn(F, cx - 1, cy + 6, -ARM_SWING * 0.5 * P.step); // the arm swings as the hero walks
   const sx = cx + 14, ln = P.atk >= 0 ? CAST.lean[P.atk] : 0;
-  staff(F, sx, cy - 12 - lift(), cy + 60 - P.bob - lift(), C, w, ln);
+  staff(A, sx, cy - 12 - lift(), cy + 60 - P.bob - lift(), C, w, ln);
   if (w) { // the long sleeve hangs below the forearm
-    F.part(poly([[cx - 4, cy + 4], [cx + 1, cy + 4], [cx + 6, cy + 14], [cx + 12, cy + 20], [cx + 6, cy + 32], [cx - 2, cy + 24]]), C.coat);
-    F.part(line(cx + 12, cy + 20, cx + 6, cy + 32, 1), C.trim, flat);
-    F.part(line(cx + 6, cy + 32, cx - 2, cy + 24, 1), C.lining, flat);
-    crystal(F, cx + 6, cy + 33, C, 2);
+    A.part(poly([[cx - 4, cy + 4], [cx + 1, cy + 4], [cx + 6, cy + 14], [cx + 12, cy + 20], [cx + 6, cy + 32], [cx - 2, cy + 24]]), C.coat);
+    A.part(line(cx + 12, cy + 20, cx + 6, cy + 32, 1), C.trim, flat);
+    A.part(line(cx + 6, cy + 32, cx - 2, cy + 24, 1), C.lining, flat);
+    crystal(A, cx + 6, cy + 33, C, 2);
   }
-  F.part(poly([[cx - 4, cy + 4], [cx + 1, cy + 4], [cx + 6, cy + 14], [cx + 12, cy + 20], [cx + 8, cy + 25], [cx - 2, cy + 19]]), C.coat);
-  F.part(line(cx + 12, cy + 20, cx + 8, cy + 25, 1), C.trim, flat);
-  F.part(line(cx - 1, cy + 8, cx + 4, cy + 17, 1), C.fold, flat);
-  F.part(ellipse(sx - 1, cy + 22 - lift(), 2.6, 2.6), C.glove);
-  F.dot(sx - 1, cy + 24 - lift(), C.skin);
+  A.part(poly([[cx - 4, cy + 4], [cx + 1, cy + 4], [cx + 6, cy + 14], [cx + 12, cy + 20], [cx + 8, cy + 25], [cx - 2, cy + 19]]), C.coat);
+  A.part(line(cx + 12, cy + 20, cx + 8, cy + 25, 1), C.trim, flat);
+  A.part(line(cx - 1, cy + 8, cx + 4, cy + 17, 1), C.fold, flat);
+  A.part(ellipse(sx - 1, cy + 22 - lift(), 2.6, 2.6), C.glove);
+  A.dot(sx - 1, cy + 24 - lift(), C.skin);
   cast(F, sx + ln, cy - 12 - lift() - (w ? 3 : 2), C);
   return F;
 }
