@@ -721,7 +721,7 @@ export class Menus {
     }
     if (act === 'lookbody') { // the other body; a new hero's hair follows it the first time (it can be changed back)
       const b = t.dataset.id, d = this.lookDraft;
-      if ((d.body || 'm') !== b && this.lookMode === 'new') d.hair = b === 'f' ? (d.hair === 'messy' ? 'long' : d.hair) : (d.hair === 'long' ? 'messy' : d.hair);
+      if ((d.body || 'm') !== b && this.lookMode === 'new') d.hair = b === 'f' ? (d.hair === 'messy' ? 'pony' : d.hair) : (d.hair === 'pony' || d.hair === 'long' ? 'messy' : d.hair);
       d.body = b;
       this.hooks.look?.(d); this.hooks.ui?.(); this.render(id);
     }

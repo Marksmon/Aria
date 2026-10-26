@@ -3,14 +3,15 @@
 // (see pack-sprites.py "strip" and pack-heads.py). The hairstyle stays the same whatever the job;
 // hair colour is a dye: the hair's shading mapped onto the dye's colours, like a palette swap.
 import * as THREE from 'three';
+import { Frame, ellipse, poly, line, rect } from './painted.js';
 
 const URL = import.meta.glob('./art/heads.png', { eager: true, import: 'default' })['./art/heads.png'];
 // layout: { cw, ch, rows: { bald, messy, ... }, dirs: { down: { col, chin: [x, y], crown, w, eyes }, ... } }
 export const HEADS = import.meta.glob('./art/heads.json', { eager: true, import: 'default' })['./art/heads.json'] || null;
 
-// the picker's hairstyles
-export const HAIRSTYLES = { messy: 'Tousled', mane: 'Long', long: 'Straight' };
-export const hairstyles = () => Object.keys(HAIRSTYLES).filter((k) => HEADS?.rows?.[k] !== undefined);
+// the picker's hairstyles: the packed rows of heads.png, and the ones made in code from them (MADE)
+export const HAIRSTYLES = { messy: 'Tousled', mane: 'Long', long: 'Straight', pony: 'Ponytail' };
+export const hairstyles = () => Object.keys(HAIRSTYLES).filter((k) => HEADS?.rows?.[MADE[k]?.from ?? k] !== undefined);
 
 // dyes: shadow → highlight. 'brown' keeps the hair as drawn
 export const DYES = {
@@ -53,18 +54,73 @@ function dye(data, ramp) {
   return data;
 }
 
-// one cell of the heads sheet as a texture: row (bald or a hairstyle), direction, dye
+// ---------- the Ponytail, made in code from the Straight hair ----------
+// The Straight hair's bangs and face-framing locks, cut at the chin (front) or the nape (side and
+// back), and a ponytail tied high at the back of the crown. The tail hangs below the head's cell
+// (TAIL more rows), down the back; from the front only the tied hair peeking over the crown shows.
+// It is painted in the Straight hair's own browns (and outline), so the dyes colour it like the rest.
+const TAIL = 20;
+const HAIR = '#8e5a36', HAIR_DK = '#5a3420', HAIR_LT = '#c08a56', TIE = '#1c120e';
+const VIEW = { down: 'front', downright: 'front', downleft: 'front', right: 'side', left: 'side', up: 'back', upright: 'back', upleft: 'back' };
+function ponytail(base, dir) {
+  const { cw, ch } = HEADS, h = ch + TAIL, view = VIEW[dir];
+  const cx = HEADS.dirs[dir].chin[0];
+  // the Straight hair, cut: below the cut row nothing, the cut row closed with the outline
+  const cutAt = view === 'front' ? 35 : view === 'side' ? 30 : 31;
+  const bg = base.getContext('2d'), d = bg.getImageData(0, 0, cw, ch);
+  for (let y = cutAt - 1; y < ch; y++) for (let x = 0; x < cw; x++) {
+    const i = (y * cw + x) * 4;
+    if (y >= cutAt) d.data[i + 3] = 0;
+    else if (d.data[i + 3] > 128) { d.data[i] = 2; d.data[i + 1] = 1; d.data[i + 2] = 1; }
+  }
+  bg.putImageData(d, 0, 0);
+  const F = new Frame(cw, h), end = h - 2;
+  if (view === 'front') {
+    // the tied hair, peeking over the crown from behind (toward the back of the head on a turn)
+    const bx = cx + (dir === 'downright' ? -3 : dir === 'downleft' ? 3 : 0);
+    F.part(ellipse(bx, 6, 4.5, 3), HAIR);
+    F.part(line(bx - 2, 7, bx + 2, 7, 1), HAIR_DK, { outline: false, flat: true });
+  } else if (view === 'side') {
+    // tied at the back of the crown, swinging down behind the neck; the left view is the right one turned
+    const X = (dx) => (dir === 'left' ? cx - dx : cx + dx);
+    F.part(poly([[X(-13), 7], [X(-8), 9], [X(-9), 14], [X(-12), 22], [X(-13), 34], [X(-14), 46], [X(-16), end - 2], [X(-18), end], [X(-19), 50], [X(-20), 38], [X(-19), 26], [X(-17), 15]]), HAIR);
+    F.part(line(X(-14), 16, X(-17), end - 4, 1), HAIR_DK, { outline: false, flat: true });
+    F.part(line(X(-12), 18, X(-14), 40, 1), HAIR_LT, { outline: false, flat: true });
+    F.part(line(X(-13), 9, X(-9), 12, 2), TIE);
+  } else {
+    // down the middle of the back, a little to the far side on a turn
+    const tx = cx + (dir === 'upright' ? -1 : dir === 'upleft' ? 1 : 0);
+    F.part(poly([[tx - 3, 11], [tx + 3, 11], [tx + 5, 20], [tx + 5, 34], [tx + 3, 48], [tx, end], [tx - 3, 48], [tx - 5, 34], [tx - 5, 20]]), HAIR);
+    F.part(line(tx - 1, 15, tx - 1, end - 6, 1), HAIR_DK, { outline: false, flat: true });
+    F.part(line(tx + 2, 18, tx + 2, 44, 1), HAIR_LT, { outline: false, flat: true });
+    F.part(rect(tx - 3, 10, tx + 3, 12), TIE);
+  }
+  const c = document.createElement('canvas');
+  c.width = cw; c.height = h;
+  const g = c.getContext('2d');
+  if (view === 'front') { g.drawImage(F.toCanvas(), 0, 0); g.drawImage(base, 0, 0); } // the tuft behind the hair
+  else { g.drawImage(base, 0, 0); g.drawImage(F.toCanvas(), 0, 0); }
+  return c;
+}
+// hairstyles made in code: { from: the packed row they start from, make(base, dir) -> canvas }
+const MADE = { pony: { from: 'long', make: ponytail } };
+
+// one cell of the heads sheet as a texture: row (bald or a hairstyle), direction, dye. A hairstyle
+// made in code (MADE) may be taller than the cell, hanging below it
 const cache = {};
 export function headTexture(row, dir, dyeId = 'brown') {
-  if (!ready || HEADS.rows[row] === undefined || !HEADS.dirs[dir]) return null;
+  const made = MADE[row], src = made?.from ?? row;
+  if (!ready || HEADS.rows[src] === undefined || !HEADS.dirs[dir]) return null;
   const key = `${row}|${dir}|${dyeId}`;
   if (cache[key]) return cache[key];
-  const { cw, ch } = HEADS, c = document.createElement('canvas');
+  const { cw, ch } = HEADS;
+  let c = document.createElement('canvas');
   c.width = cw; c.height = ch;
+  c.getContext('2d').drawImage(img, HEADS.dirs[dir].col * cw, HEADS.rows[src] * ch, cw, ch, 0, 0, cw, ch);
+  if (made) c = made.make(c, dir);
   const g = c.getContext('2d');
-  g.drawImage(img, HEADS.dirs[dir].col * cw, HEADS.rows[row] * ch, cw, ch, 0, 0, cw, ch);
   const ramp = row !== 'bald' && DYES[dyeId]?.ramp;
-  if (ramp) g.putImageData(dye(g.getImageData(0, 0, cw, ch), ramp), 0, 0);
+  if (ramp) g.putImageData(dye(g.getImageData(0, 0, c.width, c.height), ramp), 0, 0);
   const t = new THREE.CanvasTexture(c);
   t.colorSpace = THREE.SRGBColorSpace;
   t.magFilter = t.minFilter = THREE.NearestFilter;
@@ -87,7 +143,7 @@ export function paintHead(g, at, dir, look, cut = null, cutBy = '') {
     const key = `${look.hair}|${dir}|${look.dye}|${cutBy}`;
     if (!trimmed[key]) {
       const c = document.createElement('canvas');
-      c.width = HEADS.cw; c.height = HEADS.ch;
+      c.width = img.width; c.height = img.height; // a made hairstyle can hang below the cell
       const t = c.getContext('2d');
       t.drawImage(img, 0, 0);
       cut.forEach((row, x) => { if (row > 0) t.clearRect(x, 0, 1, row); });
@@ -109,6 +165,6 @@ export function lookPortrait(look, size = 96) {
   const k = Math.floor(size / Math.max(HEADS.cw, HEADS.ch));
   const ox = (size - HEADS.cw * k) / 2, oy = (size - HEADS.ch * k) / 2;
   g.drawImage(head.image, ox, oy, HEADS.cw * k, HEADS.ch * k);
-  if (hair) g.drawImage(hair.image, ox, oy, HEADS.cw * k, HEADS.ch * k);
+  if (hair) g.drawImage(hair.image, ox, oy, hair.image.width * k, hair.image.height * k); // a ponytail runs off the bottom
   return c.toDataURL();
 }

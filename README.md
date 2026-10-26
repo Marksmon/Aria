@@ -462,7 +462,7 @@ MVP's Fire Heart).
 **Your look.** A character is layers: the job's body, then one shared head (the
 standard face: eyes only, no mouth), then your hairstyle, then headgear. You choose your hero's
 name (up to 16 letters, shown over your job and in Status), a male or female body, a hairstyle
-(Tousled, Long or Straight) and a hair dye (8 colours) when you start a new game; **Embla the
+(Tousled, Long, Straight or Ponytail, a heroine's first pick) and a hair dye (8 colours) when you start a new game; **Embla the
 Stylist** by Steinborg's fountain changes them for 1,000 perz. Your hair stays
 the same through job changes, and the job changes your outfit: the Trainee's browns, the Blader's
 navy capelet, the Sorcerer's purple coat, then the BladeMaster's black and gold armour, the

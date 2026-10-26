@@ -67,6 +67,10 @@ People dressed from a bald body still use the PixelLab bodies:
   - the bald head's geometry per direction: `chin` (the anchor), `crown`, `w` and `eyes`;
   - each hairstyle's layer: the pixels where it differs from the bald head.
 - Dyes (`src/hair.js`, `DYES`) map the hair's shading onto a colour ramp, like a palette swap.
+- A hairstyle can also be made in code from a packed one (`MADE` in `src/hair.js`): the Ponytail
+  is the Straight hair cut at the chin and nape, with a ponytail tied high at the back of the crown,
+  painted in the same browns so the dyes take it. Its layer is taller than the head's cell, so the
+  tail hangs down the back; a hat's cut still hides the hair above its brim.
 
 ## Headgear
 
