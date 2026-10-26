@@ -444,6 +444,13 @@ export function unlearnFirstJob(prog) {
   prog.resets.skills++;
   return true;
 }
+// a second job's retraining: only its own tree (the first-job points that opened it stay put)
+export function unlearnSecondJob(prog) {
+  if (prog.tier !== 2) return false;
+  for (const id of Object.keys(prog.skills)) if (SKILLS[id]?.job === prog.job) delete prog.skills[id];
+  prog.resets.skills++;
+  return true;
+}
 export const pointsIn = (prog, job) => Object.entries(prog.skills).reduce((a, [id, n]) => a + (SKILLS[id]?.job === job ? n : 0), 0);
 export const MK_POINTS = 20; // a second job of two paths (the Magic Knight) wants this many points in each path's tree
 // may this hero take a second job's trial? From Job Level 40 of a first job. A second job of two

@@ -522,6 +522,7 @@ button.eq:active { background: var(--w-sel); }
 .qbox small { font-size: 12px; color: var(--w-dim); }
 .btnrow { display: flex; justify-content: flex-end; gap: 4px; }
 .btnrow.wrap { flex-wrap: wrap; justify-content: flex-start; margin-bottom: 6px; }
+.say > .btnrow { flex-wrap: wrap; } /* a talk's buttons (a Keeper has six) go onto a second line, never off the window */
 /* a trainer's question: one answer per row, and what they said about the last one */
 .btnrow .answers { display: flex; flex-direction: column; gap: 4px; flex: 1; }
 .btnrow:has(.answers) { align-items: flex-end; }

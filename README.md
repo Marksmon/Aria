@@ -733,7 +733,8 @@ leads to each.
 | Saeunn the Seeress | Steinborg | the story; lore of the Fire Giant and Galdrheim |
 | Embla the Stylist | Steinborg | hairstyle and dye, 1,000 perz |
 | Ivar the Ferryman | Steinborg | carts to any land you have walked, 300–3,000 perz |
-| Liv the Guide | Steinborg | who does what in the city · rethinks your training: one free stat reset and one free first-job skill reset (before a second job), then 20,000 perz each |
+| Liv the Guide | Steinborg | who does what in the city · **Reset stats / skills**: one free stat reset and one free skill reset (a first job's skills, or a second job's own skills), then 20,000 perz each |
+| Ingrid the Tutor · Sven the Trainer | Galdrheim · Veidheim (beside the Keeper) | **Reset stats / skills**, as Liv does |
 | Bjorn the Gate Guard | Steinborg | which monsters attack on sight |
 | Hakon the Carter | Salt Bay, by the west road | the story (Chapter 5) |
 | Boatman | Salt Bay, by the water | rows you out to **Bloop Island**, the raid (see Raids) |

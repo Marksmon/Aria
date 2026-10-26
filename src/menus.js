@@ -666,7 +666,7 @@ export class Menus {
     const step = this.hooks.storyStep?.(), ch = step ? +(/Chapter (\d+)/.exec(step.ch)?.[1] || 0) : 99;
     const greet = n.greet?.({ job: JOBS[p.job].name, jobId: p.job, tier: p.tier, baseLv: p.baseLv, ch });
     // what else they do: trade and craft
-    const extra = (n.retrain ? '<button class="rbtn" data-act="retrainwin">Rethink my training</button>' : '')
+    const extra = (n.retrain ? '<button class="rbtn" data-act="retrainwin">Reset stats / skills</button>' : '')
       + (n.stylist ? '<button class="rbtn" data-act="stylist">Change my look</button>' : '')
       + (n.shop ? '<button class="rbtn" data-act="shop">Buy / Sell</button>' : '')
       + (n.craft ? `<button class="rbtn" data-act="craftwin" data-id="${n.craft}">${CRAFTERS[n.craft].button}</button>` : '')
@@ -708,16 +708,16 @@ export class Menus {
         <div class="say"><p>Where to? You have ${this.inv.perz.toLocaleString()} perz.</p><div class="btnrow wrap">${rows || '<span>You have not walked any other land yet.</span>'}</div>
         <div class="btnrow"><button class="rbtn soft" data-act="close">Bye</button></div></div></div>`;
     }
-    if (n.retrain && this.retraining) { // Liv: stats, and first-job skills, back to be placed again
+    if (n.retrain && this.retraining) { // the trainers: stats, and a job's skills, back to be placed again
       const p = this.prog, cost = (k) => (p.resets[k] ? RETRAIN_COST : 0), sure = this.retrainSure;
       const inTrial = Object.values(NPCS).some((o) => o.trial2?.some((k) => k in this.quests.active));
-      const skillsOk = p.tier === 1 && !inTrial;
+      const skillsOk = p.tier === 2 || (p.tier === 1 && !inTrial), second = p.tier === 2 ? JOBS[p.job].name : null;
       const row = (k, label, ok, why) => `<button class="rbtn ${sure === k ? 'danger' : ''}" data-act="retrain" data-id="${k}" ${ok && this.inv.perz >= cost(k) ? '' : 'disabled'}>${sure === k ? 'Yes, start over' : label} · ${cost(k) ? cost(k).toLocaleString() + ' perz' : 'free'}</button>${ok ? '' : `<small>${why}</small>`}`;
       this.wins.talk.querySelector('.rw-title').textContent = n.name;
       return `<div class="talkwrap"><img class="portrait" src="${this.portrait(this.npc)}" alt="">
         <div class="say"><p>Not happy with how you trained? The first time is on me. After that, the masters charge ${RETRAIN_COST.toLocaleString()} perz.</p>
-        <div class="qbox"><small>Stats: every stat back to 1, and all your points to place again.</small><small>Skills: every Blader, Sorcerer and Archer skill unlearnt, and the points back. Your Trainee skills stay.</small></div>
-        <div class="btnrow wrap retrain">${row('stats', 'Reset my stats', true, '')}${row('skills', 'Reset my first-job skills', skillsOk, p.tier === 1 ? 'Not during a second-job trial.' : p.tier === 0 ? 'Choose a first job first.' : 'Not once you have a second job.')}</div>
+        <div class="qbox"><small>Stats: every stat back to 1, and all your points to place again.</small><small>${second ? `Skills: every ${esc(second)} skill unlearnt, and the points back. Your first-job and Trainee skills stay.` : 'Skills: every Blader, Sorcerer and Archer skill unlearnt, and the points back. Your Trainee skills stay.'}</small></div>
+        <div class="btnrow wrap retrain">${row('stats', 'Reset my stats', true, '')}${row('skills', second ? `Reset my ${esc(second)} skills` : 'Reset my first-job skills', skillsOk, p.tier === 1 ? 'Not during a second-job trial.' : 'Choose a first job first.')}</div>
         <div class="btnrow"><button class="rbtn soft" data-act="close">Bye</button></div></div></div>`;
     }
     const parcel = this.quests.deliveryFor(this.npc);
@@ -797,6 +797,7 @@ export class Menus {
     for (const k of id ? [id] : Object.keys(this.wins)) {
       const el = this.wins[k];
       if (el) el.querySelector('.rw-body').innerHTML = k === 'story' ? this.storyPage() : this[k]();
+      if (el && k === 'talk') this.place(el, el.offsetLeft, el.offsetTop); // a talk that grows (a trainer's choices, a Keeper's towns) moves up to fit
     }
   }
 

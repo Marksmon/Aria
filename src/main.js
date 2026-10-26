@@ -23,7 +23,7 @@ import { BigMap } from './bigmap.js';
 import { headsReady, paintHead, lookPortrait } from './hair.js';
 import { headgearReady, gearCut, paintGear } from './headgear.js';
 import { derive, playerAttack, mobAttack, magicAttack, elementMod, ELEMENTS } from './rules.js';
-import { SKILLS, EDGE_FX, skillLv, spCost, castTime, learn, skillList, weaponOk, WEAPON_NAMES, BOW_RANGE, unlearnFirstJob, RETRAIN_COST } from './skills.js';
+import { SKILLS, EDGE_FX, skillLv, spCost, castTime, learn, skillList, weaponOk, WEAPON_NAMES, BOW_RANGE, unlearnFirstJob, unlearnSecondJob, RETRAIN_COST } from './skills.js';
 import { Menus } from './menus.js';
 import { iconTexture, iconURL, ITEMS, baseOf } from './items.js';
 import { DayNight } from './daynight.js';
@@ -1227,17 +1227,19 @@ const menus = new Menus(inv, prog, player, {
     menus.close('talk');
     refreshQuests();
   },
-  // Liv's retraining: the first of each kind is free
+  // the trainers' retraining (Liv, Ingrid, Sven): the first of each kind is free. Skills: a first
+  // job's trees, or a second job's own tree (its beasts go home with their summons)
   retrain(kind) {
     const cost = prog.resets[kind] ? RETRAIN_COST : 0;
     if (inv.perz < cost) { menus.message('Not enough perz'); return; }
     if (kind === 'stats') prog.resetStats();
-    else if (!unlearnFirstJob(prog)) return;
+    else if (!(prog.tier === 2 ? unlearnSecondJob(prog) : unlearnFirstJob(prog))) return;
+    if (kind === 'skills') allies.clear();
     inv.perz -= cost;
     applyStats();
     hotbar.render?.();
     audio.play('craft');
-    menus.message(kind === 'stats' ? 'Your stats are back to 1: place your points again in the Status window.' : 'Your first-job skills are unlearnt: spend the points again in the Skills window.');
+    menus.message(kind === 'stats' ? 'Your stats are back to 1: place your points again in the Status window.' : `Your ${prog.tier === 2 ? JOBS[prog.job].name : 'first-job'} skills are unlearnt: spend the points again in the Skills window.`);
     persist();
   },
   // a delivery handed over: back to whoever sent it

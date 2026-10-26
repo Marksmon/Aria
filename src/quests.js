@@ -202,6 +202,13 @@ export const NPCS = {
     quests: [],
   },
   // ---------- Galdrheim, the city of sorcerers ----------
+  // a trainer in each city, beside the Keeper: stats and skills reset, like Liv in Steinborg
+  ingrid: {
+    name: 'Ingrid the Tutor', map: 'magic', x: 24.6, z: 46.0, dress: { body: 'sorc', main: [260, 0.3, 1.1], accent: [45, 0.6, 1.1], hair: 'long', dye: 'brown' },
+    hello: 'I tutor the young sorcerers, and the not so young. If your training went wrong somewhere, sit down: we can start your stats or your skills over.',
+    later: () => '', bye: 'Study well. And sleep sometimes.',
+    retrain: true, quests: [],
+  },
   vigdis: {
     name: 'Archmage Vigdis', map: 'magic', x: 28, z: 20.8, dress: { body: 'sorc', main: [215, 0.15, 1.55], accent: [46, 0.75, 1.05], hair: 'mane', dye: 'silver', top: 'ember_crown' }, trial: ['sorcerer_trial', 'sorcerer_trial2', 'sorcerer_trial3'], job: 'mage',
     trial2: ['wizard_trial', 'wizard_trial2', 'wizard_trial3'], job2: 'wizard',
@@ -361,6 +368,12 @@ export const NPCS = {
     later: () => '', bye: 'Good hunting! Bring me back something furry.',
     quests: [],
     lore: ['Honey from the hills is the best medicine in Aria. The Bears agree, which is the trouble.'],
+  },
+  sven: {
+    name: 'Sven the Trainer', map: 'hunt', x: 26.6, z: 27.2, dress: { body: 'blader', main: [100, 0.35, 0.85], accent: [30, 0.55, 1], hair: 'messy', dye: 'blonde' },
+    hello: 'I drill the village archers, and I can drill the bad habits out of you too. Want your stats or your skills placed over again?',
+    later: () => '', bye: 'Feet apart, elbow up. Off you go.',
+    retrain: true, quests: [],
   },
   leif: {
     name: 'Leif the Tanner', map: 'hunt', x: 46, z: 42.6, craft: 'hunt', dress: { body: 'blader', main: [28, 0.5, 0.75], accent: [45, 0.4, 0.9], hair: 'messy', dye: 'black' },
