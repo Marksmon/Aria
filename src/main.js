@@ -21,8 +21,8 @@ import { Hotbar } from './hotbar.js';
 import { BigMap } from './bigmap.js';
 import { headsReady, paintHead } from './hair.js';
 import { headgearReady, gearCut, paintGear } from './headgear.js';
-import { derive, playerAttack, mobAttack, magicAttack, elementMod } from './rules.js';
-import { SKILLS, EDGE_FX, skillLv, spCost, castTime, learn, skillList, weaponOk, WEAPON_NAMES, unlearnFirstJob, RETRAIN_COST } from './skills.js';
+import { derive, playerAttack, mobAttack, magicAttack, elementMod, ELEMENTS } from './rules.js';
+import { SKILLS, EDGE_FX, skillLv, spCost, castTime, learn, skillList, weaponOk, WEAPON_NAMES, BOW_RANGE, unlearnFirstJob, RETRAIN_COST } from './skills.js';
 import { Menus } from './menus.js';
 import { iconTexture, iconURL, ITEMS, baseOf } from './items.js';
 import { DayNight } from './daynight.js';
@@ -90,7 +90,7 @@ mobs.bossHp = save?.bossHp || {};
 const prog = new Progress();
 prog.load(save?.prog);
 // the hero's body follows the job and the look's body (male or female), painted in code (sprites.js designSet)
-const JOB_BODY = { novice: 'trainee', swordman: 'blader', mage: 'sorc', blademaster: 'master', wizard: 'wiz', magicknight: 'mknight' };
+const JOB_BODY = { novice: 'trainee', swordman: 'blader', mage: 'sorc', archer: 'archer', blademaster: 'master', wizard: 'wiz', magicknight: 'mknight' };
 const bodyArt = (look) => lib.design(`${JOB_BODY[prog.job] || 'blader'}${look.body === 'f' ? 'F' : 'M'}`);
 const player = new Player(scene, world, bodyArt({ ...save?.look }), lib.shadow, fx);
 player.setPos(save?.x ?? world.spawn.x, save?.z ?? world.spawn.z);
@@ -149,8 +149,8 @@ inv.load(save?.inv);
 inv.dropUnwearable(); // gear rules can change between versions
 // stats + gear -> the player's battle numbers (Ragnarok rules); HP/SP stay put, capped by the new max
 // timed buffs, in seconds left: aspd (Quickening Draught), warcry (War Cry's ATK bonus)
-const buffs = { aspd: 0, warcry: 0, ward: 0, aegis: 0, momentum: 0 };
-let warcryLv = 0, wardLv = 0, endureGuard = 0, aegisLv = 0;
+const buffs = { aspd: 0, warcry: 0, ward: 0, aegis: 0, momentum: 0, focus: 0 };
+let warcryLv = 0, wardLv = 0, endureGuard = 0, aegisLv = 0, focusLv = 0;
 let nav = null; // auto-navigation: { quest, map, npc, why } while walking to a quest by itself
 // second-job synergies: the BladeMaster's Momentum stacks, the last spell's element (Resonance),
 // the last Edge's element (Elemental Chain)
@@ -183,11 +183,22 @@ function inflict(m, st, lv, hitDmg = 0) {
   fx.number(m.x, overHead(m, m.sprite.scale.y * 0.8 + 0.35), m.z, STATUS_TEXT[st.kind], 'miss');
 }
 let skillClock = 0; // seconds since the game started, for those windows
-const weaponKind = () => (ITEMS[inv.gear.weapon]?.kind === 'staff' ? 'staff' : 'sword');
+const weaponKind = () => { const k = ITEMS[inv.gear.weapon]?.kind; return k === 'staff' || k === 'bow' ? k : 'sword'; };
+// an Archer's bonuses on one monster: Hunter's Mark on it, Steady Aim from 4 paces
+function bowMul(m) {
+  let k = 1;
+  if (m.markT > skillClock) k *= 1 + 0.04 * m.markLv;
+  if (weaponKind() === 'bow' && skillLv(prog, 'steadyaim') && Math.hypot(m.x - player.x, m.z - player.z) - m.def.r >= 4) k *= 1.1;
+  return k;
+}
 function applyStats() {
   const gear = inv.gearStats();
   const hide = skillLv(prog, 'ironhide');
-  const sword = ITEMS[inv.gear.weapon]?.kind !== 'staff';
+  const sword = weaponKind() === 'sword', bow = weaponKind() === 'bow';
+  const st = gear.stats;
+  st.fns = (st.fns || 0) + skillLv(prog, 'keeneye') + (buffs.focus > 0 ? focusLv : 0);
+  if (buffs.focus > 0) st.qkn = (st.qkn || 0) + focusLv;
+  gear.hit += bow ? skillLv(prog, 'longsight') : 0;
   gear.mastery = skillLv(prog, 'basics') + (sword ? 2 * skillLv(prog, 'discipline') + 3 * skillLv(prog, 'blademastery') : 0);
   gear.hit += sword ? skillLv(prog, 'blademastery') : 0;
   gear.flee += skillLv(prog, 'footwork') ? 3 : 0;
@@ -203,6 +214,12 @@ function applyStats() {
   player.hp = Math.min(player.hp, ps.maxHp);
   player.sp = Math.min(player.sp, ps.maxSp);
   player.haste = 0; // nothing hastes the walk for now: walking speed is a big buff in Aria
+  // a bow shoots from afar, with arrows (their element colours the shot)
+  player.bow = bow;
+  player.noAmmo = bow && !inv.gear.ammo;
+  player.reach = bow ? BOW_RANGE + 0.2 * skillLv(prog, 'longsight') : 1.35;
+  player.arrowCol = bow && gear.el ? ELEMENTS[gear.el].color : '#efe2c0';
+  player.dmgMod = bowMul;
   player.setHeadgear(inv.gear.head && baseOf(inv.gear.head), inv.gear.face && baseOf(inv.gear.face)); // refined headgear looks like the plain piece
   player.blockChance = inv.wearing('block') ? 0.2 : 0;
   // Spellblade: normal sword hits carry some of the MATK
@@ -285,6 +302,7 @@ const audio = new Audio();
 // damage numbers float up from whoever was hit, Ragnarok style
 const overHead = (o, h) => world.heightAt(o.x, o.z) + h;
 player.on('swing', () => audio.play('swing'));
+player.on('noammo', () => menus.message('Equip arrows to shoot (the Arrows slot)'));
 // the first weak elemental hit ever explains the grey number, once
 function weakTip(m, el) {
   if (story.flags.elementTip) return;
@@ -1091,7 +1109,14 @@ const menus = new Menus(inv, prog, player, {
     if (job === 'mage' && first && !inv.bag.count('oak_staff') && inv.gear.weapon !== 'oak_staff') { inv.add('oak_staff', 1); menus.toast('oak_staff', 1); }
     const off = inv.dropUnwearable();
     if (job === 'mage' && !inv.gear.weapon) inv.equip('oak_staff'); // straight into the new Sorcerer's hand
-    if (off.length) menus.message(`Put away what a ${JOBS[job].name} can't use: ${off.map((i) => ITEMS[i].name).join(', ')}`);
+    // a new Archer is handed a bow and a quiver of arrows, put on at once
+    if (job === 'archer' && first) {
+      for (const id of ['hunting_bow', 'wooden_arrow']) if (!inv.bag.count(id) && !Object.values(inv.gear).includes(id)) { inv.add(id, 1); menus.toast(id, 1); }
+      if (ITEMS[inv.gear.weapon]?.kind !== 'bow' && inv.bag.count('hunting_bow')) inv.equip('hunting_bow');
+      if (!inv.gear.ammo && inv.bag.count('wooden_arrow')) inv.equip('wooden_arrow');
+    }
+    const aJob = `${/^[AEIOU]/.test(JOBS[job].name) ? 'an' : 'a'} ${JOBS[job].name}`; // an Archer
+    if (off.length) menus.message(`Put away what ${aJob} can't use: ${off.map((i) => ITEMS[i].name).join(', ')}`);
     player.setArt(jobArt());
     applyStats();
     player.heal(player.maxHp);
@@ -1100,10 +1125,10 @@ const menus = new Menus(inv, prog, player, {
     const y = world.heightAt(player.x, player.z);
     fx.sparkle(player.x, y + 0.6, player.z, '#ffe37a', 24);
     fx.number(player.x, y + 1.9, player.z, `${JOBS[job].name}!`, 'level');
-    menus.message(switching ? `You are a ${JOBS[job].name} again. Your Job Level and skills come with you.`
-      : JOBS[job].tier === 2 ? `You are now a ${JOBS[job].name}! Job Level starts again; new skills wait in the Skills window.`
-        : prog.unlocked.length > 1 ? `You are now a ${JOBS[job].name} too! Both paths share your Job Level and skill points.`
-          : `You are now a ${JOBS[job].name}! Earn Job Levels for skill points.`);
+    menus.message(switching ? `You are ${aJob} again. Your Job Level and skills come with you.`
+      : JOBS[job].tier === 2 ? `You are now ${aJob}! Job Level starts again; new skills wait in the Skills window.`
+        : prog.unlocked.length > 1 ? `You are now ${aJob} too! Your paths share one Job Level and one pool of skill points.`
+          : `You are now ${aJob}! Earn Job Levels for skill points.`);
     announceSkills(known);
     menus.render();
     persist();
@@ -1299,6 +1324,39 @@ function useSkill(id) {
     return;
   }
   if (player.state !== 'normal') return;
+  // ---- Archer ----
+  if (id === 'focus') {
+    if (!pay()) return;
+    buffs.focus = 60; focusLv = lv;
+    applyStats();
+    say('Focus'); audio.play('craft');
+    fx.sparkle(player.x, y + 0.9, player.z, '#bfe8a0', 14);
+    return;
+  }
+  if (id === 'leapback') { // 3 paces back, away from the nearest monster (or from where you face)
+    const near = mobs.nearest(player.x, player.z, 8);
+    let ax = near ? player.x - near.x : -player.face.x, az = near ? player.z - near.z : -player.face.z;
+    const d = Math.hypot(ax, az) || 1;
+    ax /= d; az /= d;
+    let bx = player.x, bz = player.z;
+    for (let k = 0.5; k <= 3; k += 0.5) {
+      const x = player.x + ax * k, z = player.z + az * k, t = player.tiles.tileAt(x, z);
+      if (!player.tiles.free(t[0], t[1]) || !world.walkable(x, z)) break;
+      bx = x; bz = z;
+    }
+    if (bx === player.x && bz === player.z) { menus.message('No room to leap back'); return; }
+    if (!pay()) return;
+    fx.puff(player.x, y + 0.2, player.z, 0.8);
+    const keep = player.goal?.mob?.alive ? player.goal.mob : null;
+    player.stop();
+    player.setPos(bx, bz);
+    player.iframes = Math.max(player.iframes, 0.3);
+    if (near) player.face = { x: -ax, z: -az };
+    fx.puff(bx, world.heightAt(bx, bz) + 0.2, bz, 0.8);
+    audio.play('dodge');
+    if (keep) player.command({ mob: keep }); // keep shooting from the new spot
+    return;
+  }
   if (id === 'standfirm') {
     if (pay()) { player.endureT = 6 + Math.floor(lv / 2); endureGuard = lv / 100; say('Stand Firm'); audio.play('block'); }
     return;
@@ -1406,6 +1464,37 @@ function useSkill(id) {
   }
   // Thrust, Cleave and Heavy Strike: walk up and hit with the next swing. opts: el, defMul
   const strike = (mult, hitMult, done, opts = {}) => player.command({ mob: target, skill: { mult, hitMult, pay, done, ...opts } });
+  // ---- Archer: Hunter's Mark (from bow range), Double Shot and Arrow Rain (with the next shot) ----
+  if (id === 'huntmark') {
+    const run = (t) => {
+      if (!t.alive || !pay()) return;
+      t.markT = skillClock + 10; t.markLv = lv;
+      say("Hunter's Mark");
+      fx.sparkle(t.x, overHead(t, t.sprite.scale.y * 0.9), t.z, '#ff5a4a', 12);
+      fx.number(t.x, overHead(t, t.sprite.scale.y * 0.8 + 0.3), t.z, 'Marked', 'miss');
+      audio.play('craft');
+      player.command({ mob: t });
+    };
+    player.command({ mob: target, spell: { range: player.reach, time: 0.05, run, name: sk.name } });
+    return;
+  }
+  if (id === 'doubleshot') {
+    const m = sk.power(lv) / 100;
+    strike(m, 1, (t) => { say('Double Shot'); later(sk.every, () => arrowHit(t, m)); });
+  }
+  if (id === 'arrowrain') {
+    const m = sk.power(lv) / 100;
+    strike(m, 1, (t) => {
+      say('Arrow Rain');
+      const cx = t.x, cz = t.z, gy = world.heightAt(cx, cz);
+      for (let i = 0; i < 10; i++) { const a = Math.random() * Math.PI * 2, r = Math.random() * 2.3; fx.sparkle(cx + Math.cos(a) * r, gy + 0.2, cz + Math.sin(a) * r, '#efe2c0', 1); }
+      for (const o of [...mobs.list]) {
+        if (!o.alive || o === t || Math.hypot(o.x - cx, o.z - cz) > 2.5 + o.def.r) continue;
+        arrowHit(o, m, { x: o.x + (Math.random() - 0.5) * 0.4, y: overHead(o, 4), z: o.z + (Math.random() - 0.5) * 0.4 }, 0.6);
+      }
+      if (t.alive) { t.knock.x *= 1.5; t.knock.z *= 1.5; }
+    });
+  }
   if (id === 'thrust') strike(1.25, 1, (t) => { say('Thrust'); combo(t); });
   if (id === 'cleave') {
     strike(sk.power(lv) / 100, 1, (t) => {
@@ -1506,6 +1595,23 @@ function edgeHit(m, atkMult, matkMult, el) {
   const dx = m.x - player.x, dz = m.z - player.z, d = Math.hypot(dx, dz) || 1;
   m.hit(dmg, dx / d * 0.5, dz / d * 0.5);
   return dmg;
+}
+// one more arrow at a monster (Double Shot's second, Arrow Rain's): it flies from `from` (else the
+// hero's bow) and the hit is rolled when it lands; push = how hard it pushes the monster back
+function arrowHit(t, mult, from, push = 0.4) {
+  if (!t.alive) return;
+  const f = from || { x: player.x + player.face.x * 0.4, y: world.heightAt(player.x, player.z) + 0.85, z: player.z + player.face.z * 0.4 };
+  audio.play('swing');
+  fx.bolt(f.x, f.y, f.z, t, player.arrowCol, () => {
+    if (!t.alive) return;
+    const res = playerAttack(player.ps, t.effDef(), mult * player.atkMul * bowMul(t), 1, true);
+    const yy = overHead(t, t.sprite.scale.y * 0.8);
+    if (res.miss) { fx.number(t.x, yy, t.z, 'Miss', 'miss'); return; }
+    fx.number(t.x, yy, t.z, res.dmg, res.el > 1 ? 'crit' : res.el < 1 ? 'miss' : 'dealt');
+    const dx = t.x - player.x, dz = t.z - player.z, d = Math.hypot(dx, dz) || 1;
+    t.hit(res.dmg, dx / d * push, dz / d * push);
+    audio.play('hit');
+  }, 0.2);
 }
 // one more blade hit on a monster (Twin Fang's second cut, a Combo): a skill hit, so no crit
 function bladeHit(t, mult, opts = {}) {
@@ -1706,6 +1812,7 @@ function tickSkills(dt) {
     if (buffs[k] <= 0 && k === 'momentum') momentum = 0;
     if (buffs[k] <= 0 && k === 'imbue') { imbueEl = null; applyStats(); menus.message('Your blade loses its element'); }
     if (buffs[k] <= 0 && k === 'aegis') { player.barrier = 0; applyStats(); }
+    if (buffs[k] <= 0 && k === 'focus') applyStats();
   }
   if (buffs.aegis > 0 && player.barrier <= 0) { buffs.aegis = 0; applyStats(); menus.message('Stone Aegis breaks'); }
   if (player.endureT <= 0) endureGuard = 0;

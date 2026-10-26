@@ -11,6 +11,11 @@ fight in detail). The simulator uses the game's own rules (`src/rules.js`), mons
 - **Sorcerer:** KNL 50%, FNS 25%, END 20%, QKN 5%; Ember Bolt 5, Arc Lightning 5, Ember Bolt 10,
   Mana Well... It casts whichever bolt hits the monster hardest. Wooden Staff, then Rune Staff and
   a Robe.
+- **Archer:** FNS 45%, QKN 20%, END 25%, POW 10%; Double Shot 5, Keen Eye 5, Double Shot 10, Keen
+  Eye 10, Focus, Long Sight, Arrow Rain... Hunting Bow and Wooden Arrows, then a +5 Composite Bow,
+  Iron Arrows, Chain Mail, Wool Cape and Leather Boots (no shield: a bow takes both hands). It
+  shoots twice as a monster closes in, steps back so 30% of a monster's swings miss (half of a
+  boss's), and uses Arrow Rain on a boss's guards.
 
 The hero stands and fights: a skill when there is SP, a normal attack otherwise, a potion below 45%
 HP. Bosses stomp (half the stomps are stepped out of) and call guards, which the hero cuts down
@@ -56,43 +61,46 @@ Trainee, not a Sorcerer.
 
 ## Every monster at its own level (bosses with 20 Orange Potions; the Lantern Wisp without any)
 
-| Monster | Lv | Blader at its level | Sorcerer at its level |
-|---|---|---|---|
-| Bloop | 1 | 100% win · 1 s · 100% HP left | 100% win · 1 s · 100% HP left |
-| Sprout | 3 | 100% win · 2 s · 95% HP left | 100% win · 4 s · 93% HP left |
-| Little Bloop | 4 | 100% win · 1 s · 100% HP left | 100% win · 1 s · 100% HP left |
-| Blue Bloop | 6 | 100% win · 4 s · 80% HP left | 99% win · 12 s · 42% HP left |
-| Crab | 9 | 89% win · 12 s · 24% HP left | 0% win · 12 s · boss at 58% |
-| Wisp | 11 | 88% win · 13 s · 23% HP left | 0% win · 12 s · boss at 58% |
-| Yellow Bloop | 12 | 99% win · 11 s · 38% HP left | 26% win · 13 s · 0% HP left |
-| Mushroom | 14 | 96% win · 22 s · 25% HP left | 100% win · 10 s · 55% HP left |
-| Lantern Wisp | 16 | 1% win · 18 s · 0% HP left | 0% win · 12 s · boss at 38% |
-| Willow | 17 | 99% win · 8 s · 59% HP left | 100% win · 8 s · 50% HP left |
-| Red Sprout | 18 | 98% win · 5 s · 73% HP left | 100% win · 6 s · 52% HP left |
-| Sea Bloop | 22 | 100% win · 3 s · 80% HP left | 62% win · 10 s · 6% HP left |
-| Elder Willow | 23 | 100% win · 84 s · 58% HP left · 12 pots | 91% win · 56 s · 66% HP left · 8 pots |
-| Treant | 24 | 100% win · 5 s · 77% HP left | 100% win · 8 s · 37% HP left |
-| Giant Sprout | 25 | 100% win · 89 s · 58% HP left · 15 pots | 91% win · 44 s · 66% HP left · 6 pots |
-| Blue Crab | 26 | 100% win · 3 s · 79% HP left | 44% win · 8 s · 0% HP left |
-| Kobold | 28 | 100% win · 4 s · 76% HP left | 100% win · 4 s · 77% HP left |
-| Beetle | 30 | 100% win · 5 s · 67% HP left | 100% win · 4 s · 77% HP left |
-| Kobold Archer | 30 | 100% win · 3 s · 89% HP left | 100% win · 2 s · 100% HP left |
-| King Crab | 32 | 100% win · 94 s · 53% HP left · 15 pots | 97% win · 84 s · 60% HP left · 13 pots |
-| Kobold Assassin | 33 | 99% win · 4 s · 68% HP left | 100% win · 2 s · 78% HP left |
-| Dark Mushroom | 34 | 100% win · 5 s · 69% HP left | 76% win · 9 s · 11% HP left |
-| Dark Wisp | 38 | 99% win · 6 s · 67% HP left | 99% win · 7 s · 21% HP left |
-| Goblin | 38 | 100% win · 5 s · 74% HP left | 100% win · 7 s · 25% HP left |
-| Giant Mushroom | 40 | 100% win · 123 s · 49% HP left · 18 pots | 100% win · 82 s · 55% HP left · 15 pots |
-| Goblin Archer | 41 | 100% win · 4 s · 88% HP left | 100% win · 5 s · 69% HP left |
-| Fire Beetle | 42 | 100% win · 7 s · 69% HP left | 100% win · 7 s · 22% HP left |
-| Goblin Assassin | 44 | 97% win · 6 s · 66% HP left | 100% win · 4 s · 62% HP left |
-| Fire Wisp | 45 | 98% win · 7 s · 66% HP left | 100% win · 6 s · 27% HP left |
-| Giant Beetle | 48 | 99% win · 111 s · 48% HP left · 14 pots | 100% win · 42 s · 53% HP left · 8 pots |
-| Snake | 46 | 100% win · 6 s · 71% HP left | 100% win · 4 s · 80% HP left |
-| Wolf | 48 | 99% win · 8 s · 59% HP left | 100% win · 4 s · 62% HP left |
-| Alpha Wolf | 51 | 89% win · 92 s · 48% HP left · 13 pots | 100% win · 22 s · 51% HP left · 3 pots |
-| Bear | 53 | 100% win · 10 s · 67% HP left | 100% win · 8 s · 28% HP left |
-| Great Bear | 56 | 100% win · 108 s · 48% HP left · 15 pots | 100% win · 39 s · 51% HP left · 10 pots |
+The Archer column came with the Archer: close to the Blader, a little safer against field monsters
+(it shoots first and steps back) and a little weaker against the Great Bear and its Bears.
+
+| Monster | Lv | Blader at its level | Sorcerer at its level | Archer at its level |
+|---|---|---|---|---|
+| Bloop | 1 | 100% win · 1 s · 100% HP left | 100% win · 1 s · 100% HP left | 100% win · 0 s · 100% HP left |
+| Sprout | 3 | 100% win · 2 s · 95% HP left | 100% win · 4 s · 100% HP left | 100% win · 0 s · 100% HP left |
+| Little Bloop | 4 | 100% win · 1 s · 100% HP left | 100% win · 3 s · 100% HP left | 100% win · 0 s · 100% HP left |
+| Blue Bloop | 6 | 100% win · 5 s · 79% HP left | 99% win · 10 s · 44% HP left | 100% win · 1 s · 100% HP left |
+| Crab | 9 | 92% win · 12 s · 25% HP left | 0% win · 12 s · boss at 59% | 100% win · 6 s · 78% HP left |
+| Wisp | 11 | 82% win · 13 s · 22% HP left | 0% win · 12 s · boss at 58% | 100% win · 7 s · 77% HP left |
+| Yellow Bloop | 12 | 99% win · 11 s · 39% HP left | 18% win · 13 s · 0% HP left | 100% win · 3 s · 90% HP left |
+| Mushroom | 14 | 97% win · 22 s · 26% HP left | 100% win · 10 s · 55% HP left | 100% win · 8 s · 82% HP left |
+| Lantern Wisp | 16 | 0% win · 18 s · boss at 33% | 0% win · 12 s · boss at 38% | 78% win · 17 s · 19% HP left |
+| Willow | 17 | 98% win · 8 s · 59% HP left | 100% win · 8 s · 50% HP left | 100% win · 6 s · 87% HP left |
+| Red Sprout | 18 | 98% win · 5 s · 69% HP left | 100% win · 6 s · 54% HP left | 100% win · 4 s · 88% HP left |
+| Sea Bloop | 22 | 100% win · 3 s · 80% HP left | 67% win · 10 s · 5% HP left | 100% win · 3 s · 100% HP left |
+| Elder Willow | 23 | 100% win · 83 s · 58% HP left · 12 pots | 90% win · 56 s · 64% HP left · 8 pots | 100% win · 82 s · 62% HP left · 10 pots |
+| Treant | 24 | 100% win · 5 s · 77% HP left | 100% win · 8 s · 37% HP left | 100% win · 8 s · 71% HP left |
+| Giant Sprout | 25 | 100% win · 89 s · 58% HP left · 15 pots | 92% win · 44 s · 65% HP left · 6 pots | 100% win · 88 s · 61% HP left · 12 pots |
+| Blue Crab | 26 | 100% win · 3 s · 80% HP left | 41% win · 8 s · 0% HP left | 100% win · 2 s · 100% HP left |
+| Kobold | 28 | 100% win · 4 s · 76% HP left | 100% win · 4 s · 77% HP left | 100% win · 3 s · 86% HP left |
+| Beetle | 30 | 100% win · 5 s · 67% HP left | 100% win · 4 s · 77% HP left | 100% win · 4 s · 83% HP left |
+| Kobold Archer | 30 | 100% win · 3 s · 90% HP left | 100% win · 2 s · 100% HP left | 100% win · 2 s · 100% HP left |
+| King Crab | 32 | 100% win · 95 s · 53% HP left · 15 pots | 97% win · 85 s · 61% HP left · 13 pots | 100% win · 90 s · 54% HP left · 10 pots |
+| Kobold Assassin | 33 | 97% win · 4 s · 68% HP left | 100% win · 2 s · 78% HP left | 100% win · 2 s · 100% HP left |
+| Dark Mushroom | 34 | 100% win · 5 s · 69% HP left | 76% win · 9 s · 11% HP left | 100% win · 4 s · 86% HP left |
+| Dark Wisp | 38 | 99% win · 5 s · 67% HP left | 99% win · 7 s · 22% HP left | 100% win · 3 s · 88% HP left |
+| Goblin | 38 | 100% win · 5 s · 74% HP left | 100% win · 7 s · 26% HP left | 100% win · 5 s · 86% HP left |
+| Giant Mushroom | 40 | 100% win · 122 s · 49% HP left · 17 pots | 100% win · 82 s · 55% HP left · 15 pots | 100% win · 92 s · 52% HP left · 14 pots |
+| Goblin Archer | 41 | 100% win · 4 s · 88% HP left | 100% win · 5 s · 81% HP left | 100% win · 3 s · 90% HP left |
+| Fire Beetle | 42 | 100% win · 7 s · 69% HP left | 100% win · 7 s · 21% HP left | 100% win · 6 s · 74% HP left |
+| Goblin Assassin | 44 | 95% win · 6 s · 64% HP left | 100% win · 4 s · 62% HP left | 100% win · 3 s · 89% HP left |
+| Fire Wisp | 45 | 98% win · 7 s · 66% HP left | 100% win · 6 s · 28% HP left | 100% win · 4 s · 86% HP left |
+| Snake | 46 | 100% win · 7 s · 70% HP left | 100% win · 4 s · 80% HP left | 100% win · 4 s · 88% HP left |
+| Giant Beetle | 48 | 99% win · 111 s · 49% HP left · 14 pots | 100% win · 42 s · 52% HP left · 8 pots | 100% win · 93 s · 50% HP left · 14 pots |
+| Wolf | 48 | 99% win · 8 s · 59% HP left | 100% win · 4 s · 62% HP left | 100% win · 4 s · 87% HP left |
+| Alpha Wolf | 51 | 94% win · 93 s · 47% HP left · 14 pots | 100% win · 22 s · 52% HP left · 3 pots | 100% win · 68 s · 50% HP left · 12 pots |
+| Bear | 53 | 100% win · 10 s · 65% HP left | 100% win · 8 s · 28% HP left | 100% win · 12 s · 55% HP left |
+| Great Bear | 56 | 100% win · 108 s · 48% HP left · 15 pots | 100% win · 39 s · 52% HP left · 9 pots | 84% win · 109 s · 22% HP left · 20 pots |
 
 ## Mini-bosses at their hinted level, 20 Orange Potions
 

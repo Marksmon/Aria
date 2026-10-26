@@ -33,10 +33,11 @@ export const NPCS = {
     greet: (c) => (c.ch >= 5 ? 'The fire burns high again, thanks to you. Even so, my old bones feel trouble on the roads.'
       : c.tier === 2 ? `A ${c.job}! The songs will have your name in them yet.`
       : c.jobId === 'swordman' ? 'A Blader now! I always knew that practice sword wanted to be more than a stick.'
-      : c.jobId === 'mage' ? 'A Sorcerer! Mind the tents when you practise, child.' : null),
+      : c.jobId === 'mage' ? 'A Sorcerer! Mind the tents when you practise, child.'
+      : c.jobId === 'archer' ? 'An Archer! Point that thing at the wolves, not at my tent.' : null),
     quests: ['warden'],
     // a Trainee ready for a job is sent on to Steinborg
-    ready: 'You have learnt all a Trainee can. For the blade, go north through Moss Field to Steinborg: Captain Ulfr trains Bladers. For sorcery, go west to Fen Shore and north to Galdrheim, the city of sorcerers.',
+    ready: 'You have learnt all a Trainee can. For the blade, go north through Moss Field to Steinborg: Captain Ulfr trains Bladers. For sorcery, go west to Fen Shore and north to Galdrheim, the city of sorcerers. For the bow, go east past the Red Sprouts to Birch Grove and on through Willow Marsh to Veidheim: Huntmaster Sigrid trains Archers.',
   },
   tilly: {
     name: 'Astrid the Cook', x: 36.2, z: 33.2,
@@ -314,9 +315,14 @@ export const NPCS = {
   sigrid: {
     name: 'Huntmaster Sigrid', map: 'hunt', x: 45, z: 21.2, dress: { body: 'blader', main: [110, 0.45, 0.8], accent: [35, 0.7, 1], hair: 'long', dye: 'red', top: 'woven_cap', bow: true },
     hello: 'Mind the line: arrows fly here. I am Sigrid, Huntmaster of Veidheim. Every one of us can put an arrow through a ring at fifty paces, and lately we need to.',
+    trial: ['archer_trial', 'archer_trial2', 'archer_trial3'], job: 'archer',
+    trialHint: 'Trainees who have learnt all their basics can take the Archer\'s Trial with me: Trainee Job Level 10 and Basic Training 9.',
     later: (lv) => `The wilds out there would eat you alive. Come back at Base Level ${lv}.`,
     bye: 'Keep your eyes open and your string dry.',
-    greet: (c) => ({ blademaster: 'A BladeMaster. Pity about the sword; you would have made a fine archer.',
+    greet: (c) => ({ archer: 'One of mine. Shoulders down, elbow up, and breathe out as you loose.',
+      swordman: 'A Blader. You walk right up to them? Brave. Strange, but brave.',
+      mage: 'A Sorcerer. Your bolts fly well enough; ours just do not need a song.',
+      blademaster: 'A BladeMaster. Pity about the sword; you would have made a fine archer.',
       wizard: 'A Wizard! Try not to set the targets on fire. Again.',
       magicknight: 'Sword and spell. Out here we would add a bow, but nobody is perfect.' })[c.jobId] || null,
     quests: ['elderwillow', 'wolfpack', 'alphawolf', 'ancienttreant'],
@@ -328,7 +334,7 @@ export const NPCS = {
   },
   eydis: {
     name: 'Eydis the Trader', map: 'hunt', x: 38, z: 29, shop: 'eydis', dress: { body: 'trainee', main: [95, 0.35, 0.9], accent: [30, 0.6, 1.05], hair: 'long', dye: 'blonde' },
-    hello: 'Arrows I keep for the village, but everything else a hunter needs is here: White Potions, Honey, Speed Potions, feathers. And I buy pelts.',
+    hello: 'Asa sells the bows and arrows; everything else a hunter needs is here: White Potions, Honey, Speed Potions, feathers. And I buy pelts.',
     later: () => '', bye: 'Good hunting! Bring me back something furry.',
     quests: [],
     lore: ['Honey from the hills is the best medicine in Aria. The Bears agree, which is the trouble.'],
@@ -351,10 +357,11 @@ export const NPCS = {
   },
   asa: {
     name: 'Asa the Fletcher', map: 'hunt', x: 35.4, z: 40.2, dress: { body: 'trainee', main: [140, 0.4, 0.85], accent: [10, 0.6, 1], hair: 'pony', dye: 'brown', bow: true },
-    hello: 'I make the bows and arrows for the whole village. Willow for the bowstaves, goose feathers for the fletching, and patience for the rest.',
+    hello: 'I make the bows and arrows for the whole village, and sell them to anyone who can draw one. Willow for the bowstaves, goose feathers for the fletching, and patience for the rest. A quiver lasts: we pick our arrows up again.',
     later: (lv) => `My wood is running low, but the woods are too dangerous for you yet. Base Level ${lv}, then.`,
     bye: 'Straight shafts, true flights.',
     quests: ['bowstaves'],
+    shop: 'asa',
     lore: ['A walking Willow\'s twigs make the best bows: they still want to bend. You just have to catch the Willow first.', 'Sigrid shoots the farthest. I shoot the straightest. We do not talk about who wins.'],
   },
   bodil: {
@@ -514,6 +521,52 @@ export const QUESTS = {
         hint: 'No. A blow breaks your focus, and the chant with it.' },
     ],
     thanks: 'Water and life, fire and earth... and they all answer you. The runes have spoken.',
+    reward: { xp: 250, perz: 300 },
+  },
+  archer_trial: {
+    title: "Archer's Trial 1: The Yellow Marks", job: true, kind: 'kill', mob: 'yellowSlime', n: 5, lv: 1,
+    intro: 'An archer\'s first marks hop. Go back west into Willow Marsh and put down five Yellow Bloops. Keep your distance: let them come to you, and they never reach you. Keep the gel they drop, too.',
+    thanks: 'Five, and you are not even sticky. Now, the gel.',
+    reward: { xp: 120, perz: 100 },
+  },
+  archer_trial2: {
+    title: "Archer's Trial 2: Waxing the String", job: true, kind: 'quiz', items: { gel: 5 }, lv: 1, task: 'wax a bowstring with Huntmaster Sigrid',
+    intro: 'A dry string snaps, a wet one sags. We wax ours with Bloop Gel, boiled down. Bring me five Bloop Gel and wax a string with me: warm the gel, rub it in from the middle out, then rub it again with a scrap of leather until the string is warm.',
+    questions: [
+      { q: 'The gel is warm. Where do you start rubbing it in?',
+        options: ['At the top of the string', 'In the middle, working out', 'Only near the arrow'], a: 1,
+        why: 'From the middle, out to each end. The string wears evenly that way.',
+        hint: 'Not there. Listen again: the middle first, then out to each end.' },
+      { q: 'The wax is on. What do you rub it with?',
+        options: ['A scrap of leather, until the string is warm', 'Nothing: leave it to dry', 'Water, to cool it'], a: 0,
+        why: 'Leather, until it is warm. The heat works the wax into every strand.',
+        hint: 'Water and wax do not mix. Leather, until the string is warm.' },
+      { q: 'And why do we wax it at all?',
+        options: ['It shoots fire', 'It keeps the string from drying and snapping', 'It smells nice'], a: 1,
+        why: 'A dry string snaps at the worst time. A waxed one lasts a season.',
+        hint: 'Fire is a matter of arrows, not wax. A dry string snaps.' },
+    ],
+    thanks: 'A good string, and you waxed it yourself. One last thing: the questions every hunter here has answered.',
+    reward: { xp: 150, perz: 150, items: { potion: 5 } },
+  },
+  archer_trial3: {
+    title: "Archer's Trial 3: The Huntmaster's Questions", job: true, kind: 'quiz', lv: 1, task: "Answer Huntmaster Sigrid's three questions",
+    intro: 'A good eye is half an archer. The rest is knowing where to stand and what to load.',
+    questions: [
+      { q: 'How close must you be to shoot a monster with a bow?',
+        options: ['Right beside it, like a sword', 'About five paces away', 'Anywhere on the map'], a: 1,
+        why: 'Five paces, a little more with Long Sight. Shoot before they reach you.',
+        hint: 'No. A bow reaches about five paces: far enough to shoot first.' },
+      { q: 'You fight a Willow. Willows are Earth. Which arrows do you load?',
+        options: ['Fire Arrows: fire burns earth', 'Earth Arrows: like for like', 'It makes no difference'], a: 0,
+        why: 'Fire Arrows. The arrows in your Arrows slot set the element of every shot.',
+        hint: 'Like against like barely scratches. What burns earth?' },
+      { q: 'A Wolf is on you and you have no room to shoot. What do you do?',
+        options: ['Stand and trade blows', 'Leap Back, then shoot again', 'Drop the bow'], a: 1,
+        why: 'Leap Back: a hop of three paces, and you are shooting again. You learn it at Job Level 10.',
+        hint: 'An archer in a brawl is an archer losing. Get your distance back.' },
+    ],
+    thanks: 'A keen eye and a cool head. Welcome to the hunt, Archer.',
     reward: { xp: 250, perz: 300 },
   },
   // ---------- the second jobs: three harder steps each, from Job Level 40 of a first job ----------
@@ -750,7 +803,7 @@ export class Quests {
       if (id in this.active) return { id, q, state: this.ready(id, inv) ? 'ready' : 'active' };
       return { id, q, state: 'offer' };
     };
-    // a first job's trial: for a Trainee ready for it, or a hero of the other first job walking this path too
+    // a first job's trial: for a Trainee ready for it, or a hero of another first job walking this path too
     if (n.trial && !prog.unlocked.includes(n.job)
       && (prog.job === 'novice' ? prog.jobLv >= 10 && skillLv(prog, 'basics') >= 9 : prog.tier === 1)) {
       const st = series(n.trial, { id: n.trial.at(-1), q: QUESTS[n.trial.at(-1)], state: 'job', job: n.job });

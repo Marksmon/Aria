@@ -10,19 +10,37 @@ quests. Code: `src/progress.js` (jobs, levels, points), `src/skills.js` (trees, 
 | Tier | Jobs | Job Level |
 |---|---|---|
 | 0 | Trainee (`novice`) | 1–10 |
-| 1 | Blader (`swordman`), Sorcerer (`mage`) | 1–50, one level shared by both |
+| 1 | Blader (`swordman`), Sorcerer (`mage`), Archer (`archer`) | 1–50, one level shared by all |
 | 2 | BladeMaster (`blademaster`, from Blader), Wizard (`wizard`, from Sorcerer), Magic Knight (`magicknight`, from both) | 1–50, starts again at 1 |
 
-## First jobs: walking both paths
+## First jobs: walking several paths
 
 - A Trainee takes one first job through its trial: Trainee Job 10 and Basic Training 9.
-- A first-job hero may also take the **other** first job's trial (a Blader the Sorcerer's, a
-  Sorcerer the Blader's). They then hold both.
-- Both first jobs share **one Job Level and one pool of skill points**. Example: at Job 40 there
+- A first-job hero may also take **another** first job's trial (a Blader the Sorcerer's or the
+  Archer's, and so on). They then hold each one earned.
+- The first jobs share **one Job Level and one pool of skill points**. Example: at Job 40 there
   are 39 first-job points (plus the Trainee's 9), which may be split, e.g. 20 as a Blader and 19
   as a Sorcerer.
-- Switching between the two first jobs is done at a **Keeper** (the Keepers' ledger must be
-  signed). Trainers do not switch jobs.
+- Switching between first jobs is done at a **Keeper** (the Keepers' ledger must be signed).
+  Trainers do not switch jobs.
+
+## The Archer
+
+- Trained by **Huntmaster Sigrid** in Veidheim. Trial: 5 Yellow Bloops in Willow Marsh, wax a
+  bowstring with 5 Bloop Gel (a quiz with items, like the Sorcerer's brew), her three questions.
+  A new Archer is handed a Hunting Bow and Wooden Arrows, worn at once.
+- **Bows** (`kind: 'bow'`) take both hands (no shield). A bow's normal attack and the bow skills
+  reach `BOW_RANGE` (5) paces, +0.2 a level of Long Sight; the arrow flies and the hit is rolled
+  when it lands.
+- **Ragnarok's ranged rule:** with a bow, status ATK comes from FNS (`fns + (fns/10)^2 + pow/5 +
+  ftn/5`) instead of POW (`derive`, `gear.bow`). The bow draws at the job's `delay.bow`.
+- **Arrows** are an equipment slot (`ammo`), bought once and never used up (the owner's call). The
+  arrows' ATK adds to the bow's; an elemental arrow sets the shot's element (over the bow's own).
+  No arrows: the bow can't shoot ("Equip arrows to shoot").
+- Five actives like the Blader (Double Shot, Arrow Rain, Focus, Hunter's Mark, Leap Back) and
+  passives (Keen Eye, Long Sight, Steady Aim). Leap Back and Steady Aim come free at Job 10.
+- Balance: about the Blader's damage on one target (`build-tools/sim.mjs`); it takes less damage
+  by shooting first and stepping back, and has fewer HP and less DEF.
 
 ## Skill points
 
@@ -38,24 +56,26 @@ quests. Code: `src/progress.js` (jobs, levels, points), `src/skills.js` (trees, 
 
 ### Skills that need a weapon
 
-| Needs a sword (any weapon but a staff) | Needs a staff |
-|---|---|
-| Cleave, Heavy Strike, Ground Slash (Blader) | Ember Bolt, Frost Shard, Arc Lightning, Flame Ring (Sorcerer) |
-| Twin Fang, Piercing Edge, Final Blade, Blade Dance (BladeMaster) | Stone Spike, Earthquake, Meteor Storm, Storm Gust, Thunderstorm (Wizard) |
-| Elemental Edge, Elemental Blade, Elemental Nova (Magic Knight) | |
+| Needs a sword (or bare hands) | Needs a staff | Needs a bow |
+|---|---|---|
+| Cleave, Heavy Strike, Ground Slash (Blader) | Ember Bolt, Frost Shard, Arc Lightning, Flame Ring (Sorcerer) | Double Shot, Arrow Rain (Archer) |
+| Twin Fang, Piercing Edge, Final Blade, Blade Dance (BladeMaster) | Stone Spike, Earthquake, Meteor Storm, Storm Gust, Thunderstorm (Wizard) | |
+| Elemental Edge, Elemental Blade, Elemental Nova (Magic Knight) | | |
 
-No weapon needed: Mend, Thrust, Guard, Rest, War Cry, Stand Firm, Rune Ward, Blink, Stone Aegis.
+No weapon needed: Mend, Thrust, Guard, Rest, War Cry, Stand Firm, Rune Ward, Blink, Stone Aegis,
+Focus, Hunter's Mark, Leap Back.
 
-- Gear follows every job earned, so a Blader who passed the Sorcerer's trial may hold a staff.
+- Gear follows every job earned, so a Blader who passed the Sorcerer's trial may hold a staff,
+  and one who passed the Archer's a bow.
 
 ## Second jobs: who may take which trial
 
 - A second-job trial opens from **Job Level 40** of the first job (first jobs go to 50).
 - **Magic Knight:** both first jobs earned, and **at least 20 skill points spent in each**
   first-job tree (Blader and Sorcerer).
-- **BladeMaster / Wizard:** for a hero who earned only one first job, the matching second job.
-  For a hero who earned both, only the second job of the first job with the **most points spent**.
-  A tie opens both.
+- **BladeMaster / Wizard (one path):** for a hero who earned only one first job, the matching
+  second job. For a hero who earned several, only the second job of the first job with the **most
+  points spent** of all those walked. A tie opens each tied one.
 - The 20/20 rule opens only the Magic Knight. It does not open both BladeMaster and Wizard.
 - The current job does not matter; only the points do.
 - **Only one second job can be taken.** Once a step of one second-job trial is accepted, the other
@@ -120,6 +140,7 @@ MATK part), used by both the damage and the skill text.
 - Trainers:
   - Captain Ulfr (Blader, BladeMaster), Steinborg.
   - Archmage Vigdis (Sorcerer, Wizard), Galdrheim.
+  - Huntmaster Sigrid (Archer), Veidheim.
   - Sir Eirik the Runeblade (Magic Knight), Steinborg.
 - Taking a second job:
   - Job Level goes back to 1, and the first-job level is kept for its points (`firstLv`).

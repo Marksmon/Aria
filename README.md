@@ -271,8 +271,10 @@ easy field beside the trainer: a hunt, something made from what it dropped, and 
 questions (tap an answer; a wrong one only earns a hint). **Captain Ulfr** in Steinborg tests
 Bladers (6 Bloops and 4 Sprouts in Moss Field, 5 Bloop Gel and 3 Seeds as proof, three questions
 on fighting); **Archmage Vigdis** in Galdrheim tests Sorcerers (4 Blue Bloops in Fen Shore, brew a
-Blue Draught from 3 Bloop Gel and 2 Water Drops, three questions on elements and chanting). Pass,
-and they change your job. Elder Halvard sends ready Trainees on to the city.
+Blue Draught from 3 Bloop Gel and 2 Water Drops, three questions on elements and chanting);
+**Huntmaster Sigrid** in Veidheim tests Archers (5 Yellow Bloops in Willow Marsh, wax a bowstring
+with 5 Bloop Gel, three questions on range, arrows and Leap Back). Pass, and they change your job.
+Elder Halvard sends ready Trainees on to the city.
 
 | Trainee | | |
 |---|---|---|
@@ -311,25 +313,46 @@ A new Sorcerer is handed an Wooden Staff.
 | Blink | Job 10 | reappear 4 paces ahead |
 | Swift Chant | Job 10, passive | spells cast 15% faster |
 
-### Walking both paths
+**Archers** shoot from about five paces (more with Long Sight): tap a monster and the hero stops
+at bow range and looses arrows, each hit rolled when the arrow lands. With a bow, ATK comes from
+FNS instead of POW, and FNS also brings the HIT that lets arrows find quick monsters. A bow needs
+**arrows** in the Arrows slot of the Equipment window: they are bought once and never run out.
+Elemental arrows (Fire, Ice, Wind, Earth) give every shot their element and a little ATK; Iron
+Arrows hit harder. A bow takes both hands, so no shield. A new Archer is handed a Hunting Bow and
+Wooden Arrows, already worn. Asa the Fletcher in Veidheim sells bows and arrows; Leif crafts the
+Willow Longbow, the Gale Bow and the Heartwood Bow.
 
-A Blader can also take the Sorcerer's trial with Archmage Vigdis (and a Sorcerer the Blader's with
-Captain Ulfr). Both first jobs then share **one Job Level and one pool of skill points**: at Job 40
-you have the same points whichever you are, and could put 20 into each tree. Switch between them
-at any **Keeper** you have signed with. Points only go into the **active job's** trees; to train
-the other path, switch to it first.
+| Archer | | |
+|---|---|---|
+| Keen Eye | passive, 10 | +1 FNS per level |
+| Long Sight | passive, 10 | the bow reaches 0.2 paces further and +1 HIT per level |
+| Double Shot | 10, 10–15 SP | two arrows at once, 78–150% each |
+| Arrow Rain | 10, needs Double Shot 5 | arrows fall round the target: 88–160% to every monster within 2.5 paces, pushing them back a little |
+| Focus | 10 | +1 QKN and +1 FNS per level for 60 s |
+| Hunter's Mark | 5, needs Keen Eye 3 | marks a monster for 10 s: everything you hit it with deals 4% more per level |
+| Leap Back | Job 10 | spring 3 paces back, away from the nearest monster |
+| Steady Aim | Job 10, passive | +10% damage with a bow to a monster 4 or more paces away |
+
+### Walking several paths
+
+A Blader can also take the Sorcerer's trial with Archmage Vigdis or the Archer's with Huntmaster
+Sigrid (and so on, for any of the three). Every first job then shares **one Job Level and one pool
+of skill points**: at Job 40 you have the same points whichever you are, and could put 20 into two
+trees. Switch between them at any **Keeper** you have signed with. Points only go into the
+**active job's** trees; to train another path, switch to it first.
 
 Every skill you have learnt keeps working, whatever job you wear. Passives always apply; actives
 need the right weapon in hand. Gear follows every job you have earned, so a Blader who passed the
-Sorcerer's trial may hold a staff to cast.
+Sorcerer's trial may hold a staff to cast, and one who passed the Archer's a bow.
 
-| Needs a sword (any weapon but a staff) | Needs a staff |
-|---|---|
-| Cleave, Heavy Strike, Ground Slash (Blader) | Ember Bolt, Frost Shard, Arc Lightning, Flame Ring (Sorcerer) |
-| Twin Fang, Piercing Edge, Final Blade, Blade Dance (BladeMaster) | Stone Spike, Earthquake, Meteor Storm, Storm Gust, Thunderstorm (Wizard) |
-| Elemental Edge, Elemental Blade, Elemental Nova (Magic Knight) | |
+| Needs a sword (or bare hands) | Needs a staff | Needs a bow |
+|---|---|---|
+| Cleave, Heavy Strike, Ground Slash (Blader) | Ember Bolt, Frost Shard, Arc Lightning, Flame Ring (Sorcerer) | Double Shot, Arrow Rain (Archer) |
+| Twin Fang, Piercing Edge, Final Blade, Blade Dance (BladeMaster) | Stone Spike, Earthquake, Meteor Storm, Storm Gust, Thunderstorm (Wizard) | |
+| Elemental Edge, Elemental Blade, Elemental Nova (Magic Knight) | | |
 
-No weapon needed: Mend, Thrust, Guard, Rest, War Cry, Stand Firm, Rune Ward, Blink, Stone Aegis.
+No weapon needed: Mend, Thrust, Guard, Rest, War Cry, Stand Firm, Rune Ward, Blink, Stone Aegis,
+Focus, Hunter's Mark, Leap Back.
 
 ### Second jobs
 
@@ -343,8 +366,8 @@ points stay. Second jobs wear their first job's outfit in new colours and glow w
 - **Magic Knight** (Sir Eirik the Runeblade, Steinborg, beside Ulfr): 30 Kobolds, 10 Dark Crystals and
   15 Glow Dust, the King Crab. Only for heroes who walked both paths with **at least 20 skill
   points in each tree**.
-- A hero of both paths may take the BladeMaster or Wizard trial only for the first job with the most
-  points (a tie opens both). A Job 50 hero with 30 points as a Blader and 20 as a Sorcerer may
+- A hero of several paths may take the BladeMaster or Wizard trial only for the first job with the
+  most points (a tie opens each tied one). A Job 50 hero with 30 points as a Blader and 20 as a Sorcerer may
   become a BladeMaster or a Magic Knight; with 25 and 25, any of the three; with 35 and 15, only a
   BladeMaster. Only one second job can be taken: once you accept a step of one trial, the other
   trials close. Quit a trial midway (Quit quest in the Quest View) and it starts over, and you may
@@ -428,6 +451,19 @@ to take it off. Shops sell 1, 10 or all, and "Sell all" keeps what an active que
 | Return Feather | back to your save point (the camp until you save with a Keeper) | Hild's shop, Ragna |
 | Honey | 150–210 HP | Eydis's shop (Veidheim); Bears |
 
+**Bows and arrows** (Archers). A bow takes both hands. Arrows go in the Arrows slot and are
+never used up; an elemental arrow sets every shot's element.
+
+| Bow or arrows | ATK | Where |
+|---|---|---|
+| Hunting Bow | 30, weapon Lv 1 | Asa's shop (600 perz); a new Archer is given one |
+| Composite Bow | 55, weapon Lv 2 | Asa's shop (3,800 perz) |
+| Willow Longbow | 75, weapon Lv 3, FNS +1 | Leif crafts it (Base 20): 10 Willow Twigs, 4 Old Bark, 4 Thorns |
+| Gale Bow | 92, weapon Lv 3, Wind, QKN +2 | Leif crafts it (Base 50): the Alpha Pelt, 4 Wolf Fangs, 8 Willow Twigs |
+| Heartwood Bow | 120, weapon Lv 4, FNS +3, QKN +1 | Leif crafts it (Base 58): Ancient Heartwood, the Bear Heart, 6 Old Bark |
+| Wooden Arrows · Iron Arrows | +2 · +10 | Asa's shop (20 · 1,500 perz) |
+| Fire · Ice · Wind · Earth Arrows | +5, and their element | Asa's shop (2,500 perz each) |
+
 **Rare drops.** Each monster has a rare equip it drops very seldom. A rare find
 bursts gold on the ground and shows in gold in your bag.
 
@@ -462,10 +498,10 @@ bursts gold on the ground and shows in gold in your bag.
 | Thorn Ring · Coral Shield · Dark Hood · Fire Armor · Fire Charm | | | the new lands' monsters, 0.2–0.3% |
 | Thorn Cape · Sea Sword · Mushroom Staff · Fire Boots | | | the mini-bosses, 2–3% |
 
-Two accessory slots, a shield and a garment slot join head, face, armor, weapon, shoes and light.
+Two accessory slots, a shield, a garment and an arrows slot join head, face, armor, weapon, shoes and light.
 
 **Weapon levels.** Lv 4 weapons are the best there are: the Giant Sword, Flame Sword, Lava Sword
-and Sea Sword, and the Great, Flame, Fire and Mushroom Staves. They refine for the most ATK
+and Sea Sword, the Great, Flame, Fire and Mushroom Staves, and the Heartwood Bow. They refine for the most ATK
 (+7 a level) and are the only gear that can take a card slot.
 
 ## Refining, slots and cards
@@ -515,7 +551,8 @@ free slot. It stays there for good, unless the weapon later breaks at Holger's.
 | Fire Giant Card | Weapon (a sorcerer's card) | MATK +60%, KNL +12, FNS +8, Max SP +30%, Max HP +15%, weapon turns Fire (+15% Fire spells with a staff) | Fire Giant, 1% |
 
 **Who can wear what.** Swords up to the Iron Sword: Trainee and Blader; rare and elemental
-swords: Blader only. Staves: Sorcerer only (the Wooden Staff also Trainees). Heavy armor
+swords: Blader only. Staves: Sorcerer only (the Wooden Staff also Trainees). Bows and arrows:
+Archer only. Heavy armor
 (Beetle Armor, Chain Mail, Fire Armor): Blader only; robes: Sorcerer only; Pearl Armor:
 Blader and Sorcerer. Bucklers and round shields: Trainee and Blader. Everything else: any job.
 A job change puts away what the new job can't use.
@@ -530,7 +567,8 @@ name (up to 16 letters, shown over your job and in Status), a male or female bod
 (Tousled, Long, Straight or Ponytail, a heroine's first pick) and a hair dye (8 colours) when you start a new game; **Embla the
 Stylist** by Steinborg's fountain changes them for 1,000 perz. Your hair stays
 the same through job changes, and the job changes your outfit: the Trainee's browns, the Blader's
-navy capelet, the Sorcerer's purple coat, then the BladeMaster's black and gold armour, the
+navy capelet, the Sorcerer's purple coat, the Archer's leather vest over green (blue on her) with a quiver on
+the back, then the BladeMaster's black and gold armour, the
 Wizard's navy and red robe or the Magic Knight's orange coat, each holding its weapon (the Trainee
 a dagger) and each with its own walk and attack. Headgear snaps to the head layer, so hats sit on the crown and
 glasses and masks sit on the eyes, in every direction and every frame. See
@@ -574,7 +612,7 @@ rings the portal to take, or the person to talk to. A purple **!** marks who the
 |---|---|
 | Prologue (the tutorial) | Talk to the Elder · raise a stat · defeat 3 Bloops in Moss Field · learn Basic Training · put a potion on the hotbar · back to the Elder |
 | 1: The Stone-Fort | Travel to Steinborg · tell Captain Ulfr the fires are failing · sign the Keeper's ledger (the Keepers: healing, storage, save point, teleport) · meet Saeunn the Seeress · sell something for perz |
-| 2: Blade or Rune | Pass a job trial and become a Blader or a Sorcerer |
+| 2: Blade or Rune | Pass a job trial and become a Blader, a Sorcerer or an Archer |
 | 3: Embers in the Wilds | Saeunn's warning · defeat the Giant Sprout in Birch Grove · travel to Ember Hill |
 | 4: The Fire-Ring | Archmage Vigdis will sing the fire-ring's runes anew · **the Vigil on Ember Hill**: stand in her rune circle and hold off the Giant's heralds for 75 seconds while her song reaches him · bring the song home: the fire-ring rekindled |
 | 5: The Salt Road | Captain Ulfr: kobolds rob the salt carts · Hakon the Carter in Salt Bay · **Bloop Island**: the Boatman's Tutorial crossing (the first raid) · defeat 12 kobolds in Stone Field · Saeunn and the glowing red coal · go down into Coal Pit · Dag the Miner: the goblins drive the kobolds to dig for a "Waking Fire" |
@@ -631,10 +669,10 @@ leads to each.
 | Torvald the Runecarver | Galdrheim | Shadows in Black Wood (38): take rubbings of 3 Watcher stones in Black Wood |
 | Hrafn the Stargazer, Signy the Apprentice | Galdrheim | tales of the city, the stars and the jotnar |
 | Runa the Gatewarden | Galdrheim | the rune-gate: to any land you have walked, 300–3,000 perz |
-| Huntmaster Sigrid | Veidheim, at the archery range | The Elder Willow (26) · The Pack in the Hills (48): 25 Wolves · The Leader of the Pack (54): the Alpha Wolf · The Waking Wood (60): the Ancient Treant |
+| Huntmaster Sigrid | Veidheim, at the archery range | The Archer's Trial · The Elder Willow (26) · The Pack in the Hills (48): 25 Wolves · The Leader of the Pack (54): the Alpha Wolf · The Waking Wood (60): the Ancient Treant |
 | Ottar the Farmer | Veidheim, by the barn | The Lost Lambs (16): find 3 lambs in Willow Marsh · Snakes in the Barley (46): 20 Snakes |
 | Leif the Tanner | Veidheim | makes hunters' gear (Hunter's Cloak and Boots, Claw Charm, Bark Armor, Alpha Cloak, Bear Heart Charm) · Pelts for the Winter (50): 10 Wolf Pelts, 5 Bear Claws · The Great Bear (59) |
-| Asa the Fletcher | Veidheim | Wood for Bows (22): 12 Willow Twigs, 4 Old Bark |
+| Asa the Fletcher | Veidheim | shop: bows and arrows · Wood for Bows (22): 12 Willow Twigs, 4 Old Bark |
 | Eydis the Trader | Veidheim | shop: potions (White too), Honey, Speed Potions, feathers, torches |
 | Halla the Healer | Veidheim | heals HP and SP for free |
 | Kalf the Gate Archer | Veidheim, at the north gate | Walking Trees (22): 15 Treants in the Old Forest |

@@ -18,15 +18,16 @@ export const STATS = {
   fns: { name: 'FNS', full: 'Finesse', desc: 'Hit, steadier damage, attack speed' },
   ftn: { name: 'FTN', full: 'Fortune', desc: 'Critical hits, perfect dodge' },
 };
-// Aria's own job names (the ids of the first jobs stay Ragnarok's): the Trainee becomes a Blader or
-// a Sorcerer (tier 1), and either can later take a second job (tier 2). A hero may walk both first
-// paths: they share one Job Level and one pool of skill points, and switch between them at their
-// trainers. Walking both opens the Magic Knight.
+// Aria's own job names (the ids of the first jobs stay Ragnarok's): the Trainee becomes a Blader, a
+// Sorcerer or an Archer (tier 1), and any can later take a second job (tier 2). A hero may walk
+// several first paths: they share one Job Level and one pool of skill points, and switch between
+// them at a Keeper. Walking the Blader's and the Sorcerer's opens the Magic Knight.
 export const OLD_EDGES = ['flameedge', 'frostedge', 'thunderedge'];
 export const JOBS = {
   novice: { name: 'Trainee', tier: 0 },
   swordman: { name: 'Blader', tier: 1 },
   mage: { name: 'Sorcerer', tier: 1 },
+  archer: { name: 'Archer', tier: 1 },
   blademaster: { name: 'BladeMaster', tier: 2, from: ['swordman'] },
   wizard: { name: 'Wizard', tier: 2, from: ['mage'] },
   magicknight: { name: 'Magic Knight', tier: 2, from: ['swordman', 'mage'] }, // needs both first jobs
@@ -34,7 +35,7 @@ export const JOBS = {
 export const SECOND_AT = 40; // the first-job Job Level a second job's trial asks for
 // the skill trees a job stands on: its own and those of the jobs before it
 export const TREES = {
-  novice: ['novice'], swordman: ['swordman', 'novice'], mage: ['mage', 'novice'],
+  novice: ['novice'], swordman: ['swordman', 'novice'], mage: ['mage', 'novice'], archer: ['archer', 'novice'],
   blademaster: ['blademaster', 'swordman', 'novice'], wizard: ['wizard', 'mage', 'novice'],
   magicknight: ['magicknight', 'swordman', 'mage', 'novice'],
 };
@@ -45,6 +46,8 @@ const JOB_BONUS = {
     [33, 'pow'], [36, 'fns'], [38, 'end'], [40, 'pow'], [42, 'end'], [44, 'ftn'], [46, 'qkn'], [47, 'pow'], [49, 'pow'], [50, 'pow']],
   mage: [[2, 'knl'], [6, 'qkn'], [10, 'fns'], [14, 'knl'], [18, 'qkn'], [22, 'knl'], [26, 'fns'], [30, 'knl'], [33, 'ftn'],
     [36, 'knl'], [38, 'fns'], [40, 'knl'], [42, 'qkn'], [44, 'knl'], [46, 'fns'], [47, 'knl'], [49, 'knl'], [50, 'knl']],
+  archer: [[2, 'fns'], [6, 'qkn'], [10, 'fns'], [14, 'ftn'], [18, 'fns'], [22, 'qkn'], [26, 'fns'], [30, 'pow'], [33, 'fns'],
+    [36, 'qkn'], [38, 'fns'], [40, 'end'], [42, 'fns'], [44, 'qkn'], [46, 'fns'], [47, 'ftn'], [49, 'fns'], [50, 'qkn']],
   // second jobs carry more, like Ragnarok's
   blademaster: [[1, 'pow'], [3, 'fns'], [5, 'pow'], [7, 'qkn'], [9, 'pow'], [11, 'end'], [13, 'fns'], [15, 'pow'], [17, 'qkn'], [19, 'ftn'],
     [21, 'pow'], [23, 'fns'], [25, 'pow'], [27, 'end'], [29, 'qkn'], [31, 'pow'], [33, 'fns'], [35, 'pow'], [37, 'qkn'], [39, 'ftn'],
@@ -99,7 +102,7 @@ export class Progress {
   }
   // the jobs whose gear this hero may wear: the current job and every first or second job earned
   get wearJobs() { return this.job === 'novice' ? ['novice'] : [...new Set([this.job, ...this.unlocked, ...(JOBS[this.job].from || [])])]; }
-  // skill points: one per job level after the first in every tier walked (both first jobs share
+  // skill points: one per job level after the first in every tier walked (the first jobs share
   // theirs), minus skill levels learnt in any tree
   get skillPoints() {
     const learnt = Object.values(this.skills).reduce((a, b) => a + b, 0);

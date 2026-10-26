@@ -7,12 +7,15 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
 
 - **Jobs, skill points and second jobs:** read `docs/job-rules.md` before touching jobs, skills
   or job quests. In short:
-  - The Blader and Sorcerer share one Job Level and one pool of skill points. Points go only into
-    the active job's trees; switch first jobs at a Keeper.
-  - Learnt skills stay usable with the right weapon (sword or staff).
+  - The first jobs (Blader, Sorcerer, Archer) share one Job Level and one pool of skill points.
+    Points go only into the active job's trees; switch first jobs at a Keeper.
+  - Learnt skills stay usable with the right weapon (sword, staff or bow).
+  - The Archer (Huntmaster Sigrid, Veidheim) shoots from 5 paces with ATK from FNS; a bow needs
+    arrows in the Arrows slot, bought once and never used up (an elemental arrow sets the shot's
+    element).
   - Second jobs open at Job 40. The Magic Knight needs 20+ points in both the Blader and
     Sorcerer trees. BladeMaster/Wizard open only for the first job with the most points (a tie
-    opens both). Only one second job can be taken; quitting a trial midway starts it over and
+    opens each tied one). Only one second job can be taken; quitting a trial midway starts it over and
     lets the hero pick again. Job trials pay only when the whole series is done.
 - **Damage balance:** second jobs hit about 2–4x their first job; Blader and Sorcerer stay close.
   Do not even out the BladeMaster and the Wizard: the BladeMaster is not elemental and keeps the

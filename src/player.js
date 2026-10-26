@@ -41,6 +41,11 @@ export class Player {
     this.atkMul = 1;       // damage bonus from buffs (Magnum Break's fire, Auto Berserk), set by the game
     this.barrier = 0;      // damage a barrier soaks up before HP (Stone Aegis)
     this.bonusDmg = null;  // () -> extra damage on each normal hit that lands (Spellblade), set by the game
+    this.dmgMod = null;    // (monster) -> damage rate on it (Hunter's Mark, Steady Aim), set by the game
+    this.reach = REACH_MOB; // how close before attacking: a bow shoots from afar (set by the game)
+    this.bow = false;      // a bow in hand: attacks are arrows that land when they arrive
+    this.noAmmo = false;   // a bow but no arrows equipped: it can't shoot
+    this.arrowCol = '#efe2c0'; // the arrows' colour (an elemental arrow's element)
     this.cast = null;      // a spell being cast: { t, total, target, run(target) }
     this.steady = false;   // hits don't break the casting (Rune Ward), set by the game
     this.atkTimer = 0;
@@ -49,7 +54,7 @@ export class Player {
     this.iframes = 0;
     this.slowT = 0;
     this.knock = { x: 0, z: 0 };
-    this.events = { swing: [], hurt: [], faint: [], strike: [], block: [], interrupt: [] };
+    this.events = { swing: [], hurt: [], faint: [], strike: [], block: [], interrupt: [], noammo: [] };
 
     // Ragnarok-style orders: walk tile to tile along a path towards a goal
     // goal: { x, z, reach, arrive() } for a spot, or { mob } to fight it until it falls
@@ -390,7 +395,7 @@ export class Player {
       const m = g.mob;
       const gap = Math.hypot(m.x - this.x, m.z - this.z) - m.def.r;
       // once in reach, stay put until the monster is clearly out of it: no stop-start at the edge
-      const reach = REACH_MOB + (this.engaged === m ? 0.5 : 0);
+      const reach = this.reach + (this.engaged === m ? 0.5 : 0);
       if (!m.alive) this.stop();
       else if (gap <= reach) {
         this.engaged = m;
@@ -428,10 +433,12 @@ export class Player {
   // one attack on the target, timed by ASPD; hit, crit and damage roll by the rules. A skill
   // waiting on the goal (goal.skill: { mult, hitMult, pay() -> bool, done(target, res), el (the
   // element it hits with), defMul (share of the monster's DEF that counts) }) goes off instead of a
-  // normal attack, then the fight carries on with normal attacks.
+  // normal attack, then the fight carries on with normal attacks. With a bow the arrow flies first,
+  // and the hit is rolled when it lands.
   swing(cam, mobs) {
     const target = this.goal?.mob;
     if (!target?.alive) return;
+    if (this.bow && this.noAmmo) { this.emit('noammo'); this.stop(); return; }
     let sk = this.goal.skill;
     this.goal.skill = null;
     if (sk && !sk.pay()) sk = null;
@@ -440,14 +447,23 @@ export class Player {
     const dx = target.x - this.x, dz = target.z - this.z, d = Math.hypot(dx, dz) || 1;
     this.face = { x: dx / d, z: dz / d };
     const y = this.world.heightAt(this.x, this.z);
-    this.fx.slash(this.x + this.face.x * 0.7, y + 0.55, this.z + this.face.z * 0.7, this.face, cam);
-    const md = sk?.defMul !== undefined ? { ...target.effDef(), def: target.effDef().def * sk.defMul } : target.effDef();
-    const res = playerAttack(sk?.el ? { ...this.ps, el: sk.el } : this.ps, md, (sk?.mult || 1) * this.atkMul, sk?.hitMult || 1, !!sk);
-    if (!res.miss && !sk && this.bonusDmg) res.dmg += this.bonusDmg();
-    if (!res.miss) target.hit(res.dmg, dx / d, dz / d);
+    const land = () => {
+      if (!target.alive) return;
+      const md = sk?.defMul !== undefined ? { ...target.effDef(), def: target.effDef().def * sk.defMul } : target.effDef();
+      const mult = (sk?.mult || 1) * this.atkMul * (this.dmgMod?.(target) ?? 1);
+      const res = playerAttack(sk?.el ? { ...this.ps, el: sk.el } : this.ps, md, mult, sk?.hitMult || 1, !!sk);
+      if (!res.miss && !sk && this.bonusDmg) res.dmg += this.bonusDmg();
+      const kx = target.x - this.x, kz = target.z - this.z, k = Math.hypot(kx, kz) || 1;
+      if (!res.miss) target.hit(res.dmg, kx / k * (this.bow ? 0.4 : 1), kz / k * (this.bow ? 0.4 : 1));
+      this.emit('strike', target, res);
+      sk?.done?.(target, res);
+    };
     this.emit('swing');
-    this.emit('strike', target, res);
-    sk?.done?.(target, res);
+    if (this.bow) this.fx.bolt(this.x + this.face.x * 0.4, y + 0.85, this.z + this.face.z * 0.4, target, this.arrowCol, land, 0.2);
+    else {
+      this.fx.slash(this.x + this.face.x * 0.7, y + 0.55, this.z + this.face.z * 0.7, this.face, cam);
+      land();
+    }
   }
 
   sync() {

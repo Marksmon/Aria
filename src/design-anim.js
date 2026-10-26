@@ -22,6 +22,42 @@ export const behind = (f) => f >= 2 && f <= 4; // seen from the back, the blade 
 // the cast: the staff lifts, leans forward (side view) and the crystal bursts
 export const CAST = { lift: [3, 7, 10, 5, 2, 1, 0], lean: [0, -1, -2, 3, 3, 1, 0], burst: [0, 0, 1, 3, 4, 2, 0] };
 
+// the shot (archers.js): the bow raised (0 at rest .. 1 aimed) and the string drawn (0 .. 1), frame
+// by frame; on LOOSE the arrow flies and the string snaps straight
+export const SHOOT = { raise: [0.45, 0.85, 1, 1, 1, 0.7, 0.3], draw: [0, 0.35, 0.75, 1, 0, 0, 0] };
+export const LOOSE = 4;
+
+// a recurve bow centred on its grip (x, y): its limbs run along the angle `ang` (degrees), `half`
+// pixels each way, bending towards the target (ang turned back a quarter) with the tips curling
+// forward again. pull: how far the string is drawn back from its rest; arrow: an arrow nocked on it;
+// loose: the string just snapped (a streak ahead). c: { wood, light, grip, string, arrow, tip, fletch }.
+// handAt: where the drawing hand holds the string, instead of straight back from the grip.
+// Returns where the string is held (the drawing hand).
+export function recurve(F, x, y, ang, half, c, pull = 0, arrow = false, loose = false, handAt = null) {
+  const ux = Math.cos(rad(ang)), uy = Math.sin(rad(ang)), nx = uy, ny = -ux; // n: towards the target
+  const bend = 4 + pull * 0.2, curl = 2.5, len = half - pull * 0.12;
+  const at = (t) => { const tip = Math.max(0, Math.abs(t) - 0.75) / 0.25, k = bend * (1 - t * t) - 1.5 + curl * tip * tip; return [x + ux * t * len + nx * k, y + uy * t * len + ny * k]; };
+  const pts = [];
+  for (let i = 0; i <= 16; i++) pts.push(at(-1 + i / 8));
+  const a = pts[0], b = pts[16];
+  const rest = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
+  const hand = handAt || [rest[0] - nx * pull, rest[1] - ny * pull];
+  F.part(line(a[0], a[1], hand[0], hand[1], 1), c.string, flat);
+  F.part(line(hand[0], hand[1], b[0], b[1], 1), c.string, flat);
+  F.part((set) => { for (let i = 0; i < 16; i++) line(...pts[i], ...pts[i + 1], 2)(set); }, c.wood);
+  for (let i = 2; i < 15; i += 3) F.dot(pts[i][0], pts[i][1], c.light);
+  F.part(line(x + nx * 2.5 - ux * 2, y + ny * 2.5 - uy * 2, x + nx * 2.5 + ux * 2, y + ny * 2.5 + uy * 2, 2), c.grip, flat);
+  if (arrow) { // shaft from the string past the grip, its head and fletching
+    const gx = x + nx * (bend + 4) - hand[0], gy = y + ny * (bend + 4) - hand[1], gl = Math.hypot(gx, gy) || 1, ax = gx / gl, ay = gy / gl; // through the grip
+    const tx = hand[0] + gx, ty = hand[1] + gy;
+    F.part(line(hand[0], hand[1], tx, ty, 1), c.arrow, flat);
+    F.dot(tx, ty, c.tip); F.dot(tx - ax, ty - ay, c.tip);
+    F.dot(hand[0] + ax * 2 - ay, hand[1] + ay * 2 + ax, c.fletch); F.dot(hand[0] + ax * 2 + ay, hand[1] + ay * 2 - ax, c.fletch);
+  }
+  if (loose) for (let k = 7; k <= 15; k += 2) F.dot(x + nx * k, y + ny * k, k < 11 ? '#ffffff' : '#d8e8ff');
+  return hand;
+}
+
 // an arm swinging a sword from the shoulder (x, y): the sleeve, the gloved hand, the blade with its
 // guard and pommel. c: { sleeve, glove, blade, edge, guard, gem }
 export function swordArm(F, x, y, armA, bladeA, c, len = 16, blade = 21) {

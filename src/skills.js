@@ -1,12 +1,13 @@
 // Aria's own skills, on Ragnarok-style rules: skill points from Job Levels, actives for the
 // hotbar, passives, prerequisites and SP costs. Kept modest. A Trainee spends points on Basic
-// Training (Lv 9 opens the two jobs) and picks up the other basics free as the Job Level rises.
+// Training (Lv 9 opens the first jobs) and picks up the other basics free as the Job Level rises.
 // A Blader is plain sword craft; a Sorcerer casts spells from range (cast times shorten with FNS,
-// magic never misses). Each buys from their own tree and gets two free passives at Job 10.
+// magic never misses); an Archer shoots from range with a bow. Each buys from their own tree and
+// gets two free skills at Job 10.
 //
 // A hero who has walked several paths (see progress.js) keeps every tree they earned: passives work
 // whatever job they wear, and actives too, as long as the right weapon is in hand (weapon: 'sword'
-// = any weapon but a staff, 'staff' = a staff). Skill points only go into the active job's trees:
+// = a sword (or bare hands), 'staff' = a staff, 'bow' = a bow). range: 'bow' = the bow's reach. Skill points only go into the active job's trees:
 // to train the other path, switch to it at a Keeper.
 //
 // kind: active (goes on the hotbar) | passive
@@ -28,7 +29,7 @@ export const SKILLS = {
   // ---------- Novice ----------
   basics: {
     name: 'Basic Training', job: 'novice', kind: 'passive', max: 9, icon: 'skill_lore',
-    desc: (lv) => `+${lv} ATK. Lv 3: you can Rest. Lv 9: you may become a Blader or a Sorcerer.`,
+    desc: (lv) => `+${lv} ATK. Lv 3: you can Rest. Lv 9: you may become a Blader, a Sorcerer or an Archer.`,
   },
   rest: {
     name: 'Rest', job: 'novice', kind: 'active', max: 1, needs: { basics: 3 }, granted: true, icon: 'skill_rest',
@@ -132,6 +133,46 @@ export const SKILLS = {
   swiftchant: {
     name: 'Swift Chant', job: 'mage', kind: 'passive', max: 1, free: { jobLv: 10 }, icon: 'skill_swiftchant',
     desc: () => 'Spells cast 15% faster.',
+  },
+
+  // ---------- Archer: a bow, from range (normal shots and skills reach BOW_RANGE paces, more with
+  // Long Sight), ATK from FNS. Five actives like the Blader; two free skills at Job 10 ----------
+  keeneye: {
+    name: 'Keen Eye', job: 'archer', kind: 'passive', max: 10, icon: 'skill_keeneye',
+    desc: (lv) => `+${lv} FNS.`,
+  },
+  longsight: {
+    name: 'Long Sight', job: 'archer', kind: 'passive', max: 10, icon: 'skill_longsight',
+    desc: (lv) => `Your bow reaches ${(0.2 * lv).toFixed(1)} paces further, and +${lv} HIT with bows.`,
+  },
+  doubleshot: {
+    name: 'Double Shot', job: 'archer', kind: 'active', max: 10, target: 'mob', range: 'bow', weapon: 'bow', icon: 'skill_doubleshot',
+    sp: (lv) => 10 + Math.floor(lv / 2), power: (lv) => 70 + 8 * lv, hits: () => 2, every: 0.12,
+    desc: (lv) => `Loose two arrows at once: ${SKILLS.doubleshot.power(lv)}% damage each.`,
+  },
+  arrowrain: {
+    name: 'Arrow Rain', job: 'archer', kind: 'active', max: 10, needs: { doubleshot: 5 }, target: 'mob', range: 'bow', weapon: 'bow', cd: 2, icon: 'skill_arrowrain',
+    sp: () => 15, power: (lv) => 80 + 8 * lv,
+    desc: (lv) => `Arrows fall round your target: ${SKILLS.arrowrain.power(lv)}% damage to every monster within 2.5 paces of it, pushing them back a little.`,
+  },
+  focus: {
+    name: 'Focus', job: 'archer', kind: 'active', max: 10, cd: 5, icon: 'skill_focus',
+    sp: (lv) => 10 + lv,
+    desc: (lv) => `Steady your breath: +${lv} QKN and +${lv} FNS for 60 s.`,
+  },
+  huntmark: {
+    name: "Hunter's Mark", job: 'archer', kind: 'active', max: 5, needs: { keeneye: 3 }, target: 'mob', range: 'bow', cd: 3, icon: 'skill_mark',
+    sp: () => 12,
+    desc: (lv) => `Mark a monster for 10 s: everything you hit it with deals ${4 * lv}% more.`,
+  },
+  leapback: {
+    name: 'Leap Back', job: 'archer', kind: 'active', max: 1, free: { jobLv: 10 }, cd: 6, icon: 'skill_leapback',
+    sp: () => 6,
+    desc: () => 'Spring 3 paces back, away from the nearest monster.',
+  },
+  steadyaim: {
+    name: 'Steady Aim', job: 'archer', kind: 'passive', max: 1, free: { jobLv: 10 }, icon: 'skill_steadyaim',
+    desc: () => '+10% damage with a bow to a monster 4 or more paces away.',
   },
 
   // ---------- BladeMaster (from the Blader): one target, cut down fast. Blade skills may Combo
@@ -256,9 +297,10 @@ export function skillLv(prog, id) {
   return prog.skills[id] || 0;
 }
 
-// the weapon an active skill needs in hand, and whether it is there ('sword' = any weapon but a
-// staff; bare hands count as a sword for this)
-export const WEAPON_NAMES = { sword: 'a sword', staff: 'a staff' };
+// the weapon an active skill needs in hand, and whether it is there ('sword' = a sword; bare hands
+// count as a sword for this; 'staff' = a staff; 'bow' = a bow)
+export const WEAPON_NAMES = { sword: 'a sword', staff: 'a staff', bow: 'a bow' };
+export const BOW_RANGE = 5; // paces a bow reaches, before Long Sight
 export const weaponOk = (id, weaponKind) => !SKILLS[id].weapon || SKILLS[id].weapon === weaponKind;
 
 // why a skill can't be raised right now, or null if it can
@@ -279,7 +321,7 @@ export function learn(prog, id) {
 }
 
 // skill points spent in one job's tree
-// Liv's retraining: every first-job skill (Blader and Sorcerer) is unlearnt and its points come
+// Liv's retraining: every first-job skill (Blader, Sorcerer, Archer) is unlearnt and its points come
 // back. Only before a second job, so the second-job rules (secondJobOpen) can never be dodged; the
 // Trainee's tree is kept (Basic Training 9 is what opened the job). Skills learnt for free come back
 // by themselves, from the Job Level
@@ -291,18 +333,17 @@ export function unlearnFirstJob(prog) {
   return true;
 }
 export const pointsIn = (prog, job) => Object.entries(prog.skills).reduce((a, [id, n]) => a + (SKILLS[id]?.job === job ? n : 0), 0);
-export const MK_POINTS = 20; // the Magic Knight wants this many points in both the Blader's and the Sorcerer's tree
-// may this hero take a second job's trial? From Job Level 40 of a first job. The Magic Knight needs
-// 20 points in each first job's tree. A hero who walked both first paths may take the BladeMaster
-// or Wizard trial only for the first job they put the most points into (a tie opens both).
+export const MK_POINTS = 20; // a second job of two paths (the Magic Knight) wants this many points in each path's tree
+// may this hero take a second job's trial? From Job Level 40 of a first job. A second job of two
+// paths needs both earned and 20 points in each one's tree. A second job of one path (BladeMaster,
+// Wizard, Windrunner) opens for a hero who walked only that path, or put the most points into it
+// of all the paths walked (a tie opens each tied one).
 export function secondJobOpen(prog, job2) {
   const from = JOBS[job2].from;
   if (prog.tier !== 1 || prog.jobLv < SECOND_AT || !from.every((j) => prog.unlocked.includes(j))) return false;
-  const pts = { swordman: pointsIn(prog, 'swordman'), mage: pointsIn(prog, 'mage') };
-  const both = pts.swordman >= MK_POINTS && pts.mage >= MK_POINTS;
-  if (from.length > 1) return both;
-  const other = from[0] === 'swordman' ? 'mage' : 'swordman';
-  return !prog.unlocked.includes(other) || pts[from[0]] >= pts[other];
+  if (from.length > 1) return from.every((j) => pointsIn(prog, j) >= MK_POINTS);
+  const firsts = prog.unlocked.filter((j) => JOBS[j]?.tier === 1);
+  return firsts.length === 1 || pointsIn(prog, from[0]) >= Math.max(...firsts.map((j) => pointsIn(prog, j)));
 }
 
 // what a skill costs to use at a level

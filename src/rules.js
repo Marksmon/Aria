@@ -34,6 +34,7 @@ export const JOB_RULES = {
   novice:   { hpFactor: 0,  hpIncrease: 500, spIncrease: 100, delay: { fist: 500, sword: 700 }, weight: 2000 },
   swordman: { hpFactor: 70, hpIncrease: 500, spIncrease: 200, delay: { fist: 400, sword: 550 }, weight: 2800 },
   mage:     { hpFactor: 30, hpIncrease: 500, spIncrease: 600, delay: { fist: 500, sword: 650 }, weight: 2200 },
+  archer:   { hpFactor: 50, hpIncrease: 500, spIncrease: 250, delay: { fist: 500, sword: 700, bow: 600 }, weight: 2600 },
   // second jobs, modelled on Ragnarok's Knight, Wizard and Crusader
   blademaster: { hpFactor: 150, hpIncrease: 500, spIncrease: 300, delay: { fist: 380, sword: 480 }, weight: 3200 },
   wizard:      { hpFactor: 55, hpIncrease: 500, spIncrease: 900, delay: { fist: 500, sword: 620 }, weight: 2400 },
@@ -49,15 +50,17 @@ function baseHp(lv, j) {
 // Everything the battle rules need about the player, from progress (levels, stats) and gear.
 // gear: { atk, wlv (weapon level, 0 = bare hands), def, mastery (flat ATK), aspdRate (1 = normal), hit, flee,
 //   stats (bonus stat points), mhp / msp (extra Max HP / SP), mhpRate / mspRate (% more Max HP / SP, from cards),
-//   matk (% more MATK, from staves) }
+//   matk (% more MATK, from staves), bow (a bow in hand: ATK from FNS, its own draw speed) }
 export function derive(prog, gear) {
   const s = (k) => prog.total(k) + (gear.stats?.[k] || 0), lv = prog.baseLv, j = JOB_RULES[prog.job];
   const pow = s('pow'), qkn = s('qkn'), end = s('end'), knl = s('knl'), fns = s('fns'), ftn = s('ftn');
-  const delay = (gear.wlv ? j.delay.sword : j.delay.fist) * (1 - (4 * qkn + fns) / 1000) * (gear.aspdRate ?? 1);
+  // a bow draws at its own pace (a job with no bow delay of its own draws like it swings)
+  const delay = (gear.wlv ? (gear.bow ? j.delay.bow ?? j.delay.sword * 1.15 : j.delay.sword) : j.delay.fist) * (1 - (4 * qkn + fns) / 1000) * (gear.aspdRate ?? 1);
   return {
     maxHp: Math.floor((Math.floor(baseHp(lv, j) * (100 + end) / 100) + (gear.mhp || 0)) * (100 + (gear.mhpRate || 0)) / 100),
     maxSp: Math.floor((Math.floor((10 + Math.floor(lv * j.spIncrease / 100)) * (100 + knl) / 100) + (gear.msp || 0)) * (100 + (gear.mspRate || 0)) / 100),
-    batk: pow + Math.floor(pow / 10) ** 2 + Math.floor(fns / 5) + Math.floor(ftn / 5), // status ATK
+    // status ATK: from POW, or with a bow from FNS (Ragnarok's ranged rule)
+    batk: gear.bow ? fns + Math.floor(fns / 10) ** 2 + Math.floor(pow / 5) + Math.floor(ftn / 5) : pow + Math.floor(pow / 10) ** 2 + Math.floor(fns / 5) + Math.floor(ftn / 5),
     watk: gear.atk || 0,
     el: gear.el || 'neutral',                     // the weapon's element
     wlv: gear.wlv || 0,

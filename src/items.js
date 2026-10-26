@@ -69,6 +69,20 @@ const BASE_ITEMS = {
   stone_blade:  { type: 'equip', slot: 'weapon', el: 'earth', jobs: ['novice', 'swordman'], name: 'Stone Sword', atk: 25, wlv: 1, icon: 'weapon1', desc: 'Ridge stone knapped to an edge and bound to a grip. Crude, but it bites.' },
   ember_edge:   { type: 'equip', slot: 'weapon', jobs: ['novice', 'swordman'], el: 'fire', name: 'Fire Sword',  atk: 44, wlv: 2, icon: 'weapon2', desc: 'A stone blade worked with glow dust until it took the fire. Warm to the touch, glowing at the edge.' },
   iron_sword:   { type: 'equip', slot: 'weapon', jobs: ['novice', 'swordman'], name: 'Iron Sword',  atk: 58, wlv: 2, icon: 'weapon_iron', desc: 'Plain Steinborg steel, well balanced and well made. The Watch carries these.' },
+  // bows (the Archer's weapon, both hands): they shoot from range, and their ATK comes from FNS
+  // (rules.js derive). A bow shoots only with arrows in the Arrows slot (never used up)
+  hunting_bow:  { type: 'equip', slot: 'weapon', kind: 'bow', jobs: ['archer'], name: 'Hunting Bow', atk: 30, wlv: 1, icon: 'bow_hunt', desc: 'A plain ash bow, the first every Veidheim child is given. It bends like it means it.' },
+  composite_bow: { type: 'equip', slot: 'weapon', kind: 'bow', jobs: ['archer'], name: 'Composite Bow', atk: 55, wlv: 2, icon: 'bow_comp', desc: 'Horn, sinew and wood glued in layers. Short enough to shoot from the saddle, strong enough to bring down a stag.' },
+  willow_longbow: { type: 'equip', slot: 'weapon', kind: 'bow', jobs: ['archer'], name: 'Willow Longbow', atk: 75, wlv: 3, stats: { fns: 1 }, icon: 'bow_willow', desc: 'A long bow of walking-Willow wood. It still bends a little towards the moon at night.' },
+  gale_bow:     { type: 'equip', slot: 'weapon', kind: 'bow', el: 'wind', jobs: ['archer'], name: 'Gale Bow', atk: 92, wlv: 3, stats: { qkn: 2 }, icon: 'bow_gale', desc: 'Strung with sinew from the Alpha Wolf, its grip wrapped in the silver ruff. Its arrows whistle like wind through a pass.' },
+  heartwood_bow: { type: 'equip', slot: 'weapon', kind: 'bow', jobs: ['archer'], name: 'Heartwood Bow', atk: 120, wlv: 4, stats: { fns: 3, qkn: 1 }, icon: 'bow_heart', desc: 'Ancient Heartwood and the Great Bear\'s heart-cord. The finest bow in Aria; the string hums before you draw it.' },
+  // arrows: the Arrows slot. Bought once and never used up; an elemental one sets the shot's element
+  wooden_arrow: { type: 'equip', slot: 'ammo', jobs: ['archer'], name: 'Wooden Arrows', atk: 2, icon: 'arrow_wood', desc: 'A quiver of plain wooden arrows with goose fletching. Asa makes them by the hundred.' },
+  iron_arrow:   { type: 'equip', slot: 'ammo', jobs: ['archer'], name: 'Iron Arrows', atk: 10, icon: 'arrow_iron', desc: 'Iron-headed arrows, heavier and harder-hitting. They punch through a Snake\'s scales.' },
+  fire_arrow:   { type: 'equip', slot: 'ammo', jobs: ['archer'], el: 'fire', name: 'Fire Arrows', atk: 5, icon: 'arrow_fire', desc: 'Heads of Burnt Shell that catch light as they fly. Fire: strong against Earth, weak against Water.' },
+  ice_arrow:    { type: 'equip', slot: 'ammo', jobs: ['archer'], el: 'water', name: 'Ice Arrows', atk: 5, icon: 'arrow_ice', desc: 'Salt-glass heads that frost over in flight. Water: strong against Fire, weak against Wind.' },
+  wind_arrow:   { type: 'equip', slot: 'ammo', jobs: ['archer'], el: 'wind', name: 'Wind Arrows', atk: 5, icon: 'arrow_wind', desc: 'Fletched with Wisp feathers; they curve after their mark. Wind: strong against Water, weak against Earth.' },
+  earth_arrow:  { type: 'equip', slot: 'ammo', jobs: ['archer'], el: 'earth', name: 'Earth Arrows', atk: 5, icon: 'arrow_earth', desc: 'Heavy stone heads that hit like a thrown rock. Earth: strong against Wind, weak against Fire.' },
   // staves: weak to hit with, but they raise MATK (the Sorcerer's weapon)
   oak_staff:    { type: 'equip', slot: 'weapon', jobs: ['novice', 'mage'], kind: 'staff', name: 'Wooden Staff', atk: 15, wlv: 1, matk: 15, icon: 'staff0', desc: 'Gnarled oak with a chip of crystal at the tip. Every new Sorcerer is handed one.' },
   birch_staff:  { type: 'equip', slot: 'weapon', jobs: ['mage'], kind: 'staff', name: 'Birch Staff', atk: 22, wlv: 1, matk: 20, stats: { knl: 1 }, icon: 'staff_birch', desc: 'White birch from Birch Grove with a pale crystal. Light, and it hums when you chant.' },
@@ -289,6 +303,8 @@ export const PRICES = {
   willow_heart: 3000, ancient_heartwood: 10000, ancient_seed: 5000, willow_card: 16000, treant_card: 60000,
   snake_boots: 12000, wolf_cape: 14000, willow_staff: 6000, bear_hide: 18000, treant_shield: 7000, willow_charm: 9000, oak_ring: 26000, grove_blade: 50000,
   alpha_pelt: 5000, bear_heart: 6000, alpha_card: 20000, bear_card: 22000, alpha_cloak: 20000, bear_charm: 22000,
+  hunting_bow: 600, composite_bow: 3800, willow_longbow: 9000, gale_bow: 22000, heartwood_bow: 45000,
+  wooden_arrow: 20, iron_arrow: 1500, fire_arrow: 2500, ice_arrow: 2500, wind_arrow: 2500, earth_arrow: 2500,
   hunter_cape: 6000, hunter_boots: 6000, claw_charm: 9000, bark_armor: 12000, verdant_staff: 48000,
   heartwood_staff: 14000, frostbite: 5200, gale_blade: 9000, birch_staff: 1800, frost_staff: 3600, tide_staff: 12000, ember_staff: 20000, shade_staff: 16000, jarl_staff: 42000, runeking_staff: 50000, pearl_mail: 12000, gloom_robe: 14000, cinderfang: 24000, hornblade: 45000, prism_ring: 8000, slime_band: 12000,
 };
@@ -301,7 +317,8 @@ export const SHOPS = {
   gunnar: ['twig_sword', 'stone_blade', 'iron_sword', 'clothes', 'chain_mail', 'round_shield', 'wool_cape', 'leather_boots'],
   // Galdrheim: Kari's curios (like Hild's, and Speed Potions), Orm's staves and robes
   kari: ['potion', 'potion2', 'tonic', 'herb', 'berry', 'quick', 'wander', 'homeward', 'torch'],
-  // Veidheim: Eydis's hunting supplies (White Potions and Honey for the long hunts)
+  // Veidheim: Asa's bows and arrows, Eydis's hunting supplies (White Potions and Honey for the long hunts)
+  asa: ['hunting_bow', 'composite_bow', 'wooden_arrow', 'iron_arrow', 'fire_arrow', 'ice_arrow', 'wind_arrow', 'earth_arrow'],
   eydis: ['potion', 'potion2', 'potion3', 'tonic', 'honey', 'herb', 'quick', 'wander', 'homeward', 'torch'],
   orm: ['oak_staff', 'birch_staff', 'frost_staff', 'rune_staff', 'mage_robe', 'wool_cape', 'leather_boots'],
 };
@@ -314,7 +331,7 @@ export const recipeKind = (r) => {
 };
 
 // equipment slots, in the Equipment window's order
-export const JOB_NAMES = { novice: 'Trainee', swordman: 'Blader', mage: 'Sorcerer' };
+export const JOB_NAMES = { novice: 'Trainee', swordman: 'Blader', mage: 'Sorcerer', archer: 'Archer' };
 // job: one job id, or the list of jobs a hero has earned (any of them will do); second jobs wear
 // what the jobs before them wear
 const WEARS_AS = { blademaster: ['swordman'], wizard: ['mage'], magicknight: ['swordman', 'mage'] };
@@ -326,7 +343,7 @@ export const canWear = (id, job) => {
 export const jobLine = (it) => (it.jobs ? it.jobs.map((j) => JOB_NAMES[j]).join(', ') + ' only' : 'All jobs');
 
 // headgear: Head (hats, on the crown) and Face (glasses and masks, on the eyes)
-export const SLOTS = { head: 'Head', face: 'Face', weapon: 'Weapon', shield: 'Shield', garment: 'Garment', armor: 'Armor', shoes: 'Shoes', light: 'Light', acc: 'Accessory', acc2: 'Accessory' };
+export const SLOTS = { head: 'Head', face: 'Face', weapon: 'Weapon', shield: 'Shield', garment: 'Garment', armor: 'Armor', shoes: 'Shoes', light: 'Light', acc: 'Accessory', acc2: 'Accessory', ammo: 'Arrows' };
 
 // one line on what a piece of equipment does
 export function equipLine(it) {
@@ -393,6 +410,9 @@ export const RECIPES = [
   { item: 'hunter_boots', lv: 46, by: 'hunt', cost: { snake_skin: 8, wolf_pelt: 2 } },
   { item: 'claw_charm', lv: 50, by: 'hunt', cost: { bear_claw: 6, wolf_fang: 3 } },
   { item: 'bark_armor', lv: 52, by: 'hunt', cost: { old_bark: 10, willow_twig: 6, bear_claw: 2 } },
+  { item: 'willow_longbow', lv: 20, by: 'hunt', cost: { willow_twig: 10, old_bark: 4, thorn: 4 } },
+  { item: 'gale_bow', lv: 50, by: 'hunt', cost: { alpha_pelt: 1, wolf_fang: 4, willow_twig: 8 } },
+  { item: 'heartwood_bow', lv: 58, by: 'hunt', cost: { ancient_heartwood: 1, bear_heart: 1, old_bark: 6 } },
   { item: 'alpha_cloak', lv: 52, by: 'hunt', cost: { alpha_pelt: 1, wolf_pelt: 10, wolf_fang: 4 } },
   { item: 'bear_charm', lv: 56, by: 'hunt', cost: { bear_heart: 1, bear_claw: 8, honey: 4 } },
   { item: 'verdant_staff', lv: 55, cost: { ancient_heartwood: 1, willow_heart: 1, willow_twig: 8 } },
@@ -475,6 +495,26 @@ function oreIcon(g, rock, glint) {
   gloss(g, 24, 20, 4, 2.5);
 }
 
+// a bow, standing diagonally: limbs, grip and string
+function bowIcon(g, wood, grip, tip = wood) {
+  g.save(); g.translate(32, 32); g.rotate(-Math.PI / 4);
+  g.beginPath(); g.moveTo(-2, -26); g.quadraticCurveTo(18, 0, -2, 26); g.strokeStyle = OUT; g.lineWidth = 8; g.stroke(); g.strokeStyle = wood; g.lineWidth = 4.5; g.stroke();
+  for (const y of [-26, 26]) { g.beginPath(); g.arc(-2, y, 3, 0, 7); g.fillStyle = tip; g.fill(); g.strokeStyle = OUT; g.lineWidth = 1.5; g.stroke(); }
+  g.beginPath(); g.moveTo(-2, -26); g.lineTo(-2, 26); g.strokeStyle = '#efe6d0'; g.lineWidth = 1.5; g.stroke();
+  shape(g, () => g.roundRect(4, -5, 6, 10, 2), grip, 2);
+  g.restore();
+}
+// a bundle of arrows, its heads in the arrows' colour
+function arrowIcon(g, head, fletch = '#f4ecd8') {
+  for (const [dx, a] of [[-6, -0.15], [0, 0], [6, 0.15]]) {
+    g.save(); g.translate(32 + dx, 34); g.rotate(a);
+    g.beginPath(); g.moveTo(0, -18); g.lineTo(0, 24); g.strokeStyle = OUT; g.lineWidth = 5; g.stroke(); g.strokeStyle = '#a07040'; g.lineWidth = 2.5; g.stroke();
+    shape(g, () => { g.moveTo(0, -28); g.lineTo(5, -18); g.lineTo(-5, -18); g.closePath(); }, head, 2);
+    shape(g, () => { g.moveTo(0, 16); g.lineTo(5, 26); g.lineTo(0, 23); g.lineTo(-5, 26); g.closePath(); }, fletch, 1.5);
+    g.restore();
+  }
+}
+
 // a monster card: a gilded frame round a little portrait (a crowned head in the race's colour)
 function cardIcon(g, face, crown) {
   shape(g, () => g.roundRect(14, 6, 36, 52, 4), '#f4ead0');
@@ -491,6 +531,17 @@ function skillIcon(g, col, draw) {
   g.strokeStyle = g.fillStyle = '#fff4dc';
   g.lineWidth = 5;
   draw();
+}
+// an arrow on a skill icon, from its fletching (x0, y0) to its head (x1, y1)
+function iconArrow(g, x0, y0, x1, y1, w = 3) {
+  const a = Math.atan2(y1 - y0, x1 - x0), c = Math.cos(a), s = Math.sin(a);
+  g.lineWidth = w;
+  g.beginPath(); g.moveTo(x0, y0); g.lineTo(x1 - c * 4, y1 - s * 4); g.stroke();
+  g.beginPath(); g.moveTo(x1, y1); g.lineTo(x1 - c * 8 - s * 5, y1 - s * 8 + c * 5); g.lineTo(x1 - c * 8 + s * 5, y1 - s * 8 - c * 5); g.closePath(); g.fill();
+  for (const k of [0, 4]) {
+    g.beginPath(); g.moveTo(x0 + c * k, y0 + s * k); g.lineTo(x0 + c * (k - 4) - s * 5, y0 + s * (k - 4) + c * 5);
+    g.moveTo(x0 + c * k, y0 + s * k); g.lineTo(x0 + c * (k - 4) + s * 5, y0 + s * (k - 4) - c * 5); g.lineWidth = 2; g.stroke();
+  }
 }
 
 const PAINT = {
@@ -637,6 +688,15 @@ const PAINT = {
   skill_flamering: (g) => skillIcon(g, '#d8541a', () => { g.beginPath(); g.arc(32, 32, 15, 0, 7); g.lineWidth = 5; g.stroke(); for (let i = 0; i < 6; i++) { const a = (i / 6) * Math.PI * 2; g.beginPath(); g.arc(32 + Math.cos(a) * 15, 32 + Math.sin(a) * 15, 3.5, 0, 7); g.fill(); } }),
   skill_ward: (g) => skillIcon(g, '#4a6ab8', () => { g.beginPath(); g.arc(32, 32, 16, 0, 7); g.lineWidth = 3; g.stroke(); g.beginPath(); g.moveTo(32, 20); g.lineTo(32, 44); g.moveTo(32, 26); g.lineTo(40, 20); g.moveTo(32, 32); g.lineTo(24, 26); g.lineWidth = 3.5; g.stroke(); }),
   skill_blink: (g) => skillIcon(g, '#7a5ab8', () => { g.beginPath(); g.arc(22, 34, 6, 0, 7); g.fill(); g.beginPath(); g.arc(44, 30, 8, 0, 7); g.lineWidth = 3; g.stroke(); g.beginPath(); g.moveTo(28, 33); g.lineTo(36, 31); g.setLineDash([3, 3]); g.stroke(); g.setLineDash([]); }),
+  // the Archer's: greens and browns
+  skill_keeneye: (g) => skillIcon(g, '#4a7a3a', () => { g.beginPath(); g.moveTo(10, 32); g.quadraticCurveTo(32, 12, 54, 32); g.quadraticCurveTo(32, 52, 10, 32); g.lineWidth = 3; g.stroke(); g.beginPath(); g.arc(32, 32, 8, 0, 7); g.fill(); g.fillStyle = '#4a7a3a'; g.beginPath(); g.arc(32, 32, 3.5, 0, 7); g.fill(); }),
+  skill_longsight: (g) => skillIcon(g, '#3a6a5a', () => { iconArrow(g, 12, 44, 52, 22); g.setLineDash([3, 4]); g.beginPath(); g.moveTo(12, 52); g.lineTo(54, 52); g.lineWidth = 2; g.stroke(); g.setLineDash([]); }),
+  skill_doubleshot: (g) => skillIcon(g, '#6a8a2a', () => { iconArrow(g, 12, 26, 52, 20); iconArrow(g, 12, 42, 52, 36); }),
+  skill_arrowrain: (g) => skillIcon(g, '#5a6a8a', () => { for (const [x, y] of [[20, 14], [32, 22], [44, 12], [26, 34], [40, 32]]) iconArrow(g, x - 3, y, x + 3, y + 18, 2.5); }),
+  skill_focus: (g) => skillIcon(g, '#7a8a3a', () => { for (const r of [18, 11]) { g.beginPath(); g.arc(32, 32, r, 0, 7); g.lineWidth = 3; g.stroke(); } g.beginPath(); g.arc(32, 32, 4, 0, 7); g.fill(); }),
+  skill_mark: (g) => skillIcon(g, '#a83a2a', () => { g.beginPath(); g.arc(32, 32, 14, 0, 7); g.lineWidth = 3; g.stroke(); g.beginPath(); for (const [a, b] of [[32, 10], [32, 54], [10, 32], [54, 32]]) { g.moveTo(a, b); g.lineTo(a + (32 - a) * 0.55, b + (32 - b) * 0.55); } g.stroke(); g.beginPath(); g.arc(32, 32, 4, 0, 7); g.fill(); }),
+  skill_leapback: (g) => skillIcon(g, '#6a5a3a', () => { g.beginPath(); g.moveTo(48, 46); g.quadraticCurveTo(34, 10, 18, 40); g.lineWidth = 4; g.stroke(); g.beginPath(); g.moveTo(12, 34); g.lineTo(22, 34); g.lineTo(16, 46); g.closePath(); g.fill(); g.beginPath(); g.arc(48, 48, 4, 0, 7); g.fill(); }),
+  skill_steadyaim: (g) => skillIcon(g, '#4a5a2a', () => { g.beginPath(); g.moveTo(20, 10); g.quadraticCurveTo(4, 32, 20, 54); g.lineWidth = 4; g.stroke(); g.beginPath(); g.moveTo(20, 10); g.lineTo(34, 32); g.lineTo(20, 54); g.lineWidth = 1.5; g.stroke(); iconArrow(g, 30, 32, 56, 32); }),
   skill_swiftchant: (g) => skillIcon(g, '#5a7ac8', () => { g.beginPath(); g.arc(32, 32, 15, -Math.PI / 2, Math.PI); g.lineWidth = 4; g.stroke(); g.beginPath(); g.moveTo(32, 32); g.lineTo(32, 20); g.moveTo(32, 32); g.lineTo(40, 36); g.lineWidth = 3; g.stroke(); }),
   heartwood: (g) => { shape(g, () => g.roundRect(12, 20, 40, 26, 10), '#7a5232'); shape(g, () => g.ellipse(46, 33, 8, 13, 0, 0, Math.PI * 2), '#9fd060', 2.5); g.beginPath(); g.ellipse(46, 33, 3.5, 6, 0, 0, 7); g.strokeStyle = '#4a8a36'; g.lineWidth = 2; g.stroke(); },
   king_pearl: (g) => { shape(g, () => g.arc(32, 34, 20, 0, Math.PI * 2), '#f2cf6a'); gloss(g, 25, 27, 7, 5); },
@@ -690,6 +750,17 @@ const PAINT = {
   card_beetle: (g) => cardIcon(g, '#ff7a4a', '#6a6a72'),
   card_willow: (g) => cardIcon(g, '#d8c8a0', '#9cbc4a'),
   card_treant: (g) => cardIcon(g, '#8a6a4a', '#f2b8d0'),
+  bow_hunt: (g) => bowIcon(g, '#a0703c', '#5a3a22'),
+  bow_comp: (g) => bowIcon(g, '#7a4a2a', '#c8b89a', '#e8dcc0'),
+  bow_willow: (g) => bowIcon(g, '#9a8a5a', '#3f7a3a', '#c8dc6a'),
+  bow_gale: (g) => bowIcon(g, '#c8d8e0', '#8a8e96', '#fff6a0'),
+  bow_heart: (g) => bowIcon(g, '#c8a050', '#8a2a20', '#f2cf6a'),
+  arrow_wood: (g) => arrowIcon(g, '#a0703c'),
+  arrow_iron: (g) => arrowIcon(g, '#b8c0ca'),
+  arrow_fire: (g) => arrowIcon(g, '#ff7a2a', '#ffd06a'),
+  arrow_ice: (g) => arrowIcon(g, '#8fd8ff', '#e8f8ff'),
+  arrow_wind: (g) => arrowIcon(g, '#fff27a', '#c8f0d0'),
+  arrow_earth: (g) => arrowIcon(g, '#b9874f', '#8a6a3a'),
   card_alpha: (g) => cardIcon(g, '#4a4e5a', '#c8ccd8'),
   card_bear: (g) => cardIcon(g, '#5a3a24', '#ffc04a'),
   alpha_pelt: (g) => {

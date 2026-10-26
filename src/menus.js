@@ -72,6 +72,7 @@ const POS_KEY = 'aria.windows';
 const JOB_PITCH = {
   swordman: 'Sturdy sword fighters with more HP: Cleave, Heavy Strike, War Cry, Stand Firm and Ground Slash.',
   mage: 'Casters who strike from afar with KNL: Ember Bolt, Frost Shard, Arc Lightning, Flame Ring, Rune Ward and Blink. Low HP, lots of SP.',
+  archer: 'Bow hunters who shoot from 5 paces with FNS: Double Shot, Arrow Rain, Focus, Hunter\'s Mark and Leap Back. Arrows in the Arrows slot set the shot\'s element.',
   blademaster: 'One target, cut down fast: Twin Fang, Piercing Edge, Final Blade, and Blade Dance to dash through a crowd. Blade skills may Combo, and Combos build Momentum.',
   wizard: 'The elements over an area: Stone Spike, Earthquake, Meteor Storm, Storm Gust and Thunderstorm. Changing element builds Resonance.',
   magicknight: 'Sword and spell as one: imbue your blade with an element, cut with Elemental Edge, sweep the field with Elemental Nova; Stone Aegis is a barrier of both.',
@@ -406,7 +407,7 @@ export class Menus {
     const detail = sel
       ? `<b class="${sel.rare ? 'rare' : ''}">${esc(sel.name)}${sel.rare ? ' ✦' : ''}</b><span class="rstat">${esc(SLOTS[sel.slot])}${equipLine(sel) ? ' · ' + equipLine(sel) : ''} · ${esc(jobLine(sel))}${up ? ' · ' + esc(up) : ''}</span><span>${esc(sel.desc)}</span>`
       : '<span>Tap a piece to see what it is. Double-tap it to take it off.</span>';
-    const left = [slot('head', 'head', 'l'), slot('face', 'face', 'l'), slot('armor', 'armor', 'l'), slot('weapon', 'weapon', 'l'), slot('accessory', 'acc', 'l')];
+    const left = [slot('head', 'head', 'l'), slot('face', 'face', 'l'), slot('armor', 'armor', 'l'), slot('weapon', 'weapon', 'l'), slot('accessory', 'acc', 'l'), slot('arrows', 'ammo', 'l')];
     const right = [slot('garment', 'garment', 'r'), slot('shield', 'shield', 'r'), slot('shoes', 'shoes', 'r'), slot('accessory', 'acc2', 'r'), slot('light', 'light', 'r')];
     return `<div class="equipwrap"><div class="ecol">${left.join('')}</div><div class="eme"><img src="${this.portrait?.('player') || ''}" alt=""></div><div class="ecol">${right.join('')}</div></div>
       <div class="rdetail">${detail}</div>
@@ -703,7 +704,7 @@ export class Menus {
       this.wins.talk.querySelector('.rw-title').textContent = n.name;
       return `<div class="talkwrap"><img class="portrait" src="${this.portrait(this.npc)}" alt="">
         <div class="say"><p>Not happy with how you trained? The first time is on me. After that, the masters charge ${RETRAIN_COST.toLocaleString()} perz.</p>
-        <div class="qbox"><small>Stats: every stat back to 1, and all your points to place again.</small><small>Skills: every Blader and Sorcerer skill unlearnt, and the points back. Your Trainee skills stay.</small></div>
+        <div class="qbox"><small>Stats: every stat back to 1, and all your points to place again.</small><small>Skills: every Blader, Sorcerer and Archer skill unlearnt, and the points back. Your Trainee skills stay.</small></div>
         <div class="btnrow wrap retrain">${row('stats', 'Reset my stats', true, '')}${row('skills', 'Reset my first-job skills', skillsOk, p.tier === 1 ? 'Not during a second-job trial.' : p.tier === 0 ? 'Choose a first job first.' : 'Not once you have a second job.')}</div>
         <div class="btnrow"><button class="rbtn soft" data-act="close">Bye</button></div></div></div>`;
     }
@@ -726,8 +727,8 @@ export class Menus {
       const second = JOBS[st.job].tier === 2, keep = p.tier === 1 && !second;
       box = `<b>Job change: ${esc(JOBS[st.job].name)}</b><small>${esc(JOB_PITCH[st.job])} ${second
         ? 'Job Level starts again at 1; your first-job skills and points stay with you.'
-        : keep ? 'You keep your Job Level and skill points: both first jobs share them. You can switch back here any time.' : 'Job Level starts again at 1.'}</small>`;
-      btns = `<button class="rbtn soft" data-act="close">Not yet</button><button class="rbtn" data-act="jobchange" data-id="${st.job}">Become a ${JOBS[st.job].name}</button>`;
+        : keep ? 'You keep your Job Level and skill points: every first job shares them. You can switch back here any time.' : 'Job Level starts again at 1.'}</small>`;
+      btns = `<button class="rbtn soft" data-act="close">Not yet</button><button class="rbtn" data-act="jobchange" data-id="${st.job}">Become ${/^[AEIOU]/.test(JOBS[st.job].name) ? 'an' : 'a'} ${JOBS[st.job].name}</button>`;
     } else if (st.state === 'offer') {
       const first = st.id === n.quests[0] || st.id === n.trial?.[0] || st.id === n.trial2?.[0];
       text = (first ? (greet || n.hello) + ' ' : '') + st.q.intro;
@@ -755,7 +756,7 @@ export class Menus {
     // a Trainee not yet ready for a trial hears what it takes; the Elder points ready Trainees to the city
     if (p.job === 'novice' && n.trialHint && (st.state === 'finished' || st.state === 'locked')) text = n.trialHint;
     if (p.job === 'novice' && n.ready && p.jobLv >= 10 && skillLv(p, 'basics') >= 9 && ['finished', 'locked', 'active'].includes(st.state)) text = n.ready;
-    // both first jobs walked: a Keeper switches you between them
+    // several first jobs walked: a Keeper switches you between them
     if (n.keeper && this.hooks.keeperKnown?.(this.npc) && p.tier === 1) {
       for (const j of p.unlocked) if (JOBS[j].tier === 1 && j !== p.job) btns = `<button class="rbtn" data-act="jobchange" data-id="${j}">Switch to ${JOBS[j].name}</button>` + btns;
     }

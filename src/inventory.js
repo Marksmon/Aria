@@ -60,7 +60,7 @@ export class Inventory {
   constructor() {
     this.bag = new Store(BAG_SLOTS);
     this.chest = new Store(CHEST_SLOTS);
-    this.gear = { head: null, face: null, shield: null, garment: null, weapon: 'twig_sword', armor: 'clothes', shoes: null, light: null, acc: null, acc2: null }; // slot -> item id (two accessories, like Ragnarok)
+    this.gear = { head: null, face: null, shield: null, garment: null, weapon: 'twig_sword', armor: 'clothes', shoes: null, light: null, acc: null, acc2: null, ammo: null }; // slot -> item id (two accessories, like Ragnarok)
     this.perz = 0;
     this.listeners = [];
     this.level = () => 1; // set by the game: current Base Level, for recipe requirements
@@ -130,6 +130,9 @@ export class Inventory {
     // a second accessory goes in the free hand
     const slot = it.slot === 'acc' && this.gear.acc && !this.gear.acc2 ? 'acc2' : it.slot;
     const old = this.gear[slot];
+    // a bow takes both hands: it puts the shield away, and a shield puts the bow away
+    const twoHands = (it.kind === 'bow' && this.gear.shield) ? 'shield' : (it.slot === 'shield' && ITEMS[this.gear.weapon]?.kind === 'bow') ? 'weapon' : null;
+    if (twoHands && !this.bag.room(this.gear[twoHands])) return false;
     // the piece taken off goes where the new one was, so the bag does not shuffle under your finger
     const at = this.bag.slots.findIndex((s) => s.id === id);
     if (at < 0) return false;
@@ -139,6 +142,7 @@ export class Inventory {
       if (old) this.bag.add(old, 1); // the slot just freed always has room
     }
     this.gear[slot] = id;
+    if (twoHands) { this.bag.add(this.gear[twoHands], 1); this.gear[twoHands] = null; }
     this.changed();
     return true;
   }
@@ -237,7 +241,7 @@ export class Inventory {
 
   // equipment as the battle rules see it (rules.js derive)
   gearStats() {
-    const w = ITEMS[this.gear.weapon];
+    const w = ITEMS[this.gear.weapon], bow = w?.kind === 'bow', arrows = bow ? ITEMS[this.gear.ammo] : null;
     let def = 0, hit = 0, flee = 0, mhp = 0, msp = 0, mhpRate = 0, mspRate = 0;
     const stats = {};
     for (const id of Object.values(this.gear)) {
@@ -246,7 +250,8 @@ export class Inventory {
       def += it.def || 0; hit += it.hit || 0; flee += it.flee || 0; mhp += it.mhp || 0; msp += it.msp || 0; mhpRate += it.mhpRate || 0; mspRate += it.mspRate || 0;
       for (const [k, v] of Object.entries(it.stats || {})) stats[k] = (stats[k] || 0) + v;
     }
-    return { atk: w?.atk || 0, wlv: w?.wlv || 0, matk: w?.matk || 0, el: w?.el, def, hit, flee, mhp, msp, mhpRate, mspRate, stats, mastery: 0, aspdRate: (this.wearing('aspd') ? 0.9 : 1) * (1 - (w?.aspd || 0) / 100) };
+    // with a bow, the arrows' ATK adds to its own and an elemental arrow sets the shot's element
+    return { atk: (w?.atk || 0) + (arrows?.atk || 0), wlv: w?.wlv || 0, matk: w?.matk || 0, el: arrows?.el || w?.el, bow, def, hit, flee, mhp, msp, mhpRate, mspRate, stats, mastery: 0, aspdRate: (this.wearing('aspd') ? 0.9 : 1) * (1 - (w?.aspd || 0) / 100) };
   }
 
   toJSON() { return { v: 2, perz: this.perz, bag: this.bag.toJSON(), chest: this.chest.toJSON(), gear: this.gear }; }
