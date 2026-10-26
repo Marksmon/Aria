@@ -1353,7 +1353,7 @@ hotbar.load(save?.hotbar);
 // ---------- the attack button, beside the hotbar: a normal attack on the target, or the nearest monster ----------
 let selMob = null; // the selected monster: the one last tapped, attacked or aimed at, kept after a cast or a walk
 // the selected monster while it is still a fair target: alive, on this map and near enough
-const selected = () => (selMob?.alive && selMob.sprite.visible && mobs.list.includes(selMob) && Math.hypot(selMob.x - player.x, selMob.z - player.z) < 12 ? selMob : null);
+const selected = () => (selMob?.alive && selMob.sprite.visible && mobs.list.includes(selMob) && Math.hypot(selMob.x - player.x, selMob.z - player.z) < 20 ? selMob : null);
 const atkBtn = document.createElement('button');
 atkBtn.id = 'atkbtn';
 atkBtn.dataset.btn = 'attack';
@@ -1364,18 +1364,31 @@ document.getElementById('hud').appendChild(atkBtn);
 const atkFace = () => { const w = inv.gear.weapon; atkBtn.innerHTML = w ? `<img src="${iconURL(w)}" alt="">` : '<span>✊</span>'; };
 inv.onChange(atkFace);
 atkFace();
-// it sits just right of the hotbar, whose width changes with its pages
+// it sits just left of the hotbar, whose width changes with its pages
 function placeAtkBtn() {
   const hb = document.getElementById('hotbar').getBoundingClientRect();
   if (!hb.width) return;
-  atkBtn.style.left = `${Math.min(window.innerWidth - atkBtn.offsetWidth - 6, hb.right + 8)}px`;
+  atkBtn.style.left = `${Math.max(6, hb.left - atkBtn.offsetWidth - 8)}px`;
   atkBtn.style.top = `${hb.top + (hb.height - atkBtn.offsetHeight) / 2}px`;
 }
 window.addEventListener('resize', placeAtkBtn);
 setInterval(placeAtkBtn, 500);
+// the nearest monster on screen (in sight), however far: a melee hero walks to it, a bow shoots from range
+const sightV = new THREE.Vector3();
+function nearestInSight() {
+  let best = null, bd = Infinity;
+  for (const m of mobs.list) {
+    if (!m.alive || !m.sprite.visible) continue;
+    sightV.set(m.x, world.heightAt(m.x, m.z) + 0.5, m.z).project(camera);
+    if (sightV.z > 1 || Math.abs(sightV.x) > 1 || Math.abs(sightV.y) > 1) continue; // off screen
+    const d = Math.hypot(m.x - player.x, m.z - player.z);
+    if (d < bd) { bd = d; best = m; }
+  }
+  return best;
+}
 function attackNow() {
   if (player.state === 'down') return;
-  const t = (player.goal?.mob?.alive && mobs.list.includes(player.goal.mob) && player.goal.mob) || selected() || mobs.nearest(player.x, player.z, 9);
+  const t = (player.goal?.mob?.alive && mobs.list.includes(player.goal.mob) && player.goal.mob) || selected() || nearestInSight();
   if (!t) { menus.message('No monster nearby'); return; }
   stopNav();
   selMob = t;

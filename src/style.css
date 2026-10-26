@@ -762,7 +762,7 @@ button.eq:active { background: var(--w-sel); }
 #bufftip[hidden] { display: none; }
 #bufftip b { color: var(--w-gold); font-size: 13px; }
 
-/* the attack button, right of the hotbar: the weapon in hand on a round red-gold button */
+/* the attack button, left of the hotbar: the weapon in hand on a round red-gold button */
 #atkbtn {
   position: absolute;
   width: 58px;
