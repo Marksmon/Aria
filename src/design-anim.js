@@ -67,14 +67,36 @@ export function burst(F, x, y, k, c) {
 // the bob, so the head goes down with the body (bob gives how far, frame by frame)
 export const REST = { step: 0, bob: 0, atk: -1 };
 export function animFrames(views, heads, bw, draw) {
-  const out = {};
-  for (const [dir, [view, flip]] of Object.entries(views)) {
-    const [x, , neck] = heads[dir];
-    const cx = Math.round(flip ? bw - 1 - x : x); // a mirrored view is painted unmirrored, then flipped
-    const one = (pose) => { const F = draw(view, cx, neck + pose.bob, pose); return (flip ? F.mirror() : F).toCanvas(); };
-    const walk = WALK.map((step) => ({ step, bob: bobOf(step), atk: -1 }));
-    const attack = [...Array(ATTACK)].map((_, atk) => ({ step: 0, bob: 0, atk }));
-    out[dir] = { idle: [one(REST)], walk: walk.map(one), attack: attack.map(one), bob: { idle: [0], walk: walk.map((p) => p.bob), attack: attack.map(() => 0) } };
+  const frame = framePainter(heads, bw, draw), out = {};
+  for (const dir of Object.keys(views)) {
+    out[dir] = { bob: {} };
+    for (const [anim, poses] of Object.entries(POSES)) {
+      out[dir][anim] = poses.map((_, i) => frame(dir, anim, i));
+      out[dir].bob[anim] = poses.map((p) => p.bob);
+    }
   }
   return out;
+}
+
+export const LEGS = 63; // in every design, chin to ground in pixels: the feet stand this far below the head's chin
+
+// the 8 directions: dir -> [view, mirrored]; the left ones are the right ones painted, then flipped
+export const VIEWS = {
+  down: ['front', false], downright: ['front3', false], right: ['side', false], upright: ['back3', false], up: ['back', false],
+  downleft: ['front3', true], left: ['side', true], upleft: ['back3', true],
+};
+// the poses of each move, frame by frame
+export const POSES = {
+  idle: [REST],
+  walk: WALK.map((step) => ({ step, bob: bobOf(step), atk: -1 })),
+  attack: [...Array(ATTACK)].map((_, atk) => ({ step: 0, bob: 0, atk })),
+};
+// one design's frames painted one at a time, when asked for (the game paints them as they are
+// needed, so a new body costs no wait): frame(dir, anim, i) -> canvas
+export function framePainter(heads, bw, draw) {
+  return (dir, anim, i) => {
+    const [view, flip] = VIEWS[dir], [x, , neck] = heads[dir], pose = POSES[anim][i];
+    const F = draw(view, Math.round(flip ? bw - 1 - x : x), neck + pose.bob, pose);
+    return (flip ? F.mirror() : F).toCanvas();
+  };
 }

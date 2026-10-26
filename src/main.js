@@ -79,12 +79,15 @@ const save = loadSave();
 let lookBefore = null; // the look kept, while one is being tried on
 mobs.mvpAt = typeof save?.mvpAt === 'number' ? { jarl: save.mvpAt } : save?.mvpAt || {}; // older saves timed the Fire Giant alone
 mobs.bossHp = save?.bossHp || {};
-const player = new Player(scene, world, lib.player, lib.shadow, fx);
-player.setPos(save?.x ?? world.spawn.x, save?.z ?? world.spawn.z);
-if (save?.look) player.setLook(save.look.hair === 'long' ? { ...save.look, hair: 'mane' } : save.look); // the straight long hair waits for a female look
-lookBefore = { ...player.look };
 const prog = new Progress();
 prog.load(save?.prog);
+// the hero's body follows the job and the look's body (male or female), painted in code (sprites.js designSet)
+const JOB_BODY = { novice: 'trainee', swordman: 'blader', mage: 'sorc', blademaster: 'master', wizard: 'wiz', magicknight: 'mknight' };
+const bodyArt = (look) => lib.design(`${JOB_BODY[prog.job] || 'blader'}${look.body === 'f' ? 'F' : 'M'}`);
+const player = new Player(scene, world, bodyArt({ ...save?.look }), lib.shadow, fx);
+player.setPos(save?.x ?? world.spawn.x, save?.z ?? world.spawn.z);
+if (save?.look) player.setLook(save.look);
+lookBefore = { ...player.look };
 const quests = new Quests();
 quests.load(save?.quests);
 const story = new Story();
@@ -130,8 +133,8 @@ fx.landAt = (x, z) => {
 const inv = new Inventory();
 inv.level = () => prog.baseLv;
 inv.job = () => prog.wearJobs; // every job earned: a Blader who passed the Sorcerer's trial may hold a staff
-// the player's look follows the job: the Trainee's clothes, then the Blader's or the Sorcerer's
-const jobArt = () => ({ novice: lib.novice, swordman: lib.player, mage: lib.sorcerer || lib.novice, blademaster: lib.blademaster, wizard: lib.wizard, magicknight: lib.magicknight }[prog.job] || lib.player);
+// the player's look follows the job: the Trainee's clothes, then the first and second jobs'
+const jobArt = () => bodyArt(player.look);
 player.setArt(jobArt());
 inv.load(save?.inv);
 inv.dropUnwearable(); // gear rules can change between versions
@@ -1155,16 +1158,17 @@ const menus = new Menus(inv, prog, player, {
   toggleSound() { audio.setEnabled(!audio.enabled); },
   closed() { persist(); },
   // the hair picker tries looks on as you choose; lookDone keeps one (the stylist charges for it)
-  look(l) { player.setLook(l); },
+  look(l) { player.setLook(l); player.setArt(jobArt()); }, // a new body when trying the other one on
   currentLook: () => ({ ...player.look }),
   lookDone(l, mode) {
     if (mode === 'stylist') {
-      if (inv.perz < 1000) { player.setLook(lookBefore); menus.message('Not enough perz'); return; }
+      if (inv.perz < 1000) { player.setLook(lookBefore); player.setArt(jobArt()); menus.message('Not enough perz'); return; }
       inv.perz -= 1000;
       inv.changed();
       menus.message('Embla steps back, pleased: "Like a hero of the songs!"');
     }
     player.setLook(l);
+    player.setArt(jobArt());
     lookBefore = { ...player.look };
     audio.play('craft');
     persist();
@@ -1173,7 +1177,7 @@ const menus = new Menus(inv, prog, player, {
 });
 menus.quests = quests;
 const portraits = {};
-menus.portrait = (id) => (id === 'player' ? (portraits[`${prog.job}|${jobArt().dressed}`] ||= jobArt().anims.down.idle[0].image.toDataURL())
+menus.portrait = (id) => (id === 'player' ? (portraits[`${prog.job}|${player.look.body}|${jobArt().dressed}`] ||= jobArt().anims.down.idle[0].image.toDataURL())
   : (portraits[id] ||= lib.villagers[id].anims.down.idle[0].image.toDataURL()));
 // things in camp and town you tap to use: the player walks over, then it opens. h = height on screen
 const SPOTS = [

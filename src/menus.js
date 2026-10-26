@@ -144,9 +144,11 @@ export class Menus {
   }
 
   look() {
-    const d = this.lookDraft, styles = hairstyles(), changed = d.hair !== this.lookFrom.hair || d.dye !== this.lookFrom.dye;
+    const d = this.lookDraft, styles = hairstyles(), changed = d.hair !== this.lookFrom.hair || d.dye !== this.lookFrom.dye || (d.body || 'm') !== (this.lookFrom.body || 'm');
     const price = this.lookMode === 'stylist' ? 1000 : 0;
+    const body = (b, name) => `<button class="rbtn${(d.body || 'm') === b ? '' : ' soft'}" data-act="lookbody" data-id="${b}" aria-pressed="${(d.body || 'm') === b}">${name}</button>`;
     return `<div class="lookwrap"><img class="lookpic" src="${lookPortrait(d, 96)}" alt="">
+      <div class="lookrow">${body('m', 'Male')}${body('f', 'Female')}</div>
       <div class="lookrow"><button class="rbtn soft" data-act="lookhair" data-id="-1">◀</button><b>${esc(HAIRSTYLES[d.hair] || d.hair)}</b><button class="rbtn soft" data-act="lookhair" data-id="1">▶</button></div>
       <div class="swatches">${Object.entries(DYES).map(([k, v]) => `<button class="swatch${d.dye === k ? ' on' : ''}" data-act="lookdye" data-id="${k}" title="${esc(v.name)}" style="background:${v.swatch}"></button>`).join('')}</div>
       <small>${esc(DYES[d.dye].name)} · ${styles.length} hairstyles</small>
@@ -694,6 +696,12 @@ export class Menus {
       const st = hairstyles(), i = st.indexOf(this.lookDraft.hair);
       this.lookDraft.hair = st[(i + +t.dataset.id + st.length) % st.length];
       this.hooks.look?.(this.lookDraft); this.hooks.ui?.(); this.render(id);
+    }
+    if (act === 'lookbody') { // the other body; a new hero's hair follows it the first time (it can be changed back)
+      const b = t.dataset.id, d = this.lookDraft;
+      if ((d.body || 'm') !== b && this.lookMode === 'new') d.hair = b === 'f' ? (d.hair === 'messy' ? 'long' : d.hair) : (d.hair === 'long' ? 'messy' : d.hair);
+      d.body = b;
+      this.hooks.look?.(d); this.hooks.ui?.(); this.render(id);
     }
     if (act === 'lookdye') { this.lookDraft.dye = t.dataset.id; this.hooks.look?.(this.lookDraft); this.hooks.ui?.(); this.render(id); }
     if (act === 'lookok') {

@@ -1,12 +1,17 @@
-// Characters (player, monsters, villagers) are PixelLab sprite sheets in src/art, packed by
-// build-tools/pack-sprites.py; the world, props and effects are painted into canvases at
-// startup. Each sprite is drawn bottom-centered so it stands on the ground. Sizes are in
+// Characters (monsters, villagers) are PixelLab sprite sheets in src/art, packed by
+// build-tools/pack-sprites.py; the hero's job bodies are painted in code (designSet); the world,
+// props and effects are painted into canvases at startup. Each sprite is drawn bottom-centered so it stands on the ground. Sizes are in
 // world units, not pixels.
 import * as THREE from 'three';
 import { mulberry32 } from './noise.js';
 import { paintSet, frameSize } from './painted.js';
 import { paintButler, BW, BH } from './butler.js';
 import { paintBleepBloop, BW as BBW, BH as BBH, BODY as BB_BODY } from './bleepbloop.js';
+import { POSES, LEGS, framePainter } from './design-anim.js';
+import { drawTrainee } from './trainees.js';
+import { drawBlader } from './bladers.js';
+import { drawMage } from './mages.js';
+import { drawMKnight } from './mknights.js';
 
 const SHEETS = import.meta.glob('./art/*.png', { eager: true, import: 'default' });
 const LAYOUTS = import.meta.glob('./art/*.json', { eager: true, import: 'default' });
@@ -426,8 +431,8 @@ function tex(canvas, opts = {}) {
   return t;
 }
 
-// Second-job outfits: the first job's clothes recoloured, band by band of hue. Skin, hair, steel and
-// the staff's crystal are left alone (too pale, too grey, or skin-toned).
+// Recolouring a sheet band by band of hue (people dressed from a bald body, bloops in new colours).
+// Skin, hair, steel and crystals are left alone (too pale, too grey, or skin-toned).
 function rgb2hsl(r, g, b) {
   r /= 255; g /= 255; b /= 255;
   const mx = Math.max(r, g, b), mn = Math.min(r, g, b), l = (mx + mn) / 2, d = mx - mn;
@@ -472,28 +477,6 @@ const recolorer = (bands, details = []) => (px, w) => {
 const navy = (h, s, l) => h > 195 && h < 265 && s > 0.12 && l < 0.8; // the navy gambeson / the blue robe
 const crimson = (h, s) => (h > 325 || h < 8) && s > 0.45;              // the Blader's sash
 const silver = (h, s, l) => s < 0.15 && l > 0.5 && l < 0.8;             // the Sorcerer's trims
-const steel = (h, s, l) => s < 0.14 && l > 0.22 && l < 0.82;            // armour, buckles, the blade
-const white = (h, s, l) => s < 0.2 && l >= 0.82;                         // the emblem, the under-tunic
-const leather = (h, s, l) => (h < 45 || h > 330) && s > 0.06 && s < 0.5 && l > 0.08 && l < 0.42; // belts, boots, gloves (skin is paler)
-const crystal = (h, s, l) => h > 175 && h < 215 && l > 0.6;             // the staff's glowing crystal
-const ATTIRE = {
-  // the BladeMaster: crimson and black, gilded steel, a gold sash and emblem
-  blademaster: recolorer([
-    [navy, (h, s, l) => [354, Math.min(0.85, s + 0.35), l * 1.1]],
-    [crimson, (h, s, l) => [44, 0.85, Math.min(0.62, l + 0.2)]],
-    [white, (h, s, l) => [46, 0.85, 0.66]],
-    [leather, (h, s, l) => [350, s * 0.45, l * 0.6]],
-    [steel, (h, s, l) => [40, 0.3, l * 1.05]],
-  ], [{ band: 0, trim: [44, 0.85, 0.55] }, { band: 3, trim: [42, 0.75, 0.45] }]), // gold edges on the coat and the leather
-  // the Wizard: deep violet with gold trims, plum leather, a rose crystal
-  wizard: recolorer([
-    [navy, (h, s, l) => [278, Math.min(0.8, s + 0.25), l * 1.15]],
-    [silver, (h, s, l) => [44, 0.7, l * 0.85]],
-    [crystal, (h, s, l) => [325, 0.85, l]],
-    [leather, (h, s, l) => [300, 0.3, l * 0.85]],
-  ], [{ band: 0, trim: [46, 0.8, 0.56] }, { band: 0, dots: [282, 0.85, 0.62], every: 13 }]), // gold hems, a few glowing rune dots
-  magicknight: recolorer([[navy, (h, s, l) => [268, Math.min(0.7, s + 0.1), l * 1.1]], [crimson, (h, s, l) => [190, 0.7, Math.min(0.6, l + 0.15)]]]),
-};
 
 // a Bloop in another colour: its body (the green Bloop's hues 50-150, or the Blue Bloop's) turned to
 // hue, its saturation scaled, its lightness scaled and lifted; the outline and the eyes stay
@@ -612,6 +595,76 @@ function codeSet(frames, fw, fh, body, anchor) {
   return set;
 }
 
+// The hero's body for a job, painted in code (trainees.js, bladers.js, mages.js, mknights.js) on the
+// bald bodies' frame: a sprite set shaped like pixelSet's, standing, walking (8) and attacking (7), with
+// each frame's head spot (sunk with the body on the walk) so the shared head, hair and headgear are
+// painted on by dress() like on any bald body. Painting is the slow part, so the standing frames are
+// painted at once, the rest a few at a time in the background, and a frame shown before its turn
+// (ensure, from the Player) is painted right then.
+const DESIGNS = {
+  trainee: drawTrainee, blader: drawBlader, master: drawBlader, sorc: drawMage, wiz: drawMage, mknight: drawMKnight,
+};
+function designSet(id) {
+  const L = LAYOUTS['./art/trainee.json'];
+  const fw = L.fw, fh = L.fh;
+  const heads = Object.fromEntries(Object.entries(L.anims).map(([d, a]) => [d, a.idle[3][0]]));
+  const frame = framePainter(heads, fw, DESIGNS[id.replace(/[MF]$/, '')](id));
+  const foot = (dir) => (fh - (heads[dir][2] + LEGS)) / fh; // the feet, as a share of the frame from the bottom
+  const set = { pixel: true, fw, fh, body: L.body, bald: true, loaded: true, anchor: foot('down'), hair: L.hair.map((c) => c.map((v) => v / 255)), anims: {}, flash: {} };
+  const nearest = (c) => { const t = tex(c); t.magFilter = t.minFilter = THREE.NearestFilter; t.generateMipmaps = false; return t; };
+  const cuts = [], of = new Map();
+  for (const [dir, a] of Object.entries(L.anims)) {
+    const h = a.idle[3][0], spot = a.idle[4][0];
+    set.anims[dir] = {};
+    set.flash[dir] = {};
+    for (const [anim, poses] of Object.entries(POSES)) {
+      set.anims[dir][anim] = [];
+      set.flash[dir][anim] = [];
+      poses.forEach(({ bob }, i) => {
+        const t = nearest(mk(fw, fh).c), f = nearest(mk(fw, fh).c);
+        t.userData.anchor = f.userData.anchor = foot(dir);
+        t.userData.head = f.userData.head = { x: h[0], crown: h[1] + bob, neck: h[2] + bob, w: h[3], eyes: h.slice(4).map((v, k) => (k % 2 ? v + bob : v)), at: [spot[0], spot[1] + bob] };
+        set.anims[dir][anim].push(t);
+        set.flash[dir][anim].push(f);
+        const c = { t, f, dir, anim, i, body: null };
+        cuts.push(c);
+        of.set(t, c);
+      });
+    }
+  }
+  let paint = null;
+  const draw = (list) => {
+    for (const c of list) {
+      if (!c.body) continue; // not painted yet: drawn when it is
+      const { t, f, dir } = c, b = t.image.getContext('2d');
+      b.clearRect(0, 0, fw, fh);
+      b.drawImage(c.body, 0, 0);
+      if (paint) paint(b, t.userData, dir);
+      const g = f.image.getContext('2d');
+      g.globalCompositeOperation = 'source-over';
+      g.clearRect(0, 0, fw, fh);
+      g.drawImage(t.image, 0, 0);
+      g.globalCompositeOperation = 'source-in';
+      g.fillStyle = '#ffffff';
+      g.fillRect(0, 0, fw, fh);
+      t.needsUpdate = f.needsUpdate = true;
+    }
+  };
+  const fill = (c) => { if (!c.body) { c.body = frame(c.dir, c.anim, c.i); draw([c]); } };
+  set.dress = (fn) => { paint = fn; draw(cuts); };
+  set.repaint = (t) => { const c = of.get(t); if (c) draw([c]); }; // one frame (an animated hat)
+  set.ensure = (t) => { const c = of.get(t); if (c) fill(c); };
+  cuts.filter((c) => c.anim === 'idle').forEach(fill);
+  const rest = cuts.filter((c) => !c.body).sort((a, b) => (a.anim === 'walk' ? 0 : 1) - (b.anim === 'walk' ? 0 : 1)); // the walk first
+  const pump = () => {
+    const t0 = performance.now();
+    while (rest.length && performance.now() - t0 < 6) fill(rest.shift());
+    if (rest.length) setTimeout(pump, 40);
+  };
+  setTimeout(pump, 40);
+  return set;
+}
+
 // The Keepers' butler (butler.js), painted in code on the bald bodies' frame: a sprite set shaped
 // like pixelSet's, standing only, with the trainee's head spots so the shared head and hair are
 // painted on by dress() like on any bald body.
@@ -726,22 +779,20 @@ export function createSprites() {
   // outfit), or the Keepers' butler painted in code ({ body: 'butler' }); the head, hair and headgear
   // are painted on by dressPeople (main.js) once they load
   const person = (spec) => Object.assign(spec.body === 'butler' ? butlerSet() : sheet(spec.body, { recolor: outfit(spec.body, spec) }), { person: spec });
+  // the hero's job bodies (designSet), each made the first time it is worn: trainee | blader | master |
+  // sorc | wiz | mknight, then M or F
+  const designs = {};
+  const design = (id) => (designs[id] ||= designSet(id));
 
   return {
     mobs,
     villagers,
     person,
+    design,
     marks: { offer: tex(questMark('!', '#e3a13a')), ready: tex(questMark('?', '#5fae45')), story: tex(questMark('!', '#8a6af0')) },
     fx: { slash: tex(slashArc()), puff: tex(puff()) },
     props,
     fire: { frames: fireFrames, aspect: fireAspect, w: 1.2 },
-    player: SHEETS['./art/blader.png'] ? sheet('blader') : sheet('player'), // the Blader (the standard one once made)
-    novice: SHEETS['./art/trainee.png'] ? sheet('trainee') : SHEETS['./art/novice.png'] ? sheet('novice') : null, // the standard Trainee once made
-    sorcerer: SHEETS['./art/sorc.png'] ? sheet('sorc') : SHEETS['./art/sorcerer.png'] ? sheet('sorcerer') : null, // the standard Sorcerer once made
-    // second jobs: for now the first job's outfit in new colours (see ATTIRE); the Magic Knight has its own
-    blademaster: SHEETS['./art/blader.png'] ? sheet('blader', { recolor: ATTIRE.blademaster }) : null,
-    wizard: SHEETS['./art/sorc.png'] ? sheet('sorc', { recolor: ATTIRE.wizard }) : null,
-    magicknight: SHEETS['./art/mknight.png'] ? sheet('mknight') : SHEETS['./art/blader.png'] ? sheet('blader', { recolor: ATTIRE.magicknight }) : null,
     ground: tex(groundDetail(), { repeat: 28 }),
     shadow: tex(blobShadow()),
     water: tex(waterTex(), { repeat: 4 }),

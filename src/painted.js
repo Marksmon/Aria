@@ -12,21 +12,46 @@ const OUT = '#23170f';
 // ---------- colours ----------
 const hex = (c) => [parseInt(c.slice(1, 3), 16), parseInt(c.slice(3, 5), 16), parseInt(c.slice(5, 7), 16)];
 const mix = (c, to, k) => { const a = hex(c), b = hex(to); return `rgb(${a.map((v, i) => Math.round(v + (b[i] - v) * k)).join(',')})`; };
-const light = (c) => mix(c, '#ffffff', 0.28);
-const dark = (c) => mix(c, '#000000', 0.32);
+const shades = new Map(); // colour -> [light, dark], worked out once
+const shade = (c) => shades.get(c) || (shades.set(c, [mix(c, '#ffffff', 0.28), mix(c, '#000000', 0.32)]), shades.get(c));
+const light = (c) => shade(c)[0];
+const dark = (c) => shade(c)[1];
+
+// any CSS colour as [r, g, b], read once through a canvas (which writes it back as #rrggbb)
+const rgbs = new Map();
+let norm = null;
+const rgbOf = (v) => {
+  let c = rgbs.get(v);
+  if (!c) {
+    norm ||= document.createElement('canvas').getContext('2d');
+    norm.fillStyle = '#000000'; norm.fillStyle = v;
+    c = hex(norm.fillStyle);
+    rgbs.set(v, c);
+  }
+  return c;
+};
 
 // ---------- a frame: a grid of colours ----------
 export class Frame {
   constructor(w = FW, h = FH) { this.w = w; this.h = h; this.px = new Array(w * h).fill(null); }
-  // draw one part: shape(set) marks its pixels; it is shaded and outlined, then laid over what's there
+  // draw one part: shape(set) marks its pixels; it is shaded and outlined, then laid over what's there.
+  // Only the box around its pixels is walked, so small parts are cheap
   part(shape, col, { outline = true, flat = false } = {}) {
     const FW = this.w, FH = this.h;
     const m = new Uint8Array(FW * FH);
-    const set = (x, y) => { x = Math.round(x); y = Math.round(y); if (x >= 0 && y >= 0 && x < FW && y < FH) m[y * FW + x] = 1; };
+    let x0 = FW, y0 = FH, x1 = -1, y1 = -1;
+    const set = (x, y) => {
+      x = Math.round(x); y = Math.round(y);
+      if (x >= 0 && y >= 0 && x < FW && y < FH) {
+        m[y * FW + x] = 1;
+        if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y;
+      }
+    };
     shape(set);
+    if (x1 < 0) return;
     const at = (x, y) => x >= 0 && y >= 0 && x < FW && y < FH && m[y * FW + x];
     const lt = light(col), dk = dark(col);
-    for (let y = 0; y < FH; y++) for (let x = 0; x < FW; x++) {
+    for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) {
       if (!m[y * FW + x]) continue;
       let c = col;
       if (!flat) {
@@ -35,7 +60,7 @@ export class Frame {
       }
       this.px[y * FW + x] = c;
     }
-    if (outline) for (let y = 0; y < FH; y++) for (let x = 0; x < FW; x++) {
+    if (outline) for (let y = Math.max(0, y0 - 1); y <= Math.min(FH - 1, y1 + 1); y++) for (let x = Math.max(0, x0 - 1); x <= Math.min(FW - 1, x1 + 1); x++) {
       if (m[y * FW + x]) continue;
       if (at(x + 1, y) || at(x - 1, y) || at(x, y + 1) || at(x, y - 1)) this.px[y * FW + x] = OUT;
     }
@@ -46,11 +71,14 @@ export class Frame {
     const FW = this.w, FH = this.h;
     const c = document.createElement('canvas');
     c.width = FW; c.height = FH;
-    const g = c.getContext('2d');
-    for (let y = 0; y < FH; y++) for (let x = 0; x < FW; x++) {
-      const v = this.px[y * FW + x];
-      if (v) { g.fillStyle = v; g.fillRect(x, y, 1, 1); }
+    const g = c.getContext('2d'), img = g.createImageData(FW, FH), d = img.data;
+    for (let i = 0; i < FW * FH; i++) {
+      const v = this.px[i];
+      if (!v) continue;
+      const [r, gr, b] = rgbOf(v);
+      d[i * 4] = r; d[i * 4 + 1] = gr; d[i * 4 + 2] = b; d[i * 4 + 3] = 255;
     }
+    g.putImageData(img, 0, 0);
     return c;
   }
 }

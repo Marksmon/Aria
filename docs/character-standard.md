@@ -29,6 +29,17 @@ it.
 
 ## Bodies
 
+The hero's job bodies, male and female, are painted in code from the owner's uniform sheets:
+`src/trainees.js` (Trainee), `bladers.js` (Blader, BladeMaster), `mages.js` (Sorcerer, Wizard) and
+`mknights.js` (Magic Knight). They keep the standard below: the bald bodies' frame (106 × 108, the
+Trainee's head spots, the chin 63 pixels above the ground), 8 directions (the left ones mirrored),
+standing, an 8-frame walk and a 7-frame attack or cast (`design-anim.js`). The game paints them as
+they are needed (`designSet` in `sprites.js`); each frame carries its head spot, which sinks with
+the body on the walk, so the head, hair and headgear go on like on any bald body. The look's
+`body` (`m` or `f`) picks which one. `art/designs/` holds their sheets.
+
+People dressed from a bald body still use the PixelLab bodies:
+
 | | |
 |---|---|
 | Tool | PixelLab Pro (`build-tools/pixellab.py`, `pro()`) |

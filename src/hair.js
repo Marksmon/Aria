@@ -8,8 +8,8 @@ const URL = import.meta.glob('./art/heads.png', { eager: true, import: 'default'
 // layout: { cw, ch, rows: { bald, messy, ... }, dirs: { down: { col, chin: [x, y], crown, w, eyes }, ... } }
 export const HEADS = import.meta.glob('./art/heads.json', { eager: true, import: 'default' })['./art/heads.json'] || null;
 
-// the picker's hairstyles (the straight 'long' row is packed too, kept for a female look later)
-export const HAIRSTYLES = { messy: 'Tousled', mane: 'Long' };
+// the picker's hairstyles
+export const HAIRSTYLES = { messy: 'Tousled', mane: 'Long', long: 'Straight' };
 export const hairstyles = () => Object.keys(HAIRSTYLES).filter((k) => HEADS?.rows?.[k] !== undefined);
 
 // dyes: shadow → highlight. 'brown' keeps the hair as drawn

@@ -77,7 +77,7 @@ export class Player {
     // Ragnarok-style layers: the standard bald head and the hairstyle, painted into the frames of a
     // body made bald (dressHead), then headgear (hair.js, headgear.js). An older headless body gets
     // the head and hair as sprites on its neck anchor instead.
-    this.look = { hair: 'messy', dye: 'brown' };
+    this.look = { hair: 'messy', dye: 'brown', body: 'm' }; // body: m | f
     const layer = (order, mat = new THREE.SpriteMaterial({ alphaTest: 0.5 })) => {
       const s = new THREE.Sprite(mat);
       s.renderOrder = order;
@@ -332,6 +332,7 @@ export class Player {
     } else if (this.moving && this.state === 'normal') {
       tex = A.walk[Math.floor(this.animT * A.walk.length) % A.walk.length]; // every frame is part of the cycle
     }
+    this.art.ensure?.(tex); // a body painted in code paints a frame it hasn't reached yet
     if (this.mat.map !== tex) { this.mat.map = tex; this.sprite.center.y = tex.userData.anchor; }
     this.tex = tex;
 

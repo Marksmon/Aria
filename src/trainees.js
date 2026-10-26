@@ -6,12 +6,12 @@
 // front panel with the compass star, on her a short brown skirt over white, a thigh strap and knee
 // boots. The sheet has no weapon, so the owner gave the Trainee a dagger.
 // Standing, walking (8 frames) and attacking (7: a dagger slash), 8 directions: the left ones are the
-// right ones mirrored. Not used in the game yet. Plain canvas, no three.js.
+// right ones mirrored. The game paints the hero's body from these (sprites.js designSet). Plain
+// canvas, no three.js.
 import { Frame, ellipse, rect, poly, line } from './painted.js';
-import { REST, SWING, SLASH, behind, swordArm, slashArc, animFrames } from './design-anim.js';
+import { REST, SWING, SLASH, behind, swordArm, slashArc, animFrames, VIEWS } from './design-anim.js';
 
 export const BW = 106, BH = 108; // the bald bodies' frame (src/art/trainee.json)
-const LEGS = 63;                 // chin to ground, in pixels, in every direction
 
 const C = {
   vest: '#8a5a34', vestLt: '#a8744a', shirt: '#efe9de', shirtDk: '#cfc6b6', steel: '#b9bec8', leather: '#2c272d',
@@ -219,14 +219,7 @@ function side(F, o, cx, cy) {
   return F;
 }
 
-// dir -> [view, mirrored]
-const VIEWS = {
-  down: ['front', false], downright: ['front3', false], right: ['side', false], upright: ['back3', false], up: ['back', false],
-  downleft: ['front3', true], left: ['side', true], upleft: ['back3', true],
-};
-// one design's moves: { dir: { idle, walk, attack, bob } } (design-anim.js animFrames); heads: the
-// trainee's head data, { dir: [x, crown, neck, ...] }
-export function animTrainee(id, heads) {
-  const o = TRAINEES[id];
-  return animFrames(VIEWS, heads, BW, (view, cx, cy, pose) => { P = pose; try { return paint(o, view, cx, cy); } finally { P = REST; } });
-}
+// one design's painter for a pose (design-anim.js): (view, cx, cy, pose) -> Frame
+export const drawTrainee = (id) => (view, cx, cy, pose) => { P = pose; try { return paint(TRAINEES[id], view, cx, cy); } finally { P = REST; } };
+// one design's moves: { dir: { idle, walk, attack, bob } }; heads: the trainee's head data, { dir: [x, crown, neck, ...] }
+export const animTrainee = (id, heads) => animFrames(VIEWS, heads, BW, drawTrainee(id));

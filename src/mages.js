@@ -13,12 +13,11 @@
 //   rings around a blue star, sparkling.
 // Standing, walking (8 frames) and casting (7: the staff raised, then the crystal bursting), 8
 // directions: the left ones are the right ones mirrored.
-// Not used in the game yet. Plain canvas, no three.js.
+// The game paints the hero's body from these (sprites.js designSet). Plain canvas, no three.js.
 import { Frame, ellipse, rect, poly, line } from './painted.js';
-import { REST, CAST, burst, animFrames } from './design-anim.js';
+import { REST, CAST, burst, animFrames, VIEWS } from './design-anim.js';
 
 export const BW = 106, BH = 108; // the bald bodies' frame (src/art/trainee.json)
-const LEGS = 63;                 // chin to ground, in pixels, in every direction
 
 const SORC = {
   coat: '#4c3888', fold: '#3a2a6c', lining: '#ebe5d8', liningDk: '#cbc3b2', trim: '#cfa64c', shirt: '#25212d',
@@ -410,24 +409,7 @@ function side(F, o, cx, cy) {
   return F;
 }
 
-// dir -> [view, mirrored]; heads: the trainee's head data, { dir: [x, crown, neck, ...] }
-const VIEWS = {
-  down: ['front', false], downright: ['front3', false], right: ['side', false], upright: ['back3', false], up: ['back', false],
-  downleft: ['front3', true], left: ['side', true], upleft: ['back3', true],
-};
-// one design's frames: { dir: { canvas, foot } } (foot: rows from the frame's bottom to the ground)
-export function paintMage(id, heads) {
-  const o = MAGES[id], out = {};
-  for (const [dir, [view, flip]] of Object.entries(VIEWS)) {
-    const [x, , neck] = heads[dir];
-    const cx = flip ? BW - 1 - x : x; // a mirrored view is painted unmirrored, then flipped
-    const F = paint(o, view, Math.round(cx), neck);
-    out[dir] = { canvas: (flip ? F.mirror() : F).toCanvas(), foot: BH - (neck + LEGS) };
-  }
-  return out;
-}
-// one design's moves: { dir: { idle, walk, attack, bob } } (design-anim.js animFrames)
-export function animMage(id, heads) {
-  const o = MAGES[id];
-  return animFrames(VIEWS, heads, BW, (view, cx, cy, pose) => { P = pose; try { return paint(o, view, cx, cy); } finally { P = REST; } });
-}
+// one design's painter for a pose (design-anim.js): (view, cx, cy, pose) -> Frame
+export const drawMage = (id) => (view, cx, cy, pose) => { P = pose; try { return paint(MAGES[id], view, cx, cy); } finally { P = REST; } };
+// one design's moves: { dir: { idle, walk, attack, bob } }; heads: the trainee's head data, { dir: [x, crown, neck, ...] }
+export const animMage = (id, heads) => animFrames(VIEWS, heads, BW, drawMage(id));

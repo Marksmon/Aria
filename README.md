@@ -460,10 +460,13 @@ Leaf Cap, Flower Crown, Horned Crown, and the animated **Fire Crown** (crafted f
 MVP's Fire Heart).
 
 **Your look.** A character is layers: the job's body, then one shared head (the
-standard face: eyes only, no mouth), then your hairstyle, then headgear. You choose a hairstyle
-(Tousled or Long) and a hair dye (8 colours) when you start a new game; **Embla the Stylist** by
-Steinborg's fountain changes them for 1,000 perz. Your hair stays the same through job changes,
-and the job changes your outfit. Headgear snaps to the head layer, so hats sit on the crown and
+standard face: eyes only, no mouth), then your hairstyle, then headgear. You choose a male or
+female body, a hairstyle (Tousled, Long or Straight) and a hair dye (8 colours) when you start a
+new game; **Embla the Stylist** by Steinborg's fountain changes them for 1,000 perz. Your hair stays
+the same through job changes, and the job changes your outfit: the Trainee's browns, the Blader's
+navy capelet, the Sorcerer's purple coat, then the BladeMaster's black and gold armour, the
+Wizard's navy and red robe or the Magic Knight's orange coat, each holding its weapon (the Trainee
+a dagger) and each with its own walk and attack. Headgear snaps to the head layer, so hats sit on the crown and
 glasses and masks sit on the eyes, in every direction and every frame. See
 `docs/character-standard.md`.
 
@@ -613,9 +616,11 @@ shops and quests), `hotbar.js`, `daynight.js`, `audio.js`,
 
 ## PixelLab art
 
-Every character is made with PixelLab's Pro mode from a style reference: the player from a
-style reference sprite (kept out of the repo), everyone else from the player, so the cast shares
-one look. Raw exports live in `art/pixellab/<name>/`; older versions stay in `*_v1` / `*_v2`.
+The hero's job bodies are painted in code, male and female, from the owner's uniform sheets
+(`src/trainees.js`, `bladers.js`, `mages.js`, `mknights.js`, with the moves in `design-anim.js`);
+`art/designs/` holds their sheets. Every other character is made with PixelLab's Pro mode from a
+style reference: the first hero from a style reference sprite (kept out of the repo), everyone
+else from it, so the cast shares one look. Raw exports live in `art/pixellab/<name>/`; older versions stay in `*_v1` / `*_v2`.
 
 ```bash
 # needs PIXELLAB_API_KEY (and PIXELLAB_STYLE_REF for the player)
