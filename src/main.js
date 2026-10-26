@@ -25,7 +25,7 @@ import { headgearReady, gearCut, paintGear } from './headgear.js';
 import { derive, playerAttack, mobAttack, magicAttack, elementMod, ELEMENTS } from './rules.js';
 import { SKILLS, EDGE_FX, skillLv, spCost, castTime, learn, skillList, weaponOk, WEAPON_NAMES, BOW_RANGE, unlearnFirstJob, unlearnSecondJob, RETRAIN_COST } from './skills.js';
 import { Menus } from './menus.js';
-import { iconTexture, iconURL, ITEMS, baseOf, canWear } from './items.js';
+import { iconTexture, iconURL, ITEMS, baseOf, canWear, maybeSlotted } from './items.js';
 import { DayNight } from './daynight.js';
 import { Audio } from './audio.js';
 import { Wings } from './wings.js';
@@ -437,12 +437,13 @@ mobs.on('death', (m, drops) => {
   else gainExp(...m.def.exp, RATES);
   for (const id of quests.onKill(m.type)) questComplete(id);
   story.onKill(m.type);
-  for (const [item, count] of drops) {
+  for (const [base, count] of drops) {
+    const item = maybeSlotted(base); // now and then a piece of gear drops with a card slot
     fx.drop(m.x, m.z, item, count, iconTexture(item), !!ITEMS[item]?.rare);
-    if (ITEMS[item].rare) { // a rare find: a golden burst and a word, like Ragnarok's drop glow
+    if (ITEMS[item].rare || item !== base) { // a rare find: a golden burst and a word, like Ragnarok's drop glow
       fx.sparkle(m.x, world.heightAt(m.x, m.z) + 0.5, m.z, '#ffd23a', 20);
       audio.play('heart');
-      menus.message(`Rare drop! The ${m.def.name} dropped ${ITEMS[item].name}.`);
+      menus.message(`${ITEMS[item].rare ? 'Rare drop' : 'A slotted find'}! The ${m.def.name} dropped ${ITEMS[item].name}.`);
     }
   }
 });
@@ -978,6 +979,7 @@ function raidReward(id, diff) {
   if (r.perz) { inv.addPerz(r.perz); menus.message(`+${r.perz.toLocaleString()} perz`); }
   const give = (item, n) => { const got = inv.add(item, n); if (got < n) inv.chest.add(item, n - got); menus.toast(item, n); };
   for (const [item, n] of Object.entries(r.items)) give(item, n);
+  if (r.rare) r.rare = maybeSlotted(r.rare); // a raid's rare can come with a card slot too
   if (r.rare) { give(r.rare, 1); audio.play('heart'); menus.message(`Rare find! ${ITEMS[r.rare].name}!`); }
 }
 // the run is over: its monsters go, the EXP held is paid, and (unless the hero went elsewhere) the

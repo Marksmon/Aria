@@ -1,4 +1,5 @@
 // Items (materials, usables and equipment) and recipes, plus the painted icons used both on the ground and in menus.
+import { paintWisp, paintLantern } from './wingart.js';
 import * as THREE from 'three';
 import { headgearIcon, headgearReady } from './headgear.js';
 
@@ -151,6 +152,22 @@ const BASE_ITEMS = {
   willow_charm: { type: 'equip', slot: 'acc', rare: true, name: 'Willow Charm', stats: { fns: 1, knl: 1 }, msp: 20, icon: 'r_willow', desc: 'A loop of Elder Willow twig with a firefly asleep in it. Your songs come quicker.', from: 'the Elder Willow (4%)' },
   oak_ring:     { type: 'equip', slot: 'acc', rare: true, name: 'Oak Ring', stats: { end: 3, pow: 1 }, mhp: 80, icon: 'r_oak', desc: 'A ring grown from the Ancient Treant\'s finger. It is a little warm, like a tree in the sun.', from: 'the Ancient Treant (5%)' },
   grove_blade:  { type: 'equip', slot: 'weapon', jobs: ['swordman'], el: 'earth', rare: true, name: 'Grove Sword', atk: 125, wlv: 4, stats: { pow: 2, end: 2 }, icon: 'weapon_grove', desc: 'A sword of living heartwood, harder than steel, with leaves on its hilt that never fall.', from: 'the Ancient Treant (1%)' },
+  // cards from ordinary monsters, for every kind of gear with a slot (the bosses' cards go in weapons)
+  bloop_card: { type: 'misc', rare: true, name: 'Bloop Card', icon: 'card_bloop', card: { on: 'armor', mhp: 100, stats: { ftn: 1 } }, desc: 'A Bloop on a sticky card. Nothing hurts quite as much, somehow. In an armor with a slot: Max HP +100, FTN +1.', from: 'Bloops (0.1%)' },
+  bluecrab_card: { type: 'misc', rare: true, name: 'Blue Crab Card', icon: 'card_bluecrab', card: { on: 'armor', def: 3, mhpRate: 5 }, desc: 'A Blue Crab on a card that smells of the sea. Its shell lends you its hardness. In an armor with a slot: DEF +3, Max HP +5%.', from: 'Blue Crabs (0.1%)' },
+  shellcrab_card: { type: 'misc', rare: true, name: 'Crab Card', icon: 'card_shellcrab', card: { on: 'shield', def: 2, mhp: 60 }, desc: 'A Crab on a card, claws raised. It would rather be a shield than a supper. In a shield with a slot: DEF +2, Max HP +60.', from: 'Crabs (0.1%)' },
+  bark_card: { type: 'misc', rare: true, name: 'Treant Card', icon: 'card_bark', card: { on: 'shield', mhpRate: 8 }, desc: 'A Treant on a card of pressed bark. It stands between you and harm, slowly. In a shield with a slot: Max HP +8%.', from: 'Treants (0.1%)' },
+  wisp_card: { type: 'misc', rare: true, name: 'Wisp Card', icon: 'card_wisp', card: { on: 'garment', flee: 5 }, desc: 'A Wisp on a card that glows in the dark. Blows pass through you, now and then. In a garment with a slot: FLEE +5.', from: 'Wisps (0.1%)' },
+  snake_card: { type: 'misc', rare: true, name: 'Snake Card', icon: 'card_snake', card: { on: 'garment', flee: 3, stats: { qkn: 1 } }, desc: 'A Snake coiled on a card. You learn to slip aside the way it does. In a garment with a slot: FLEE +3, QKN +1.', from: 'Snakes (0.1%)' },
+  mushling_card: { type: 'misc', rare: true, name: 'Mushroom Card', icon: 'card_mushling', card: { on: 'shoes', mhpRate: 5, stats: { end: 1 } }, desc: 'A Mushroom on a card, rooted firmly. Your feet stay just as firm. In shoes with a slot: Max HP +5%, END +1.', from: 'Mushrooms (0.1%)' },
+  wolf_card: { type: 'misc', rare: true, name: 'Wolf Card', icon: 'card_wolf', card: { on: 'shoes', flee: 2, stats: { qkn: 2 } }, desc: 'A Wolf on a card, caught mid-stride. Wear it and you run like the pack. In shoes with a slot: QKN +2, FLEE +2.', from: 'Wolves (0.1%)' },
+  seed_card: { type: 'misc', rare: true, name: 'Sprout Card', icon: 'card_seed', card: { on: ['head', 'face'], msp: 30, stats: { knl: 1 } }, desc: 'A Sprout on a card, leaves still twitching. It fills your head with green ideas. In head or face gear with a slot: KNL +1, Max SP +30.', from: 'Sprouts (0.1%)' },
+  gloomcap_card: { type: 'misc', rare: true, name: 'Dark Mushroom Card', icon: 'card_gloomcap', card: { on: ['head', 'face'], stats: { knl: 2 } }, desc: 'A Dark Mushroom on a card that smells of spores. Strange thoughts, but clever ones. In head or face gear with a slot: KNL +2.', from: 'Dark Mushrooms (0.1%)' },
+  koboldw_card: { type: 'misc', rare: true, name: 'Kobold Card', icon: 'card_koboldw', card: { on: 'acc', stats: { pow: 2 } }, desc: 'A Kobold on a card, fist raised. A little of its stubborn strength rubs off. In an accessory with a slot: POW +2.', from: 'Kobolds (0.1%)' },
+  gobarcher_card: { type: 'misc', rare: true, name: 'Goblin Archer Card', icon: 'card_gobarcher', card: { on: 'acc', hit: 5, stats: { fns: 2 } }, desc: 'A Goblin Archer on a card, one eye shut to aim. Your own aim sharpens. In an accessory with a slot: FNS +2, HIT +5.', from: 'Goblin Archers (0.1%)' },
+  yellowbloop_card: { type: 'misc', rare: true, name: 'Yellow Bloop Card', icon: 'card_yellowbloop', card: { on: 'acc', stats: { ftn: 3 } }, desc: 'A Yellow Bloop on a card, grinning. Luck seems to bounce your way. In an accessory with a slot: FTN +3.', from: 'Yellow Bloops (0.1%)' },
+  shadewisp_card: { type: 'misc', rare: true, name: 'Dark Wisp Card', icon: 'card_shadewisp', card: { on: 'wings', mspRate: 5, stats: { knl: 2 } }, desc: 'A Dark Wisp on a card that is cold to hold. It whispers to whatever flies beside you. In wings with a slot: KNL +2, Max SP +5%.', from: 'Dark Wisps (0.1%)' },
+  emberwisp_card: { type: 'misc', rare: true, name: 'Fire Wisp Card', icon: 'card_emberwisp', card: { on: 'wings', stats: { pow: 1, knl: 1 }, mhp: 50 }, desc: 'A Fire Wisp on a scorched card. Whatever flies beside you burns a little brighter. In wings with a slot: POW +1, KNL +1, Max HP +50.', from: 'Fire Wisps (0.1%)' },
   alpha_card:   { type: 'misc', rare: true, name: 'Alpha Wolf Card', icon: 'card_alpha', card: { on: 'weapon', flee: 10, aspd: 8, stats: { qkn: 5 } }, desc: 'The Alpha Wolf on a card with a torn edge. In a weapon with a slot: QKN +5, FLEE +10, attacks 8% faster.', from: 'the Alpha Wolf (1%)' },
   bear_card:    { type: 'misc', rare: true, name: 'Great Bear Card', icon: 'card_bear', card: { on: 'weapon', atk: 30, mhpRate: 10, stats: { pow: 5 } }, desc: 'The Great Bear on a card with claw marks across it. In a weapon with a slot: ATK +30, POW +5, Max HP +10%.', from: 'the Great Bear (1%)' },
   // gear from the hunters' own leatherworks (Leif in Veidheim)
@@ -243,7 +260,7 @@ function upgradedItem(key) {
   for (const c of u.cards) {
     const cd = BASE_ITEMS[c]?.card;
     if (!cd) continue;
-    for (const k of ['atk', 'def', 'matk', 'hit', 'flee', 'mhpRate', 'mspRate', 'aspd']) if (cd[k]) it[k] = (it[k] || 0) + cd[k];
+    for (const k of ['atk', 'def', 'matk', 'hit', 'flee', 'mhp', 'msp', 'mhpRate', 'mspRate', 'aspd']) if (cd[k]) it[k] = (it[k] || 0) + cd[k];
     if (cd.el) it.el = cd.el;
     for (const [k, v] of Object.entries(cd.stats || {})) it.stats[k] = (it.stats[k] || 0) + v;
   }
@@ -283,18 +300,24 @@ export function refineInfo(key) {
 
 // Seyla's enchanting: a card slot at a time, up to two. The first works half the time; the second
 // a quarter of the time, for twice the materials. A failure breaks the piece (its card comes back).
-// For now only Lv 4 weapons take slots (and every card is a weapon card).
+// Seyla opens slots only in Lv 4 weapons; any piece may also be found, crafted or won with a slot
+// (SLOTTED_CHANCE), and every kind of gear has cards (a boss's card goes in a weapon).
 export const SLOTTABLE = ['weapon'];
 export const MAX_SLOTS = 2;
 export const ENCHANT = { chance: [50, 25], perz: 50000, items: { hard_ore: 5, shade: 5 }, boss: ['heartwood', 'king_pearl', 'gloom_heart', 'cinder_core', 'willow_heart', 'alpha_pelt', 'bear_heart'] };
 // the next enchant of a piece: { slots (after it), chance %, mult (x the materials) }
 export const enchantStep = (key) => { const n = ITEMS[key]?.slots || 0; return { slots: n + 1, chance: ENCHANT.chance[n], mult: n + 1 }; };
 export const canEnchant = (key) => { const it = ITEMS[key]; return !!it && it.type === 'equip' && SLOTTABLE.includes(it.slot) && it.wlv === 4 && (it.slots || 0) < MAX_SLOTS; };
-// a card fits a piece of its kind with a free slot
+// a card fits a piece of its kind with a free slot (on: a slot, or a list: head cards fit face gear too)
+export const cardOn = (cd) => [cd.on].flat();
 export const canInsert = (card, key) => {
   const cd = ITEMS[card]?.card, it = ITEMS[key];
-  return !!cd && !!it && it.type === 'equip' && it.slot === cd.on && (it.slots || 0) > (it.cards?.length || 0);
+  return !!cd && !!it && it.type === 'equip' && cardOn(cd).includes(it.slot) && (it.slots || 0) > (it.cards?.length || 0);
 };
+// slotted gear is rarer: a piece dropped, crafted or won comes with a card slot this often (shops
+// sell them plain). Arrows never have one.
+export const SLOTTED_CHANCE = 0.1;
+export const maybeSlotted = (id, roll = Math.random()) => (ITEMS[id]?.type === 'equip' && ITEMS[id].slot !== 'ammo' && !String(id).includes('|') && roll < SLOTTED_CHANCE ? makeKey(id, { slots: 1 }) : id);
 
 // Prices in perz (Aria's coin, like Ragnarok's zeny): what a shop asks; any shop buys for half. 0 = can't be sold.
 export const PRICES = {
@@ -528,13 +551,6 @@ function bowIcon(g, wood, grip, tip = wood) {
   g.beginPath(); g.moveTo(-2, -26); g.lineTo(-2, 26); g.strokeStyle = '#efe6d0'; g.lineWidth = 1.5; g.stroke();
   shape(g, () => g.roundRect(4, -5, 6, 10, 2), grip, 2);
   g.restore();
-}
-// a glowing Wisp: a bright core in a soft halo
-function orbIcon(g, core, glow) {
-  const r = g.createRadialGradient(32, 32, 2, 32, 32, 28);
-  r.addColorStop(0, core); r.addColorStop(0.35, glow); r.addColorStop(1, 'rgba(0, 0, 0, 0)');
-  g.fillStyle = r; g.beginPath(); g.arc(32, 32, 28, 0, 7); g.fill();
-  g.beginPath(); g.arc(32, 32, 9, 0, 7); g.fillStyle = core; g.fill(); g.strokeStyle = glow; g.lineWidth = 2; g.stroke();
 }
 // a pair of wings, spread
 function wingIcon(g, fill, edge, vein = edge) {
@@ -815,6 +831,21 @@ const PAINT = {
   card_mushroom: (g) => cardIcon(g, '#9a7cff', '#efe2c4'),
   card_beetle: (g) => cardIcon(g, '#ff7a4a', '#6a6a72'),
   card_willow: (g) => cardIcon(g, '#d8c8a0', '#9cbc4a'),
+  card_bloop: (g) => cardIcon(g, '#7ed957', '#4f9a35'),
+  card_bluecrab: (g) => cardIcon(g, '#5aa8d8', '#e8a0a0'),
+  card_shellcrab: (g) => cardIcon(g, '#f2a8a0', '#c9726a'),
+  card_bark: (g) => cardIcon(g, '#8a6a4a', '#9cbc4a'),
+  card_wisp: (g) => cardIcon(g, '#f4fbff', '#9fdcff'),
+  card_snake: (g) => cardIcon(g, '#7a9a4a', '#c8b848'),
+  card_mushling: (g) => cardIcon(g, '#e8a060', '#f4ead0'),
+  card_wolf: (g) => cardIcon(g, '#8a8a92', '#d8d8e0'),
+  card_seed: (g) => cardIcon(g, '#9cdc76', '#e8c050'),
+  card_gloomcap: (g) => cardIcon(g, '#7a5aa8', '#c8a0ff'),
+  card_koboldw: (g) => cardIcon(g, '#a07848', '#d8c090'),
+  card_gobarcher: (g) => cardIcon(g, '#6a7a3a', '#f0e6b0'),
+  card_yellowbloop: (g) => cardIcon(g, '#ffe27a', '#e8b84a'),
+  card_shadewisp: (g) => cardIcon(g, '#f0d8ff', '#a45cff'),
+  card_emberwisp: (g) => cardIcon(g, '#ffb04a', '#ff6a2a'),
   card_treant: (g) => cardIcon(g, '#8a6a4a', '#f2b8d0'),
   bow_hunt: (g) => bowIcon(g, '#a0703c', '#5a3a22'),
   bow_comp: (g) => bowIcon(g, '#7a4a2a', '#c8b89a', '#e8dcc0'),
@@ -942,17 +973,13 @@ const PAINT = {
     g.strokeStyle = '#a09a8e'; g.lineWidth = 6; g.stroke();
     shape(g, () => { g.moveTo(24, 22); g.lineTo(32, 10); g.lineTo(40, 22); g.closePath(); }, '#c4beb2', 2.5);
   },
-  wisp_orb: (g) => orbIcon(g, '#f4fbff', '#9fdcff'),
-  dark_wisp: (g) => orbIcon(g, '#f0d8ff', '#a45cff'),
+  wisp_orb: (g) => paintWisp(g, { core: '#f4fbff', glow: '#9fdcff' }),
+  dark_wisp: (g) => paintWisp(g, { core: '#f0d8ff', glow: '#a45cff' }),
   wings_leaf: (g) => wingIcon(g, '#6fbf4a', '#3f7a2a'),
   wings_fairy: (g) => wingIcon(g, 'rgba(170, 235, 255, .85)', '#5aa8d8'),
   wings_ember: (g) => wingIcon(g, '#ff8a3a', '#b8321e', '#ffe27a'),
-  r_lantern: (g) => {
-    shape(g, () => g.roundRect(18, 16, 28, 36, 6), '#3a3a42');
-    shape(g, () => g.roundRect(23, 21, 18, 26, 4), '#ffe37a', 2);
-    g.beginPath(); g.arc(32, 34, 5, 0, 7); g.fillStyle = '#fff8d0'; g.fill();
-    g.beginPath(); g.moveTo(26, 16); g.quadraticCurveTo(32, 4, 38, 16); g.strokeStyle = OUT; g.lineWidth = 3; g.stroke();
-  },
+  r_lantern: (g) => paintLantern(g, 0.6),
+
   shiny_gel: (g) => {
     const grd = g.createLinearGradient(10, 14, 54, 52);
     grd.addColorStop(0, '#ff9ab8'); grd.addColorStop(0.5, '#9fd4ff'); grd.addColorStop(1, '#b6ec8e');

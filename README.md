@@ -589,7 +589,9 @@ bursts gold on the ground and shows in gold in your bag.
 Two accessory slots, a shield, a garment and an arrows slot join head, face, armor, weapon, shoes and wings.
 
 **Wings.** The Wings slot holds wings, worn on the back (they flap gently, and cover your back when
-you turn away), or a light that floats at your shoulder and glows. Nights are lit for every hero, so
+you turn away), or a light that floats at your shoulder and glows: a Wisp, a little flame of light
+with a face and fluttering wings, or the Lantern, iron and gilt, swaying on its ring with its flame
+flickering. Nights are lit for every hero, so
 no torch is needed.
 
 | Wings | Look | Effect | Where |
@@ -625,6 +627,11 @@ twice before a risky try.
 Holger sells Iron and Steel Ore; Hard Ore and Armor Ore only drop, from the kobolds, goblins and
 their kings.
 
+**Slotted gear.** Any piece of gear (weapons, armor, shields, garments, shoes, head and face gear,
+accessories and wings; not arrows) also comes in a slotted version with one card slot, written
+"Wolf Cape [1]". Slotted pieces are rarer: one in ten pieces of gear that drop, are crafted or come
+from a raid has a slot. Shops sell the plain ones.
+
 **Seyla the Enchanter** (Galdrheim, east of the square) opens **card slots** in Lv 4 weapons, up
 to two: "+7 Giant Sword [1]", then "[2]". The first slot works half the time; each try costs 5
 Hard Ore, 5 Dark Crystals, one boss material (a Giant Root, Big Pearl, Mushroom Heart or Fire
@@ -633,9 +640,28 @@ boss materials in any mix, 100,000 perz). A failed try breaks the weapon; any ca
 back to you.
 
 **Cards.** Each MVP drops its card (1%), and like classic MVP cards they are overpowered.
-Each mini-boss drops one too (1%): a good step up, but nothing like an MVP's.
-Select a card in the Miscs tab and tap **Insert** to press it into a weapon with a
-free slot. It stays there for good, unless the weapon later breaks at Holger's.
+Each mini-boss drops one too (1%): a good step up, but nothing like an MVP's. These go in weapons.
+Ordinary monsters drop cards for every other kind of gear (0.1%), smaller but welcome.
+Select a card in the Miscs tab and tap **Insert** to press it into a piece of its kind with a
+free slot. It stays there for good, unless the piece later breaks at Holger's.
+
+| Card | Goes in | Effect | From |
+|---|---|---|---|
+| Bloop Card | Armor | Max HP +100, FTN +1 | Bloop, 0.1% |
+| Blue Crab Card | Armor | DEF +3, Max HP +5% | Blue Crab, 0.1% |
+| Crab Card | Shield | DEF +2, Max HP +60 | Crab, 0.1% |
+| Treant Card | Shield | Max HP +8% | Treant, 0.1% |
+| Wisp Card | Garment | FLEE +5 | Wisp, 0.1% |
+| Snake Card | Garment | FLEE +3, QKN +1 | Snake, 0.1% |
+| Mushroom Card | Shoes | Max HP +5%, END +1 | Mushroom, 0.1% |
+| Wolf Card | Shoes | QKN +2, FLEE +2 | Wolf, 0.1% |
+| Sprout Card | Head or face | KNL +1, Max SP +30 | Sprout, 0.1% |
+| Dark Mushroom Card | Head or face | KNL +2 | Dark Mushroom, 0.1% |
+| Kobold Card | Accessory | POW +2 | Kobold, 0.1% |
+| Goblin Archer Card | Accessory | FNS +2, HIT +5 | Goblin Archer, 0.1% |
+| Yellow Bloop Card | Accessory | FTN +3 | Yellow Bloop, 0.1% |
+| Dark Wisp Card | Wings | KNL +2, Max SP +5% | Dark Wisp, 0.1% |
+| Fire Wisp Card | Wings | POW +1, KNL +1, Max HP +50 | Fire Wisp, 0.1% |
 
 | Card | Goes in | Effect | From |
 |---|---|---|---|

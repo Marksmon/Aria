@@ -2,7 +2,7 @@
 // Ragna's herbs), the chest (camp and Steinborg storage), shops and dialogue. Each is a small window you drag by its title bar; several can be open
 // at once and the game keeps running behind them. Positions are remembered per device.
 // Pickup toasts and messages live here too. Plain DOM over the canvas.
-import { ITEMS, RECIPES, SLOTS, SHOPS, PRICES, sellPrice, equipLine, iconURL, canWear, jobLine, recipeKind, upgradeLine, refineInfo, canEnchant, canInsert, ENCHANT, MAX_REFINE, enchantStep } from './items.js';
+import { ITEMS, RECIPES, SLOTS, SHOPS, PRICES, sellPrice, equipLine, iconURL, canWear, jobLine, recipeKind, upgradeLine, refineInfo, canEnchant, canInsert, ENCHANT, MAX_REFINE, enchantStep, cardOn } from './items.js';
 import { BAG_SLOTS, CHEST_SLOTS } from './inventory.js';
 import { STATS, STAT_KEYS, JOBS, TREES, QUEST_RATE } from './progress.js';
 import { statCost } from './ro-tables.js';
@@ -555,7 +555,7 @@ export class Menus {
       ? 'Holger refines weapons, armor, shields, capes, boots and head gear, one level at a time up to +10. Safe up to a point; past it, a failed try breaks the piece.'
       : mode === 'enchant'
         ? `Seyla opens card slots in Lv 4 weapons, up to two. The first works ${ENCHANT.chance[0]}% of the time; the second ${ENCHANT.chance[1]}%, for twice the materials. A failure breaks the weapon (its card comes back).`
-        : `Press the ${ITEMS[card].name} into a free slot of a ${SLOTS[ITEMS[card].card.on].toLowerCase()}. It stays there for good.`;
+        : `Press the ${ITEMS[card].name} into a free slot of ${cardOn(ITEMS[card].card).map((s) => SLOTS[s].toLowerCase()).join(' or ')} gear. It stays there for good.`;
     let h = `<div class="rnote">${esc(note)}</div><div class="rlist">`;
     for (const p of list) {
       const it = ITEMS[p.key], on = this.smithSel?.where === p.where && this.smithSel?.key === p.key;
@@ -959,7 +959,8 @@ export class Menus {
     if (act === 'use' && this.selected) this.hooks.useItem?.(this.selected);
     if (act === 'craft') {
       const r = RECIPES.find((x) => x.item === t.dataset.id);
-      if (inv.craft(r)) { this.hooks.crafted?.(r); this.message(`Crafted ${ITEMS[r.item].name}. It's in your bag.`); }
+      const made = inv.craft(r);
+      if (made) { this.hooks.crafted?.(r); this.message(made !== r.item ? `Crafted ${ITEMS[made].name}: it came out with a card slot! It's in your bag.` : `Crafted ${ITEMS[r.item].name}. It's in your bag.`); }
       else this.message('Bag is full');
     }
   }

@@ -2,7 +2,8 @@
 // light floating at their shoulder (the Lantern, a Wisp) that bobs, trails a little behind as they
 // walk, and glows. The look comes from the item (items.js look: { kind: 'wings' | 'float', art, ... }).
 import * as THREE from 'three';
-import { ITEMS, iconTexture } from './items.js';
+import { ITEMS } from './items.js';
+import { paintWisp, paintLantern } from './wingart.js';
 
 const tex = (c, smooth) => {
   const t = new THREE.CanvasTexture(c);
@@ -32,12 +33,15 @@ function wingsTexture(art) {
   }
   return tex(c);
 }
-// a glowing orb (a Wisp), and the soft halo every floating light wears
-function orbTexture(core, glow) {
-  const [c, g] = canvas(32, 32), r = g.createRadialGradient(16, 16, 1, 16, 16, 15);
-  r.addColorStop(0, core); r.addColorStop(0.45, glow); r.addColorStop(1, 'rgba(0, 0, 0, 0)');
-  g.fillStyle = r; g.fillRect(0, 0, 32, 32);
-  return tex(c, true);
+// the frames of a floating light (wingart.js): a Wisp's wings beating, a Lantern's flame flickering
+const FRAMES = 6;
+function floatFrames(look) {
+  return Array.from({ length: FRAMES }, (_, i) => {
+    const [c, g] = canvas(96, 96), k = 0.5 - 0.5 * Math.cos((i / FRAMES) * Math.PI * 2);
+    g.scale(1.5, 1.5);
+    if (look.art === 'lantern') paintLantern(g, 0.35 + 0.5 * k); else paintWisp(g, look, k);
+    return tex(c, true);
+  });
 }
 function haloTexture(glow) {
   const [c, g] = canvas(64, 64), r = g.createRadialGradient(32, 32, 0, 32, 32, 32);
@@ -76,7 +80,8 @@ export class Wings {
       this.wing.material.needsUpdate = true;
       this.wing.visible = true;
     } else {
-      this.orb.material.map = this.cache[key] ||= look.art === 'lantern' ? iconTexture(id) : orbTexture(look.core, look.glow);
+      this.frames = this.cache[key] ||= floatFrames(look);
+      this.orb.material.map = this.frames[0];
       this.halo.material.map = this.cache[key + ':halo'] ||= haloTexture(look.glow);
       this.orb.material.needsUpdate = this.halo.material.needsUpdate = true;
       this.orb.visible = this.halo.visible = true;
@@ -106,11 +111,15 @@ export class Wings {
     if (!this.at) this.at = want.clone();
     this.at.lerp(want, Math.min(1, dt * 4));
     const pulse = 1 + Math.sin(t * 5) * 0.08;
-    const size = this.lantern ? 0.42 : 0.3;
+    const size = this.lantern ? 0.62 : 0.56;
+    // a Wisp's wings beat fast; a Lantern's flame flickers slower, and it sways on its ring
+    const f = this.frames[Math.floor(t * (this.lantern ? 7 : 14)) % FRAMES];
+    if (this.orb.material.map !== f) { this.orb.material.map = f; this.orb.material.needsUpdate = true; }
+    this.orb.material.rotation = this.lantern ? Math.sin(t * 1.7) * 0.14 : 0;
     this.orb.position.copy(this.at);
     this.orb.scale.set(size, size, 1);
     this.halo.position.copy(this.at);
-    this.halo.scale.set(1.1 * pulse, 1.1 * pulse, 1);
+    this.halo.scale.set(0.9 * pulse, 0.9 * pulse, 1);
     this.orb.visible = this.halo.visible = true;
   }
 }

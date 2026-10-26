@@ -1,6 +1,6 @@
 // Bag, camp chest and equipment. Materials and usables stack to 99 in one slot; each piece of
 // equipment is its own item and takes a slot of its own. Worn equipment leaves the bag.
-import { ITEMS, RECIPES, SLOTS, PRICES, sellPrice, canWear, parseKey, makeKey, refineInfo, canEnchant, canInsert, ENCHANT, MAX_SLOTS, enchantStep } from './items.js';
+import { ITEMS, RECIPES, SLOTS, PRICES, sellPrice, canWear, parseKey, makeKey, refineInfo, canEnchant, canInsert, ENCHANT, MAX_SLOTS, enchantStep, maybeSlotted } from './items.js';
 
 export const BAG_SLOTS = 48;
 export const CHEST_SLOTS = 96; // the Keepers' storage, shared by every hero (save.js)
@@ -96,12 +96,14 @@ export class Inventory {
     return ok ? 'ready' : 'missing';
   }
 
+  // what was made (now and then a piece of gear comes out with a card slot), or false
   craft(r) {
     if (this.recipeState(r) !== 'ready' || !this.bag.room(r.item)) return false;
     for (const [id, n] of Object.entries(r.cost)) this.spend(id, n);
-    this.bag.add(r.item, 1);
+    const made = maybeSlotted(r.item);
+    this.bag.add(made, 1);
     this.changed();
-    return true;
+    return made;
   }
 
   moveStack(from, to, id) {
