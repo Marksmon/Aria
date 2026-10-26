@@ -90,7 +90,8 @@ Focus, Hunter's Mark, Leap Back.
   Ranger's and the Beastmaster's pairs, the most points in the path for BladeMaster, Wizard and
   Windrunner) **and every Trainee and first-job skill point has been spent** in those trees.
 - **Two paths, 20 each first:** for the Magic Knight, Moon Ranger and Beastmaster, once one path's
-  tree has 20 points it takes no more until the other path's tree has 20 too (`learnBlock`).
+  tree has 20 points it takes no more until the other path's tree has 20 too, and a third first job
+  they walked (a Magic Knight's Archer tree) takes no points until both have 20 (`learnBlock`).
 - **Retraining a second job** (Liv, Ingrid, Sven: Reset my job skills) unlearns the second job's
   skills and every first-job tree it trains (the Trainee's stay). The rule above then makes the hero rebuild the first jobs
   before the second job's skills open again, so a reset never dodges it.

@@ -26,7 +26,8 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   - A second job's own skills are raised only while its opening rule still holds (MK: 20 Blader and
     20 Sorcerer points) and every Trainee and first-job point is spent (`secondJobBlock`). A second
     job's skill reset unlearns first- and second-job skills, so the first jobs are rebuilt first. A
-    two-path second job's tree that has 20 points takes no more until the other path's has 20.
+    two-path second job's tree that has 20 points takes no more until the other path's has 20, and
+    a third first-job tree (a Magic Knight's Archer) takes none until both have 20.
   - Second jobs also train every other first job they earned (`trainTrees`), but for BladeMaster,
     Wizard and Windrunner another first-job tree never passes the path's own (Wizard: Blader <= Sorcerer).
 - **Damage balance:** second jobs hit about 2–4x their first job; Blader and Sorcerer stay close.

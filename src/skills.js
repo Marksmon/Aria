@@ -438,6 +438,10 @@ export function learnBlock(prog, id) {
     const short = from.find((j) => pointsIn(prog, j) < MK_POINTS);
     if (short) return `Needs ${MK_POINTS} points in the ${JOBS[short].name} tree first (${pointsIn(prog, short)} now)`;
   }
+  // ...and a first job outside the two paths (a Magic Knight's Archer tree) waits for both to have theirs
+  if (from.length > 1 && JOBS[s.job].tier === 1 && !from.includes(s.job) && from.some((j) => pointsIn(prog, j) < MK_POINTS)) {
+    return `Needs ${MK_POINTS} points in the ${from.map((j) => JOBS[j].name).join(' and ')} trees first (${from.map((j) => `${JOBS[j].name} ${pointsIn(prog, j)}`).join(', ')})`;
+  }
   // a second job of one path (BladeMaster, Wizard, Windrunner): another first job's tree never gets
   // more points than the path's own (a Wizard's Blader tree stays at or under its Sorcerer tree)
   if (from.length === 1 && JOBS[s.job].tier === 1 && s.job !== from[0] && pointsIn(prog, s.job) >= pointsIn(prog, from[0])) {
