@@ -82,8 +82,8 @@ and Wolf Hills, for heroes near their second job.
 | Serpent Wood | 40–55 | Goblin Assassin, Goblin, Goblin Archer | **Goblin King (55, MVP)** |
 | Willow Marsh | 12–24 | Yellow Bloop (12), Willow (17, slowing seeds) | Elder Willow (23) |
 | Old Forest | 16–26 | Treant (24), Willow | |
-| Barley Field | 44–50 | Snake (46), Wolf (48) | |
-| Wolf Hills | 46–62 | Wolf, Bear (53), Snake | **Ancient Treant (62, MVP)** |
+| Barley Field | 44–54 | Snake (46), Wolf (48) | Alpha Wolf (51) |
+| Wolf Hills | 46–62 | Wolf, Bear (53), Snake | Great Bear (56) · **Ancient Treant (62, MVP)** |
 | Any field in the valley, more at night (Moss Field only at night) | | Wisp (11) | |
 
 **Passive monsters.** Most field monsters leave you alone until you hit
@@ -114,8 +114,9 @@ Sprouts, Blue Crabs, Dark Mushrooms, Fire Beetles), and again 2 minutes after th
 equip of their own (2–3%). Each is a boss of its own, not a big copy of its kind: the Giant Sprout
 rust-red with a thorny vine round its bulb, the King Crab sea-blue and crusted with barnacles with
 gold claw tips, the Giant Mushroom near-black with glowing magenta spots and drips, the Giant Beetle
-charcoal with its cracks glowing like embers. Every boss of this kind (and the Elder Willow and the
-Ancient Treant) has an **aura**: a glow pulsing on the ground under it and motes rising round it, in
+charcoal with its cracks glowing like embers; the Alpha Wolf black with a silver ruff, red eyes and a
+scarred face; the Great Bear a grizzly with a silver-tipped hump, amber eyes and scars. Every boss of
+this kind (and the Elder Willow and the Ancient Treant) has an **aura**: a glow pulsing on the ground under it and motes rising round it, in
 its colour. Their guards are lesser servants of their kind (half the HP, 60% of
 the ATK): cut them down first. At the level their quests suggest (Giant Sprout 28, King Crab 34,
 Giant Mushroom 43, Giant Beetle 50) each is about a two-minute fight on a dozen or so Orange
@@ -127,6 +128,10 @@ minutes and a bag of potions (a Blader drinks around 50 White Potions; a Sorcere
 moving needs far fewer, but Blue Potions too). Whoever brings it down gets **MVP** over their
 head, bonus Base EXP and MVP items straight to the bag, plus its drops (its horn, crown, cape or
 sword). It comes back 15 minutes later, even if you leave the map or close the game.
+
+The predators have two mini-bosses: the **Alpha Wolf** (Lv 51) leads the packs of Barley Field and
+pounces from afar, calling 2 Wolves; the **Great Bear** (Lv 56) rules Wolf Hills beside the Ancient
+Treant, charging and calling 2 Bears. Their pelt and heart (30%) make Leif's best hunting gear.
 
 The **Elder Willow** of Willow Marsh (Lv 23: silvery, wide antlers with fireflies on their tips,
 water-lilies in its hair) is the mini-boss on the road to Veidheim, a step after the Giant Sprout,
@@ -169,6 +174,7 @@ fills up until it hits: step out of it.
 | Giant Sprout · Giant Mushroom | **Seed Pod** · **Spore Pod**, thrown at you |
 | King Crab · Giant Beetle | **Charge** |
 | Elder Willow | **Seed Cloud**, thrown at you |
+| Alpha Wolf · Great Bear | **Pounce** (a leap) · **Mauling Charge** |
 | Ancient Treant | **Root Stone** (thrown) · **Uprooting Charge** |
 
 Each move hits for 1.4–2x the boss's ATK. Staying far away no longer keeps you safe: spells reach
@@ -495,6 +501,8 @@ free slot. It stays there for good, unless the weapon later breaks at Holger's.
 | Giant Mushroom Card | Weapon | MATK +15%, KNL +4, Max SP +10% | Giant Mushroom, 1% |
 | Giant Beetle Card | Weapon | ATK +25, POW +4 | Giant Beetle, 1% |
 | Elder Willow Card | Weapon | MATK +10%, FNS +3 | Elder Willow, 1% |
+| Alpha Wolf Card | Weapon | QKN +5, FLEE +10, attacks 8% faster | Alpha Wolf, 1% |
+| Great Bear Card | Weapon | ATK +30, POW +5, Max HP +10% | Great Bear, 1% |
 | Ancient Treant Card | Weapon | ATK +40, DEF +15, Max HP +30%, POW +8, END +10 | Ancient Treant, 1% |
 | Fire Giant Card | Weapon (a sorcerer's card) | MATK +60%, KNL +12, FNS +8, Max SP +30%, Max HP +15%, weapon turns Fire (+15% Fire spells with a staff) | Fire Giant, 1% |
 
@@ -615,9 +623,9 @@ leads to each.
 | Torvald the Runecarver | Galdrheim | Shadows in Black Wood (38): take rubbings of 3 Watcher stones in Black Wood |
 | Hrafn the Stargazer, Signy the Apprentice | Galdrheim | tales of the city, the stars and the jotnar |
 | Runa the Gatewarden | Galdrheim | the rune-gate: to any land you have walked, 300–3,000 perz |
-| Huntmaster Sigrid | Veidheim, at the archery range | The Elder Willow (26) · The Pack in the Hills (48): 25 Wolves · The Waking Wood (60): the Ancient Treant |
+| Huntmaster Sigrid | Veidheim, at the archery range | The Elder Willow (26) · The Pack in the Hills (48): 25 Wolves · The Leader of the Pack (54): the Alpha Wolf · The Waking Wood (60): the Ancient Treant |
 | Ottar the Farmer | Veidheim, by the barn | The Lost Lambs (16): find 3 lambs in Willow Marsh · Snakes in the Barley (46): 20 Snakes |
-| Leif the Tanner | Veidheim | makes hunters' gear (Hunter's Cloak and Boots, Claw Charm, Bark Armor) · Pelts for the Winter (50): 10 Wolf Pelts, 5 Bear Claws |
+| Leif the Tanner | Veidheim | makes hunters' gear (Hunter's Cloak and Boots, Claw Charm, Bark Armor, Alpha Cloak, Bear Heart Charm) · Pelts for the Winter (50): 10 Wolf Pelts, 5 Bear Claws · The Great Bear (59) |
 | Asa the Fletcher | Veidheim | Wood for Bows (22): 12 Willow Twigs, 4 Old Bark |
 | Eydis the Trader | Veidheim | shop: potions (White too), Honey, Speed Potions, feathers, torches |
 | Halla the Healer | Veidheim | heals HP and SP for free |

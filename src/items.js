@@ -44,6 +44,8 @@ const BASE_ITEMS = {
   bear_claw:    { type: 'misc', name: 'Bear Claw', desc: 'A Bear\'s claw as long as a finger. Charm-makers set them in silver; nobody else wants to hold one.', from: 'Bears' },
   old_bark:     { type: 'misc', name: 'Old Bark', desc: 'A slab of bark from a Treant, mossy and hard as a shield. It still creaks now and then.', from: 'Treants' },
   willow_heart: { type: 'misc', rare: true, name: 'Willow Heart', desc: 'A knot of pale wood from the Elder Willow\'s heart. It hums like a bee. Staffwrights and enchanters both want it.', from: 'the Elder Willow (30%)' },
+  alpha_pelt:   { type: 'misc', rare: true, name: 'Alpha Pelt', desc: 'The Alpha Wolf\'s black pelt with its silver ruff. Every wolf in the hills knows its smell, and keeps away.', from: 'the Alpha Wolf (30%)' },
+  bear_heart:   { type: 'misc', rare: true, name: 'Bear Heart', desc: 'The Great Bear\'s heart, as big as a helm and still warm. Charm-makers say it never quite stops beating.', from: 'the Great Bear (30%)' },
   ancient_heartwood: { type: 'misc', rare: true, name: 'Ancient Heartwood', desc: 'Golden wood from the heart of the Ancient Treant, a thousand rings deep. Nothing in Aria is harder, or older.', from: 'the Ancient Treant (25%)' },
   ancient_seed: { type: 'misc', name: 'Ancient Seed', desc: 'A seed as big as a fist from the Ancient Treant. Plant it, and in a thousand years there will be another: proof that you were the one who felled it.', from: 'the Ancient Treant (MVP reward)' },
   ember_heart: { type: 'misc', name: 'Fire Heart', desc: 'The Fire Giant\'s smouldering heart, still beating: proof that you were the one who brought it down.', from: 'the Fire Giant (MVP reward)' },
@@ -120,7 +122,11 @@ const BASE_ITEMS = {
   willow_charm: { type: 'equip', slot: 'acc', rare: true, name: 'Willow Charm', stats: { fns: 1, knl: 1 }, msp: 20, icon: 'r_willow', desc: 'A loop of Elder Willow twig with a firefly asleep in it. Your songs come quicker.', from: 'the Elder Willow (4%)' },
   oak_ring:     { type: 'equip', slot: 'acc', rare: true, name: 'Oak Ring', stats: { end: 3, pow: 1 }, mhp: 80, icon: 'r_oak', desc: 'A ring grown from the Ancient Treant\'s finger. It is a little warm, like a tree in the sun.', from: 'the Ancient Treant (5%)' },
   grove_blade:  { type: 'equip', slot: 'weapon', jobs: ['swordman'], el: 'earth', rare: true, name: 'Grove Sword', atk: 125, wlv: 4, stats: { pow: 2, end: 2 }, icon: 'weapon_grove', desc: 'A sword of living heartwood, harder than steel, with leaves on its hilt that never fall.', from: 'the Ancient Treant (1%)' },
+  alpha_card:   { type: 'misc', rare: true, name: 'Alpha Wolf Card', icon: 'card_alpha', card: { on: 'weapon', flee: 10, aspd: 8, stats: { qkn: 5 } }, desc: 'The Alpha Wolf on a card with a torn edge. In a weapon with a slot: QKN +5, FLEE +10, attacks 8% faster.', from: 'the Alpha Wolf (1%)' },
+  bear_card:    { type: 'misc', rare: true, name: 'Great Bear Card', icon: 'card_bear', card: { on: 'weapon', atk: 30, mhpRate: 10, stats: { pow: 5 } }, desc: 'The Great Bear on a card with claw marks across it. In a weapon with a slot: ATK +30, POW +5, Max HP +10%.', from: 'the Great Bear (1%)' },
   // gear from the hunters' own leatherworks (Leif in Veidheim)
+  alpha_cloak:  { type: 'equip', slot: 'garment', name: 'Alpha Cloak', def: 5, flee: 6, stats: { qkn: 2 }, icon: 'r_alphacloak', desc: 'The Alpha Wolf\'s pelt over a hunter\'s cloak, the silver ruff at the collar. The pack gives way to whoever wears it.' },
+  bear_charm:   { type: 'equip', slot: 'acc', name: 'Bear Heart Charm', stats: { pow: 3, end: 2 }, mhp: 100, icon: 'charm_bear', desc: 'The Great Bear\'s heart, dried and bound with claws and honeyed cord. It beats when you are angry.' },
   hunter_cape:  { type: 'equip', slot: 'garment', name: "Hunter's Cloak", def: 2, flee: 4, stats: { fns: 1 }, icon: 'r_huntcape', desc: 'Green wool lined with Wolf pelt, the cloak every Veidheim hunter wears. It hides you in the long grass.' },
   hunter_boots: { type: 'equip', slot: 'shoes', name: "Hunter's Boots", def: 3, flee: 3, mhp: 40, icon: 'boots_hunter', desc: 'Soft Snake skin boots that make no sound on a forest floor.' },
   claw_charm:   { type: 'equip', slot: 'acc', name: 'Claw Charm', stats: { pow: 2 }, hit: 4, icon: 'charm_claw', desc: 'A Bear claw and two Wolf fangs set in silver. It makes your arm feel heavy and sure.' },
@@ -251,7 +257,7 @@ export function refineInfo(key) {
 // For now only Lv 4 weapons take slots (and every card is a weapon card).
 export const SLOTTABLE = ['weapon'];
 export const MAX_SLOTS = 2;
-export const ENCHANT = { chance: [50, 25], perz: 50000, items: { hard_ore: 5, shade: 5 }, boss: ['heartwood', 'king_pearl', 'gloom_heart', 'cinder_core', 'willow_heart'] };
+export const ENCHANT = { chance: [50, 25], perz: 50000, items: { hard_ore: 5, shade: 5 }, boss: ['heartwood', 'king_pearl', 'gloom_heart', 'cinder_core', 'willow_heart', 'alpha_pelt', 'bear_heart'] };
 // the next enchant of a piece: { slots (after it), chance %, mult (x the materials) }
 export const enchantStep = (key) => { const n = ITEMS[key]?.slots || 0; return { slots: n + 1, chance: ENCHANT.chance[n], mult: n + 1 }; };
 export const canEnchant = (key) => { const it = ITEMS[key]; return !!it && it.type === 'equip' && SLOTTABLE.includes(it.slot) && it.wlv === 4 && (it.slots || 0) < MAX_SLOTS; };
@@ -282,6 +288,7 @@ export const PRICES = {
   snake_skin: 420, wolf_pelt: 460, wolf_fang: 900, willow_twig: 80, bear_claw: 560, old_bark: 120, honey: 300,
   willow_heart: 3000, ancient_heartwood: 10000, ancient_seed: 5000, willow_card: 16000, treant_card: 60000,
   snake_boots: 12000, wolf_cape: 14000, willow_staff: 6000, bear_hide: 18000, treant_shield: 7000, willow_charm: 9000, oak_ring: 26000, grove_blade: 50000,
+  alpha_pelt: 5000, bear_heart: 6000, alpha_card: 20000, bear_card: 22000, alpha_cloak: 20000, bear_charm: 22000,
   hunter_cape: 6000, hunter_boots: 6000, claw_charm: 9000, bark_armor: 12000, verdant_staff: 48000,
   heartwood_staff: 14000, frostbite: 5200, gale_blade: 9000, birch_staff: 1800, frost_staff: 3600, tide_staff: 12000, ember_staff: 20000, shade_staff: 16000, jarl_staff: 42000, runeking_staff: 50000, pearl_mail: 12000, gloom_robe: 14000, cinderfang: 24000, hornblade: 45000, prism_ring: 8000, slime_band: 12000,
 };
@@ -386,6 +393,8 @@ export const RECIPES = [
   { item: 'hunter_boots', lv: 46, by: 'hunt', cost: { snake_skin: 8, wolf_pelt: 2 } },
   { item: 'claw_charm', lv: 50, by: 'hunt', cost: { bear_claw: 6, wolf_fang: 3 } },
   { item: 'bark_armor', lv: 52, by: 'hunt', cost: { old_bark: 10, willow_twig: 6, bear_claw: 2 } },
+  { item: 'alpha_cloak', lv: 52, by: 'hunt', cost: { alpha_pelt: 1, wolf_pelt: 10, wolf_fang: 4 } },
+  { item: 'bear_charm', lv: 56, by: 'hunt', cost: { bear_heart: 1, bear_claw: 8, honey: 4 } },
   { item: 'verdant_staff', lv: 55, cost: { ancient_heartwood: 1, willow_heart: 1, willow_twig: 8 } },
   { item: 'sprout_charm', lv: 2, cost: { seed: 5, leaf: 3 } },
   { item: 'spore_charm',  lv: 4, cost: { spore: 5, gel: 3 } },
@@ -681,6 +690,15 @@ const PAINT = {
   card_beetle: (g) => cardIcon(g, '#ff7a4a', '#6a6a72'),
   card_willow: (g) => cardIcon(g, '#d8c8a0', '#9cbc4a'),
   card_treant: (g) => cardIcon(g, '#8a6a4a', '#f2b8d0'),
+  card_alpha: (g) => cardIcon(g, '#4a4e5a', '#c8ccd8'),
+  card_bear: (g) => cardIcon(g, '#5a3a24', '#ffc04a'),
+  alpha_pelt: (g) => {
+    shape(g, () => { g.moveTo(14, 16); g.lineTo(50, 16); g.quadraticCurveTo(56, 34, 50, 52); g.lineTo(40, 46); g.lineTo(32, 54); g.lineTo(24, 46); g.lineTo(14, 52); g.quadraticCurveTo(8, 34, 14, 16); g.closePath(); }, '#3a3e48');
+    shape(g, () => { g.moveTo(12, 16); for (let i = 0; i <= 8; i++) g.lineTo(12 + i * 5, i % 2 ? 6 : 16); g.lineTo(52, 22); g.lineTo(12, 22); g.closePath(); }, '#c8ccd8', 2.5);
+  },
+  bear_heart: (g) => { shape(g, () => { g.moveTo(32, 56); g.bezierCurveTo(2, 34, 12, 6, 32, 20); g.bezierCurveTo(52, 6, 62, 34, 32, 56); }, '#8a2a20'); g.beginPath(); g.moveTo(24, 26); g.lineTo(30, 38); g.moveTo(40, 24); g.lineTo(36, 36); g.strokeStyle = '#ffc04a'; g.lineWidth = 2.5; g.stroke(); gloss(g, 22, 28, 4, 3); },
+  r_alphacloak: (g) => { shape(g, () => { g.moveTo(22, 14); g.lineTo(42, 14); g.quadraticCurveTo(54, 34, 52, 56); g.lineTo(12, 56); g.quadraticCurveTo(10, 34, 22, 14); g.closePath(); }, '#3a3e48'); shape(g, () => { g.moveTo(16, 18); for (let i = 0; i <= 6; i++) g.lineTo(16 + i * 5.3, i % 2 ? 26 : 16); g.lineTo(48, 12); g.lineTo(16, 12); g.closePath(); }, '#c8ccd8', 2.5); },
+  charm_bear: (g) => charmIcon(g, '#8a2a20', '#ffc04a'),
   snake_skin: (g) => {
     shape(g, () => { g.moveTo(10, 50); g.bezierCurveTo(18, 20, 40, 52, 46, 22); g.lineTo(56, 14); g.lineTo(50, 28); g.bezierCurveTo(44, 58, 22, 30, 16, 54); g.closePath(); }, '#7fae4e');
     for (const [x, y] of [[20, 40], [30, 38], [40, 36], [48, 26]]) { g.beginPath(); g.arc(x, y, 2.5, 0, 7); g.fillStyle = '#e0d07a'; g.fill(); }

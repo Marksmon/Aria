@@ -90,7 +90,9 @@ Trainee, not a Sorcerer.
 | Giant Beetle | 48 | 99% win · 111 s · 48% HP left · 14 pots | 100% win · 42 s · 53% HP left · 8 pots |
 | Snake | 46 | 100% win · 6 s · 71% HP left | 100% win · 4 s · 80% HP left |
 | Wolf | 48 | 99% win · 8 s · 59% HP left | 100% win · 4 s · 62% HP left |
+| Alpha Wolf | 51 | 89% win · 92 s · 48% HP left · 13 pots | 100% win · 22 s · 51% HP left · 3 pots |
 | Bear | 53 | 100% win · 10 s · 67% HP left | 100% win · 8 s · 28% HP left |
+| Great Bear | 56 | 100% win · 108 s · 48% HP left · 15 pots | 100% win · 39 s · 51% HP left · 10 pots |
 
 ## Mini-bosses at their hinted level, 20 Orange Potions
 
@@ -100,6 +102,8 @@ Trainee, not a Sorcerer.
 | King Crab at Base 34 | 100% win · 83 s · 52% HP left · 10 pots | 99% win · 82 s · 59% HP left · 12 pots |
 | Giant Mushroom at Base 43 | 100% win · 84 s · 50% HP left · 8 pots | 100% win · 73 s · 54% HP left · 12 pots |
 | Giant Beetle at Base 50 | 100% win · 84 s · 49% HP left · 5 pots | 100% win · 41 s · 51% HP left · 7 pots |
+| Alpha Wolf at Base 54 | 100% win · 72 s · 48% HP left · 4 pots | 100% win · 21 s · 51% HP left · 2 pots |
+| Great Bear at Base 59 | 100% win · 84 s · 48% HP left · 4 pots | 100% win · 36 s · 50% HP left · 8 pots |
 | Elder Willow at Base 26 | 100% win · 66 s · 57% HP left · 8 pots | 99% win · 47 s · 64% HP left · 6 pots |
 | Lantern Wisp at Base 16 | 100% win · 33 s · 65% HP left · 3 pots | 100% win · 22 s · 88% HP left · 3 pots |
 
@@ -129,7 +133,9 @@ Red Sprout, the Treant (Lv 24) between the Giant Sprout and the Blue Crab, and t
 Potions). The Yellow Bloop (Lv 12, Wind) keeps the raid's stats and is a tough bloop for its level
 (at Base 12 the Sorcerer is still a Trainee); in Willow Marsh heroes meet it at 16 and up.
 The predators' lands (Snake 46, Wolf 48, Bear 53) sit on the same curve as the goblins and fire
-beasts; the Sorcerer is shorter against the Bear, which is Neutral and hits hard. The Ancient
+beasts; the Sorcerer is shorter against the Bear, which is Neutral and hits hard. Their mini-bosses,
+the Alpha Wolf (51) and the Great Bear (56), fit between the Giant Beetle and the MVPs; the Alpha's
+pounce and dodging make it the harder of the two at its own level. The Ancient
 Treant (Lv 62) is the strongest MVP: like the Goblin King, a first-job hero cannot finish it
 (`node build-tools/sim.mjs ancientTreant 62`), a second job hitting 2-4x as hard can. Its guards
 are Wolves and Snakes, not Treants and Bears, which would make it a wall.

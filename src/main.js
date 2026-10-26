@@ -75,8 +75,8 @@ const SPAWNS = {
   hunt: [],
   marsh: [['willow', 9], ['yellowSlime', 8], ['elderWillow', 1], ['willow', 2, true], ['wisp', 3, true]],
   oldwood: [['treant', 9], ['willow', 4], ['treant', 2, true], ['wisp', 2, true]],
-  farm: [['snake', 10], ['wolf', 6], ['snake', 2, true], ['wolf', 3, true]],
-  wolfhill: [['wolf', 10], ['bear', 5], ['snake', 2], ['ancientTreant', 1], ['wolf', 3, true]],
+  farm: [['snake', 10], ['wolf', 6], ['alphaWolf', 1], ['snake', 2, true], ['wolf', 3, true]],
+  wolfhill: [['wolf', 10], ['bear', 5], ['snake', 2], ['greatBear', 1], ['ancientTreant', 1], ['wolf', 3, true]],
 };
 
 // which build this is, on the title screen (matches the APK's version, 1.0.<build>)

@@ -17,6 +17,10 @@ export const BEASTS = {
   // wide antlers with fireflies on their tips and water-lilies in its teal hair; the Ancient Treant,
   // pale with age, glowing runes carved down its chest, a long beard, blossoms in its crown
   elderWillow: { kind: 'willow', boss: true, size: [56, 80], body: [22, 68], bark: '#c4c8bc', horn: '#a89878', leaf: '#3f8a72', leafLt: '#9ae0c0', leafDk: '#245a4a', eye: '#ffd23a', fly: '#fff6a0', lily: '#f4f0f8', lilyHeart: '#f2a8c8' },
+  // the Alpha Wolf, black-furred with a silver ruff, red eyes and a scar across its face; the Great
+  // Bear, a grizzly with a silver-tipped hump, amber eyes, scars and long pale claws
+  alphaWolf: { kind: 'quad', boss: true, size: [56, 44], body: [20, 26], fur: '#4a4e5a', back: '#2e3038', belly: '#9aa0b0', muzzle: '#7a8090', eye: '#ff4a3a', mouth: '#8a2a2a', tail: 'bush', mane: '#c8ccd8', scar: '#e8b8b0' },
+  greatBear: { kind: 'quad', boss: true, size: [64, 56], body: [28, 34], fur: '#5a3a24', back: '#3e2818', belly: '#8a6040', muzzle: '#a87a50', eye: '#ffb03a', mouth: '#8a2a2a', claw: '#fff6e0', tail: 'stub', bear: true, mane: '#c8b8a0', scar: '#d8a890' },
   ancientTreant: { kind: 'treant', boss: true, size: [84, 96], body: [46, 86], bark: '#8a7a66', moss: '#7aa04a', leaf: '#3f8040', leaf2: '#78b85a', eye: '#b8ff7a', mouth: '#24180e', cap: '#f0d8a0', rune: '#8affc0', blossom: '#f6b8d4' },
 };
 export const beastSize = (id) => BEASTS[id].size;
@@ -68,6 +72,16 @@ function quad(F, P, dir, { G, W, step, walk, f, atk }) {
     F.part(ellipse(bx - 1, by + ry * 0.55, rx * 0.65, ry * 0.35), P.belly, flat);
     F.part(line(bx - rx + 2, by - ry * 0.75, bx + rx * 0.5, by - ry - rear + 1, 2), P.back, flat); // the darker back
     if (P.tail === 'bush') F.dot(bx - rx - 9, by - 4 + wag, light(P.fur));
+    if (P.boss && B) { // a silver-tipped hump over the shoulders
+      const hx2 = bx + rx * 0.4, hy2 = by - ry - rear * 0.7;
+      F.part(ellipse(hx2, hy2, 4.5 * k, 2.4 * k), light(P.fur));
+      for (let i = -3; i <= 3; i++) { F.dot(hx2 + i * 1.6, hy2 - 2 * k + Math.abs(i) * 0.5, P.mane); if (i % 2) F.dot(hx2 + i * 1.6, hy2 - 1, P.mane); }
+    } else if (P.boss) { // a jagged silver ruff from the shoulders up the neck, one mass
+      const ax = bx + rx * 0.25, ay = by - ry + 2, ex = hx - 1, ey = hy - 3, pts = [];
+      for (let t = 0; t <= 8; t++) { const u = t / 8; pts.push([ax + (ex - ax) * u, ay + (ey - ay) * u - (t % 2 ? 5 : 1)]); }
+      for (let t = 8; t >= 0; t--) { const u = t / 8; pts.push([ax + (ex - ax) * u + 1, ay + (ey - ay) * u + 4]); }
+      F.part(poly(pts), P.mane);
+    }
     // the near legs
     leg(bx - rx + 6, swing, P.fur);
     if (rear) { // the near front paw raised to swipe, claws out
@@ -90,8 +104,9 @@ function quad(F, P, dir, { G, W, step, walk, f, atk }) {
       F.dot(hx + sl - 2, hy + 1, '#f4ecd8'); F.dot(hx + sl - 3, hy + 4, '#f4ecd8');
     }
     F.dot(hx + sl, hy - 1 - (open ? 2 : 0), '#1e1410'); F.dot(hx + sl, hy - (open ? 2 : 0), '#1e1410'); // the nose
-    F.dot(hx + 1, hy - 2, P.eye); F.dot(hx + 2, hy - 2, '#1e1410');
+    F.dot(hx + 1, hy - 2, P.eye); F.dot(hx + 2, hy - 2, P.boss ? light(P.eye) : '#1e1410');
     if (!B) F.dot(hx + 2, hy - 3, '#1e1410'); // a wolf's brow
+    if (P.boss) { F.part(line(hx - 1, hy - 5, hx + 3, hy + 1, 1), P.scar, flat); F.part(line(hx + 4, hy - 3, hx + 6, hy, 1), P.scar, flat); } // old scars
     return;
   }
 
@@ -112,6 +127,10 @@ function quad(F, P, dir, { G, W, step, walk, f, atk }) {
     leg(cx + 7 * k, by - 2, lu, dark(P.fur));
     F.part(ellipse(cx, by, 9 * k, 7 * k), P.fur);
     F.part(line(cx, by - 6 * k, cx, by + 2, 2), P.back, flat);
+    if (P.boss) { // the ruff or the hump, seen from behind
+      F.part(ellipse(cx, by - 6 * k, 7 * k, 3 * k), B ? light(P.fur) : P.mane);
+      for (let i = -2; i <= 2; i++) F.dot(cx + i * 2.5, by - 8 * k + Math.abs(i) * 0.6, B ? P.mane : light(P.mane));
+    }
     leg(cx - 5 * k, by + 3, lu, P.fur);
     leg(cx + 5 * k, by + 3, ru, P.fur);
     if (raise) for (const s of [-1, 1]) F.part(line(cx + s * 8 * k, by - 4, cx + s * 11 * k, by - 4 - raise, 4), P.fur); // paws up beside the head
@@ -134,6 +153,15 @@ function quad(F, P, dir, { G, W, step, walk, f, atk }) {
     leg(cx - 4 * k, by + 4, 0, P.fur); leg(cx + 4 * k, by + 4, 0, P.fur);
   } else { leg(cx - 4 * k, by + 4, lu, P.fur); leg(cx + 4 * k, by + 4, ru, P.fur); }
   const hy = by - 8 * k + dip - raise * 0.4;
+  if (P.boss && B) { // the hump behind the head, its fur tipped with silver
+    F.part(ellipse(cx, by - 6 * k, 10 * k, 4 * k), light(P.fur));
+    for (let i = -4; i <= 4; i++) F.dot(cx + i * 2.4, by - 9 * k + Math.abs(i) * 0.5, P.mane);
+  }
+  else if (P.boss) { // a spiky silver ruff round the throat
+    const pts = [];
+    for (let i = 0; i < 18; i++) { const a = (i / 18) * Math.PI * 2, r = i % 2 ? 0.72 : 1; pts.push([cx + Math.cos(a) * 9.5 * r, hy + 5 + Math.sin(a) * 6.5 * r]); }
+    F.part(poly(pts), P.mane);
+  }
   if (!B) for (const s of [-1, 1]) F.part(poly([[cx + s * 2, hy - 3], [cx + s * 5, hy - 12], [cx + s * 7, hy - 2]]), P.fur);
   else for (const s of [-1, 1]) { F.part(ellipse(cx + s * 7, hy - 6, 3, 3), P.fur); F.dot(cx + s * 7, hy - 6, dark(P.fur)); }
   F.part(ellipse(cx, hy, 7 * k, 6 * k), P.fur);
@@ -148,8 +176,12 @@ function quad(F, P, dir, { G, W, step, walk, f, atk }) {
   const ey = Math.round(hy - 2);
   for (const s of [-1, 1]) {
     const ex = Math.round(cx + s * 3.5 * k);
-    F.dot(ex, ey, P.eye); F.dot(ex + (s < 0 ? 1 : -1), ey, P.eye); F.dot(ex, ey, '#1e1410');
+    F.dot(ex, ey, P.eye); F.dot(ex + (s < 0 ? 1 : -1), ey, P.eye); F.dot(ex, ey, P.boss ? light(P.eye) : '#1e1410');
     if (!B) F.dot(ex + (s < 0 ? -1 : 1), ey - 1, '#1e1410');
+  }
+  if (P.boss) { // a scar across the left eye
+    const sx = Math.round(cx - 3.5 * k);
+    F.part(line(sx - 2, ey - 3, sx + 2, ey + 3, 1), P.scar, flat);
   }
 }
 

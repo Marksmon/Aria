@@ -319,7 +319,7 @@ export const NPCS = {
     greet: (c) => ({ blademaster: 'A BladeMaster. Pity about the sword; you would have made a fine archer.',
       wizard: 'A Wizard! Try not to set the targets on fire. Again.',
       magicknight: 'Sword and spell. Out here we would add a bow, but nobody is perfect.' })[c.jobId] || null,
-    quests: ['elderwillow', 'wolfpack', 'ancienttreant'],
+    quests: ['elderwillow', 'wolfpack', 'alphawolf', 'ancienttreant'],
     lore: [
       'Veidheim was a hunting camp once, a few tents past Birch Grove. Then the farmers came for the soil, and the hunters stayed to keep the beasts off it.',
       'We had farms past Black Wood too: Barley Field, and the hills beyond it. The snakes and the wolves took them. The packs are never alone, and they come for you on sight.',
@@ -338,7 +338,7 @@ export const NPCS = {
     hello: 'Pelts, skins and bark: bring them to me and I make them into hunters\' gear. Cloaks, boots, charms, armor. It smells, but it holds.',
     later: (lv) => `I will have work for you at Base Level ${lv}.`,
     bye: 'Wear it in the rain. Leather likes the rain.',
-    quests: ['pelts'],
+    quests: ['pelts', 'greatbear'],
     lore: ['A Wolf pelt for the warmth, a Snake skin for the quiet. A hunter wants both.', 'Old Bark from a Treant makes armor that grows back. I once had a breastplate sprout a leaf.'],
   },
   ottar: {
@@ -664,6 +664,18 @@ export const QUESTS = {
     intro: 'Winter comes early this side of Black Wood. I need ten Wolf Pelts for the watch\'s cloaks, and five Bear Claws for the charms that keep them brave.',
     thanks: 'Good thick pelts. The watch will be warm, and the charms will rattle. Here is your share.',
     reward: { xp: 150000, perz: 14000, items: { hunter_cape: 1 } },
+  },
+  alphawolf: {
+    title: 'The Leader of the Pack', kind: 'kill', mob: 'alphaWolf', n: 1, lv: 54,
+    intro: 'The packs did not grow bold on their own. A black wolf with a silver ruff leads them, the Alpha Wolf, and it hunts the Barley Field. It pounces from further than you think. Bring it down, and the packs will scatter.',
+    thanks: 'The Alpha is dead? Then the packs are leaderless, and the barley is ours again. You hunt like one of us.',
+    reward: { xp: 140000, perz: 15000, items: { potion3: 10 } },
+  },
+  greatbear: {
+    title: 'The Great Bear', kind: 'kill', mob: 'greatBear', n: 1, lv: 59,
+    intro: 'There is a bear in Wolf Hills as big as my workshop, grey-backed with age, and it has torn up every hunters\' camp out there. Kill the Great Bear, and bring me its heart if it gives it up: I will make you something no other hunter has.',
+    thanks: 'The Great Bear, gone. The camps can go back up. If you found its heart, I know what to do with it.',
+    reward: { xp: 200000, perz: 18000, items: { potion3: 12, honey: 6 } },
   },
   bowstaves: {
     title: 'Wood for Bows', kind: 'fetch', items: { willow_twig: 12, old_bark: 4 }, lv: 22,
