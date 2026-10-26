@@ -267,8 +267,9 @@ you will get.
 
 ## Jobs and skills
 
-**The Skills window** is a skill tree: a tab for each tree you have earned (your current job's
-first, with the points spent in it), the tree itself (each skill a node, square for actives and
+**The Skills window** is a skill tree: tabs for the trees you have earned, with the points spent in
+each (the Trainee first, then your first jobs in one tab: tap it again to pick another from its ▾
+list, then your second job, marked **2nd Job**), the tree itself (each skill a node, square for actives and
 round for passives, its level on a badge; lines run from each skill to what it opens and turn gold
 once the need is met; it scrolls when it is bigger than the window), and beside it the skill you
 tap: what it does now and at the next level, its SP, cast time, cooldown and weapon, what it

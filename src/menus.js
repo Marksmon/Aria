@@ -106,6 +106,8 @@ export class Menus {
     this.tab = 'use';       // Items window tab: use, equip or misc
     this.skTab = null;      // Skills window: the tree shown (a job id), and the skill picked in it
     this.skSel = null;
+    this.skFirst = null;    // the first job the first-jobs tab shows, and whether its list is open
+    this.skMenu = false;
     this.craftKind = 'gear'; // crafting window: Gunnar's gear or Ragna's usables
     this.shopId = null;     // the shop open in the Shop window
     this.shopTab = 'buy';
@@ -425,14 +427,22 @@ export class Menus {
   // costs and needs, and the Raise button (or why it can't be raised). Actives drag to the hotbar.
   skills() {
     const p = this.prog, trees = skillTrees(p);
-    if (!trees.includes(this.skTab)) this.skTab = trees[0];
+    if (!trees.includes(this.skTab)) this.skTab = trees[0]; // the job worn's tree, to begin with
     const tree = this.skTab, ids = Object.keys(SKILLS).filter((id) => SKILLS[id].job === tree);
     if (!ids.includes(this.skSel)) this.skSel = ids[0];
     const lay = treeLayout(tree);
-    const tabs = trees.map((j) => {
-      const n = j === 'novice' ? pointsIn(p, 'novice') : pointsIn(p, j);
-      return `<button class="rtab${j === tree ? ' on' : ''}" data-act="sktab" data-id="${j}">${esc(JOBS[j].name)}${n ? ` <small>${n}</small>` : ''}</button>`;
-    }).join('');
+    // the tabs: the Trainee first, then the first jobs (one tab, the others in its ▾ list), then the
+    // second job, marked as one
+    const firsts = trees.filter((j) => JOBS[j].tier === 1), seconds = trees.filter((j) => JOBS[j].tier === 2);
+    if (firsts.includes(tree)) this.skFirst = tree;
+    if (!firsts.includes(this.skFirst)) this.skFirst = firsts.find((j) => (JOBS[p.job].from || [p.job]).includes(j)) || firsts[0];
+    const pts = (j) => (pointsIn(p, j) ? ` <small>${pointsIn(p, j)}</small>` : '');
+    const tab = (j, extra = '') => `<button class="rtab${j === tree ? ' on' : ''}" data-act="sktab" data-id="${j}">${esc(JOBS[j].name)}${pts(j)}${extra}</button>`;
+    const many = firsts.length > 1, open = many && this.skMenu;
+    const tabs = (trees.includes('novice') ? tab('novice') : '')
+      + (firsts.length ? `<button class="rtab skfirst${firsts.includes(tree) ? ' on' : ''}" data-act="skfirst" aria-expanded="${open}">${esc(JOBS[this.skFirst].name)}${pts(this.skFirst)}${many ? ` <i>${open ? '▴' : '▾'}</i>` : ''}</button>` : '')
+      + seconds.map((j) => tab(j, ' <i class="sk2nd">2nd Job</i>')).join('');
+    const menu = open ? `<div class="skmenu"><span>First jobs:</span>${firsts.map((j) => tab(j)).join('')}</div>` : '';
     // the connectors: from the bottom of each need to the top of what it opens, lit once met
     const lines = [];
     for (const id of ids) for (const [k, n] of Object.entries(SKILLS[id].needs || {})) {
@@ -448,7 +458,7 @@ export class Menus {
       return `<button class="${cls}" style="left:${at.x}px;top:${at.y}px" data-act="sksel" data-id="${id}"${active && lv ? ` data-drag="skill:${id}"` : ''} title="${esc(sk.name)}">${icon(sk.icon)}<b>${badge}</b></button>`;
     }).join('');
     const train = trainTrees(p).includes(tree) ? '' : `<div class="sknote">Switch to ${esc(JOBS[tree].name)} at a Keeper to train this tree.</div>`;
-    return `<div class="rtabs sktabs">${tabs}</div>${train}
+    return `<div class="rtabs sktabs">${tabs}</div>${menu}${train}
       <div class="skwrap"><div class="sktree"><div class="skcanvas" style="width:${lay.w}px;height:${lay.h}px"><svg width="${lay.w}" height="${lay.h}">${lines.join('')}</svg>${nodes}</div></div>
       <div class="skdetail">${this.skillDetail(this.skSel)}</div></div>
       <div class="rfoot"><span>${esc(JOBS[p.job].name)} · Job Lv ${p.jobLv}</span><span>Skill Points <b>${p.skillPoints}</b></span></div>`;
@@ -477,7 +487,7 @@ export class Menus {
     else if (block && block.startsWith('Needs')) how = block + '.'; // a skill it builds on, or a second job's first-job rule (skills.js secondJobBlock)
     const hot = active && lv ? (this.hotbar?.has('skill', id) ? 'On the hotbar.' : 'Drag it onto the hotbar to use it.') : '';
     const text = (l) => esc(sk.desc(l)) + (sk.kind === 'passive' ? ' <i>(passive)</i>' : '');
-    return `<div class="skhead">${icon(sk.icon)}<div><b>${esc(sk.name)}</b><small>${active ? 'Active' : 'Passive'} · ${esc(JOBS[sk.job].name)} · ${sk.max > 1 ? `Lv ${lv} / ${sk.max}` : lv ? 'Learnt' : 'Not learnt'}</small></div></div>
+    return `<div class="skhead">${icon(sk.icon)}<div><b>${esc(sk.name)}</b><small>${active ? 'Active' : 'Passive'} · ${esc(JOBS[sk.job].name)}${JOBS[sk.job].tier === 2 ? ' (2nd Job)' : ''} · ${sk.max > 1 ? `Lv ${lv} / ${sk.max}` : lv ? 'Learnt' : 'Not learnt'}</small></div></div>
       ${facts.length ? `<div class="skfacts">${esc(facts.join(' · '))}</div>` : ''}
       ${needs ? `<ul class="skneeds">${needs}</ul>` : ''}
       ${lv ? `<div class="sklv"><b>Now (Lv ${lv})</b><p>${text(lv)}</p></div>` : ''}
@@ -851,7 +861,13 @@ export class Menus {
       this.render();
     }
     if (act === 'learn') this.hooks.learn?.(t.dataset.id);
-    if (act === 'sktab') { this.skTab = t.dataset.id; this.skSel = null; this.render(id); }
+    if (act === 'sktab') { this.skTab = t.dataset.id; this.skSel = null; this.skMenu = false; this.render(id); }
+    // the first-jobs tab: shows the first job picked; tapped again, it opens the list of the others
+    if (act === 'skfirst') {
+      if (this.skTab === this.skFirst) this.skMenu = !this.skMenu;
+      else { this.skTab = this.skFirst; this.skSel = null; }
+      this.render(id);
+    }
     if (act === 'sksel') { this.skSel = t.dataset.id; this.render(id); }
     if (act === 'jobchange') { this.hooks.jobChange?.(t.dataset.id); this.close('talk'); }
     if (act === 'shop') { this.close('talk'); this.openShop(this.npc); }

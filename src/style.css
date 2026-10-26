@@ -535,6 +535,11 @@ button.eq:active { background: var(--w-sel); }
 /* the skill tree: tabs, the tree (scrolls both ways) and the picked skill beside it */
 .sktabs { flex-wrap: wrap; }
 .sktabs .rtab small { color: var(--w-dim); font-weight: 400; }
+.sktabs .rtab i { font-style: normal; }
+.sktabs .sk2nd { margin-left: 3px; padding: 0 4px; border-radius: 3px; background: var(--w-gold); color: #1a120c; font-size: 10px; font-weight: 800; }
+/* the first jobs' list, under the tabs, while it is open */
+.skmenu { display: flex; flex-wrap: wrap; align-items: center; gap: 3px; padding: 4px 6px; border-bottom: 1px solid var(--w-line); background: var(--w-soft); font-size: 12px; color: var(--w-dim); }
+.skmenu .rtab { border-radius: 3px; border-bottom: 1px solid var(--w-line); margin: 0; }
 .skwrap { display: grid; grid-template-columns: minmax(0, 1fr) 200px; min-height: 0; }
 .sktree { overflow: auto; touch-action: pan-x pan-y; max-height: 300px; min-height: 150px; background: radial-gradient(ellipse at 50% 0, rgba(90, 110, 160, .18), transparent 70%), var(--w-cell0); border-right: 1px solid var(--w-line2); }
 .skcanvas { position: relative; margin: 0 auto; }
