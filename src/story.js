@@ -92,11 +92,11 @@ export const STORY = [
   // ---------- Chapter 3: embers in the wilds ----------
   { id: 'heralds', ch: 'Chapter 3: Embers in the Wilds', title: 'The Heralds', kind: 'talk', npc: 'saeunn', goal: 'Return to Saeunn the Seeress',
     say: [['saeunn', 'The Giant sends his heralds ahead of him: beasts swollen with his heat. In Birch Grove, east of the city, a Giant Sprout has grown huge on it.'],
-      ['saeunn', 'Cut it down. Its roots drink from Ember Hill; while it lives, it feeds him. But it is no Sprout of the fields: grow strong first. Base Level 28 or so, and a bag of Orange Potions.']],
+      ['saeunn', 'Its roots drink from Ember Hill, and the Red Sprouts around it carry the heat out into the grove. Thin them out, and see what their roots hold. The Giant Sprout itself you may leave be: it is a fight for the very strong.']],
     reward: { xp: 400 } },
-  { id: 'matron', ch: 'Chapter 3: Embers in the Wilds', title: 'The Giant Sprout', kind: 'kill', mob: 'matron', n: 1, map: 'birch', goal: 'Defeat the Giant Sprout in Birch Grove (east gate)',
-    hint: 'A level 25 mini-boss: Base Level 28 or so, with about 20 Orange Potions, makes it fair. Step out of reach when it rears up to stomp, and cut down the Red Sprouts it calls before you go back to it.',
-    say: [[null, 'The Giant Sprout crumbles into ash and thorns. Deep in its roots, something glows like a coal.']],
+  { id: 'redsprouts', ch: 'Chapter 3: Embers in the Wilds', title: 'Roots of Fire', kind: 'kill', mob: 'russet', n: 12, map: 'birch', goal: 'Defeat 12 Red Sprouts in Birch Grove (east gate)',
+    hint: 'Red Sprouts of level 18. The Giant Sprout roams the grove too: you need not fight it, so keep your distance.',
+    say: [[null, 'The last Red Sprout crumbles into ash and thorns. Deep in its roots, something glows like a coal.']],
     reward: { xp: 5000, perz: 1500 } },
   { id: 'roots', ch: 'Chapter 3: Embers in the Wilds', title: 'What the Roots Knew', kind: 'talk', npc: 'saeunn', goal: 'Tell Saeunn what you found',
     say: [['saeunn', 'A coal in the roots... The Giant is waking faster than I feared.'],
@@ -189,13 +189,13 @@ export const STORY = [
   { id: 'secondpath', ch: 'Chapter 7: The Second Path', title: 'Beyond the First Path', kind: 'job2', goal: 'Take a second job: BladeMaster (Captain Ulfr), Wizard (Archmage Vigdis), Magic Knight (Sir Eirik, Steinborg), Windrunner (Huntmaster Sigrid, Veidheim), Moon Ranger (Hrafn the Stargazer, Galdrheim) or Beastmaster (Bjarki, Veidheim)',
     hint: 'A second-job trial opens at Job Level 40. Which trials you may take depends on where your skill points went.',
     say: [[null, 'Your power has taken a new shape. The aura around you is faint, but every monster in Aria can feel it.'],
-      ['vigdis', 'Now you are ready. Go to Ash Heath and put out the Giant Beetle\'s furnace.']],
+      ['vigdis', 'Now you are ready. Go to Ash Heath: the Fire Beetles there gorge on the goblins\' red coal. Break their feast.']],
     reward: { xp: 15000, perz: 10000 } },
 
   // ---------- Chapter 8: the Waking Fire ----------
-  { id: 'furnace', ch: 'Chapter 8: The Waking Fire', title: 'The Living Furnace', kind: 'kill', mob: 'cinderLord', n: 1, map: 'heath', goal: 'Defeat the Giant Beetle in Ash Heath (east of Ember Hill)',
-    hint: 'A level 48 mini-boss that calls Fire Beetles to its side. Base Level 50 or so, with water on your side, makes it fair.',
-    say: [[null, 'The Giant Beetle crashes down, and the red glow drains out of its shell. Far to the west, Ember Hill falls quiet.'],
+  { id: 'coalfeast', ch: 'Chapter 8: The Waking Fire', title: 'The Coal Feast', kind: 'kill', mob: 'cinderBeetle', n: 20, map: 'heath', goal: 'Defeat 20 Fire Beetles in Ash Heath (east of Ember Hill)',
+    hint: 'Fire Beetles of level 42: water on your side helps. The Giant Beetle roams the heath too: you need not fight it.',
+    say: [[null, 'The last Fire Beetle crashes down, and the red glow drains out of the coal heaps. Far to the west, Ember Hill falls quiet.'],
       [null, 'Only one trail is left: north from Burnt Wood, into Serpent Wood.']],
     reward: { xp: 30000, perz: 10000, items: { potion3: 10 } } },
   { id: 'ormholt', ch: 'Chapter 8: The Waking Fire', title: 'The Serpent Wood', kind: 'visit', map: 'serpent', goal: 'Travel north from Burnt Wood to Serpent Wood',
@@ -223,7 +223,9 @@ export const STORY = [
 // the steps as they were before the Fire Giant left the story, and where those steps went
 const OLD_ORDER = ['wake', 'stats', 'slimes', 'training', 'hotbar', 'report', 'north', 'captain', 'seeress', 'trade', 'path', 'heralds', 'matron', 'roots', 'emberhill', 'ready', 'lastfire', 'jarl', 'rekindled'];
 // ledger: the Keepers' step moved from Chapter 5 to Chapter 1 ('keepers'); a hero who was on it goes on to the carter
-const RENAMED = { ready: 'runesong', lastfire: 'runesong', jarl: 'rekindled', ledger: 'carter' };
+// matron, furnace: the story's boss fights (the Giant Sprout, the Giant Beetle) became hunts of
+// their kin, so no story step needs a boss
+const RENAMED = { ready: 'runesong', lastfire: 'runesong', jarl: 'rekindled', ledger: 'carter', matron: 'redsprouts', furnace: 'coalfeast' };
 
 // directions: which way to walk from one map to reach another, through which portal
 export function route(from, to) {

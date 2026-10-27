@@ -48,6 +48,11 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   4 s rush and the 2 s after Gale Step (the owner's call: bursts only, never a lasting haste).
 - **Bosses and MVPs** spawn at random spots and roam their whole map; each has a respawn timer
   (`mvpAt`, saved) that holds across map changes and restarts.
+- **MVPs are the hardest fights in Aria** (the owner's call): several minutes each, with skills of
+  their own that need a plan (Fire Giant: Meteor Rain and burning ground; Kobold King: Tribe's
+  Shield and Burrow; Goblin King: Mirror Image; Ancient Treant: Grasping Roots and Bark Armor), and
+  enraged below half HP (`MVP_RAGE`). Even a Lv 99 hero without good, upgraded gear should not beat
+  one. So no main story step needs a boss, and boss and MVP cards drop at 1% (other cards 0.1%).
 - **Quests:** side quests and job trials can be quit from the Quest View; the main story quest
   can never be quit.
 - **EXP rates:** battles pay x4 (`RATES`: monsters, mini-bosses, MVPs, raids); quests pay x2

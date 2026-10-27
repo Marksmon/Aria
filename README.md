@@ -162,7 +162,7 @@ or leap away, so even a quick hero who keeps their distance gets caught while it
 30% of every hit back at whoever struck it, you or your beasts. Hold off until it passes. It comes back 35 minutes
 after it falls.
 
-Two more MVPs rule the new lands: the **Kobold King** (Lv 50, 300,000 HP, Earth) in
+Two more MVPs rule the new lands: the **Kobold King** (Lv 50, 450,000 HP, Earth) in
 Coal Pit, and the **Goblin King** (Lv 55, 420,000 HP, Wind) in Serpent Wood. Both
 stomp like the Fire Giant, and each MVP keeps its own timer (20 and 30 minutes). The Kobold King
 hides behind his tribe (**Tribe's Shield**): while any of his guards stands he takes 80% less
@@ -176,7 +176,7 @@ guards** at 80%, 50% and 25% of its HP: the Fire Giant 2 Fire Wisps and 3 Fire B
 king 4 of his own (2 warriors, an archer and an assassin); a call brings back only the guards that
 are missing. Once the last guard falls, it calls again a minute later, if it is still fighting. Guards are lesser
 monsters of their kind (half the HP, 60% of the ATK): they follow their MVP, fight whoever it
-fights, and vanish when it falls (no EXP, no drops). The kings drop ores, a rare accessory (5%) and their **card** (0.1%), as does the Fire Giant.
+fights, and vanish when it falls (no EXP, no drops). The kings drop ores, a rare accessory (5%) and their **card** (1%), as does the Fire Giant.
 
 **Enraged.** Below half its HP an MVP is enraged for good (it glows red, and calms down only if it
 heals back over 60%): it hits 25% harder and 35% faster, walks 15% faster, stomps every 4.5
@@ -687,8 +687,8 @@ Core) and 50,000 perz. The second works a quarter of the time and costs twice as
 boss materials in any mix, 100,000 perz). A failed try breaks the weapon; any card in it comes
 back to you.
 
-**Cards.** Each MVP drops its card (0.1%), and like classic MVP cards they are overpowered.
-Each mini-boss drops one too (0.1%): a good step up, but nothing like an MVP's. The Goblin King's, the
+**Cards.** Each MVP drops its card (1%: they are very hard to bring down), and like classic MVP cards they are overpowered.
+Each mini-boss drops one too (1%): a good step up, but nothing like an MVP's. The Goblin King's, the
 Fire Giant's, the Great Bear's and the Giant Beetle's go in weapons; the rest in other gear.
 Every other monster drops a card too (0.1%), for every kind of gear, smaller but welcome (all but the
 Little Bloops a Blue Bloop splits into: they drop neither gear nor cards).
@@ -719,7 +719,7 @@ they come back whole and the slot stays open. A piece that breaks at Holger's gi
 | Beetle Card (Hardy) | Armor | DEF +2, END +1 | Beetle, 0.1% |
 | Lantern Wisp Card (Glowing) | Wings | FNS +2, KNL +1 | Lantern Wisp, 0.1% |
 | Red Bloop Card (Fiery) | Weapon | ATK +10 | Red Bloop (Bloop Island), 0.1% |
-| BleepBloop Card (Grand) | Weapon | ATK +20, Max HP +10%, FTN +5 | BleepBloop, 0.1% |
+| BleepBloop Card (Grand) | Weapon | ATK +20, Max HP +10%, FTN +5 | BleepBloop, 1% |
 | Red Sprout Card (Thorny) | Garment | Max HP +5%, FLEE +2 | Red Sprout, 0.1% |
 | Sea Bloop Card (Briny) | Shield | DEF +1, Max SP +5% | Sea Bloop, 0.1% |
 | Fire Beetle Card (Scorched) | Armor | DEF +2, POW +1 | Fire Beetle, 0.1% |
@@ -732,17 +732,17 @@ they come back whole and the slot stays open. A piece that breaks at Holger's gi
 
 | Card | Goes in | Effect | From |
 |---|---|---|---|
-| Kobold King Card (Stubborn) | Armor | Max HP +40%, DEF +10, FLEE +10, END +10 | Kobold King, 0.1% |
-| Goblin King Card (Tyrant) | Weapon | ATK +100, POW +10, QKN +10, attacks 15% faster | Goblin King, 0.1% |
-| Giant Sprout Card (Blooming) | Accessory | Max HP +10%, END +4 | Giant Sprout, 0.1% |
-| King Crab Card (Tidal) | Garment | QKN +5, FLEE +8 | King Crab, 0.1% |
-| Giant Mushroom Card (Dreaming) | Head or face | KNL +6, Max SP +10% | Giant Mushroom, 0.1% |
-| Giant Beetle Card (Burning) | Weapon | ATK +25, POW +4 | Giant Beetle, 0.1% |
-| Elder Willow Card (Elder) | Wings | FNS +3, KNL +3 | Elder Willow, 0.1% |
-| Alpha Wolf Card (Wild) | Shoes | QKN +6, FLEE +10 | Alpha Wolf, 0.1% |
-| Great Bear Card (Savage) | Weapon | ATK +30, POW +5, Max HP +10% | Great Bear, 0.1% |
-| Ancient Treant Card (Ancient) | Shield | DEF +15, Max HP +30%, POW +8, END +10 | Ancient Treant, 0.1% |
-| Fire Giant Card (Infernal) | Weapon (a sorcerer's card) | MATK +60%, KNL +12, FNS +8, Max SP +30%, Max HP +15%, weapon turns Fire (+15% Fire spells with a staff) | Fire Giant, 0.1% |
+| Kobold King Card (Stubborn) | Armor | Max HP +40%, DEF +10, FLEE +10, END +10 | Kobold King, 1% |
+| Goblin King Card (Tyrant) | Weapon | ATK +100, POW +10, QKN +10, attacks 15% faster | Goblin King, 1% |
+| Giant Sprout Card (Blooming) | Accessory | Max HP +10%, END +4 | Giant Sprout, 1% |
+| King Crab Card (Tidal) | Garment | QKN +5, FLEE +8 | King Crab, 1% |
+| Giant Mushroom Card (Dreaming) | Head or face | KNL +6, Max SP +10% | Giant Mushroom, 1% |
+| Giant Beetle Card (Burning) | Weapon | ATK +25, POW +4 | Giant Beetle, 1% |
+| Elder Willow Card (Elder) | Wings | FNS +3, KNL +3 | Elder Willow, 1% |
+| Alpha Wolf Card (Wild) | Shoes | QKN +6, FLEE +10 | Alpha Wolf, 1% |
+| Great Bear Card (Savage) | Weapon | ATK +30, POW +5, Max HP +10% | Great Bear, 1% |
+| Ancient Treant Card (Ancient) | Shield | DEF +15, Max HP +30%, POW +8, END +10 | Ancient Treant, 1% |
+| Fire Giant Card (Infernal) | Weapon (a sorcerer's card) | MATK +60%, KNL +12, FNS +8, Max SP +30%, Max HP +15%, weapon turns Fire (+15% Fire spells with a staff) | Fire Giant, 1% |
 
 **Who can wear what.** Swords up to the Iron Sword: Trainee and Blader; rare and elemental
 swords: Blader only. Staves: Sorcerer only (the Wooden Staff also Trainees). Bows and arrows:
@@ -813,12 +813,12 @@ rings the portal to take, or the person to talk to. A purple **!** marks who the
 | Prologue (the tutorial) | Talk to the Elder · raise a stat · defeat 3 Bloops in Moss Field · learn Basic Training · put a potion on the hotbar · back to the Elder |
 | 1: The Stone-Fort | Travel to Steinborg · tell Captain Ulfr the fires are failing · sign the Keeper's ledger (the Keepers: healing, storage, save point, teleport) · meet Saeunn the Seeress · sell something for perz |
 | 2: Blade or Rune | Pass a job trial and become a Blader, a Sorcerer or an Archer |
-| 3: Embers in the Wilds | Saeunn's warning · defeat the Giant Sprout in Birch Grove · travel to Ember Hill |
+| 3: Embers in the Wilds | Saeunn's warning · defeat 12 Red Sprouts in Birch Grove · travel to Ember Hill |
 | 4: The Fire-Ring | Archmage Vigdis will sing the fire-ring's runes anew · **the Vigil on Ember Hill**: stand in her rune circle and hold off the Giant's heralds for 75 seconds while her song reaches him · bring the song home: the fire-ring rekindled |
 | 5: The Salt Road | Captain Ulfr: kobolds rob the salt carts · Hakon the Carter in Salt Bay · **Bloop Island**: the Boatman's Tutorial crossing (the first raid) · defeat 12 kobolds in Stone Field · Saeunn and the glowing red coal · go down into Coal Pit · Dag the Miner: the goblins drive the kobolds to dig for a "Waking Fire" |
 | 6: The Goblin War-Band | tell Ulfr · defeat 15 goblins in Burnt Wood · Archmage Vigdis reads the two coal trails |
 | 7: The Second Path | take a second job (BladeMaster, Wizard or Magic Knight) |
-| 8: The Waking Fire | defeat the Giant Beetle in Ash Heath · travel to Serpent Wood · defeat 20 goblins, the keepers of the goblins' backward fire-ring · the backward rune-stone to Vigdis · home to the Elder |
+| 8: The Waking Fire | defeat 20 Fire Beetles in Ash Heath · travel to Serpent Wood · defeat 20 goblins, the keepers of the goblins' backward fire-ring · the backward rune-stone to Vigdis · home to the Elder |
 
 The second saga (chapters 5–8) runs from about Base 32 to Base 55. A hero who finished the first saga
 picks up at Chapter 5. No MVP is part of the story: the Fire Giant, the Kobold King and the Goblin
