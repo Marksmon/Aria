@@ -57,7 +57,7 @@ const allies = new Allies(scene, world, lib, mobs.shadowGeo, mobs.shadowMat); //
 const SPAWNS = {
   camp: [],
   grove: [['slime', 12], ['sprout', 9], ['wisp', 2, true], ['slime', 3, true], ['sprout', 2, true]], // the first field: Wisps only at night
-  fen: [['blueSlime', 9], ['crab', 7], ['wisp', 3], ['wisp', 3, true], ['blueSlime', 2, true], ['crab', 1, true]],
+  fen: [['blueSlime', 9], ['crab', 7], ['wisp', 4, true], ['blueSlime', 2, true], ['crab', 1, true]], // (Wisps only at night here too: a Trainee's field)
   hollow: [['mushling', 12], ['wisp', 3], ['wisp', 3, true], ['mushling', 2, true]],
   ridge: [['beetle', 10], ['jarl', 1], ['wisp', 3], ['wisp', 3, true], ['beetle', 2, true]],
   city: [],
@@ -434,7 +434,7 @@ player.on('faint', () => {
 mobs.on('death', (m, drops) => {
   audio.play('kill');
   if (raid && m.def.raidLv) { raid.exp[0] += m.def.exp[0] * RATES.base; raid.exp[1] += m.def.exp[1] * RATES.job; } // a raid holds its EXP until the run ends
-  else gainExp(...m.def.exp, RATES);
+  else gainExp(m.def.exp[0], prog.job === 'novice' && m.def.tjob ? m.def.tjob : m.def.exp[1], RATES); // (a Trainee earns a bloop field's big Job EXP: tjob)
   for (const id of quests.onKill(m.type)) questComplete(id);
   story.onKill(m.type);
   for (const [base, count] of drops) {

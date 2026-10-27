@@ -81,7 +81,7 @@ and Wolf Hills, for heroes near their second job.
 | Map | Level | Monsters | Boss |
 |---|---|---|---|
 | Moss Field | 1–6 | Bloop (Lv 1), Sprout (3) | |
-| Fen Shore | 5–12 | Blue Bloop (6, splits), Crab (9) | |
+| Fen Shore | 3–10 | Blue Bloop (4, splits), Crab (6); Wisps only at night | |
 | Dark Dale | 12–18 | Mushroom (14, slowing spores) | |
 | Birch Grove | 16–26 | Red Sprout (18), Sprout, Bloop | Giant Sprout (25) |
 | Salt Bay | 20–32 | Sea Bloop (22), Blue Crab (26), Crab | King Crab (32) |
@@ -97,6 +97,10 @@ and Wolf Hills, for heroes near their second job.
 | Barley Field | 44–54 | Snake (46), Wolf (48) | Alpha Wolf (51) |
 | Wolf Hills | 46–62 | Wolf, Bear (53), Snake | Great Bear (56) · **Ancient Treant (62, MVP)** |
 | Any field in the valley, more at night (Moss Field only at night) | | Wisp (11) | |
+
+Moss Field and Fen Shore, by the camp and the city, are a Trainee's fields: a Base 10 Trainee
+beats any of their monsters again and again, and a Trainee earns big Job EXP there (Job 10 in
+about 20–30 kills).
 
 **Passive monsters.** Most field monsters leave you alone until you hit
 them; then they fight back for a while. Only the Dark Wisps, the fire beasts of Ash Heath, the
