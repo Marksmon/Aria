@@ -134,7 +134,7 @@ the ATK): cut them down first. At the level their quests suggest (Giant Sprout 2
 Giant Mushroom 43, Giant Beetle 50) each is about a two-minute fight on a dozen or so Orange
 Potions; see `docs/balance.md`.
 
-**MVP.** The Fire Giant (Lv 60, 144,000 HP, Fire), optional and not part of the story, roams Ember Hill and stomps the
+**MVP.** The Fire Giant (Lv 60, 240,000 HP, Fire), optional and not part of the story, roams Ember Hill and stomps the
 ground around it every few seconds. MVPs are the hardest fights in Aria, made for a strong second
 job well above their level (or a long, careful fight for one at it): a minute or more of dodging
 and a bag of White and Blue Potions, and the wrong element (Fire Arrows on the Fire Giant) can
@@ -148,14 +148,14 @@ Treant, charging and calling 2 Bears. Their pelt and heart (30%) make Leif's bes
 
 The **Elder Willow** of Willow Marsh (Lv 23: silvery, wide antlers with fireflies on their tips,
 water-lilies in its hair) is the mini-boss on the road to Veidheim, a step after the Giant Sprout,
-calling Willows out of the reeds. The **Ancient Treant** (Lv 62, 156,000 HP, Earth: pale with age,
+calling Willows out of the reeds. The **Ancient Treant** (Lv 62, 260,000 HP, Earth: pale with age,
 glowing runes carved down its body, blossoms in its crown), the oldest tree in Aria, has walked
 out of the Old Forest into Wolf Hills and is its MVP: it stomps, hurls stones and charges, and calls
 2 Wolves and 2 Snakes. It is the strongest MVP, and it comes back 35 minutes
 after it falls.
 
-Two more MVPs rule the new lands: the **Kobold King** (Lv 50, 108,000 HP, Earth) in
-Coal Pit, and the **Goblin King** (Lv 55, 126,000 HP, Wind) in Serpent Wood. Both
+Two more MVPs rule the new lands: the **Kobold King** (Lv 50, 180,000 HP, Earth) in
+Coal Pit, and the **Goblin King** (Lv 55, 210,000 HP, Wind) in Serpent Wood. Both
 stomp like the Fire Giant, and each MVP keeps its own timer (20 and 30 minutes). **Every MVP calls
 guards** at 80%, 50% and 25% of its HP: the Fire Giant 2 Fire Wisps and 3 Fire Beetles, each
 king 4 of his own (2 warriors, an archer and an assassin); a call brings back only the guards that

@@ -53,7 +53,7 @@ export const MOB_DEFS = {
   // reward on top of the drops. Stomps the ground around it every few seconds (stomp: x its ATK),
   // and calls 2 Fire Wisps and 3 Fire Beetles (summon: see SUMMON_CD).
   // Made for a Base 50 character in the best gear, alone: about 3 minutes and a bag of potions.
-  jarl: { name: 'Fire Giant', ai: 'boss', art: 'jarl', el: 'fire', lv: 60, hp: 144000, atk: [195, 260], def: 20, vit: 40, agi: 30, dex: 70, mdef: 40, exp: [60000, 42000], adelay: 1600, walk: 130, aggro: 7, chase: 25, reach: 1.9, w: 3.1, r: 1.15, heavy: true,
+  jarl: { name: 'Fire Giant', ai: 'boss', art: 'jarl', el: 'fire', lv: 60, hp: 240000, atk: [300, 400], def: 20, vit: 40, agi: 30, dex: 70, mdef: 40, exp: [60000, 42000], adelay: 1600, walk: 130, aggro: 7, chase: 25, reach: 1.9, w: 3.1, r: 1.15, heavy: true,
     mvp: true, respawn: 900, mvpExp: 30000, stomp: 1.8, moves: [{ kind: 'throw', mult: 2.0, r: 2.0 }, { kind: 'leap', mult: 1.8, r: 2.2 }],
     summon: ['emberWisp', 'emberWisp', 'cinderBeetle', 'cinderBeetle', 'cinderBeetle'], summonText: 'The Fire Giant roars, and the fire answers!', mvpDrops: [['potion3', 3], ['ember_heart', 1]],
     wake: 'The ground trembles… the Fire Giant has woken in Ember Hill!',
@@ -70,11 +70,11 @@ export const MOB_DEFS = {
   goblinAssassin: { name: 'Goblin Assassin', ai: 'assassin', art: 'goblinAssassin', el: 'wind', lv: 44, hp: 1800, atk: [140, 178], def: 8, vit: 26, agi: 60, dex: 82, exp: [850, 595], adelay: 1100, walk: 100, aggro: 6, chase: 10, reach: 0.75, double: 0.25, w: 0.7, r: 0.3, drops: [['goblin_tooth', 1, 2, 0.5], ['quick', 1, 1, 0.04], ['potion3', 1, 1, 0.04], ['hard_ore', 1, 1, 0.025], ['armor_ore', 1, 1, 0.02], ['goblinassassin_card', 1, 1, 0.001], ['goblin_shroud', 1, 1, 0.002]] },
   // the kings: MVPs like the Fire Giant, a step below it. They stomp, and call four guards
   // (summon: see SUMMON_CD). Both are quick on their feet and have moves of their own (see MOVES).
-  koboldKing: { name: 'Kobold King', ai: 'boss', art: 'koboldKing', el: 'earth', lv: 50, hp: 108000, atk: [156, 208], def: 22, vit: 45, agi: 30, dex: 70, mdef: 25, exp: [36000, 25200], adelay: 1500, walk: 150, aggro: 7, chase: 25, reach: 1.4, w: 1.3, r: 0.6, heavy: true,
+  koboldKing: { name: 'Kobold King', ai: 'boss', art: 'koboldKing', el: 'earth', lv: 50, hp: 180000, atk: [240, 320], def: 22, vit: 45, agi: 30, dex: 70, mdef: 25, exp: [36000, 25200], adelay: 1500, walk: 150, aggro: 7, chase: 25, reach: 1.4, w: 1.3, r: 0.6, heavy: true,
     mvp: true, respawn: 1200, mvpExp: 18000, stomp: 1.6, moves: [{ kind: 'charge', mult: 1.7 }, { kind: 'throw', mult: 1.8, r: 1.6 }], summon: ['koboldWarrior', 'koboldWarrior', 'koboldArcher', 'koboldAssassin'], mvpDrops: [['potion3', 3], ['hard_ore', 2]],
     wake: 'War drums in the quarry… the Kobold King holds court in Coal Pit!',
     drops: [['potion3', 1, 2, 0.5], ['kobold_fur', 4, 6, 1], ['hard_ore', 1, 2, 0.4], ['armor_ore', 1, 2, 0.4], ['kobold_ring', 1, 1, 0.05], ['kobold_card', 1, 1, 0.001]] },
-  goblinKing: { name: 'Goblin King', ai: 'boss', art: 'goblinKing', el: 'wind', lv: 55, hp: 126000, atk: [180, 234], def: 22, vit: 48, agi: 34, dex: 74, mdef: 30, exp: [48000, 33600], adelay: 1500, walk: 120, aggro: 7, chase: 25, reach: 1.4, w: 1.3, r: 0.6, heavy: true,
+  goblinKing: { name: 'Goblin King', ai: 'boss', art: 'goblinKing', el: 'wind', lv: 55, hp: 210000, atk: [276, 360], def: 22, vit: 48, agi: 34, dex: 74, mdef: 30, exp: [48000, 33600], adelay: 1500, walk: 120, aggro: 7, chase: 25, reach: 1.4, w: 1.3, r: 0.6, heavy: true,
     mvp: true, respawn: 1800, mvpExp: 24000, stomp: 1.7, moves: [{ kind: 'leap', mult: 1.7, r: 1.8 }, { kind: 'throw', mult: 1.4, r: 1.3 }, { kind: 'frenzy' }], summon: ['goblinWarrior', 'goblinWarrior', 'goblinArcher', 'goblinAssassin'], mvpDrops: [['potion3', 3], ['hard_ore', 3]],
     wake: 'Horns in the dark wood… the Goblin King rides out in Serpent Wood!',
     drops: [['potion3', 1, 2, 0.6], ['goblin_tooth', 4, 6, 1], ['hard_ore', 1, 3, 0.45], ['armor_ore', 1, 3, 0.45], ['goblin_charm', 1, 1, 0.05], ['great_bow', 1, 1, 0.02], ['goblin_card', 1, 1, 0.001]] },
@@ -99,7 +99,7 @@ export const MOB_DEFS = {
   // the MVP of Wolf Hills: the oldest tree in Aria, woken by the jotnar's stirring, has walked out of
   // the Old Forest, and the beasts follow it. Stomps, hurls stones from its roots, and calls wolves
   // and snakes (summon: see SUMMON_CD). Made for a Base 60 second job: about 3 minutes and a bag of White Potions.
-  ancientTreant: { name: 'Ancient Treant', ai: 'boss', art: 'ancientTreant', aura: '#ff9ac8', el: 'earth', lv: 62, hp: 156000, atk: [189, 247], def: 20, vit: 45, agi: 30, dex: 78, mdef: 35, exp: [76000, 53200], adelay: 1700, walk: 200, aggro: 7, chase: 25, reach: 2.0, w: 2.8, r: 1.15, heavy: true,
+  ancientTreant: { name: 'Ancient Treant', ai: 'boss', art: 'ancientTreant', aura: '#ff9ac8', el: 'earth', lv: 62, hp: 260000, atk: [290, 380], def: 20, vit: 45, agi: 30, dex: 78, mdef: 35, exp: [76000, 53200], adelay: 1700, walk: 200, aggro: 7, chase: 25, reach: 2.0, w: 2.8, r: 1.15, heavy: true,
     mvp: true, respawn: 2100, mvpExp: 36000, stomp: 1.7, moves: [{ kind: 'throw', name: 'Root Stone', mult: 1.8, r: 1.8 }, { kind: 'charge', name: 'Uprooting Charge', mult: 1.7 }], summon: ['wolf', 'wolf', 'snake', 'snake'], summonText: 'The Ancient Treant groans, and the pack answers!', mvpDrops: [['potion3', 3], ['ancient_seed', 1]],
     wake: 'The hills shake… the Ancient Treant walks in Wolf Hills!',
     drops: [['potion3', 1, 2, 0.6], ['old_bark', 4, 6, 1], ['ancient_heartwood', 1, 1, 0.25], ['hard_ore', 1, 2, 0.4], ['armor_ore', 1, 2, 0.4], ['oak_ring', 1, 1, 0.05], ['grove_blade', 1, 1, 0.01], ['treant_card', 1, 1, 0.001]] },
@@ -905,7 +905,7 @@ export class MobManager {
       const w = this.bossHp[type]; // as you left it: its wounds (less what it healed since) and its guards
       if (w) {
         // (its wounds as a share of its HP, should that have changed; an MVP left wounded before MVPs
-        // got 6x their HP comes back whole)
+        // got 10x their HP comes back whole)
         const hp = w.max ? w.hp * m.def.hp / w.max : m.def.mvp ? m.def.hp : w.hp;
         m.hp = Math.min(m.def.hp, hp + m.def.hp * BOSS_REGEN * (Date.now() - w.at) / 60000);
         m.calls = w.calls || 0;
