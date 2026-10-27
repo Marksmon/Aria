@@ -5,6 +5,9 @@ import { ITEMS, RECIPES, SLOTS, PRICES, sellPrice, canWear, parseKey, makeKey, r
 export const BAG_SLOTS = 48;
 export const CHEST_SLOTS = 96; // the Keepers' storage, shared by every hero (save.js)
 const STACK = 999;
+// items that changed id: an old save's pieces come back as the new ones (upgrades and cards kept)
+const RENAMED = { ore_crown: 'goat_horns', warlord_mask: 'elf_ears' };
+const renamed = (key) => { const [base, ...rest] = String(key).split('|'); return RENAMED[base] ? [RENAMED[base], ...rest].join('|') : key; };
 const stackOf = (id) => (ITEMS[id].type === 'equip' ? 1 : STACK);
 
 class Store {
@@ -50,7 +53,8 @@ class Store {
   // over the limit, until it is taken out
   load(arr) {
     this.slots = [];
-    for (const [id, n] of arr || []) {
+    for (let [id, n] of arr || []) {
+      id = renamed(id);
       if (!ITEMS[id]) continue;
       let left = (n | 0) - this.add(id, n | 0);
       for (const max = stackOf(id); left > 0; left -= max) this.slots.push({ id, n: Math.min(left, max) });
@@ -288,7 +292,7 @@ export class Inventory {
       // the Light slot became Wings: the Lantern flies on, a Torch goes back in the bag
       if (g.light && !g.wings) { if (ITEMS[g.light]?.slot === 'wings') g.wings = g.light; else if (ITEMS[g.light]) this.bag.add(g.light, 1); }
       for (const slot of Object.keys(SLOTS)) {
-        const id = g[slot];
+        const id = g[slot] && renamed(g[slot]);
         this.gear[slot] = ITEMS[id]?.slot === (slot === 'acc2' ? 'acc' : slot) ? id : null;
       }
       return;

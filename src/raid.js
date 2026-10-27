@@ -80,7 +80,7 @@ export const RAIDS = {
     difficulties: ladder([45, 60, 75, 90]),
     reward: { perz: 4500, items: [['kobold_fur', 6, 1], ['iron_ore', 4, 1], ['steel_ore', 1, 0.5]], cores: ['kobold_core', 3] },
     rares: ['quarry_shield', 'stonehide_mantle', 'earthshaker_boots', 'oreheart_ring', 'pickaxe_charm', 'miners_plate'],
-    ultra: ['ore_crown', 0.01],
+    ultra: ['goat_horns', 0.01],
     card: ['kwarlord_card', 0.01],
     words: {
       pitch: 'Three waves of kobolds in their walled camp, then their Warlord, all in 10 minutes before the war drums call the rest of the tribe.',
@@ -102,7 +102,7 @@ export const RAIDS = {
     difficulties: ladder([50, 65, 80, 95]),
     reward: { perz: 6000, items: [['goblin_tooth', 6, 1], ['steel_ore', 2, 1], ['armor_ore', 1, 0.3]], cores: ['goblin_core', 3] },
     rares: ['raider_cloak', 'windstep_boots', 'spiked_buckler', 'totem_charm', 'wardrum_pendant', 'horde_leather'],
-    ultra: ['warlord_mask', 0.01],
+    ultra: ['elf_ears', 0.01],
     card: ['gwarlord_card', 0.01],
     words: {
       pitch: 'Three waves of goblins in their lair under the dark trees, then their Warlord, all in 10 minutes before the torches gutter out.',

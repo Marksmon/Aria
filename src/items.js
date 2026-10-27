@@ -237,9 +237,9 @@ const BASE_ITEMS = {
   pickaxe_charm: { type: 'equip', slot: 'acc', rare: true, name: 'Pickaxe Charm', hit: 6, stats: { pow: 3 }, icon: 'r_pickaxe', desc: 'A tiny silver pickaxe on a cord. Kobolds swear it finds the soft spot in any stone.', from: 'Kobold Camp (a clear: 3%), or made from Kobold Cores' },
   miners_plate: { type: 'equip', slot: 'armor', rare: true, name: "Miner's Plate", def: 8, mhp: 150, stats: { end: 2 }, icon: 'r_minersplate', desc: 'Kobold mail riveted with ore plates, made for crawling through rockfalls.', from: 'Kobold Camp (a clear: 3%), or made from Kobold Cores' },
   // the raids' ultra rares (1% a clear, or a guide's 300 cores), worn and seen: each a headgear
-  // sheet of its own (art/hg_ore_crown, hg_warlord_mask: the Horned Crown and the Bird Mask recoloured)
-  ore_crown: { type: 'equip', slot: 'head', rare: true, ultra: true, name: "Ore King's Crown", def: 6, mhpRate: 10, stats: { pow: 4, end: 4 }, desc: 'The Kobold Warlord\'s crown, hammered from the purest ore of the deep and set with rubies that glow like coals. The Kobold Camp\'s ultra rare.', from: 'Kobold Camp (a clear: 1%), or Brokk makes it from 300 Kobold Cores' },
-  warlord_mask: { type: 'equip', slot: 'face', rare: true, ultra: true, name: "Warlord's Mask", hit: 10, flee: 5, stats: { qkn: 4, fns: 4 }, desc: 'The Goblin Warlord\'s feathered war mask, its eyes ringed in war-paint red. Nothing escapes its gaze. The Goblin Lair\'s ultra rare.', from: 'Goblin Lair (a clear: 1%), or Ylva makes it from 300 Goblin Cores' },
+  // sheet of its own (art/hg_goat_horns, hg_elf_ears: drawn by build-tools/draw-headgear.py)
+  goat_horns: { type: 'equip', slot: 'head', rare: true, ultra: true, name: 'Giant Goat Horns', def: 6, mhpRate: 10, stats: { pow: 4, end: 4 }, desc: 'A great pair of ridged horns, curled back past the ears, from the old mountain goat the Kobold Warlord rides into the deep. Heavy as an anvil, and twice as stubborn. The Kobold Camp\'s ultra rare.', from: 'Kobold Camp (a clear: 1%), or Brokk makes them from 300 Kobold Cores' },
+  elf_ears: { type: 'equip', slot: 'face', rare: true, ultra: true, name: 'Elven Ears', hit: 10, flee: 5, stats: { qkn: 4, fns: 4 }, desc: 'Long pointed ears, charmed by the old wood elves the goblins drove out. They hear an arrow before it is loosed and a step before it falls. The Goblin Lair\'s ultra rare.', from: 'Goblin Lair (a clear: 1%), or Ylva makes them from 300 Goblin Cores' },
   kwarlord_card: { type: 'misc', rare: true, name: 'Kobold Warlord Card', adj: 'Unyielding', icon: 'card_kwarlord', card: { on: 'armor', def: 5, mhpRate: 15, stats: { end: 6 } }, desc: 'The Kobold Warlord behind his shield wall, on a card that smells of coal. In an armor with a slot: DEF +5, Max HP +15%, END +6.', from: 'clearing the Kobold Camp (1%, any difficulty)' },
   raider_cloak: { type: 'equip', slot: 'garment', rare: true, name: "Raider's Cloak", def: 3, flee: 8, stats: { qkn: 2 }, icon: 'r_raidercloak', desc: 'A goblin raider\'s ragged green cloak. It moves before you do.', from: 'Goblin Lair (a clear: 3%), or made from Goblin Cores' },
   windstep_boots: { type: 'equip', slot: 'shoes', rare: true, name: 'Windstep Boots', def: 3, flee: 6, stats: { qkn: 3 }, icon: 'r_windstep', desc: 'Soft boots with wind-runes stitched into the soles. Light as a breath.', from: 'Goblin Lair (a clear: 3%), or made from Goblin Cores' },
@@ -405,7 +405,7 @@ export const maybeSlotted = (id, roll = Math.random()) => (canBeSlotted(id) && r
 export const PRICES = {
   // early drops (gel to spore) pay enough to keep a beginner in potions
   bloop_core: 600, veteran_boots: 24000, bloop_buckler: 20000, bleep_ring: 22000,
-  kobold_core: 900, goblin_core: 1200, kwarlord_card: 40000, gwarlord_card: 40000, ore_crown: 60000, warlord_mask: 60000,
+  kobold_core: 900, goblin_core: 1200, kwarlord_card: 40000, gwarlord_card: 40000, goat_horns: 60000, elf_ears: 60000,
   quarry_shield: 30000, stonehide_mantle: 26000, earthshaker_boots: 26000, oreheart_ring: 22000, pickaxe_charm: 16000, miners_plate: 30000,
   raider_cloak: 28000, windstep_boots: 28000, spiked_buckler: 30000, totem_charm: 18000, wardrum_pendant: 22000, horde_leather: 30000,
   gel: 15, dew: 20, seed: 16, leaf: 16, shell: 50, spore: 60, stone: 60, glow: 50, ember_heart: 4000,
@@ -580,14 +580,14 @@ export const RECIPES = [
   { item: 'stonehide_mantle', lv: 45, by: 'kobold', cost: { kobold_core: 80, kobold_fur: 30 } },
   { item: 'miners_plate', lv: 45, by: 'kobold', cost: { kobold_core: 120, steel_ore: 10, armor_ore: 3 } },
   { item: 'quarry_shield', lv: 45, by: 'kobold', cost: { kobold_core: 150, hard_ore: 3, armor_ore: 3 } },
-  { item: 'ore_crown', lv: 45, by: 'kobold', cost: { kobold_core: 300, hard_ore: 5, armor_ore: 5 } },
+  { item: 'goat_horns', lv: 45, by: 'kobold', cost: { kobold_core: 300, hard_ore: 5, armor_ore: 5 } },
   { item: 'totem_charm', lv: 50, by: 'goblin', cost: { goblin_core: 30, goblin_tooth: 20 } },
   { item: 'wardrum_pendant', lv: 50, by: 'goblin', cost: { goblin_core: 60, goblin_tooth: 30 } },
   { item: 'windstep_boots', lv: 50, by: 'goblin', cost: { goblin_core: 80, goblin_tooth: 30 } },
   { item: 'raider_cloak', lv: 50, by: 'goblin', cost: { goblin_core: 80, goblin_tooth: 30 } },
   { item: 'horde_leather', lv: 50, by: 'goblin', cost: { goblin_core: 120, steel_ore: 10, armor_ore: 3 } },
   { item: 'spiked_buckler', lv: 50, by: 'goblin', cost: { goblin_core: 150, hard_ore: 3, armor_ore: 3 } },
-  { item: 'warlord_mask', lv: 50, by: 'goblin', cost: { goblin_core: 300, hard_ore: 5, goblin_tooth: 50 } },
+  { item: 'elf_ears', lv: 50, by: 'goblin', cost: { goblin_core: 300, hard_ore: 5, goblin_tooth: 50 } },
 ];
 
 // ---------- icons ----------

@@ -68,8 +68,8 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   big health bar, all within 10 minutes, in a small round arena. Half HP/SP back after each wave,
   all of it before the boss. Each raid has one 3 h cooldown shared by its difficulties, from
   setting out. A clear pays the raid's cores x1/x3/x9/x27 by difficulty (3/9/27/81), its rare finds
-  at 3% on any difficulty, and its ultra rare (a Head, Face or Wings piece: Angel Wings, the Ore
-  King's Crown, the Warlord's Mask) and its card at 1%; its guide makes the rares and the ultra rare
+  at 3% on any difficulty, and its ultra rare (a Head, Face or Wings piece: Angel Wings, Giant Goat
+  Horns, Elven Ears) and its card at 1%; its guide makes the rares and the ultra rare
   from cores (the rarer, the more; an ultra rare 300). The story's step gets a
   Tutorial run: no cooldown, and the clear reward win or lose (a loss gets the Boatman's "we finished
   it for you, but not next time"). Easy/Normal/Hard/Hell need Base 40/55/70/85 (the owner's call):
