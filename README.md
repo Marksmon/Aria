@@ -830,7 +830,7 @@ they come back whole and the slot stays open. A piece that breaks at Holger's gi
 | Alpha Wolf Card (Wild) | Shoes | QKN +6, FLEE +10; **Keen Fangs:** +8% critical hits | Alpha Wolf, 1% |
 | Great Bear Card (Savage) | Weapon | ATK +30, POW +5, Max HP +10%; **Wounded Fury:** below 40% HP your blows hit 20% harder | Great Bear, 1% |
 | Ancient Treant Card (Ancient) | Shield | DEF +10, Max HP +20%, POW +6, END +7; **Bark Armor:** a monster striking you up close takes back 20% of the blow | Ancient Treant, 1% |
-| Fire Giant Card (Infernal) | Weapon (a sorcerer's card) | MATK +30%, KNL +6, FNS +4, Max SP +15%, Max HP +5%, weapon turns Fire (+15% Fire spells with a staff); **Meteor Heart:** spells and blows set a monster burning 10% of the time | Fire Giant, 1% |
+| Fire Giant Card (Infernal) | Weapon (a sorcerer's card) | MATK +30%, KNL +6, FNS +4, Max SP +15%, weapon turns Fire (+15% Fire spells with a staff); **Meteor Heart:** spells and blows set a monster burning 10% of the time | Fire Giant, 1% |
 
 **Who can wear what.** Swords up to the Iron Sword: Trainee and Blader; rare and elemental
 swords: Blader only. Staves: Sorcerer only (the Wooden Staff also Trainees). Bows and arrows:
