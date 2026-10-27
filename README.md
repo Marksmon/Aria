@@ -261,11 +261,18 @@ the Old Forest.
 ## Raids
 
 A raid is a timed run in an arena of its own: **three waves** of monsters that attack on sight and
-never stop following you, then a **boss**, all within the time limit. The first is **Bloop Island**,
-a small round island out in Salt Bay; the **Boatman** by the water rows you out (`src/raid.js`).
-His crossings window lists the difficulties down the left (locked until you have the level) and,
-for the one you pick, the boss (level, HP, ATK, element, skills and matchup), the waves, the clear
-reward, the rare finds and the boss's card.
+never stop following you, then a **boss**, all within the time limit (`src/raid.js`). There are
+three, each with its own guide and its own cooldown:
+
+| Raid | Guide | Where | Difficulties need |
+|---|---|---|---|
+| **Bloop Island**, a small round island out in Salt Bay | the Boatman | Salt Bay, by the water | Base 40 / 55 / 70 / 85 |
+| **Kobold Den**, a quarry pit walled in rock under Coal Pit | Brokk the Miner | Coal Pit, by the east portal | Base 45 / 60 / 75 / 90 |
+| **Goblin War Camp**, a burnt clearing ringed by dead trees in Serpent Wood | Ylva the Scout | Serpent Wood, by the south portal | Base 50 / 65 / 80 / 95 |
+
+A guide's window lists the difficulties down the left (locked until you have the level) and, for
+the one you pick, the boss (its picture, level, HP, ATK, element, skills and matchup), the waves,
+the clear reward, the cores, the rare finds and the boss's card.
 
 - **Bloop Island:** wave 1 is Green and Blue Bloops, wave 2 Blue and **Yellow Bloops** (also met in Willow Marsh), wave 3 Yellow
   and **Red Bloops**. Then comes **BleepBloop**, a giant orange bloop general with a white beard, a plumed general's hat and a mantle. He
@@ -273,15 +280,24 @@ reward, the rare finds and the boss's card.
   HP while you fight him.
 - **10 minutes** for the lot. After each wave you get back half your HP and SP, and before the boss
   all of it.
-- **Difficulty:** you choose when you set out, and each needs its Base Level. The monsters' level
-  and strength follow it.
+- **The Kobold Den:** Kobolds and Kobold Archers, then Kobold Assassins, then the **Kobold
+  Warlord**, the Kobold King's look in war-paint: he charges and hurls boulders and calls his
+  warriors. **The Goblin War Camp:** Goblins and Goblin Archers, then Goblin Assassins, then the
+  **Goblin Warlord**: he leaps on you, hurls axes, flies into frenzies and calls the horde.
+- **Difficulty:** you choose when you set out, and each needs its Base Level (above). The monsters'
+  level and strength follow it.
 
-| Difficulty | Needs | Made for | Monsters | Rewards | Rare chance |
-|---|---|---|---|---|---|
-| Easy | Base 40 | a first job, no potions needed | Lv 36–45 | x1 | 5% |
-| Normal | Base 55 | a second job, 20 White Potions | Lv 51–60 | x3 | 10% |
-| Hard | Base 70 | a strong second job, 30 White Potions | Lv 66–75 | x6 | 15% |
-| Hell | Base 85 | the best gear, upgraded and carded, and a big bag of White Potions | Lv 81–90 | x9 | 20% |
+| Difficulty | Made for | Rewards | Cores | Rare chance |
+|---|---|---|---|---|
+| Easy | a first job, no potions needed | x1 | 3 | 1% |
+| Normal | a second job, 20 White Potions | x3 | 9 | 1% |
+| Hard | a strong second job, 30 White Potions | x6 | 27 | 1% |
+| Hell | the best gear, upgraded and carded, and a big bag of White Potions | x9 | 81 | 1% |
+
+- **Hell's Warlords** are fierce like BleepBloop: the Kobold Warlord **Burrows**, and hides behind his
+  guards (70% less damage while one stands); his warriors' shields catch arrows (−40%) but kobolds fear
+  sorcery (+30%). The Goblin Warlord casts **Mirror Image** (two shadows of him; 90% less damage while
+  one stands); his war-paint wards off arrows and spells (−20%) but not steel (+30%).
 
 - **Hell's BleepBloop** is as hard and tricky as a field MVP (210,000 HP). He is enraged below half
   his HP, and his stomp and moves can't be dodged with FLEE and go through most of your DEF: step
@@ -294,10 +310,38 @@ reward, the rare finds and the boss's card.
 - **EXP is held while you fight** and paid when the run ends. A clear pays all of it **x1.5**. A
   failed run (the time runs out, you faint, or you leave) pays only the monsters you beat, with no
   bonus.
-- **A clear** also pays perz, Bloop Gel, Water Drops, Bloop Cores and maybe Shiny Gel (times the
-  difficulty's reward), a chance at a rare (Veteran's Boots, the Bloop Buckler, the Bleep Ring, the
-  Bloop Ring, the Water Necklace or Angel Wings) and a 1% chance at the BleepBloop Card.
-- **The tide:** one 3-hour cooldown for every difficulty, starting when you set out.
+- **A clear** pays perz and materials (times the difficulty's reward), the raid's **cores** (3, 9, 27
+  or 81), a 1% chance at one of its rare finds and a 1% chance at its boss's card. Bloop Island
+  pays Bloop Gel, Water Drops and maybe Shiny Gel; the Kobold Den Kobold Fur, Iron and Steel Ore;
+  the Goblin War Camp Goblin Teeth, Steel and Armor Ore.
+- **Cores buy the rare finds.** Each guide makes its raid's rare finds from its cores (and a few
+  materials): the rarer the piece, the more cores. A Hell clear pays enough for most pieces at once.
+
+| Raid | Rare finds, and what the guide asks for them |
+|---|---|
+| Bloop Island | Bloop Ring, Water Necklace (25 Bloop Cores) · Bleep Ring (60) · Bloop Buckler, Veteran's Boots (80) · Angel Wings (150) |
+| Kobold Den | Pickaxe Charm (30 Kobold Cores) · Ore-Heart Ring (60) · Earthshaker Boots, Stonehide Mantle (80) · Miner's Plate (120) · Quarry Shield (150) |
+| Goblin War Camp | Totem Charm (30 Goblin Cores) · War-Drum Pendant (60) · Windstep Boots, Raider's Cloak (80) · Horde Leather (120) · Spiked Buckler (150) |
+
+| New piece | Slot | Effect |
+|---|---|---|
+| Pickaxe Charm | Accessory | POW +3, HIT +6 |
+| Ore-Heart Ring | Accessory | DEF 2, POW +2, END +2 |
+| Earthshaker Boots | Shoes | DEF 5, POW +1, END +2, Max HP +100 |
+| Stonehide Mantle | Garment | DEF 5, END +2, Max HP +150 |
+| Miner's Plate | Armor | DEF 8, END +2, Max HP +150 |
+| Quarry Shield | Shield | DEF 7, END +2, Max HP +8% |
+| Totem Charm | Accessory | QKN +2, FNS +2, HIT +5 |
+| War-Drum Pendant | Accessory | POW +2, END +1, Max HP +80 |
+| Windstep Boots | Shoes | DEF 3, FLEE +6, QKN +3 |
+| Raider's Cloak | Garment | DEF 3, FLEE +8, QKN +2 |
+| Horde Leather | Armor | DEF 6, FLEE +5, QKN +2 |
+| Spiked Buckler | Shield | DEF 6, POW +2 |
+| Kobold Warlord Card | Armor card | DEF +5, Max HP +15%, END +6 (Kobold Den, 1%) |
+| Goblin Warlord Card | Weapon card | ATK +40, QKN +5 (Goblin War Camp, 1%) |
+
+- **Cooldowns:** each raid has one 3-hour cooldown for all its difficulties, from setting out; the
+  three are separate.
 - **The Tutorial crossing** (Chapter 5): while the story waits on the raid, the Boatman also offers
   a gentler Tutorial run (Lv 24–33 monsters). It starts no cooldown and pays the clear reward win or
   lose. Lose it, and the Boatman's crew finish BleepBloop for you, this once.
@@ -621,9 +665,9 @@ bursts gold on the ground and shows in gold in your bag.
 | Dark Wisp | Wings (floats at your shoulder, glowing) | KNL +2, Max SP +30 | Dark Wisp, 0.25% |
 | Ember Wings | Wings (fiery wings on your back) | POW +1, KNL +1, Max HP +50 | Fire Wisp, 0.25% |
 | Shiny Gel | Misc | a collector's prize | Green and Blue Bloops, 1% |
-| Veteran's Boots | Shoes | DEF 3, FLEE +3, END +1, Max HP +60 | Bloop Island (a clear: 5–20%) |
-| Bloop Buckler | Shield | DEF 4, Max HP +80 | Bloop Island (a clear: 5–20%) |
-| Bleep Ring | Accessory | POW +1, QKN +1, FTN +1, Max HP +40 | Bloop Island (a clear: 5–20%) |
+| Veteran's Boots | Shoes | DEF 3, FLEE +3, END +1, Max HP +60 | Bloop Island (a clear: 1%), or the Boatman makes it from Bloop Cores |
+| Bloop Buckler | Shield | DEF 4, Max HP +80 | Bloop Island (a clear: 1%), or the Boatman makes it from Bloop Cores |
+| Bleep Ring | Accessory | POW +1, QKN +1, FTN +1, Max HP +40 | Bloop Island (a clear: 1%), or the Boatman makes it from Bloop Cores |
 | Horned Crown | Head | DEF 4, POW +2, END +1 | Fire Giant, 5% |
 | Flame Sword | Weapon | ATK 110, weapon Lv 4 | Fire Giant, 1% |
 | King's Ring | Accessory | POW +2, END +1, Max HP +50 | Kobold King, 5% |
@@ -681,7 +725,7 @@ no torch is needed.
 | Lantern | a lantern at your shoulder | KNL +1, FNS +1 | Wisp, 0.4% |
 | Dark Wisp | a violet Wisp at your shoulder | KNL +2, Max SP +30 | Dark Wisp, 0.25% |
 | Ember Wings | tongues of flame fanning out, flickering | POW +1, KNL +1, Max HP +50 | Fire Wisp, 0.25% |
-| Angel Wings | white feathers edged in gold | KNL +2, FTN +2, FLEE +2, Max SP +40 | Bloop Island raid, a rare reward |
+| Angel Wings | white feathers edged in gold | KNL +2, FTN +2, FLEE +2, Max SP +40 | Bloop Island raid (a clear: 1%), or the Boatman makes them from 150 Bloop Cores |
 | Devil Wings | a bat's leathery wings | POW +2, END +1, Max HP +80 | Fire Giant, 3% |
 
 **Weapon levels.** Lv 4 weapons are the best there are: the Giant Sword, Flame Sword, Lava Sword

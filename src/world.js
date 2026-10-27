@@ -43,6 +43,8 @@ export const ZONE_NAMES = {
   burnt: 'Burnt Wood',   // goblin country
   serpent: 'Serpent Wood', // the Goblin King's wood
   bloop: 'Bloop Island',   // the first raid (raid.js): a small round island out in Salt Bay
+  koboldden: 'Kobold Den', // the kobolds' raid: a quarry pit under Coal Pit
+  goblincamp: 'Goblin War Camp', // the goblins' raid: a burnt clearing deep in Serpent Wood
   hunt: 'Veidheim',        // "hunt-home": the hunters' village, farms and archers
   farm: 'Barley Field',    // the old farms past Black Wood, lost to the snakes and wolves
   wolfhill: 'Wolf Hills',  // the packs' green hills, east of Ash Heath
@@ -79,6 +81,9 @@ export const MAPS = {
   // the raid's arena: a round island of radius r in the middle of the map, the sea all round it. No
   // portals: the Boatman rows you in and out (raid.js)
   bloop:   { portals: [], arena: { r: 13 } },
+  // a land arena (land: true): a round clearing ringed by rock walls or dead trees, no sea
+  koboldden: { portals: [], arena: { r: 13, land: true } },
+  goblincamp: { portals: [], arena: { r: 13, land: true } },
   // Veidheim, the hunters' village east of Willow Marsh, with the gentle willows and treants round it;
   // the predators' lands (Barley Field, Wolf Hills) lie far off, east of Black Wood and Ash Heath.
   // plots: farmland (farm.js), crops in rows inside a rail fence; farms: [x, z] of a haystack, a
@@ -110,6 +115,8 @@ const GROUND = {
   burnt: ['#4a4036', '#62533f'],
   serpent: ['#2c4230', '#3a5236'],
   bloop: ['#7fb64e', '#9cc85e'],
+  koboldden: ['#7a6a58', '#8e7c66'],
+  goblincamp: ['#5e6a3a', '#727a46'],
   hunt: ['#6f9a48', '#88b058'],
   farm: ['#8aa848', '#a8bc5a'],
   wolfhill: ['#5f9444', '#7cac56'],
@@ -134,6 +141,8 @@ const TABLE = {
   coalpit: [['rock_grey', 24], ['rock', 8], ['rock_small', 28], ['tree_dead', 14], ['grass_dark', 12], ['shrub_dry', 8]],
   burnt: [['tree_dead', 34], ['stump', 16], ['rock_small', 14], ['grass_dry', 18], ['shrub_dry', 10], ['rock_grey', 5]],
   bloop: [['grass', 40], ['flowers', 28], ['bush', 8], ['rock_small', 14], ['rock_grey', 4]],
+  koboldden: [['rock_small', 30], ['rock', 8], ['rock_grey', 8], ['grass_dry', 16]],
+  goblincamp: [['grass_dry', 30], ['stump', 10], ['shrub_dry', 12], ['rock_small', 10], ['tree_dead', 4]],
   hunt: [['grass', 8], ['flowers', 5]],
   farm: [['grass', 30], ['flowers', 16], ['bush', 10], ['tree_grove', 6], ['haystack', 3], ['pumpkin', 3], ['stump', 3], ['rock_small', 4]],
   wolfhill: [['tree_pine', 22], ['grass', 30], ['flowers', 10], ['rock_grey', 10], ['bush', 8], ['stump', 4], ['rock_small', 8]],
@@ -141,7 +150,7 @@ const TABLE = {
   oldwood: [['tree_oak', 30], ['tree_pine', 6], ['bush', 10], ['mushrooms', 10], ['grass_dark', 22], ['stump', 6], ['flowers', 4], ['mushroom_big', 3], ['rock_grey', 4]],
   serpent: [['tree_dark', 36], ['mushroom_big', 10], ['mushrooms', 18], ['grass_dark', 22], ['stump', 6], ['tree_dead', 6]],
 };
-const BORDER = { grove: 'tree_grove', hollow: 'tree_dark', ridge: 'rock', fen: 'tree_willow', camp: 'tree_grove', city: 'tree_grove', magic: 'tree_birch', birch: 'tree_birch', coast: 'rock_grey', deep: 'tree_dark', heath: 'tree_dead', stones: 'rock', coalpit: 'rock_grey', burnt: 'tree_dead', serpent: 'tree_dark', hunt: 'tree_pine', farm: 'tree_grove', wolfhill: 'tree_pine', marsh: 'tree_willow', oldwood: 'tree_oak' };
+const BORDER = { grove: 'tree_grove', hollow: 'tree_dark', ridge: 'rock', fen: 'tree_willow', camp: 'tree_grove', city: 'tree_grove', magic: 'tree_birch', birch: 'tree_birch', coast: 'rock_grey', deep: 'tree_dark', heath: 'tree_dead', stones: 'rock', coalpit: 'rock_grey', burnt: 'tree_dead', serpent: 'tree_dark', hunt: 'tree_pine', farm: 'tree_grove', wolfhill: 'tree_pine', marsh: 'tree_willow', oldwood: 'tree_oak', koboldden: 'rock', goblincamp: 'tree_dead' };
 // inside the city walls (and a step beyond them)
 const inWalls = (x, z, m = 0) => x > WALL.x0 - m && x < WALL.x1 + m && z > WALL.z0 - m && z < WALL.z1 + m;
 
@@ -159,6 +168,7 @@ function buildMap(id, scene, lib, shared) {
     groundCols[k] = Array.isArray(v) ? v.map((h) => new THREE.Color(h)) : new THREE.Color(v);
   }
   const LAKE = def.lake, ARENA = def.arena, PLOTS = def.plots || [];
+  const SEA = ARENA && !ARENA.land, PIT = ARENA && ARENA.land; // an island arena, or a clearing walled in
   const soilCols = SOIL.map((c) => new THREE.Color(c));
   const edgeDist = (x, z) => Math.min(x, z, SIZE - x, SIZE - z);
   const lakeD = (x, z) => (LAKE ? Math.hypot((x - LAKE.x) / LAKE.rx, (z - LAKE.z) / LAKE.rz) : 9);
@@ -191,7 +201,8 @@ function buildMap(id, scene, lib, shared) {
     if (h < WATER_Y + 0.25) h = WATER_Y + 0.25 + (h - WATER_Y - 0.25) * 0.2;
     const ld = lakeD(x, z);
     if (ld < 1.5) h = lerp(h, -1.1, sstep(1.5, 0.65, ld));
-    if (ARENA) return lerp(h * 0.35 + 0.1, -1.4, sstep(ARENA.r - 2, ARENA.r + 1.5, campR(x, z))); // a low round island, sand sloping into the sea
+    if (SEA) return lerp(h * 0.35 + 0.1, -1.4, sstep(ARENA.r - 2, ARENA.r + 1.5, campR(x, z))); // a low round island, sand sloping into the sea
+    if (PIT) return h * 0.35 + 0.2 + Math.pow(Math.min(1, Math.max(0, campR(x, z) - ARENA.r + 1) / 6), 2) * 4; // a clearing, its walls rising all round
     // flat ground under the portals and along the trails' ends
     for (const p of def.portals) {
       const d = Math.hypot(x - p.x, z - p.z);
@@ -209,10 +220,10 @@ function buildMap(id, scene, lib, shared) {
   }
 
   // a lake's shallow edge (to about knee deep) can be waded: the water hides the feet (see wading)
-  const SHALLOW = LAKE || ARENA ? WATER_Y - 0.22 : WATER_Y + 0.08;
-  const walkable = (x, z) => edgeDist(x, z) > 2.4 && (!isCamp || campR(x, z) < CAMP_R) && heightAt(x, z) > SHALLOW;
+  const SHALLOW = LAKE || SEA ? WATER_Y - 0.22 : WATER_Y + 0.08;
+  const walkable = (x, z) => edgeDist(x, z) > 2.4 && (!isCamp || campR(x, z) < CAMP_R) && (!PIT || campR(x, z) < ARENA.r) && heightAt(x, z) > SHALLOW;
   // standing in the water: how deep (0 on dry land)
-  const wading = (x, z) => (LAKE || ARENA ? Math.max(0, WATER_Y + 0.04 - heightAt(x, z)) : 0);
+  const wading = (x, z) => (LAKE || SEA ? Math.max(0, WATER_Y + 0.04 - heightAt(x, z)) : 0);
   const isSafe = () => isCamp || isCity; // towns are safe ground
 
   function colorAt(x, z, h) {
@@ -228,7 +239,7 @@ function buildMap(id, scene, lib, shared) {
     if (so >= 0) out.copy(soilCols[so]);
     const pd = pathDist(x, z);
     if (pd < 1.4 && so < 0) out.lerp(groundCols.dirt, sstep(1.4, 0.5, pd + (noise.n(x * 0.9, z * 0.9) - 0.5) * 0.6) * 0.9);
-    if ((ARENA || lakeD(x, z) < 1.6) && h < WATER_Y + 0.45) out.lerp(groundCols.sand, sstep(WATER_Y + 0.45, WATER_Y + 0.05, h) * 0.85);
+    if ((SEA || lakeD(x, z) < 1.6) && h < WATER_Y + 0.45) out.lerp(groundCols.sand, sstep(WATER_Y + 0.45, WATER_Y + 0.05, h) * 0.85);
     const e = Math.min(edgeDist(x, z), isCamp ? CAMP_R + 3 - campR(x, z) : 99);
     if (e < 6) out.multiplyScalar(1 - 0.3 * sstep(6, 1.5, e));
     out.multiplyScalar(0.9 + noise.fbm(x * 0.4, z * 0.4, 2) * 0.2);
@@ -323,11 +334,11 @@ function buildMap(id, scene, lib, shared) {
   if (fenceMesh) group.add(fenceMesh);
 
   // treeline framing the map (camp: a ring of forest around the clearing; city: outside the walls)
-  for (let i = 0; i < (isCamp ? 1400 : ARENA ? 0 : 900); i++) { // (the arena has the sea for a border)
+  for (let i = 0; i < (isCamp || PIT ? 1400 : SEA ? 0 : 900); i++) { // (an island arena has the sea for a border; a walled one, a ring like the camp's)
     const x = 0.5 + rng() * 63, z = 0.5 + rng() * 63;
-    const e = isCamp ? campR(x, z) - CAMP_R : 3.6 - edgeDist(x, z);
+    const e = isCamp ? campR(x, z) - CAMP_R : PIT ? campR(x, z) - ARENA.r : 3.6 - edgeDist(x, z);
     if (isCity && (inWalls(x, z, 1.6) || pathDist(x, z) < 4.5 || edgeDist(x, z) > 3.4)) continue; // keep the walls in view
-    if (isCity ? edgeDist(x, z) < 0.8 : isCamp ? e < 0.3 || e > 9 : e < 0 || edgeDist(x, z) < 0.8) continue;
+    if (isCity ? edgeDist(x, z) < 0.8 : isCamp || PIT ? e < 0.3 || e > 9 : e < 0 || edgeDist(x, z) < 0.8) continue;
     const type = id === 'ridge' && rng() < 0.3 ? 'tree_dead' : BORDER[id];
     place(type, x, z);
   }
@@ -338,6 +349,7 @@ function buildMap(id, scene, lib, shared) {
   for (let i = 0; i < 6000 && interior < want; i++) {
     const x = 3 + rng() * 58, z = 3 + rng() * 58;
     if (isCamp && (campR(x, z) < 7.5 || campR(x, z) > CAMP_R - 1)) continue;
+    if (PIT && campR(x, z) > ARENA.r - 1.5) continue;
     const h = heightAt(x, z);
     if (h < WATER_Y + 0.15) continue;
     if (PLOTS.length && soilAt(PLOTS, x, z) >= 0 || PLOTS.some((p) => x > p.x0 - 1 && x < p.x1 + 1 && z > p.z0 - 1 && z < p.z1 + 1)) continue;
@@ -380,13 +392,13 @@ function buildMap(id, scene, lib, shared) {
   group.add(terrain);
 
   // ---------- Water ----------
-  if (LAKE || ARENA) {
-    const waterGeo = ARENA ? new THREE.PlaneGeometry(SIZE * 3, SIZE * 3) : new THREE.PlaneGeometry(LAKE.rx * 3.2, LAKE.rz * 3.2);
+  if (LAKE || SEA) {
+    const waterGeo = SEA ? new THREE.PlaneGeometry(SIZE * 3, SIZE * 3) : new THREE.PlaneGeometry(LAKE.rx * 3.2, LAKE.rz * 3.2);
     waterGeo.rotateX(-Math.PI / 2);
     const water = new THREE.Mesh(waterGeo, new THREE.MeshLambertMaterial({
       color: '#5aa6c4', map: lib.water, transparent: true, opacity: 0.82, depthWrite: false,
     }));
-    water.position.set(ARENA ? CENTER : LAKE.x, WATER_Y, ARENA ? CENTER : LAKE.z);
+    water.position.set(SEA ? CENTER : LAKE.x, WATER_Y, SEA ? CENTER : LAKE.z);
     water.renderOrder = 1;
     group.add(water);
   }

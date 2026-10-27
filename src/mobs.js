@@ -122,6 +122,17 @@ export const MOB_DEFS = {
 // Goblin King for blades, the Ancient Treant for beasts (and hardest for the jobs it resists).
 // the Goblin King's Mirror Image: a Goblin King of shadow, just like him to look at, that fights
 // beside him (no EXP, no drops). He takes 90% less damage while one stands (MIRROR)
+// the bosses of the Kobold Den and the Goblin War Camp (raid.js): warlords of their kind, the kings'
+// looks in war-paint (tint) and bigger, with the kings' moves, calling their warriors. Only ever met
+// in a raid, rebuilt at its level (raidDef); Hell makes them fierce (FIERCE)
+MOB_DEFS.koboldWarlord = { raid: true, name: 'Kobold Warlord', ai: 'boss', art: 'koboldKing', tint: '#ffb070', el: 'earth', boss: true, lv: 50, hp: 9600, atk: [62, 80], def: 14, vit: 35, agi: 24, dex: 52, exp: [9000, 6300], adelay: 1500, walk: 150,
+  moves: [{ kind: 'charge', name: "Warlord's Charge", mult: 1.5 }, { kind: 'throw', name: 'Boulder', mult: 1.5, r: 1.6 }], stomp: 1.5,
+  aggro: 99, chase: 99, reach: 1.6, w: 2.0, r: 0.8, heavy: true, summon: ['koboldWarrior', 'koboldWarrior', 'koboldArcher'], summonText: 'The Kobold Warlord bangs his shield, and his warriors come running!', drops: [] };
+MOB_DEFS.goblinWarlord = { raid: true, name: 'Goblin Warlord', ai: 'boss', art: 'goblinKing', tint: '#9ad0ff', el: 'wind', boss: true, lv: 55, hp: 9600, atk: [62, 80], def: 14, vit: 35, agi: 30, dex: 60, exp: [9000, 6300], adelay: 1400, walk: 130,
+  moves: [{ kind: 'leap', name: 'War Leap', mult: 1.6, r: 1.8 }, { kind: 'throw', name: 'Hurled Axe', mult: 1.4, r: 1.3 }, { kind: 'frenzy' }], stomp: 1.5,
+  aggro: 99, chase: 99, reach: 1.6, w: 2.0, r: 0.8, heavy: true, summon: ['goblinWarrior', 'goblinArcher', 'goblinAssassin'], summonText: 'The Goblin Warlord blows his war-horn, and the horde answers!', drops: [] };
+// Hell's Goblin Warlord's Mirror Image: shadows like him (MIRROR)
+MOB_DEFS.warlordShadow = { ...MOB_DEFS.goblinWarlord, raid: false, decoy: true, boss: false, ai: 'tank', hp: 12000, atk: [150, 190], exp: [0, 0], summon: null, moves: null, aggro: 12, chase: 30 };
 MOB_DEFS.kingShadow = { ...MOB_DEFS.goblinKing, decoy: true, mvp: false, ai: 'tank', hp: 9000, atk: [140, 180], exp: [0, 0], drops: [], summon: null, moves: null, mvpDrops: null, wake: null, aggro: 12, chase: 30 };
 // BleepBloop's Jelly Wall (Hell): a quivering core of royal jelly that barely moves and only
 // slaps whoever stands on it. He takes 90% less damage while one stands (MIRROR)
@@ -211,6 +222,18 @@ const STRENGTH = { slime: 0.8, blueSlime: 0.9, yellowSlime: 1, redSlime: 1.1 };
 // enraged below half HP, moves that FLEE can't dodge and that go through most DEF (MVP_MOVE), a
 // matchup (takes), and moves of its own (MOVES)
 const FIERCE = {
+  koboldWarlord: {
+    fierce: true, stomp: 2.0, adelay: 2000, summonCd: 30, stats: { def: 22, vit: 50, dex: 150 }, tribe: 0.7,
+    moves: [{ kind: 'burrow', name: 'Burrow', mult: 2.2, r: 2.0 }, { kind: 'charge', name: "Warlord's Charge", mult: 2.0 }, { kind: 'throw', name: 'Boulder', mult: 1.8, r: 1.8 }],
+    takes: { ranged: 0.6, magic: 1.3 },
+    takesText: 'his warriors\' shields catch arrows (−40%), but kobolds fear sorcery (+30%); and he hides behind his guards (70% less damage while one stands)',
+  },
+  goblinWarlord: {
+    fierce: true, stomp: 2.0, adelay: 1900, summonCd: 30, stats: { def: 22, vit: 50, dex: 160 },
+    moves: [{ kind: 'mirror', name: 'Mirror Image', decoy: 'warlordShadow', n: 2 }, { kind: 'leap', name: 'War Leap', mult: 2.0, r: 2.0 }, { kind: 'throw', name: 'Hurled Axe', mult: 1.8, r: 1.4 }, { kind: 'frenzy' }],
+    takes: { melee: 1.3, ranged: 0.8, magic: 0.8 },
+    takesText: 'his war-paint wards off arrows and spells (−20%), but not cold steel (+30%)',
+  },
   bleepBloop: {
     fierce: true, stomp: 2.0, adelay: 2000, summonCd: 30, stats: { def: 22, vit: 50, dex: 160 },
     moves: [

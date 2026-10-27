@@ -70,7 +70,7 @@ const SPAWNS = {
   stones: [['koboldWarrior', 10], ['koboldArcher', 6], ['koboldAssassin', 2], ['koboldWarrior', 2, true]],
   coalpit: [['koboldAssassin', 7], ['koboldWarrior', 5], ['koboldArcher', 5], ['koboldKing', 1], ['koboldAssassin', 2, true]],
   burnt: [['goblinWarrior', 10], ['goblinArcher', 6], ['goblinAssassin', 2], ['goblinWarrior', 2, true]],
-  bloop: [], // the raid spawns its own (tickRaid)
+  bloop: [], koboldden: [], goblincamp: [], // the raids spawn their own (tickRaid)
   serpent: [['goblinAssassin', 7], ['goblinWarrior', 5], ['goblinArcher', 5], ['goblinKing', 1], ['goblinAssassin', 2, true]],
   // Veidheim's lands: the gentle willows and treants round the village (and Yellow Bloops in the marsh),
   // the predators far off past Black Wood and Ash Heath, more of them at night
@@ -641,7 +641,7 @@ mobs.on('mirror', (m, mv) => {
 const WARD_HINT = { under: 'Underground!', tribe: 'Guarded!', mirror: 'Shrouded!', jelly: 'Jelly Wall!' };
 let wardHintAt = 0;
 mobs.on('warded', (m) => {
-  const why = m.under ? 'under' : m.def.tribe ? 'tribe' : m.def.raidLv ? 'jelly' : 'mirror';
+  const why = m.under ? 'under' : m.def.tribe && mobs.guardsOf(m).some((g) => !g.def.decoy) ? 'tribe' : mobs.decoysOf(m)[0]?.type === 'jellyCore' ? 'jelly' : 'mirror';
   fx.number(m.x, overHead(m, m.sprite.scale.y * 0.8 + 0.4), m.z, WARD_HINT[why], 'miss');
   if (why === 'tribe' && performance.now() - wardHintAt > 15000) { wardHintAt = performance.now(); menus.message(`The ${m.def.name} hides behind his tribe! Bring down his guards first.`); }
 });
@@ -1003,10 +1003,12 @@ function tickVigil(dt) {
 // ends it. One cooldown for every difficulty, from going in. The story's Tutorial run (only while the
 // story waits on the raid) starts no cooldown, and pays the clear reward and moves the story on, win
 // or lose.
-let raidAt = save?.raidAt || 0; // when the tide lets the Boatman row again (ms since 1970)
+// when each raid opens again (ms since 1970): { bloop, kobold, goblin }. A save from when Bloop
+// Island was the only raid kept one number
+let raidAt = typeof save?.raidAt === 'number' ? { bloop: save.raidAt } : { ...(save?.raidAt || {}) };
 let raid = null; // { id, diff, left, wave, phase: land | fight | rest, restT, list, boss, exp: [base, job], arrived, shown }
 const raidBar = document.getElementById('raidbar'), bossBar = document.getElementById('bossbar');
-raidBar.querySelector('.rb-leave').addEventListener('click', () => { if (raid) endRaid(false, 'You leave the island, and the Boatman rows you back to Salt Bay.'); });
+raidBar.querySelector('.rb-leave').addEventListener('click', () => { if (raid) endRaid(false, RAIDS[raid.id].words.leave); });
 const raidOf = (map) => Object.entries(RAIDS).find(([, R]) => R.map === map)?.[1] || null;
 const storyRaid = (id) => storyLive() && story.step?.kind === 'raid' && story.step.raid === id;
 const boatSpot = (R) => ({ x: NPCS[R.npc].x, z: NPCS[R.npc].z + 1.4 });
@@ -1031,13 +1033,13 @@ function mobPortrait(art) {
   } catch { return (mobPics[art] = null); }
 }
 function raidInfo(id) {
-  return { wait: Math.max(0, raidAt - Date.now()), story: storyRaid(id) };
+  return { wait: Math.max(0, (raidAt[id] || 0) - Date.now()), story: storyRaid(id) };
 }
 function raidGo(id, diff) {
   const R = RAIDS[id], D = R.difficulties[diff], info = raidInfo(id);
   if (raid || warping || !D || (D.tutorial ? !info.story : info.wait)) return;
   if (!D.tutorial && prog.baseLv < D.lv) { menus.message(`${D.name} needs Base Level ${D.lv}.`); return; } // (each difficulty needs its level)
-  if (!D.tutorial) raidAt = Date.now() + R.cooldown; // the tide, from going in
+  if (!D.tutorial) raidAt[id] = Date.now() + R.cooldown; // its cooldown, from going in
   raid = { id, diff, left: R.secs, wave: -1, phase: 'land', restT: 2.5, list: [], boss: null, exp: [0, 0], arrived: false, shown: 1 };
   menus.close('talk');
   warp(R.map, null, R.landing);
@@ -1064,13 +1066,13 @@ function raidNext(R, D) {
   raid.phase = 'fight';
   if (raid.wave < R.waves.length) {
     for (const [type, n, off] of R.waves[raid.wave]) for (let i = 0; i < n; i++) raidSpawn(R, type, D.lv + off, D.wave);
-    menus.message(`Wave ${raid.wave + 1} of ${R.waves.length}! The bloops come bouncing in from the shore.`);
+    menus.message(`Wave ${raid.wave + 1} of ${R.waves.length}! ${R.words.wave}`);
     audio.play('night');
     cam.shake = 0.25;
   } else {
     const [type, off] = R.boss;
     raid.boss = raidSpawn(R, type, D.lv + off, D.boss, D.wave);
-    menus.message(`${raid.boss.def.name} rises out of the surf: the old bloop general, beard, plume and all!`);
+    menus.message(`${raid.boss.def.name} ${R.words.boss}`);
     audio.play('night');
     cam.shake = 0.6;
   }
@@ -1081,12 +1083,12 @@ function tickRaid(dt) {
   if (!raid.arrived) {
     if (world.id !== R.map || warping) return;
     raid.arrived = true;
-    menus.message(`${R.name}, ${D.name}: three waves of bloops, then their boss. ${R.secs / 60} minutes before the tide turns!`);
+    menus.message(`${R.name}, ${D.name}: ${R.words.arrive}. ${R.secs / 60} minutes ${R.words.time}!`);
   }
   if (world.id !== R.map) { endRaid(false, 'You left the island, and the raid is lost.', true); return; }
   if (player.state === 'down') { endRaid(false, 'You fainted, and the raid is lost.', true); return; }
   raid.left -= dt;
-  if (raid.left <= 0) { endRaid(false, 'The tide turns! The Boatman rows you back before the raid is done.'); return; }
+  if (raid.left <= 0) { endRaid(false, R.words.timeUp); return; }
   if (raid.phase === 'fight' && !raid.list.some((m) => m.alive && mobs.list.includes(m))) {
     if (raid.boss) { winRaid(R, D); return; }
     const last = raid.wave === R.waves.length - 1, k = last && R.bossHeal ? 1 : R.breather;

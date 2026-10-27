@@ -1,28 +1,44 @@
 // Raids: a timed run in an arena of its own. Three waves of monsters that attack on sight and never
 // give up (mobs.js raidDef: relentless), then a boss, all inside the time limit. A difficulty sets
-// the monsters' level and strength and the size of the reward. One cooldown is shared by every
-// difficulty and starts when you go in. The story's raid step gets a Tutorial run of its own: open
+// the monsters' level and strength and the size of the reward. Each raid has its own cooldown, shared
+// by its difficulties, from going in. Bloop Island's story step gets a Tutorial run of its own: open
 // only while the story waits on it, it never starts the cooldown, and win or lose it pays the clear
 // reward and moves the story on.
 // EXP is held while you fight and paid when the run ends: all of it x1.5 on a clear, the kills alone
 // on a failure. The game runs the raid (main.js tickRaid); this file is its data.
 //
-// A difficulty needs its Base Level (lv; the Tutorial excepted): Easy 40, Normal 55, Hard 70, Hell
-// 85 (plus: shown as 85+). Strength (hp, atk on raidDef; exp, if given, sets the EXP apart from the
-// HP) was tuned with a whole-run simulation (build-tools/raid-sim.mjs: every monster of a wave at
-// once, natural regen, the breathers and the full heal): Easy for a first job without potions,
-// Normal for a second job with 20 White Potions, Hard with 30. Hell's boss is fierce (mobs.js
-// FIERCE): as hard and tricky as a field MVP, with moves of its own, for a hero in the best gear,
-// and was tested in the browser like the MVPs (docs/balance.md).
+// A difficulty needs its Base Level (lv; the Tutorial excepted): Bloop Island 40/55/70/85, the
+// Kobold Den 45/60/75/90, the Goblin War Camp 50/65/80/95 (plus: the Hell one is shown as 95+).
+// Strength (hp, atk on raidDef; exp, if given, sets the EXP apart from the HP) was tuned with a
+// whole-run simulation (build-tools/raid-sim.mjs: every monster of a wave at once, natural regen,
+// the breathers and the full heal): Easy for a first job without potions, Normal for a second job
+// with 20 White Potions, Hard with 30. Hell's boss is fierce (mobs.js FIERCE): as hard and tricky as
+// a field MVP, with moves of its own, for a hero in the best gear (docs/balance.md).
+//
+// The reward: perz and materials times the difficulty's mult (x1/x3/x6/x9), the raid's own cores
+// times its cores (x1/x3/x9/x27), and at 1% on any difficulty one of the raid's rare finds, which
+// its guide also makes from cores (items.js RECIPES, by: the raid), and at 1% the boss's card.
+const LADDER = [
+  ['easy', 'Easy', 1, 1, { hp: 0.3, atk: 0.14 }, { hp: 0.45, atk: 0.28 }, 'a first job, no potions needed'],
+  ['normal', 'Normal', 3, 3, { hp: 1.15, atk: 0.36, exp: 0.4 }, { hp: 1.75, atk: 0.72, exp: 0.6 }, 'a second job and 20 White Potions'],
+  ['hard', 'Hard', 6, 9, { hp: 1.45, atk: 0.41, exp: 0.42 }, { hp: 2.25, atk: 0.82, exp: 0.65 }, 'a strong second job and 30 White Potions'],
+  // Hell: the boss as hard and tricky as an MVP (fierce)
+  ['hell', 'Hell', 9, 27, { hp: 3, atk: 0.8, exp: 0.6 }, { hp: 7, atk: 1.2, exp: 0.75, fierce: true }, 'the best gear, upgraded and carded, and a big bag of White Potions'],
+];
+const RARE = 0.01; // a clear's chance at a rare find, every difficulty
+const ladder = (lvs) => Object.fromEntries(LADDER.map(([k, name, mult, cores, wave, boss, advice], i) =>
+  [k, { name, lv: lvs[i], ...(k === 'hell' ? { plus: true } : {}), mult, cores, wave, boss, rare: RARE, advice }]));
+const COMMON = {
+  secs: 600,                 // 10 minutes for the three waves and the boss
+  cooldown: 3 * 3600 * 1000, // shared by the raid's difficulties
+  breather: 0.5,             // after each wave the hero gets back half their HP and SP
+  bossHeal: true,            // and before the boss, all of it
+  rest: 3,                   // seconds between a wave's fall and the next
+};
 export const RAIDS = {
   bloop: {
-    name: 'Bloop Island', map: 'bloop', from: 'coast', npc: 'boatman',
+    name: 'Bloop Island', map: 'bloop', from: 'coast', npc: 'boatman', ...COMMON,
     landing: { x: 32, z: 42 }, // the south beach
-    secs: 600,                 // 10 minutes for the three waves and the boss
-    cooldown: 3 * 3600 * 1000, // shared by every difficulty
-    breather: 0.5,             // after each wave the hero gets back half their HP and SP
-    bossHeal: true,            // and before the boss, all of it
-    rest: 3,                   // seconds between a wave's fall and the next
     // waves: [type, count, level offset from the advised level]
     waves: [
       [['slime', 6, -4], ['blueSlime', 3, -2]],
@@ -31,19 +47,66 @@ export const RAIDS = {
     ],
     boss: ['bleepBloop', 5],
     difficulties: {
-      tutorial: { name: 'Tutorial', lv: 28, mult: 1, wave: { hp: 0.15, atk: 0.08 }, boss: { hp: 0.25, atk: 0.15 }, rare: 0.05, tutorial: true, advice: 'the story run: no wait, and the reward win or lose' },
-      easy: { name: 'Easy', lv: 40, mult: 1, wave: { hp: 0.3, atk: 0.14 }, boss: { hp: 0.45, atk: 0.28 }, rare: 0.05, advice: 'a first job, no potions needed' },
-      normal: { name: 'Normal', lv: 55, mult: 3, wave: { hp: 1.15, atk: 0.36, exp: 0.4 }, boss: { hp: 1.75, atk: 0.72, exp: 0.6 }, rare: 0.1, advice: 'a second job and 20 White Potions' },
-      hard: { name: 'Hard', lv: 70, mult: 6, wave: { hp: 1.45, atk: 0.41, exp: 0.42 }, boss: { hp: 2.25, atk: 0.82, exp: 0.65 }, rare: 0.15, advice: 'a strong second job and 30 White Potions' },
-      // Hell: the boss as hard and tricky as an MVP (fierce), about 210,000 HP
-      hell: { name: 'Hell', lv: 85, plus: true, mult: 9, wave: { hp: 3, atk: 0.8, exp: 0.6 }, boss: { hp: 7, atk: 1.2, exp: 0.75, fierce: true }, rare: 0.2, advice: 'the best gear, upgraded and carded, and a big bag of White Potions' },
+      tutorial: { name: 'Tutorial', lv: 28, mult: 1, cores: 1, wave: { hp: 0.15, atk: 0.08 }, boss: { hp: 0.25, atk: 0.15 }, rare: RARE, tutorial: true, advice: 'the story run: no wait, and the reward win or lose' },
+      ...ladder([40, 55, 70, 85]),
     },
-    // the clear reward at x1 (times the difficulty's mult): perz and [item, count, chance]
-    reward: { perz: 3000, items: [['gel', 6, 1], ['dew', 4, 1], ['bloop_core', 2, 1], ['shiny_gel', 1, 0.3]] },
-    // the rare roll: one of these, at the difficulty's chance
+    // the clear reward at x1: perz and [item, count, chance] (times the difficulty's mult), and the
+    // raid's cores (times its cores)
+    reward: { perz: 3000, items: [['gel', 6, 1], ['dew', 4, 1], ['shiny_gel', 1, 0.3]], cores: ['bloop_core', 3] },
+    // the rare roll: one of these, at the difficulty's chance (the Boatman makes them from Bloop Cores too)
     rares: ['veteran_boots', 'bloop_buckler', 'bleep_ring', 'gooey_ring', 'tide_pendant', 'angel_wings'],
     // the boss's card: raid monsters drop nothing, so a clear may pay it (a boss card's 1%, any difficulty)
     card: ['bleep_card', 0.01],
+    // what is said along the way
+    words: {
+      pitch: 'Three waves of bloops, then BleepBloop himself, all in 10 minutes before the tide turns.',
+      wait: 'The tide is wrong', arrive: 'three waves of bloops, then their boss', time: 'before the tide turns',
+      wave: 'The bloops come bouncing in from the shore.', boss: 'rises out of the surf: the old bloop general, beard, plume and all!',
+      timeUp: 'The tide turns! The Boatman rows you back before the raid is done.', leave: 'You leave the island, and the Boatman rows you back to Salt Bay.',
+      cooldown: 'After a crossing the tide keeps me ashore 3 hours.',
+    },
+  },
+  kobold: {
+    name: 'Kobold Den', map: 'koboldden', from: 'coalpit', npc: 'brokk', ...COMMON,
+    landing: { x: 32, z: 42 },
+    waves: [
+      [['koboldWarrior', 5, -4], ['koboldArcher', 3, -2]],
+      [['koboldWarrior', 4, -2], ['koboldArcher', 3, 0], ['koboldAssassin', 2, 0]],
+      [['koboldAssassin', 4, 0], ['koboldWarrior', 4, 2]],
+    ],
+    boss: ['koboldWarlord', 5],
+    difficulties: ladder([45, 60, 75, 90]),
+    reward: { perz: 4500, items: [['kobold_fur', 6, 1], ['iron_ore', 4, 1], ['steel_ore', 1, 0.5]], cores: ['kobold_core', 3] },
+    rares: ['quarry_shield', 'stonehide_mantle', 'earthshaker_boots', 'oreheart_ring', 'pickaxe_charm', 'miners_plate'],
+    card: ['kwarlord_card', 0.01],
+    words: {
+      pitch: 'Three waves of kobolds down in the quarry pit, then their Warlord, all in 10 minutes before the props give way.',
+      wait: 'The props are still settling', arrive: 'three waves of kobolds, then their Warlord', time: 'before the props give way',
+      wave: 'Kobolds pour out of the tunnels!', boss: 'shoulders out of the deepest tunnel, war-paint and shield wall!',
+      timeUp: 'The props creak and give! Brokk hauls you out before the roof comes down.', leave: 'You climb out of the pit, and Brokk hauls you up to Coal Pit.',
+      cooldown: 'After a run the props need 3 hours to settle.',
+    },
+  },
+  goblin: {
+    name: 'Goblin War Camp', map: 'goblincamp', from: 'serpent', npc: 'ylva', ...COMMON,
+    landing: { x: 32, z: 42 },
+    waves: [
+      [['goblinWarrior', 5, -4], ['goblinArcher', 3, -2]],
+      [['goblinWarrior', 4, -2], ['goblinArcher', 3, 0], ['goblinAssassin', 2, 0]],
+      [['goblinAssassin', 4, 0], ['goblinWarrior', 4, 2]],
+    ],
+    boss: ['goblinWarlord', 5],
+    difficulties: ladder([50, 65, 80, 95]),
+    reward: { perz: 6000, items: [['goblin_tooth', 6, 1], ['steel_ore', 2, 1], ['armor_ore', 1, 0.3]], cores: ['goblin_core', 3] },
+    rares: ['raider_cloak', 'windstep_boots', 'spiked_buckler', 'totem_charm', 'wardrum_pendant', 'horde_leather'],
+    card: ['gwarlord_card', 0.01],
+    words: {
+      pitch: 'Three waves of the horde in their burnt clearing, then their Warlord, all in 10 minutes before the war-horns call the rest.',
+      wait: 'The camp is on watch', arrive: 'three waves of goblins, then their Warlord', time: 'before the war-horns call the rest',
+      wave: 'Goblins charge out of the smoke!', boss: 'leaps down from the war-totem, axe in hand!',
+      timeUp: 'War-horns all round! Ylva pulls you out before the whole horde comes.', leave: 'You slip out of the camp, and Ylva leads you back to Serpent Wood.',
+      cooldown: 'After a raid the camp stays on watch 3 hours.',
+    },
   },
 };
 
@@ -53,6 +116,7 @@ export function rollReward(raid, diff) {
   for (const [id, n, chance] of R.reward.items) {
     if (Math.random() < chance) items[id] = (items[id] || 0) + n * d.mult;
   }
+  if (R.reward.cores) { const [core, n] = R.reward.cores; items[core] = (items[core] || 0) + n * (d.cores || 1); }
   const rare = Math.random() < d.rare ? R.rares[Math.floor(Math.random() * R.rares.length)] : null;
   const card = R.card && Math.random() < R.card[1] ? R.card[0] : null;
   return { perz: R.reward.perz * d.mult, items, rare, card };

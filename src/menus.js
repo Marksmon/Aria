@@ -92,6 +92,10 @@ const CRAFTERS = {
   magic: { title: "Orm's Workshop", note: 'Orm carves staves and stitches robes for sorcerers.', button: 'Craft sorcerer gear' },
   hunt: { title: "Leif's Leatherworks", note: 'Leif tans pelts and skins into hunters\' gear.', button: 'Make hunting gear' },
   bow: { title: "Asa's Workbench", note: 'Asa makes bows from wood, vine, shell and whatever the hunt brings back.', button: 'Make bows' },
+  // the raids' guides: each raid's rare finds, made from its cores
+  bloop: { title: "The Boatman's Trades", note: 'The Boatman makes Bloop Island\'s rare finds from Bloop Cores (a clear pays 3, 9, 27 or 81 by difficulty).', button: 'Trade Bloop Cores' },
+  kobold: { title: "Brokk's Forge", note: 'Brokk makes the Kobold Den\'s rare finds from Kobold Cores (a clear pays 3, 9, 27 or 81 by difficulty).', button: 'Trade Kobold Cores' },
+  goblin: { title: "Ylva's Trades", note: 'Ylva makes the Goblin War Camp\'s rare finds from Goblin Cores (a clear pays 3, 9, 27 or 81 by difficulty).', button: 'Trade Goblin Cores' },
 };
 
 export class Menus {
@@ -192,9 +196,9 @@ export class Menus {
     const loot = R.reward.items.map(([id, cnt, chance]) => `<span class="loot" title="${esc(ITEMS[id].name)}">${icon(id, 'xs')}${esc(ITEMS[id].name)} ×${cnt * D.mult}${chance < 1 ? ` <i>${Math.round(chance * 100)}%</i>` : ''}</span>`).join('');
     const rares = R.rares.map((id) => `<span class="loot rare" title="${esc(ITEMS[id].name)}">${icon(id, 'xs')}${esc(ITEMS[id].name)}</span>`).join('');
     const card = R.card ? `<span class="loot rare">${icon(R.card[0], 'xs')}${esc(ITEMS[R.card[0]].name)} <i>${Math.round(R.card[1] * 100)}%</i></span>` : '';
-    const why = low(D) ? `Needs Base ${D.lv}: you are Base ${p.baseLv}.` : info.wait && !D.tutorial ? `The tide is wrong: back in ${waitText(info.wait)}.` : '';
+    const why = low(D) ? `Needs Base ${D.lv}: you are Base ${p.baseLv}.` : info.wait && !D.tutorial ? `${R.words.wait}: back in ${waitText(info.wait)}.` : '';
     const note = info.story && D.tutorial ? 'First time out? The Tutorial crossing costs no tide, and I pay you whether you beat him or not.'
-      : `Three waves, then ${base.name} himself, all in ${R.secs / 60} minutes before the tide turns. After a crossing the tide keeps me ashore ${R.cooldown / 3600000} hours (every difficulty).`;
+      : `${R.words.pitch} ${R.words.cooldown}`;
     const tw = this.wins.talk;
     tw.classList.add('raidwin');
     tw.querySelector('.rw-title').textContent = `${n.name} · ${R.name}`;
@@ -209,6 +213,7 @@ export class Menus {
         <p class="raidline"><b>Waves</b> ${R.waves.length} · ${esc(wavesOf.join(', '))} (Lv ${Math.min(...lvs)}–${Math.max(...lvs)})</p>
         <p class="raidline"><b>Made for</b> ${D.tutorial ? 'a hero on the story: no tide, and paid win or lose' : `Base ${D.lv}${D.plus ? '+' : ''}: ${esc(D.advice)}`}</p>
         <div class="lootrow"><b>Clear reward</b>${D.tutorial ? '' : ` <span class="rtag">x${D.mult}</span>`}<span class="loot perz">${(R.reward.perz * D.mult).toLocaleString()} perz</span>${loot}</div>
+        ${R.reward.cores ? `<div class="lootrow"><b>Cores</b>${D.cores > 1 ? ` <span class="rtag">x${D.cores}</span>` : ''}<span class="loot rare">${icon(R.reward.cores[0], 'xs')}${esc(ITEMS[R.reward.cores[0]].name)} ×${R.reward.cores[1] * (D.cores || 1)}</span><i class="corenote">trade them to ${esc(n.name)} for the rare finds below</i></div>` : ''}
         <div class="lootrow"><b>Rare find</b> <span class="rtag">${Math.round(D.rare * 100)}%</span>${rares}</div>
         <div class="lootrow"><b>Boss card</b>${card}</div>
         <p class="raidline">${esc(note)}</p>

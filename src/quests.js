@@ -121,10 +121,23 @@ export const NPCS = {
   },
   // the Boatman of Salt Bay rows heroes out to Bloop Island, the first raid (raid.js)
   boatman: {
-    name: 'Boatman', map: 'coast', x: 33.5, z: 40.5, raid: 'bloop',
+    name: 'Boatman', map: 'coast', x: 33.5, z: 40.5, raid: 'bloop', craft: 'bloop',
     dress: { body: 'trainee', main: [28, 0.45, 0.7], accent: [205, 0.5, 1], hair: 'mane', dye: 'silver' }, // an old salt: oilskin browns, sea-blue trim
     hello: 'Out there, past the reeds: Bloop Island. The bloops have swarmed it under old BleepBloop, a bloop general with a white beard and a temper. Nobody fishes those waters now.',
     later: () => '', bye: 'Mind the tide.', quests: [],
+  },
+  // the other raids' guides: each takes you in (raid) and makes its rare gear from its cores (craft)
+  brokk: {
+    name: 'Brokk the Miner', map: 'coalpit', x: 52, z: 35.5, raid: 'kobold', craft: 'kobold',
+    dress: { body: 'blader', main: [30, 0.35, 0.55], accent: [40, 0.8, 1], hair: 'mane', dye: 'brown', top: 'horned_helm' }, // coal-black leathers, a brass-trimmed helm
+    hello: 'Under this pit the kobolds dug a den, and their Warlord holds it. I shore up the tunnels; you clear them. Bring me their cores and I\'ll make you something worth wearing.',
+    later: () => '', bye: 'Mind your head down there.', quests: [],
+  },
+  ylva: {
+    name: 'Ylva the Scout', map: 'serpent', x: 35.5, z: 52, raid: 'goblin', craft: 'goblin',
+    dress: { body: 'trainee', main: [110, 0.4, 0.55], accent: [0, 0.6, 0.9], hair: 'mane', dye: 'red' }, // woodland greens, a red sash
+    hello: 'Deep in this wood the goblins keep a war camp round a totem, and their Warlord leads them. I know the way in. Bring back their cores and I\'ll trade you their best gear.',
+    later: () => '', bye: 'Keep low, and keep moving.', quests: [],
   },
   // the Magic Knight's trainer: for heroes who have walked both the Blader's and the Sorcerer's path
   eirik: {

@@ -814,6 +814,7 @@ button.eq:active { background: var(--w-sel); }
 .loot .ico.xs { width: 18px; height: 18px; }
 .loot.rare { color: #ffd23a; }
 .loot i { opacity: .75; font-style: normal; }
+.lootrow .corenote { opacity: .7; font-style: normal; font-size: 11px; }
 .raidinfo .btnrow { justify-content: flex-end; align-items: center; flex-wrap: wrap; }
 .raidinfo .btnrow .why { margin-right: auto; color: #ffb0a0; }
 @media (max-width: 520px) { .raidui { flex-direction: column; } .raidlist { flex-direction: row; flex-wrap: wrap; width: auto; } }
