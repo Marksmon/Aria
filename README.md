@@ -348,7 +348,7 @@ crystal earrings and a band round the back of the head; QKN +4, FNS +4, HIT +10,
 | Horde Leather | Armor | DEF 6, FLEE +5, QKN +2 |
 | Spiked Buckler | Shield | DEF 6, POW +2 |
 | Kobold Warlord Card | Head or face card | DEF +5, Max HP +15%, END +6; **Earthshaker:** blows and spells stun a monster 5% of the time (Kobold Camp, 1%) |
-| Goblin Warlord Card | Head or face card | ATK +20, POW +5, blows up close (not arrows) +15%; **Frenzy:** 10% of them land twice (Goblin Lair, 1%) |
+| Goblin Warlord Card | Head or face card | ATK +40, QKN +5, blows up close (not arrows) +15%; **Frenzy:** 10% of them land twice (Goblin Lair, 1%) |
 
 - **Cooldowns:** each raid has one 3-hour cooldown for all its difficulties, from setting out; the
   three are separate.
