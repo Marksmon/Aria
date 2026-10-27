@@ -291,7 +291,7 @@ export class Player {
     this.atkTimer -= dt;
     this.atkAnim -= dt;
     this.iframes -= dt;
-    this.slowT -= dt;
+    this.slowT = this.ps?.sureFoot ? 0 : this.slowT - dt; // (the King Crab Card's Sea Legs: never slowed)
     this.rootT -= dt;
     this.endureT -= dt;
 

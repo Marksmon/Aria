@@ -401,8 +401,6 @@ player.on('hurt', (n) => {
 });
 mobs.on('thorns', (m, n) => fx.number(m.x, overHead(m, m.sprite.scale.y * 0.8), m.z, n, 'dealt')); // Bark Armor's
 mobs.on('miss', (m, res) => {
-  // the King Crab Card's Ebb Tide: a blow that misses you gives back a little HP
-  if (!m.foe && player.ps.ebb) { const n = player.heal(Math.max(1, Math.round(player.maxHp * player.ps.ebb / 100))); if (n > 0) fx.number(player.x, overHead(player, 1.6), player.z, n, 'heal'); }
   const t = m.foe || player; fx.number(t.x, overHead(t, 1.3), t.z, res.dodge ? 'Lucky!' : 'Miss', 'miss');
 });
 // the beasts: their bites and dives, the blows they take, the Bear's roar, a beast that falls
@@ -475,7 +473,7 @@ mobs.on('spore', (m) => {
   audio.play('spore');
   const y = world.heightAt(m.x, m.z) + 0.4;
   fx.cloud(m.x, y, m.z);
-  if (Math.hypot(player.x - m.x, player.z - m.z) < 2.6) {
+  if (Math.hypot(player.x - m.x, player.z - m.z) < 2.6 && !player.ps.sureFoot) { // (Sea Legs: spores can't slow you)
     if (player.slowT <= 0) menus.message(m.def.puff || 'Spores! You feel sluggish');
     player.slowT = 2.2;
   }

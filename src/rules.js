@@ -85,7 +85,7 @@ export function derive(prog, gear) {
     lifesteal: gear.perk?.lifesteal || 0,  // % of damage dealt healed (the BleepBloop Card)
     double: gear.perk?.double || 0,        // % chance a blow up close lands twice (the Goblin Warlord Card)
     pierce: gear.perk?.pierce || 0,        // % of a monster's DEF your blows go through (the Giant Beetle Card)
-    ebb: gear.perk?.ebb || 0,              // % Max HP back each time a monster misses you (the King Crab Card)
+    sureFoot: !!gear.perk?.sureFoot,       // never slowed: spores, sticky or rubbled ground (the King Crab Card)
     fury: gear.perk?.fury || 0,            // % harder blows below 40% HP (the Great Bear Card)
     def: clamp(gear.def || 0, 0, 100),            // hard DEF from equipment
     end,                                          // soft DEF comes from END each hit

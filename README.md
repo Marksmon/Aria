@@ -823,7 +823,7 @@ they come back whole and the slot stays open. A piece that breaks at Holger's gi
 | Kobold King Card (Stubborn) | Armor | Max HP +30%, DEF +7, FLEE +7, END +7; **Tribe's Shield:** monsters' blows land 15% softer | Kobold King, 1% |
 | Goblin King Card (Tyrant) | Weapon | ATK +75, POW +7, QKN +7, attacks 10% faster; **Mirror Image:** +10% lucky dodge (works on an MVP's moves too) | Goblin King, 1% |
 | Giant Sprout Card (Blooming) | Accessory | Max HP +10%, END +4; **Bloom:** HP comes back 30% faster | Giant Sprout, 1% |
-| King Crab Card (Tidal) | Garment | QKN +5, FLEE +8; **Ebb Tide:** each blow that misses you gives back 1% Max HP | King Crab, 1% |
+| King Crab Card (Tidal) | Garment | QKN +5, FLEE +8; **Sea Legs:** nothing slows you (spores, sticky or rubbled ground; roots still hold) | King Crab, 1% |
 | Giant Mushroom Card (Dreaming) | Head or face | KNL +6, Max SP +10%; **Dream Spores:** SP comes back 30% faster | Giant Mushroom, 1% |
 | Giant Beetle Card (Burning) | Weapon | ATK +25, POW +4; **Shell Breaker:** your blows go through 25% of a monster's DEF | Giant Beetle, 1% |
 | Elder Willow Card (Elder) | Wings | FNS +3, KNL +3; **Whispering Seeds:** spells cast 15% faster | Elder Willow, 1% |
