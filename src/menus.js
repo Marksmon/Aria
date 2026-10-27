@@ -94,8 +94,8 @@ const CRAFTERS = {
   bow: { title: "Asa's Workbench", note: 'Asa makes bows from wood, vine, shell and whatever the hunt brings back.', button: 'Make bows' },
   // the raids' guides: each raid's rare finds, made from its cores
   bloop: { title: "The Boatman's Trades", note: 'The Boatman makes Bloop Island\'s rare finds from Bloop Cores (a clear pays 3, 9, 27 or 81 by difficulty).', button: 'Trade Bloop Cores' },
-  kobold: { title: "Brokk's Forge", note: 'Brokk makes the Kobold Den\'s rare finds from Kobold Cores (a clear pays 3, 9, 27 or 81 by difficulty).', button: 'Trade Kobold Cores' },
-  goblin: { title: "Ylva's Trades", note: 'Ylva makes the Goblin War Camp\'s rare finds from Goblin Cores (a clear pays 3, 9, 27 or 81 by difficulty).', button: 'Trade Goblin Cores' },
+  kobold: { title: "Brokk's Forge", note: 'Brokk makes the Kobold Camp\'s rare finds from Kobold Cores (a clear pays 3, 9, 27 or 81 by difficulty).', button: 'Trade Kobold Cores' },
+  goblin: { title: "Ylva's Trades", note: 'Ylva makes the Goblin Lair\'s rare finds from Goblin Cores (a clear pays 3, 9, 27 or 81 by difficulty).', button: 'Trade Goblin Cores' },
 };
 
 export class Menus {

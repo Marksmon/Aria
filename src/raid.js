@@ -8,7 +8,7 @@
 // on a failure. The game runs the raid (main.js tickRaid); this file is its data.
 //
 // A difficulty needs its Base Level (lv; the Tutorial excepted): Bloop Island 40/55/70/85, the
-// Kobold Den 45/60/75/90, the Goblin War Camp 50/65/80/95 (plus: the Hell one is shown as 95+).
+// Kobold Camp 45/60/75/90, the Goblin Lair 50/65/80/95 (plus: the Hell one is shown as 95+).
 // Strength (hp, atk on raidDef; exp, if given, sets the EXP apart from the HP) was tuned with a
 // whole-run simulation (build-tools/raid-sim.mjs: every monster of a wave at once, natural regen,
 // the breathers and the full heal): Easy for a first job without potions, Normal for a second job
@@ -67,7 +67,7 @@ export const RAIDS = {
     },
   },
   kobold: {
-    name: 'Kobold Den', map: 'koboldden', from: 'coalpit', npc: 'brokk', ...COMMON,
+    name: 'Kobold Camp', map: 'koboldcamp', from: 'coalpit', npc: 'brokk', ...COMMON,
     landing: { x: 32, z: 42 },
     waves: [
       [['koboldWarrior', 5, -4], ['koboldArcher', 3, -2]],
@@ -80,15 +80,15 @@ export const RAIDS = {
     rares: ['quarry_shield', 'stonehide_mantle', 'earthshaker_boots', 'oreheart_ring', 'pickaxe_charm', 'miners_plate'],
     card: ['kwarlord_card', 0.01],
     words: {
-      pitch: 'Three waves of kobolds down in the quarry pit, then their Warlord, all in 10 minutes before the props give way.',
-      wait: 'The props are still settling', arrive: 'three waves of kobolds, then their Warlord', time: 'before the props give way',
-      wave: 'Kobolds pour out of the tunnels!', boss: 'shoulders out of the deepest tunnel, war-paint and shield wall!',
-      timeUp: 'The props creak and give! Brokk hauls you out before the roof comes down.', leave: 'You climb out of the pit, and Brokk hauls you up to Coal Pit.',
-      cooldown: 'After a run the props need 3 hours to settle.',
+      pitch: 'Three waves of kobolds in their walled camp, then their Warlord, all in 10 minutes before the war drums call the rest of the tribe.',
+      wait: 'The camp is on watch', arrive: 'three waves of kobolds, then their Warlord', time: 'before the war drums call the tribe',
+      wave: 'Kobolds pour out of the tents!', boss: 'stomps out of his war tent, war-paint and shield wall!',
+      timeUp: 'War drums all round! Brokk pulls you out before the whole tribe comes.', leave: 'You slip out of the camp, and Brokk leads you back to Coal Pit.',
+      cooldown: 'After a raid the camp stays on watch 3 hours.',
     },
   },
   goblin: {
-    name: 'Goblin War Camp', map: 'goblincamp', from: 'serpent', npc: 'ylva', ...COMMON,
+    name: 'Goblin Lair', map: 'goblinlair', from: 'serpent', npc: 'ylva', ...COMMON,
     landing: { x: 32, z: 42 },
     waves: [
       [['goblinWarrior', 5, -4], ['goblinArcher', 3, -2]],
@@ -101,11 +101,11 @@ export const RAIDS = {
     rares: ['raider_cloak', 'windstep_boots', 'spiked_buckler', 'totem_charm', 'wardrum_pendant', 'horde_leather'],
     card: ['gwarlord_card', 0.01],
     words: {
-      pitch: 'Three waves of the horde in their burnt clearing, then their Warlord, all in 10 minutes before the war-horns call the rest.',
-      wait: 'The camp is on watch', arrive: 'three waves of goblins, then their Warlord', time: 'before the war-horns call the rest',
-      wave: 'Goblins charge out of the smoke!', boss: 'leaps down from the war-totem, axe in hand!',
-      timeUp: 'War-horns all round! Ylva pulls you out before the whole horde comes.', leave: 'You slip out of the camp, and Ylva leads you back to Serpent Wood.',
-      cooldown: 'After a raid the camp stays on watch 3 hours.',
+      pitch: 'Three waves of goblins in their lair under the dark trees, then their Warlord, all in 10 minutes before the torches gutter out.',
+      wait: 'The lair is stirred up', arrive: 'three waves of goblins, then their Warlord', time: 'before the torches gutter out',
+      wave: 'Goblins creep out of the dark!', boss: 'drops down from his totem, axe in hand!',
+      timeUp: 'The torches gutter out! Ylva drags you out of the dark before the horde closes in.', leave: 'You slip out of the lair, and Ylva leads you back to Serpent Wood.',
+      cooldown: 'After a raid the lair stays stirred up 3 hours.',
     },
   },
 };

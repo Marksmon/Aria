@@ -43,8 +43,8 @@ export const ZONE_NAMES = {
   burnt: 'Burnt Wood',   // goblin country
   serpent: 'Serpent Wood', // the Goblin King's wood
   bloop: 'Bloop Island',   // the first raid (raid.js): a small round island out in Salt Bay
-  koboldden: 'Kobold Den', // the kobolds' raid: a quarry pit under Coal Pit
-  goblincamp: 'Goblin War Camp', // the goblins' raid: a burnt clearing deep in Serpent Wood
+  koboldcamp: 'Kobold Camp', // the kobolds' raid: their walled war camp beyond Coal Pit
+  goblinlair: 'Goblin Lair',  // the goblins' raid: their lair under the dark trees of Serpent Wood
   hunt: 'Veidheim',        // "hunt-home": the hunters' village, farms and archers
   farm: 'Barley Field',    // the old farms past Black Wood, lost to the snakes and wolves
   wolfhill: 'Wolf Hills',  // the packs' green hills, east of Ash Heath
@@ -82,8 +82,9 @@ export const MAPS = {
   // portals: the Boatman rows you in and out (raid.js)
   bloop:   { portals: [], arena: { r: 13 } },
   // a land arena (land: true): a round clearing ringed by rock walls or dead trees, no sea
-  koboldden: { portals: [], arena: { r: 13, land: true } },
-  goblincamp: { portals: [], arena: { r: 13, land: true } },
+  // (each dressed like its own land: Coal Pit's stone and the kobolds' tents, Serpent Wood's dark trees and the goblins')
+  koboldcamp: { portals: [], arena: { r: 13, land: true }, lift: [0.4, 1.0], camps: [[25, 27], [39, 27]] },
+  goblinlair: { portals: [], arena: { r: 13, land: true, near: 'mushroom_big' }, lift: [-0.1, 0.4], camps: [[25, 27], [39, 27]] }, // (near: the ring's camera side, low enough to see over)
   // Veidheim, the hunters' village east of Willow Marsh, with the gentle willows and treants round it;
   // the predators' lands (Barley Field, Wolf Hills) lie far off, east of Black Wood and Ash Heath.
   // plots: farmland (farm.js), crops in rows inside a rail fence; farms: [x, z] of a haystack, a
@@ -115,8 +116,8 @@ const GROUND = {
   burnt: ['#4a4036', '#62533f'],
   serpent: ['#2c4230', '#3a5236'],
   bloop: ['#7fb64e', '#9cc85e'],
-  koboldden: ['#7a6a58', '#8e7c66'],
-  goblincamp: ['#5e6a3a', '#727a46'],
+  koboldcamp: ['#4c4642', '#625a52'],
+  goblinlair: ['#2c4230', '#3a5236'],
   hunt: ['#6f9a48', '#88b058'],
   farm: ['#8aa848', '#a8bc5a'],
   wolfhill: ['#5f9444', '#7cac56'],
@@ -141,8 +142,8 @@ const TABLE = {
   coalpit: [['rock_grey', 24], ['rock', 8], ['rock_small', 28], ['tree_dead', 14], ['grass_dark', 12], ['shrub_dry', 8]],
   burnt: [['tree_dead', 34], ['stump', 16], ['rock_small', 14], ['grass_dry', 18], ['shrub_dry', 10], ['rock_grey', 5]],
   bloop: [['grass', 40], ['flowers', 28], ['bush', 8], ['rock_small', 14], ['rock_grey', 4]],
-  koboldden: [['rock_small', 30], ['rock', 8], ['rock_grey', 8], ['grass_dry', 16]],
-  goblincamp: [['grass_dry', 30], ['stump', 10], ['shrub_dry', 12], ['rock_small', 10], ['tree_dead', 4]],
+  koboldcamp: [['rock_grey', 14], ['rock', 4], ['rock_small', 28], ['tree_dead', 6], ['grass_dark', 12], ['shrub_dry', 8]],
+  goblinlair: [['mushroom_big', 6], ['mushrooms', 20], ['grass_dark', 26], ['stump', 6]],
   hunt: [['grass', 8], ['flowers', 5]],
   farm: [['grass', 30], ['flowers', 16], ['bush', 10], ['tree_grove', 6], ['haystack', 3], ['pumpkin', 3], ['stump', 3], ['rock_small', 4]],
   wolfhill: [['tree_pine', 22], ['grass', 30], ['flowers', 10], ['rock_grey', 10], ['bush', 8], ['stump', 4], ['rock_small', 8]],
@@ -150,7 +151,7 @@ const TABLE = {
   oldwood: [['tree_oak', 30], ['tree_pine', 6], ['bush', 10], ['mushrooms', 10], ['grass_dark', 22], ['stump', 6], ['flowers', 4], ['mushroom_big', 3], ['rock_grey', 4]],
   serpent: [['tree_dark', 36], ['mushroom_big', 10], ['mushrooms', 18], ['grass_dark', 22], ['stump', 6], ['tree_dead', 6]],
 };
-const BORDER = { grove: 'tree_grove', hollow: 'tree_dark', ridge: 'rock', fen: 'tree_willow', camp: 'tree_grove', city: 'tree_grove', magic: 'tree_birch', birch: 'tree_birch', coast: 'rock_grey', deep: 'tree_dark', heath: 'tree_dead', stones: 'rock', coalpit: 'rock_grey', burnt: 'tree_dead', serpent: 'tree_dark', hunt: 'tree_pine', farm: 'tree_grove', wolfhill: 'tree_pine', marsh: 'tree_willow', oldwood: 'tree_oak', koboldden: 'rock', goblincamp: 'tree_dead' };
+const BORDER = { grove: 'tree_grove', hollow: 'tree_dark', ridge: 'rock', fen: 'tree_willow', camp: 'tree_grove', city: 'tree_grove', magic: 'tree_birch', birch: 'tree_birch', coast: 'rock_grey', deep: 'tree_dark', heath: 'tree_dead', stones: 'rock', coalpit: 'rock_grey', burnt: 'tree_dead', serpent: 'tree_dark', hunt: 'tree_pine', farm: 'tree_grove', wolfhill: 'tree_pine', marsh: 'tree_willow', oldwood: 'tree_oak', koboldcamp: 'rock_grey', goblinlair: 'tree_dark' };
 // inside the city walls (and a step beyond them)
 const inWalls = (x, z, m = 0) => x > WALL.x0 - m && x < WALL.x1 + m && z > WALL.z0 - m && z < WALL.z1 + m;
 
@@ -339,7 +340,7 @@ function buildMap(id, scene, lib, shared) {
     const e = isCamp ? campR(x, z) - CAMP_R : PIT ? campR(x, z) - ARENA.r : 3.6 - edgeDist(x, z);
     if (isCity && (inWalls(x, z, 1.6) || pathDist(x, z) < 4.5 || edgeDist(x, z) > 3.4)) continue; // keep the walls in view
     if (isCity ? edgeDist(x, z) < 0.8 : isCamp || PIT ? e < 0.3 || e > 9 : e < 0 || edgeDist(x, z) < 0.8) continue;
-    const type = id === 'ridge' && rng() < 0.3 ? 'tree_dead' : BORDER[id];
+    const type = id === 'ridge' && rng() < 0.3 ? 'tree_dead' : PIT && ARENA.near && z > CENTER + 4 ? ARENA.near : BORDER[id];
     place(type, x, z);
   }
 

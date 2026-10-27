@@ -221,7 +221,7 @@ Lv 90), and moved the raids to Base 40/55/70/85: the playtests above were at the
 After the halving: Hell (Base 85) fell to a Lv 85 bot in the best gear in 3:44 (92 White Potions),
 and a Lv 99 in shop gear still fainted against the Goblin King (at 5:30, the King at 41%).
 
-## The Kobold Den and the Goblin War Camp
+## The Kobold Camp and the Goblin Lair
 
 Two more raids on Bloop Island's ladder of strength (raid.js LADDER), at Base 45/60/75/90 and
 50/65/80/95, their waves of kobolds and goblins, their bosses the Kobold and Goblin Warlords
@@ -229,12 +229,12 @@ Two more raids on Bloop Island's ladder of strength (raid.js LADDER), at Base 45
 
 | Raid | Difficulty | Hero | Blader | Sorcerer |
 |---|---|---|---|---|
-| Kobold Den | Easy | Base 45, first job | 0 pots: 100% (3.6 min) | 0 pots: 100% (1.3 min) |
-| Kobold Den | Normal | Base 60, second job, 20 White | 20 pots: 100% (2.4 min, 8 used) | 20 pots: 100% (0.8 min, 1 used) |
-| Kobold Den | Hard | Base 75, second job, 30 White | 30 pots: 99% (3.3 min, 23 used) | 30 pots: 100% (0.7 min) |
-| Goblin War Camp | Easy | Base 50, first job | 0 pots: 100% (3.5 min) | 0 pots: 100% (1.6 min) |
-| Goblin War Camp | Normal | Base 65, second job, 20 White | 20 pots: 100% (2.5 min, 9 used) | 20 pots: 100% (1.2 min, 8 used) |
-| Goblin War Camp | Hard | Base 80, second job, 30 White | 30 pots: 96% (3.7 min, 30 used) | 30 pots: 100% (1.0 min, 4 used) |
+| Kobold Camp | Easy | Base 45, first job | 0 pots: 100% (3.6 min) | 0 pots: 100% (1.3 min) |
+| Kobold Camp | Normal | Base 60, second job, 20 White | 20 pots: 100% (2.4 min, 8 used) | 20 pots: 100% (0.8 min, 1 used) |
+| Kobold Camp | Hard | Base 75, second job, 30 White | 30 pots: 99% (3.3 min, 23 used) | 30 pots: 100% (0.7 min) |
+| Goblin Lair | Easy | Base 50, first job | 0 pots: 100% (3.5 min) | 0 pots: 100% (1.6 min) |
+| Goblin Lair | Normal | Base 65, second job, 20 White | 20 pots: 100% (2.5 min, 9 used) | 20 pots: 100% (1.2 min, 8 used) |
+| Goblin Lair | Hard | Base 80, second job, 30 White | 30 pots: 96% (3.7 min, 30 used) | 30 pots: 100% (1.0 min, 4 used) |
 
 Kobolds are Earth, so the Sorcerer's Ember Bolt walks through the Den. Every raid's rare finds now
 drop at 1% on every difficulty; the cores (3/9/27/81 a clear) buy them from the raid's guide.

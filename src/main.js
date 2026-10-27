@@ -70,7 +70,7 @@ const SPAWNS = {
   stones: [['koboldWarrior', 10], ['koboldArcher', 6], ['koboldAssassin', 2], ['koboldWarrior', 2, true]],
   coalpit: [['koboldAssassin', 7], ['koboldWarrior', 5], ['koboldArcher', 5], ['koboldKing', 1], ['koboldAssassin', 2, true]],
   burnt: [['goblinWarrior', 10], ['goblinArcher', 6], ['goblinAssassin', 2], ['goblinWarrior', 2, true]],
-  bloop: [], koboldden: [], goblincamp: [], // the raids spawn their own (tickRaid)
+  bloop: [], koboldcamp: [], goblinlair: [], // the raids spawn their own (tickRaid)
   serpent: [['goblinAssassin', 7], ['goblinWarrior', 5], ['goblinArcher', 5], ['goblinKing', 1], ['goblinAssassin', 2, true]],
   // Veidheim's lands: the gentle willows and treants round the village (and Yellow Bloops in the marsh),
   // the predators far off past Black Wood and Ash Heath, more of them at night

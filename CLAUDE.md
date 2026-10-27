@@ -63,15 +63,15 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   can never be quit.
 - **EXP rates:** battles pay x4 (`RATES`: monsters, mini-bosses, MVPs, raids); quests pay x2
   (`QUEST_RATE`: side quests, job trials, the main story).
-- **Raids** (`src/raid.js`): Bloop Island (the Boatman, Salt Bay), the Kobold Den (Brokk, Coal Pit)
-  and the Goblin War Camp (Ylva, Serpent Wood). 3 waves of relentless monsters, then a boss with a
+- **Raids** (`src/raid.js`): Bloop Island (the Boatman, Salt Bay), the Kobold Camp (Brokk, Coal Pit)
+  and the Goblin Lair (Ylva, Serpent Wood). 3 waves of relentless monsters, then a boss with a
   big health bar, all within 10 minutes, in a small round arena. Half HP/SP back after each wave,
   all of it before the boss. Each raid has one 3 h cooldown shared by its difficulties, from
   setting out. A clear pays the raid's cores x1/x3/x9/x27 by difficulty (3/9/27/81), its rare finds
   only at 1% on any difficulty, and its guide makes those rares from cores (the rarer, the more). The story's step gets a
   Tutorial run: no cooldown, and the clear reward win or lose (a loss gets the Boatman's "we finished
   it for you, but not next time"). Easy/Normal/Hard/Hell need Base 40/55/70/85 (the owner's call):
-  (the Kobold Den 45/60/75/90, the Goblin War Camp 50/65/80/95). Easy a first job with no potions,
+  (the Kobold Camp 45/60/75/90, the Goblin Lair 50/65/80/95). Easy a first job with no potions,
   Normal a second job with 20 White, Hard with 30; Hell's boss is fierce (as
   hard and tricky as a field MVP: `FIERCE` in `mobs.js`), for a hero in the best gear. Clear rewards
   (perz, materials) x1/x3/x6/x9. Raid EXP is held and paid at the end: x1.5 on a clear,

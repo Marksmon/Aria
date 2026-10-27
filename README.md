@@ -267,8 +267,8 @@ three, each with its own guide and its own cooldown:
 | Raid | Guide | Where | Difficulties need |
 |---|---|---|---|
 | **Bloop Island**, a small round island out in Salt Bay | the Boatman | Salt Bay, by the water | Base 40 / 55 / 70 / 85 |
-| **Kobold Den**, a quarry pit walled in rock under Coal Pit | Brokk the Miner | Coal Pit, by the east portal | Base 45 / 60 / 75 / 90 |
-| **Goblin War Camp**, a burnt clearing ringed by dead trees in Serpent Wood | Ylva the Scout | Serpent Wood, by the south portal | Base 50 / 65 / 80 / 95 |
+| **Kobold Camp**, the kobolds' walled war camp beyond Coal Pit: Coal Pit's dark stone, rock walls and kobold tents | Brokk the Miner | Coal Pit, by the east portal | Base 45 / 60 / 75 / 90 |
+| **Goblin Lair**, the goblins' lair under Serpent Wood's dark trees: giant mushrooms and goblin tents | Ylva the Scout | Serpent Wood, by the south portal | Base 50 / 65 / 80 / 95 |
 
 A guide's window lists the difficulties down the left (locked until you have the level) and, for
 the one you pick, the boss (its picture, level, HP, ATK, element, skills and matchup), the waves,
@@ -280,9 +280,9 @@ the clear reward, the cores, the rare finds and the boss's card.
   HP while you fight him.
 - **10 minutes** for the lot. After each wave you get back half your HP and SP, and before the boss
   all of it.
-- **The Kobold Den:** Kobolds and Kobold Archers, then Kobold Assassins, then the **Kobold
+- **The Kobold Camp:** Kobolds and Kobold Archers, then Kobold Assassins, then the **Kobold
   Warlord**, the Kobold King's look in war-paint: he charges and hurls boulders and calls his
-  warriors. **The Goblin War Camp:** Goblins and Goblin Archers, then Goblin Assassins, then the
+  warriors. **The Goblin Lair:** Goblins and Goblin Archers, then Goblin Assassins, then the
   **Goblin Warlord**: he leaps on you, hurls axes, flies into frenzies and calls the horde.
 - **Difficulty:** you choose when you set out, and each needs its Base Level (above). The monsters'
   level and strength follow it.
@@ -312,16 +312,16 @@ the clear reward, the cores, the rare finds and the boss's card.
   bonus.
 - **A clear** pays perz and materials (times the difficulty's reward), the raid's **cores** (3, 9, 27
   or 81), a 1% chance at one of its rare finds and a 1% chance at its boss's card. Bloop Island
-  pays Bloop Gel, Water Drops and maybe Shiny Gel; the Kobold Den Kobold Fur, Iron and Steel Ore;
-  the Goblin War Camp Goblin Teeth, Steel and Armor Ore.
+  pays Bloop Gel, Water Drops and maybe Shiny Gel; the Kobold Camp Kobold Fur, Iron and Steel Ore;
+  the Goblin Lair Goblin Teeth, Steel and Armor Ore.
 - **Cores buy the rare finds.** Each guide makes its raid's rare finds from its cores (and a few
   materials): the rarer the piece, the more cores. A Hell clear pays enough for most pieces at once.
 
 | Raid | Rare finds, and what the guide asks for them |
 |---|---|
 | Bloop Island | Bloop Ring, Water Necklace (25 Bloop Cores) · Bleep Ring (60) · Bloop Buckler, Veteran's Boots (80) · Angel Wings (150) |
-| Kobold Den | Pickaxe Charm (30 Kobold Cores) · Ore-Heart Ring (60) · Earthshaker Boots, Stonehide Mantle (80) · Miner's Plate (120) · Quarry Shield (150) |
-| Goblin War Camp | Totem Charm (30 Goblin Cores) · War-Drum Pendant (60) · Windstep Boots, Raider's Cloak (80) · Horde Leather (120) · Spiked Buckler (150) |
+| Kobold Camp | Pickaxe Charm (30 Kobold Cores) · Ore-Heart Ring (60) · Earthshaker Boots, Stonehide Mantle (80) · Miner's Plate (120) · Quarry Shield (150) |
+| Goblin Lair | Totem Charm (30 Goblin Cores) · War-Drum Pendant (60) · Windstep Boots, Raider's Cloak (80) · Horde Leather (120) · Spiked Buckler (150) |
 
 | New piece | Slot | Effect |
 |---|---|---|
@@ -337,8 +337,8 @@ the clear reward, the cores, the rare finds and the boss's card.
 | Raider's Cloak | Garment | DEF 3, FLEE +8, QKN +2 |
 | Horde Leather | Armor | DEF 6, FLEE +5, QKN +2 |
 | Spiked Buckler | Shield | DEF 6, POW +2 |
-| Kobold Warlord Card | Armor card | DEF +5, Max HP +15%, END +6 (Kobold Den, 1%) |
-| Goblin Warlord Card | Weapon card | ATK +40, QKN +5 (Goblin War Camp, 1%) |
+| Kobold Warlord Card | Armor card | DEF +5, Max HP +15%, END +6 (Kobold Camp, 1%) |
+| Goblin Warlord Card | Weapon card | ATK +40, QKN +5 (Goblin Lair, 1%) |
 
 - **Cooldowns:** each raid has one 3-hour cooldown for all its difficulties, from setting out; the
   three are separate.

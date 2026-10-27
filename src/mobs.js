@@ -122,7 +122,7 @@ export const MOB_DEFS = {
 // Goblin King for blades, the Ancient Treant for beasts (and hardest for the jobs it resists).
 // the Goblin King's Mirror Image: a Goblin King of shadow, just like him to look at, that fights
 // beside him (no EXP, no drops). He takes 90% less damage while one stands (MIRROR)
-// the bosses of the Kobold Den and the Goblin War Camp (raid.js): warlords of their kind, the kings'
+// the bosses of the Kobold Camp and the Goblin Lair (raid.js): warlords of their kind, the kings'
 // looks in war-paint (tint) and bigger, with the kings' moves, calling their warriors. Only ever met
 // in a raid, rebuilt at its level (raidDef); Hell makes them fierce (FIERCE)
 MOB_DEFS.koboldWarlord = { raid: true, name: 'Kobold Warlord', ai: 'boss', art: 'koboldKing', tint: '#ffb070', el: 'earth', boss: true, lv: 50, hp: 9600, atk: [62, 80], def: 14, vit: 35, agi: 24, dex: 52, exp: [9000, 6300], adelay: 1500, walk: 150,
