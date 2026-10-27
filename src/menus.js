@@ -2,7 +2,7 @@
 // Ragna's herbs), the chest (camp and Steinborg storage), shops and dialogue. Each is a small window you drag by its title bar; several can be open
 // at once and the game keeps running behind them. Positions are remembered per device.
 // Pickup toasts and messages live here too. Plain DOM over the canvas.
-import { ITEMS, RECIPES, SLOTS, SHOPS, PRICES, sellPrice, equipLine, iconURL, canWear, jobLine, recipeKind, upgradeLine, refineInfo, canEnchant, canInsert, ENCHANT, MAX_REFINE, enchantStep, cardOn } from './items.js';
+import { ITEMS, RECIPES, SLOTS, SHOPS, PRICES, sellPrice, equipLine, iconURL, canWear, jobLine, recipeKind, upgradeLine, refineInfo, canEnchant, canInsert, ENCHANT, MAX_REFINE, enchantStep, cardOn, cardLine, UNCARD_FEE, parseKey, makeKey } from './items.js';
 import { BAG_SLOTS, CHEST_SLOTS } from './inventory.js';
 import { STATS, STAT_KEYS, JOBS, TREES, QUEST_RATE } from './progress.js';
 import { statCost } from './ro-tables.js';
@@ -66,6 +66,7 @@ const SMITHS = {
   refine: { title: "Holger's Anvil", button: 'Refine gear' },
   enchant: { title: "Seyla's Circle", button: 'Add a card slot' },
   insert: { title: 'Insert Card' },
+  uncard: { title: "Seyla's Circle", button: 'Remove a card' },
 };
 const POS_KEY = 'aria.windows';
 
@@ -380,6 +381,14 @@ export class Menus {
     return h + '</div>';
   }
 
+  // the cards in a piece, each with its picture and what it does (and the empty slots left)
+  cardsBlock(it) {
+    if (!it?.slots) return '';
+    const rows = (it.cards || []).map((c) => `<div class="cardrow">${icon(c, 'xs')}<b>${esc(ITEMS[c].name)}</b><small>${esc(cardLine(ITEMS[c].card))}</small></div>`);
+    for (let i = rows.length; i < it.slots; i++) rows.push('<div class="cardrow empty"><i></i><small>An empty slot</small></div>');
+    return `<div class="cardlist">${rows.join('')}</div>`;
+  }
+
   // Ragnarok's item window: Usables, Equips and Miscs tabs
   items() {
     const inv = this.inv, tabs = { use: 'Usables', equip: 'Equips', misc: 'Miscs' };
@@ -389,7 +398,7 @@ export class Menus {
     if (sel?.type === 'equip') act = canWear(this.selected, this.prog.wearJobs) ? '<button class="rbtn" data-act="equip">Equip</button>' : `<span class="rtag">${esc(jobLine(sel))}</span>`;
     if (sel?.card) act = '<button class="rbtn" data-act="insertcard">Insert</button>';
     const up = sel?.type === 'equip' ? upgradeLine(sel) : '';
-    const line = sel?.type === 'equip' ? `<span class="rstat">${esc(SLOTS[sel.slot])}${equipLine(sel) ? ' · ' + equipLine(sel) : ''} · ${esc(jobLine(sel))}${up ? ' · ' + esc(up) : ''}</span>` : '';
+    const line = sel?.type === 'equip' ? `<span class="rstat">${esc(SLOTS[sel.slot])}${equipLine(sel) ? ' · ' + equipLine(sel) : ''} · ${esc(jobLine(sel))}${up ? ' · ' + esc(up) : ''}</span>${this.cardsBlock(sel)}` : sel?.card ? `<span class="rstat">Card · goes in ${esc(cardOn(sel.card).map((s) => SLOTS[s]).join(' or '))} · ${esc(cardLine(sel.card))}${sel.adj ? ` · names it "${esc(sel.adj)}"` : ''}</span>` : '';
     return `<div class="rtabs">${Object.entries(tabs).map(([k, n]) => `<button class="rtab${this.tab === k ? ' on' : ''}" data-act="tab" data-id="${k}">${n}</button>`).join('')}</div>
       ${this.grid(inv.bag.ofType(this.tab), 'bag')}
       <div class="rdetail">${sel
@@ -412,7 +421,7 @@ export class Menus {
     if (this.eqSel && !sel) this.eqSel = null;
     const up = sel ? upgradeLine(sel) : '';
     const detail = sel
-      ? `<b class="${sel.rare ? 'rare' : ''}">${esc(sel.name)}${sel.rare ? ' ✦' : ''}</b><span class="rstat">${esc(SLOTS[sel.slot])}${equipLine(sel) ? ' · ' + equipLine(sel) : ''} · ${esc(jobLine(sel))}${up ? ' · ' + esc(up) : ''}</span><span>${esc(sel.desc)}</span>`
+      ? `<b class="${sel.rare ? 'rare' : ''}">${esc(sel.name)}${sel.rare ? ' ✦' : ''}</b><span class="rstat">${esc(SLOTS[sel.slot])}${equipLine(sel) ? ' · ' + equipLine(sel) : ''} · ${esc(jobLine(sel))}${up ? ' · ' + esc(up) : ''}</span>${this.cardsBlock(sel)}<span>${esc(sel.desc)}</span>`
       : '<span>Tap a piece to see what it is. Double-tap it to take it off.</span>';
     const left = [slot('head', 'head', 'l'), slot('face', 'face', 'l'), slot('armor', 'armor', 'l'), slot('weapon', 'weapon', 'l'), slot('accessory', 'acc', 'l'), slot('arrows', 'ammo', 'l')];
     const right = [slot('garment', 'garment', 'r'), slot('shield', 'shield', 'r'), slot('shoes', 'shoes', 'r'), slot('accessory', 'acc2', 'r'), slot('wings', 'wings', 'r')];
@@ -548,21 +557,23 @@ export class Menus {
   // odds and the cost, and try. A try that can break the piece asks twice.
   smith() {
     const inv = this.inv, mode = this.smithMode, card = this.smithCard;
-    const test = mode === 'refine' ? (k) => refineInfo(k) && !refineInfo(k).max : mode === 'enchant' ? canEnchant : (k) => canInsert(card, k);
+    const test = mode === 'refine' ? (k) => refineInfo(k) && !refineInfo(k).max : mode === 'enchant' ? canEnchant : mode === 'uncard' ? (k) => ITEMS[k]?.cards?.length > 0 : (k) => canInsert(card, k);
     const list = inv.pieces(test);
     if (this.smithSel && !list.some((p) => p.where === this.smithSel.where && p.key === this.smithSel.key)) this.smithSel = null;
     const note = mode === 'refine'
       ? 'Holger refines weapons, armor, shields, capes, boots and head gear, one level at a time up to +10. Safe up to a point; past it, a failed try breaks the piece.'
       : mode === 'enchant'
         ? `Seyla opens card slots in Lv 4 weapons, up to two. The first works ${ENCHANT.chance[0]}% of the time; the second ${ENCHANT.chance[1]}%, for twice the materials. A failure breaks the weapon (its card comes back).`
-        : `Press the ${ITEMS[card].name} into a free slot of ${cardOn(ITEMS[card].card).map((s) => SLOTS[s].toLowerCase()).join(' or ')} gear. It stays there for good.`;
+        : mode === 'uncard'
+          ? `Seyla coaxes every card out of a piece, whole, and the slots stay open for others. ${UNCARD_FEE.toLocaleString()} perz a card.`
+          : `Press the ${ITEMS[card].name} into a free slot of ${cardOn(ITEMS[card].card).map((s) => SLOTS[s].toLowerCase()).join(' or ')} gear. It stays until Seyla in Galdrheim draws it out.`;
     let h = `<div class="rnote">${esc(note)}</div><div class="rlist">`;
     for (const p of list) {
       const it = ITEMS[p.key], on = this.smithSel?.where === p.where && this.smithSel?.key === p.key;
       h += `<div class="ritem smithrow${on ? ' sel' : ''}">${icon(p.key, 'sm')}<div><b>${esc(it.name)}</b><small>${esc(SLOTS[it.slot])} · ${p.where === 'bag' ? 'in your bag' : 'worn'}${upgradeLine(it) ? ' · ' + esc(upgradeLine(it)) : ''}</small></div>
         <button class="rbtn soft" data-act="smithpick" data-where="${p.where}" data-id="${esc(p.key)}">${on ? 'Picked' : 'Pick'}</button></div>`;
     }
-    if (!list.length) h += `<div class="rnote">${mode === 'insert' ? 'Nothing you have has a free slot of the right kind. Seyla in Galdrheim can open one.' : 'Nothing you have can be worked on here.'}</div>`;
+    if (!list.length) h += `<div class="rnote">${mode === 'insert' ? 'Nothing you have has a free slot of the right kind. Seyla in Galdrheim can open one.' : mode === 'uncard' ? 'Nothing you have holds a card.' : 'Nothing you have can be worked on here.'}</div>`;
     h += '</div>';
     const sel = this.smithSel, it = sel && ITEMS[sel.key];
     if (it) {
@@ -583,8 +594,14 @@ export class Menus {
         const bossRow = `<span class="cost ${c.boss.length >= c.bossNeed ? 'ok' : ''}" title="${bossTip}">${c.boss.length ? icon(c.boss[0], 'xs') : ''}${esc(bossName)} ${c.boss.length}/${c.bossNeed}</span>`;
         costs = Object.entries(c.items).map(([id, n]) => costRow(id, n)).join('') + bossRow + perzRow(c.perz);
         risky = true; can = c.ok; label = 'Enchant';
+      } else if (mode === 'uncard') {
+        const n = it.cards.length, fee = UNCARD_FEE * n, after = ITEMS[makeKey(parseKey(sel.key).base, { ...parseKey(sel.key), cards: [] })];
+        what = `${esc(it.name)} → ${esc(after.name)}${this.cardsBlock(it)}<small class="calm">The card${n > 1 ? 's come' : ' comes'} back to your bag, whole.</small>`;
+        costs = perzRow(fee); can = inv.perz >= fee; label = n > 1 ? 'Remove the cards' : 'Remove the card';
       } else {
-        what = `${esc(ITEMS[card].name)} → ${esc(it.name)}<small>${esc(ITEMS[card].desc)}</small>`;
+        // the preview: what the piece becomes with the card in it
+        const u = parseKey(sel.key), after = ITEMS[makeKey(u.base, { ...u, cards: [...u.cards, card] })];
+        what = `${esc(ITEMS[card].name)} → <b>${esc(after.name)}</b><small class="calm">The card: ${esc(cardLine(ITEMS[card].card))}</small><small class="calm">Becomes: ${esc(equipLine(after))}</small>`;
         can = inv.bag.count(card) > 0; label = 'Insert';
       }
       const sure = risky && this.smithSure;
@@ -686,7 +703,7 @@ export class Menus {
       + (n.stylist ? '<button class="rbtn" data-act="stylist">Change my look</button>' : '')
       + (n.shop ? '<button class="rbtn" data-act="shop">Buy / Sell</button>' : '')
       + (n.craft ? `<button class="rbtn" data-act="craftwin" data-id="${n.craft}">${CRAFTERS[n.craft].button}</button>` : '')
-      + (n.smith ? `<button class="rbtn" data-act="smithwin" data-id="${n.smith}">${SMITHS[n.smith].button}</button>` : '')
+      + [n.smith || []].flat().map((k) => `<button class="rbtn" data-act="smithwin" data-id="${k}">${SMITHS[k].button}</button>`).join('')
       + (n.heal ? '<button class="rbtn" data-act="heal">Heal me</button>' : '')
       + (n.warp ? '<button class="rbtn" data-act="ferrylist">Travel</button>' : '')
       + (n.raid ? `<button class="rbtn" data-act="ferrylist">${esc(RAIDS[n.raid].name)}</button>` : '')
@@ -881,10 +898,11 @@ export class Menus {
       const risky = mode === 'enchant' || (mode === 'refine' && !refineInfo(key).safe);
       if (risky && !this.smithSure) { this.smithSure = true; this.render(id); return; }
       this.smithSure = false;
-      const res = mode === 'refine' ? inv.refine(where, key) : mode === 'enchant' ? inv.enchant(where, key) : inv.insert(this.smithCard, where, key);
+      const res = mode === 'refine' ? inv.refine(where, key) : mode === 'enchant' ? inv.enchant(where, key) : mode === 'uncard' ? inv.uncard(where, key) : inv.insert(this.smithCard, where, key);
       if (res.error) { this.message(res.error); return; }
       this.smithSel = res.key ? { where, key: res.key } : null;
-      if (mode === 'insert') { this.message(`The card sinks into the ${name}.`); this.close('smith'); this.selected = null; }
+      if (mode === 'insert') { this.message(`The card sinks into it: ${ITEMS[res.key].name}.`); this.close('smith'); this.selected = null; }
+      else if (mode === 'uncard') { this.smithSel = null; this.message(`Seyla draws out the ${res.cards.map((c) => ITEMS[c].name).join(' and the ')}. It's in your bag.`); }
       else if (res.ok) this.message(mode === 'refine' ? `Success! ${ITEMS[res.key].name}` : `The song holds! ${ITEMS[res.key].name}`);
       else this.message(`The ${name} breaks apart…${res.cards?.length ? ` You pick the ${res.cards.map((c) => ITEMS[c].name).join(' and the ')} out of the pieces.` : ''}`);
       this.hooks.upgraded?.(mode, res);

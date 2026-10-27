@@ -622,6 +622,7 @@ button.eq:active { background: var(--w-sel); }
 /* the smith window (Holger, Seyla, inserting cards) */
 .ritem.smithrow.sel { background: rgba(227, 179, 65, .18); }
 .smithdetail small { display: block; margin-top: 2px; color: #c8463c; }
+.smithdetail small.calm { color: var(--w-dim); } /* the card previews: nothing to fear */
 .smithdetail b.ok { color: #5fae45; }
 .smithdetail b.risk { color: #e0703a; }
 .rbtn.danger { background: #a83a2a; color: #fff4dc; }
@@ -781,3 +782,11 @@ button.eq:active { background: var(--w-sel); }
 #atkbtn img { width: 40px; height: 40px; image-rendering: pixelated; filter: drop-shadow(0 1px 1px rgba(0, 0, 0, .6)); pointer-events: none; }
 #atkbtn span { font-size: 26px; line-height: 1; pointer-events: none; }
 #atkbtn.pressed { transform: scale(.92); filter: brightness(1.2); }
+
+/* the cards in a piece: picture, name, what it does; an empty slot as a dashed square */
+.cardlist { display: flex; flex-direction: column; gap: 2px; margin: 2px 0; }
+.cardrow { display: flex; align-items: center; gap: 5px; font-size: 11.5px; }
+.cardrow b { color: var(--w-gold); font-weight: 700; white-space: nowrap; }
+.cardrow small { color: var(--w-dim); }
+.rw .cardrow .ico.xs { width: 18px; height: 22px; flex: none; }
+.cardrow.empty i { width: 14px; height: 18px; border: 1px dashed var(--w-line); border-radius: 2px; flex: none; margin: 0 2px; }

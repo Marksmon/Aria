@@ -1,6 +1,6 @@
 // Bag, camp chest and equipment. Materials and usables stack to 99 in one slot; each piece of
 // equipment is its own item and takes a slot of its own. Worn equipment leaves the bag.
-import { ITEMS, RECIPES, SLOTS, PRICES, sellPrice, canWear, parseKey, makeKey, refineInfo, canEnchant, canInsert, ENCHANT, MAX_SLOTS, enchantStep, maybeSlotted } from './items.js';
+import { ITEMS, RECIPES, SLOTS, PRICES, sellPrice, canWear, parseKey, makeKey, refineInfo, canEnchant, canInsert, ENCHANT, MAX_SLOTS, enchantStep, maybeSlotted, UNCARD_FEE } from './items.js';
 
 export const BAG_SLOTS = 48;
 export const CHEST_SLOTS = 96; // the Keepers' storage, shared by every hero (save.js)
@@ -240,6 +240,23 @@ export class Inventory {
     this.replace(where, key, nk);
     this.changed();
     return { ok: true, key: nk };
+  }
+
+  // Seyla draws every card out of a piece (they come back to the bag whole; the slots stay open)
+  uncard(where, key) {
+    const u = parseKey(key);
+    if (!u.cards.length) return { error: 'There is no card in that.' };
+    const fee = UNCARD_FEE * u.cards.length;
+    if (this.perz < fee) return { error: 'Not enough perz.' };
+    const need = {};
+    for (const c of u.cards) need[c] = (need[c] || 0) + 1;
+    if (Object.entries(need).some(([c, n]) => this.bag.room(c) < n)) return { error: 'Your bag is too full to take the cards back.' };
+    const nk = makeKey(u.base, { ...u, cards: [] });
+    if (!this.replace(where, key, nk)) return { error: 'That piece is not there any more.' };
+    this.perz -= fee;
+    for (const c of u.cards) this.bag.add(c, 1);
+    this.changed();
+    return { ok: true, key: nk, cards: u.cards };
   }
 
   // is a worn item giving this effect (speed, light, regen, aspd, block, exp)?

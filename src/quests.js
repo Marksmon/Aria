@@ -242,8 +242,8 @@ export const NPCS = {
     ],
   },
   seyla: {
-    name: 'Seyla the Enchanter', map: 'magic', x: 49.4, z: 36.2, dress: ROLE.smith, smith: 'enchant',
-    hello: 'I open a hollow in a great weapon, a slot, where a monster card can sleep. Only Lv 4 weapons are strong enough to hold one. Half the time the weapon takes the song; the other half it cracks apart.',
+    name: 'Seyla the Enchanter', map: 'magic', x: 49.4, z: 36.2, dress: ROLE.smith, smith: ['enchant', 'uncard'],
+    hello: 'I open a hollow in a great weapon, a slot, where a monster card can sleep. Only Lv 4 weapons are strong enough to hold one. Half the time the weapon takes the song; the other half it cracks apart. And if a card no longer suits you, I can coax it back out, whole.',
     later: () => '', bye: 'Bring me something worth the risk.',
     quests: [],
     lore: [

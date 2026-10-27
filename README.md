@@ -671,53 +671,56 @@ Fire Giant's, the Great Bear's and the Giant Beetle's go in weapons; the rest in
 Every other monster drops a card too (0.1%), for every kind of gear, smaller but welcome (all but the
 Little Bloops a Blue Bloop splits into: they drop neither gear nor cards).
 Select a card in the Miscs tab and tap **Insert** to press it into a piece of its kind with a
-free slot. It stays there for good, unless the piece later breaks at Holger's.
+free slot: the window shows what the piece becomes before you press it in. Each card gives the piece
+a word in its name ("Bouncy Shell Armor [1]"; two of one card, "Double"). A piece's details list its
+cards and what each does. **Seyla** draws cards out again for 10,000 perz a card ("Remove a card"):
+they come back whole and the slot stays open. A piece that breaks at Holger's gives its cards back too.
 
 | Card | Goes in | Effect | From |
 |---|---|---|---|
-| Bloop Card | Armor | Max HP +100, FTN +1 | Bloop, 0.1% |
-| Blue Crab Card | Armor | DEF +3, Max HP +5% | Blue Crab, 0.1% |
-| Crab Card | Shield | DEF +2, Max HP +60 | Crab, 0.1% |
-| Treant Card | Shield | Max HP +8% | Treant, 0.1% |
-| Wisp Card | Garment | FLEE +5 | Wisp, 0.1% |
-| Snake Card | Garment | FLEE +3, QKN +1 | Snake, 0.1% |
-| Mushroom Card | Shoes | Max HP +5%, END +1 | Mushroom, 0.1% |
-| Wolf Card | Shoes | QKN +2, FLEE +2 | Wolf, 0.1% |
-| Sprout Card | Head or face | KNL +1, Max SP +30 | Sprout, 0.1% |
-| Dark Mushroom Card | Head or face | KNL +2 | Dark Mushroom, 0.1% |
-| Kobold Card | Accessory | POW +2 | Kobold, 0.1% |
-| Goblin Archer Card | Accessory | FNS +2, HIT +5 | Goblin Archer, 0.1% |
-| Yellow Bloop Card | Accessory | FTN +3 | Yellow Bloop, 0.1% |
-| Dark Wisp Card | Wings | KNL +2, Max SP +5% | Dark Wisp, 0.1% |
-| Fire Wisp Card | Wings | POW +1, KNL +1, Max HP +50 | Fire Wisp, 0.1% |
-| Blue Bloop Card | Head or face | Max SP +40 | Blue Bloop, 0.1% |
-| Beetle Card | Armor | DEF +2, END +1 | Beetle, 0.1% |
-| Lantern Wisp Card | Wings | FNS +2, KNL +1 | Lantern Wisp, 0.1% |
-| Red Bloop Card | Weapon | ATK +10 | Red Bloop (Bloop Island), 0.1% |
-| BleepBloop Card | Weapon | ATK +20, Max HP +10%, FTN +5 | BleepBloop, 0.1% |
-| Red Sprout Card | Garment | Max HP +5%, FLEE +2 | Red Sprout, 0.1% |
-| Sea Bloop Card | Shield | DEF +1, Max SP +5% | Sea Bloop, 0.1% |
-| Fire Beetle Card | Armor | DEF +2, POW +1 | Fire Beetle, 0.1% |
-| Kobold Archer Card | Head or face | FNS +2 | Kobold Archer, 0.1% |
-| Kobold Assassin Card | Shoes | QKN +1, FLEE +4 | Kobold Assassin, 0.1% |
-| Goblin Card | Weapon | ATK +12, HIT +3 | Goblin, 0.1% |
-| Goblin Assassin Card | Accessory | QKN +2, FLEE +2 | Goblin Assassin, 0.1% |
-| Willow Card | Wings | KNL +1, Max SP +40 | Willow, 0.1% |
-| Bear Card | Armor | Max HP +8%, POW +1 | Bear, 0.1% |
+| Bloop Card (Bouncy) | Armor | Max HP +100, FTN +1 | Bloop, 0.1% |
+| Blue Crab Card (Plated) | Armor | DEF +3, Max HP +5% | Blue Crab, 0.1% |
+| Crab Card (Shelled) | Shield | DEF +2, Max HP +60 | Crab, 0.1% |
+| Treant Card (Rooted) | Shield | Max HP +8% | Treant, 0.1% |
+| Wisp Card (Flickering) | Garment | FLEE +5 | Wisp, 0.1% |
+| Snake Card (Slithering) | Garment | FLEE +3, QKN +1 | Snake, 0.1% |
+| Mushroom Card (Sturdy) | Shoes | Max HP +5%, END +1 | Mushroom, 0.1% |
+| Wolf Card (Swift) | Shoes | QKN +2, FLEE +2 | Wolf, 0.1% |
+| Sprout Card (Sprouting) | Head or face | KNL +1, Max SP +30 | Sprout, 0.1% |
+| Dark Mushroom Card (Mystic) | Head or face | KNL +2 | Dark Mushroom, 0.1% |
+| Kobold Card (Strong) | Accessory | POW +2 | Kobold, 0.1% |
+| Goblin Archer Card (Keen) | Accessory | FNS +2, HIT +5 | Goblin Archer, 0.1% |
+| Yellow Bloop Card (Lucky) | Accessory | FTN +3 | Yellow Bloop, 0.1% |
+| Dark Wisp Card (Shadowed) | Wings | KNL +2, Max SP +5% | Dark Wisp, 0.1% |
+| Fire Wisp Card (Blazing) | Wings | POW +1, KNL +1, Max HP +50 | Fire Wisp, 0.1% |
+| Blue Bloop Card (Calm) | Head or face | Max SP +40 | Blue Bloop, 0.1% |
+| Beetle Card (Hardy) | Armor | DEF +2, END +1 | Beetle, 0.1% |
+| Lantern Wisp Card (Glowing) | Wings | FNS +2, KNL +1 | Lantern Wisp, 0.1% |
+| Red Bloop Card (Fiery) | Weapon | ATK +10 | Red Bloop (Bloop Island), 0.1% |
+| BleepBloop Card (Grand) | Weapon | ATK +20, Max HP +10%, FTN +5 | BleepBloop, 0.1% |
+| Red Sprout Card (Thorny) | Garment | Max HP +5%, FLEE +2 | Red Sprout, 0.1% |
+| Sea Bloop Card (Briny) | Shield | DEF +1, Max SP +5% | Sea Bloop, 0.1% |
+| Fire Beetle Card (Scorched) | Armor | DEF +2, POW +1 | Fire Beetle, 0.1% |
+| Kobold Archer Card (Sharp-eyed) | Head or face | FNS +2 | Kobold Archer, 0.1% |
+| Kobold Assassin Card (Silent) | Shoes | QKN +1, FLEE +4 | Kobold Assassin, 0.1% |
+| Goblin Card (Vicious) | Weapon | ATK +12, HIT +3 | Goblin, 0.1% |
+| Goblin Assassin Card (Nimble) | Accessory | QKN +2, FLEE +2 | Goblin Assassin, 0.1% |
+| Willow Card (Whispering) | Wings | KNL +1, Max SP +40 | Willow, 0.1% |
+| Bear Card (Mighty) | Armor | Max HP +8%, POW +1 | Bear, 0.1% |
 
 | Card | Goes in | Effect | From |
 |---|---|---|---|
-| Kobold King Card | Armor | Max HP +40%, DEF +10, FLEE +10, END +10 | Kobold King, 0.1% |
-| Goblin King Card | Weapon | ATK +100, POW +10, QKN +10, attacks 15% faster | Goblin King, 0.1% |
-| Giant Sprout Card | Accessory | Max HP +10%, END +4 | Giant Sprout, 0.1% |
-| King Crab Card | Garment | QKN +5, FLEE +8 | King Crab, 0.1% |
-| Giant Mushroom Card | Head or face | KNL +6, Max SP +10% | Giant Mushroom, 0.1% |
-| Giant Beetle Card | Weapon | ATK +25, POW +4 | Giant Beetle, 0.1% |
-| Elder Willow Card | Wings | FNS +3, KNL +3 | Elder Willow, 0.1% |
-| Alpha Wolf Card | Shoes | QKN +6, FLEE +10 | Alpha Wolf, 0.1% |
-| Great Bear Card | Weapon | ATK +30, POW +5, Max HP +10% | Great Bear, 0.1% |
-| Ancient Treant Card | Shield | DEF +15, Max HP +30%, POW +8, END +10 | Ancient Treant, 0.1% |
-| Fire Giant Card | Weapon (a sorcerer's card) | MATK +60%, KNL +12, FNS +8, Max SP +30%, Max HP +15%, weapon turns Fire (+15% Fire spells with a staff) | Fire Giant, 0.1% |
+| Kobold King Card (Stubborn) | Armor | Max HP +40%, DEF +10, FLEE +10, END +10 | Kobold King, 0.1% |
+| Goblin King Card (Tyrant) | Weapon | ATK +100, POW +10, QKN +10, attacks 15% faster | Goblin King, 0.1% |
+| Giant Sprout Card (Blooming) | Accessory | Max HP +10%, END +4 | Giant Sprout, 0.1% |
+| King Crab Card (Tidal) | Garment | QKN +5, FLEE +8 | King Crab, 0.1% |
+| Giant Mushroom Card (Dreaming) | Head or face | KNL +6, Max SP +10% | Giant Mushroom, 0.1% |
+| Giant Beetle Card (Burning) | Weapon | ATK +25, POW +4 | Giant Beetle, 0.1% |
+| Elder Willow Card (Elder) | Wings | FNS +3, KNL +3 | Elder Willow, 0.1% |
+| Alpha Wolf Card (Wild) | Shoes | QKN +6, FLEE +10 | Alpha Wolf, 0.1% |
+| Great Bear Card (Savage) | Weapon | ATK +30, POW +5, Max HP +10% | Great Bear, 0.1% |
+| Ancient Treant Card (Ancient) | Shield | DEF +15, Max HP +30%, POW +8, END +10 | Ancient Treant, 0.1% |
+| Fire Giant Card (Infernal) | Weapon (a sorcerer's card) | MATK +60%, KNL +12, FNS +8, Max SP +30%, Max HP +15%, weapon turns Fire (+15% Fire spells with a staff) | Fire Giant, 0.1% |
 
 **Who can wear what.** Swords up to the Iron Sword: Trainee and Blader; rare and elemental
 swords: Blader only. Staves: Sorcerer only (the Wooden Staff also Trainees). Bows and arrows:
