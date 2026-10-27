@@ -790,3 +790,29 @@ button.eq:active { background: var(--w-sel); }
 .cardrow small { color: var(--w-dim); }
 .rw .cardrow .ico.xs { width: 18px; height: 22px; flex: none; }
 .cardrow.empty i { width: 14px; height: 18px; border: 1px dashed var(--w-line); border-radius: 2px; flex: none; margin: 0 2px; }
+
+/* the Boatman's crossings (menus.js raidPanel): difficulties on the left, the one picked on the right */
+.rw-talk.raidwin { width: min(620px, calc(100vw - 16px)) !important; }
+.raidui { display: flex; gap: 8px; padding: 6px 8px 8px; align-items: flex-start; }
+.raidlist { display: flex; flex-direction: column; gap: 4px; flex: none; width: 104px; }
+.raidlist .rbtn { display: flex; flex-direction: column; align-items: flex-start; text-align: left; padding: 5px 8px; line-height: 1.15; }
+.raidlist .rbtn small { font-size: 11px; opacity: .8; }
+.raidlist .rbtn.on { outline: 2px solid var(--w-gold); }
+.raidlist .rbtn.locked { opacity: .55; }
+.raidinfo { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 5px; font-size: 12px; }
+.raidboss { display: flex; gap: 8px; align-items: flex-start; }
+.raidboss > .ico { width: 44px; height: 44px; flex: none; image-rendering: pixelated; }
+.raidboss small { display: block; line-height: 1.35; opacity: .9; }
+.raidboss small.match { color: #ffd88a; }
+.raidboss .rtag.hot { background: #8a2a2a; color: #ffe0d0; padding: 0 5px; border-radius: 4px; }
+.raidline > b { color: var(--w-gold); margin-right: 4px; }
+.raidline { margin: 0; line-height: 1.35; opacity: .9; }
+.lootrow { display: flex; flex-wrap: wrap; gap: 3px 8px; align-items: center; }
+.lootrow > b { color: var(--w-gold); margin-right: 2px; }
+.loot { display: inline-flex; align-items: center; gap: 3px; white-space: nowrap; }
+.loot .ico.xs { width: 18px; height: 18px; }
+.loot.rare { color: #ffd23a; }
+.loot i { opacity: .75; font-style: normal; }
+.raidinfo .btnrow { justify-content: flex-end; align-items: center; flex-wrap: wrap; }
+.raidinfo .btnrow .why { margin-right: auto; color: #ffb0a0; }
+@media (max-width: 520px) { .raidui { flex-direction: column; } .raidlist { flex-direction: row; flex-wrap: wrap; width: auto; } }

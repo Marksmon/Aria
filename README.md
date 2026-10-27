@@ -256,6 +256,9 @@ the Old Forest.
 A raid is a timed run in an arena of its own: **three waves** of monsters that attack on sight and
 never stop following you, then a **boss**, all within the time limit. The first is **Bloop Island**,
 a small round island out in Salt Bay; the **Boatman** by the water rows you out (`src/raid.js`).
+His crossings window lists the difficulties down the left (locked until you have the level) and,
+for the one you pick, the boss (level, HP, ATK, element, skills and matchup), the waves, the clear
+reward, the rare finds and the boss's card.
 
 - **Bloop Island:** wave 1 is Green and Blue Bloops, wave 2 Blue and **Yellow Bloops** (also met in Willow Marsh), wave 3 Yellow
   and **Red Bloops**. Then comes **BleepBloop**, a giant orange bloop general with a white beard, a plumed general's hat and a mantle. He
@@ -285,8 +288,8 @@ a small round island out in Salt Bay; the **Boatman** by the water rows you out 
   failed run (the time runs out, you faint, or you leave) pays only the monsters you beat, with no
   bonus.
 - **A clear** also pays perz, Bloop Gel, Water Drops, Bloop Cores and maybe Shiny Gel (times the
-  difficulty's reward), and a chance at a rare: Veteran's Boots, the Bloop Buckler, the Bleep Ring,
-  the Bloop Ring or the Water Necklace.
+  difficulty's reward), a chance at a rare (Veteran's Boots, the Bloop Buckler, the Bleep Ring, the
+  Bloop Ring, the Water Necklace or Angel Wings) and a 1% chance at the BleepBloop Card.
 - **The tide:** one 3-hour cooldown for every difficulty, starting when you set out.
 - **The Tutorial crossing** (Chapter 5): while the story waits on the raid, the Boatman also offers
   a gentler Tutorial run (Lv 24–33 monsters). It starts no cooldown and pays the clear reward win or

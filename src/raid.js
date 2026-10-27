@@ -42,17 +42,20 @@ export const RAIDS = {
     reward: { perz: 3000, items: [['gel', 6, 1], ['dew', 4, 1], ['bloop_core', 2, 1], ['shiny_gel', 1, 0.3]] },
     // the rare roll: one of these, at the difficulty's chance
     rares: ['veteran_boots', 'bloop_buckler', 'bleep_ring', 'gooey_ring', 'tide_pendant', 'angel_wings'],
+    // the boss's card: raid monsters drop nothing, so a clear may pay it (a boss card's 1%, any difficulty)
+    card: ['bleep_card', 0.01],
   },
 };
 
-// what a clear pays: { perz, items: { id: n }, rare: id | null }
+// what a clear pays: { perz, items: { id: n }, rare: id | null, card: id | null }
 export function rollReward(raid, diff) {
   const R = RAIDS[raid], d = R.difficulties[diff], items = {};
   for (const [id, n, chance] of R.reward.items) {
     if (Math.random() < chance) items[id] = (items[id] || 0) + n * d.mult;
   }
   const rare = Math.random() < d.rare ? R.rares[Math.floor(Math.random() * R.rares.length)] : null;
-  return { perz: R.reward.perz * d.mult, items, rare };
+  const card = R.card && Math.random() < R.card[1] ? R.card[0] : null;
+  return { perz: R.reward.perz * d.mult, items, rare, card };
 }
 
 // "2 h 14 m" / "9 m" / "under a minute"

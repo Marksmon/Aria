@@ -1,10 +1,10 @@
-// Bag, camp chest and equipment. Materials and usables stack to 99 in one slot; each piece of
+// Bag, camp chest and equipment. Materials and usables stack to 999 in one slot; each piece of
 // equipment is its own item and takes a slot of its own. Worn equipment leaves the bag.
 import { ITEMS, RECIPES, SLOTS, PRICES, sellPrice, canWear, parseKey, makeKey, refineInfo, canEnchant, canInsert, ENCHANT, MAX_SLOTS, enchantStep, maybeSlotted, UNCARD_FEE } from './items.js';
 
 export const BAG_SLOTS = 48;
 export const CHEST_SLOTS = 96; // the Keepers' storage, shared by every hero (save.js)
-const STACK = 99;
+const STACK = 999;
 const stackOf = (id) => (ITEMS[id].type === 'equip' ? 1 : STACK);
 
 class Store {
