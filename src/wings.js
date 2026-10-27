@@ -31,7 +31,7 @@ const WING_MOVE = {
   leaf: { w: 1.36, h: 0.8, y: 0.98, move: 'sway' },
   fairy: { w: 1.36, h: 0.8, y: 0.98, move: 'flutter' },
   ember: { w: 1.36, h: 0.8, y: 0.98, move: 'flicker' },
-  angel: { w: 0.96, h: 1.4, y: 0.74, move: 'flap', speed: 1.6, amp: 0.05 }, // folded, tall on the back (a 78 x 114 box)
+  angel: { w: 0.72, h: 1.05, y: 0.81, move: 'flap', speed: 1.6, amp: 0.05 }, // folded, tall on the back (a 78 x 114 box)
   devil: { w: 1.5, h: 0.88, y: 0.98, move: 'flap', speed: 1.7, amp: 0.2 },
 };
 // the frames of a floating light (wingart.js): a Wisp's wings beating, a Lantern's flame flickering
