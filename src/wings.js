@@ -3,7 +3,7 @@
 // walk, and glows. The look comes from the item (items.js look: { kind: 'wings' | 'float', art, ... }).
 import * as THREE from 'three';
 import { ITEMS } from './items.js';
-import { paintWisp, paintLantern, paintWings, WING_FRAMES } from './wingart.js';
+import { paintWisp, paintLantern, paintWings, wingBox, WING_FRAMES } from './wingart.js';
 
 const tex = (c, smooth) => {
   const t = new THREE.CanvasTexture(c);
@@ -13,10 +13,11 @@ const tex = (c, smooth) => {
 };
 const canvas = (w, h) => { const c = document.createElement('canvas'); c.width = w; c.height = h; return [c, c.getContext('2d')]; };
 
-// a pair of wings, each art its own shape (wingart.js), on a 192 x 112 canvas (twice the painter's box)
+// a pair of wings, each art its own shape (wingart.js), on a canvas twice the painter's box
 function wingsFrames(art) {
+  const [w, h] = wingBox(art);
   return Array.from({ length: WING_FRAMES[art] || 1 }, (_, f) => {
-    const [c, g] = canvas(192, 112);
+    const [c, g] = canvas(w * 2, h * 2);
     g.scale(2, 2);
     paintWings(g, art, f);
     return tex(c, true);
@@ -28,7 +29,7 @@ const WING_MOVE = {
   leaf: { w: 1.36, h: 0.8, y: 0.98, move: 'sway' },
   fairy: { w: 1.36, h: 0.8, y: 0.98, move: 'flutter' },
   ember: { w: 1.36, h: 0.8, y: 0.98, move: 'flicker' },
-  angel: { w: 1.55, h: 0.9, y: 1.0, move: 'flap', speed: 2.2, amp: 0.14 },
+  angel: { w: 0.96, h: 1.4, y: 0.74, move: 'flap', speed: 1.6, amp: 0.05 }, // folded, tall on the back (a 78 x 114 box)
   devil: { w: 1.5, h: 0.88, y: 0.98, move: 'flap', speed: 1.7, amp: 0.2 },
 };
 // the frames of a floating light (wingart.js): a Wisp's wings beating, a Lantern's flame flickering

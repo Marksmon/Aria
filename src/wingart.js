@@ -78,14 +78,43 @@ export function paintLantern(g, flame = 0.5) {
 
 // Wings, spread from the hero's back, in a 96 x 56 box (the back at 48, 30). Each art its own shape:
 // leaf (two great leaves a side), fairy (a butterfly's, thin as glass), ember (tongues of flame),
-// angel (white feathers in rows), devil (a bat's, bones and a scalloped membrane).
+// angel (folded, gold-trimmed feathers: its own box, below), devil (a bat's, bones and a scalloped membrane).
+// Angel Wings are folded instead (the owner's concept), tall on the back: their own box (WING_BOX).
 export function paintWings(g, art, frame = 0) {
+  const [, , bx, by] = wingBox(art);
   for (const s of [-1, 1]) {
-    g.save(); g.translate(48, 30); g.scale(s, 1);
+    g.save(); g.translate(bx, by); g.scale(s, 1);
     (WING_ART[art] || WING_ART.fairy)(g, frame, s);
     g.restore();
   }
+  if (WING_MIDDLE[art]) { g.save(); g.translate(bx, by); WING_MIDDLE[art](g); g.restore(); }
 }
+// a box other than 96 x 56 with the back at (48, 30): [w, h, back x, back y]
+const WING_BOX = { angel: [78, 114, 39, 35] };
+export const wingBox = (art) => WING_BOX[art] || [96, 56, 48, 30];
+// a pale crystal: a diamond, lit at its upper left
+function crystal(g, x, y, w, h) {
+  g.beginPath(); g.moveTo(x, y - h); g.lineTo(x + w, y); g.lineTo(x, y + h); g.lineTo(x - w, y); g.closePath();
+  const c = g.createLinearGradient(x - w, y - h, x + w, y + h);
+  c.addColorStop(0, '#ffffff'); c.addColorStop(0.45, '#cfe4ff'); c.addColorStop(1, '#7a9ad8');
+  g.fillStyle = c; g.fill(); g.lineWidth = 0.7; g.strokeStyle = '#6e4a18'; g.stroke();
+}
+// what is drawn once, between the two wings: the Angel Wings' gold crest down the spine, a big
+// crystal at its heart and two small ones below
+const WING_MIDDLE = {
+  angel(g) {
+    path(g, [[0, -32], [1.5, -20, 2, -14, 4, -8], [5, -5, 4, -1, 2, 3], [1.5, 20, 1.2, 36, 0, 46], [-1.2, 36, -1.5, 20, -2, 3], [-4, -1, -5, -5, -4, -8], [-2, -14, -1.5, -20, 0, -32]]);
+    const gold = g.createLinearGradient(-5, 0, 5, 0);
+    gold.addColorStop(0, '#a8762a'); gold.addColorStop(0.45, '#fff0b0'); gold.addColorStop(1, '#c08c34');
+    g.fillStyle = gold; g.fill(); g.lineWidth = 0.9; g.strokeStyle = '#6e4a18'; g.stroke();
+    // little gold horns curling out from the crest
+    for (const s of [-1, 1]) { g.beginPath(); g.moveTo(s * 3, -10); g.quadraticCurveTo(s * 8, -13, s * 7, -20); g.lineWidth = 1.3; g.strokeStyle = '#d9a845'; g.stroke(); }
+    crystal(g, 0, -3, 2.6, 5);
+    crystal(g, 0, 16, 1.4, 2.8);
+    crystal(g, 0, 30, 1.2, 2.4);
+    g.beginPath(); g.moveTo(-2.5, 46); g.lineTo(2.5, 46); g.moveTo(0, 43); g.lineTo(0, 50); g.lineWidth = 1; g.strokeStyle = '#d9a845'; g.stroke();
+  },
+};
 // how many frames each art has (one each, for now)
 export const WING_FRAMES = {};
 const path = (g, pts) => { g.beginPath(); g.moveTo(...pts[0]); for (const p of pts.slice(1)) p.length === 4 ? g.quadraticCurveTo(...p) : g.bezierCurveTo(...p); g.closePath(); };
@@ -124,22 +153,48 @@ const WING_ART = {
       g.restore();
     }
   },
-  // white feathers: the arm curves up and out from the back; long flight feathers hang from it,
-  // longest at the tip, with a row of short coverts over their roots and a golden leading edge
+  // folded: two tall wings, each rising to a peak at the top and hanging to a point, covered in
+  // rows of white feathers overlapping downward (the long primaries at the bottom), with a gold
+  // leading edge, spikes at the peak, gold on the outer feathers, and a crystal hanging at the side
   angel(g) {
-    const arm = (k) => [2 + 44 * k, -4 - 26 * Math.sin(k * Math.PI * 0.62)]; // along the arm, k 0..1
-    const feather = ([x, y], len, ang, wid, fill) => {
+    const lerp = (pts, y) => { // a piecewise-linear edge: x at height y
+      for (let i = 1; i < pts.length; i++) if (y <= pts[i][1]) { const [x0, y0] = pts[i - 1], [x1, y1] = pts[i]; return x0 + (x1 - x0) * (y - y0) / (y1 - y0); }
+      return pts[pts.length - 1][0];
+    };
+    const OUTER = [[17, -27], [27, -17], [31, -4], [30, 16], [26, 36], [19, 56], [12, 70]];
+    const INNER = [[6, -12], [4, 0], [5, 30], [8, 56], [11, 66]];
+    const feather = (x, y, len, ang, wid, gold) => {
       g.save(); g.translate(x, y); g.rotate(ang);
-      g.beginPath(); g.moveTo(0, -wid * 0.5); g.quadraticCurveTo(len * 0.55, -wid, len, 0); g.quadraticCurveTo(len * 0.55, wid * 0.9, 0, wid * 0.5); g.closePath();
-      g.fillStyle = fill; g.fill(); g.lineWidth = 1; g.strokeStyle = '#9aa4c0'; g.stroke();
-      g.beginPath(); g.moveTo(1, 0); g.lineTo(len - 3, 0); g.lineWidth = 0.6; g.strokeStyle = '#c8d0e4'; g.stroke();
+      g.beginPath(); g.moveTo(0, -wid * 0.5); g.quadraticCurveTo(len * 0.55, -wid * 0.7, len, 0); g.quadraticCurveTo(len * 0.55, wid * 0.7, 0, wid * 0.5); g.closePath();
+      const f = g.createLinearGradient(0, 0, len, 0);
+      f.addColorStop(0, '#ffffff'); f.addColorStop(0.6, '#f1f2f9'); f.addColorStop(1, '#d4d8ec');
+      g.fillStyle = f; g.fill();
+      g.lineWidth = gold ? 1 : 0.55; g.strokeStyle = gold ? '#c99a3e' : '#a9b0cb'; g.stroke();
+      g.beginPath(); g.moveTo(len * 0.15, 0); g.lineTo(len * 0.85, 0); g.lineWidth = 0.45; g.strokeStyle = 'rgba(150, 160, 195, .75)'; g.stroke();
       g.restore();
     };
-    for (let i = 7; i >= 0; i--) { const k = i / 7; feather(arm(k), 18 + 16 * k, 1.55 - 0.75 * k, 7, '#ffffff'); } // flight feathers, hanging down and out
-    for (let i = 6; i >= 0; i--) { const k = i / 6; feather(arm(k * 0.92), 10 + 5 * k, 1.35 - 0.6 * k, 6, '#f0f2fa'); } // the coverts
-    g.beginPath(); g.moveTo(...arm(0));
-    for (let k = 0.1; k <= 1.001; k += 0.1) g.lineTo(...arm(k));
-    g.lineWidth = 3; g.strokeStyle = '#e8c86a'; g.stroke(); g.lineWidth = 1; g.strokeStyle = '#a8862e'; g.stroke();
+    // the rows, bottom first so each row lies over the one below
+    for (let y = 52; y >= -18; y -= 7) {
+      const x1 = lerp(OUTER, y), x0 = y < -12 ? lerp(OUTER, -27) - 4 : lerp(INNER, y), n = Math.max(1, Math.round((x1 - x0) / 4.5));
+      const len = y > 40 ? 24 : 11 + (y + 18) * 0.16;
+      for (let i = 0; i <= n; i++) {
+        const k = n ? i / n : 1, x = x0 + (x1 - x0) * k;
+        feather(x, y, len, Math.PI / 2 + 0.05 + 0.22 * k - (y > 30 ? 0.08 : 0), 5.5, i === n);
+      }
+    }
+    // the leading edge: gold, from the spine up to the peak and down the outer edge, with spikes
+    g.beginPath(); g.moveTo(4, -8); g.quadraticCurveTo(8, -24, 17, -27); g.quadraticCurveTo(26, -22, 30, -10);
+    g.lineCap = 'round'; g.lineWidth = 4.2; g.strokeStyle = '#6e4a18'; g.stroke();
+    g.lineWidth = 2.8; g.strokeStyle = '#e2b450'; g.stroke();
+    g.beginPath(); g.moveTo(6, -14); g.quadraticCurveTo(10, -24, 17, -26); g.lineWidth = 0.9; g.strokeStyle = '#fff0b8'; g.stroke();
+    for (const [x, y, dx, dy] of [[15, -27, 3, -6], [22, -25, 5, -4], [28, -15, 5, -2]]) {
+      g.beginPath(); g.moveTo(x - 1.6, y + 0.5); g.lineTo(x + dx, y + dy); g.lineTo(x + 1.6, y + 0.5); g.closePath();
+      g.fillStyle = '#e2b450'; g.fill(); g.lineWidth = 0.7; g.strokeStyle = '#6e4a18'; g.stroke();
+    }
+    crystal(g, 13, -18, 1.8, 3.2);
+    // a crystal hanging on a fine chain from the outer edge
+    g.beginPath(); g.moveTo(30, -8); g.lineTo(32, 10); g.lineWidth = 0.6; g.strokeStyle = '#c99a3e'; g.stroke();
+    crystal(g, 32, 13, 1.5, 3);
   },
   // a bat's: the arm up to a clawed wrist, fingers fanning down, the membrane scalloped between them
   devil(g) {

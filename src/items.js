@@ -1,5 +1,5 @@
 // Items (materials, usables and equipment) and recipes, plus the painted icons used both on the ground and in menus.
-import { paintWisp, paintLantern, paintWings } from './wingart.js';
+import { paintWisp, paintLantern, paintWings, wingBox } from './wingart.js';
 import * as THREE from 'three';
 import { headgearIcon, headgearReady } from './headgear.js';
 
@@ -138,7 +138,7 @@ const BASE_ITEMS = {
   dark_wisp:    { type: 'equip', slot: 'wings', rare: true, name: 'Dark Wisp', look: { kind: 'float', art: 'orb', core: '#f0d8ff', glow: '#a45cff' }, msp: 30, stats: { knl: 2 }, icon: 'dark_wisp', desc: 'A Dark Wisp that chose to follow you home. It whispers spells you almost understand.' },
   leaf_wings:   { type: 'equip', slot: 'wings', name: 'Leaf Wings', look: { kind: 'wings', art: 'leaf' }, flee: 2, icon: 'wings_leaf', desc: 'Two great Sprout leaves bound to a harness. They will not lift you, but they catch the wind.' },
   fairy_wings:  { type: 'equip', slot: 'wings', name: 'Fairy Wings', look: { kind: 'wings', art: 'fairy' }, flee: 3, stats: { qkn: 1 }, icon: 'wings_fairy', desc: 'Wings of Glow Dust and water, thin as a soap bubble. They shimmer when you move.' },
-  angel_wings:  { type: 'equip', slot: 'wings', rare: true, ultra: true, name: 'Angel Wings', look: { kind: 'wings', art: 'angel' }, flee: 6, msp: 80, mhpRate: 5, stats: { knl: 4, ftn: 4 }, icon: 'wings_angel', desc: 'White feathers edged in gold, from no bird anyone has seen. The Boatman found them washed up on Bloop Island. Bloop Island\'s ultra rare.', from: 'Bloop Island (a clear: 1%), or the Boatman makes them from 300 Bloop Cores' },
+  angel_wings:  { type: 'equip', slot: 'wings', rare: true, ultra: true, name: 'Angel Wings', look: { kind: 'wings', art: 'angel' }, flee: 6, msp: 80, mhpRate: 5, stats: { knl: 4, ftn: 4 }, icon: 'wings_angel', desc: 'Folded wings of white feathers trimmed in gold, a gold crest set with crystals down the spine between them. A symbol of hope, purity, and unshakable strength. The Boatman found them washed up on Bloop Island. Bloop Island\'s ultra rare.', from: 'Bloop Island (a clear: 1%), or the Boatman makes them from 300 Bloop Cores' },
   devil_wings:  { type: 'equip', slot: 'wings', rare: true, name: 'Devil Wings', look: { kind: 'wings', art: 'devil' }, mhp: 80, stats: { pow: 2, end: 1 }, icon: 'wings_devil', desc: 'Leathery wings torn from the smoke around the Fire Giant. They twitch when something nearby is afraid.' },
   ember_wings:  { type: 'equip', slot: 'wings', rare: true, name: 'Ember Wings', look: { kind: 'wings', art: 'ember' }, mhp: 50, stats: { pow: 1, knl: 1 }, icon: 'wings_ember', desc: 'Wings of living fire, shed by a Fire Wisp. Warm to the touch, and they never singe your cape.' },
   // boss drops
@@ -693,9 +693,10 @@ function bootIcon(g, body, band, toe) {
   g.beginPath(); g.moveTo(18, 20); g.lineTo(34, 20); g.strokeStyle = band; g.lineWidth = 4; g.stroke();
   if (toe) shape(g, () => { g.moveTo(40, 42); g.lineTo(52, 44); g.quadraticCurveTo(56, 54, 48, 56); g.lineTo(40, 56); g.closePath(); }, toe, 2);
 }
-// a pair of wings, spread: the same shapes the hero wears (wingart.js), shrunk to the icon
+// a pair of wings: the same shapes the hero wears (wingart.js), shrunk to fit the icon
 function wingIcon(g, art) {
-  g.save(); g.translate(2, 16); g.scale(0.625, 0.625); paintWings(g, art); g.restore();
+  const [w, h] = wingBox(art), k = Math.min(60 / w, 60 / h);
+  g.save(); g.translate(32 - (w * k) / 2, 32 - (h * k) / 2); g.scale(k, k); paintWings(g, art); g.restore();
 }
 // a bundle of arrows, its heads in the arrows' colour
 function arrowIcon(g, head, fletch = '#f4ecd8') {

@@ -331,7 +331,7 @@ the clear reward, the cores, the rare finds and the boss's card.
 gunmetal helm worked in gold with a gold crest, two great dark horns banded in gold curling round
 beside it, and the ears left bare; DEF 6, POW +4, END +4, Max HP +10%), Elven Ears
 (Face: long pointed ears over the hero's own, dressed in silver: cuffs and spikes, sapphires,
-crystal earrings and a band round the back of the head; QKN +4, FNS +4, HIT +10, FLEE +5) and Angel Wings (KNL +4, FTN +4, FLEE +6, Max SP +80, Max HP +5%).
+crystal earrings and a band round the back of the head; QKN +4, FNS +4, HIT +10, FLEE +5) and Angel Wings (Wings: folded white wings trimmed in gold, a crystal crest between them; KNL +4, FTN +4, FLEE +6, Max SP +80, Max HP +5%).
 
 | New piece | Slot | Effect |
 |---|---|---|
@@ -735,7 +735,7 @@ no torch is needed.
 | Lantern | a lantern at your shoulder | KNL +1, FNS +1 | Wisp, 0.4% |
 | Dark Wisp | a violet Wisp at your shoulder | KNL +2, Max SP +30 | Dark Wisp, 0.25% |
 | Ember Wings | tongues of flame fanning out, flickering | POW +1, KNL +1, Max HP +50 | Fire Wisp, 0.25% |
-| Angel Wings | white feathers edged in gold | KNL +4, FTN +4, FLEE +6, Max SP +80, Max HP +5% | Bloop Island's ultra rare (a clear: 1%), or the Boatman makes them from 300 Bloop Cores |
+| Angel Wings | folded white wings trimmed in gold, a gold crest set with crystals down the spine | KNL +4, FTN +4, FLEE +6, Max SP +80, Max HP +5% | Bloop Island's ultra rare (a clear: 1%), or the Boatman makes them from 300 Bloop Cores |
 | Devil Wings | a bat's leathery wings | POW +2, END +1, Max HP +80 | Fire Giant, 3% |
 
 **Weapon levels.** Lv 4 weapons are the best there are: the Giant Sword, Flame Sword, Lava Sword
