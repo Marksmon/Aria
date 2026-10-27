@@ -904,7 +904,7 @@ leads to each.
 | Torvald the Runecarver | Galdrheim | Shadows in Black Wood (38): take rubbings of 3 Watcher stones in Black Wood |
 | Hrafn the Stargazer, Signy the Apprentice | Galdrheim | tales of the city, the stars and the jotnar |
 | Runa the Gatewarden | Galdrheim | the rune-gate: to any land you have walked, 300–3,000 perz |
-| Huntmaster Sigrid | Veidheim, at the archery range | The Archer's Trial · The Walking Willows (10): 20 Willows · The Pack in the Hills (48): 25 Wolves · The Alpha's Pack (54): 20 Wolves · The Waking Wood (60): 20 Wolves, 10 Snakes |
+| Huntmaster Sigrid | Veidheim, at the archery range | The Archer's Trial · The Walking Willows (10): 20 Willows · The Pack in the Hills (48): 25 Wolves · The Alpha's Pack (54): 20 Wolves · The Waking Wood (70): the Great Bear and the Alpha Wolf |
 | Ottar the Farmer | Veidheim, by the barn | The Lost Lambs (16): find 3 lambs in Willow Marsh · Snakes in the Barley (46): 20 Snakes |
 | Leif the Tanner | Veidheim | makes hunters' gear (Hunter's Cloak and Boots, Claw Charm, Bark Armor, Alpha Cloak, Bear Heart Charm) · Pelts for the Winter (50): 10 Wolf Pelts, 5 Bear Claws · The Great Bear's Kin (59): 12 Bears |
 | Bjarki the Beastmaster | Veidheim, by the lodge | the Beastmaster's trial; his wolf Grimr never bites (unless asked) |

@@ -839,10 +839,10 @@ export const QUESTS = {
     reward: { xp: 8000, perz: 3500, items: { potion2: 6 } },
   },
   ancienttreant: {
-    title: 'The Waking Wood', kind: 'kill', mobs: { wolf: 20, snake: 10 }, lv: 60,
-    intro: 'The Ancient Treant has walked out of the Old Forest into Wolf Hills, and the packs follow it like hounds. No hunter can fell a tree that has stood a thousand years, but its hounds bleed. Thin them out, twenty Wolves and ten Snakes, before they lead it this way.',
-    thanks: 'Its pack is broken, and the old tree walks alone. Veidheim sleeps easier tonight, hunter.',
-    reward: { xp: 240000, perz: 22000, items: { potion3: 15 } },
+    title: 'The Waking Wood', kind: 'kill', mobs: { greatBear: 1, alphaWolf: 1 }, lv: 70,
+    intro: 'The Ancient Treant has walked out of the Old Forest into Wolf Hills, and the beasts follow it. Two lead them for it: the Great Bear of Wolf Hills and the Alpha Wolf of Barley Field. No hunter can fell a tree that has stood a thousand years, but its lieutenants can fall. Bring down both, and the old tree walks alone.',
+    thanks: 'The Great Bear and the Alpha, both! Its beasts have no one to follow now. Veidheim sleeps easier tonight, hunter.',
+    reward: { xp: 450000, perz: 30000, items: { potion3: 20 } },
   },
 };
 
