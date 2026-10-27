@@ -153,7 +153,7 @@ def box(cell):
     b = cell.getbbox()
     return list(b) if b else None
 
-def build(pid, slot, draw):
+def build(pid, slot, draw, **extra):
     sheet = Image.new('RGBA', (CELL * 8, CELL), (0, 0, 0, 0))
     boxes = {}
     for c, d in enumerate(DIRS):
@@ -161,7 +161,7 @@ def build(pid, slot, draw):
         sheet.paste(cell, (c * CELL, 0))
         boxes[d] = box(cell)
     sheet.save(f'{ART}/hg_{pid}.png')
-    L = {'cw': CELL, 'ch': CELL, 'frames': 1, 'slot': slot, 'dirs': {d: i for i, d in enumerate(DIRS)}, 'box': boxes, 'cut': None}
+    L = {'cw': CELL, 'ch': CELL, 'frames': 1, 'slot': slot, 'dirs': {d: i for i, d in enumerate(DIRS)}, 'box': boxes, 'cut': None, **extra}
     json.dump(L, open(f'{ART}/hg_{pid}.json', 'w'))
     return sheet
 
@@ -179,6 +179,6 @@ def preview(path, sheets):
     out.save(path)
 
 if __name__ == '__main__':
-    sheets = [build('goat_horns', 'head', draw_horns), build('elf_ears', 'face', draw_ears)]
+    sheets = [build('goat_horns', 'head', draw_horns), build('elf_ears', 'face', draw_ears, over=True)]  # the ears go over the hat
     if '--preview' in sys.argv:
         preview(sys.argv[sys.argv.index('--preview') + 1], sheets)

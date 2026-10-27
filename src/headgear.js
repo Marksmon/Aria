@@ -33,6 +33,15 @@ export const gearFrames = (id) => gearPiece(id)?.L.frames || 1;
 // the hair a piece hides: per column of the head cell, the row above which hair is left out
 export const gearCut = (id, dir) => gearPiece(id)?.L.cut?.[dir] || null;
 
+// paint the face piece and the hat into a body frame, the hat on top, unless the face piece goes
+// over it (its layout's over: Elven Ears stick out past horns and hats)
+export function paintGears(g, at, dir, top, face, frame = 0) {
+  const over = gearPiece(face)?.L.over;
+  if (!over) paintGear(g, at, dir, face, frame);
+  paintGear(g, at, dir, top, frame);
+  if (over) paintGear(g, at, dir, face, frame);
+}
+
 // paint a piece into a body frame (ctx), its cell's top-left corner at at = [x, y] (the head's)
 export function paintGear(g, at, dir, id, frame = 0) {
   const pc = gearPiece(id);

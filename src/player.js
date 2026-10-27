@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { dirFor, dirFor8 } from './noise.js';
 import { playerAttack, WALK_SCALE } from './rules.js';
-import { HeadLayer, GEAR_FPS, gearCut, gearFrames, headgearReady, paintGear } from './headgear.js';
+import { HeadLayer, GEAR_FPS, gearCut, gearFrames, headgearReady, paintGears } from './headgear.js';
 import { HEADS, headTexture, headsReady, paintHead } from './hair.js';
 
 // Walking, as in Ragnarok (rAthena status_calc_speed): 150 ms a tile (times WALK_SCALE). Changes are
@@ -124,8 +124,7 @@ export class Player {
         const at = ud.head?.at;
         if (!at) return;
         paintHead(g, at, dir, look, gearCut(top, dir), top);
-        paintGear(g, at, dir, face, this.gearFrame);
-        paintGear(g, at, dir, top, this.gearFrame);
+        paintGears(g, at, dir, top, face, this.gearFrame);
         ud.gearFrame = this.gearFrame;
       });
     }

@@ -21,7 +21,7 @@ import { Tiles } from './tiles.js';
 import { Hotbar } from './hotbar.js';
 import { BigMap } from './bigmap.js';
 import { headsReady, paintHead, lookPortrait } from './hair.js';
-import { headgearReady, gearCut, paintGear } from './headgear.js';
+import { headgearReady, gearCut, paintGears } from './headgear.js';
 import { derive, playerAttack, mobAttack, magicAttack, elementMod, ELEMENTS } from './rules.js';
 import { SKILLS, EDGE_FX, skillLv, spCost, castTime, learn, skillList, weaponOk, WEAPON_NAMES, BOW_RANGE, unlearnFirstJob, unlearnSecondJob, RETRAIN_COST } from './skills.js';
 import { Menus } from './menus.js';
@@ -124,8 +124,7 @@ function dressPeople() {
       const at = ud.head?.at;
       if (!at) return;
       paintHead(g, at, dir, { hair, dye }, gearCut(top, dir), top);
-      paintGear(g, at, dir, face, 0);
-      paintGear(g, at, dir, top, 0);
+      paintGears(g, at, dir, top, face, 0);
       if (art.person.bow) paintBow(g, ud.head, dir); // Veidheim's archers (bow.js)
     });
     for (const [id, n] of Object.entries(NPCS)) if (n.dress === art.person) delete portraits[id]; // drawn again, dressed
