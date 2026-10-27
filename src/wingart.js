@@ -89,6 +89,33 @@ export function paintWings(g, art, frame = 0) {
   }
   if (WING_MIDDLE[art]) { g.save(); g.translate(bx, by); WING_MIDDLE[art](g); g.restore(); }
 }
+// Wings drawn for each of the hero's 8 directions (the Angel Wings): each wing a panel swept back
+// from the spine (SWEEP), turned with the hero (yaw: how far the face has turned toward screen right),
+// so it narrows and slides as they turn; the nearer wing over the farther, the crest down the spine
+// only when the back is toward us, and a wing's inner face (toward the hero's front) a little darker.
+export const WING_VIEWS = { angel: true };
+export const WING_DIRS = ['down', 'downright', 'right', 'upright', 'up', 'upleft', 'left', 'downleft'];
+const SWEEP = 0.7, BACK = 10; // the wings' sweep back from the spine plane; the back, this far behind the hero's middle (px)
+export function paintWingsView(g, art, dir, frame = 0) {
+  const [, , bx, by] = wingBox(art), t = (WING_DIRS.indexOf(dir) * Math.PI) / 4;
+  const cs = Math.cos(SWEEP), sn = Math.sin(SWEEP), ct = Math.cos(t), st = Math.sin(t);
+  const parts = [-1, 1].map((side) => {
+    const a = side * cs * ct - sn * st; // how a wing's painted x (out from the spine) lands across the screen
+    const d = 18, depth = -side * d * cs * st + (-BACK - d * sn) * ct;
+    const front = -side * sn * st - cs * ct < 0; // its inner face toward us
+    return { depth, draw: () => {
+      g.save(); g.translate(bx - BACK * st, by); g.transform(a, 0, 0, 1, 0, 0);
+      if (front) g.filter = 'brightness(0.86)';
+      (WING_ART[art] || WING_ART.fairy)(g, frame, side);
+      g.restore();
+    } };
+  });
+  // (the crest: over the wings' roots, seen only with the back toward us)
+  if (WING_MIDDLE[art] && ct < -0.3) parts.push({ depth: 99, draw: () => {
+    g.save(); g.translate(bx - BACK * st, by); g.scale(Math.max(0.25, Math.abs(ct)), 1); WING_MIDDLE[art](g); g.restore();
+  } });
+  for (const p of parts.sort((x, y) => x.depth - y.depth)) p.draw();
+}
 // a box other than 96 x 56 with the back at (48, 30): [w, h, back x, back y]
 const WING_BOX = { angel: [78, 114, 39, 35] };
 export const wingBox = (art) => WING_BOX[art] || [96, 56, 48, 30];

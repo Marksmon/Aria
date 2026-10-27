@@ -3,7 +3,7 @@
 // walk, and glows. The look comes from the item (items.js look: { kind: 'wings' | 'float', art, ... }).
 import * as THREE from 'three';
 import { ITEMS } from './items.js';
-import { paintWisp, paintLantern, paintWings, wingBox, WING_FRAMES } from './wingart.js';
+import { paintWisp, paintLantern, paintWings, paintWingsView, wingBox, WING_FRAMES, WING_VIEWS, WING_DIRS } from './wingart.js';
 
 const tex = (c, smooth) => {
   const t = new THREE.CanvasTexture(c);
@@ -13,16 +13,18 @@ const tex = (c, smooth) => {
 };
 const canvas = (w, h) => { const c = document.createElement('canvas'); c.width = w; c.height = h; return [c, c.getContext('2d')]; };
 
-// a pair of wings, each art its own shape (wingart.js), on a canvas twice the painter's box
-function wingsFrames(art) {
+// a pair of wings, each art its own shape (wingart.js), on a canvas twice the painter's box; wings
+// drawn for each direction (WING_VIEWS) get their frames for each: { dir: [frames] }
+function wingsFrames(art, dir) {
   const [w, h] = wingBox(art);
   return Array.from({ length: WING_FRAMES[art] || 1 }, (_, f) => {
     const [c, g] = canvas(w * 2, h * 2);
     g.scale(2, 2);
-    paintWings(g, art, f);
+    if (dir) paintWingsView(g, art, dir, f); else paintWings(g, art, f);
     return tex(c, true);
   });
 }
+const wingViews = (art) => Object.fromEntries(WING_DIRS.map((d) => [d, wingsFrames(art, d)]));
 // how each kind sits and moves: its size and height on the back, and its motion (sway: a vine
 // swaying; flutter: a butterfly's quick beat; flicker: flames dancing; flap: a slow wingbeat)
 const WING_MOVE = {
@@ -75,7 +77,8 @@ export class Wings {
     if (!look) return;
     const key = `${id}`;
     if (look.kind === 'wings') {
-      this.wingFrames = this.cache[key] ||= wingsFrames(look.art);
+      this.views = WING_VIEWS[look.art] ? (this.cache[key + ':views'] ||= wingViews(look.art)) : null;
+      this.wingFrames = this.views ? this.views.down : (this.cache[key] ||= wingsFrames(look.art));
       this.wing.material.map = this.wingFrames[0];
       this.wing.material.needsUpdate = true;
       this.wing.visible = true;
@@ -104,11 +107,12 @@ export class Wings {
       if (M.move === 'flutter') { sx = 0.72 + 0.28 * Math.abs(Math.sin(t * 13)); bob = Math.sin(t * 3) * 0.02; }
       if (M.move === 'flicker') { sy = 0.94 + 0.06 * Math.sin(t * 9) + 0.03 * Math.sin(t * 23); }
       if (M.move === 'flap') { sx = 1 - M.amp + M.amp * Math.sin(t * M.speed); bob = Math.sin(t * M.speed + 1) * 0.03; }
+      if (this.views) this.wingFrames = this.views[p.dir] || this.views.down; // turned with the hero
       const f = this.wingFrames[Math.floor(t * 9) % this.wingFrames.length];
       if (this.wing.material.map !== f) { this.wing.material.map = f; this.wing.material.needsUpdate = true; }
       this.wing.material.rotation = rot;
       this.wing.position.set(p.x + fwd.x * k, ground + M.y + bob, p.z + fwd.z * k);
-      this.wing.scale.set(M.w * sx * (side ? 0.7 : 1), M.h * sy, 1);
+      this.wing.scale.set(M.w * sx * (side && !this.views ? 0.7 : 1), M.h * sy, 1);
       this.wing.renderOrder = away ? 5 : 1;
       this.wing.visible = true;
       return;
