@@ -218,3 +218,5 @@ ATK x1.2: won in 4:04 (67 White Potions) and 5:08 (180), leaving the waves about
 
 The owner then halved every MVP's and mini-boss's HP (and Hell's boss's: about 210,000 HP at its
 Lv 90), and moved the raids to Base 40/55/70/85: the playtests above were at the old HP.
+After the halving: Hell (Base 85) fell to a Lv 85 bot in the best gear in 3:44 (92 White Potions),
+and a Lv 99 in shop gear still fainted against the Goblin King (at 5:30, the King at 41%).
