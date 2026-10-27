@@ -16,8 +16,9 @@
 // a field MVP, with moves of its own, for a hero in the best gear (docs/balance.md).
 //
 // The reward: perz and materials times the difficulty's mult (x1/x3/x6/x9), the raid's own cores
-// times its cores (x1/x3/x9/x27), and at 1% on any difficulty one of the raid's rare finds, which
-// its guide also makes from cores (items.js RECIPES, by: the raid), and at 1% the boss's card.
+// times its cores (x1/x3/x9/x27), and on any difficulty a 3% chance at one of the raid's rare finds
+// and 1% at its ultra rare (a Head, Face or Wings piece) and at its boss's card. Its guide also makes
+// the rares and the ultra rare from cores (items.js RECIPES, by: the raid).
 const LADDER = [
   ['easy', 'Easy', 1, 1, { hp: 0.3, atk: 0.14 }, { hp: 0.45, atk: 0.28 }, 'a first job, no potions needed'],
   ['normal', 'Normal', 3, 3, { hp: 1.15, atk: 0.36, exp: 0.4 }, { hp: 1.75, atk: 0.72, exp: 0.6 }, 'a second job and 20 White Potions'],
@@ -25,7 +26,7 @@ const LADDER = [
   // Hell: the boss as hard and tricky as an MVP (fierce)
   ['hell', 'Hell', 9, 27, { hp: 3, atk: 0.8, exp: 0.6 }, { hp: 7, atk: 1.2, exp: 0.75, fierce: true }, 'the best gear, upgraded and carded, and a big bag of White Potions'],
 ];
-const RARE = 0.01; // a clear's chance at a rare find, every difficulty
+const RARE = 0.03; // a clear's chance at a rare find, every difficulty (its ultra rare and its card: 1% each)
 const ladder = (lvs) => Object.fromEntries(LADDER.map(([k, name, mult, cores, wave, boss, advice], i) =>
   [k, { name, lv: lvs[i], ...(k === 'hell' ? { plus: true } : {}), mult, cores, wave, boss, rare: RARE, advice }]));
 const COMMON = {
@@ -54,7 +55,8 @@ export const RAIDS = {
     // raid's cores (times its cores)
     reward: { perz: 3000, items: [['gel', 6, 1], ['dew', 4, 1], ['shiny_gel', 1, 0.3]], cores: ['bloop_core', 3] },
     // the rare roll: one of these, at the difficulty's chance (the Boatman makes them from Bloop Cores too)
-    rares: ['veteran_boots', 'bloop_buckler', 'bleep_ring', 'gooey_ring', 'tide_pendant', 'angel_wings'],
+    rares: ['veteran_boots', 'bloop_buckler', 'bleep_ring', 'gooey_ring', 'tide_pendant'],
+    ultra: ['angel_wings', 0.01], // the raid's ultra rare
     // the boss's card: raid monsters drop nothing, so a clear may pay it (a boss card's 1%, any difficulty)
     card: ['bleep_card', 0.01],
     // what is said along the way
@@ -78,6 +80,7 @@ export const RAIDS = {
     difficulties: ladder([45, 60, 75, 90]),
     reward: { perz: 4500, items: [['kobold_fur', 6, 1], ['iron_ore', 4, 1], ['steel_ore', 1, 0.5]], cores: ['kobold_core', 3] },
     rares: ['quarry_shield', 'stonehide_mantle', 'earthshaker_boots', 'oreheart_ring', 'pickaxe_charm', 'miners_plate'],
+    ultra: ['ore_crown', 0.01],
     card: ['kwarlord_card', 0.01],
     words: {
       pitch: 'Three waves of kobolds in their walled camp, then their Warlord, all in 10 minutes before the war drums call the rest of the tribe.',
@@ -99,6 +102,7 @@ export const RAIDS = {
     difficulties: ladder([50, 65, 80, 95]),
     reward: { perz: 6000, items: [['goblin_tooth', 6, 1], ['steel_ore', 2, 1], ['armor_ore', 1, 0.3]], cores: ['goblin_core', 3] },
     rares: ['raider_cloak', 'windstep_boots', 'spiked_buckler', 'totem_charm', 'wardrum_pendant', 'horde_leather'],
+    ultra: ['warlord_mask', 0.01],
     card: ['gwarlord_card', 0.01],
     words: {
       pitch: 'Three waves of goblins in their lair under the dark trees, then their Warlord, all in 10 minutes before the torches gutter out.',
@@ -110,7 +114,7 @@ export const RAIDS = {
   },
 };
 
-// what a clear pays: { perz, items: { id: n }, rare: id | null, card: id | null }
+// what a clear pays: { perz, items: { id: n }, rare: id | null, ultra: id | null, card: id | null }
 export function rollReward(raid, diff) {
   const R = RAIDS[raid], d = R.difficulties[diff], items = {};
   for (const [id, n, chance] of R.reward.items) {
@@ -118,8 +122,9 @@ export function rollReward(raid, diff) {
   }
   if (R.reward.cores) { const [core, n] = R.reward.cores; items[core] = (items[core] || 0) + n * (d.cores || 1); }
   const rare = Math.random() < d.rare ? R.rares[Math.floor(Math.random() * R.rares.length)] : null;
+  const ultra = R.ultra && Math.random() < R.ultra[1] ? R.ultra[0] : null;
   const card = R.card && Math.random() < R.card[1] ? R.card[0] : null;
-  return { perz: R.reward.perz * d.mult, items, rare, card };
+  return { perz: R.reward.perz * d.mult, items, rare, ultra, card };
 }
 
 // "2 h 14 m" / "9 m" / "under a minute"

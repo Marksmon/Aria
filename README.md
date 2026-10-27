@@ -287,12 +287,12 @@ the clear reward, the cores, the rare finds and the boss's card.
 - **Difficulty:** you choose when you set out, and each needs its Base Level (above). The monsters'
   level and strength follow it.
 
-| Difficulty | Made for | Rewards | Cores | Rare chance |
-|---|---|---|---|---|
-| Easy | a first job, no potions needed | x1 | 3 | 1% |
-| Normal | a second job, 20 White Potions | x3 | 9 | 1% |
-| Hard | a strong second job, 30 White Potions | x6 | 27 | 1% |
-| Hell | the best gear, upgraded and carded, and a big bag of White Potions | x9 | 81 | 1% |
+| Difficulty | Made for | Rewards | Cores | Rare | Ultra rare, card |
+|---|---|---|---|---|---|
+| Easy | a first job, no potions needed | x1 | 3 | 3% | 1% each |
+| Normal | a second job, 20 White Potions | x3 | 9 | 3% | 1% each |
+| Hard | a strong second job, 30 White Potions | x6 | 27 | 3% | 1% each |
+| Hell | the best gear, upgraded and carded, and a big bag of White Potions | x9 | 81 | 3% | 1% each |
 
 - **Hell's Warlords** are fierce like BleepBloop: the Kobold Warlord **Burrows**, and hides behind his
   guards (70% less damage while one stands); his warriors' shields catch arrows (−40%) but kobolds fear
@@ -311,7 +311,8 @@ the clear reward, the cores, the rare finds and the boss's card.
   failed run (the time runs out, you faint, or you leave) pays only the monsters you beat, with no
   bonus.
 - **A clear** pays perz and materials (times the difficulty's reward), the raid's **cores** (3, 9, 27
-  or 81), a 1% chance at one of its rare finds and a 1% chance at its boss's card. Bloop Island
+  or 81), a 3% chance at one of its rare finds, and 1% chances at its **ultra rare** and at its boss's
+  card. Bloop Island
   pays Bloop Gel, Water Drops and maybe Shiny Gel; the Kobold Camp Kobold Fur, Iron and Steel Ore;
   the Goblin Lair Goblin Teeth, Steel and Armor Ore.
 - **Cores buy the rare finds.** Each guide makes its raid's rare finds from its cores (and a few
@@ -319,9 +320,14 @@ the clear reward, the cores, the rare finds and the boss's card.
 
 | Raid | Rare finds, and what the guide asks for them |
 |---|---|
-| Bloop Island | Bloop Ring, Water Necklace (25 Bloop Cores) · Bleep Ring (60) · Bloop Buckler, Veteran's Boots (80) · Angel Wings (150) |
-| Kobold Camp | Pickaxe Charm (30 Kobold Cores) · Ore-Heart Ring (60) · Earthshaker Boots, Stonehide Mantle (80) · Miner's Plate (120) · Quarry Shield (150) |
-| Goblin Lair | Totem Charm (30 Goblin Cores) · War-Drum Pendant (60) · Windstep Boots, Raider's Cloak (80) · Horde Leather (120) · Spiked Buckler (150) |
+| Bloop Island | Bloop Ring, Water Necklace (25 Bloop Cores) · Bleep Ring (60) · Bloop Buckler, Veteran's Boots (80) · ultra rare: **Angel Wings** (300) |
+| Kobold Camp | Pickaxe Charm (30 Kobold Cores) · Ore-Heart Ring (60) · Earthshaker Boots, Stonehide Mantle (80) · Miner's Plate (120) · Quarry Shield (150) · ultra rare: **Ore King's Crown** (300) |
+| Goblin Lair | Totem Charm (30 Goblin Cores) · War-Drum Pendant (60) · Windstep Boots, Raider's Cloak (80) · Horde Leather (120) · Spiked Buckler (150) · ultra rare: **Warlord's Mask** (300) |
+
+**Ultra rares** are worn where everyone can see them: the Ore King's Crown (Head: the Horned Crown
+in ore-gold with ruby glints; DEF 6, POW +4, END +4, Max HP +10%), the Warlord's Mask (Face: a
+feathered war mask in goblin green, its eyes ringed in war-paint red; QKN +4, FNS +4, HIT +10,
+FLEE +5) and Angel Wings (KNL +4, FTN +4, FLEE +6, Max SP +80, Max HP +5%).
 
 | New piece | Slot | Effect |
 |---|---|---|
@@ -665,9 +671,9 @@ bursts gold on the ground and shows in gold in your bag.
 | Dark Wisp | Wings (floats at your shoulder, glowing) | KNL +2, Max SP +30 | Dark Wisp, 0.25% |
 | Ember Wings | Wings (fiery wings on your back) | POW +1, KNL +1, Max HP +50 | Fire Wisp, 0.25% |
 | Shiny Gel | Misc | a collector's prize | Green and Blue Bloops, 1% |
-| Veteran's Boots | Shoes | DEF 3, FLEE +3, END +1, Max HP +60 | Bloop Island (a clear: 1%), or the Boatman makes it from Bloop Cores |
-| Bloop Buckler | Shield | DEF 4, Max HP +80 | Bloop Island (a clear: 1%), or the Boatman makes it from Bloop Cores |
-| Bleep Ring | Accessory | POW +1, QKN +1, FTN +1, Max HP +40 | Bloop Island (a clear: 1%), or the Boatman makes it from Bloop Cores |
+| Veteran's Boots | Shoes | DEF 3, FLEE +3, END +1, Max HP +60 | Bloop Island (a clear: 3%), or the Boatman makes it from Bloop Cores |
+| Bloop Buckler | Shield | DEF 4, Max HP +80 | Bloop Island (a clear: 3%), or the Boatman makes it from Bloop Cores |
+| Bleep Ring | Accessory | POW +1, QKN +1, FTN +1, Max HP +40 | Bloop Island (a clear: 3%), or the Boatman makes it from Bloop Cores |
 | Horned Crown | Head | DEF 4, POW +2, END +1 | Fire Giant, 5% |
 | Flame Sword | Weapon | ATK 110, weapon Lv 4 | Fire Giant, 1% |
 | King's Ring | Accessory | POW +2, END +1, Max HP +50 | Kobold King, 5% |
@@ -725,7 +731,7 @@ no torch is needed.
 | Lantern | a lantern at your shoulder | KNL +1, FNS +1 | Wisp, 0.4% |
 | Dark Wisp | a violet Wisp at your shoulder | KNL +2, Max SP +30 | Dark Wisp, 0.25% |
 | Ember Wings | tongues of flame fanning out, flickering | POW +1, KNL +1, Max HP +50 | Fire Wisp, 0.25% |
-| Angel Wings | white feathers edged in gold | KNL +2, FTN +2, FLEE +2, Max SP +40 | Bloop Island raid (a clear: 1%), or the Boatman makes them from 150 Bloop Cores |
+| Angel Wings | white feathers edged in gold | KNL +4, FTN +4, FLEE +6, Max SP +80, Max HP +5% | Bloop Island's ultra rare (a clear: 1%), or the Boatman makes them from 300 Bloop Cores |
 | Devil Wings | a bat's leathery wings | POW +2, END +1, Max HP +80 | Fire Giant, 3% |
 
 **Weapon levels.** Lv 4 weapons are the best there are: the Giant Sword, Flame Sword, Lava Sword

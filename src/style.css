@@ -813,6 +813,7 @@ button.eq:active { background: var(--w-sel); }
 .loot { display: inline-flex; align-items: center; gap: 3px; white-space: nowrap; }
 .loot .ico.xs { width: 18px; height: 18px; }
 .loot.rare { color: #ffd23a; }
+.loot.ultra { color: #ff9af0; font-weight: 700; text-shadow: 0 0 6px rgba(255, 120, 230, .6); }
 .loot i { opacity: .75; font-style: normal; }
 .lootrow .corenote { opacity: .7; font-style: normal; font-size: 11px; }
 .raidinfo .btnrow { justify-content: flex-end; align-items: center; flex-wrap: wrap; }

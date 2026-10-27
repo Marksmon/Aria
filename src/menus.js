@@ -215,6 +215,7 @@ export class Menus {
         <div class="lootrow"><b>Clear reward</b>${D.tutorial ? '' : ` <span class="rtag">x${D.mult}</span>`}<span class="loot perz">${(R.reward.perz * D.mult).toLocaleString()} perz</span>${loot}</div>
         ${R.reward.cores ? `<div class="lootrow"><b>Cores</b>${D.cores > 1 ? ` <span class="rtag">x${D.cores}</span>` : ''}<span class="loot rare">${icon(R.reward.cores[0], 'xs')}${esc(ITEMS[R.reward.cores[0]].name)} ×${R.reward.cores[1] * (D.cores || 1)}</span><i class="corenote">trade them to ${esc(n.name)} for the rare finds below</i></div>` : ''}
         <div class="lootrow"><b>Rare find</b> <span class="rtag">${Math.round(D.rare * 100)}%</span>${rares}</div>
+        ${R.ultra ? `<div class="lootrow"><b>Ultra rare</b> <span class="rtag">${Math.round(R.ultra[1] * 100)}%</span><span class="loot ultra">${icon(R.ultra[0], 'xs')}${esc(ITEMS[R.ultra[0]].name)}</span><i class="corenote">${esc(equipLine(ITEMS[R.ultra[0]]))}</i></div>` : ''}
         <div class="lootrow"><b>Boss card</b>${card}</div>
         <p class="raidline">${esc(note)}</p>
         <div class="btnrow">${why ? `<small class="why">${esc(why)}</small>` : ''}<button class="rbtn" data-act="raidgo" data-id="${k}" ${why ? 'disabled' : ''}>Set out: ${esc(D.name)}</button><button class="rbtn soft" data-act="close">Bye</button></div>

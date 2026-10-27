@@ -1137,6 +1137,7 @@ function raidReward(id, diff) {
   for (const [item, n] of Object.entries(r.items)) give(item, n);
   if (r.rare) r.rare = maybeSlotted(r.rare); // a raid's rare can come with a card slot too
   if (r.rare) { give(r.rare, 1); audio.play('heart'); menus.message(`Rare find! ${ITEMS[r.rare].name}!`); }
+  if (r.ultra) { give(maybeSlotted(r.ultra), 1); audio.play('heart'); cam.shake = 0.3; menus.message(`ULTRA RARE! ${ITEMS[r.ultra].name}!`); }
   if (r.card) { give(r.card, 1); audio.play('heart'); menus.message(`Rare find! ${ITEMS[r.card].name}!`); }
 }
 // the run is over: its monsters go, the EXP held is paid, and (unless the hero went elsewhere) the
