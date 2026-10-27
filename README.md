@@ -96,7 +96,7 @@ and Wolf Hills, for heroes near their second job.
 | Old Forest | 16–26 | Treant (24), Willow | |
 | Barley Field | 44–54 | Snake (46), Wolf (48) | Alpha Wolf (51) |
 | Wolf Hills | 46–62 | Wolf, Bear (53), Snake | Great Bear (56) · **Ancient Treant (62, MVP)** |
-| Any field in the valley, more at night (Moss Field only at night) | | Wisp (11) | |
+| Any field in the valley, more at night (Moss Field and Fen Shore only at night) | | Wisp (11) | |
 
 Moss Field and Fen Shore, by the camp and the city, are a Trainee's fields: a Base 10 Trainee
 beats any of their monsters again and again, and a Trainee earns big Job EXP there (Job 10 in
