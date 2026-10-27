@@ -203,7 +203,7 @@ export const SKILLS = {
   },
   volley: {
     name: 'Hurricane Volley', job: 'windrunner', kind: 'active', max: 10, needs: { windborne: 5 }, target: 'mob', range: 'bow', weapon: 'bow', icon: 'skill_volley',
-    sp: (lv) => 18 + 2 * lv, power: (lv) => 60 + 8 * lv, hits: (lv) => 5 + Math.floor(lv / 2), every: 0.09,
+    sp: (lv) => 18 + 2 * lv, power: (lv) => 60 + 8 * lv, hits: (lv) => 5 + Math.floor(lv / 2), every: 0.09, cd: 1.5, // (one stream at a time: it can't be cast again before it has flown)
     desc: (lv) => `A stream of ${SKILLS.volley.hits(lv)} arrows, one on the heels of the next: ${SKILLS.volley.power(lv)}% damage each.`,
   },
   cyclone: {

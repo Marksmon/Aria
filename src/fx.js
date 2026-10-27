@@ -293,7 +293,7 @@ export class FX {
         const m = e.target, p = e.s.position;
         const ty = this.world.heightAt(m.x, m.z) + 0.5;
         const dx = m.x - p.x, dy = ty - p.y, dz = m.z - p.z, d = Math.hypot(dx, dy, dz), step = 13 * dt;
-        if (!m.alive || d <= step) { e.t = e.life; if (m.alive) e.onHit(); }
+        if (!m.alive || d <= step) { e.t = e.life; if (m.alive) e.onHit(); } // lands once: gone this very frame (below)
         else { p.x += (dx / d) * step; p.y += (dy / d) * step; p.z += (dz / d) * step; }
         if ((e.trail -= dt) <= 0) { // a fading trail behind it
           e.trail = 0.03;
@@ -317,7 +317,7 @@ export class FX {
         e.s.scale.set(sc, sc, 1);
         e.s.material.opacity = 1 - k;
       }
-      if (k >= 1) {
+      if (e.t >= e.life) { // (not k: a bolt that has just landed set e.t, and must not land again next frame)
         if (e.color) e.s.material.color.set('#ffffff');
         if (e.tex) { e.tex.dispose(); e.s.material.map = null; }
         this.release(e.s);
