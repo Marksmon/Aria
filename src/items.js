@@ -327,7 +327,7 @@ export function cardLine(cd) {
   return p.join(' · ');
 }
 // Seyla draws the cards out of a piece again (they come back whole), for this much a card
-export const UNCARD_FEE = 10000;
+export const UNCARD_FEE = 50000;
 export const ITEMS = new Proxy(BASE_ITEMS, {
   get: (t, k) => (typeof k === 'string' && k.includes('|') ? upgradedItem(k) : t[k]),
   has: (t, k) => (typeof k === 'string' && k.includes('|') ? !!upgradedItem(k) : k in t),

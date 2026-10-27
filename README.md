@@ -673,7 +673,7 @@ Little Bloops a Blue Bloop splits into: they drop neither gear nor cards).
 Select a card in the Miscs tab and tap **Insert** to press it into a piece of its kind with a
 free slot: the window shows what the piece becomes before you press it in. Each card gives the piece
 a word in its name ("Bouncy Shell Armor [1]"; two of one card, "Double"). A piece's details list its
-cards and what each does. **Seyla** draws cards out again for 10,000 perz a card ("Remove a card"):
+cards and what each does. **Seyla** draws cards out again for 50,000 perz a card ("Remove a card"):
 they come back whole and the slot stays open. A piece that breaks at Holger's gives its cards back too.
 
 | Card | Goes in | Effect | From |
