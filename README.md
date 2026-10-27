@@ -347,8 +347,8 @@ crystal earrings and a band round the back of the head; QKN +4, FNS +4, HIT +10,
 | Raider's Cloak | Garment | DEF 3, FLEE +8, QKN +2 |
 | Horde Leather | Armor | DEF 6, FLEE +5, QKN +2 |
 | Spiked Buckler | Shield | DEF 6, POW +2 |
-| Kobold Warlord Card | Head or face card | DEF +5, Max HP +15%, END +6; **Earthshaker:** blows and spells stun a monster 5% of the time (Kobold Camp, 1%) |
-| Goblin Warlord Card | Head or face card | ATK +40, QKN +5, blows up close (not arrows) +15%; **Frenzy:** 10% of them land twice (Goblin Lair, 1%) |
+| Kobold Warlord Card | Head or face card | DEF +7, Max HP +25%, END +7, POW +4; **Earthshaker:** blows and spells stun a monster 8% of the time (Kobold Camp, 1%) |
+| Goblin Warlord Card | Head or face card | ATK +60, QKN +7, POW +4, blows up close (not arrows) +15%; **Frenzy:** 10% of them land twice (Goblin Lair, 1%) |
 
 - **Cooldowns:** each raid has one 3-hour cooldown for all its difficulties, from setting out; the
   three are separate.
@@ -807,7 +807,7 @@ they come back whole and the slot stays open. A piece that breaks at Holger's gi
 | Beetle Card (Hardy) | Armor | DEF +2, END +1 | Beetle, 0.1% |
 | Lantern Wisp Card (Glowing) | Wings | FNS +2, KNL +1 | Lantern Wisp, 0.1% |
 | Red Bloop Card (Fiery) | Weapon | ATK +10 | Red Bloop (Bloop Island), 0.1% |
-| BleepBloop Card (Grand) | Wings | ATK +20, Max HP +10%, FTN +5; **Gulp:** 3% of the damage you deal heals you | BleepBloop, 1% |
+| BleepBloop Card (Grand) | Wings | ATK +40, Max HP +20%, FTN +7, KNL +4; **Gulp:** 5% of the damage you deal heals you | BleepBloop, 1% |
 | Red Sprout Card (Thorny) | Garment | Max HP +5%, FLEE +2 | Red Sprout, 0.1% |
 | Sea Bloop Card (Briny) | Shield | DEF +1, Max SP +5% | Sea Bloop, 0.1% |
 | Fire Beetle Card (Scorched) | Armor | DEF +2, POW +1 | Fire Beetle, 0.1% |
@@ -820,8 +820,8 @@ they come back whole and the slot stays open. A piece that breaks at Holger's gi
 
 | Card | Goes in | Effect | From |
 |---|---|---|---|
-| Kobold King Card (Stubborn) | Armor | Max HP +40%, DEF +10, FLEE +10, END +10; **Tribe's Shield:** monsters' blows land 15% softer | Kobold King, 1% |
-| Goblin King Card (Tyrant) | Weapon | ATK +100, POW +10, QKN +10, attacks 15% faster; **Mirror Image:** +10% lucky dodge (works on an MVP's moves too) | Goblin King, 1% |
+| Kobold King Card (Stubborn) | Armor | Max HP +30%, DEF +7, FLEE +7, END +7; **Tribe's Shield:** monsters' blows land 15% softer | Kobold King, 1% |
+| Goblin King Card (Tyrant) | Weapon | ATK +75, POW +7, QKN +7, attacks 10% faster; **Mirror Image:** +10% lucky dodge (works on an MVP's moves too) | Goblin King, 1% |
 | Giant Sprout Card (Blooming) | Accessory | Max HP +10%, END +4; **Bloom:** HP comes back 30% faster | Giant Sprout, 1% |
 | King Crab Card (Tidal) | Garment | QKN +5, FLEE +8; **Hard Shell:** monsters' blows land 5% softer | King Crab, 1% |
 | Giant Mushroom Card (Dreaming) | Head or face | KNL +6, Max SP +10%; **Dream Spores:** SP comes back 30% faster | Giant Mushroom, 1% |
@@ -829,8 +829,8 @@ they come back whole and the slot stays open. A piece that breaks at Holger's gi
 | Elder Willow Card (Elder) | Wings | FNS +3, KNL +3; **Rooting Seeds:** blows and spells hold a monster fast 3% of the time | Elder Willow, 1% |
 | Alpha Wolf Card (Wild) | Shoes | QKN +6, FLEE +10; **Pounce:** +5% lucky dodge | Alpha Wolf, 1% |
 | Great Bear Card (Savage) | Weapon | ATK +30, POW +5, Max HP +10%; **Maul:** 5% of blows up close land twice | Great Bear, 1% |
-| Ancient Treant Card (Ancient) | Shield | DEF +15, Max HP +30%, POW +8, END +10; **Bark Armor:** a monster striking you up close takes back 20% of the blow | Ancient Treant, 1% |
-| Fire Giant Card (Infernal) | Weapon (a sorcerer's card) | MATK +60%, KNL +12, FNS +8, Max SP +30%, Max HP +15%, weapon turns Fire (+15% Fire spells with a staff); **Meteor Heart:** spells and blows set a monster burning 10% of the time | Fire Giant, 1% |
+| Ancient Treant Card (Ancient) | Shield | DEF +10, Max HP +20%, POW +6, END +7; **Bark Armor:** a monster striking you up close takes back 20% of the blow | Ancient Treant, 1% |
+| Fire Giant Card (Infernal) | Weapon (a sorcerer's card) | MATK +45%, KNL +9, FNS +6, Max SP +20%, Max HP +10%, weapon turns Fire (+15% Fire spells with a staff); **Meteor Heart:** spells and blows set a monster burning 10% of the time | Fire Giant, 1% |
 
 **Who can wear what.** Swords up to the Iron Sword: Trainee and Blader; rare and elemental
 swords: Blader only. Staves: Sorcerer only (the Wooden Staff also Trainees). Bows and arrows:
