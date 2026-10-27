@@ -52,9 +52,10 @@ export const MOB_DEFS = {
   // MVP boss of Ember Hill: one at a time, back 15 minutes after it falls. Its slayer gets the MVP
   // reward on top of the drops. Stomps the ground around it every few seconds (stomp: x its ATK),
   // and calls 2 Fire Wisps and 3 Fire Beetles (summon: see SUMMON_CD).
-  // Made for a Base 50 character in the best gear, alone: about 3 minutes and a bag of potions.
-  jarl: { name: 'Fire Giant', ai: 'boss', art: 'jarl', el: 'fire', lv: 60, hp: 240000, atk: [300, 400], def: 20, vit: 40, agi: 30, dex: 70, mdef: 40, exp: [60000, 42000], adelay: 1600, walk: 130, aggro: 7, chase: 25, reach: 1.9, w: 3.1, r: 1.15, heavy: true,
-    mvp: true, respawn: 900, mvpExp: 30000, stomp: 1.8, moves: [{ kind: 'throw', mult: 2.0, r: 2.0 }, { kind: 'leap', mult: 1.8, r: 2.2 }],
+  // A fight of several minutes for a strong second job. Its own moves (MOVES): Meteor Rain, and
+  // burning ground (burns) wherever its meteors and leaps land: keep moving, and fight off the fire.
+  jarl: { name: 'Fire Giant', ai: 'boss', art: 'jarl', el: 'fire', lv: 60, hp: 480000, atk: [300, 400], def: 20, vit: 40, agi: 30, dex: 70, mdef: 40, exp: [60000, 42000], adelay: 1600, walk: 130, aggro: 7, chase: 25, reach: 1.9, w: 3.1, r: 1.15, heavy: true,
+    mvp: true, respawn: 900, mvpExp: 30000, stomp: 1.8, moves: [{ kind: 'meteors', name: 'Meteor Rain', mult: 1.8, r: 1.5 }, { kind: 'throw', mult: 2.0, r: 2.0 }, { kind: 'leap', mult: 1.8, r: 2.2 }], burns: { r: 1.5, dur: 6, mult: 0.35 },
     summon: ['emberWisp', 'emberWisp', 'cinderBeetle', 'cinderBeetle', 'cinderBeetle'], summonText: 'The Fire Giant roars, and the fire answers!', mvpDrops: [['potion3', 3], ['ember_heart', 1]],
     wake: 'The ground trembles… the Fire Giant has woken in Ember Hill!',
     drops: [['potion2', 2, 3, 0.8], ['potion3', 1, 2, 0.5], ['stone', 4, 6, 1], ['jarl_horn', 1, 1, 0.25], ['ember_crown', 1, 1, 0.05], ['jarl_mantle', 1, 1, 0.03], ['jarl_staff', 1, 1, 0.02], ['emberbrand', 1, 1, 0.01], ['flame_bow', 1, 1, 0.01], ['devil_wings', 1, 1, 0.03], ['jarl_card', 1, 1, 0.001]] },
@@ -70,12 +71,15 @@ export const MOB_DEFS = {
   goblinAssassin: { name: 'Goblin Assassin', ai: 'assassin', art: 'goblinAssassin', el: 'wind', lv: 44, hp: 1800, atk: [140, 178], def: 8, vit: 26, agi: 60, dex: 82, exp: [850, 595], adelay: 1100, walk: 100, aggro: 6, chase: 10, reach: 0.75, double: 0.25, w: 0.7, r: 0.3, drops: [['goblin_tooth', 1, 2, 0.5], ['quick', 1, 1, 0.04], ['potion3', 1, 1, 0.04], ['hard_ore', 1, 1, 0.025], ['armor_ore', 1, 1, 0.02], ['goblinassassin_card', 1, 1, 0.001], ['goblin_shroud', 1, 1, 0.002]] },
   // the kings: MVPs like the Fire Giant, a step below it. They stomp, and call four guards
   // (summon: see SUMMON_CD). Both are quick on their feet and have moves of their own (see MOVES).
-  koboldKing: { name: 'Kobold King', ai: 'boss', art: 'koboldKing', el: 'earth', lv: 50, hp: 180000, atk: [330, 430], def: 22, vit: 45, agi: 30, dex: 70, mdef: 25, exp: [36000, 25200], adelay: 1200, walk: 150, aggro: 7, chase: 25, reach: 1.4, w: 1.3, r: 0.6, heavy: true,
-    mvp: true, respawn: 1200, mvpExp: 18000, stomp: 2.0, moves: [{ kind: 'charge', mult: 2.2 }, { kind: 'throw', mult: 2.0, r: 1.8 }], summon: ['koboldWarrior', 'koboldWarrior', 'koboldArcher', 'koboldAssassin'], mvpDrops: [['potion3', 3], ['hard_ore', 2]],
+  // The Kobold King hides behind his tribe (tribe: he takes 80% less damage while a guard stands,
+  // and calls them back every 30 s) and Burrows under you; the Goblin King's Mirror Image sends two
+  // Goblin Kings of shadow at you (kingShadow), and shrouds him (90% less damage) until both fall.
+  koboldKing: { name: 'Kobold King', ai: 'boss', art: 'koboldKing', el: 'earth', lv: 50, hp: 300000, atk: [330, 430], def: 22, vit: 45, agi: 30, dex: 70, mdef: 25, exp: [36000, 25200], adelay: 1200, walk: 150, aggro: 7, chase: 25, reach: 1.4, w: 1.3, r: 0.6, heavy: true,
+    mvp: true, respawn: 1200, mvpExp: 18000, stomp: 2.0, moves: [{ kind: 'burrow', name: 'Burrow', mult: 2.4, r: 2.0 }, { kind: 'charge', mult: 2.2 }, { kind: 'throw', mult: 2.0, r: 1.8 }], tribe: 0.8, summonCd: 30, summon: ['koboldWarrior', 'koboldWarrior', 'koboldArcher', 'koboldAssassin'], mvpDrops: [['potion3', 3], ['hard_ore', 2]],
     wake: 'War drums in the quarry… the Kobold King holds court in Coal Pit!',
     drops: [['potion3', 1, 2, 0.5], ['kobold_fur', 4, 6, 1], ['hard_ore', 1, 2, 0.4], ['armor_ore', 1, 2, 0.4], ['kobold_ring', 1, 1, 0.05], ['kobold_card', 1, 1, 0.001]] },
-  goblinKing: { name: 'Goblin King', ai: 'boss', art: 'goblinKing', el: 'wind', lv: 55, hp: 210000, atk: [276, 360], def: 22, vit: 48, agi: 34, dex: 74, mdef: 30, exp: [48000, 33600], adelay: 1500, walk: 120, aggro: 7, chase: 25, reach: 1.4, w: 1.3, r: 0.6, heavy: true,
-    mvp: true, respawn: 1800, mvpExp: 24000, stomp: 1.7, moves: [{ kind: 'leap', mult: 1.7, r: 1.8 }, { kind: 'throw', mult: 1.4, r: 1.3 }, { kind: 'frenzy' }], summon: ['goblinWarrior', 'goblinWarrior', 'goblinArcher', 'goblinAssassin'], mvpDrops: [['potion3', 3], ['hard_ore', 3]],
+  goblinKing: { name: 'Goblin King', ai: 'boss', art: 'goblinKing', el: 'wind', lv: 55, hp: 420000, atk: [276, 360], def: 22, vit: 48, agi: 34, dex: 74, mdef: 30, exp: [48000, 33600], adelay: 1500, walk: 120, aggro: 7, chase: 25, reach: 1.4, w: 1.3, r: 0.6, heavy: true,
+    mvp: true, respawn: 1800, mvpExp: 24000, stomp: 1.7, moves: [{ kind: 'mirror', name: 'Mirror Image' }, { kind: 'leap', mult: 1.7, r: 1.8 }, { kind: 'throw', mult: 1.4, r: 1.3 }, { kind: 'frenzy' }], summon: ['goblinWarrior', 'goblinWarrior', 'goblinArcher', 'goblinAssassin'], mvpDrops: [['potion3', 3], ['hard_ore', 3]],
     wake: 'Horns in the dark wood… the Goblin King rides out in Serpent Wood!',
     drops: [['potion3', 1, 2, 0.6], ['goblin_tooth', 4, 6, 1], ['hard_ore', 1, 3, 0.45], ['armor_ore', 1, 3, 0.45], ['goblin_charm', 1, 1, 0.05], ['great_bow', 1, 1, 0.02], ['goblin_card', 1, 1, 0.001]] },
   // ---------- Veidheim and its lands (beasts.js) ----------
@@ -101,11 +105,14 @@ export const MOB_DEFS = {
   // hurls stones from its roots, charges, calls wolves and snakes (summon: see SUMMON_CD), and has
   // two moves of its own (MOVES): Grasping Roots hold a hero who keeps away (a quick Windrunner
   // too) while it comes for them, and Bark Armor sends back what hits it.
-  ancientTreant: { name: 'Ancient Treant', ai: 'boss', art: 'ancientTreant', aura: '#ff9ac8', el: 'earth', lv: 62, hp: 500000, atk: [480, 620], def: 20, vit: 45, agi: 30, dex: 78, mdef: 35, exp: [76000, 53200], adelay: 1200, walk: 170, aggro: 7, chase: 25, reach: 2.0, w: 2.8, r: 1.15, heavy: true,
-    mvp: true, respawn: 2100, mvpExp: 36000, stomp: 2.2, moves: [{ kind: 'roots', name: 'Grasping Roots', mult: 1.2, r: 1.6, hold: 3 }, { kind: 'bark', name: 'Bark Armor' }, { kind: 'throw', name: 'Root Stone', mult: 2.2, r: 2.0 }, { kind: 'charge', name: 'Uprooting Charge', mult: 2.2 }], summon: ['wolf', 'wolf', 'snake', 'snake'], summonText: 'The Ancient Treant groans, and the pack answers!', mvpDrops: [['potion3', 3], ['ancient_seed', 1]],
+  ancientTreant: { name: 'Ancient Treant', ai: 'boss', art: 'ancientTreant', aura: '#ff9ac8', el: 'earth', lv: 62, hp: 500000, atk: [400, 520], def: 20, vit: 45, agi: 30, dex: 78, mdef: 35, exp: [76000, 53200], adelay: 1200, walk: 170, aggro: 7, chase: 25, reach: 2.0, w: 2.8, r: 1.15, heavy: true,
+    mvp: true, respawn: 2100, mvpExp: 36000, stomp: 2.0, moves: [{ kind: 'roots', name: 'Grasping Roots', mult: 1.0, r: 1.6, hold: 2.5 }, { kind: 'bark', name: 'Bark Armor' }, { kind: 'throw', name: 'Root Stone', mult: 2.2, r: 2.0 }, { kind: 'charge', name: 'Uprooting Charge', mult: 2.2 }], summon: ['wolf', 'wolf', 'snake', 'snake'], summonText: 'The Ancient Treant groans, and the pack answers!', mvpDrops: [['potion3', 3], ['ancient_seed', 1]],
     wake: 'The hills shake… the Ancient Treant walks in Wolf Hills!',
     drops: [['potion3', 1, 2, 0.6], ['old_bark', 4, 6, 1], ['ancient_heartwood', 1, 1, 0.25], ['hard_ore', 1, 2, 0.4], ['armor_ore', 1, 2, 0.4], ['oak_ring', 1, 1, 0.05], ['grove_blade', 1, 1, 0.01], ['treant_card', 1, 1, 0.001]] },
 };
+// the Goblin King's Mirror Image: a Goblin King of shadow, just like him to look at, that fights
+// beside him (no EXP, no drops). He takes 90% less damage while one stands (MIRROR)
+MOB_DEFS.kingShadow = { ...MOB_DEFS.goblinKing, decoy: true, mvp: false, ai: 'tank', hp: 9000, atk: [140, 180], exp: [0, 0], drops: [], summon: null, moves: null, mvpDrops: null, wake: null, aggro: 12, chase: 30 };
 // walk: ms a tile, as Ragnarok's monster database has it (Poring 400, Kobold 200, Goblin 150,
 // Goblin Leader 120, Ifrit 130; the hero 150), taken WALK_SCALE times as long. speed: tiles a second.
 for (const d of Object.values(MOB_DEFS)) d.speed = 1000 / (d.walk * WALK_SCALE);
@@ -118,10 +125,17 @@ for (const d of Object.values(MOB_DEFS)) d.speed = 1000 / (d.walk * WALK_SCALE);
 //   leap   - from 2.5 to 8 paces: jumps onto where you stand, landing 0.9 s later, mult x ATK within r.
 //   frenzy - below half HP: for 8 s it moves 30% faster and attacks 40% faster.
 //   roots  - from 3 to 14 paces (the Ancient Treant): roots burst out of the ground where you stand
-//            0.8 s later, mult x ATK within r, and hold you there for `hold` s: you can't walk, dash
-//            or leap away (you can still fight) while it comes for you. Enraged, three patches.
+//            0.8 s later, mult x ATK within r, and hold you there for `hold` s (1.4x enraged): you
+//            can't walk, dash or leap away (you can still fight) while it comes for you. Enraged,
+//            three patches.
 //   bark   - (the Ancient Treant) its bark hardens for 6 s: it takes 30% less damage and sends 30%
 //            of what still lands back at whoever struck it (the hero, or a beast). Stop and wait.
+//   meteors - (the Fire Giant) up to 12 paces: 5 fireballs (7 enraged) fall one after another round
+//            you, each a red circle first, mult x ATK within r; each leaves burning ground (def.burns).
+//   burrow - (the Kobold King) from 2 to 10 paces: digs in, and can't be hit while under; 0.8 s before
+//            it bursts out, a red circle marks where you stand: mult x ATK within r.
+//   mirror - (the Goblin King) calls two Goblin Kings of shadow (kingShadow) and trades places with
+//            one; until both fall he takes 90% less damage.
 // cd: seconds before the same move again (a boss uses one move at a time, and waits 2.5 s between;
 // an MVP 1.6 s, and enraged 1 s with its moves back 40% sooner).
 export const MOVES = {
@@ -131,7 +145,11 @@ export const MOVES = {
   frenzy: { cd: 22, dur: 8, below: 0.5 },
   roots: { min: 3, max: 14, cd: 12, wind: 0.45, land: 0.8 },
   bark: { cd: 20, dur: 6, below: 0.95 },
+  meteors: { min: 0, max: 12, cd: 14, wind: 0.7, n: 5, every: 0.3, land: 1.0 },
+  burrow: { min: 2, max: 10, cd: 14, dig: 0.5, under: 1.8, mark: 0.8 },
+  mirror: { cd: 30, below: 0.9 },
 };
+const MIRROR = 0.1;
 export const BARK = { taken: 0.7, reflect: 0.3 };
 // An MVP is a fight for a strong second job (or a party): below half its HP it is enraged for good
 // (until it heals back over 60%): it hits 25% harder and 35% faster, walks 15% faster, stomps every
@@ -155,7 +173,7 @@ const STATUS_COL = Object.fromEntries(Object.entries({ bark: '#c8a05a', bark2: '
 // once every guard is gone, and not until 2 minutes after the last one fell, while it still fights.
 const SUMMON_AT = 0.6, SUMMON_CD = 120;
 const callMarks = (d) => (d.mvp ? MVP_CALLS : [SUMMON_AT]);
-const summonCd = (d) => (d.mvp ? MVP_SUMMON_CD : SUMMON_CD);
+const summonCd = (d) => d.summonCd ?? (d.mvp ? MVP_SUMMON_CD : SUMMON_CD);
 // a boss's guards are lesser servants of their kind: half the HP, 60% of the ATK (tuned with
 // build-tools/sim.mjs, so the fight is the boss and not two full-strength monsters at once)
 export const GUARD = { hp: 0.5, atk: 0.6 };
@@ -274,6 +292,8 @@ class Mob {
     this.nextMove = 3;       // seconds until any move
     this.rageT = 0;          // frenzy left
     this.barkT = 0;          // Bark Armor left (MOVES.bark)
+    this.under = false;      // burrowed (MOVES.burrow): can't be hit
+    this.wardSaid = -9;      // when it last showed that a blow was shielded
     this.status = null;      // why it is helpless while stunT lasts: freeze, paralyze, stun
     this.burnT = 0;          // burning (main.js inflict)
     this.foe = null;         // a companion beast it has turned on (allies.js), else it fights the hero
@@ -314,6 +334,9 @@ class Mob {
         if (this.hp / d.hp > M.below) continue;
         this.rageT = M.dur;
         this.mgr.emit('frenzy', this);
+      } else if (mv.kind === 'mirror') {
+        if (this.hp / d.hp > M.below || this.mgr.decoysOf(this).length) continue;
+        this.mgr.mirror(this);
       } else if (mv.kind === 'bark') {
         if (this.hp / d.hp > M.below) continue;
         this.barkT = M.dur;
@@ -326,6 +349,8 @@ class Mob {
         const spot = { x: p.x, z: p.z };
         if (mv.kind === 'charge') this.act = { kind: 'charge', mv, t: M.wind, phase: 'wind', left: Math.min(dist + 2, M.max) };
         if (mv.kind === 'throw') this.act = { kind: 'throw', mv, t: M.wind, spot };
+        if (mv.kind === 'meteors') this.act = { kind: 'meteors', mv, t: M.wind };
+        if (mv.kind === 'burrow') this.act = { kind: 'burrow', mv, t: M.dig, phase: 'dig' };
         if (mv.kind === 'roots') { // where you stand, and enraged two more patches beside you
           const spots = [spot];
           if (this.enraged) for (let i = 0; i < 2; i++) { const a = Math.random() * Math.PI * 2; spots.push({ x: p.x + Math.cos(a) * 2.4, z: p.z + Math.sin(a) * 2.4 }); }
@@ -336,7 +361,7 @@ class Mob {
         this.mgr.emit('move', this, this.act);
       }
       this.moveCd[mv.kind] = M.cd * (this.enraged && mv.kind !== 'frenzy' ? MVP_RAGE.cd : 1);
-      if (mv.kind === 'bark') { this.nextMove = 0.5; return; } // (a self move: it can act again at once)
+      if (mv.kind === 'bark' || mv.kind === 'mirror') { this.nextMove = 0.5; return; } // (a self move: it can act again at once)
       this.nextMove = this.enraged ? MVP_RAGE.gap : d.mvp ? MVP_GAP : 2.5;
       return;
     }
@@ -365,6 +390,26 @@ class Mob {
     if (a.kind === 'throw') {
       if (!a.thrown && a.t <= 0) { a.thrown = true; a.t = 0.35; this.atkAnim = ATTACK_ANIM; this.mgr.emit('throw', this, a.spot, a.mv, M.land); }
       else if (a.thrown && a.t <= 0) this.act = null;
+      return { moving: false, lift: 0 };
+    }
+    if (a.kind === 'meteors') {
+      if (a.t <= 0) { this.act = null; this.atkAnim = ATTACK_ANIM; this.mgr.emit('meteors', this, a.mv, this.enraged ? 7 : M.n); }
+      return { moving: false, lift: 0 };
+    }
+    if (a.kind === 'burrow') { // digs in, goes under (it can't be hit), and bursts out where you stood
+      if (a.phase === 'dig') {
+        if (a.t <= 0) { a.phase = 'under'; a.t = M.under; this.under = true; this.mgr.emit('burrow', this); }
+        return { moving: false, lift: 0 };
+      }
+      if (!a.spot && a.t <= M.mark) { a.spot = { x: p.x, z: p.z }; this.mgr.emit('burrowMark', this, a.spot, a.mv, M.mark); }
+      if (a.t <= 0) {
+        const w = this.mgr.world, s = a.spot || { x: p.x, z: p.z };
+        if (w.walkable(s.x, s.z) && !w.isSafe(s.x, s.z) && !nearPortal(w, s.x, s.z, this.def.r)) { this.x = s.x; this.z = s.z; }
+        this.under = false;
+        this.act = null;
+        this.atkAnim = ATTACK_ANIM;
+        this.mgr.emit('erupt', this, a.mv, s);
+      }
       return { moving: false, lift: 0 };
     }
     if (a.kind === 'roots') {
@@ -424,6 +469,12 @@ class Mob {
   // from: the beast that struck (allies.js), else the hero
   hit(dmg, fx, fz, from = null) {
     if (!this.alive) return;
+    const ward = this.ward();
+    if (ward < 1 && dmg > 0) { // underground, behind its tribe, shrouded by its shadows: little or nothing lands
+      dmg = ward > 0 ? Math.max(1, Math.round(dmg * ward)) : 0;
+      if (this.t - this.wardSaid > 1.2) { this.wardSaid = this.t; this.mgr.emit('warded', this); }
+      if (!dmg) return;
+    }
     if (this.barkT > 0 && dmg > 0) { // Bark Armor: less lands, and some of it goes back (main.js)
       dmg = Math.max(1, Math.round(dmg * BARK.taken));
       this.mgr.emit('reflect', this, Math.max(1, Math.round(dmg * BARK.reflect)), from);
@@ -445,6 +496,14 @@ class Mob {
       this.tired = 0;
     }
     if (this.hp <= 0) this.mgr.kill(this);
+  }
+
+  // the share of a blow that lands now: 0 burrowed, less behind its tribe (def.tribe) or its shadows
+  ward() {
+    if (this.under) return 0;
+    if (this.def.tribe && this.mgr.guardsOf(this).some((g) => !g.def.decoy)) return 1 - this.def.tribe;
+    if (this.mgr.decoysOf(this).length) return MIRROR;
+    return 1;
   }
 
   // passes the guard-calling HP marks it is now under; true if it passed any
@@ -738,6 +797,7 @@ class Mob {
     if (!this.mgr.tint.includes(this.mat)) this.mat.color.copy(this.mat.userData.tint || WHITE).multiply(this.mat.userData.fx || WHITE);
 
     const y = this.mgr.world.heightAt(this.x, this.z);
+    this.sprite.visible = this.shadow.visible = !this.under; // (burrowed: out of sight)
     this.sprite.position.set(this.x, y + lift, this.z);
     this.shadow.position.set(this.x, y + 0.03, this.z);
     if (this.aura) { // the glow pulses under the boss; motes rise round it, over its whole height
@@ -838,7 +898,7 @@ export class MobManager {
   bossSnapshot() {
     for (const m of this.list) {
       if (!m.alive || !(m.def.mvp || m.def.boss) || m.temp) continue; // (a raid's boss is not kept)
-      const guards = this.guardsOf(m).map((g) => [g.type, Math.ceil(g.hp)]);
+      const guards = this.guardsOf(m).filter((g) => !g.def.decoy).map((g) => [g.type, Math.ceil(g.hp)]);
       const cd = m.calls && !guards.length ? Math.max(0, summonCd(m.def) - (m.t - m.guardsGoneT)) : 0;
       if (m.hp < m.def.hp || m.calls || guards.length) this.bossHp[m.type] = { hp: Math.ceil(m.hp), max: m.def.hp, at: Date.now(), calls: m.calls, guards, cd };
       else delete this.bossHp[m.type];
@@ -847,6 +907,21 @@ export class MobManager {
   }
 
   guardsOf(boss) { return this.list.filter((o) => o.leader === boss && o.alive); }
+  decoysOf(boss) { return this.guardsOf(boss).filter((o) => o.def.decoy); }
+
+  // the Goblin King's Mirror Image: two shadows of him come, and he trades places with one
+  mirror(boss) {
+    const made = [0, 1].map(() => {
+      const c = this.guard(boss, 'kingShadow', 2);
+      c.def = MOB_DEFS.kingShadow; c.hp = c.def.hp;
+      c.state = 'chase'; c.chaseT = 30; c.angry = 30;
+      return c;
+    });
+    const o = made[Math.floor(Math.random() * 2)];
+    [boss.x, boss.z, o.x, o.z] = [o.x, o.z, boss.x, boss.z];
+    for (const c of [boss, ...made]) this.fx.puff(c.x, this.world.heightAt(c.x, c.z) + 0.4, c.z, 1.2);
+    this.emit('mirror', boss);
+  }
 
   // a king's guards: they come running, and don't come back once beaten
   summon(boss) {

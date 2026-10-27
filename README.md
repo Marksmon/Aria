@@ -134,11 +134,14 @@ the ATK): cut them down first. At the level their quests suggest (Giant Sprout 2
 Giant Mushroom 43, Giant Beetle 50) each is about a two-minute fight on a dozen or so Orange
 Potions; see `docs/balance.md`.
 
-**MVP.** The Fire Giant (Lv 60, 240,000 HP, Fire), optional and not part of the story, roams Ember Hill and stomps the
+**MVP.** The Fire Giant (Lv 60, 480,000 HP, Fire), optional and not part of the story, roams Ember Hill and stomps the
 ground around it every few seconds. MVPs are the hardest fights in Aria, made for a strong second
-job well above their level (or a long, careful fight for one at it): a minute or more of dodging
-and a bag of White and Blue Potions, and the wrong element (Fire Arrows on the Fire Giant) can
-cost you the fight. Whoever brings it down gets **MVP** over their
+job well above their level: several minutes each, a big bag of White and Blue Potions, and a plan.
+Each has skills of its own that punish standing and shooting, and the wrong element (Fire Arrows
+on the Fire Giant) can cost you the fight. The Fire Giant calls down a **Meteor Rain**: five
+fireballs (seven when enraged) fall one after another around you, each a red circle first, and
+wherever its meteors and leaps land the ground **burns** for 6 seconds (an orange circle), burning
+anyone who stands in it. Keep moving, fight from clear ground, and bring Ice Arrows. Whoever brings it down gets **MVP** over their
 head, bonus Base EXP and MVP items straight to the bag, plus its drops (its horn, crown, cape or
 sword). It comes back 15 minutes later, even if you leave the map or close the game.
 
@@ -159,9 +162,16 @@ or leap away, so even a quick hero who keeps their distance gets caught while it
 30% of every hit back at whoever struck it, you or your beasts. Hold off until it passes. It comes back 35 minutes
 after it falls.
 
-Two more MVPs rule the new lands: the **Kobold King** (Lv 50, 180,000 HP, Earth) in
-Coal Pit, and the **Goblin King** (Lv 55, 210,000 HP, Wind) in Serpent Wood. Both
-stomp like the Fire Giant, and each MVP keeps its own timer (20 and 30 minutes). **Every MVP calls
+Two more MVPs rule the new lands: the **Kobold King** (Lv 50, 300,000 HP, Earth) in
+Coal Pit, and the **Goblin King** (Lv 55, 420,000 HP, Wind) in Serpent Wood. Both
+stomp like the Fire Giant, and each MVP keeps its own timer (20 and 30 minutes). The Kobold King
+hides behind his tribe (**Tribe's Shield**): while any of his guards stands he takes 80% less
+damage, and he calls them back every 30 seconds, so cut the guards down first (Arrow Rain and
+other area skills shine here). He also **Burrows**: he digs in, can't be hit while under, and
+bursts out where you stood (a red circle shows it just before). The Goblin King's **Mirror Image**
+calls two shadow Goblin Kings that look just like him and fight beside him, and he trades places
+with one of them: while a shadow stands he takes 90% less damage, so find the shadows and bring
+them down. **Every MVP calls
 guards** at 80%, 50% and 25% of its HP: the Fire Giant 2 Fire Wisps and 3 Fire Beetles, each
 king 4 of his own (2 warriors, an archer and an assassin); a call brings back only the guards that
 are missing. Once the last guard falls, it calls again a minute later, if it is still fighting. Guards are lesser
@@ -192,9 +202,9 @@ fills up until it hits: step out of it.
 
 | Boss | Moves |
 |---|---|
-| Kobold King | **Charge**: crouches, then rushes at you in a straight line (stands winded after) · **Boulder**: thrown where you stand, lands 1 s later |
-| Goblin King | **Leap**: jumps onto where you stand · **Hurled Axe** · **Frenzy** below half HP: 8 s of faster steps and attacks (he glows red) |
-| Fire Giant | **Fireball** (wide) · **Leap** |
+| Kobold King | **Burrow** (bursts out under you) · **Charge**: crouches, then rushes at you in a straight line (stands winded after) · **Boulder**: thrown where you stand, lands 1 s later · **Tribe's Shield** while his guards stand |
+| Goblin King | **Mirror Image** (two shadow kings) · **Leap**: jumps onto where you stand · **Hurled Axe** · **Frenzy** below half HP: 8 s of faster steps and attacks (he glows red) |
+| Fire Giant | **Meteor Rain** · **Fireball** (wide) · **Leap** · burning ground where they land |
 | Giant Sprout · Giant Mushroom | **Seed Pod** · **Spore Pod**, thrown at you |
 | King Crab · Giant Beetle | **Charge** |
 | Elder Willow | **Seed Cloud**, thrown at you |

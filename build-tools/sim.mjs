@@ -165,7 +165,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   } else {
     console.log('| Monster | Lv | Blader at its level | Sorcerer at its level | Archer at its level |\n|---|---|---|---|---|');
     for (const [t, d] of Object.entries(MOB_DEFS).sort((a, b) => a[1].lv - b[1].lv)) {
-      if (d.mvp || d.night || d.raid || t === 'slimelet') continue; // (raid monsters: build-tools/raid-sim.mjs)
+      if (d.mvp || d.night || d.raid || d.decoy || t === 'slimelet') continue; // (raid monsters: build-tools/raid-sim.mjs)
       const opts = d.boss ? { potions: 20 } : {};
       console.log(`| ${d.name} | ${d.lv} | ${fmt(sim('blader', d.lv, t, opts))} | ${fmt(sim('sorcerer', d.lv, t, opts))} | ${fmt(sim('archer', d.lv, t, opts))} |`);
     }

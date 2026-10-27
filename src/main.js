@@ -555,6 +555,84 @@ mobs.on('slam', (m, mv) => {
   fx.sparkle(m.x, y + 0.3, m.z, MOVE_COL[m.def.el] || '#ffffff', 20);
   audio.play('hit');
   bossBlow(m, mv.mult, m.x, m.z, mv.r);
+  if (m.def.burns) burnGround(m, m.x, m.z);
+});
+// burning ground (the Fire Giant's def.burns): where its meteors and leaps land, the ground burns
+// for a while; standing in it burns you every half second (mult x its ATK)
+const burning = [];
+function burnGround(m, x, z) {
+  const b = m.def.burns;
+  burning.push({ m, map: world.id, x, z, r: b.r, t: b.dur, tick: 0.5 });
+  fx.warn(x, z, b.r, b.dur, '#ff8a2a');
+}
+function burnTick(dt) {
+  for (let i = burning.length - 1; i >= 0; i--) {
+    const b = burning[i];
+    b.t -= dt;
+    if (b.t <= 0 || !b.m.alive || world.id !== b.map) { burning.splice(i, 1); continue; }
+    if (Math.random() < dt * 3) fx.sparkle(b.x + (Math.random() - 0.5) * b.r, world.heightAt(b.x, b.z) + 0.2, b.z + (Math.random() - 0.5) * b.r, '#ff7a2a', 2);
+    if ((b.tick -= dt) > 0) continue;
+    b.tick = 0.5;
+    if (Math.hypot(player.x - b.x, player.z - b.z) > b.r || !player.canBeHit() || player.state === 'down') continue;
+    const res = mobAttack(b.m.def, player.ps, b.m.def.burns.mult * b.m.fury);
+    if (!res.miss) { player.takeDamage(res.dmg, b.x, b.z); fx.number(player.x, overHead(player, 1.6), player.z, 'Burning!', 'miss'); }
+  }
+}
+// Meteor Rain (the Fire Giant): fireballs fall one after another round you, each a red circle first
+mobs.on('meteors', (m, mv, n) => {
+  const map = world.id, M = MOVES.meteors;
+  menus.message(`The ${m.def.name} calls down a Meteor Rain! Keep moving!`);
+  for (let i = 0; i < n; i++) {
+    setTimeout(() => {
+      if (world.id !== map || !m.alive) return;
+      const a = Math.random() * Math.PI * 2, r = i ? 1.2 + Math.random() * 2.8 : 0; // the first right where you are
+      const spot = { x: player.x + Math.cos(a) * r, z: player.z + Math.sin(a) * r };
+      fx.warn(spot.x, spot.z, mv.r, M.land);
+      const gy = world.heightAt(spot.x, spot.z), fall = 9 / 13; // (fx.bolt flies 13 paces a second)
+      setTimeout(() => {
+        if (world.id !== map || !m.alive) return;
+        fx.bolt(spot.x, gy + 9, spot.z, { x: spot.x, z: spot.z, alive: true }, '#ff6a1a', () => {
+          if (world.id !== map || !m.alive) return;
+          fx.puff(spot.x, gy + 0.2, spot.z, mv.r * 1.2);
+          fx.sparkle(spot.x, gy + 0.3, spot.z, '#ff6a1a', 14);
+          audio.play('hit');
+          bossBlow(m, mv.mult, spot.x, spot.z, mv.r);
+          if (m.def.burns) burnGround(m, spot.x, spot.z);
+        }, 0.9);
+      }, Math.max(0, M.land - fall) * 1000);
+    }, i * M.every * 1000);
+  }
+});
+// Burrow (the Kobold King): he digs in (he can't be hit), and a red circle marks where he bursts out
+mobs.on('burrow', (m) => {
+  const y = world.heightAt(m.x, m.z);
+  fx.puff(m.x, y + 0.2, m.z, 1.4);
+  fx.sparkle(m.x, y + 0.3, m.z, '#c8a06a', 16);
+  audio.play('dodge');
+  menus.message(`The ${m.def.name} burrows into the ground! Watch your feet.`);
+});
+mobs.on('burrowMark', (m, spot, mv, t) => fx.warn(spot.x, spot.z, mv.r, t));
+mobs.on('erupt', (m, mv, spot) => {
+  const y = world.heightAt(spot.x, spot.z);
+  fx.puff(spot.x, y + 0.2, spot.z, mv.r * 1.3);
+  fx.sparkle(spot.x, y + 0.3, spot.z, '#c8a06a', 22);
+  audio.play('hit');
+  cam.shake = 0.35;
+  bossBlow(m, mv.mult, spot.x, spot.z, mv.r);
+});
+// Mirror Image (the Goblin King): shadows of him, and he hides among them
+mobs.on('mirror', (m) => {
+  menus.message(`The ${m.def.name} splits into three! Cut down his shadows: he is shrouded while they stand.`);
+  fx.number(m.x, overHead(m, m.sprite.scale.y * 0.8 + 0.4), m.z, 'Mirror Image', 'skill');
+  audio.play('night');
+});
+// a blow that barely lands (mobs.js ward): underground, behind his tribe, shrouded by shadows
+const WARD_HINT = { under: 'Underground!', tribe: 'Guarded!', mirror: 'Shrouded!' };
+let wardHintAt = 0;
+mobs.on('warded', (m) => {
+  const why = m.under ? 'under' : m.def.tribe ? 'tribe' : 'mirror';
+  fx.number(m.x, overHead(m, m.sprite.scale.y * 0.8 + 0.4), m.z, WARD_HINT[why], 'miss');
+  if (why === 'tribe' && performance.now() - wardHintAt > 15000) { wardHintAt = performance.now(); menus.message(`The ${m.def.name} hides behind his tribe! Bring down his guards first.`); }
 });
 mobs.on('enrage', (m) => { // an MVP below half its HP (mobs.js MVP_RAGE)
   menus.message(`The ${m.def.name} is enraged! It hits harder and faster now.`);
@@ -2468,6 +2546,7 @@ function frame() {
   mobs.cam = b;
   allies.cam = b;
   if (live) mobs.update(dt, player);
+  if (live) burnTick(dt);
   if (live) allies.update(dt, player, mobs, player.goal?.mob || player.cast?.target);
   if (live) dayNight.update(dt, t); else if (!started) dayNight.update(0, t);
   world.update(dt, t);
