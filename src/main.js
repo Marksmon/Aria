@@ -8,7 +8,7 @@ import { Player } from './player.js';
 import { Input } from './input.js';
 import { UI } from './ui.js';
 import { FX } from './fx.js';
-import { MobManager, MOB_DEFS, MOVES, guardDef, raidDef } from './mobs.js';
+import { MobManager, MOB_DEFS, MOVES, MVP_MOVE, guardDef, raidDef } from './mobs.js';
 import { Allies } from './allies.js';
 import { RAIDS, rollReward } from './raid.js';
 import { loadSave, writeSave, loadStorage, writeStorage, clearSave, saveCode, loadCode, SLOTS, activeSlot, setActiveSlot } from './save.js';
@@ -472,7 +472,7 @@ mobs.on('stomp', (m) => { // the ground bursts around the boss
   if (Math.hypot(player.x - m.x, player.z - m.z) > 3.2) return;
   cam.shake = 0.35;
   if (!player.canBeHit()) return;
-  const res = mobAttack(m.def, player.ps, (m.def.stomp || 1.5) * m.fury);
+  const res = mobAttack(m.def, player.ps, (m.def.stomp || 1.5) * m.fury, m.def.mvp ? MVP_MOVE : undefined);
   if (res.miss) fx.number(player.x, overHead(player, 1.3), player.z, 'Miss', 'miss');
   else player.takeDamage(res.dmg, m.x, m.z);
 });
@@ -482,7 +482,7 @@ const MOVE_COL = { fire: '#ff6a1a', earth: '#c8a06a', wind: '#dff7c8', water: '#
 function bossBlow(m, mult, x, z, r) {
   if (Math.hypot(player.x - x, player.z - z) > r + 0.3 || !player.canBeHit() || player.state === 'down') return;
   cam.shake = 0.3;
-  const res = mobAttack(m.def, player.ps, mult * m.fury);
+  const res = mobAttack(m.def, player.ps, mult * m.fury, m.def.mvp ? MVP_MOVE : undefined); // (an MVP's: no FLEE, little DEF)
   if (res.miss) fx.number(player.x, overHead(player, 1.3), player.z, 'Miss', 'miss');
   else player.takeDamage(res.dmg, x, z);
 }
@@ -575,7 +575,7 @@ function burnTick(dt) {
     if ((b.tick -= dt) > 0) continue;
     b.tick = 0.5;
     if (Math.hypot(player.x - b.x, player.z - b.z) > b.r || !player.canBeHit() || player.state === 'down') continue;
-    const res = mobAttack(b.m.def, player.ps, b.m.def.burns.mult * b.m.fury);
+    const res = mobAttack(b.m.def, player.ps, b.m.def.burns.mult * b.m.fury, MVP_MOVE);
     if (!res.miss) { player.takeDamage(res.dmg, b.x, b.z); fx.number(player.x, overHead(player, 1.6), player.z, 'Burning!', 'miss'); }
   }
 }

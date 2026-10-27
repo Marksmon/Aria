@@ -54,7 +54,7 @@ export const MOB_DEFS = {
   // and calls 2 Fire Wisps and 3 Fire Beetles (summon: see SUMMON_CD).
   // A fight of several minutes for a strong second job. Its own moves (MOVES): Meteor Rain, and
   // burning ground (burns) wherever its meteors and leaps land: keep moving, and fight off the fire.
-  jarl: { name: 'Fire Giant', ai: 'boss', art: 'jarl', el: 'fire', lv: 60, hp: 480000, atk: [300, 400], def: 20, vit: 40, agi: 30, dex: 70, mdef: 40, exp: [60000, 42000], adelay: 2400, walk: 130, aggro: 7, chase: 25, reach: 1.9, w: 3.1, r: 1.15, heavy: true,
+  jarl: { name: 'Fire Giant', ai: 'boss', art: 'jarl', el: 'fire', lv: 60, hp: 800000, atk: [300, 400], def: 20, vit: 40, agi: 30, dex: 160, mdef: 40, exp: [60000, 42000], adelay: 2400, walk: 130, aggro: 7, chase: 25, reach: 1.9, w: 3.1, r: 1.15, heavy: true,
     mvp: true, respawn: 900, mvpExp: 30000, stomp: 1.8, moves: [{ kind: 'meteors', name: 'Meteor Rain', mult: 1.8, r: 1.5 }, { kind: 'throw', mult: 2.0, r: 2.0 }, { kind: 'leap', mult: 1.8, r: 2.2 }], burns: { r: 1.5, dur: 6, mult: 0.35 },
     summon: ['emberWisp', 'emberWisp', 'cinderBeetle', 'cinderBeetle', 'cinderBeetle'], summonText: 'The Fire Giant roars, and the fire answers!', mvpDrops: [['potion3', 3], ['ember_heart', 1]],
     wake: 'The ground trembles… the Fire Giant has woken in Ember Hill!',
@@ -74,11 +74,11 @@ export const MOB_DEFS = {
   // The Kobold King hides behind his tribe (tribe: he takes 80% less damage while a guard stands,
   // and calls them back every 30 s) and Burrows under you; the Goblin King's Mirror Image sends two
   // Goblin Kings of shadow at you (kingShadow), and shrouds him (90% less damage) until both fall.
-  koboldKing: { name: 'Kobold King', ai: 'boss', art: 'koboldKing', el: 'earth', lv: 50, hp: 450000, atk: [330, 430], def: 22, vit: 45, agi: 30, dex: 70, mdef: 25, exp: [36000, 25200], adelay: 2000, walk: 150, aggro: 7, chase: 25, reach: 1.4, w: 1.3, r: 0.6, heavy: true,
+  koboldKing: { name: 'Kobold King', ai: 'boss', art: 'koboldKing', el: 'earth', lv: 50, hp: 1200000, atk: [330, 430], def: 22, vit: 45, agi: 30, dex: 140, mdef: 25, exp: [36000, 25200], adelay: 2000, walk: 150, aggro: 7, chase: 25, reach: 1.4, w: 1.3, r: 0.6, heavy: true,
     mvp: true, respawn: 1200, mvpExp: 18000, stomp: 2.0, moves: [{ kind: 'burrow', name: 'Burrow', mult: 2.4, r: 2.0 }, { kind: 'charge', mult: 2.2 }, { kind: 'throw', mult: 2.0, r: 1.8 }], tribe: 0.8, summonCd: 30, summon: ['koboldWarrior', 'koboldWarrior', 'koboldArcher', 'koboldAssassin'], mvpDrops: [['potion3', 3], ['hard_ore', 2]],
     wake: 'War drums in the quarry… the Kobold King holds court in Coal Pit!',
     drops: [['potion3', 1, 2, 0.5], ['kobold_fur', 4, 6, 1], ['hard_ore', 1, 2, 0.4], ['armor_ore', 1, 2, 0.4], ['kobold_ring', 1, 1, 0.05], ['kobold_card', 1, 1, 0.01]] },
-  goblinKing: { name: 'Goblin King', ai: 'boss', art: 'goblinKing', el: 'wind', lv: 55, hp: 420000, atk: [276, 360], def: 22, vit: 48, agi: 34, dex: 74, mdef: 30, exp: [48000, 33600], adelay: 2200, walk: 120, aggro: 7, chase: 25, reach: 1.4, w: 1.3, r: 0.6, heavy: true,
+  goblinKing: { name: 'Goblin King', ai: 'boss', art: 'goblinKing', el: 'wind', lv: 55, hp: 1200000, atk: [276, 360], def: 22, vit: 48, agi: 34, dex: 150, mdef: 30, exp: [48000, 33600], adelay: 2200, walk: 120, aggro: 7, chase: 25, reach: 1.4, w: 1.3, r: 0.6, heavy: true,
     mvp: true, respawn: 1800, mvpExp: 24000, stomp: 1.7, moves: [{ kind: 'mirror', name: 'Mirror Image' }, { kind: 'leap', mult: 1.7, r: 1.8 }, { kind: 'throw', mult: 1.4, r: 1.3 }, { kind: 'frenzy' }], summon: ['goblinWarrior', 'goblinWarrior', 'goblinArcher', 'goblinAssassin'], mvpDrops: [['potion3', 3], ['hard_ore', 3]],
     wake: 'Horns in the dark wood… the Goblin King rides out in Serpent Wood!',
     drops: [['potion3', 1, 2, 0.6], ['goblin_tooth', 4, 6, 1], ['hard_ore', 1, 3, 0.45], ['armor_ore', 1, 3, 0.45], ['goblin_charm', 1, 1, 0.05], ['great_bow', 1, 1, 0.02], ['goblin_card', 1, 1, 0.01]] },
@@ -105,7 +105,7 @@ export const MOB_DEFS = {
   // hurls stones from its roots, charges, calls wolves and snakes (summon: see SUMMON_CD), and has
   // two moves of its own (MOVES): Grasping Roots hold a hero who keeps away (a quick Windrunner
   // too) while it comes for them, and Bark Armor sends back what hits it.
-  ancientTreant: { name: 'Ancient Treant', ai: 'boss', art: 'ancientTreant', aura: '#ff9ac8', el: 'earth', lv: 62, hp: 500000, atk: [400, 520], def: 20, vit: 45, agi: 30, dex: 78, mdef: 35, exp: [76000, 53200], adelay: 2000, walk: 170, aggro: 7, chase: 25, reach: 2.0, w: 2.8, r: 1.15, heavy: true,
+  ancientTreant: { name: 'Ancient Treant', ai: 'boss', art: 'ancientTreant', aura: '#ff9ac8', el: 'earth', lv: 62, hp: 1100000, atk: [400, 520], def: 20, vit: 45, agi: 30, dex: 165, mdef: 35, exp: [76000, 53200], adelay: 2000, walk: 170, aggro: 7, chase: 25, reach: 2.0, w: 2.8, r: 1.15, heavy: true,
     mvp: true, respawn: 2100, mvpExp: 36000, stomp: 2.0, moves: [{ kind: 'roots', name: 'Grasping Roots', mult: 1.0, r: 1.6, hold: 2.5 }, { kind: 'bark', name: 'Bark Armor' }, { kind: 'throw', name: 'Root Stone', mult: 2.2, r: 2.0 }, { kind: 'charge', name: 'Uprooting Charge', mult: 2.2 }], summon: ['wolf', 'wolf', 'snake', 'snake'], summonText: 'The Ancient Treant groans, and the pack answers!', mvpDrops: [['potion3', 3], ['ancient_seed', 1]],
     wake: 'The hills shake… the Ancient Treant walks in Wolf Hills!',
     drops: [['potion3', 1, 2, 0.6], ['old_bark', 4, 6, 1], ['ancient_heartwood', 1, 1, 0.25], ['hard_ore', 1, 2, 0.4], ['armor_ore', 1, 2, 0.4], ['oak_ring', 1, 1, 0.05], ['grove_blade', 1, 1, 0.01], ['treant_card', 1, 1, 0.01]] },
@@ -159,6 +159,10 @@ export const BARK = { taken: 0.7, reflect: 0.3 };
 export const MVP_RAGE = { below: 0.5, calm: 0.6, atk: 1.25, adelay: 0.65, speed: 1.15, stomp: 4.5, gap: 1, cd: 0.6 };
 // (An MVP swings slowly for its ATK: its moves are the danger, each shown by a red circle first.)
 const MVP_CALLS = [0.8, 0.5, 0.25], MVP_SUMMON_CD = 60, MVP_GIVE_UP = 22, MVP_GAP = 1.6;
+// An MVP's moves (stomp, its circles, burning ground) can't be stepped aside from with FLEE, and go
+// through 75% of DEF: no armor makes you safe from them, only getting out of the circle. (Its swings
+// stay ordinary blows, but an MVP's DEX is high: they land on all but the nimblest.)
+export const MVP_MOVE = { sure: true, pierce: 0.75 };
 const RESPAWN = 60;
 // a wounded boss or MVP heals 5% of its HP a minute while it isn't fighting you, on its map or not;
 // what it has left is kept when you leave (bossHp, saved), so a fight can be picked up again
@@ -1014,7 +1018,7 @@ export class MobManager {
       const w = this.bossHp[type]; // as you left it: its wounds (less what it healed since) and its guards
       if (w) {
         // (its wounds as a share of its HP, should that have changed; an MVP left wounded before MVPs
-        // got 10x their HP comes back whole)
+        // got their much bigger HP comes back whole)
         const hp = w.max ? w.hp * m.def.hp / w.max : m.def.mvp ? m.def.hp : w.hp;
         m.hp = Math.min(m.def.hp, hp + m.def.hp * BOSS_REGEN * (Date.now() - w.at) / 60000);
         m.calls = w.calls || 0;

@@ -114,12 +114,14 @@ export function playerAttack(ps, md, mult = 1, hitMult = 1, skill = false) {
 
 // A monster hits the player: perfect dodge, then hit vs FLEE, then DEF.
 // Returns { miss, dodge, dmg }.
-export function mobAttack(md, ps, atkMult = 1) {
+// opts: { sure: it can't be stepped aside from (FLEE doesn't count; a lucky dodge still does),
+// pierce: the share of DEF it goes through } (an MVP's moves, mobs.js MVP_MOVE)
+export function mobAttack(md, ps, atkMult = 1, opts = {}) {
   if (Math.random() * 100 < ps.dodge) return { miss: true, dodge: true, dmg: 0 };
-  const hit = clamp(80 + md.lv + md.dex - ps.flee, 5, 100);
+  const hit = opts.sure ? 100 : clamp(80 + md.lv + md.dex - ps.flee, 5, 100);
   if (Math.random() * 100 >= hit) return { miss: true, dodge: false, dmg: 0 };
   let dmg = (md.atk[0] + rnd(md.atk[1] - md.atk[0] + 1)) * atkMult;
-  dmg = dmg * (100 - ps.def) / 100 - playerSoftDef(ps.end);
+  dmg = dmg * (100 - ps.def * (1 - (opts.pierce || 0))) / 100 - playerSoftDef(ps.end);
   return { miss: false, dodge: false, dmg: Math.max(1, Math.floor(dmg)) };
 }
 
