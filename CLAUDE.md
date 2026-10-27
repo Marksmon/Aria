@@ -60,9 +60,10 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   lean to casters and archers) wait for new monsters in a map extension. The MVP and raid boss cards
   each have an effect of their own, after the boss's moves (`card.perk`: Fire Giant burn, Kobold
   King guard, Goblin King lucky dodge, Ancient Treant reflect; BleepBloop lifesteal, Kobold Warlord
-  stun, Goblin Warlord melee and double blows). Mini-boss cards have a small one, about half an
-  MVP card's (Giant Sprout HP regen, King Crab guard, Giant Mushroom SP regen, Giant Beetle burn,
-  Elder Willow stun, Alpha Wolf lucky dodge, Great Bear double blows). Every card keeps its stats
+  stun, Goblin Warlord melee and double blows). Mini-boss cards have smaller ones of their own,
+  never a weaker copy of an MVP's or raid boss's (the owner's call: Giant Sprout HP regen, King Crab
+  HP back on a miss, Giant Mushroom SP regen, Giant Beetle DEF pierce, Elder Willow faster casting,
+  Alpha Wolf crits, Great Bear harder blows at low HP). Every card keeps its stats
   (the owner's call; MVP and boss cards too); an effect comes on top.
   Each MVP has a matchup (`takes` in `mobs.js`, applied in `rules.js`): easiest for one job family
   and hardest for another (Fire Giant: bows / casters; Kobold King: casters / bows; Goblin King:

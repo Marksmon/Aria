@@ -823,14 +823,14 @@ they come back whole and the slot stays open. A piece that breaks at Holger's gi
 | Kobold King Card (Stubborn) | Armor | Max HP +30%, DEF +7, FLEE +7, END +7; **Tribe's Shield:** monsters' blows land 15% softer | Kobold King, 1% |
 | Goblin King Card (Tyrant) | Weapon | ATK +75, POW +7, QKN +7, attacks 10% faster; **Mirror Image:** +10% lucky dodge (works on an MVP's moves too) | Goblin King, 1% |
 | Giant Sprout Card (Blooming) | Accessory | Max HP +10%, END +4; **Bloom:** HP comes back 30% faster | Giant Sprout, 1% |
-| King Crab Card (Tidal) | Garment | QKN +5, FLEE +8; **Hard Shell:** monsters' blows land 5% softer | King Crab, 1% |
+| King Crab Card (Tidal) | Garment | QKN +5, FLEE +8; **Ebb Tide:** each blow that misses you gives back 1% Max HP | King Crab, 1% |
 | Giant Mushroom Card (Dreaming) | Head or face | KNL +6, Max SP +10%; **Dream Spores:** SP comes back 30% faster | Giant Mushroom, 1% |
-| Giant Beetle Card (Burning) | Weapon | ATK +25, POW +4; **Smoulder:** blows and spells set a monster burning 5% of the time | Giant Beetle, 1% |
-| Elder Willow Card (Elder) | Wings | FNS +3, KNL +3; **Rooting Seeds:** blows and spells hold a monster fast 3% of the time | Elder Willow, 1% |
-| Alpha Wolf Card (Wild) | Shoes | QKN +6, FLEE +10; **Pounce:** +5% lucky dodge | Alpha Wolf, 1% |
-| Great Bear Card (Savage) | Weapon | ATK +30, POW +5, Max HP +10%; **Maul:** 5% of blows up close land twice | Great Bear, 1% |
+| Giant Beetle Card (Burning) | Weapon | ATK +25, POW +4; **Shell Breaker:** your blows go through 25% of a monster's DEF | Giant Beetle, 1% |
+| Elder Willow Card (Elder) | Wings | FNS +3, KNL +3; **Whispering Seeds:** spells cast 15% faster | Elder Willow, 1% |
+| Alpha Wolf Card (Wild) | Shoes | QKN +6, FLEE +10; **Keen Fangs:** +8% critical hits | Alpha Wolf, 1% |
+| Great Bear Card (Savage) | Weapon | ATK +30, POW +5, Max HP +10%; **Wounded Fury:** below 40% HP your blows hit 20% harder | Great Bear, 1% |
 | Ancient Treant Card (Ancient) | Shield | DEF +10, Max HP +20%, POW +6, END +7; **Bark Armor:** a monster striking you up close takes back 20% of the blow | Ancient Treant, 1% |
-| Fire Giant Card (Infernal) | Weapon (a sorcerer's card) | MATK +45%, KNL +9, FNS +6, Max SP +20%, Max HP +10%, weapon turns Fire (+15% Fire spells with a staff); **Meteor Heart:** spells and blows set a monster burning 10% of the time | Fire Giant, 1% |
+| Fire Giant Card (Infernal) | Weapon (a sorcerer's card) | MATK +30%, KNL +6, FNS +4, Max SP +15%, Max HP +5%, weapon turns Fire (+15% Fire spells with a staff); **Meteor Heart:** spells and blows set a monster burning 10% of the time | Fire Giant, 1% |
 
 **Who can wear what.** Swords up to the Iron Sword: Trainee and Blader; rare and elemental
 swords: Blader only. Staves: Sorcerer only (the Wooden Staff also Trainees). Bows and arrows:

@@ -220,8 +220,7 @@ function inflict(m, st, lv, hitDmg = 0) {
   fx.number(m.x, overHead(m, m.sprite.scale.y * 0.8 + 0.35), m.z, STATUS_TEXT[st.kind], 'miss');
 }
 // cards' own effects on each hit or spell that lands (items.js card.perk): the Fire Giant's Meteor
-// Heart (and the Giant Beetle's Smoulder) sets the monster burning, the Kobold Warlord's Earthshaker
-// (and the Elder Willow's Rooting Seeds) stuns it (a boss a third as often,
+// Heart sets the monster burning, the Kobold Warlord's Earthshaker stuns it (a boss a third as often,
 // for half as long, like any status), and the BleepBloop's Gulp heals you a share of the damage
 function cardOnHit(m, dmg) {
   const ps = player.ps;
@@ -385,7 +384,7 @@ player.on('strike', (m, res) => {
     if (res.el < 1) weakTip(m, player.ps.el);
     audio.play('hit');
     cardOnHit(m, res.dmg);
-    // a blow struck up close now and then lands twice (the Goblin Warlord Card's Frenzy, the Great Bear's Maul)
+    // the Goblin Warlord Card's Frenzy: a blow struck up close now and then lands twice
     if (!player.bow && player.ps.double && m.alive && Math.random() * 100 < player.ps.double) {
       m.hit(res.dmg, 0, 0);
       fx.number(m.x, y + 0.35, m.z, 'Twice!', 'skill');
@@ -401,7 +400,11 @@ player.on('hurt', (n) => {
   fx.number(player.x, overHead(player, 1.3), player.z, n, 'taken');
 });
 mobs.on('thorns', (m, n) => fx.number(m.x, overHead(m, m.sprite.scale.y * 0.8), m.z, n, 'dealt')); // Bark Armor's
-mobs.on('miss', (m, res) => { const t = m.foe || player; fx.number(t.x, overHead(t, 1.3), t.z, res.dodge ? 'Lucky!' : 'Miss', 'miss'); });
+mobs.on('miss', (m, res) => {
+  // the King Crab Card's Ebb Tide: a blow that misses you gives back a little HP
+  if (!m.foe && player.ps.ebb) { const n = player.heal(Math.max(1, Math.round(player.maxHp * player.ps.ebb / 100))); if (n > 0) fx.number(player.x, overHead(player, 1.6), player.z, n, 'heal'); }
+  const t = m.foe || player; fx.number(t.x, overHead(t, 1.3), t.z, res.dodge ? 'Lucky!' : 'Miss', 'miss');
+});
 // the beasts: their bites and dives, the blows they take, the Bear's roar, a beast that falls
 allies.on('strike', (b, m, res) => {
   if (!m.alive) return;
@@ -2329,7 +2332,8 @@ function tickSkills(dt) {
   moonMark.classList.toggle('on', nightUp && skillLv(prog, 'moonlit') > 0 && player.state !== 'down');
   player.steady = buffs.ward > 0;
   const low = player.hp < player.maxHp * 0.25 && skillLv(prog, 'laststand');
-  player.atkMul = (buffs.warcry > 0 ? 1 + warcryLv / 100 : 1) * (low ? 1.15 : 1) * (1 + momentum * skillLv(prog, 'momentum') / 100);
+  const fury = player.ps.fury && player.hp < player.maxHp * 0.4 ? 1 + player.ps.fury / 100 : 1; // the Great Bear Card's Wounded Fury
+  player.atkMul = (buffs.warcry > 0 ? 1 + warcryLv / 100 : 1) * (low ? 1.15 : 1) * (1 + momentum * skillLv(prog, 'momentum') / 100) * fury;
 }
 
 // ---------- tap to walk, attack, pick up, talk ----------

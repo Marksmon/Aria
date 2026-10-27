@@ -73,7 +73,7 @@ export function derive(prog, gear) {
     mastery: gear.mastery || 0,
     hit: lv + fns + (gear.hit || 0),
     flee: lv + qkn + (gear.flee || 0),
-    crit: (10 + Math.floor(ftn * 10 / 3)) / 10,  // %
+    crit: (10 + Math.floor(ftn * 10 / 3)) / 10 + (gear.perk?.crit || 0), // % (the Alpha Wolf Card's Keen Fangs adds to it)
     dodge: (ftn + 10) / 10 + (gear.perk?.dodge || 0), // % perfect dodge (the Goblin King Card adds to it)
     // cards' own effects (items.js card.perk): melee % harder blows up close, guard % softer blows
     // from monsters, reflect % of a blow up close back at the monster, burn % chance to set one burning
@@ -84,12 +84,15 @@ export function derive(prog, gear) {
     stun: gear.perk?.stun || 0,            // % chance a hit or spell stuns (the Kobold Warlord Card)
     lifesteal: gear.perk?.lifesteal || 0,  // % of damage dealt healed (the BleepBloop Card)
     double: gear.perk?.double || 0,        // % chance a blow up close lands twice (the Goblin Warlord Card)
+    pierce: gear.perk?.pierce || 0,        // % of a monster's DEF your blows go through (the Giant Beetle Card)
+    ebb: gear.perk?.ebb || 0,              // % Max HP back each time a monster misses you (the King Crab Card)
+    fury: gear.perk?.fury || 0,            // % harder blows below 40% HP (the Great Bear Card)
     def: clamp(gear.def || 0, 0, 100),            // hard DEF from equipment
     end,                                          // soft DEF comes from END each hit
     mdef: knl + Math.floor(end / 2),
     // magic: KNL makes MATK, FNS shortens cast times (no cast at 150 FNS)
     matk: [knl + Math.floor(knl / 7) ** 2, knl + Math.floor(knl / 5) ** 2].map((v) => Math.floor(v * (100 + (gear.matk || 0)) / 100)),
-    castRate: Math.max(0, 1 - fns / 150),
+    castRate: Math.max(0, 1 - fns / 150) * (1 - (gear.perk?.chant || 0) / 100), // (the Elder Willow Card's Whispering Seeds)
     aspd: Math.round(200 - delay / 10),
     interval: (2 * delay) / 1000,                 // seconds between attacks
     weight: j.weight + 30 * pow,
@@ -117,7 +120,7 @@ export function playerAttack(ps, md, mult = 1, hitMult = 1, skill = false) {
   const wmin = Math.min(ps.watk, Math.floor(ps.fns * (80 + 20 * ps.wlv) / 100));
   const wdmg = crit ? ps.watk : wmin + rnd(Math.max(1, ps.watk - wmin + 1));
   let dmg = (ps.batk + wdmg) * mult;
-  if (!crit) dmg = dmg * (100 - md.def) / 100 - mobSoftDef(md.vit);
+  if (!crit) dmg = dmg * (100 - md.def * (1 - (ps.pierce || 0) / 100)) / 100 - mobSoftDef(md.vit);
   const el = elementMod(ps.el, md.el);
   const close = !ps.beast && !ps.ranged; // a blow struck up close (the Goblin Warlord Card's)
   dmg = Math.max(1, Math.floor((Math.floor(dmg) + ps.mastery) * el * takes(md, ps.beast ? 'beast' : ps.ranged ? 'ranged' : 'melee') * (close ? 1 + (ps.meleeRate || 0) / 100 : 1)));
