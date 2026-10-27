@@ -21,7 +21,7 @@ import { RAIDS } from '../src/raid.js';
 const RUNS = 120;
 const HEAL = { potion2: 125, potion3: 205 }; // Orange, White
 // the hero and the potions each difficulty is made for: [potion, how many, second-job damage x]
-const SUPPLY = { tutorial: ['potion2', 0, 0], easy: ['potion2', 0, 0], normal: ['potion2', 20, 0], hard: ['potion3', 30, 2.5], hell: ['potion3', 50, 3] };
+const SUPPLY = { tutorial: ['potion2', 0, 0], easy: ['potion3', 0, 2.5], normal: ['potion3', 20, 2.5], hard: ['potion3', 30, 3], hell: ['potion3', 50, 3] }; // (Hell's fierce boss: tested in the browser, docs/balance.md)
 const BOLTS = { spark: 'fire', frost: 'water', arc: 'wind' };
 const pow = (k, lv) => SKILLS[k].power(lv) * (SKILLS[k].hits?.(lv) || 1);
 

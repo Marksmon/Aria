@@ -260,6 +260,9 @@ the Old Forest.
 A raid is a timed run in an arena of its own: **three waves** of monsters that attack on sight and
 never stop following you, then a **boss**, all within the time limit. The first is **Bloop Island**,
 a small round island out in Salt Bay; the **Boatman** by the water rows you out (`src/raid.js`).
+His crossings window lists the difficulties down the left (locked until you have the level) and,
+for the one you pick, the boss (level, HP, ATK, element, skills and matchup), the waves, the clear
+reward, the rare finds and the boss's card.
 
 - **Bloop Island:** wave 1 is Green and Blue Bloops, wave 2 Blue and **Yellow Bloops** (also met in Willow Marsh), wave 3 Yellow
   and **Red Bloops**. Then comes **BleepBloop**, a giant orange bloop general with a white beard, a plumed general's hat and a mantle. He
@@ -267,27 +270,36 @@ a small round island out in Salt Bay; the **Boatman** by the water rows you out 
   HP while you fight him.
 - **10 minutes** for the lot. After each wave you get back half your HP and SP, and before the boss
   all of it.
-- **Difficulty:** you choose when you set out. The monsters' level and strength follow it.
+- **Difficulty:** you choose when you set out, and each needs its Base Level. The monsters' level
+  and strength follow it.
 
-| Difficulty | Made for | Monsters | Rewards | Rare chance |
-|---|---|---|---|---|
-| Easy | Base 30, no potions needed | Lv 26–35 | x1 | 5% |
-| Normal | Base 40, 20 Orange Potions | Lv 36–45 | x3 | 10% |
-| Hard | Base 50 with a second job, 30 White Potions | Lv 46–55 | x6 | 15% |
-| Hell | Base 60 with a second job, 50 White Potions | Lv 56–65 | x9 | 20% |
+| Difficulty | Needs | Made for | Monsters | Rewards | Rare chance |
+|---|---|---|---|---|---|
+| Easy | Base 60 | a second job, no potions needed | Lv 56–65 | x1 | 5% |
+| Normal | Base 75 | a second job, 20 White Potions | Lv 71–80 | x3 | 10% |
+| Hard | Base 90 | a strong second job, 30 White Potions | Lv 86–95 | x6 | 15% |
+| Hell | Base 99 | the best gear, upgraded and carded, and a big bag of White Potions | Lv 95–104 | x9 | 20% |
+
+- **Hell's BleepBloop** is as hard and tricky as a field MVP (770,000 HP). He is enraged below half
+  his HP, and his stomp and moves can't be dodged with FLEE and go through most of your DEF: step
+  out of the red circles. **Bloop Rain** drops bloops all round you, and each leaves a **sticky
+  puddle** that slows and hurts whoever stands in it. **Jelly Wall** raises three Jelly Cores round
+  him: while one stands he takes 90% less damage, so pop them first. He belly-flops and charges
+  harder too, and his jelly takes spells well (+30%) but swallows blades and fists (−30%) and
+  beasts (−20%).
 
 - **EXP is held while you fight** and paid when the run ends. A clear pays all of it **x1.5**. A
   failed run (the time runs out, you faint, or you leave) pays only the monsters you beat, with no
   bonus.
 - **A clear** also pays perz, Bloop Gel, Water Drops, Bloop Cores and maybe Shiny Gel (times the
-  difficulty's reward), and a chance at a rare: Veteran's Boots, the Bloop Buckler, the Bleep Ring,
-  the Bloop Ring or the Water Necklace.
+  difficulty's reward), a chance at a rare (Veteran's Boots, the Bloop Buckler, the Bleep Ring, the
+  Bloop Ring, the Water Necklace or Angel Wings) and a 1% chance at the BleepBloop Card.
 - **The tide:** one 3-hour cooldown for every difficulty, starting when you set out.
 - **The Tutorial crossing** (Chapter 5): while the story waits on the raid, the Boatman also offers
   a gentler Tutorial run (Lv 24–33 monsters). It starts no cooldown and pays the clear reward win or
   lose. Lose it, and the Boatman's crew finish BleepBloop for you, this once.
-- Tuned with a whole-run simulation: every monster of a wave at once, natural regen, the breathers.
-  A first job can't clear Hard or Hell.
+- Easy to Hard were tuned with a whole-run simulation (every monster of a wave at once, natural
+  regen, the breathers); Hell was tested in the game like the MVPs.
 
 ## Character
 

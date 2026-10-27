@@ -178,3 +178,20 @@ Blue one below 60 SP (300 of each in the bag):
 | Kobold King | won, 3:06, 101 | fainted at 4:55, the King at 44% | won at 300,000 HP in 1:31; at 1,200,000 out of reach |
 | Goblin King | won, 3:30, 47 | fainted at 6:02, the King at 42% | fainted (at 420,000 HP) |
 | Ancient Treant | won, 3:27, 145 (rooted 14 times) | fainted at 7:11, the Treant at 29% | fainted (at 500,000 HP) |
+
+## Raids at Base 60/75/90/99
+
+Each difficulty needs its Base Level (Easy 60, Normal 75, Hard 90, Hell 99). Easy to Hard are made
+for a second job at that level, checked with `node build-tools/raid-sim.mjs` (its second job is the
+sim's first-job build at x2.5-3 damage, in shop gear, so a real one has an easier time):
+
+| Difficulty | Hero | Blader | Sorcerer |
+|---|---|---|---|
+| Easy | Base 60, second job | 0 pots: 100% (2.0 min) | 0 pots: 100% (1.1 min) |
+| Normal | Base 75, second job, 20 White | 20 pots: 100% (3.7 min, 13 used) · 0 pots: 81% | 20 pots: 100% (1.2 min, 4 used) |
+| Hard | Base 90, second job, 30 White | 30 pots: 100% (5.1 min, 29 used) · 0 pots: 53% | 30 pots: 100% (1.1 min, 2 used) |
+
+Hell's BleepBloop is fierce (`FIERCE` in `src/mobs.js`): an MVP's rules (enraged below half, moves
+that FLEE can't dodge and that go through 75% of DEF), 770,000 HP, ATK about 400-500, Bloop Rain
+with sticky puddles, Jelly Wall (three Jelly Cores, 90% less damage while one stands), and a
+matchup (spells +30%; blades and fists −30%, beasts −20%).

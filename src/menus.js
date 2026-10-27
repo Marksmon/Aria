@@ -10,6 +10,7 @@ import { HAIRSTYLES, DYES, hairstyles, lookPortrait } from './hair.js';
 import { NPCS, QUESTS, giverOf, rewardOf, SERIES } from './quests.js';
 import { ZONE_NAMES } from './world.js';
 import { RAIDS, waitText } from './raid.js';
+import { raidDef, MOB_DEFS } from './mobs.js';
 import { SKILLS, skillList, skillLv, learnBlock, trainTrees, spCost, castTime, pointsIn, WEAPON_NAMES, RETRAIN_COST, MK_POINTS } from './skills.js';
 
 // the Skills window's trees: every tree the hero has earned, the current job's first, then the jobs it
@@ -160,10 +161,58 @@ export class Menus {
   talkTo(npc) {
     this.npc = npc;
     this.ferrying = false; // the Ferryman's list of lands, once asked for
+    this.raidPick = null;  // the raid difficulty looked at (the Boatman)
     this.loreAt = 0;       // how far into their tales (NPCS lore) they are
     this.quizNote = null;  // what a trainer said about the last answer
     this.retraining = false; // Liv's retraining choices are open
     this.show('talk');
+  }
+
+  // the Boatman's crossings: the difficulties down the left (each needs its Base Level), and the one
+  // picked on the right: its boss and what it does, the waves, what a clear pays and the rare finds
+  raidPanel(n) {
+    const p = this.prog, R = RAIDS[n.raid], info = this.hooks.raidInfo?.(n.raid) || { wait: 0 };
+    // the Tutorial run only while the story waits on the raid; it never waits on the tide
+    const list = Object.entries(R.difficulties).filter(([, d]) => !d.tutorial || info.story);
+    const low = (d) => !d.tutorial && p.baseLv < d.lv; // (each difficulty needs its Base Level; the Tutorial doesn't)
+    const shut = (d) => low(d) || (info.wait && !d.tutorial);
+    if (!R.difficulties[this.raidPick] || !list.some(([k]) => k === this.raidPick)) { // the hardest open to them, else the first
+      this.raidPick = ([...list].reverse().find(([, d]) => !low(d)) || list[0])[0];
+    }
+    const k = this.raidPick, D = R.difficulties[k];
+    const [btype, boff] = R.boss, B = raidDef(btype, D.lv + boff, D.boss, D.wave), base = MOB_DEFS[btype];
+    const lvs = R.waves.flat().map(([, , off]) => D.lv + off);
+    const wavesOf = [...new Set(R.waves.flat().map(([t]) => MOB_DEFS[t].name))];
+    const MOVE = { charge: 'Charge', leap: 'Leap', throw: 'Throw', meteors: 'Meteor Rain', mirror: 'Mirror Image', burrow: 'Burrow', roots: 'Roots', bark: 'Bark Armor', frenzy: 'Frenzy' };
+    const skills = [...(B.moves || []).map((m) => m.name || MOVE[m.kind]), 'Stomp', B.summon && `calls ${B.summon.length} ${MOB_DEFS[B.summon[0]].name}s`, B.burns && 'sticky puddles', B.fierce && 'enraged below half HP'].filter(Boolean);
+    const num = (v) => Math.round(v).toLocaleString();
+    const rows = list.map(([id, d]) => `<button class="rbtn raidpick ${id === k ? 'on' : ''} ${shut(d) ? 'locked' : ''}" data-act="raidpick" data-id="${id}">
+      <b>${esc(d.name)}</b><small>${d.tutorial ? 'the story run' : `Base ${d.lv}${d.lv >= 99 ? '+' : ''}${low(d) ? ' 🔒' : ''}`}</small></button>`).join('');
+    const loot = R.reward.items.map(([id, cnt, chance]) => `<span class="loot" title="${esc(ITEMS[id].name)}">${icon(id, 'xs')}${esc(ITEMS[id].name)} ×${cnt * D.mult}${chance < 1 ? ` <i>${Math.round(chance * 100)}%</i>` : ''}</span>`).join('');
+    const rares = R.rares.map((id) => `<span class="loot rare" title="${esc(ITEMS[id].name)}">${icon(id, 'xs')}${esc(ITEMS[id].name)}</span>`).join('');
+    const card = R.card ? `<span class="loot rare">${icon(R.card[0], 'xs')}${esc(ITEMS[R.card[0]].name)} <i>${Math.round(R.card[1] * 100)}%</i></span>` : '';
+    const why = low(D) ? `Needs Base ${D.lv}: you are Base ${p.baseLv}.` : info.wait && !D.tutorial ? `The tide is wrong: back in ${waitText(info.wait)}.` : '';
+    const note = info.story && D.tutorial ? 'First time out? The Tutorial crossing costs no tide, and I pay you whether you beat him or not.'
+      : `Three waves, then ${base.name} himself, all in ${R.secs / 60} minutes before the tide turns. After a crossing the tide keeps me ashore ${R.cooldown / 3600000} hours (every difficulty).`;
+    const tw = this.wins.talk;
+    tw.classList.add('raidwin');
+    tw.querySelector('.rw-title').textContent = `${n.name} · ${R.name}`;
+    requestAnimationFrame(() => this.place(tw, (window.innerWidth - tw.offsetWidth) / 2, tw.offsetTop)); // (wider now: centred, kept on screen)
+    return `<div class="raidui">
+      <div class="raidlist">${rows}</div>
+      <div class="raidinfo">
+        <div class="raidboss">${icon(R.card?.[0] || btype)}<div><b>${esc(base.name)}</b> <span class="rtag">Lv ${B.lv}</span>${B.fierce ? ' <span class="rtag hot">as hard as an MVP</span>' : ''}
+          <small>HP ${num(B.hp)} · ATK ${num(B.atk[0])}–${num(B.atk[1])} · ${esc(B.el[0].toUpperCase() + B.el.slice(1))}</small>
+          <small>${esc(skills.join(' · '))}</small>
+          ${B.takesText ? `<small class="match">${esc(B.takesText[0].toUpperCase() + B.takesText.slice(1))}.</small>` : ''}</div></div>
+        <p class="raidline"><b>Waves</b> ${R.waves.length} · ${esc(wavesOf.join(', '))} (Lv ${Math.min(...lvs)}–${Math.max(...lvs)})</p>
+        <p class="raidline"><b>Made for</b> ${D.tutorial ? 'a hero on the story: no tide, and paid win or lose' : `Base ${D.lv}${D.lv >= 99 ? '+' : ''}: ${esc(D.advice)}`}</p>
+        <div class="lootrow"><b>Clear reward</b>${D.tutorial ? '' : ` <span class="rtag">x${D.mult}</span>`}<span class="loot perz">${(R.reward.perz * D.mult).toLocaleString()} perz</span>${loot}</div>
+        <div class="lootrow"><b>Rare find</b> <span class="rtag">${Math.round(D.rare * 100)}%</span>${rares}</div>
+        <div class="lootrow"><b>Boss card</b>${card}</div>
+        <p class="raidline">${esc(note)}</p>
+        <div class="btnrow">${why ? `<small class="why">${esc(why)}</small>` : ''}<button class="rbtn" data-act="raidgo" data-id="${k}" ${why ? 'disabled' : ''}>Set out: ${esc(D.name)}</button><button class="rbtn soft" data-act="close">Bye</button></div>
+      </div></div>`;
   }
 
   // story pages: [[speaker id or null (the narrator), line], ...], one at a time; done() after the last
@@ -619,7 +668,7 @@ export class Menus {
       const st = inv.recipeState(r), it = ITEMS[r.item];
       const cost = Object.entries(r.cost).map(([id, n]) => {
         const have = inv.have(id);
-        return `<span class="cost ${have >= n ? 'ok' : ''}" title="${esc(ITEMS[id].name)}">${icon(id, 'xs')}${esc(ITEMS[id].name)} ${Math.min(have, 99)}/${n}</span>`;
+        return `<span class="cost ${have >= n ? 'ok' : ''}" title="${esc(ITEMS[id].name)}">${icon(id, 'xs')}${esc(ITEMS[id].name)} ${Math.min(have, 999)}/${n}</span>`;
       }).join('');
       const btn = st === 'level' ? `<span class="rtag">Base Lv ${r.lv}</span>`
         : `<button class="rbtn" data-act="craft" data-id="${r.item}" ${st === 'ready' ? '' : 'disabled'}>Craft</button>`;
@@ -694,6 +743,7 @@ export class Menus {
 
   talk() {
     const n = NPCS[this.npc], st = this.quests.status(this.npc, this.prog, this.inv), p = this.prog;
+    this.wins.talk.classList.remove('raidwin'); // (wide only for the raid's crossings)
     let text, box = '', btns = '<button class="rbtn soft" data-act="close">Bye</button>', quizzing = false;
     // what they say on seeing this hero: their own line for the hero's job and chapter, if they have one
     const step = this.hooks.storyStep?.(), ch = step ? +(/Chapter (\d+)/.exec(step.ch)?.[1] || 0) : 99;
@@ -718,21 +768,7 @@ export class Menus {
         <div class="say"><p>Which town? You have ${this.inv.perz.toLocaleString()} perz.</p><div class="btnrow wrap">${rows || '<span>You have not signed any other Keeper\'s ledger yet.</span>'}</div>
         <div class="btnrow"><button class="rbtn soft" data-act="close">Bye</button></div></div></div>`;
     }
-    if (n.raid && this.ferrying) { // the raid: its difficulties, the advised level, and the shared cooldown
-      const R = RAIDS[n.raid], info = this.hooks.raidInfo?.(n.raid) || { wait: 0 };
-      // the Tutorial run only while the story waits on the raid; it never waits on the tide
-      const list = Object.entries(R.difficulties).filter(([, d]) => !d.tutorial || info.story);
-      const rows = list.map(([k, d]) => `<button class="rbtn ${p.baseLv < d.lv ? 'warn' : ''}" data-act="raidgo" data-id="${k}" ${info.wait && !d.tutorial ? 'disabled' : ''}>
-        <b>${esc(d.name)}</b> · Lv ${d.lv} · ${esc(d.advice)}${d.tutorial ? '' : ` · rewards x${d.mult}`}</button>`).join('');
-      const note = (info.story ? 'First time out? Take the Tutorial crossing: it costs no tide, and I will pay you whether you beat him or not. ' : '')
-        + (info.wait ? `The tide is wrong for a full crossing. Come back in ${waitText(info.wait)}.`
-          : `Three waves of bloops, then BleepBloop himself, and only ${R.secs / 60} minutes before the tide turns and I must row you back. After a crossing, the tide keeps me ashore ${R.cooldown / 3600000} hours.`);
-      this.wins.talk.querySelector('.rw-title').textContent = n.name;
-      return `<div class="talkwrap"><img class="portrait" src="${this.portrait(this.npc)}" alt="">
-        <div class="say"><p>${esc(note)}</p><div class="btnrow wrap raids">${rows}</div>
-        ${list.some(([, d]) => p.baseLv < d.lv) ? `<small>Below the advised level (you are Base ${p.baseLv}), it will be a hard fight.</small>` : ''}
-        <div class="btnrow"><button class="rbtn soft" data-act="close">Bye</button></div></div></div>`;
-    }
+    if (n.raid && this.ferrying) return this.raidPanel(n);
     if (n.warp && this.ferrying) { // the lands you have walked, and the fare to each
       const list = this.hooks.ferryList?.() || [];
       const rows = list.map(([m, fare]) => `<button class="rbtn" data-act="ferry" data-id="${m}" ${this.inv.perz < fare ? 'disabled' : ''}>${esc(ZONE_NAMES[m])} · ${fare.toLocaleString()} perz</button>`).join('');
@@ -924,6 +960,7 @@ export class Menus {
     if (act === 'lore') { this.loreAt++; this.render('talk'); }
     if (act === 'ferry') this.hooks.ferry?.(t.dataset.id);
     if (act === 'raidgo') this.hooks.raidGo?.(NPCS[this.npc].raid, t.dataset.id);
+    if (act === 'raidpick') { this.raidPick = t.dataset.id; this.render('talk'); }
     if (act === 'shoptab') { this.shopTab = t.dataset.id; this.sellSel = null; this.render(id); }
     if (act === 'buy') {
       const n = +t.dataset.n;
