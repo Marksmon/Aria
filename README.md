@@ -323,9 +323,9 @@ the clear reward, the cores, the rare finds and the boss's card.
 
 | Raid | Rare finds, and what the guide asks for them |
 |---|---|
-| Bloop Island | Bloop Ring, Water Necklace (25 Bloop Cores) · Bleep Ring (60) · Bloop Buckler, Veteran's Boots (80) · ultra rare: **Angel Wings** (300) |
-| Kobold Camp | Pickaxe Charm (30 Kobold Cores) · Ore-Heart Ring (60) · Earthshaker Boots, Stonehide Mantle (80) · Miner's Plate (120) · Quarry Shield (150) · ultra rare: **Giant Goat Horn Helm** (300) |
-| Goblin Lair | Totem Charm (30 Goblin Cores) · War-Drum Pendant (60) · Windstep Boots, Raider's Cloak (80) · Horde Leather (120) · Spiked Buckler (150) · ultra rare: **Elven Ears** (300) |
+| Bloop Island | Bloop Ring, Water Necklace (25 Bloop Cores) · Bleep Ring (60) · Bloop Buckler, Veteran's Boots (80) · ultra rare: **Angel Wings** (500) |
+| Kobold Camp | Pickaxe Charm (30 Kobold Cores) · Ore-Heart Ring (60) · Earthshaker Boots, Stonehide Mantle (80) · Miner's Plate (120) · Quarry Shield (150) · ultra rare: **Giant Goat Horn Helm** (500) |
+| Goblin Lair | Totem Charm (30 Goblin Cores) · War-Drum Pendant (60) · Windstep Boots, Raider's Cloak (80) · Horde Leather (120) · Spiked Buckler (150) · ultra rare: **Elven Ears** (500) |
 
 **Ultra rares** are worn where everyone can see them: the Giant Goat Horn Helm (Head: a
 gunmetal helm worked in gold with a gold crest, two great dark horns banded in gold curling round
@@ -735,7 +735,7 @@ no torch is needed.
 | Lantern | a lantern at your shoulder | KNL +1, FNS +1 | Wisp, 0.4% |
 | Dark Wisp | a violet Wisp at your shoulder | KNL +2, Max SP +30 | Dark Wisp, 0.25% |
 | Ember Wings | tongues of flame fanning out, flickering | POW +1, KNL +1, Max HP +50 | Fire Wisp, 0.25% |
-| Angel Wings | folded white wings trimmed in gold, a gold crest set with crystals down the spine | KNL +4, FTN +4, FLEE +6, Max SP +80, Max HP +5% | Bloop Island's ultra rare (a clear: 1%), or the Boatman makes them from 300 Bloop Cores |
+| Angel Wings | folded white wings trimmed in gold, a gold crest set with crystals down the spine | KNL +4, FTN +4, FLEE +6, Max SP +80, Max HP +5% | Bloop Island's ultra rare (a clear: 1%), or the Boatman makes them from 500 Bloop Cores |
 | Devil Wings | a bat's leathery wings | POW +2, END +1, Max HP +80 | Fire Giant, 3% |
 
 **Weapon levels.** Lv 4 weapons are the best there are: the Giant Sword, Flame Sword, Lava Sword

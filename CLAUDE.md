@@ -70,7 +70,7 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   setting out. A clear pays the raid's cores x1/x3/x9/x27 by difficulty (3/9/27/81), its rare finds
   at 3% on any difficulty, and its ultra rare (a Head, Face or Wings piece: Angel Wings, the Giant Goat
   Horn Helm, Elven Ears) and its card at 1%; its guide makes the rares and the ultra rare
-  from cores (the rarer, the more; an ultra rare 300). The story's step gets a
+  from cores (the rarer, the more; an ultra rare 500, always made, 10% of them with a card slot). The story's step gets a
   Tutorial run: no cooldown, and the clear reward win or lose (a loss gets the Boatman's "we finished
   it for you, but not next time"). Easy/Normal/Hard/Hell need Base 40/55/70/85 (the owner's call):
   (the Kobold Camp 45/60/75/90, the Goblin Lair 50/65/80/95). Easy a first job with no potions,

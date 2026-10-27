@@ -138,7 +138,7 @@ const BASE_ITEMS = {
   dark_wisp:    { type: 'equip', slot: 'wings', rare: true, name: 'Dark Wisp', look: { kind: 'float', art: 'orb', core: '#f0d8ff', glow: '#a45cff' }, msp: 30, stats: { knl: 2 }, icon: 'dark_wisp', desc: 'A Dark Wisp that chose to follow you home. It whispers spells you almost understand.' },
   leaf_wings:   { type: 'equip', slot: 'wings', name: 'Leaf Wings', look: { kind: 'wings', art: 'leaf' }, flee: 2, icon: 'wings_leaf', desc: 'Two great Sprout leaves bound to a harness. They will not lift you, but they catch the wind.' },
   fairy_wings:  { type: 'equip', slot: 'wings', name: 'Fairy Wings', look: { kind: 'wings', art: 'fairy' }, flee: 3, stats: { qkn: 1 }, icon: 'wings_fairy', desc: 'Wings of Glow Dust and water, thin as a soap bubble. They shimmer when you move.' },
-  angel_wings:  { type: 'equip', slot: 'wings', rare: true, ultra: true, name: 'Angel Wings', look: { kind: 'wings', art: 'angel' }, flee: 6, msp: 80, mhpRate: 5, stats: { knl: 4, ftn: 4 }, icon: 'wings_angel', desc: 'Folded wings of white feathers trimmed in gold, a gold crest set with crystals down the spine between them. A symbol of hope, purity, and unshakable strength. The Boatman found them washed up on Bloop Island. Bloop Island\'s ultra rare.', from: 'Bloop Island (a clear: 1%), or the Boatman makes them from 300 Bloop Cores' },
+  angel_wings:  { type: 'equip', slot: 'wings', rare: true, ultra: true, name: 'Angel Wings', look: { kind: 'wings', art: 'angel' }, flee: 6, msp: 80, mhpRate: 5, stats: { knl: 4, ftn: 4 }, icon: 'wings_angel', desc: 'Folded wings of white feathers trimmed in gold, a gold crest set with crystals down the spine between them. A symbol of hope, purity, and unshakable strength. The Boatman found them washed up on Bloop Island. Bloop Island\'s ultra rare.', from: 'Bloop Island (a clear: 1%), or the Boatman makes them from 500 Bloop Cores' },
   devil_wings:  { type: 'equip', slot: 'wings', rare: true, name: 'Devil Wings', look: { kind: 'wings', art: 'devil' }, mhp: 80, stats: { pow: 2, end: 1 }, icon: 'wings_devil', desc: 'Leathery wings torn from the smoke around the Fire Giant. They twitch when something nearby is afraid.' },
   ember_wings:  { type: 'equip', slot: 'wings', rare: true, name: 'Ember Wings', look: { kind: 'wings', art: 'ember' }, mhp: 50, stats: { pow: 1, knl: 1 }, icon: 'wings_ember', desc: 'Wings of living fire, shed by a Fire Wisp. Warm to the touch, and they never singe your cape.' },
   // boss drops
@@ -236,10 +236,10 @@ const BASE_ITEMS = {
   oreheart_ring: { type: 'equip', slot: 'acc', rare: true, name: 'Ore-Heart Ring', def: 2, stats: { pow: 2, end: 2 }, icon: 'r_oreheart', desc: 'A ring around a heart of red ore that never cools.', from: 'Kobold Camp (a clear: 3%), or made from Kobold Cores' },
   pickaxe_charm: { type: 'equip', slot: 'acc', rare: true, name: 'Pickaxe Charm', hit: 6, stats: { pow: 3 }, icon: 'r_pickaxe', desc: 'A tiny silver pickaxe on a cord. Kobolds swear it finds the soft spot in any stone.', from: 'Kobold Camp (a clear: 3%), or made from Kobold Cores' },
   miners_plate: { type: 'equip', slot: 'armor', rare: true, name: "Miner's Plate", def: 8, mhp: 150, stats: { end: 2 }, icon: 'r_minersplate', desc: 'Kobold mail riveted with ore plates, made for crawling through rockfalls.', from: 'Kobold Camp (a clear: 3%), or made from Kobold Cores' },
-  // the raids' ultra rares (1% a clear, or a guide's 300 cores), worn and seen: each a headgear
+  // the raids' ultra rares (1% a clear, or a guide's 500 cores), worn and seen: each a headgear
   // sheet of its own (art/hg_goat_horns, hg_elf_ears: drawn by build-tools/draw-headgear.py)
-  goat_horns: { type: 'equip', slot: 'head', rare: true, ultra: true, name: 'Giant Goat Horn Helm', def: 6, mhpRate: 10, stats: { pow: 4, end: 4 }, desc: 'A gunmetal helm worked in gold, its crest a gold blade, crowned by the great ridged horns of the old mountain goat the Kobold Warlord rides into the deep, banded in gold. A crown of strength, born from the mountains; it leaves the ears bare. The Kobold Camp\'s ultra rare.', from: 'Kobold Camp (a clear: 1%), or Brokk makes it from 300 Kobold Cores' },
-  elf_ears: { type: 'equip', slot: 'face', rare: true, ultra: true, name: 'Elven Ears', hit: 10, flee: 5, stats: { qkn: 4, fns: 4 }, desc: 'Long pointed ears, charmed by the old wood elves the goblins drove out, dressed in elven silver: a cuff up each ear to a silver spike, sapphires, crystal earrings, and a band round the back of the head. They hear an arrow before it is loosed and a step before it falls. The Goblin Lair\'s ultra rare.', from: 'Goblin Lair (a clear: 1%), or Ylva makes them from 300 Goblin Cores' },
+  goat_horns: { type: 'equip', slot: 'head', rare: true, ultra: true, name: 'Giant Goat Horn Helm', def: 6, mhpRate: 10, stats: { pow: 4, end: 4 }, desc: 'A gunmetal helm worked in gold, its crest a gold blade, crowned by the great ridged horns of the old mountain goat the Kobold Warlord rides into the deep, banded in gold. A crown of strength, born from the mountains; it leaves the ears bare. The Kobold Camp\'s ultra rare.', from: 'Kobold Camp (a clear: 1%), or Brokk makes it from 500 Kobold Cores' },
+  elf_ears: { type: 'equip', slot: 'face', rare: true, ultra: true, name: 'Elven Ears', hit: 10, flee: 5, stats: { qkn: 4, fns: 4 }, desc: 'Long pointed ears, charmed by the old wood elves the goblins drove out, dressed in elven silver: a cuff up each ear to a silver spike, sapphires, crystal earrings, and a band round the back of the head. They hear an arrow before it is loosed and a step before it falls. The Goblin Lair\'s ultra rare.', from: 'Goblin Lair (a clear: 1%), or Ylva makes them from 500 Goblin Cores' },
   kwarlord_card: { type: 'misc', rare: true, name: 'Kobold Warlord Card', adj: 'Unyielding', icon: 'card_kwarlord', card: { on: 'armor', def: 5, mhpRate: 15, stats: { end: 6 } }, desc: 'The Kobold Warlord behind his shield wall, on a card that smells of coal. In an armor with a slot: DEF +5, Max HP +15%, END +6.', from: 'clearing the Kobold Camp (1%, any difficulty)' },
   raider_cloak: { type: 'equip', slot: 'garment', rare: true, name: "Raider's Cloak", def: 3, flee: 8, stats: { qkn: 2 }, icon: 'r_raidercloak', desc: 'A goblin raider\'s ragged green cloak. It moves before you do.', from: 'Goblin Lair (a clear: 3%), or made from Goblin Cores' },
   windstep_boots: { type: 'equip', slot: 'shoes', rare: true, name: 'Windstep Boots', def: 3, flee: 6, stats: { qkn: 3 }, icon: 'r_windstep', desc: 'Soft boots with wind-runes stitched into the soles. Light as a breath.', from: 'Goblin Lair (a clear: 3%), or made from Goblin Cores' },
@@ -573,21 +573,21 @@ export const RECIPES = [
   { item: 'bleep_ring', lv: 28, by: 'bloop', cost: { bloop_core: 60, shiny_gel: 1 } },
   { item: 'bloop_buckler', lv: 28, by: 'bloop', cost: { bloop_core: 80, gel: 40 } },
   { item: 'veteran_boots', lv: 28, by: 'bloop', cost: { bloop_core: 80, crableg: 20 } },
-  { item: 'angel_wings', lv: 28, by: 'bloop', cost: { bloop_core: 300, shiny_gel: 5, glow: 40 } }, // (the ultra rares: 300 cores)
+  { item: 'angel_wings', lv: 28, by: 'bloop', cost: { bloop_core: 500, shiny_gel: 5, glow: 40 } }, // (the ultra rares: 500 cores; 10% come slotted, like any craft)
   { item: 'pickaxe_charm', lv: 45, by: 'kobold', cost: { kobold_core: 30, iron_ore: 10 } },
   { item: 'oreheart_ring', lv: 45, by: 'kobold', cost: { kobold_core: 60, armor_ore: 2 } },
   { item: 'earthshaker_boots', lv: 45, by: 'kobold', cost: { kobold_core: 80, kobold_fur: 30 } },
   { item: 'stonehide_mantle', lv: 45, by: 'kobold', cost: { kobold_core: 80, kobold_fur: 30 } },
   { item: 'miners_plate', lv: 45, by: 'kobold', cost: { kobold_core: 120, steel_ore: 10, armor_ore: 3 } },
   { item: 'quarry_shield', lv: 45, by: 'kobold', cost: { kobold_core: 150, hard_ore: 3, armor_ore: 3 } },
-  { item: 'goat_horns', lv: 45, by: 'kobold', cost: { kobold_core: 300, hard_ore: 5, armor_ore: 5 } },
+  { item: 'goat_horns', lv: 45, by: 'kobold', cost: { kobold_core: 500, hard_ore: 5, armor_ore: 5 } },
   { item: 'totem_charm', lv: 50, by: 'goblin', cost: { goblin_core: 30, goblin_tooth: 20 } },
   { item: 'wardrum_pendant', lv: 50, by: 'goblin', cost: { goblin_core: 60, goblin_tooth: 30 } },
   { item: 'windstep_boots', lv: 50, by: 'goblin', cost: { goblin_core: 80, goblin_tooth: 30 } },
   { item: 'raider_cloak', lv: 50, by: 'goblin', cost: { goblin_core: 80, goblin_tooth: 30 } },
   { item: 'horde_leather', lv: 50, by: 'goblin', cost: { goblin_core: 120, steel_ore: 10, armor_ore: 3 } },
   { item: 'spiked_buckler', lv: 50, by: 'goblin', cost: { goblin_core: 150, hard_ore: 3, armor_ore: 3 } },
-  { item: 'elf_ears', lv: 50, by: 'goblin', cost: { goblin_core: 300, hard_ore: 5, goblin_tooth: 50 } },
+  { item: 'elf_ears', lv: 50, by: 'goblin', cost: { goblin_core: 500, hard_ore: 5, goblin_tooth: 50 } },
 ];
 
 // ---------- icons ----------
