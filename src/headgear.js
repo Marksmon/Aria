@@ -42,12 +42,13 @@ export function paintGears(g, at, dir, top, face, frame = 0) {
   if (over) paintGear(g, at, dir, face, frame);
 }
 
-// paint a piece into a body frame (ctx), its cell's top-left corner at at = [x, y] (the head's)
+// paint a piece into a body frame (ctx), its cell's top-left corner at at = [x, y] (the head's); a
+// piece wider than the head (the Giant Goat Horns) says where the head's cell starts in its own (off)
 export function paintGear(g, at, dir, id, frame = 0) {
   const pc = gearPiece(id);
   if (!pc?.loaded || !at || pc.L.dirs[dir] === undefined) return;
-  const { cw, ch } = pc.L;
-  g.drawImage(pc.img, pc.L.dirs[dir] * cw, (frame % pc.L.frames) * ch, cw, ch, at[0], at[1], cw, ch);
+  const { cw, ch } = pc.L, [ox, oy] = pc.L.off || [0, 0];
+  g.drawImage(pc.img, pc.L.dirs[dir] * cw, (frame % pc.L.frames) * ch, cw, ch, at[0] - ox, at[1] - oy, cw, ch);
 }
 
 const REF_W = 34;   // head width the art is drawn for

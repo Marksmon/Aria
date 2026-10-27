@@ -328,7 +328,7 @@ the clear reward, the cores, the rare finds and the boss's card.
 | Goblin Lair | Totem Charm (30 Goblin Cores) · War-Drum Pendant (60) · Windstep Boots, Raider's Cloak (80) · Horde Leather (120) · Spiked Buckler (150) · ultra rare: **Elven Ears** (300) |
 
 **Ultra rares** are worn where everyone can see them: Giant Goat Horns (Head: a great pair
-of ridged ivory horns curled back past the ears; DEF 6, POW +4, END +4, Max HP +10%), Elven Ears
+of ridged ivory horns sweeping out over the ears and curling round beside them; DEF 6, POW +4, END +4, Max HP +10%), Elven Ears
 (Face: long pointed ears over the hero's own; QKN +4, FNS +4, HIT +10, FLEE +5) and Angel Wings (KNL +4, FTN +4, FLEE +6, Max SP +80, Max HP +5%).
 
 | New piece | Slot | Effect |

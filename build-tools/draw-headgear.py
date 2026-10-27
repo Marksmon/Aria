@@ -1,8 +1,10 @@
 # Draws standard headgear pieces in code, as 3D shapes turned to each of the head's 8 directions
 # and drawn on its 43x43 cell (docs/character-standard.md), for pieces PixelLab didn't make:
-#   goat_horns  Giant Goat Horns (Head): two great ridged horns curling back and round past the ears
+#   goat_horns  Giant Goat Horns (Head): two great ridged horns sweeping out over the ears and curling round beside them
 #   elf_ears    Elven Ears (Face): long pointed ears over the head's own
-# Writes src/art/hg_<id>.png (8 cells in a row) and its .json layout.
+# Writes src/art/hg_<id>.png (8 cells in a row) and its .json layout. A piece wider than the head
+# (the horns) gets cells PX wider on each side, and says so in its layout (off: where the head's cell
+# starts in its own; headgear.js paintGear).
 #   python3 build-tools/draw-headgear.py [--preview out.png]
 import json, math, sys
 from PIL import Image, ImageDraw
@@ -35,48 +37,60 @@ def project(p, d, c):
     cx, cy = centre(c)
     return cx + sx, cy - y * math.cos(TILT) + dep * math.sin(TILT) * 0.6, dep
 
-def head_mask(c):
+def head_mask(c, px=0):
     a = bald(c).load()
-    return {(x, y) for x in range(CELL) for y in range(CELL) if a[x, y][3] > 0}
+    return {(x + px, y) for x in range(CELL) for y in range(CELL) if a[x, y][3] > 0}
 
 # --- the horns ---------------------------------------------------------------------------------
 IVORY = [(250, 238, 206), (226, 206, 160), (190, 162, 116), (140, 112, 78)]  # light .. dark
 RIDGE = (120, 92, 62)
 
+HORN_PX = 10  # the horns reach this far past the head's cell on each side
+
 def horn(side):
-    # a ram's curl: up from the temple, back, down past the ear and forward, widening outward
+    # a great curl to each side, outside the ears: out and up from the temple over the ears, then
+    # round a wide spiral, back, down and forward, its tip curling up again
     pts = []
-    n = 90
+    n = 140
+    C = (25.0, 3.5, -5.0)  # the spiral's centre
     for i in range(n + 1):
         t = i / n
-        a = math.radians(-35 + 320 * t)
-        r = 7.6 * (1 - 0.5 * t)
-        cy, cz = 3.5, -3.5
-        y = cy + r * math.cos(a)
-        z = cz - r * math.sin(a)
-        x = side * (8 + 6 * math.sin(min(1, t * 1.6) * math.pi / 2))
-        w = 3.3 * (1 - 0.72 * t) + 0.6
-        pts.append(((x, y, z), w, t))
+        if t < 0.3:  # the sweep from the temple out over the ear
+            u = t / 0.3
+            e = u * u * (3 - 2 * u)
+            x = 7 + (C[0] - 2 - 7) * e
+            y = 10 + (C[1] + 9.5 - 10) * math.sin(min(1, u * 1.6) * math.pi / 2)  # up first, clear of the ear tips
+            z = 1 + (C[2] - 1) * e
+        else:  # the spiral, from its top round: back, down, forward, and up
+            u = (t - 0.3) / 0.7
+            a = math.radians(320 * u)
+            r = 9.5 * (1 - 0.55 * u)
+            x = C[0] - 2 + 4.5 * u
+            y = C[1] + r * math.cos(a)
+            z = C[2] - r * math.sin(a)
+        w = 4.3 * (1 - 0.75 * t) + 0.6
+        pts.append(((side * x, y, z), w, t))
     return pts
 
 def draw_horns(d, c):
-    big = Image.new('RGBA', (CELL * SS, CELL * SS), (0, 0, 0, 0))
+    px = HORN_PX
+    big = Image.new('RGBA', ((CELL + 2 * px) * SS, CELL * SS), (0, 0, 0, 0))
     g = ImageDraw.Draw(big)
-    hm = head_mask(c)
+    hm = head_mask(c, px)
     blobs = []
     for side in (-1, 1):
         for p, w, t in horn(side):
             sx, sy, dep = project(p, d, c)
-            blobs.append((dep, sx, sy, w, t))
+            blobs.append((dep, sx + px, sy, w, t))
     blobs.sort(key=lambda b: b[0])
     for dep, sx, sy, w, t in blobs:
         # behind the head: hidden where the head is
         if dep < -3 and (int(sx), int(sy)) in hm:
             continue
-        ridge = (t * 10) % 1 < 0.2 and t < 0.9
+        ridge = (t * 13) % 1 < 0.2 and t < 0.9
         # shade: the far side and the underside darker
         k = 0 if dep > 0 else 1 if dep > -6 else 2
-        col = RIDGE if ridge else IVORY[min(2, k + (1 if t > 0.7 else 0))]
+        col = RIDGE if ridge else IVORY[min(2, k + (1 if t > 0.75 else 0))]
         R = w * SS
         g.ellipse([sx * SS - R, sy * SS - R, sx * SS + R, sy * SS + R], fill=col + (255,))
     return big
@@ -133,16 +147,17 @@ def draw_ears(d, c):
 
 # --- packing -----------------------------------------------------------------------------------
 def to_cell(big):
-    small = big.resize((CELL, CELL), Image.NEAREST)
+    W, H = big.width // SS, big.height // SS
+    small = big.resize((W, H), Image.NEAREST)
     a = small.load()
     # a dark outline round the piece, and no half-transparent pixels
     out = small.copy()
     o = out.load()
-    for y in range(CELL):
-        for x in range(CELL):
+    for y in range(H):
+        for x in range(W):
             if a[x, y][3] < 128:
                 o[x, y] = (0, 0, 0, 0)
-                if any(0 <= x + u < CELL and 0 <= y + v < CELL and a[x + u, y + v][3] >= 128
+                if any(0 <= x + u < W and 0 <= y + v < H and a[x + u, y + v][3] >= 128
                        for u, v in ((1, 0), (-1, 0), (0, 1), (0, -1))):
                     o[x, y] = OUT
             else:
@@ -153,32 +168,53 @@ def box(cell):
     b = cell.getbbox()
     return list(b) if b else None
 
-def build(pid, slot, draw, **extra):
-    sheet = Image.new('RGBA', (CELL * 8, CELL), (0, 0, 0, 0))
+def build(pid, slot, draw, px=0, **extra):
+    W = CELL + 2 * px
+    sheet = Image.new('RGBA', (W * 8, CELL), (0, 0, 0, 0))
     boxes = {}
     for c, d in enumerate(DIRS):
         cell = to_cell(draw(d, c))
-        sheet.paste(cell, (c * CELL, 0))
+        sheet.paste(cell, (c * W, 0))
         boxes[d] = box(cell)
     sheet.save(f'{ART}/hg_{pid}.png')
-    L = {'cw': CELL, 'ch': CELL, 'frames': 1, 'slot': slot, 'dirs': {d: i for i, d in enumerate(DIRS)}, 'box': boxes, 'cut': None, **extra}
+    L = {'cw': W, 'ch': CELL, 'frames': 1, 'slot': slot, 'dirs': {d: i for i, d in enumerate(DIRS)}, 'box': boxes, 'cut': None, **({'off': [px, 0]} if px else {}), **extra}
     json.dump(L, open(f'{ART}/hg_{pid}.json', 'w'))
     return sheet
 
-def preview(path, sheets):
-    S = 6
+def cells(sheet, px):
+    W = CELL + 2 * px
+    return [sheet.crop((c * W, 0, c * W + W, CELL)) for c in range(8)]
+
+def overlap(a, b):
+    # opaque pixels two pieces share, cell by cell (both as wide as the horns)
+    n = []
+    for ca, cb in zip(a, b):
+        A, B = ca.load(), cb.load()
+        n.append(sum(1 for x in range(ca.width) for y in range(ca.height) if A[x, y][3] and B[x, y][3]))
+    return n
+
+def preview(path, pieces):
+    S, PX = 5, HORN_PX
+    W = CELL + 2 * PX
     rows = [0, 2, 1]  # bald, mane, messy
-    out = Image.new('RGBA', (CELL * 8 * S, CELL * S * len(rows) * len(sheets)), (70, 72, 84, 255))
-    for si, sh in enumerate(sheets):
+    out = Image.new('RGBA', (W * 8 * S, CELL * S * len(rows) * len(pieces)), (70, 72, 84, 255))
+    for si, layers in enumerate(pieces):
         for ri, r in enumerate(rows):
-            strip = heads.crop((0, 0, CELL * 8, CELL)).copy()
-            if r: strip.alpha_composite(heads.crop((0, r * CELL, CELL * 8, r * CELL + CELL)))
-            strip.alpha_composite(sh)
-            y = (si * len(rows) + ri) * CELL * S
-            out.alpha_composite(strip.resize((CELL * 8 * S, CELL * S), Image.NEAREST), (0, y))
+            for c in range(8):
+                cell = Image.new('RGBA', (W, CELL), (0, 0, 0, 0))
+                cell.alpha_composite(heads.crop((c * CELL, 0, c * CELL + CELL, CELL)), (PX, 0))
+                if r: cell.alpha_composite(heads.crop((c * CELL, r * CELL, c * CELL + CELL, r * CELL + CELL)), (PX, 0))
+                for cl in layers: cell.alpha_composite(cl[c])
+                out.alpha_composite(cell.resize((W * S, CELL * S), Image.NEAREST), (c * W * S, (si * len(rows) + ri) * CELL * S))
     out.save(path)
 
 if __name__ == '__main__':
-    sheets = [build('goat_horns', 'head', draw_horns), build('elf_ears', 'face', draw_ears, over=True)]  # the ears go over the hat
+    horns = build('goat_horns', 'head', draw_horns, px=HORN_PX)
+    ears = build('elf_ears', 'face', draw_ears, over=True)  # the ears go over the hat
+    H = cells(horns, HORN_PX)
+    E = []
+    for c in cells(ears, 0):
+        w = Image.new('RGBA', (CELL + 2 * HORN_PX, CELL), (0, 0, 0, 0)); w.alpha_composite(c, (HORN_PX, 0)); E.append(w)
+    print('horns over the ears (px a direction):', dict(zip(DIRS, overlap(H, E))))
     if '--preview' in sys.argv:
-        preview(sys.argv[sys.argv.index('--preview') + 1], sheets)
+        preview(sys.argv[sys.argv.index('--preview') + 1], [[H], [E], [H, E]])
