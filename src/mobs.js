@@ -97,10 +97,12 @@ export const MOB_DEFS = {
   alphaWolf: { name: 'Alpha Wolf', ai: 'boss', art: 'alphaWolf', aura: '#b8d0ff', el: 'earth', boss: true, lv: 51, hp: 10800, atk: [52, 68], def: 14, vit: 34, agi: 40, dex: 78, exp: [32000, 22400], adelay: 1300, walk: 120, moves: [{ kind: 'leap', name: 'Pounce', mult: 1.6, r: 1.6 }], aggro: 6, chase: 12, reach: 1.2, w: 1.5, r: 0.6, summon: ['wolf', 'wolf'], summonText: 'The Alpha Wolf howls, and the pack comes running!', respawn: 480, drops: [['alpha_pelt', 1, 1, 0.3], ['wolf_pelt', 3, 5, 1], ['potion3', 1, 2, 0.5], ['wolf_cape', 1, 1, 0.03], ['alpha_card', 1, 1, 0.001]] },
   greatBear: { name: 'Great Bear', ai: 'boss', art: 'greatBear', aura: '#ffc04a', el: 'neutral', boss: true, lv: 56, hp: 13000, atk: [60, 78], def: 26, vit: 56, agi: 30, dex: 74, exp: [42000, 29400], adelay: 1600, walk: 155, moves: [{ kind: 'charge', name: 'Mauling Charge', mult: 1.6 }], aggro: 5.5, chase: 12, reach: 1.6, w: 2.3, r: 0.9, heavy: true, summon: ['bear', 'bear'], summonText: 'The Great Bear roars, and Bears lumber out of the pines!', respawn: 540, drops: [['bear_heart', 1, 1, 0.3], ['bear_claw', 3, 5, 1], ['honey', 2, 4, 0.6], ['potion3', 1, 2, 0.5], ['bear_hide', 1, 1, 0.03], ['bear_card', 1, 1, 0.001]] },
   // the MVP of Wolf Hills: the oldest tree in Aria, woken by the jotnar's stirring, has walked out of
-  // the Old Forest, and the beasts follow it. Stomps, hurls stones from its roots, and calls wolves
-  // and snakes (summon: see SUMMON_CD). Made for a Base 60 second job: about 3 minutes and a bag of White Potions.
-  ancientTreant: { name: 'Ancient Treant', ai: 'boss', art: 'ancientTreant', aura: '#ff9ac8', el: 'earth', lv: 62, hp: 260000, atk: [480, 620], def: 20, vit: 45, agi: 30, dex: 78, mdef: 35, exp: [76000, 53200], adelay: 1200, walk: 170, aggro: 7, chase: 25, reach: 2.0, w: 2.8, r: 1.15, heavy: true,
-    mvp: true, respawn: 2100, mvpExp: 36000, stomp: 2.2, moves: [{ kind: 'throw', name: 'Root Stone', mult: 2.2, r: 2.0 }, { kind: 'charge', name: 'Uprooting Charge', mult: 2.2 }], summon: ['wolf', 'wolf', 'snake', 'snake'], summonText: 'The Ancient Treant groans, and the pack answers!', mvpDrops: [['potion3', 3], ['ancient_seed', 1]],
+  // the Old Forest, and the beasts follow it. The hardest MVP, a fight of several minutes: it stomps,
+  // hurls stones from its roots, charges, calls wolves and snakes (summon: see SUMMON_CD), and has
+  // two moves of its own (MOVES): Grasping Roots hold a hero who keeps away (a quick Windrunner
+  // too) while it comes for them, and Bark Armor sends back what hits it.
+  ancientTreant: { name: 'Ancient Treant', ai: 'boss', art: 'ancientTreant', aura: '#ff9ac8', el: 'earth', lv: 62, hp: 500000, atk: [480, 620], def: 20, vit: 45, agi: 30, dex: 78, mdef: 35, exp: [76000, 53200], adelay: 1200, walk: 170, aggro: 7, chase: 25, reach: 2.0, w: 2.8, r: 1.15, heavy: true,
+    mvp: true, respawn: 2100, mvpExp: 36000, stomp: 2.2, moves: [{ kind: 'roots', name: 'Grasping Roots', mult: 1.2, r: 1.6, hold: 3 }, { kind: 'bark', name: 'Bark Armor' }, { kind: 'throw', name: 'Root Stone', mult: 2.2, r: 2.0 }, { kind: 'charge', name: 'Uprooting Charge', mult: 2.2 }], summon: ['wolf', 'wolf', 'snake', 'snake'], summonText: 'The Ancient Treant groans, and the pack answers!', mvpDrops: [['potion3', 3], ['ancient_seed', 1]],
     wake: 'The hills shake… the Ancient Treant walks in Wolf Hills!',
     drops: [['potion3', 1, 2, 0.6], ['old_bark', 4, 6, 1], ['ancient_heartwood', 1, 1, 0.25], ['hard_ore', 1, 2, 0.4], ['armor_ore', 1, 2, 0.4], ['oak_ring', 1, 1, 0.05], ['grove_blade', 1, 1, 0.01], ['treant_card', 1, 1, 0.001]] },
 };
@@ -115,6 +117,11 @@ for (const d of Object.values(MOB_DEFS)) d.speed = 1000 / (d.walk * WALK_SCALE);
 //            1 s later, mult x ATK within r.
 //   leap   - from 2.5 to 8 paces: jumps onto where you stand, landing 0.9 s later, mult x ATK within r.
 //   frenzy - below half HP: for 8 s it moves 30% faster and attacks 40% faster.
+//   roots  - from 3 to 14 paces (the Ancient Treant): roots burst out of the ground where you stand
+//            0.8 s later, mult x ATK within r, and hold you there for `hold` s: you can't walk, dash
+//            or leap away (you can still fight) while it comes for you. Enraged, three patches.
+//   bark   - (the Ancient Treant) its bark hardens for 6 s: it takes 30% less damage and sends 30%
+//            of what still lands back at whoever struck it (the hero, or a beast). Stop and wait.
 // cd: seconds before the same move again (a boss uses one move at a time, and waits 2.5 s between;
 // an MVP 1.6 s, and enraged 1 s with its moves back 40% sooner).
 export const MOVES = {
@@ -122,7 +129,10 @@ export const MOVES = {
   throw: { min: 3.5, max: 9, cd: 6, wind: 0.5, land: 1.0 },
   leap: { min: 2.5, max: 8, cd: 10, wind: 0.25, air: 0.9 },
   frenzy: { cd: 22, dur: 8, below: 0.5 },
+  roots: { min: 3, max: 14, cd: 12, wind: 0.45, land: 0.8 },
+  bark: { cd: 20, dur: 6, below: 0.95 },
 };
+export const BARK = { taken: 0.7, reflect: 0.3 };
 // An MVP is a fight for a strong second job (or a party): below half its HP it is enraged for good
 // (until it heals back over 60%): it hits 25% harder and 35% faster, walks 15% faster, stomps every
 // 4.5 s instead of 7 and moves sooner (above). It calls its guards at 80%, 50% and 25% of its HP
@@ -139,7 +149,7 @@ const PORTAL_KEEP = 2.2;
 const portalGap = (w, x, z) => Math.min(Infinity, ...w.portals.map((p) => Math.hypot(p.x - x, p.z - z)));
 const nearPortal = (w, x, z, r = 0) => portalGap(w, x, z) < PORTAL_KEEP + r;
 const WHITE = new THREE.Color('#ffffff');
-const STATUS_COL = Object.fromEntries(Object.entries({ freeze: '#8fd0ff', paralyze: '#fff27a', stun: '#d8c8a8', burn: '#ff9a6a', burn2: '#ffc08a', rage: '#ff8a7a', rage2: '#ffb0a0' })
+const STATUS_COL = Object.fromEntries(Object.entries({ bark: '#c8a05a', bark2: '#9a7a48', freeze: '#8fd0ff', paralyze: '#fff27a', stun: '#d8c8a8', burn: '#ff9a6a', burn2: '#ffc08a', rage: '#ff8a7a', rage2: '#ffb0a0' })
   .map(([k, c]) => [k, new THREE.Color(c)]));
 // A boss (MVP or mini-boss) first calls its guards when it falls below 60% HP. It calls again only
 // once every guard is gone, and not until 2 minutes after the last one fell, while it still fights.
@@ -263,6 +273,7 @@ class Mob {
     this.moveCd = {};        // per move: seconds until it can be used again
     this.nextMove = 3;       // seconds until any move
     this.rageT = 0;          // frenzy left
+    this.barkT = 0;          // Bark Armor left (MOVES.bark)
     this.status = null;      // why it is helpless while stunT lasts: freeze, paralyze, stun
     this.burnT = 0;          // burning (main.js inflict)
     this.foe = null;         // a companion beast it has turned on (allies.js), else it fights the hero
@@ -303,6 +314,11 @@ class Mob {
         if (this.hp / d.hp > M.below) continue;
         this.rageT = M.dur;
         this.mgr.emit('frenzy', this);
+      } else if (mv.kind === 'bark') {
+        if (this.hp / d.hp > M.below) continue;
+        this.barkT = M.dur;
+        this.atkAnim = ATTACK_ANIM * 1.6;
+        this.mgr.emit('bark', this, mv);
       } else {
         if (dist < M.min || dist > M.max) continue;
         if (mv.kind === 'leap' && nearPortal(this.mgr.world, p.x, p.z, d.r)) continue; // not onto a portal
@@ -310,11 +326,17 @@ class Mob {
         const spot = { x: p.x, z: p.z };
         if (mv.kind === 'charge') this.act = { kind: 'charge', mv, t: M.wind, phase: 'wind', left: Math.min(dist + 2, M.max) };
         if (mv.kind === 'throw') this.act = { kind: 'throw', mv, t: M.wind, spot };
+        if (mv.kind === 'roots') { // where you stand, and enraged two more patches beside you
+          const spots = [spot];
+          if (this.enraged) for (let i = 0; i < 2; i++) { const a = Math.random() * Math.PI * 2; spots.push({ x: p.x + Math.cos(a) * 2.4, z: p.z + Math.sin(a) * 2.4 }); }
+          this.act = { kind: 'roots', mv, t: M.wind, spots };
+        }
         if (mv.kind === 'leap') this.act = { kind: 'leap', mv, t: M.wind + M.air, from: { x: this.x, z: this.z }, spot };
         this.atkAnim = ATTACK_ANIM * 1.6;
         this.mgr.emit('move', this, this.act);
       }
       this.moveCd[mv.kind] = M.cd * (this.enraged && mv.kind !== 'frenzy' ? MVP_RAGE.cd : 1);
+      if (mv.kind === 'bark') { this.nextMove = 0.5; return; } // (a self move: it can act again at once)
       this.nextMove = this.enraged ? MVP_RAGE.gap : d.mvp ? MVP_GAP : 2.5;
       return;
     }
@@ -343,6 +365,10 @@ class Mob {
     if (a.kind === 'throw') {
       if (!a.thrown && a.t <= 0) { a.thrown = true; a.t = 0.35; this.atkAnim = ATTACK_ANIM; this.mgr.emit('throw', this, a.spot, a.mv, M.land); }
       else if (a.thrown && a.t <= 0) this.act = null;
+      return { moving: false, lift: 0 };
+    }
+    if (a.kind === 'roots') {
+      if (a.t <= 0) { this.act = null; this.atkAnim = ATTACK_ANIM; this.mgr.emit('roots', this, a.spots, a.mv, M.land); }
       return { moving: false, lift: 0 };
     }
     if (a.kind === 'leap') {
@@ -395,8 +421,13 @@ class Mob {
     this.tired = 0;
   }
 
-  hit(dmg, fx, fz) {
+  // from: the beast that struck (allies.js), else the hero
+  hit(dmg, fx, fz, from = null) {
     if (!this.alive) return;
+    if (this.barkT > 0 && dmg > 0) { // Bark Armor: less lands, and some of it goes back (main.js)
+      dmg = Math.max(1, Math.round(dmg * BARK.taken));
+      this.mgr.emit('reflect', this, Math.max(1, Math.round(dmg * BARK.reflect)), from);
+    }
     this.hp -= dmg;
     this.flash = 0.09;
     if (this.lulled) { this.lulled = false; this.provoke(); } // a blow wakes a lulled boss (the vigil's song breaks)
@@ -474,6 +505,7 @@ class Mob {
     const dx = p.x - this.x, dz = p.z - this.z, dist = Math.hypot(dx, dz);
     const low = this.hp / d.hp <= 0.3 && d.hp > 1;
     this.rageT -= dt;
+    this.barkT -= dt;
     if ((d.mvp || d.boss) && this.state !== 'chase' && this.hp < d.hp) this.hp = Math.min(d.hp, this.hp + d.hp * BOSS_REGEN / 60 * dt);
     // an MVP below half its HP is enraged (MVP_RAGE); healed back over 60% it calms down
     if (d.mvp && this.alive) {
@@ -700,6 +732,7 @@ class Mob {
     // a colour over the monster for what ails it (daynight.js multiplies it in)
     this.mat.userData.fx = this.stunT > 0 && this.status ? STATUS_COL[this.status]
       : this.burnT > 0 ? (Math.sin(this.t * 12) > 0 ? STATUS_COL.burn : STATUS_COL.burn2)
+      : this.barkT > 0 ? (Math.sin(this.t * 6) > 0 ? STATUS_COL.bark : STATUS_COL.bark2)
       : this.rageT > 0 ? (Math.sin(this.t * 10) > 0 ? STATUS_COL.rage : STATUS_COL.rage2)
       : this.enraged ? (Math.sin(this.t * 4) > 0 ? STATUS_COL.rage : STATUS_COL.rage2) : null;
     if (!this.mgr.tint.includes(this.mat)) this.mat.color.copy(this.mat.userData.tint || WHITE).multiply(this.mat.userData.fx || WHITE);

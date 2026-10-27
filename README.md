@@ -148,10 +148,15 @@ Treant, charging and calling 2 Bears. Their pelt and heart (30%) make Leif's bes
 
 The **Elder Willow** of Willow Marsh (Lv 23: silvery, wide antlers with fireflies on their tips,
 water-lilies in its hair) is the mini-boss on the road to Veidheim, a step after the Giant Sprout,
-calling Willows out of the reeds. The **Ancient Treant** (Lv 62, 260,000 HP, Earth: pale with age,
+calling Willows out of the reeds. The **Ancient Treant** (Lv 62, 500,000 HP, Earth: pale with age,
 glowing runes carved down its body, blossoms in its crown), the oldest tree in Aria, has walked
 out of the Old Forest into Wolf Hills and is its MVP: it stomps, hurls stones and charges, and calls
-2 Wolves and 2 Snakes. It is the strongest MVP, and it comes back 35 minutes
+2 Wolves and 2 Snakes. It is the hardest MVP, a fight of several minutes, with two skills of its
+own. **Grasping Roots** burst out where you stand (a red circle first) and hold you there for 3
+seconds (4 when it is enraged, and then in three patches): you can still fight, but not walk, dash
+or leap away, so even a quick hero who keeps their distance gets caught while it comes for them.
+**Bark Armor** hardens its bark for 6 seconds (it glows brown): it takes 30% less damage and sends
+30% of every hit back at whoever struck it, you or your beasts. Hold off until it passes. It comes back 35 minutes
 after it falls.
 
 Two more MVPs rule the new lands: the **Kobold King** (Lv 50, 180,000 HP, Earth) in
@@ -194,7 +199,7 @@ fills up until it hits: step out of it.
 | King Crab · Giant Beetle | **Charge** |
 | Elder Willow | **Seed Cloud**, thrown at you |
 | Alpha Wolf · Great Bear | **Pounce** (a leap) · **Mauling Charge** |
-| Ancient Treant | **Root Stone** (thrown) · **Uprooting Charge** |
+| Ancient Treant | **Grasping Roots** (hold you in place) · **Bark Armor** (hits bounce back) · **Root Stone** (thrown) · **Uprooting Charge** |
 
 Each move hits for 1.4–2x the boss's ATK. Staying far away no longer keeps you safe: spells reach
 5 paces, and every boss has a move for 3–9 paces.

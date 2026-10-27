@@ -53,6 +53,7 @@ export class Player {
     this.atkDur = 1;
     this.iframes = 0;
     this.slowT = 0;
+    this.rootT = 0; // held by roots (the Ancient Treant's Grasping Roots): no walking or dashing
     this.knock = { x: 0, z: 0 };
     this.events = { swing: [], hurt: [], faint: [], strike: [], block: [], soak: [], interrupt: [], noammo: [] };
 
@@ -292,6 +293,7 @@ export class Player {
     this.atkAnim -= dt;
     this.iframes -= dt;
     this.slowT -= dt;
+    this.rootT -= dt;
     this.endureT -= dt;
 
     if (this.state === 'down') {
@@ -341,7 +343,7 @@ export class Player {
     if (this.mat.map !== tex) { this.mat.map = tex; this.sprite.center.y = tex.userData.anchor; }
     this.tex = tex;
 
-    this.mat.color.set(this.slowT > 0 ? '#c8e6a0' : '#ffffff');
+    this.mat.color.set(this.rootT > 0 ? '#d8b88a' : this.slowT > 0 ? '#c8e6a0' : '#ffffff');
     if (this.tint) this.mat.color.multiply(this.tint);
     const breathe = this.moving ? 1 : 1 + Math.sin(performance.now() / 420) * 0.015;
     this.sprite.scale.y = this.size.h * breathe * (this.state === 'sit' ? 0.8 : 1); // resting: settled down low
@@ -416,7 +418,7 @@ export class Player {
 
     this.moving = false;
     const next = this.path[0];
-    if (!next) { this.animT = 0; return; }
+    if (!next || this.rootT > 0) { this.animT = 0; return; } // (rooted: it still fights what is in reach)
     const winding = this.atkAnim > this.atkDur - 0.18; // only the start of a swing slows you
     const speed = this.walkSpeed() * (winding ? 0.55 : 1);
     const dx = next.x - this.x, dz = next.z - this.z, d = Math.hypot(dx, dz), step = speed * dt;

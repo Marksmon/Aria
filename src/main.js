@@ -389,7 +389,7 @@ allies.on('strike', (b, m, res) => {
   if (res.miss) { fx.number(m.x, y, m.z, 'Miss', 'miss'); return; }
   fx.number(m.x, y, m.z, res.dmg, res.crit ? 'crit' : 'dealt');
   const dx = m.x - b.x, dz = m.z - b.z, d = Math.hypot(dx, dz) || 1;
-  m.hit(res.dmg, dx / d * 0.3, dz / d * 0.3);
+  m.hit(res.dmg, dx / d * 0.3, dz / d * 0.3, b);
   audio.play('hit');
   if (b.kind === 'hawk') { const wt = skillLv(prog, 'windtalons'); if (wt) inflict(m, { kind: 'stun', chance: () => 2 * wt, dur: 1 }, wt, res.dmg); }
   if (m.alive && m.foe?.kind !== 'bear' && Math.random() < 0.35) m.foe = b; // it may turn on the beast that bit it
@@ -497,6 +497,40 @@ mobs.on('move', (m, a) => {
   }
   if (a.kind === 'throw') fx.warn(a.spot.x, a.spot.z, a.mv.r, MOVES.throw.wind + MOVES.throw.land);
   if (a.kind === 'leap') fx.warn(a.spot.x, a.spot.z, a.mv.r, MOVES.leap.wind + MOVES.leap.air);
+  if (a.kind === 'roots') for (const p of a.spots) fx.warn(p.x, p.z, a.mv.r, MOVES.roots.wind + MOVES.roots.land);
+});
+// Grasping Roots (the Ancient Treant): they burst up `land` s later; caught, you are held there
+mobs.on('roots', (m, spots, mv, land) => {
+  const map = world.id;
+  setTimeout(() => {
+    if (world.id !== map || !m.alive) return;
+    for (const p of spots) {
+      const gy = world.heightAt(p.x, p.z);
+      fx.puff(p.x, gy + 0.2, p.z, mv.r * 1.1);
+      fx.sparkle(p.x, gy + 0.3, p.z, '#8a6a3a', 14);
+    }
+    audio.play('hit');
+    const caught = spots.some((p) => Math.hypot(player.x - p.x, player.z - p.z) <= mv.r + 0.3);
+    if (!caught || !player.canBeHit() || player.state === 'down') return;
+    bossBlow(m, mv.mult, player.x, player.z, mv.r);
+    player.rootT = (mv.hold || 3) * (m.enraged ? 1.4 : 1);
+    player.path = [];
+    menus.message('Roots hold you fast! You can still fight, but not get away.');
+    fx.number(player.x, overHead(player, 1.5), player.z, 'Rooted!', 'miss');
+  }, land * 1000);
+});
+// Bark Armor (the Ancient Treant): its bark hardens, and what hits it hits back
+mobs.on('bark', (m, mv) => {
+  menus.message(`The ${m.def.name} hardens its bark! Hits bounce back at you: hold off for a moment.`);
+  fx.number(m.x, overHead(m, m.sprite.scale.y * 0.8 + 0.4), m.z, mv.name || 'Bark Armor', 'skill');
+  fx.sparkle(m.x, world.heightAt(m.x, m.z) + 1.2, m.z, '#c8a05a', 24);
+  audio.play('block');
+});
+mobs.on('reflect', (m, n, from) => {
+  const foe = from || player;
+  if (!foe.canBeHit?.() || foe.state === 'down') return;
+  if (foe === player) fx.number(player.x, overHead(player, 1.6), player.z, 'Reflected', 'miss');
+  foe.takeDamage(n, m.x, m.z);
 });
 mobs.on('rush', (m) => { audio.play('dodge'); fx.puff(m.x, world.heightAt(m.x, m.z) + 0.15, m.z, 1.2); });
 mobs.on('rammed', (m, mult) => bossBlow(m, mult, m.x, m.z, m.def.reach + 0.6));
@@ -1461,6 +1495,7 @@ function useSkill(id) {
     return;
   }
   if (id === 'blink') {
+    if (player.rootT > 0) { menus.message('Roots hold you fast!'); return; }
     if (player.state !== 'normal' || player.cast || !pay()) return;
     // as far as 4 paces ahead, stopping short of anything in the way
     let bx = player.x, bz = player.z;
@@ -1491,6 +1526,7 @@ function useSkill(id) {
     fx.sparkle(player.x, y + 0.9, player.z, '#bfe8a0', 14);
     return;
   }
+  if (['leapback', 'galestep'].includes(id) && player.rootT > 0) { menus.message('Roots hold you fast!'); return; }
   if (id === 'leapback') { // 3 paces back, away from the nearest monster (or from where you face)
     const near = mobs.nearest(player.x, player.z, 8);
     let ax = near ? player.x - near.x : -player.face.x, az = near ? player.z - near.z : -player.face.z;
@@ -2313,6 +2349,7 @@ function buffList() {
   if (buffs.frenzy > 0) sk('frenzy', 'packfrenzy', buffs.frenzy, `Beasts: attack speed +${3 * frenzyLv}% · damage +${3 * frenzyLv}%`);
   if (buffs.imbue > 0 && imbueEl) sk('imbue', 'elemblade', buffs.imbue, `Element: ${imbueEl[0].toUpperCase()}${imbueEl.slice(1)}`);
   if (buffs.momentum > 0 && momentum) { sk('momentum', 'momentum', buffs.momentum, `ATK +${momentum * lvOf('momentum')}%`); out.at(-1).stacks = momentum; }
+  if (player.rootT > 0) out.push({ key: 'root', icon: 'skill_earthsplit', name: 'Rooted', left: player.rootT, fx: "Can't walk, dash or leap away" });
   if (buffs.aspd > 0) out.push({ key: 'aspd', icon: 'quick', name: ITEMS.quick.name, left: buffs.aspd, fx: 'Attack speed +10%' });
   return out;
 }
