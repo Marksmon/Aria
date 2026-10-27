@@ -156,10 +156,10 @@ upgraded gear can't beat one. So no main story step needs a boss, and boss and M
 
 | MVP | HP | ATK | Its own skills (the plan) |
 |---|---|---|---|
-| Fire Giant (60) | 800,000 | 300-400 | Meteor Rain, burning ground: keep moving, fight from clear ground, Ice Arrows |
-| Kobold King (50) | 1,200,000 | 330-430 | Tribe's Shield (80% less damage while a guard stands, guards every 30 s), Burrow: clear the guards first |
-| Goblin King (55) | 1,200,000 | 276-360 | Mirror Image (90% less damage while a shadow stands), Frenzy: cut down the shadows |
-| Ancient Treant (62) | 1,100,000 | 400-520 | Grasping Roots (held 2.5 s), Bark Armor (30% back): hold off while its bark is hard |
+| Fire Giant (60) | 400,000 | 300-400 | Meteor Rain, burning ground: keep moving, fight from clear ground, Ice Arrows |
+| Kobold King (50) | 600,000 | 330-430 | Tribe's Shield (80% less damage while a guard stands, guards every 30 s), Burrow: clear the guards first |
+| Goblin King (55) | 600,000 | 276-360 | Mirror Image (90% less damage while a shadow stands), Frenzy: cut down the shadows |
+| Ancient Treant (62) | 550,000 | 400-520 | Grasping Roots (held 2.5 s), Bark Armor (30% back): hold off while its bark is hard |
 
 All four are enraged below half HP (`MVP_RAGE` in `src/mobs.js`: +25% damage, attacks 35% faster,
 15% faster walk, a stomp every 4.5 s, moves sooner), call guards at 80/50/25% and a minute after the
@@ -179,26 +179,27 @@ Blue one below 60 SP (300 of each in the bag):
 | Goblin King | won, 3:30, 47 | fainted at 6:02, the King at 42% | fainted (at 420,000 HP) |
 | Ancient Treant | won, 3:27, 145 (rooted 14 times) | fainted at 7:11, the Treant at 29% | fainted (at 500,000 HP) |
 
-## Raids at Base 60/75/90/99
+## Raids at Base 40/55/70/85
 
-Each difficulty needs its Base Level (Easy 60, Normal 75, Hard 90, Hell 99). Easy to Hard are made
-for a second job at that level, checked with `node build-tools/raid-sim.mjs` (its second job is the
-sim's first-job build at x2.5-3 damage, in shop gear, so a real one has an easier time):
+Each difficulty needs its Base Level (Easy 40, Normal 55, Hard 70, Hell 85; the owner's call). Easy
+is made for a first job without potions, Normal and Hard for a second job at that level, checked
+with `node build-tools/raid-sim.mjs` (its second job is the sim's first-job build at x2.5-3 damage,
+in shop gear, so a real one has an easier time):
 
 | Difficulty | Hero | Blader | Sorcerer |
 |---|---|---|---|
-| Easy | Base 60, second job | 0 pots: 100% (2.0 min) | 0 pots: 100% (1.1 min) |
-| Normal | Base 75, second job, 20 White | 20 pots: 100% (3.7 min, 13 used) · 0 pots: 81% | 20 pots: 100% (1.2 min, 4 used) |
-| Hard | Base 90, second job, 30 White | 30 pots: 100% (5.1 min, 29 used) · 0 pots: 53% | 30 pots: 100% (1.1 min, 2 used) |
+| Easy | Base 40, first job | 0 pots: 100% (3.7 min) | 0 pots: 100% (2.0 min) |
+| Normal | Base 55, second job, 20 White | 20 pots: 100% (2.4 min, 7 used) · 0 pots: 74% | 20 pots: 100% (1.3 min, 13 used) |
+| Hard | Base 70, second job, 30 White | 30 pots: 99% (3.1 min, 18 used) · 0 pots: 28% | 30 pots: 100% (1.3 min, 17 used) |
 
 Hell's BleepBloop is fierce (`FIERCE` in `src/mobs.js`): an MVP's rules (enraged below half, moves
-that FLEE can't dodge and that go through 75% of DEF), 490,000 HP, ATK about 240-300, Bloop Rain
+that FLEE can't dodge and that go through 75% of DEF), about 210,000 HP at Lv 90, ATK about 210-260, Bloop Rain
 with sticky puddles, Jelly Wall (three Jelly Cores, 90% less damage while one stands), and a
 matchup (spells +30%; blades and fists −30%, beasts −20%).
 
 ## Mini-bosses: half as hard as an MVP
 
-The owner's call: mini-bosses are half as hard as an MVP (380,000-580,000 HP, ATK about half an
+The owner's call: mini-bosses are half as hard as an MVP (190,000-290,000 HP since the owner halved them, ATK about half an
 MVP's, DEX 120-145, slower swings) and fierce like one (enraged below half HP, moves that FLEE
 can't dodge and that go through 75% of DEF, guards at 80/50/25%), and a decent Lv 70 can beat them.
 No quest or trial needs one any more: those hunt their kin. Playtested with the same Windrunner bot
@@ -214,3 +215,6 @@ No quest or trial needs one any more: those hunt their kin. Playtested with the 
 Hell's BleepBloop on its own (the waves aside), the Lv 99 bot in the best gear at 490,000 HP and
 ATK x1.2: won in 4:04 (67 White Potions) and 5:08 (180), leaving the waves about 5 minutes of the
 10. At 770,000 HP, ATK x2 and DEF 42 the same hero fainted with him at 80%.
+
+The owner then halved every MVP's and mini-boss's HP (and Hell's boss's: about 210,000 HP at its
+Lv 90), and moved the raids to Base 40/55/70/85: the playtests above were at the old HP.

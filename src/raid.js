@@ -7,13 +7,13 @@
 // EXP is held while you fight and paid when the run ends: all of it x1.5 on a clear, the kills alone
 // on a failure. The game runs the raid (main.js tickRaid); this file is its data.
 //
-// A difficulty needs its Base Level (lv; the Tutorial excepted): Easy 60, Normal 75, Hard 90, Hell
-// 99. Strength (hp, atk on raidDef; exp, if given, sets the EXP apart from the HP) was tuned with a
-// whole-run simulation (build-tools/raid-sim.mjs: every monster of a wave at once, natural regen,
-// the breathers and the full heal) for a second job at that level: Easy without potions, Normal with
-// 20 White Potions, Hard with 30. Hell's boss is fierce (mobs.js FIERCE): as hard and tricky as a
-// field MVP, with moves of its own, so Hell is for a Lv 99 hero in the best gear, and was tested
-// in the browser like the MVPs (docs/balance.md).
+// A difficulty needs its Base Level (lv; the Tutorial excepted): Easy 40, Normal 55, Hard 70, Hell
+// 85 (plus: shown as 85+). Strength (hp, atk on raidDef; exp, if given, sets the EXP apart from the
+// HP) was tuned with a whole-run simulation (build-tools/raid-sim.mjs: every monster of a wave at
+// once, natural regen, the breathers and the full heal): Easy for a first job without potions,
+// Normal for a second job with 20 White Potions, Hard with 30. Hell's boss is fierce (mobs.js
+// FIERCE): as hard and tricky as a field MVP, with moves of its own, for a hero in the best gear,
+// and was tested in the browser like the MVPs (docs/balance.md).
 export const RAIDS = {
   bloop: {
     name: 'Bloop Island', map: 'bloop', from: 'coast', npc: 'boatman',
@@ -32,11 +32,11 @@ export const RAIDS = {
     boss: ['bleepBloop', 5],
     difficulties: {
       tutorial: { name: 'Tutorial', lv: 28, mult: 1, wave: { hp: 0.15, atk: 0.08 }, boss: { hp: 0.25, atk: 0.15 }, rare: 0.05, tutorial: true, advice: 'the story run: no wait, and the reward win or lose' },
-      easy: { name: 'Easy', lv: 60, mult: 1, wave: { hp: 1.0, atk: 0.3, exp: 0.4 }, boss: { hp: 1.5, atk: 0.6, exp: 0.6 }, rare: 0.05, advice: 'a second job, no potions needed' },
-      normal: { name: 'Normal', lv: 75, mult: 3, wave: { hp: 1.3, atk: 0.34, exp: 0.42 }, boss: { hp: 2.0, atk: 0.7, exp: 0.65 }, rare: 0.1, advice: 'a second job and 20 White Potions' },
-      hard: { name: 'Hard', lv: 90, mult: 6, wave: { hp: 1.5, atk: 0.36, exp: 0.45 }, boss: { hp: 2.3, atk: 0.75, exp: 0.7 }, rare: 0.15, advice: 'a strong second job and 30 White Potions' },
-      // Hell: the boss as hard and tricky as an MVP (fierce), about 490,000 HP
-      hell: { name: 'Hell', lv: 99, mult: 9, wave: { hp: 3, atk: 0.8, exp: 0.6 }, boss: { hp: 14, atk: 1.2, exp: 0.75, fierce: true }, rare: 0.2, advice: 'the best gear, upgraded and carded, and a big bag of White Potions' },
+      easy: { name: 'Easy', lv: 40, mult: 1, wave: { hp: 0.3, atk: 0.14 }, boss: { hp: 0.45, atk: 0.28 }, rare: 0.05, advice: 'a first job, no potions needed' },
+      normal: { name: 'Normal', lv: 55, mult: 3, wave: { hp: 1.15, atk: 0.36, exp: 0.4 }, boss: { hp: 1.75, atk: 0.72, exp: 0.6 }, rare: 0.1, advice: 'a second job and 20 White Potions' },
+      hard: { name: 'Hard', lv: 70, mult: 6, wave: { hp: 1.45, atk: 0.41, exp: 0.42 }, boss: { hp: 2.25, atk: 0.82, exp: 0.65 }, rare: 0.15, advice: 'a strong second job and 30 White Potions' },
+      // Hell: the boss as hard and tricky as an MVP (fierce), about 210,000 HP
+      hell: { name: 'Hell', lv: 85, plus: true, mult: 9, wave: { hp: 3, atk: 0.8, exp: 0.6 }, boss: { hp: 7, atk: 1.2, exp: 0.75, fierce: true }, rare: 0.2, advice: 'the best gear, upgraded and carded, and a big bag of White Potions' },
     },
     // the clear reward at x1 (times the difficulty's mult): perz and [item, count, chance]
     reward: { perz: 3000, items: [['gel', 6, 1], ['dew', 4, 1], ['bloop_core', 2, 1], ['shiny_gel', 1, 0.3]] },

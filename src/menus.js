@@ -188,7 +188,7 @@ export class Menus {
     const skills = [...(B.moves || []).map((m) => m.name || MOVE[m.kind]), 'Stomp', B.summon && `calls ${B.summon.length} ${MOB_DEFS[B.summon[0]].name}s`, B.burns && 'sticky puddles', B.fierce && 'enraged below half HP'].filter(Boolean);
     const num = (v) => Math.round(v).toLocaleString();
     const rows = list.map(([id, d]) => `<button class="rbtn raidpick ${id === k ? 'on' : ''} ${shut(d) ? 'locked' : ''}" data-act="raidpick" data-id="${id}">
-      <b>${esc(d.name)}</b><small>${d.tutorial ? 'the story run' : `Base ${d.lv}${d.lv >= 99 ? '+' : ''}${low(d) ? ' 🔒' : ''}`}</small></button>`).join('');
+      <b>${esc(d.name)}</b><small>${d.tutorial ? 'the story run' : `Base ${d.lv}${d.plus ? '+' : ''}${low(d) ? ' 🔒' : ''}`}</small></button>`).join('');
     const loot = R.reward.items.map(([id, cnt, chance]) => `<span class="loot" title="${esc(ITEMS[id].name)}">${icon(id, 'xs')}${esc(ITEMS[id].name)} ×${cnt * D.mult}${chance < 1 ? ` <i>${Math.round(chance * 100)}%</i>` : ''}</span>`).join('');
     const rares = R.rares.map((id) => `<span class="loot rare" title="${esc(ITEMS[id].name)}">${icon(id, 'xs')}${esc(ITEMS[id].name)}</span>`).join('');
     const card = R.card ? `<span class="loot rare">${icon(R.card[0], 'xs')}${esc(ITEMS[R.card[0]].name)} <i>${Math.round(R.card[1] * 100)}%</i></span>` : '';
@@ -207,7 +207,7 @@ export class Menus {
           <small>${esc(skills.join(' · '))}</small>
           ${B.takesText ? `<small class="match">${esc(B.takesText[0].toUpperCase() + B.takesText.slice(1))}.</small>` : ''}</div></div>
         <p class="raidline"><b>Waves</b> ${R.waves.length} · ${esc(wavesOf.join(', '))} (Lv ${Math.min(...lvs)}–${Math.max(...lvs)})</p>
-        <p class="raidline"><b>Made for</b> ${D.tutorial ? 'a hero on the story: no tide, and paid win or lose' : `Base ${D.lv}${D.lv >= 99 ? '+' : ''}: ${esc(D.advice)}`}</p>
+        <p class="raidline"><b>Made for</b> ${D.tutorial ? 'a hero on the story: no tide, and paid win or lose' : `Base ${D.lv}${D.plus ? '+' : ''}: ${esc(D.advice)}`}</p>
         <div class="lootrow"><b>Clear reward</b>${D.tutorial ? '' : ` <span class="rtag">x${D.mult}</span>`}<span class="loot perz">${(R.reward.perz * D.mult).toLocaleString()} perz</span>${loot}</div>
         <div class="lootrow"><b>Rare find</b> <span class="rtag">${Math.round(D.rare * 100)}%</span>${rares}</div>
         <div class="lootrow"><b>Boss card</b>${card}</div>
