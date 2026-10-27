@@ -459,9 +459,10 @@ mobs.on('spore', (m) => {
 });
 
 // ---------- the MVP ----------
-mobs.on('windup', (m) => {
+mobs.on('windup', (m) => { // a boss raises its fists: the stomp lands round it (3.2 paces) when the red circle fills
   audio.play('swing');
   fx.sparkle(m.x, world.heightAt(m.x, m.z) + 1.2, m.z, '#ff8a3a', 10);
+  fx.warn(m.x, m.z, 3.2, m.special);
 });
 mobs.on('stomp', (m) => { // the ground bursts around the boss
   const y = world.heightAt(m.x, m.z);
