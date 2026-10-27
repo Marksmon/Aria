@@ -301,7 +301,7 @@ export class Menus {
     this.wins.quest.querySelector('.rw-title').textContent = q.job ? 'Job Quest' : 'Quest';
     return `<div class="qview ${q.job ? 'job' : ''}"><b>${esc(q.title)}</b><small>From ${esc(giver.name)} · ${esc(ZONE_NAMES[giver.map || 'camp'])}</small>
       <p>${esc(q.intro)}</p>
-      <div class="qbox"><b>${ready ? 'Done: return to ' + esc(giver.name) : 'Goal'}</b><small>${esc(st.goal(q))}</small>${active ? `<small>Progress: ${esc(st.progress(id, inv))}</small>` : ''}${this.questReward(id)}</div>
+      <div class="qbox"><b>${ready ? 'Done: return to ' + esc(giver.name) : 'Goal'}</b><small>${esc(st.goal(q))}${q.repeat ? ' · a bounty: take it again whenever you like' : ''}</small>${active ? `<small>Progress: ${esc(st.progress(id, inv))}</small>` : ''}${this.questReward(id)}</div>
       ${where}${go(ready ? 'Go back' : 'Go there', active ? `<button class="rbtn ${this.quitSure ? 'danger' : 'soft'} qquit" data-act="qquit">${this.quitSure ? (SERIES[id] ? 'Yes: start the trial over' : 'Yes, give it up') : 'Quit quest'}</button>` : '')}</div>`;
   }
 
@@ -814,7 +814,7 @@ export class Menus {
     } else if (st.state === 'offer') {
       const first = st.id === n.quests[0] || st.id === n.trial?.[0] || st.id === n.trial2?.[0];
       text = (first ? (greet || n.hello) + ' ' : '') + st.q.intro;
-      box = `<b class="${st.q.job ? 'jobq' : ''}">${esc(st.q.title)}</b><small>${esc(this.quests.goal(st.q))}</small>${this.questReward(st.id)}`;
+      box = `<b class="${st.q.job ? 'jobq' : ''}">${esc(st.q.title)}</b><small>${esc(this.quests.goal(st.q))}${st.q.repeat ? ' · a bounty: take it again whenever you like' : ''}</small>${this.questReward(st.id)}`;
       btns = `<button class="rbtn soft" data-act="close">Not now</button><button class="rbtn" data-act="accept" data-id="${st.id}">Accept</button>`;
     } else if (st.state === 'active' && st.q.kind === 'quiz' && this.quests.hasItems(st.id, this.inv)) {
       // a trainer's questions, one at a time: tap an answer

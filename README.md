@@ -865,7 +865,11 @@ The quest list folds away with a tap on its title bar and scrolls when it is lon
 Tap someone to talk. A **!** bubble means they have a quest (or a job change) for you, a **?**
 means you can hand one in. Active quests show under the clock.
 
-A few big jobs instead of many errands: one each in the camp, and a handful in Steinborg.
+Most quest givers have a **series**: each step pays when you hand it in, and the next is offered at
+once (when you have its level), from Base 2 up to Base 90, so there is always a paying quest near the
+fields you hunt. Quests pay 2x. At the top of a few late series is a **bounty**: once done, it is
+offered again, for heroes past 75 whose levels take millions of EXP (each pays about a third of a
+level).
 
 **Kinds of quest.** Hunt (defeat monsters), gather (bring items), **cook or brew** (bring the
 makings, then answer the cook's or brewer's questions; a wrong answer only gets a hint), **search**
@@ -876,17 +880,17 @@ leads to each.
 
 | Who | Where | Quests (Base Level) |
 |---|---|---|
-| Elder Halvard | camp | The Mushroom Wood (12): hold Dark Dale's old waystone against 3 waves of Mushrooms |
-| Astrid the Cook | camp | A Feast for Eldrun (10): bring 10 Bloop Gel, 5 Crab Legs, 5 Spores, then cook it with her |
-| Sigrun the Scout | camp | The Lantern Wisp (14): hunt the golden Wisp that rises over Fen Shore's pond at night |
+| Elder Halvard | camp | The Valley Watch: Bloops at the Gate (2): 12 Bloops, 8 Sprouts · The Fen Road (6): 12 Blue Bloops, 6 Crabs · The Mushroom Wood (12): hold Dark Dale's old waystone against 3 waves of Mushrooms · The Spore Blight (14): 20 Mushrooms |
+| Astrid the Cook | camp | Astrid's Kitchen: A Feast for Eldrun (10): bring 10 Bloop Gel, 5 Crab Legs, 5 Spores, then cook it with her · Crab Boil (12): 8 Crab Legs, 10 Shells · Forest Stew (16): 12 Spores, 4 Green Herbs · Salted Supper (24): 10 Salt, 10 Bloop Gel · Honey Cake (56): 6 Honey |
+| Sigrun the Scout | camp | Sigrun's Map: The Lantern Wisp (14): hunt the golden Wisp that rises over Fen Shore's pond at night · The Southern Lands (32): walk Ember Hill, Black Wood and Ash Heath · The Far Lands (46): walk Barley Field, Wolf Hills, Serpent Wood and Coal Pit |
 | Gyda the Healer | camp | heals HP and SP for free |
 | The Keepers (butlers in black) | camp, Steinborg, Galdrheim, Veidheim | sign the ledger, then: storage (shared by all your heroes), healing, Save here (where you wake after fainting, and where Return Feathers go), switch first jobs, and teleport to any other Keeper you signed with (300–500 perz) |
 | Sir Eirik the Runeblade | Steinborg | the Magic Knight's trial |
-| Hild the Trader | Steinborg | shop · Hild's Crate (24): take a crate of potions to Hakon in Salt Bay |
-| Gunnar the Gear Crafter | Steinborg | shop, forge · Stone for the Forge (34): 30 Stone, 15 Burnt Shells |
+| Hild the Trader | Steinborg | shop · The Trade Road: Hild's Crate (24): take a crate of potions to Hakon in Salt Bay · Kobold Fur (30): 15 · Goblin Teeth (40): 15 · Snakeskin (48): 12 |
+| Gunnar the Gear Crafter | Steinborg | shop, forge · The Forge: Stone for the Forge (34): 30 Stone, 15 Burnt Shells · Iron and Steel (44): 10 Iron Ore, 4 Steel Ore · Claws and Fangs (58): 12 Bear Claws, 6 Wolf Fangs |
 | Holger the Refiner | Steinborg | refines gear up to +10; sells Iron and Steel Ore |
-| Ragna the Herbalist | Steinborg | brewing · The Great Remedy (38): bring 6 Dark Spores and 6 Fire Dust, then brew it with her |
-| Captain Ulfr | Steinborg | The Blader's Trial · The King's Shore (30): 20 Blue Crabs · The Beetles of Ash Heath (46): 20 Fire Beetles |
+| Ragna the Herbalist | Steinborg | brewing · The Herbalist: The Great Remedy (38): bring 6 Dark Spores and 6 Fire Dust, then brew it with her · Snake Venom (47): 8 Snakeskins, 8 Green Herbs · Honey Salve (60): 8 Honey |
+| Captain Ulfr | Steinborg | The Blader's Trial · The King's Shore (30): 20 Blue Crabs · The Beetles of Ash Heath (46): 20 Fire Beetles · The Watch at War: Serpent Wood (52): 20 Goblins, 15 Archers, 15 Assassins · Coal Pit (58): 20 Kobolds, 15 Archers, 15 Assassins · The Beasts of the Shore and Heath (72): the King Crab and the Giant Beetle · Watch Bounty (80, again and again): 30 Goblin and 30 Kobold Assassins |
 | Saeunn the Seeress | Steinborg | the story; lore of the Fire Giant and Galdrheim |
 | Embla the Stylist | Steinborg | hairstyle and dye, 1,000 perz |
 | Ivar the Ferryman | Steinborg | carts to any land you have walked, 300–3,000 perz |
@@ -896,22 +900,22 @@ leads to each.
 | Hakon the Carter | Salt Bay, by the west road | the story (Chapter 5) |
 | Boatman | Salt Bay, by the water | rows you out to **Bloop Island**, the raid (see Raids) |
 | Dag the Miner | Coal Pit, by the east road | the story (Chapter 5) |
-| Archmage Vigdis | Galdrheim | The Rune Trial · The Mother of Spores (40): 20 Dark Mushrooms |
-| Orm the Staffwright | Galdrheim | shop, crafts sorcerers' gear (staves, robes) · The Living Wood (26): a Giant Root, 8 Thorns |
+| Archmage Vigdis | Galdrheim | The Rune Trial · The Mother of Spores (40): 20 Dark Mushrooms · Fire and Ash (50): 15 Fire Dust, 10 Burnt Shells · The Spore Mother (70): the Giant Mushroom · Archmage's Bounty (85, again and again): the Giant Mushroom and the Elder Willow |
+| Orm the Staffwright | Galdrheim | shop, crafts sorcerers' gear (staves, robes) · The Staffwright: The Living Wood (26): a Giant Root, 8 Thorns · Dark Ink (36): 8 Dark Crystals, 8 Dark Spores · Ember Ink (45): 10 Fire Dust, 15 Glow Dust |
 | Seyla the Enchanter | Galdrheim | opens a card slot in a Lv 4 weapon (50%) |
 | Kari the Curio Seller | Galdrheim | shop: potions, feathers, Speed Potions |
-| Brynja the Lorekeeper | Galdrheim | The Drowned Tomes (20): find 4 tomes washed up on the Salt Bay shore |
-| Torvald the Runecarver | Galdrheim | Shadows in Black Wood (38): take rubbings of 3 Watcher stones in Black Wood |
+| Brynja the Lorekeeper | Galdrheim | The Lorekeeper: The Drowned Tomes (20): find 4 tomes washed up on the Salt Bay shore · Thorny Pages (22): 25 Red Sprouts · The Shore Library (28): 25 Blue Crabs |
+| Torvald the Runecarver | Galdrheim | The Runecarver: Shadows in Black Wood (38): take rubbings of 3 Watcher stones in Black Wood · Backward Runes (42): 15 Goblins, 10 Archers, 5 Assassins · The Deep Carvers (55): 20 Kobold and 20 Goblin Assassins |
 | Hrafn the Stargazer, Signy the Apprentice | Galdrheim | tales of the city, the stars and the jotnar |
 | Runa the Gatewarden | Galdrheim | the rune-gate: to any land you have walked, 300–3,000 perz |
-| Huntmaster Sigrid | Veidheim, at the archery range | The Archer's Trial · The Walking Willows (10): 20 Willows · The Pack in the Hills (48): 25 Wolves · The Alpha's Pack (54): 20 Wolves · The Waking Wood (70): the Great Bear and the Alpha Wolf |
-| Ottar the Farmer | Veidheim, by the barn | The Lost Lambs (16): find 3 lambs in Willow Marsh · Snakes in the Barley (46): 20 Snakes |
-| Leif the Tanner | Veidheim | makes hunters' gear (Hunter's Cloak and Boots, Claw Charm, Bark Armor, Alpha Cloak, Bear Heart Charm) · Pelts for the Winter (50): 10 Wolf Pelts, 5 Bear Claws · The Great Bear's Kin (59): 12 Bears |
+| Huntmaster Sigrid | Veidheim, at the archery range | The Archer's Trial · The Walking Willows (10): 20 Willows · The Pack in the Hills (48): 25 Wolves · The Alpha's Pack (54): 20 Wolves · The Waking Wood (70): the Great Bear and the Alpha Wolf · Hunter's Bounty (78, again and again): 30 Bears, 30 Wolves |
+| Ottar the Farmer | Veidheim, by the barn | The Farmer: The Lost Lambs (16): find 3 lambs in Willow Marsh · Snakes in the Barley (46): 20 Snakes · Guard the Harvest (56): 25 Snakes, 15 Wolves |
+| Leif the Tanner | Veidheim | makes hunters' gear (Hunter's Cloak and Boots, Claw Charm, Bark Armor, Alpha Cloak, Bear Heart Charm) · Pelts for the Winter (50): 10 Wolf Pelts, 5 Bear Claws · The Great Bear's Kin (59): 12 Bears · Winter Hides (64): 20 Wolf Pelts, 10 Bear Claws · Tanner's Bounty (90, again and again): the Great Bear and 20 Bears |
 | Bjarki the Beastmaster | Veidheim, by the lodge | the Beastmaster's trial; his wolf Grimr never bites (unless asked) |
-| Asa the Fletcher | Veidheim | shop: bows and arrows · makes bows (Vine, Ice, Willow, Fire, Steel, Gale, Heartwood) · Wood for Bows (22): 12 Willow Twigs, 4 Old Bark |
+| Asa the Fletcher | Veidheim | shop: bows and arrows · makes bows (Vine, Ice, Willow, Fire, Steel, Gale, Heartwood) · The Fletcher: Wood for Bows (22): 12 Willow Twigs, 4 Old Bark · Fang and Feather (48): 6 Wolf Fangs, 10 Willow Twigs |
 | Eydis the Trader | Veidheim | shop: potions (White too), Honey, Speed Potions, feathers |
 | Halla the Healer | Veidheim | heals HP and SP for free |
-| Kalf the Gate Archer | Veidheim, at the north gate | Walking Trees (22): 15 Treants in the Old Forest |
+| Kalf the Gate Archer | Veidheim, at the north gate | The Gate Watch: Marsh Patrol (8): 12 Yellow Bloops, 8 Willows · Walking Trees (22): 15 Treants in the Old Forest · The Old Forest (28): 30 Treants |
 | Bodil the Sentry, Finn the Young Archer | Veidheim | tales of the village and its lands |
 | Tove the Carter | Veidheim | carts to any land you have walked |
 

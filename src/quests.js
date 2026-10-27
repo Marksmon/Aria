@@ -35,7 +35,7 @@ export const NPCS = {
       : c.jobId === 'swordman' ? 'A Blader now! I always knew that practice sword wanted to be more than a stick.'
       : c.jobId === 'mage' ? 'A Sorcerer! Mind the tents when you practise, child.'
       : c.jobId === 'archer' ? 'An Archer! Point that thing at the wolves, not at my tent.' : null),
-    quests: ['warden'],
+    quests: ['bloopcull', 'fenpatrol', 'warden', 'mushroomblight'],
     // a Trainee ready for a job is sent on to Steinborg
     ready: 'You have learnt all a Trainee can. For the blade, go north through Moss Field to Steinborg: Captain Ulfr trains Bladers. For sorcery, go west to Fen Shore and north to Galdrheim, the city of sorcerers. For the bow, go east past the Red Sprouts to Birch Grove and on through Willow Marsh to Veidheim: Huntmaster Sigrid trains Archers.',
   },
@@ -44,14 +44,14 @@ export const NPCS = {
     hello: 'Hungry? So am I! But my pantry is bare...',
     later: (lv) => `Nothing to cook right now. Pop back at Base Level ${lv}, I'll have a big job for you.`,
     bye: 'The pot is always on for you, dear.',
-    quests: ['feast'],
+    quests: ['feast', 'crabboil', 'mushroomstew', 'saltfish', 'honeycake'],
   },
   wren: {
     name: 'Sigrun the Scout', x: 35.6, z: 28.2,
     hello: "Oh, a new face! I'm mapping the valley, but the night is too dangerous for me.",
     later: (lv) => `I'm still scribbling notes. Find me again at Base Level ${lv}.`,
     bye: "My map is finished, thanks to you. Best map in the valley, if I say so myself.",
-    quests: ['lights'],
+    quests: ['lights', 'mapsouth', 'mapfar'],
   },
   // a healer, like Ragnarok's: she mends you for nothing (no sprite of her own yet)
   gyda: {
@@ -68,7 +68,7 @@ export const NPCS = {
     later: (lv) => `I will have work for you at Base Level ${lv}. Meanwhile, shop away!`,
     bye: 'Good trading, friend. Mind your purse on the road.',
     greet: (c) => (c.baseLv >= 30 ? 'My best customer! The wilds must be paying you well.' : null),
-    quests: ['pearls'],
+    quests: ['pearls', 'koboldfur', 'goblinteeth', 'snakeskins'],
   },
   gunnar: {
     name: 'Gunnar the Gear Crafter', map: 'city', x: 43.2, z: 30.4, shop: 'gunnar', craft: 'gear',
@@ -77,14 +77,14 @@ export const NPCS = {
     bye: 'Keep that edge sharp.',
     greet: (c) => (c.baseLv >= 40 ? 'Back again? That gear has seen some fighting. Let us see what I can do with it.'
       : c.jobId === 'swordman' ? 'A Blader needs good steel. Have a look at the rack.' : null),
-    quests: ['ore'],
+    quests: ['ore', 'oreforge', 'clawforge'],
   },
   ragna: {
     name: 'Ragna the Herbalist', map: 'city', x: 20.6, z: 22.8, craft: 'use',
     hello: 'Herbs, gels and dusts make potions and feathers. Bring me the makings and I will brew them for you.',
     later: (lv) => `I will have an errand for you at Base Level ${lv}.`,
     bye: 'Drink slowly. The good ones are strong.',
-    quests: ['remedy'],
+    quests: ['remedy', 'venom', 'honeysalve'],
   },
   ulfr: {
     name: 'Captain Ulfr', map: 'city', x: 36.4, z: 51.4, trial: ['blader_trial', 'blader_trial2', 'blader_trial3'], job: 'swordman',
@@ -99,7 +99,7 @@ export const NPCS = {
       swordman: 'One of the Watch\'s own Bladers. Stand straight.',
       mage: 'A Sorcerer at my gate. The Watch could use a few spells.' })[c.jobId] || null,
     trialHint: 'Trainees who have learnt all their basics can take the Blader\'s Trial with me: Trainee Job Level 10 and Basic Training 9.',
-    quests: ['kingcrab', 'giantbeetle'],
+    quests: ['kingcrab', 'giantbeetle', 'goblinwar', 'koboldwar', 'kingsguard', 'watchbounty'],
   },
   // the Keepers: one in the camp and in each city. Register with one to save there (where you wake
   // after fainting, and where a Return Feather takes you) and to be teleported to it by any other
@@ -222,7 +222,7 @@ export const NPCS = {
       blademaster: 'BladeMaster. Your sword hums; I can hear it from here.',
       magicknight: 'Steel that sings. I taught half of that song.' })[c.jobId] || null,
     trialHint: 'When your training is done (Trainee Job Level 10, Basic Training 9), come to me and I will test whether the runes answer you.',
-    quests: ['giantmother'],
+    quests: ['giantmother', 'firedust', 'sporemother', 'arcbounty'],
     lore: [
       'Galdrheim was founded by Hallveig, the first Archmage, on a rune-well: a place where the old songs rise out of the ground. The circle in our square sits on top of it.',
       'When the settlers crossed the mountains, it was Hallveig who cut the runes of Eldrun\'s fire-ring. A ring of fire alone would not hold a jotunn; a ring of fire that sings does.',
@@ -235,7 +235,7 @@ export const NPCS = {
     hello: 'Staves, robes, rings and charms for the song-folk. Bring me the makings and I carve and stitch them, or buy from the rack.',
     later: (lv) => `I may need your help with the wood at Base Level ${lv}.`,
     bye: 'Hold your staff by the grain, not against it.',
-    quests: ['livingwood'],
+    quests: ['livingwood', 'darkink', 'emberink'],
     lore: [
       'A staff is not a stick. The wood must still remember being alive, or the song runs straight through it.',
       'Gunnar in Steinborg makes fine swords. He told me once a staff was a sword for people who are afraid of swords. I have not forgiven him.',
@@ -267,7 +267,7 @@ export const NPCS = {
     hello: 'Quiet, please. This is the oldest library north of the mountains.',
     later: (lv) => `I have a task for you, but not yet. Come back at Base Level ${lv}.`,
     bye: 'Return your books on time. All of them.',
-    quests: ['tomes'],
+    quests: ['tomes', 'redsprouts', 'shoretide'],
     lore: [
       'The fire-jotnar were born when the world was young, from the fire under the mountains. They did not hate us. They simply burnt, the way fire does.',
       'There were nine great jotnar. Eight were sung into the stone long ago. The ninth, the one the settlers called the Ember Jarl, slept under Ember Hill. You know him as the Fire Giant.',
@@ -279,7 +279,7 @@ export const NPCS = {
     hello: 'Every rune is a word, and every word is a promise. I carve them so the promises last.',
     later: (lv) => `My chisel needs something you cannot fetch yet. Come back at Base Level ${lv}.`,
     bye: 'Mind the stones. They are older than they look.',
-    quests: ['shades'],
+    quests: ['shades', 'goblinrunes', 'deeprunes'],
     lore: [
       'These three stones are the Watchers. They have stood here since before the walls. When the jotnar stir, their runes glow brighter.',
       'They have been glowing for a month now.',
@@ -341,7 +341,7 @@ export const NPCS = {
       blademaster: 'A BladeMaster. Pity about the sword; you would have made a fine archer.',
       wizard: 'A Wizard! Try not to set the targets on fire. Again.',
       magicknight: 'Sword and spell. Out here we would add a bow, but nobody is perfect.' })[c.jobId] || null,
-    quests: ['elderwillow', 'wolfpack', 'alphawolf', 'ancienttreant'],
+    quests: ['elderwillow', 'wolfpack', 'alphawolf', 'ancienttreant', 'huntbounty'],
     lore: [
       'Veidheim was a hunting camp once, a few tents past Birch Grove. Then the farmers came for the soil, and the hunters stayed to keep the beasts off it.',
       'We had farms past Black Wood too: Barley Field, and the hills beyond it. The snakes and the wolves took them. The packs are never alone, and they come for you on sight.',
@@ -380,7 +380,7 @@ export const NPCS = {
     hello: 'Pelts, skins and bark: bring them to me and I make them into hunters\' gear. Cloaks, boots, charms, armor. It smells, but it holds. Bows are Asa\'s work: the fletcher\'s bench.',
     later: (lv) => `I will have work for you at Base Level ${lv}.`,
     bye: 'Wear it in the rain. Leather likes the rain.',
-    quests: ['pelts', 'greatbear'],
+    quests: ['pelts', 'greatbear', 'hides', 'bearbounty'],
     lore: ['A Wolf pelt for the warmth, a Snake skin for the quiet. A hunter wants both.', 'Old Bark from a Treant makes armor that grows back. I once had a breastplate sprout a leaf.'],
   },
   ottar: {
@@ -388,7 +388,7 @@ export const NPCS = {
     hello: 'Barley in the field, cabbages in the yard and a windmill that never stops. Or it would be a good year, if it were not for the beasts.',
     later: (lv) => `There is always farm work. Come back at Base Level ${lv}.`,
     bye: 'Good soil and good neighbours. That is all a man needs.',
-    quests: ['lambs', 'snakes'],
+    quests: ['lambs', 'snakes', 'farmguard'],
     lore: ['The archers keep the wolves off us. I keep the archers fed. It is a fair trade.'],
   },
   asa: {
@@ -396,7 +396,7 @@ export const NPCS = {
     hello: 'I make the bows and arrows for the whole village, and sell them to anyone who can draw one. Bring me vines, shells, willow or steel and I will make you a better bow at my bench. A quiver lasts: we pick our arrows up again. And strap a small shield to your forearm: the hand still draws, and the arm is safer.',
     later: (lv) => `My wood is running low, but the woods are too dangerous for you yet. Base Level ${lv}, then.`,
     bye: 'Straight shafts, true flights.',
-    quests: ['bowstaves'],
+    quests: ['bowstaves', 'fletching'],
     shop: 'asa',
     lore: ['A walking Willow\'s twigs make the best bows: they still want to bend. You just have to catch the Willow first.', 'Sigrid shoots the farthest. I shoot the straightest. We do not talk about who wins.'],
   },
@@ -410,7 +410,7 @@ export const NPCS = {
     name: 'Kalf the Gate Archer', map: 'hunt', x: 35.6, z: 12.6, dress: { ...ROLE.sentry, main: [80, 0.35, 0.7], dye: 'blonde' },
     hello: 'North is the Old Forest. The Treants there walk about like old men looking for their pipes. They will not touch you unless you start it.',
     later: (lv) => `The Treants hit like falling trees. Come back at Base Level ${lv}.`,
-    bye: 'Mind the roots.', quests: ['treants'],
+    bye: 'Mind the roots.', quests: ['marshwatch', 'treants', 'oldwoodwatch'],
     lore: ['West is Willow Marsh, the way you came in. There is an old willow by the water, bigger than the rest: the Elder Willow, we call it. It does not like visitors.'],
   },
   halla: {
@@ -449,14 +449,14 @@ export const FARES = { camp: 300, city: 500, magic: 500, grove: 300, fen: 400, h
 export const QUESTS = {
   // ---------- Eldrun Camp: one big job each ----------
   warden: {
-    title: 'The Mushroom Wood', kind: 'defend', map: 'hollow', at: { x: 32, z: 32 }, place: 'the old waystone', waves: [['mushling', 3], ['mushling', 4], ['mushling', 5]], lv: 12,
+    title: 'The Valley Watch 3: The Mushroom Wood', kind: 'defend', map: 'hollow', at: { x: 32, z: 32 }, place: 'the old waystone', waves: [['mushling', 3], ['mushling', 4], ['mushling', 5]], lv: 12,
     intro: 'The Mushrooms of Dark Dale march on the camp road a little further every night. In the middle of the dale stands our old waystone. Stand by it and hold it against three waves of them. They hit back hard: bring potions.',
     thanks: 'Three waves, and the stone still stands. The air already smells cleaner. You have become a true guardian of Eldrun.',
     reward: { xp: 2500, perz: 1500, items: { potion2: 5 } },
   },
 
   feast: {
-    title: 'A Feast for Eldrun', kind: 'quiz', items: { gel: 10, crableg: 5, spore: 5 }, lv: 10, task: 'cook the feast with Astrid',
+    title: 'Astrid\'s Kitchen 1: A Feast for Eldrun', kind: 'quiz', items: { gel: 10, crableg: 5, spore: 5 }, lv: 10, task: 'cook the feast with Astrid',
     intro: "The camp hasn't feasted in a year! Bring me ten Bloop Gel, five Crab Legs from Fen Shore and five Spores from Dark Dale, and cook it with me. The secret: gel for the sauce, crab for the meat, and spores only at the very end, a pinch at a time.",
     questions: [
       { q: 'The pot is bubbling. What makes the sauce?', options: ['The Crab Legs', 'The Bloop Gel', 'The Spores'], a: 1,
@@ -471,7 +471,7 @@ export const QUESTS = {
   },
 
   lights: {
-    title: 'The Lantern Wisp', kind: 'kill', mob: 'lanternWisp', n: 1, rare: { map: 'fen', x: 32, z: 26, night: true }, lv: 14,
+    title: 'Sigrun\'s Map 1: The Lantern Wisp', kind: 'kill', mob: 'lanternWisp', n: 1, rare: { map: 'fen', x: 32, z: 26, night: true }, lv: 14,
     intro: 'The fishers of Fen Shore swear a great golden Wisp rises over the pond, but only at night. The old songs call it the Lantern Wisp. Find it, and bring it down before it drifts away at dawn. It is stronger than any Wisp you have seen.',
     thanks: 'The Lantern Wisp! Then the songs were true. Keep what it left you: they say it lights the darkest road.',
     reward: { xp: 2000, perz: 800, items: { glow: 5, wander: 3 } },
@@ -716,7 +716,7 @@ export const QUESTS = {
   },
   // ---------- Steinborg ----------
   pearls: {
-    title: "Hild's Crate", kind: 'deliver', to: 'hakon', thing: 'crate of potions', lv: 24,
+    title: 'The Trade Road 1: Hild\'s Crate', kind: 'deliver', to: 'hakon', thing: 'crate of potions', lv: 24,
     intro: 'Hakon the carter is stuck in Salt Bay, and the salt road is no place to go without potions. Take this crate to him, by the west road of Salt Bay, and come back to tell me he has it.',
     toLine: 'From Hild? Bless that woman. With these I can get the salt carts rolling again. Tell her the first load of salt is hers.',
     thanks: 'He has it? Good. Then the salt comes back to my stall, and some of the coin comes to you.',
@@ -724,13 +724,13 @@ export const QUESTS = {
   },
 
   ore: {
-    title: 'Stone for the Forge', kind: 'fetch', items: { stone: 30, cinder: 15 }, lv: 34,
+    title: 'The Forge 1: Stone for the Forge', kind: 'fetch', items: { stone: 30, cinder: 15 }, lv: 34,
     intro: 'The forge is cold. Thirty Stone from the Beetles of Ember Hill and fifteen Burnt Shells from the Fire Beetles of Ash Heath, and I can work again.',
     thanks: 'Good stone, and the shells are still warm. Here: coin, and something for the road.',
     reward: { xp: 30000, perz: 8000, items: { potion3: 5 } },
   },
   remedy: {
-    title: 'The Great Remedy', kind: 'quiz', items: { gloom: 6, ember_dust: 6 }, lv: 38, task: 'brew the remedy with Ragna',
+    title: 'The Herbalist 1: The Great Remedy', kind: 'quiz', items: { gloom: 6, ember_dust: 6 }, lv: 38, task: 'brew the remedy with Ragna',
     intro: 'I can brew a remedy for the burning sickness in Ash Heath. Bring me six Dark Spores from Black Wood and six pinches of Fire Dust from the Fire Wisps, and brew it with me: the cold spores calm the fire, so they go in first and the dust goes in slowly after.',
     questions: [
       { q: 'The burning sickness runs hot. What goes in the pot first?', options: ['The Fire Dust', 'The Dark Spores', 'Water, nothing else'], a: 1,
@@ -752,14 +752,14 @@ export const QUESTS = {
   },
   // ---------- Galdrheim ----------
   tomes: {
-    title: 'The Drowned Tomes', kind: 'search', map: 'coast', thing: 'Drowned Tome', spots: [[16, 10], [32.5, 44.5], [34, 22], [10, 49]], lv: 20,
+    title: 'The Lorekeeper 1: The Drowned Tomes', kind: 'search', map: 'coast', thing: 'Drowned Tome', spots: [[16, 10], [32.5, 44.5], [34, 22], [10, 49]], lv: 20,
     intro: 'A ship carrying our oldest books sank off Salt Bay. Four tomes have washed up along the shore. Look for something glinting by the water, and bring them back to me before the tide takes them again.',
     thanks: 'The ink is still there. Hallveig\'s own hand! Thank you.',
     reward: { xp: 7000, perz: 4000, items: { tonic: 5 } },
   },
 
   livingwood: {
-    title: 'The Living Wood', kind: 'fetch', items: { heartwood: 1, thorn: 8 }, lv: 26,
+    title: 'The Staffwright 1: The Living Wood', kind: 'fetch', items: { heartwood: 1, thorn: 8 }, lv: 26,
     intro: 'The best staves are carved from wood that still lives. The Giant Sprout of Birch Grove carries a root like that in its heart. Bring me a Giant Root, and eight Thorns to bind it.',
     thanks: 'It is still warm. I will make something good of this, and so will you.',
     reward: { xp: 14000, perz: 6000, items: { potion2: 8 } },
@@ -777,7 +777,7 @@ export const QUESTS = {
     reward: { xp: 120000, perz: 15000, items: { potion3: 10 } },
   },
   shades: {
-    title: 'Shadows in Black Wood', kind: 'search', map: 'deep', thing: 'Watcher stone', spots: [[18, 18], [46, 24], [26, 46]], verb: 'Rubbing taken', lv: 38,
+    title: 'The Runecarver 1: Shadows in Black Wood', kind: 'search', map: 'deep', thing: 'Watcher stone', spots: [[18, 18], [46, 24], [26, 46]], verb: 'Rubbing taken', lv: 38,
     intro: 'Three old Watcher stones stand among the black trees of Black Wood, older than Galdrheim. Find them, look for the faint glow, and take a rubbing of each for me. Mind the Dark Wisps: they come for you on sight.',
     thanks: 'Cold, and singing. The runes on these rubbings are older than any I have carved. The Watchers will be glad.',
     reward: { xp: 45000, perz: 6000, items: { tonic: 8 } },
@@ -785,13 +785,13 @@ export const QUESTS = {
 
   // ---------- Veidheim ----------
   snakes: {
-    title: 'Snakes in the Barley', kind: 'kill', mob: 'snake', n: 20, lv: 46,
+    title: 'The Farmer 2: Snakes in the Barley', kind: 'kill', mob: 'snake', n: 20, lv: 46,
     intro: 'Our old farm past Black Wood, the Barley Field, is crawling with Snakes, and they strike at anyone on sight. I want my barley back. Kill twenty of them.',
     thanks: 'Twenty! The reapers are already sharpening their scythes. Here, for your trouble, and a loaf when the barley is in.',
     reward: { xp: 130000, perz: 12000, items: { potion3: 8, honey: 4 } },
   },
   lambs: {
-    title: 'The Lost Lambs', kind: 'search', map: 'marsh', thing: 'Lost lamb', spots: [[46, 16], [14, 50], [48, 50]], verb: 'Lamb found', lv: 16,
+    title: 'The Farmer 1: The Lost Lambs', kind: 'search', map: 'marsh', thing: 'Lost lamb', spots: [[46, 16], [14, 50], [48, 50]], verb: 'Lamb found', lv: 16,
     intro: 'Something spooked my flock in the night, and three lambs ran off into Willow Marsh, west of the gate. The Willows will not hurt them, but the reeds are deep. Find them and send them home.',
     thanks: 'All three, bleating their heads off. You have a farmer\'s ear. Here, and thank you.',
     reward: { xp: 5000, perz: 2000, items: { potion2: 4, honey: 2 } },
@@ -803,7 +803,7 @@ export const QUESTS = {
     reward: { xp: 170000, perz: 15000, items: { potion3: 10 } },
   },
   pelts: {
-    title: 'Pelts for the Winter', kind: 'fetch', items: { wolf_pelt: 10, bear_claw: 5 }, lv: 50,
+    title: 'The Tanner 1: Pelts for the Winter', kind: 'fetch', items: { wolf_pelt: 10, bear_claw: 5 }, lv: 50,
     intro: 'Winter comes early this side of Black Wood. I need ten Wolf Pelts for the watch\'s cloaks, and five Bear Claws for the charms that keep them brave.',
     thanks: 'Good thick pelts. The watch will be warm, and the charms will rattle. Here is your share.',
     reward: { xp: 150000, perz: 14000, items: { hunter_cape: 1 } },
@@ -815,13 +815,13 @@ export const QUESTS = {
     reward: { xp: 140000, perz: 15000, items: { potion3: 10 } },
   },
   greatbear: {
-    title: 'The Great Bear\'s Kin', kind: 'kill', mob: 'bear', n: 12, lv: 59,
+    title: 'The Tanner 2: The Great Bear\'s Kin', kind: 'kill', mob: 'bear', n: 12, lv: 59,
     intro: 'There is a bear in Wolf Hills as big as my workshop, grey-backed with age, and its kin have torn up every hunters\' camp out there. Nobody can kill the Great Bear, but twelve fewer Bears and the camps can go back up. If you ever do bring down the giant, bring me its heart: I will make you something no other hunter has.',
     thanks: 'Twelve Bears! The camps can go back up. And if you ever find its heart, I know what to do with it.',
     reward: { xp: 200000, perz: 18000, items: { potion3: 12, honey: 6 } },
   },
   bowstaves: {
-    title: 'Wood for Bows', kind: 'fetch', items: { willow_twig: 12, old_bark: 4 }, lv: 22,
+    title: 'The Fletcher 1: Wood for Bows', kind: 'fetch', items: { willow_twig: 12, old_bark: 4 }, lv: 22,
     intro: 'Bows need willow that still wants to bend, and the bow-grips need bark that will not crack. Bring me twelve Willow Twigs from the marsh and four slabs of Old Bark from the Treants.',
     thanks: 'Lovely wood. Still twitching, too. Every archer in the village will shoot a little straighter because of you.',
     reward: { xp: 9000, perz: 4000, items: { potion2: 6, quick: 2 } },
@@ -833,7 +833,7 @@ export const QUESTS = {
     reward: { xp: 6000, perz: 3000, items: { potion2: 6 } },
   },
   treants: {
-    title: 'Walking Trees', kind: 'kill', mob: 'treant', n: 15, lv: 22,
+    title: 'The Gate Watch 2: Walking Trees', kind: 'kill', mob: 'treant', n: 15, lv: 22,
     intro: 'The Treants of the Old Forest have started wandering up to the north gate and leaning on the palisade. It creaks. Fell fifteen of them and the rest will keep their distance.',
     thanks: 'Fifteen! The palisade has stopped groaning, and so have I. Here, from the watch.',
     reward: { xp: 8000, perz: 3500, items: { potion2: 6 } },
@@ -843,6 +843,224 @@ export const QUESTS = {
     intro: 'The Ancient Treant has walked out of the Old Forest into Wolf Hills, and the beasts follow it. Two lead them for it: the Great Bear of Wolf Hills and the Alpha Wolf of Barley Field. No hunter can fell a tree that has stood a thousand years, but its lieutenants can fall. Bring down both, and the old tree walks alone.',
     thanks: 'The Great Bear and the Alpha, both! Its beasts have no one to follow now. Veidheim sleeps easier tonight, hunter.',
     reward: { xp: 450000, perz: 30000, items: { potion3: 20 } },
+  },
+  // ---------- more series for every giver (each step pays as it is handed in); a repeat: true
+  // bounty at the top of a late series can be taken again and again ----------
+  bloopcull: {
+    title: 'The Valley Watch 1: Bloops at the Gate', kind: 'kill', mobs: { slime: 12, sprout: 8 }, lv: 2,
+    intro: 'Bloops have been nosing at the camp gate and Sprouts dig up the paths in Moss Field, north of camp. Clear twelve Bloops and eight Sprouts for an old man.',
+    thanks: 'The gate is quiet again. You have a good arm, young one.',
+    reward: { xp: 300, perz: 300, items: { potion: 5 } },
+  },
+  fenpatrol: {
+    title: 'The Valley Watch 2: The Fen Road', kind: 'kill', mobs: { blueSlime: 12, crab: 6 }, lv: 6,
+    intro: 'The fishers walk the Fen Shore road west of camp, and the Blue Bloops and Crabs will not let them pass. Twelve Bloops and six Crabs should do.',
+    thanks: 'The fishers came home with full nets. They asked your name.',
+    reward: { xp: 900, perz: 600, items: { potion: 5 } },
+  },
+  mushroomblight: {
+    title: 'The Valley Watch 4: The Spore Blight', kind: 'kill', mob: 'mushling', n: 20, lv: 14,
+    intro: 'Mushrooms are spreading through Dark Dale, east of Moss Field, and their spores reach our tents on the wind. Twenty of them, and mind the slowing clouds.',
+    thanks: 'The air smells of pine again, not spores. The valley owes you, again.',
+    reward: { xp: 3500, perz: 1500, items: { potion2: 5 } },
+  },
+  crabboil: {
+    title: 'Astrid\'s Kitchen 2: Crab Boil', kind: 'fetch', items: { crableg: 8, shell: 10 }, lv: 12,
+    intro: 'A crab boil for the whole camp! Eight Crab Legs and ten Shells from the Crabs of Fen Shore, and I will do the rest.',
+    thanks: 'Into the pot they go! Here, take this, and come back for seconds.',
+    reward: { xp: 2500, perz: 1200, items: { potion: 8 } },
+  },
+  mushroomstew: {
+    title: 'Astrid\'s Kitchen 3: Forest Stew', kind: 'fetch', items: { spore: 12, herb: 4 }, lv: 16,
+    intro: 'A stew to warm the scouts: twelve Spores from the Mushrooms of Dark Dale and four Green Herbs. Don\'t breathe the spores in!',
+    thanks: 'It smells like a forest after rain. Wonderful. Thank you, dear.',
+    reward: { xp: 4500, perz: 2000, items: { potion2: 4 } },
+  },
+  saltfish: {
+    title: 'Astrid\'s Kitchen 4: Salted Supper', kind: 'fetch', items: { salt: 10, gel: 10 }, lv: 24,
+    intro: 'For a winter store I need ten Salt from the Sea Bloops of Salt Bay, and ten Bloop Gel to seal the jars.',
+    thanks: 'The cellar will be full all winter. You\'re a treasure.',
+    reward: { xp: 3800, perz: 3500, items: { potion2: 6 } },
+  },
+  honeycake: {
+    title: 'Astrid\'s Kitchen 5: Honey Cake', kind: 'fetch', items: { honey: 6 }, lv: 56,
+    intro: 'The finest cake needs the finest honey: six pots from the Bears of Wolf Hills. Don\'t let them eat you first.',
+    thanks: 'Honey cake for everyone! And the biggest slice is yours.',
+    reward: { xp: 190000, perz: 15000, items: { potion3: 10 } },
+  },
+  mapsouth: {
+    title: 'Sigrun\'s Map 2: The Southern Lands', kind: 'visit', zones: ['ridge', 'deep', 'heath'], lv: 32,
+    intro: 'My map stops at Dark Dale. Walk Ember Hill, Black Wood and Ash Heath for me, and I\'ll fill in the south.',
+    thanks: 'Ember Hill, Black Wood, Ash Heath... my map is twice as big! Thank you!',
+    reward: { xp: 13000, perz: 6000, items: { potion2: 8 } },
+  },
+  mapfar: {
+    title: 'Sigrun\'s Map 3: The Far Lands', kind: 'visit', zones: ['farm', 'wolfhill', 'serpent', 'coalpit'], lv: 46,
+    intro: 'The last corners: Barley Field and Wolf Hills in the far east, Serpent Wood beyond Burnt Wood, and Coal Pit past Stone Field. Walk them all.',
+    thanks: 'The whole of Aria, on one sheet. I\'ll name a hill after you.',
+    reward: { xp: 64000, perz: 12000, items: { potion3: 6 } },
+  },
+  koboldfur: {
+    title: 'The Trade Road 2: Kobold Fur', kind: 'fetch', items: { kobold_fur: 15 }, lv: 30,
+    intro: 'Kobold fur sells well in the north. Fifteen pelts from the Kobolds of Stone Field, west of Salt Bay, and we split the profit.',
+    thanks: 'Thick, warm and only a little smelly. A pleasure doing business.',
+    reward: { xp: 12000, perz: 7000, items: { potion2: 8 } },
+  },
+  goblinteeth: {
+    title: 'The Trade Road 3: Goblin Teeth', kind: 'fetch', items: { goblin_tooth: 15 }, lv: 40,
+    intro: 'Carvers in Galdrheim want goblin teeth for charms. Fifteen from the goblins of Burnt Wood, north of Galdrheim.',
+    thanks: 'Ugh, but they\'ll fetch a fine price. Here\'s your share.',
+    reward: { xp: 43000, perz: 10000, items: { potion3: 5 } },
+  },
+  snakeskins: {
+    title: 'The Trade Road 4: Snakeskin', kind: 'fetch', items: { snake_skin: 12 }, lv: 48,
+    intro: 'Snakeskin boots are all the rage. Twelve skins from the Snakes of Barley Field, far to the east.',
+    thanks: 'Beautiful scales. The cobblers will fight over these.',
+    reward: { xp: 76000, perz: 14000, items: { potion3: 6 } },
+  },
+  oreforge: {
+    title: 'The Forge 2: Iron and Steel', kind: 'fetch', items: { iron_ore: 10, steel_ore: 4 }, lv: 44,
+    intro: 'Ten Iron Ore from the Kobolds and four Steel Ore from the Kobold Archers or Goblins, and I\'ll forge for the Watch all month.',
+    thanks: 'Good ore. The forge sings again.',
+    reward: { xp: 53000, perz: 12000, items: { potion3: 5 } },
+  },
+  clawforge: {
+    title: 'The Forge 3: Claws and Fangs', kind: 'fetch', items: { bear_claw: 12, wolf_fang: 6 }, lv: 58,
+    intro: 'I want to try something new: blades edged with bear claw and wolf fang. Twelve claws and six fangs from Wolf Hills.',
+    thanks: 'Look at that edge! You\'ll be the first to hear when it\'s done.',
+    reward: { xp: 200000, perz: 20000, items: { potion3: 10 } },
+  },
+  venom: {
+    title: 'The Herbalist 2: Snake Venom', kind: 'fetch', items: { snake_skin: 8, herb: 8 }, lv: 47,
+    intro: 'An antidote starts with the poison. Eight Snakeskins from Barley Field and eight Green Herbs.',
+    thanks: 'With this I can save a dozen hunters. Thank you.',
+    reward: { xp: 70000, perz: 12000, items: { potion3: 6 } },
+  },
+  honeysalve: {
+    title: 'The Herbalist 3: Honey Salve', kind: 'fetch', items: { honey: 8 }, lv: 60,
+    intro: 'Honey heals burns like nothing else. Eight pots from the Bears of Wolf Hills.',
+    thanks: 'Sweet and soothing. The Watch\'s medics will thank you.',
+    reward: { xp: 260000, perz: 22000, items: { potion3: 12 } },
+  },
+  darkink: {
+    title: 'The Staffwright 2: Dark Ink', kind: 'fetch', items: { shade: 8, gloom: 8 }, lv: 36,
+    intro: 'Runes for a staff need dark ink: eight Dark Crystals from the Dark Wisps and eight Dark Spores from the Dark Mushrooms of Black Wood.',
+    thanks: 'The ink drinks the light. Perfect.',
+    reward: { xp: 22000, perz: 8000, items: { tonic: 10 } },
+  },
+  emberink: {
+    title: 'The Staffwright 3: Ember Ink', kind: 'fetch', items: { ember_dust: 10, glow: 15 }, lv: 45,
+    intro: 'Now the fire runes: ten Fire Dust from the Fire Wisps of Ash Heath and fifteen Glow Dust.',
+    thanks: 'It glows on the page! A staff of this will burn bright.',
+    reward: { xp: 58000, perz: 12000, items: { tonic: 12 } },
+  },
+  redsprouts: {
+    title: 'The Lorekeeper 2: Thorny Pages', kind: 'kill', mob: 'russet', n: 25, lv: 22,
+    intro: 'The Red Sprouts of Birch Grove trample the old library garden. Twenty-five of them, please.',
+    thanks: 'The garden is safe, and so are the books under it.',
+    reward: { xp: 3000, perz: 3000, items: { potion2: 6 } },
+  },
+  shoretide: {
+    title: 'The Lorekeeper 3: The Shore Library', kind: 'kill', mob: 'tidecrab', n: 25, lv: 28,
+    intro: 'Blue Crabs nest in the sunken library off Salt Bay. Twenty-five, and I can send divers for the rest of the books.',
+    thanks: 'The divers found three more shelves. Remarkable.',
+    reward: { xp: 6700, perz: 5000, items: { potion2: 8 } },
+  },
+  goblinrunes: {
+    title: 'The Runecarver 2: Backward Runes', kind: 'kill', mobs: { goblinWarrior: 15, goblinArcher: 10, goblinAssassin: 5 }, lv: 42,
+    intro: 'The goblins of Burnt Wood carve backward runes. Bring down fifteen Goblins, ten Archers and five Assassins, and the carving stops.',
+    thanks: 'Not one fresh rune since. You have done the city a service.',
+    reward: { xp: 53000, perz: 10000, items: { potion3: 5 } },
+  },
+  deeprunes: {
+    title: 'The Runecarver 3: The Deep Carvers', kind: 'kill', mobs: { koboldAssassin: 20, goblinAssassin: 20 }, lv: 55,
+    intro: 'Assassins carve the worst runes, in the dark of Coal Pit and Serpent Wood. Twenty of each.',
+    thanks: 'The runes are fading already. The stones remember you.',
+    reward: { xp: 180000, perz: 18000, items: { potion3: 10 } },
+  },
+  marshwatch: {
+    title: 'The Gate Watch 1: Marsh Patrol', kind: 'kill', mobs: { yellowSlime: 12, willow: 8 }, lv: 8,
+    intro: 'Willow Marsh, west of the gate, is crawling with Yellow Bloops and walking Willows. Twelve Bloops and eight Willows.',
+    thanks: 'The marsh road is clear. Not bad for a new hand.',
+    reward: { xp: 800, perz: 600, items: { potion: 6 } },
+  },
+  oldwoodwatch: {
+    title: 'The Gate Watch 3: The Old Forest', kind: 'kill', mob: 'treant', n: 30, lv: 28,
+    intro: 'The Treants of the Old Forest, north of the gate, walk closer every night. Thirty of them back to sleep.',
+    thanks: 'The forest is still. Good shooting.',
+    reward: { xp: 6700, perz: 5000, items: { potion2: 8 } },
+  },
+  fletching: {
+    title: 'The Fletcher 2: Fang and Feather', kind: 'fetch', items: { wolf_fang: 6, willow_twig: 10 }, lv: 48,
+    intro: 'Fang-tipped arrows fly true. Six Wolf Fangs from Barley Field and ten Willow Twigs from the marsh.',
+    thanks: 'These will fly straighter than any I\'ve made. Thank you.',
+    reward: { xp: 76000, perz: 12000, items: { potion3: 5 } },
+  },
+  farmguard: {
+    title: 'The Farmer 3: Guard the Harvest', kind: 'kill', mobs: { snake: 25, wolf: 15 }, lv: 56,
+    intro: 'Harvest is coming, and the Snakes and Wolves of Barley Field know it. Twenty-five Snakes and fifteen Wolves.',
+    thanks: 'The harvest is in, every sheaf! Here, take this, and some bread.',
+    reward: { xp: 190000, perz: 15000, items: { potion3: 10 } },
+  },
+  goblinwar: {
+    title: 'The Watch at War 1: Serpent Wood', kind: 'kill', mobs: { goblinWarrior: 20, goblinArcher: 15, goblinAssassin: 15 }, lv: 52,
+    intro: 'The goblins gather in Serpent Wood. Break their war-band: twenty Goblins, fifteen Archers, fifteen Assassins.',
+    thanks: 'Their war-band is scattered. The Watch salutes you.',
+    reward: { xp: 140000, perz: 18000, items: { potion3: 10 } },
+  },
+  koboldwar: {
+    title: 'The Watch at War 2: Coal Pit', kind: 'kill', mobs: { koboldWarrior: 20, koboldArcher: 15, koboldAssassin: 15 }, lv: 58,
+    intro: 'Now the kobolds of Coal Pit. Twenty Kobolds, fifteen Archers, fifteen Assassins.',
+    thanks: 'Coal Pit is quiet. Two fronts held by one hero.',
+    reward: { xp: 200000, perz: 22000, items: { potion3: 12 } },
+  },
+  kingsguard: {
+    title: 'The Watch at War 3: The Beasts of the Shore and Heath', kind: 'kill', mobs: { tideKing: 1, cinderLord: 1 }, lv: 72,
+    intro: 'The King Crab of Salt Bay and the Giant Beetle of Ash Heath have grown too strong to leave. Bring both down.',
+    thanks: 'Both of them! You are the Watch\'s champion now.',
+    reward: { xp: 860000, perz: 40000, items: { potion3: 20 } },
+  },
+  watchbounty: {
+    title: 'Watch Bounty: Assassins', kind: 'kill', mobs: { goblinAssassin: 30, koboldAssassin: 30 }, lv: 80, repeat: true,
+    intro: 'The Watch pays well for assassins. Thirty from Serpent Wood and thirty from Coal Pit, as often as you like.',
+    thanks: 'Bounty paid. Come back whenever you want more.',
+    reward: { xp: 640000, perz: 25000, items: { potion3: 15 } },
+  },
+  firedust: {
+    title: 'The Archmage 2: Fire and Ash', kind: 'fetch', items: { ember_dust: 15, cinder: 10 }, lv: 50,
+    intro: 'For the rune-well\'s fire wards: fifteen Fire Dust and ten Burnt Shells from Ash Heath.',
+    thanks: 'The wards burn bright. Well gathered.',
+    reward: { xp: 120000, perz: 15000, items: { tonic: 15 } },
+  },
+  sporemother: {
+    title: 'The Archmage 3: The Spore Mother', kind: 'kill', mob: 'gloomMother', n: 1, lv: 70,
+    intro: 'The Giant Mushroom of Black Wood still fouls the rune-well. You are strong enough now. End it.',
+    thanks: 'The well runs clean at last. Galdrheim is in your debt.',
+    reward: { xp: 740000, perz: 35000, items: { tonic: 20, potion3: 10 } },
+  },
+  arcbounty: {
+    title: 'Archmage\'s Bounty: Old Powers', kind: 'kill', mobs: { gloomMother: 1, elderWillow: 1 }, lv: 85, repeat: true,
+    intro: 'The Giant Mushroom and the Elder Willow keep coming back, swollen with old power. Bring them down, as often as they rise.',
+    thanks: 'Bounty paid. The well is grateful, and so am I.',
+    reward: { xp: 1000000, perz: 40000, items: { potion3: 20 } },
+  },
+  huntbounty: {
+    title: 'Hunter\'s Bounty: Wolf Hills', kind: 'kill', mobs: { bear: 30, wolf: 30 }, lv: 78, repeat: true,
+    intro: 'Veidheim pays a bounty on every Bear and Wolf of Wolf Hills. Thirty of each, as often as you like.',
+    thanks: 'Bounty paid. The hills are safer, for a while.',
+    reward: { xp: 470000, perz: 25000, items: { potion3: 15 } },
+  },
+  hides: {
+    title: 'The Tanner 3: Winter Hides', kind: 'fetch', items: { wolf_pelt: 20, bear_claw: 10 }, lv: 64,
+    intro: 'Winter is long up here. Twenty Wolf Pelts and ten Bear Claws, and every hunter in Veidheim stays warm.',
+    thanks: 'Warm coats for the whole village. Thank you, hunter.',
+    reward: { xp: 320000, perz: 25000, items: { potion3: 12 } },
+  },
+  bearbounty: {
+    title: 'Tanner\'s Bounty: The Great Bear', kind: 'kill', mobs: { greatBear: 1, bear: 20 }, lv: 90, repeat: true,
+    intro: 'The Great Bear and its kin: one of it and twenty of them, as often as the hills allow. The best hides in Aria.',
+    thanks: 'Bounty paid. These hides are worth a king\'s ransom.',
+    reward: { xp: 1700000, perz: 50000, items: { potion3: 20 } },
   },
 };
 
@@ -1004,7 +1222,7 @@ export class Quests {
     const q = QUESTS[id];
     if (q.kind !== 'kill' && q.items) for (const [item, n] of Object.entries(q.items)) inv.spend(item, n); // fetch, or a quiz's ingredients
     delete this.active[id];
-    this.done.push(id);
+    if (!q.repeat) this.done.push(id); // (a bounty, repeat: true, is offered again at once)
     return rewardOf(id) || {}; // a trial's steps on the way pay nothing
   }
 
