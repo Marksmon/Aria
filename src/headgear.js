@@ -43,7 +43,7 @@ export function paintGears(g, at, dir, top, face, frame = 0) {
 }
 
 // paint a piece into a body frame (ctx), its cell's top-left corner at at = [x, y] (the head's); a
-// piece wider than the head (the Giant Goat Horns) says where the head's cell starts in its own (off)
+// piece wider than the head (the Giant Goat Horn Helm) says where the head's cell starts in its own (off)
 export function paintGear(g, at, dir, id, frame = 0) {
   const pc = gearPiece(id);
   if (!pc?.loaded || !at || pc.L.dirs[dir] === undefined) return;
