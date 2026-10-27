@@ -181,6 +181,7 @@ export class Menus {
     }
     const k = this.raidPick, D = R.difficulties[k];
     const [btype, boff] = R.boss, B = raidDef(btype, D.lv + boff, D.boss, D.wave), base = MOB_DEFS[btype];
+    const pic = this.hooks.mobPortrait?.(base.art); // the boss as it stands (the card's picture if it can't be drawn)
     const lvs = R.waves.flat().map(([, , off]) => D.lv + off);
     const wavesOf = [...new Set(R.waves.flat().map(([t]) => MOB_DEFS[t].name))];
     const MOVE = { charge: 'Charge', leap: 'Leap', throw: 'Throw', meteors: 'Meteor Rain', mirror: 'Mirror Image', burrow: 'Burrow', roots: 'Roots', bark: 'Bark Armor', frenzy: 'Frenzy' };
@@ -201,7 +202,7 @@ export class Menus {
     return `<div class="raidui">
       <div class="raidlist">${rows}</div>
       <div class="raidinfo">
-        <div class="raidboss">${icon(R.card?.[0] || btype)}<div><b>${esc(base.name)}</b> <span class="rtag">Lv ${B.lv}</span>${B.fierce ? ' <span class="rtag hot">as hard as an MVP</span>' : ''}
+        <div class="raidboss">${pic ? `<img class="bosspic" src="${pic}" alt="">` : icon(R.card?.[0] || btype)}<div><b>${esc(base.name)}</b> <span class="rtag">Lv ${B.lv}</span>${B.fierce ? ' <span class="rtag hot">as hard as an MVP</span>' : ''}
           <small>HP ${num(B.hp)} · ATK ${num(B.atk[0])}–${num(B.atk[1])} · ${esc(B.el[0].toUpperCase() + B.el.slice(1))}</small>
           <small>${esc(skills.join(' · '))}</small>
           ${B.takesText ? `<small class="match">${esc(B.takesText[0].toUpperCase() + B.takesText.slice(1))}.</small>` : ''}</div></div>

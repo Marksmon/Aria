@@ -1010,6 +1010,26 @@ raidBar.querySelector('.rb-leave').addEventListener('click', () => { if (raid) e
 const raidOf = (map) => Object.entries(RAIDS).find(([, R]) => R.map === map)?.[1] || null;
 const storyRaid = (id) => storyLive() && story.step?.kind === 'raid' && story.step.raid === id;
 const boatSpot = (R) => ({ x: NPCS[R.npc].x, z: NPCS[R.npc].z + 1.4 });
+// a monster as it stands, facing you, as a picture (the Boatman shows the raid's boss): its first
+// standing frame, cropped to what is painted, cached
+const mobPics = {};
+function mobPortrait(art) {
+  if (art in mobPics) return mobPics[art];
+  try {
+    const set = lib.mobs[art], anims = set.anims.down || Object.values(set.anims)[0];
+    const img = (anims.idle || Object.values(anims)[0])[0].image;
+    const c = document.createElement('canvas'); c.width = img.width; c.height = img.height;
+    const g = c.getContext('2d'); g.drawImage(img, 0, 0);
+    const px = g.getImageData(0, 0, c.width, c.height).data;
+    let x0 = c.width, y0 = c.height, x1 = -1, y1 = -1;
+    for (let y = 0; y < c.height; y++) for (let x = 0; x < c.width; x++) if (px[(y * c.width + x) * 4 + 3] > 8) { x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
+    if (x1 < 0) return (mobPics[art] = null);
+    const w = x1 - x0 + 1, h = y1 - y0 + 1, out = document.createElement('canvas');
+    out.width = w; out.height = h;
+    out.getContext('2d').drawImage(c, x0, y0, w, h, 0, 0, w, h);
+    return (mobPics[art] = out.toDataURL());
+  } catch { return (mobPics[art] = null); }
+}
 function raidInfo(id) {
   return { wait: Math.max(0, raidAt - Date.now()), story: storyRaid(id) };
 }
@@ -1307,6 +1327,7 @@ const menus = new Menus(inv, prog, player, {
   ferryList: () => Object.entries(FARES).filter(([m]) => visited.has(m) && m !== world.id),
   // the Boatman: the raid's difficulties and the tide
   raidInfo: (id) => raidInfo(id),
+  mobPortrait: (art) => mobPortrait(art),
   raidGo: (id, diff) => raidGo(id, diff),
   ferry(map) {
     const fare = FARES[map];

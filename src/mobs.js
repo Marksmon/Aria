@@ -215,11 +215,11 @@ const FIERCE = {
     fierce: true, stomp: 2.0, adelay: 2000, summonCd: 30, stats: { def: 22, vit: 50, dex: 160 },
     moves: [
       { kind: 'mirror', name: 'Jelly Wall', decoy: 'jellyCore', n: 3, swap: false, text: 'BleepBloop wobbles, and three Jelly Cores rise round him! Pop them: he is shielded while they stand.' },
-      { kind: 'meteors', name: 'Bloop Rain', mult: 1.6, r: 1.6, color: '#ff7a8a' },
+      { kind: 'meteors', name: 'Bloop Rain', mult: 1.6, r: 1.6, color: '#ff7a8a', cd: 20 },
       { kind: 'leap', name: 'Belly Flop', mult: 2.0, r: 2.4 },
       { kind: 'charge', name: "Veteran's Charge", mult: 1.8 },
     ],
-    burns: { r: 1.6, dur: 6, mult: 0.3, slow: true, color: '#ff7a8a', word: 'Sticky!' },
+    burns: { r: 1.5, dur: 4, mult: 0.2, slow: true, color: '#ff7a8a', word: 'Sticky!' },
     takes: { melee: 0.7, magic: 1.3, beast: 0.8 },
     takesText: 'blades and fists sink into his jelly (−30%) and beasts get stuck (−20%), but spells burst it (+30%)',
   },
@@ -398,7 +398,7 @@ class Mob {
         this.atkAnim = ATTACK_ANIM * 1.6;
         this.mgr.emit('move', this, this.act);
       }
-      this.moveCd[mv.kind] = M.cd * (this.enraged && mv.kind !== 'frenzy' ? MVP_RAGE.cd : 1);
+      this.moveCd[mv.kind] = (mv.cd ?? M.cd) * (this.enraged && mv.kind !== 'frenzy' ? MVP_RAGE.cd : 1); // (a move may wait longer than its kind: mv.cd)
       if (mv.kind === 'bark' || mv.kind === 'mirror') { this.nextMove = 0.5; return; } // (a self move: it can act again at once)
       this.nextMove = this.enraged ? MVP_RAGE.gap : fierce(d) ? MVP_GAP : 2.5;
       return;

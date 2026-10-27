@@ -802,6 +802,7 @@ button.eq:active { background: var(--w-sel); }
 .raidinfo { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 5px; font-size: 12px; }
 .raidboss { display: flex; gap: 8px; align-items: flex-start; }
 .raidboss > .ico { width: 44px; height: 44px; flex: none; image-rendering: pixelated; }
+.raidboss > .bosspic { width: 76px; height: 76px; object-fit: contain; flex: none; image-rendering: pixelated; }
 .raidboss small { display: block; line-height: 1.35; opacity: .9; }
 .raidboss small.match { color: #ffd88a; }
 .raidboss .rtag.hot { background: #8a2a2a; color: #ffe0d0; padding: 0 5px; border-radius: 4px; }
