@@ -81,6 +81,9 @@ export function derive(prog, gear) {
     guard: Math.min(50, gear.perk?.guard || 0),
     reflect: gear.perk?.reflect || 0,
     burn: gear.perk?.burn || 0,
+    stun: gear.perk?.stun || 0,            // % chance a hit or spell stuns (the Kobold Warlord Card)
+    lifesteal: gear.perk?.lifesteal || 0,  // % of damage dealt healed (the BleepBloop Card)
+    double: gear.perk?.double || 0,        // % chance a blow up close lands twice (the Goblin Warlord Card)
     def: clamp(gear.def || 0, 0, 100),            // hard DEF from equipment
     end,                                          // soft DEF comes from END each hit
     mdef: knl + Math.floor(end / 2),

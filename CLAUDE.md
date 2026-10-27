@@ -57,9 +57,10 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   Waking Wood (Lv 70: the Great Bear and the Alpha Wolf, two mini-bosses), and it can be quit. Boss and MVP cards drop at 1%
   (other cards 0.1%). **Cards are monsters** (the owner's call): one card per monster, named after it,
   never a second card or a card that is not a monster. More Head/Face cards (for fighters: today's
-  lean to casters and archers) wait for new monsters in a map extension. The MVP cards each have an
-  effect of their own, after the MVP's move (`card.perk`: Fire Giant burn, Kobold King guard,
-  Goblin King lucky dodge, Ancient Treant reflect).
+  lean to casters and archers) wait for new monsters in a map extension. The MVP and raid boss cards
+  each have an effect of their own, after the boss's moves (`card.perk`: Fire Giant burn, Kobold
+  King guard, Goblin King lucky dodge, Ancient Treant reflect; BleepBloop lifesteal, Kobold Warlord
+  stun, Goblin Warlord melee and double blows).
   Each MVP has a matchup (`takes` in `mobs.js`, applied in `rules.js`): easiest for one job family
   and hardest for another (Fire Giant: bows / casters; Kobold King: casters / bows; Goblin King:
   blades / bows and casters; Ancient Treant: beasts / blades).

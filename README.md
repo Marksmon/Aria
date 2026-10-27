@@ -347,8 +347,8 @@ crystal earrings and a band round the back of the head; QKN +4, FNS +4, HIT +10,
 | Raider's Cloak | Garment | DEF 3, FLEE +8, QKN +2 |
 | Horde Leather | Armor | DEF 6, FLEE +5, QKN +2 |
 | Spiked Buckler | Shield | DEF 6, POW +2 |
-| Kobold Warlord Card | Head or face card | DEF +5, Max HP +15%, END +6 (Kobold Camp, 1%) |
-| Goblin Warlord Card | Head or face card | ATK +20, POW +5, blows up close (not arrows) +15% (Goblin Lair, 1%) |
+| Kobold Warlord Card | Head or face card | DEF +5, Max HP +15%, END +6; **Earthshaker:** blows and spells stun a monster 5% of the time (Kobold Camp, 1%) |
+| Goblin Warlord Card | Head or face card | ATK +20, POW +5, blows up close (not arrows) +15%; **Frenzy:** 10% of them land twice (Goblin Lair, 1%) |
 
 - **Cooldowns:** each raid has one 3-hour cooldown for all its difficulties, from setting out; the
   three are separate.
@@ -807,7 +807,7 @@ they come back whole and the slot stays open. A piece that breaks at Holger's gi
 | Beetle Card (Hardy) | Armor | DEF +2, END +1 | Beetle, 0.1% |
 | Lantern Wisp Card (Glowing) | Wings | FNS +2, KNL +1 | Lantern Wisp, 0.1% |
 | Red Bloop Card (Fiery) | Weapon | ATK +10 | Red Bloop (Bloop Island), 0.1% |
-| BleepBloop Card (Grand) | Wings | ATK +20, Max HP +10%, FTN +5 | BleepBloop, 1% |
+| BleepBloop Card (Grand) | Wings | ATK +20, Max HP +10%, FTN +5; **Gulp:** 3% of the damage you deal heals you | BleepBloop, 1% |
 | Red Sprout Card (Thorny) | Garment | Max HP +5%, FLEE +2 | Red Sprout, 0.1% |
 | Sea Bloop Card (Briny) | Shield | DEF +1, Max SP +5% | Sea Bloop, 0.1% |
 | Fire Beetle Card (Scorched) | Armor | DEF +2, POW +1 | Fire Beetle, 0.1% |

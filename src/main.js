@@ -219,10 +219,17 @@ function inflict(m, st, lv, hitDmg = 0) {
   }
   fx.number(m.x, overHead(m, m.sprite.scale.y * 0.8 + 0.35), m.z, STATUS_TEXT[st.kind], 'miss');
 }
-// the Fire Giant Card's Meteor Heart: a hit or spell sets the monster burning now and then
-// (player.ps.burn %; a boss a third as often, for half as long, like any burn)
-function cardBurn(m, dmg) {
-  if (player.ps.burn && m.alive) inflict(m, { kind: 'burn', chance: () => player.ps.burn, dur: 3 }, 1, dmg);
+// cards' own effects on each hit or spell that lands (items.js card.perk): the Fire Giant's Meteor
+// Heart sets the monster burning, the Kobold Warlord's Earthshaker stuns it (a boss a third as often,
+// for half as long, like any status), and the BleepBloop's Gulp heals you a share of the damage
+function cardOnHit(m, dmg) {
+  const ps = player.ps;
+  if (ps.burn && m.alive) inflict(m, { kind: 'burn', chance: () => ps.burn, dur: 3 }, 1, dmg);
+  if (ps.stun && m.alive) inflict(m, { kind: 'stun', chance: () => ps.stun, dur: 1.5 }, 1, dmg);
+  if (ps.lifesteal && dmg > 0) {
+    const n = player.heal(Math.max(1, Math.round(dmg * ps.lifesteal / 100)));
+    if (n > 0) fx.number(player.x, overHead(player, 1.3), player.z, n, 'heal');
+  }
 }
 let skillClock = 0; // seconds since the game started, for those windows
 // what is in hand: 'sword', 'staff', 'bow', or 'none' (bare hands: no blade skills, no sword mastery)
@@ -376,7 +383,13 @@ player.on('strike', (m, res) => {
     fx.number(m.x, y, m.z, res.dmg, res.crit || res.el > 1 ? 'crit' : res.el < 1 ? 'miss' : 'dealt');
     if (res.el < 1) weakTip(m, player.ps.el);
     audio.play('hit');
-    cardBurn(m, res.dmg);
+    cardOnHit(m, res.dmg);
+    // the Goblin Warlord Card's Frenzy: a blow struck up close now and then lands twice
+    if (!player.bow && player.ps.double && m.alive && Math.random() * 100 < player.ps.double) {
+      m.hit(res.dmg, 0, 0);
+      fx.number(m.x, y + 0.35, m.z, 'Frenzy!', 'skill');
+      fx.number(m.x, y, m.z, res.dmg, 'dealt');
+    }
     if (player.bow) arrowLanded();
     // Battle Rhythm: every third hit that lands gives back 3 SP, so a Blader keeps swinging skills
     if (skillLv(prog, 'rhythm') && ++rhythm % 3 === 0) player.healSp(3);
@@ -2149,7 +2162,7 @@ function spellHit(m, mult, element) {
   if (res.el < 1) weakTip(m, element);
   audio.play('hit');
   m.hit(res.dmg, dx / d * 0.5, dz / d * 0.5);
-  cardBurn(m, res.dmg);
+  cardOnHit(m, res.dmg);
   return res;
 }
 function castSpell(id, lv, pay, sp) {
