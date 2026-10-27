@@ -347,8 +347,8 @@ crystal earrings and a band round the back of the head; QKN +4, FNS +4, HIT +10,
 | Raider's Cloak | Garment | DEF 3, FLEE +8, QKN +2 |
 | Horde Leather | Armor | DEF 6, FLEE +5, QKN +2 |
 | Spiked Buckler | Shield | DEF 6, POW +2 |
-| Kobold Warlord Card | Head card | DEF +5, Max HP +15%, END +6 (Kobold Camp, 1%) |
-| Goblin Warlord Card | Face card | ATK +40, QKN +5 (Goblin Lair, 1%) |
+| Kobold Warlord Card | Head or face card | DEF +5, Max HP +15%, END +6 (Kobold Camp, 1%) |
+| Goblin Warlord Card | Head or face card | ATK +40, QKN +5 (Goblin Lair, 1%) |
 
 - **Cooldowns:** each raid has one 3-hour cooldown for all its difficulties, from setting out; the
   three are separate.
@@ -808,6 +808,12 @@ they come back whole and the slot stays open. A piece that breaks at Holger's gi
 | Lantern Wisp Card (Glowing) | Wings | FNS +2, KNL +1 | Lantern Wisp, 0.1% |
 | Red Bloop Card (Fiery) | Weapon | ATK +10 | Red Bloop (Bloop Island), 0.1% |
 | BleepBloop Card (Grand) | Wings | ATK +20, Max HP +10%, FTN +5 | BleepBloop, 1% |
+| Little Bloop Card (Plucky) | Head or face | ATK +3, HIT +3 | Little Bloop, 0.1% |
+| Beetle Horn Card (Horned) | Head or face | ATK +5, POW +1 | Beetle, 0.1% |
+| Goblin War Paint Card (Painted) | Head or face | ATK +10, HIT +5 | Goblin, 0.1% |
+| Wolf Fang Card (Fanged) | Head or face | ATK +8, QKN +1 | Wolf, 0.1% |
+| Bear Claw Card (Mauling) | Head or face | ATK +6, POW +2, Max HP +3% | Bear, 0.1% |
+| Alpha Howl Card (Howling) | Head or face | ATK +20, POW +3, HIT +8 | Alpha Wolf, 1% |
 | Red Sprout Card (Thorny) | Garment | Max HP +5%, FLEE +2 | Red Sprout, 0.1% |
 | Sea Bloop Card (Briny) | Shield | DEF +1, Max SP +5% | Sea Bloop, 0.1% |
 | Fire Beetle Card (Scorched) | Armor | DEF +2, POW +1 | Fire Beetle, 0.1% |
