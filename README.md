@@ -125,8 +125,13 @@ hard. They drop twigs, bark, pelts, skins and claws for Leif's leatherworks, Hon
 rare gear.
 
 **Bosses.** Each new field has a mini-boss: big, stomping the ground around it, back 5–8
-minutes after it falls (its timer holds when you leave the map or close the game, as an MVP's does). Like the MVPs, each calls 2 guards of its own kind below 60% HP (Red
-Sprouts, Blue Crabs, Dark Mushrooms, Fire Beetles), and again 2 minutes after the last one falls. They drop a rare material (30%) that forges the best gear, and a rare
+minutes after it falls (its timer holds when you leave the map or close the game, as an MVP's does).
+Mini-bosses are **half as hard as an MVP** (380,000–580,000 HP) and fierce like one: enraged below
+half their HP, and their stomps and moves can't be dodged by FLEE and go through most of your DEF.
+They are fights for a hero in good gear whatever their level, and no quest needs one (the quests
+and trials that once did now hunt their kin). Like the MVPs, each calls 2 guards of its own kind at
+80%, 50% and 25% HP (Red Sprouts, Blue Crabs, Dark Mushrooms, Fire Beetles), and again a minute
+after the last one falls. They drop a rare material (30%) that forges the best gear, and a rare
 equip of their own (2–3%). Each is a boss of its own, not a big copy of its kind: the Giant Sprout
 rust-red with a thorny vine round its bulb, the King Crab sea-blue and crusted with barnacles with
 gold claw tips, the Giant Mushroom near-black with glowing magenta spots and drips, the Giant Beetle
@@ -134,9 +139,7 @@ charcoal with its cracks glowing like embers; the Alpha Wolf black with a silver
 scarred face; the Great Bear a grizzly with a silver-tipped hump, amber eyes and scars. Every boss of
 this kind (and the Elder Willow and the Ancient Treant) has an **aura**: a glow pulsing on the ground under it and motes rising round it, in
 its colour. Their guards are lesser servants of their kind (half the HP, 60% of
-the ATK): cut them down first. At the level their quests suggest (Giant Sprout 28, King Crab 34,
-Giant Mushroom 43, Giant Beetle 50) each is about a two-minute fight on a dozen or so Orange
-Potions; see `docs/balance.md`.
+the ATK): cut them down first. See `docs/balance.md`.
 
 **MVP.** The Fire Giant (Lv 60, 800,000 HP, Fire), optional and not part of the story, roams Ember Hill and stomps the
 ground around it every few seconds. MVPs are the hardest fights in Aria, made for a strong second
@@ -436,17 +439,17 @@ Level starts again at 1 (up to 50, on the second-job EXP table); your first-job 
 points stay. Second jobs wear their first job's outfit in new colours and glow with a small aura
 (the Magic Knight, the Windrunner, the Moon Ranger and the Beastmaster have their own).
 
-- **BladeMaster** (Captain Ulfr): 30 Goblins, 20 Kobold Assassins, the Giant Beetle.
-- **Wizard** (Archmage Vigdis): 10 Fire Dust and 10 Dark Crystals, 20 Kobolds in Stone Field (Earth: fire burns them), the Giant Mushroom.
+- **BladeMaster** (Captain Ulfr): 30 Goblins, 20 Kobold Assassins, 25 Fire Beetles.
+- **Wizard** (Archmage Vigdis): 10 Fire Dust and 10 Dark Crystals, 20 Kobolds in Stone Field (Earth: fire burns them), 25 Dark Mushrooms.
 - **Magic Knight** (Sir Eirik the Runeblade, Steinborg, beside Ulfr): 30 Kobolds, 10 Dark Crystals and
-  15 Glow Dust, the King Crab. Only for heroes who walked both paths with **at least 20 skill
+  15 Glow Dust, 25 Blue Crabs. Only for heroes who walked both paths with **at least 20 skill
   points in each tree**.
-- **Windrunner** (Huntmaster Sigrid, Veidheim): 20 Wolves and 10 Snakes in Barley Field, the Alpha Wolf.
+- **Windrunner** (Huntmaster Sigrid, Veidheim): 20 Wolves and 10 Snakes in Barley Field, then 25 more Wolves.
 - **Moon Ranger** (Hrafn the Stargazer, Galdrheim): 20 Dark Wisps in Black Wood, 10 Fire Wisps in
-  Ash Heath, the Giant Mushroom. Only for heroes who walked the Sorcerer's and the Archer's paths
+  Ash Heath, 25 Dark Mushrooms. Only for heroes who walked the Sorcerer's and the Archer's paths
   with **at least 20 skill points in each tree**.
 - **Beastmaster** (Bjarki, by Veidheim's lodge, his wolf Grimr at his side): 15 Wolves, 10 Bears,
-  the Great Bear. Only for heroes who walked the Blader's and the Archer's paths with **at least 20
+  12 more Bears. Only for heroes who walked the Blader's and the Archer's paths with **at least 20
   skill points in each tree**.
 - A hero of several paths may take the BladeMaster, Wizard or Windrunner trial only for the first
   job with the most points (a tie opens each tied one). A Job 50 hero with 30 points as a Blader and 20 as a Sorcerer may
@@ -883,7 +886,7 @@ leads to each.
 | Gunnar the Gear Crafter | Steinborg | shop, forge · Stone for the Forge (34): 30 Stone, 15 Burnt Shells |
 | Holger the Refiner | Steinborg | refines gear up to +10; sells Iron and Steel Ore |
 | Ragna the Herbalist | Steinborg | brewing · The Great Remedy (38): bring 6 Dark Spores and 6 Fire Dust, then brew it with her |
-| Captain Ulfr | Steinborg | The Blader's Trial · The King of the Shore (30): the King Crab · The Beetle of Ash Heath (46): the Giant Beetle |
+| Captain Ulfr | Steinborg | The Blader's Trial · The King's Shore (30): 20 Blue Crabs · The Beetles of Ash Heath (46): 20 Fire Beetles |
 | Saeunn the Seeress | Steinborg | the story; lore of the Fire Giant and Galdrheim |
 | Embla the Stylist | Steinborg | hairstyle and dye, 1,000 perz |
 | Ivar the Ferryman | Steinborg | carts to any land you have walked, 300–3,000 perz |
@@ -893,7 +896,7 @@ leads to each.
 | Hakon the Carter | Salt Bay, by the west road | the story (Chapter 5) |
 | Boatman | Salt Bay, by the water | rows you out to **Bloop Island**, the raid (see Raids) |
 | Dag the Miner | Coal Pit, by the east road | the story (Chapter 5) |
-| Archmage Vigdis | Galdrheim | The Rune Trial · The Mother of Spores (40): the Giant Mushroom |
+| Archmage Vigdis | Galdrheim | The Rune Trial · The Mother of Spores (40): 20 Dark Mushrooms |
 | Orm the Staffwright | Galdrheim | shop, crafts sorcerers' gear (staves, robes) · The Living Wood (26): a Giant Root, 8 Thorns |
 | Seyla the Enchanter | Galdrheim | opens a card slot in a Lv 4 weapon (50%) |
 | Kari the Curio Seller | Galdrheim | shop: potions, feathers, Speed Potions |
@@ -901,9 +904,9 @@ leads to each.
 | Torvald the Runecarver | Galdrheim | Shadows in Black Wood (38): take rubbings of 3 Watcher stones in Black Wood |
 | Hrafn the Stargazer, Signy the Apprentice | Galdrheim | tales of the city, the stars and the jotnar |
 | Runa the Gatewarden | Galdrheim | the rune-gate: to any land you have walked, 300–3,000 perz |
-| Huntmaster Sigrid | Veidheim, at the archery range | The Archer's Trial · The Elder Willow (26) · The Pack in the Hills (48): 25 Wolves · The Leader of the Pack (54): the Alpha Wolf · The Waking Wood (60): the Ancient Treant |
+| Huntmaster Sigrid | Veidheim, at the archery range | The Archer's Trial · The Walking Willows (10): 20 Willows · The Pack in the Hills (48): 25 Wolves · The Alpha's Pack (54): 20 Wolves · The Waking Wood (60): the Ancient Treant |
 | Ottar the Farmer | Veidheim, by the barn | The Lost Lambs (16): find 3 lambs in Willow Marsh · Snakes in the Barley (46): 20 Snakes |
-| Leif the Tanner | Veidheim | makes hunters' gear (Hunter's Cloak and Boots, Claw Charm, Bark Armor, Alpha Cloak, Bear Heart Charm) · Pelts for the Winter (50): 10 Wolf Pelts, 5 Bear Claws · The Great Bear (59) |
+| Leif the Tanner | Veidheim | makes hunters' gear (Hunter's Cloak and Boots, Claw Charm, Bark Armor, Alpha Cloak, Bear Heart Charm) · Pelts for the Winter (50): 10 Wolf Pelts, 5 Bear Claws · The Great Bear's Kin (59): 12 Bears |
 | Bjarki the Beastmaster | Veidheim, by the lodge | the Beastmaster's trial; his wolf Grimr never bites (unless asked) |
 | Asa the Fletcher | Veidheim | shop: bows and arrows · makes bows (Vine, Ice, Willow, Fire, Steel, Gale, Heartwood) · Wood for Bows (22): 12 Willow Twigs, 4 Old Bark |
 | Eydis the Trader | Veidheim | shop: potions (White too), Honey, Speed Potions, feathers |

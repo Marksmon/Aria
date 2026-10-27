@@ -619,8 +619,8 @@ export const QUESTS = {
     reward: { xp: 20000, perz: 4000 },
   },
   beastmaster_trial3: {
-    title: 'Beastmaster Trial 3: The Great Bear', job: true, kind: 'kill', mob: 'greatBear', n: 1, lv: 1,
-    intro: 'The Great Bear rules Wolf Hills. Beat it, and every beast in the hills will know your name. Come back to me after.',
+    title: 'Beastmaster Trial 3: The Great Bear\'s Kin', job: true, kind: 'kill', mob: 'bear', n: 12, lv: 1,
+    intro: 'The Great Bear rules Wolf Hills, and no beast-tamer fights it alone. Its Bears are another matter. Put twelve of them down, and every beast in the hills will know your name. Come back to me after.',
     thanks: 'The hills are quiet. Listen: that is the sound of beasts deciding to follow you. Rise, Beastmaster.',
     reward: { xp: 30000, perz: 6000 },
   },
@@ -637,8 +637,8 @@ export const QUESTS = {
     reward: { xp: 20000, perz: 4000 },
   },
   moonranger_trial3: {
-    title: 'Moon Ranger Trial 3: The Spore Mother', job: true, kind: 'kill', mob: 'gloomMother', n: 1, lv: 1,
-    intro: 'The Giant Mushroom of Black Wood clouds the sky with its spores, and I cannot see my stars. Bring it down and come back to me.',
+    title: 'Moon Ranger Trial 3: The Spore Mother\'s Brood', job: true, kind: 'kill', mob: 'gloomcap', n: 25, lv: 1,
+    intro: 'The Giant Mushroom of Black Wood clouds the sky with its spores, and its Dark Mushrooms carry them on. Clear twenty-five of its brood, and I will see my stars again.',
     thanks: 'Clear skies again. Kneel... no, look up. There. Rise, Moon Ranger.',
     reward: { xp: 30000, perz: 6000 },
   },
@@ -655,9 +655,9 @@ export const QUESTS = {
     reward: { xp: 20000, perz: 4000 },
   },
   windrunner_trial3: {
-    title: 'Windrunner Trial 3: The Leader of the Pack', job: true, kind: 'kill', mob: 'alphaWolf', n: 1, lv: 1,
-    intro: 'The Alpha Wolf leads the packs of Barley Field. It pounces from afar and calls its Wolves. Outrun it, outshoot it, and come back to me.',
-    thanks: 'The Alpha, down. The wind has chosen you. Rise, Windrunner.',
+    title: 'Windrunner Trial 3: The Alpha\'s Pack', job: true, kind: 'kill', mob: 'wolf', n: 25, lv: 1,
+    intro: 'The Alpha Wolf leads the packs of Barley Field. Leave the Alpha to the strongest; break its pack instead. Twenty-five Wolves, as fast as your bow allows, and come back to me.',
+    thanks: 'The pack, scattered. The wind has chosen you. Rise, Windrunner.',
     reward: { xp: 30000, perz: 6000 },
   },
   blademaster_trial: {
@@ -673,8 +673,8 @@ export const QUESTS = {
     reward: { xp: 20000, perz: 4000 },
   },
   blademaster_trial3: {
-    title: 'BladeMaster Trial 3: The Burning Shell', job: true, kind: 'kill', mob: 'cinderLord', n: 1, lv: 1,
-    intro: 'The Giant Beetle of Ash Heath. Alone. One target, one blade, until it falls.',
+    title: 'BladeMaster Trial 3: The Burning Shells', job: true, kind: 'kill', mob: 'cinderBeetle', n: 25, lv: 1,
+    intro: 'The Fire Beetles of Ash Heath. Twenty-five of them. One blade, until they fall. The Giant Beetle among them is no trial, it is a grave: leave it be.',
     thanks: 'You did not flinch once. Kneel; rise a BladeMaster.',
     reward: { xp: 30000, perz: 6000 },
   },
@@ -691,8 +691,8 @@ export const QUESTS = {
     reward: { xp: 20000, perz: 4000 },
   },
   wizard_trial3: {
-    title: 'Wizard Trial 3: The Rotting Well', job: true, kind: 'kill', mob: 'gloomMother', n: 1, lv: 1,
-    intro: 'The Giant Mushroom of Black Wood chokes a rune-well. Burn it, freeze it, break it: any element you like, as long as it falls.',
+    title: 'Wizard Trial 3: The Rotting Well', job: true, kind: 'kill', mob: 'gloomcap', n: 25, lv: 1,
+    intro: 'The Giant Mushroom of Black Wood chokes a rune-well, and its Dark Mushrooms spread the rot. Burn them, freeze them, break them: twenty-five, any element you like.',
     thanks: 'The well sings again. So, Wizard, do you.',
     reward: { xp: 30000, perz: 6000 },
   },
@@ -709,8 +709,8 @@ export const QUESTS = {
     reward: { xp: 20000, perz: 4000 },
   },
   mknight_trial3: {
-    title: 'Magic Knight Trial 3: Steel and Song', job: true, kind: 'kill', mob: 'tideKing', n: 1, lv: 1,
-    intro: 'The King Crab of Salt Bay: a shell no sword cuts and no spell burns. Both together will. Bring it down.',
+    title: 'Magic Knight Trial 3: Steel and Song', job: true, kind: 'kill', mob: 'tidecrab', n: 25, lv: 1,
+    intro: 'The Blue Crabs of Salt Bay, the King Crab\'s own: shells no sword cuts and no spell burns. Both together will. Bring down twenty-five.',
     thanks: 'Steel and song, as one. Rise, Magic Knight.',
     reward: { xp: 30000, perz: 6000 },
   },
@@ -745,9 +745,9 @@ export const QUESTS = {
   },
 
   kingcrab: {
-    title: 'The King of the Shore', kind: 'kill', mob: 'tideKing', n: 1, lv: 30,
-    intro: 'A crab as big as a cart rules the Salt Bay shore, and the fishers will not go out. Kill the King Crab.',
-    thanks: 'The King Crab, dead? The fishers will feast for a week. Well fought.',
+    title: 'The King\'s Shore', kind: 'kill', mob: 'tidecrab', n: 20, lv: 30,
+    intro: 'A crab as big as a cart rules the Salt Bay shore, and its Blue Crabs swarm the nets. Nobody can touch the King Crab itself, but thin out twenty of its crabs and the fishers can go out.',
+    thanks: 'Twenty Blue Crabs! The fishers will feast for a week. Well fought.',
     reward: { xp: 20000, perz: 6000, items: { potion2: 10 } },
   },
   // ---------- Galdrheim ----------
@@ -765,14 +765,14 @@ export const QUESTS = {
     reward: { xp: 14000, perz: 6000, items: { potion2: 8 } },
   },
   giantmother: {
-    title: 'The Mother of Spores', kind: 'kill', mob: 'gloomMother', n: 1, lv: 40,
-    intro: 'The Giant Mushroom of Black Wood has rooted itself on a rune-well. It drinks the song and breathes out rot. Destroy it, and the well will run clean.',
+    title: 'The Mother of Spores', kind: 'kill', mob: 'gloomcap', n: 20, lv: 40,
+    intro: 'The Giant Mushroom of Black Wood has rooted itself on a rune-well. It drinks the song, and its Dark Mushrooms breathe out the rot. Destroy twenty of them, and the well will run cleaner.',
     thanks: 'I felt the well clear from here. You sing louder than you know.',
     reward: { xp: 60000, perz: 10000, items: { tonic: 10 } },
   },
   giantbeetle: {
-    title: 'The Beetle of Ash Heath', kind: 'kill', mob: 'cinderLord', n: 1, lv: 46,
-    intro: 'In Ash Heath a Giant Beetle burns the heath wherever it walks. It is the worst thing the Watch has seen. Kill it.',
+    title: 'The Beetles of Ash Heath', kind: 'kill', mob: 'cinderBeetle', n: 20, lv: 46,
+    intro: 'In Ash Heath a Giant Beetle burns the heath wherever it walks, and its Fire Beetles carry the fire on. Nobody can stop the giant; kill twenty Fire Beetles and the fires will die down.',
     thanks: 'You did what the whole Watch could not. Steinborg owes you.',
     reward: { xp: 120000, perz: 15000, items: { potion3: 10 } },
   },
@@ -809,15 +809,15 @@ export const QUESTS = {
     reward: { xp: 150000, perz: 14000, items: { hunter_cape: 1 } },
   },
   alphawolf: {
-    title: 'The Leader of the Pack', kind: 'kill', mob: 'alphaWolf', n: 1, lv: 54,
-    intro: 'The packs did not grow bold on their own. A black wolf with a silver ruff leads them, the Alpha Wolf, and it hunts the Barley Field. It pounces from further than you think. Bring it down, and the packs will scatter.',
-    thanks: 'The Alpha is dead? Then the packs are leaderless, and the barley is ours again. You hunt like one of us.',
+    title: 'The Alpha\'s Pack', kind: 'kill', mob: 'wolf', n: 20, lv: 54,
+    intro: 'The packs did not grow bold on their own. A black wolf with a silver ruff leads them, the Alpha Wolf, and no hunter can stand against it. But its pack bleeds like any other: kill twenty Wolves in the Barley Field and the rest will scatter.',
+    thanks: 'Twenty of the pack! Then the barley is ours again, Alpha or no Alpha. You hunt like one of us.',
     reward: { xp: 140000, perz: 15000, items: { potion3: 10 } },
   },
   greatbear: {
-    title: 'The Great Bear', kind: 'kill', mob: 'greatBear', n: 1, lv: 59,
-    intro: 'There is a bear in Wolf Hills as big as my workshop, grey-backed with age, and it has torn up every hunters\' camp out there. Kill the Great Bear, and bring me its heart if it gives it up: I will make you something no other hunter has.',
-    thanks: 'The Great Bear, gone. The camps can go back up. If you found its heart, I know what to do with it.',
+    title: 'The Great Bear\'s Kin', kind: 'kill', mob: 'bear', n: 12, lv: 59,
+    intro: 'There is a bear in Wolf Hills as big as my workshop, grey-backed with age, and its kin have torn up every hunters\' camp out there. Nobody can kill the Great Bear, but twelve fewer Bears and the camps can go back up. If you ever do bring down the giant, bring me its heart: I will make you something no other hunter has.',
+    thanks: 'Twelve Bears! The camps can go back up. And if you ever find its heart, I know what to do with it.',
     reward: { xp: 200000, perz: 18000, items: { potion3: 12, honey: 6 } },
   },
   bowstaves: {
@@ -827,10 +827,10 @@ export const QUESTS = {
     reward: { xp: 9000, perz: 4000, items: { potion2: 6, quick: 2 } },
   },
   elderwillow: {
-    title: 'The Elder Willow', kind: 'kill', mob: 'elderWillow', n: 1, lv: 26,
-    intro: 'The Elder Willow of Willow Marsh, west of the gate, is calling the willows out of the water, and they walk farther every night. Cut it down before they reach the fields.',
+    title: 'The Walking Willows', kind: 'kill', mob: 'willow', n: 20, lv: 10,
+    intro: 'The Elder Willow of Willow Marsh, west of the gate, is calling the willows out of the water, and they walk farther every night. Nobody can fell the Elder, but cut down twenty Willows before they reach the fields.',
     thanks: 'The marsh is still at last. Even the frogs are quieter. Veidheim owes you a great deal.',
-    reward: { xp: 15000, perz: 6000, items: { potion2: 10 } },
+    reward: { xp: 6000, perz: 3000, items: { potion2: 6 } },
   },
   treants: {
     title: 'Walking Trees', kind: 'kill', mob: 'treant', n: 15, lv: 22,

@@ -52,7 +52,10 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   their own that need a plan (Fire Giant: Meteor Rain and burning ground; Kobold King: Tribe's
   Shield and Burrow; Goblin King: Mirror Image; Ancient Treant: Grasping Roots and Bark Armor), and
   enraged below half HP (`MVP_RAGE`). Even a Lv 99 hero without good, upgraded gear should not beat
-  one. So no main story step needs a boss, and boss and MVP cards drop at 1% (other cards 0.1%).
+  one. Mini-bosses are half as hard as an MVP and fierce like one (the owner's call). So no main story
+  step or job trial needs a boss, nor any quest but Sigrid's The Waking Wood (the Ancient Treant,
+  a side quest that can be quit): they hunt the boss's kin. Boss and MVP cards drop at 1%
+  (other cards 0.1%).
   Each MVP has a matchup (`takes` in `mobs.js`, applied in `rules.js`): easiest for one job family
   and hardest for another (Fire Giant: bows / casters; Kobold King: casters / bows; Goblin King:
   blades / bows and casters; Ancient Treant: beasts / blades).

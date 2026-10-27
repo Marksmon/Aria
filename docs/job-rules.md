@@ -183,15 +183,16 @@ MATK part), used by both the damage and the skill text.
 - First-job trials are for a Trainee of Base ~10 and need one trip to the easy field beside the
   trainer: a hunt (Slimes and Sprouts, or Blue Slimes), a step made from what it dropped (proof,
   or the Sorcerer's brew), and the trainer's questions (`kind: 'quiz'`). A wrong answer only gets
-  a hint; the question can be tried again. Second-job trials are harder: Base 40–50 monsters and
-  a mini-boss.
+  a hint; the question can be tried again. Second-job trials are harder: Base 40–55 monsters, the
+  third step a big hunt of a mini-boss's kin (mini-bosses are half as hard as an MVP: no trial or
+  quest needs one).
 - Trainers:
   - Captain Ulfr (Blader, BladeMaster), Steinborg.
   - Archmage Vigdis (Sorcerer, Wizard), Galdrheim.
-  - Hrafn the Stargazer (Moon Ranger), Galdrheim: 20 Dark Wisps, 10 Fire Wisps, the Giant Mushroom.
+  - Hrafn the Stargazer (Moon Ranger), Galdrheim: 20 Dark Wisps, 10 Fire Wisps, 25 Dark Mushrooms.
   - Huntmaster Sigrid (Archer, Windrunner), Veidheim.
-  - Bjarki the Beastmaster (Beastmaster), Veidheim: 15 Wolves, 10 Bears, the Great Bear. The Windrunner's trial: 20 Wolves, 10 Snakes,
-    the Alpha Wolf (all in Barley Field).
+  - Bjarki the Beastmaster (Beastmaster), Veidheim: 15 Wolves, 10 Bears, 12 more Bears. The Windrunner's trial: 20 Wolves, 10 Snakes,
+    25 more Wolves (all in Barley Field).
   - Sir Eirik the Runeblade (Magic Knight), Steinborg.
 - Taking a second job:
   - Job Level goes back to 1, and the first-job level is kept for its points (`firstLv`).
