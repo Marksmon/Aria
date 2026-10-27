@@ -74,7 +74,13 @@ export function derive(prog, gear) {
     hit: lv + fns + (gear.hit || 0),
     flee: lv + qkn + (gear.flee || 0),
     crit: (10 + Math.floor(ftn * 10 / 3)) / 10,  // %
-    dodge: (ftn + 10) / 10,                       // % perfect dodge
+    dodge: (ftn + 10) / 10 + (gear.perk?.dodge || 0), // % perfect dodge (the Goblin King Card adds to it)
+    // cards' own effects (items.js card.perk): melee % harder blows up close, guard % softer blows
+    // from monsters, reflect % of a blow up close back at the monster, burn % chance to set one burning
+    meleeRate: gear.perk?.melee || 0,
+    guard: Math.min(50, gear.perk?.guard || 0),
+    reflect: gear.perk?.reflect || 0,
+    burn: gear.perk?.burn || 0,
     def: clamp(gear.def || 0, 0, 100),            // hard DEF from equipment
     end,                                          // soft DEF comes from END each hit
     mdef: knl + Math.floor(end / 2),
@@ -109,7 +115,8 @@ export function playerAttack(ps, md, mult = 1, hitMult = 1, skill = false) {
   let dmg = (ps.batk + wdmg) * mult;
   if (!crit) dmg = dmg * (100 - md.def) / 100 - mobSoftDef(md.vit);
   const el = elementMod(ps.el, md.el);
-  dmg = Math.max(1, Math.floor((Math.floor(dmg) + ps.mastery) * el * takes(md, ps.beast ? 'beast' : ps.ranged ? 'ranged' : 'melee')));
+  const close = !ps.beast && !ps.ranged; // a blow struck up close (the Goblin Warlord Card's)
+  dmg = Math.max(1, Math.floor((Math.floor(dmg) + ps.mastery) * el * takes(md, ps.beast ? 'beast' : ps.ranged ? 'ranged' : 'melee') * (close ? 1 + (ps.meleeRate || 0) / 100 : 1)));
   return { miss: false, crit, dmg, el };
 }
 
@@ -127,6 +134,7 @@ export function mobAttack(md, ps, atkMult = 1, opts = {}) {
   if (Math.random() * 100 >= hit) return { miss: true, dodge: false, dmg: 0 };
   let dmg = (md.atk[0] + rnd(md.atk[1] - md.atk[0] + 1)) * atkMult;
   dmg = dmg * (100 - ps.def * (1 - (opts.pierce || 0))) / 100 - playerSoftDef(ps.end);
+  dmg *= 1 - (ps.guard || 0) / 100; // the Kobold King Card's Tribe's Shield
   return { miss: false, dodge: false, dmg: Math.max(1, Math.floor(dmg)) };
 }
 

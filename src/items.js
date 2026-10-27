@@ -215,16 +215,16 @@ const BASE_ITEMS = {
   // slotted weapon for good (a weapon that breaks at Holger's gives its cards back), see Seyla and
   // the Insert button. card: where it goes and what it adds: atk, def, matk (% MATK), hit, flee,
   // mhpRate / mspRate (% Max HP / SP), aspd (% faster attacks), el (the weapon's element) and stats
-  kobold_card:  { type: 'misc', rare: true, name: 'Kobold King Card', adj: 'Stubborn', icon: 'card_kobold', card: { on: 'armor', mhpRate: 40, def: 10, flee: 10, stats: { end: 10 } }, desc: 'The Kobold King on a gilded card, too stubborn to fall. In an armor with a slot: Max HP +40%, DEF +10, FLEE +10, END +10.', from: 'the Kobold King (1%)' },
-  goblin_card:  { type: 'misc', rare: true, name: 'Goblin King Card', adj: 'Tyrant', icon: 'card_goblin', card: { on: 'weapon', atk: 100, aspd: 15, stats: { pow: 10, qkn: 10 } }, desc: 'The Goblin King on a gilded card, grinning. In a weapon with a slot: ATK +100, POW +10, QKN +10, attacks 15% faster.', from: 'the Goblin King (1%)' },
-  treant_card:  { type: 'misc', rare: true, name: 'Ancient Treant Card', adj: 'Ancient', icon: 'card_treant', card: { on: 'shield', def: 15, mhpRate: 30, stats: { pow: 8, end: 10 } }, desc: 'The Ancient Treant on a card of pressed bark, blossoms in its crown. In a shield with a slot: DEF +15, Max HP +30%, POW +8, END +10.', from: 'the Ancient Treant (1%)' },
+  kobold_card:  { type: 'misc', rare: true, name: 'Kobold King Card', adj: 'Stubborn', icon: 'card_kobold', card: { on: 'armor', mhpRate: 40, def: 10, flee: 10, stats: { end: 10 }, perk: { guard: 15 } }, desc: 'The Kobold King on a gilded card, too stubborn to fall. In an armor with a slot: Max HP +40%, DEF +10, FLEE +10, END +10, and Tribe\'s Shield: every blow from a monster lands 15% softer.', from: 'the Kobold King (1%)' },
+  goblin_card:  { type: 'misc', rare: true, name: 'Goblin King Card', adj: 'Tyrant', icon: 'card_goblin', card: { on: 'weapon', atk: 100, aspd: 15, stats: { pow: 10, qkn: 10 }, perk: { dodge: 10 } }, desc: 'The Goblin King on a gilded card, grinning. In a weapon with a slot: ATK +100, POW +10, QKN +10, attacks 15% faster, and Mirror Image: 10% more lucky dodges (even an MVP\'s moves can slip past a mirror).', from: 'the Goblin King (1%)' },
+  treant_card:  { type: 'misc', rare: true, name: 'Ancient Treant Card', adj: 'Ancient', icon: 'card_treant', card: { on: 'shield', def: 15, mhpRate: 30, stats: { pow: 8, end: 10 }, perk: { reflect: 20 } }, desc: 'The Ancient Treant on a card of pressed bark, blossoms in its crown. In a shield with a slot: DEF +15, Max HP +30%, POW +8, END +10, and Bark Armor: a monster that strikes you up close takes back 20% of the blow.', from: 'the Ancient Treant (1%)' },
   // mini-boss cards: a step above an ordinary piece of gear, well below an MVP's
   willow_card:  { type: 'misc', rare: true, name: 'Elder Willow Card', adj: 'Elder', icon: 'card_willow', card: { on: 'wings', stats: { fns: 3, knl: 3 } }, desc: 'The Elder Willow on a card that smells of the marsh. In wings with a slot: FNS +3 (quicker casting), KNL +3.', from: 'the Elder Willow (1%)' },
   sprout_card:  { type: 'misc', rare: true, name: 'Giant Sprout Card', adj: 'Blooming', icon: 'card_sprout', card: { on: 'acc', mhpRate: 10, stats: { end: 4 } }, desc: 'The Giant Sprout on a leafy card. In an accessory with a slot: Max HP +10%, END +4.', from: 'the Giant Sprout (1%)' },
   crab_card:    { type: 'misc', rare: true, name: 'King Crab Card', adj: 'Tidal', icon: 'card_crab', card: { on: 'garment', flee: 8, stats: { qkn: 5 } }, desc: 'The King Crab on a sea-stained card. In a garment with a slot: QKN +5, FLEE +8.', from: 'the King Crab (1%)' },
   mushroom_card: { type: 'misc', rare: true, name: 'Giant Mushroom Card', adj: 'Dreaming', icon: 'card_mushroom', card: { on: ['head', 'face'], mspRate: 10, stats: { knl: 6 } }, desc: 'The Giant Mushroom on a violet card that smells of rain. In head or face gear with a slot: KNL +6, Max SP +10%.', from: 'the Giant Mushroom (1%)' },
   beetle_card:  { type: 'misc', rare: true, name: 'Giant Beetle Card', adj: 'Burning', icon: 'card_beetle', card: { on: 'weapon', atk: 25, stats: { pow: 4 } }, desc: 'The Giant Beetle on a scorched card. In a weapon with a slot: ATK +25, POW +4.', from: 'the Giant Beetle (1%)' },
-  jarl_card:    { type: 'misc', rare: true, name: 'Fire Giant Card', adj: 'Infernal', icon: 'card_jarl', card: { on: 'weapon', matk: 60, mspRate: 30, mhpRate: 15, el: 'fire', stats: { knl: 12, fns: 8 } }, desc: 'The Fire Giant on a scorched card, still warm: a sorcerer\'s treasure. In a weapon with a slot: MATK +60%, KNL +12, FNS +8 (quicker casting), Max SP +30%, Max HP +15%, and the weapon turns to Fire (a staff then adds 15% to Fire spells).', from: 'the Fire Giant (1%)' },
+  jarl_card:    { type: 'misc', rare: true, name: 'Fire Giant Card', adj: 'Infernal', icon: 'card_jarl', card: { on: 'weapon', matk: 60, mspRate: 30, mhpRate: 15, el: 'fire', stats: { knl: 12, fns: 8 }, perk: { burn: 10 } }, desc: 'The Fire Giant on a scorched card, still warm: a sorcerer\'s treasure. In a weapon with a slot: MATK +60%, KNL +12, FNS +8 (quicker casting), Max SP +30%, Max HP +15%, and the weapon turns to Fire (a staff then adds 15% to Fire spells), and Meteor Heart: your spells and blows set a monster burning 10% of the time.', from: 'the Fire Giant (1%)' },
   // Bloop Island (the raid, raid.js): its clear reward and rare finds
   bloop_core:   { type: 'misc', name: 'Bloop Core', desc: 'The hard, warm heart of a raid bloop, still faintly bouncing. The Boatman makes Bloop Island\'s rare gear from it.', from: 'Bloop Island (a clear: 3, x3 a difficulty up)' },
   // the Kobold Camp's and the Goblin Lair's cores, and the rare gear their guides make from them
@@ -247,15 +247,7 @@ const BASE_ITEMS = {
   totem_charm: { type: 'equip', slot: 'acc', rare: true, name: 'Totem Charm', hit: 5, stats: { qkn: 2, fns: 2 }, icon: 'r_totem', desc: 'A little carved war-totem. Goblin archers kiss it before every shot.', from: 'Goblin Lair (a clear: 3%), or made from Goblin Cores' },
   wardrum_pendant: { type: 'equip', slot: 'acc', rare: true, name: 'War-Drum Pendant', mhp: 80, stats: { pow: 2, end: 1 }, icon: 'r_wardrum', desc: 'A drum the size of a thumb, still beating faintly with the horde\'s march.', from: 'Goblin Lair (a clear: 3%), or made from Goblin Cores' },
   horde_leather: { type: 'equip', slot: 'armor', rare: true, name: 'Horde Leather', def: 6, flee: 5, stats: { qkn: 2 }, icon: 'r_hordeleather', desc: 'Painted goblin leathers, light enough to run in all day.', from: 'Goblin Lair (a clear: 3%), or made from Goblin Cores' },
-  gwarlord_card: { type: 'misc', rare: true, name: 'Goblin Warlord Card', adj: 'Warlike', icon: 'card_gwarlord', card: { on: ['head', 'face'], atk: 40, stats: { qkn: 5 } }, desc: 'The Goblin Warlord mid-leap, war-paint and all. In a face piece or headgear with a slot (the Elven Ears, say): ATK +40, QKN +5.', from: 'clearing the Goblin Lair (1%, any difficulty)' },
-  // head and face cards for fighters (the others there favour casters and archers): a second card
-  // from monsters that fight up close, and the Alpha Wolf's at a boss card's 1%
-  littlebloop_card: { type: 'misc', rare: true, name: 'Little Bloop Card', adj: 'Plucky', icon: 'card_littlebloop', card: { on: ['head', 'face'], atk: 3, hit: 3 }, desc: 'A Little Bloop puffed up as big as it can, on a card. It never backs down. In headgear or a face piece with a slot: ATK +3, HIT +3.', from: 'Little Bloops (0.1%)' },
-  beetlehorn_card: { type: 'misc', rare: true, name: 'Beetle Horn Card', adj: 'Horned', icon: 'card_beetlehorn', card: { on: ['head', 'face'], atk: 5, stats: { pow: 1 } }, desc: 'A Beetle head down, horn first, on a card. In headgear or a face piece with a slot: ATK +5, POW +1.', from: 'Beetles (0.1%)' },
-  goblinpaint_card: { type: 'misc', rare: true, name: 'Goblin War Paint Card', adj: 'Painted', icon: 'card_goblinpaint', card: { on: ['head', 'face'], atk: 10, hit: 5 }, desc: 'A Goblin in fresh war paint, grinning, on a card. In headgear or a face piece with a slot: ATK +10, HIT +5.', from: 'Goblins (0.1%)' },
-  wolffang_card: { type: 'misc', rare: true, name: 'Wolf Fang Card', adj: 'Fanged', icon: 'card_wolffang', card: { on: ['head', 'face'], atk: 8, stats: { qkn: 1 } }, desc: 'A Wolf baring its fangs, on a card. In headgear or a face piece with a slot: ATK +8, QKN +1.', from: 'Wolves (0.1%)' },
-  bearclaw_card: { type: 'misc', rare: true, name: 'Bear Claw Card', adj: 'Mauling', icon: 'card_bearclaw', card: { on: ['head', 'face'], atk: 6, mhpRate: 3, stats: { pow: 2 } }, desc: 'A Bear up on its hind legs, claws out, on a card. In headgear or a face piece with a slot: ATK +6, POW +2, Max HP +3%.', from: 'Bears (0.1%)' },
-  alphahowl_card: { type: 'misc', rare: true, name: 'Alpha Howl Card', adj: 'Howling', icon: 'card_alphahowl', card: { on: ['head', 'face'], atk: 20, hit: 8, stats: { pow: 3 } }, desc: 'The Alpha Wolf howling at the moon, on a card that hums when you hold it. In headgear or a face piece with a slot: ATK +20, POW +3, HIT +8.', from: 'the Alpha Wolf (1%)' },
+  gwarlord_card: { type: 'misc', rare: true, name: 'Goblin Warlord Card', adj: 'Warlike', icon: 'card_gwarlord', card: { on: ['head', 'face'], atk: 20, perk: { melee: 15 }, stats: { pow: 5 } }, desc: 'The Goblin Warlord mid-leap, war-paint and all, axe in hand: a fighter\'s card. In a face piece or headgear with a slot (the Elven Ears, say): ATK +20, POW +5, and blows struck up close (not arrows) hit 15% harder.', from: 'clearing the Goblin Lair (1%, any difficulty)' },
   veteran_boots: { type: 'equip', slot: 'shoes', rare: true, name: "Veteran's Boots", def: 3, flee: 3, mhp: 60, stats: { end: 1 }, icon: 'boots_veteran', desc: "BleepBloop's old marching boots, iron-toed and patched from a hundred battles. Somehow they fit a hero's feet.", from: 'Bloop Island (a clear: 3%), or made from Bloop Cores' },
   bloop_buckler: { type: 'equip', slot: 'shield', rare: true, name: 'Bloop Buckler', def: 4, mhp: 80, icon: 'r_bloopbuckler', desc: 'A round shield of hardened orange bloop. Blows bounce off it, mostly.', from: 'Bloop Island (a clear: 3%), or made from Bloop Cores' },
   bleep_ring:   { type: 'equip', slot: 'acc', rare: true, name: 'Bleep Ring', stats: { pow: 1, qkn: 1, ftn: 1 }, mhp: 40, icon: 'r_bleep', desc: 'A ring with a tiny orange bloop set in it, which bleeps when danger is near.', from: 'Bloop Island (a clear: 3%), or made from Bloop Cores' },
@@ -325,6 +317,7 @@ function upgradedItem(key) {
     for (const k of ['atk', 'def', 'matk', 'hit', 'flee', 'mhp', 'msp', 'mhpRate', 'mspRate', 'aspd']) if (cd[k]) it[k] = (it[k] || 0) + cd[k];
     if (cd.el) it.el = cd.el;
     for (const [k, v] of Object.entries(cd.stats || {})) it.stats[k] = (it.stats[k] || 0) + v;
+    if (cd.perk) { it.perk = { ...(it.perk || {}) }; for (const [k, v] of Object.entries(cd.perk)) it.perk[k] = (it.perk[k] || 0) + v; }
   }
   it.name = `${u.refine ? `+${u.refine} ` : ''}${cardWords(u.cards)}${b.name}${u.slots ? ` [${u.slots}]` : ''}`;
   upgraded.set(key, it);
@@ -438,7 +431,7 @@ export const PRICES = {
   snake_skin: 420, wolf_pelt: 460, wolf_fang: 900, willow_twig: 80, bear_claw: 560, old_bark: 120, honey: 300,
   willow_heart: 3000, ancient_heartwood: 10000, ancient_seed: 5000, willow_card: 16000, treant_card: 60000,
   snake_boots: 12000, wolf_cape: 14000, willow_staff: 6000, bear_hide: 18000, treant_shield: 7000, willow_charm: 9000, oak_ring: 26000, grove_blade: 50000,
-  alpha_pelt: 5000, bear_heart: 6000, alpha_card: 20000, alphahowl_card: 20000, bear_card: 22000, alpha_cloak: 20000, bear_charm: 22000,
+  alpha_pelt: 5000, bear_heart: 6000, alpha_card: 20000, bear_card: 22000, alpha_cloak: 20000, bear_charm: 22000,
   hunting_bow: 600, composite_bow: 3800, willow_longbow: 9000, gale_bow: 22000, heartwood_bow: 45000,
   vine_bow: 2400, ice_bow: 5200, fire_bow: 11000, steel_bow: 16000, kobold_bow: 15000, goblin_bow: 24000, flame_bow: 42000, great_bow: 48000,
   wooden_arrow: 20, iron_arrow: 1500, fire_arrow: 2500, ice_arrow: 2500, wind_arrow: 2500, earth_arrow: 2500,
@@ -1135,12 +1128,6 @@ const PAINT = {
     g.restore();
   },
   r_minersplate: (g) => armorIcon(g, '#8a8070', '#e8a02a'),
-  card_littlebloop: (g) => cardIcon(g, '#8ac8f0', '#e3b341'),
-  card_beetlehorn: (g) => cardIcon(g, '#8c8478', '#c86a3a'),
-  card_goblinpaint: (g) => cardIcon(g, '#6a8a3a', '#d84a3a'),
-  card_wolffang: (g) => cardIcon(g, '#8a8a92', '#f4f4f8'),
-  card_bearclaw: (g) => cardIcon(g, '#7a5a3a', '#e8e0d0'),
-  card_alphahowl: (g) => cardIcon(g, '#4a4e5a', '#9ab8ff'),
   card_kwarlord: (g) => cardIcon(g, '#ffb070', '#6e5a48'),
   r_raidercloak: (g) => capeIcon(g, '#5a8a3a', '#e8dcc0'),
   r_windstep: (g) => bootIcon(g, '#8ab86a', '#dff7c8'),

@@ -219,6 +219,11 @@ function inflict(m, st, lv, hitDmg = 0) {
   }
   fx.number(m.x, overHead(m, m.sprite.scale.y * 0.8 + 0.35), m.z, STATUS_TEXT[st.kind], 'miss');
 }
+// the Fire Giant Card's Meteor Heart: a hit or spell sets the monster burning now and then
+// (player.ps.burn %; a boss a third as often, for half as long, like any burn)
+function cardBurn(m, dmg) {
+  if (player.ps.burn && m.alive) inflict(m, { kind: 'burn', chance: () => player.ps.burn, dur: 3 }, 1, dmg);
+}
 let skillClock = 0; // seconds since the game started, for those windows
 // what is in hand: 'sword', 'staff', 'bow', or 'none' (bare hands: no blade skills, no sword mastery)
 const weaponKind = () => { const it = ITEMS[inv.gear.weapon]; return !it ? 'none' : it.kind === 'staff' || it.kind === 'bow' ? it.kind : 'sword'; };
@@ -371,6 +376,7 @@ player.on('strike', (m, res) => {
     fx.number(m.x, y, m.z, res.dmg, res.crit || res.el > 1 ? 'crit' : res.el < 1 ? 'miss' : 'dealt');
     if (res.el < 1) weakTip(m, player.ps.el);
     audio.play('hit');
+    cardBurn(m, res.dmg);
     if (player.bow) arrowLanded();
     // Battle Rhythm: every third hit that lands gives back 3 SP, so a Blader keeps swinging skills
     if (skillLv(prog, 'rhythm') && ++rhythm % 3 === 0) player.healSp(3);
@@ -380,6 +386,7 @@ player.on('hurt', (n) => {
   ui.hurt(); cam.shake = 0.2; audio.play('hurt');
   fx.number(player.x, overHead(player, 1.3), player.z, n, 'taken');
 });
+mobs.on('thorns', (m, n) => fx.number(m.x, overHead(m, m.sprite.scale.y * 0.8), m.z, n, 'dealt')); // Bark Armor's
 mobs.on('miss', (m, res) => { const t = m.foe || player; fx.number(t.x, overHead(t, 1.3), t.z, res.dodge ? 'Lucky!' : 'Miss', 'miss'); });
 // the beasts: their bites and dives, the blows they take, the Bear's roar, a beast that falls
 allies.on('strike', (b, m, res) => {
@@ -2142,6 +2149,7 @@ function spellHit(m, mult, element) {
   if (res.el < 1) weakTip(m, element);
   audio.play('hit');
   m.hit(res.dmg, dx / d * 0.5, dz / d * 0.5);
+  cardBurn(m, res.dmg);
   return res;
 }
 function castSpell(id, lv, pay, sp) {
