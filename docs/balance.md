@@ -148,29 +148,32 @@ Treant (Lv 62) is the strongest MVP: like the Goblin King, a first-job hero cann
 (`node build-tools/sim.mjs ancientTreant 62`), a second job hitting 2-4x as hard can. Its guards
 are Wolves and Snakes, not Treants and Bears, which would make it a wall.
 
-## MVPs (10x HP, 2x ATK, enraged below half)
+## MVPs: the hardest fights in Aria
 
-The sim's second job (2-4x a first job, SP counted) is far behind a well-built second job in the
-game, where Blue Potions keep the best skill going: the owner's Windrunner (Base 72, FNS 88, QKN 51,
-Goblin Bow, Hurricane Volley, Blue Potions as needed) took the old MVPs (18,000-26,000 HP) in about
-10 seconds. At the owner's call MVPs now have 10x that HP and 2x the ATK (the Kobold King and the
-Ancient Treant, weak to Fire Arrows, more: ATK 330-430 and 480-620, quicker swings, stomps and
-moves of 2-2.2x ATK, the Treant a quicker walk), and are enraged below half
-their HP (`MVP_RAGE` in `src/mobs.js`: +25% damage, attacks 35% faster, 15% faster walk, a stomp
-every 4.5 s, moves sooner); they call guards at 80/50/25% and a minute after the last falls, and
-only give up the chase 22 paces off. Mini-bosses are unchanged: they are made for first jobs at
-their level.
+The owner's call: an MVP takes several minutes and a plan, and even a Lv 99 hero without good,
+upgraded gear can't beat one. So no main story step needs a boss, and boss and MVP cards drop at 1%.
 
-That Windrunner, playtested in the browser (standing and shooting, never stepping out of a red
-circle; a White Potion below half HP, a Blue one below 60 SP):
+| MVP | HP | ATK | Its own skills (the plan) |
+|---|---|---|---|
+| Fire Giant (60) | 800,000 | 300-400 | Meteor Rain, burning ground: keep moving, fight from clear ground, Ice Arrows |
+| Kobold King (50) | 1,200,000 | 330-430 | Tribe's Shield (80% less damage while a guard stands, guards every 30 s), Burrow: clear the guards first |
+| Goblin King (55) | 1,200,000 | 276-360 | Mirror Image (90% less damage while a shadow stands), Frenzy: cut down the shadows |
+| Ancient Treant (62) | 1,100,000 | 400-520 | Grasping Roots (held 2.5 s), Bark Armor (30% back): hold off while its bark is hard |
 
-| MVP | Arrows | Time | White Potions | Blue Potions | Lowest HP |
-|---|---|---|---|---|---|
-| Fire Giant (60) | Iron | 101 s | 94 | 50 | 190 |
-| Goblin King (55) | Fire | 87 s | 76 | 42 | 322 |
-| Ancient Treant (62) | Fire (Earth: weak to it) | 72 s (one run of two fainted, the Treant at 20%) | 29 | 34 | 46 |
-| Kobold King (50) | Fire (Earth: weak to it) | 49 s | 56 | 23 | 126 |
+All four are enraged below half HP (`MVP_RAGE` in `src/mobs.js`: +25% damage, attacks 35% faster,
+15% faster walk, a stomp every 4.5 s, moves sooner), call guards at 80/50/25% and a minute after the
+last falls, and give up the chase only 22 paces off. They swing slowly for their ATK but with high
+DEX (140-165); their stomp (now a red circle too), moves and burning ground can't be dodged with
+FLEE and go through 75% of DEF (`MVP_MOVE`), so armor alone never makes a hero safe: stepping out of
+the circles does. Mini-bosses are unchanged: they are made for first jobs at their level.
 
-A hero who stands in the red circles needs a huge bag of potions against the Fire Giant and the
-Goblin King; dodging the moves and stomps is what makes them doable. A second job at an MVP's own
-level should bring friends (Beastmaster beasts) or a long supply line.
+Playtested in the browser with a Windrunner bot that steps out of red and orange circles, holds fire
+during Bark Armor, cuts down guards and shadows first, drinks a White Potion below half HP and a
+Blue one below 60 SP (300 of each in the bag):
+
+| MVP | Lv 99, best gear (+10 Great Bow with the Goblin King card, +7 armor with MVP cards, the right arrows) | Lv 99, shop gear (Composite Bow, Iron Arrows, no cards or upgrades) | The owner's Base 72 (Goblin Bow, King Crab card) |
+|---|---|---|---|
+| Fire Giant | won, 3:33, 220 White Potions | fainted at 4:21, the Giant at 52% | fainted (at 480,000 HP) |
+| Kobold King | won, 3:06, 101 | fainted at 4:55, the King at 44% | won at 300,000 HP in 1:31; at 1,200,000 out of reach |
+| Goblin King | won, 3:30, 47 | fainted at 6:02, the King at 42% | fainted (at 420,000 HP) |
+| Ancient Treant | won, 3:27, 145 (rooted 14 times) | fainted at 7:11, the Treant at 29% | fainted (at 500,000 HP) |
