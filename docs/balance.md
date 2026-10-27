@@ -192,6 +192,21 @@ sim's first-job build at x2.5-3 damage, in shop gear, so a real one has an easie
 | Hard | Base 90, second job, 30 White | 30 pots: 100% (5.1 min, 29 used) · 0 pots: 53% | 30 pots: 100% (1.1 min, 2 used) |
 
 Hell's BleepBloop is fierce (`FIERCE` in `src/mobs.js`): an MVP's rules (enraged below half, moves
-that FLEE can't dodge and that go through 75% of DEF), 600,000 HP, ATK about 300-375, Bloop Rain
+that FLEE can't dodge and that go through 75% of DEF), 490,000 HP, ATK about 240-300, Bloop Rain
 with sticky puddles, Jelly Wall (three Jelly Cores, 90% less damage while one stands), and a
 matchup (spells +30%; blades and fists −30%, beasts −20%).
+
+## Mini-bosses: half as hard as an MVP
+
+The owner's call: mini-bosses are half as hard as an MVP (380,000-580,000 HP, ATK about half an
+MVP's, DEX 120-145, slower swings) and fierce like one (enraged below half HP, moves that FLEE
+can't dodge and that go through 75% of DEF, guards at 80/50/25%), and a decent Lv 70 can beat them.
+No quest or trial needs one any more: those hunt their kin. Playtested with the same Windrunner bot
+(steps out of circles, guards first, potions as needed):
+
+| Mini-boss | Lv 70, decent gear (Goblin Bow +7, armor +4, King Crab card, the right arrows) | Lv 99, shop gear | Lv 99, best gear |
+|---|---|---|---|
+| Great Bear (56) | won, 3:28, 1 White Potion | won, 4:16, none | won, 2:13, no HP lost |
+| Alpha Wolf (51) | won, 1:48, 20 White Potions | | |
+| Giant Mushroom (40) | won, 2:09, none | | |
+| Elder Willow (23) | | | won, 2:02 |

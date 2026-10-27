@@ -283,7 +283,7 @@ reward, the rare finds and the boss's card.
 | Hard | Base 90 | a strong second job, 30 White Potions | Lv 86–95 | x6 | 15% |
 | Hell | Base 99 | the best gear, upgraded and carded, and a big bag of White Potions | Lv 95–104 | x9 | 20% |
 
-- **Hell's BleepBloop** is as hard and tricky as a field MVP (600,000 HP). He is enraged below half
+- **Hell's BleepBloop** is as hard and tricky as a field MVP (490,000 HP). He is enraged below half
   his HP, and his stomp and moves can't be dodged with FLEE and go through most of your DEF: step
   out of the red circles. **Bloop Rain** drops bloops all round you, and each leaves a **sticky
   puddle** that slows and hurts whoever stands in it. **Jelly Wall** raises three Jelly Cores round

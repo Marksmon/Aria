@@ -35,8 +35,8 @@ export const RAIDS = {
       easy: { name: 'Easy', lv: 60, mult: 1, wave: { hp: 1.0, atk: 0.3, exp: 0.4 }, boss: { hp: 1.5, atk: 0.6, exp: 0.6 }, rare: 0.05, advice: 'a second job, no potions needed' },
       normal: { name: 'Normal', lv: 75, mult: 3, wave: { hp: 1.3, atk: 0.34, exp: 0.42 }, boss: { hp: 2.0, atk: 0.7, exp: 0.65 }, rare: 0.1, advice: 'a second job and 20 White Potions' },
       hard: { name: 'Hard', lv: 90, mult: 6, wave: { hp: 1.5, atk: 0.36, exp: 0.45 }, boss: { hp: 2.3, atk: 0.75, exp: 0.7 }, rare: 0.15, advice: 'a strong second job and 30 White Potions' },
-      // Hell: the boss as hard and tricky as an MVP (fierce), about 600,000 HP
-      hell: { name: 'Hell', lv: 99, mult: 9, wave: { hp: 3, atk: 0.8, exp: 0.6 }, boss: { hp: 17, atk: 1.5, exp: 0.75, fierce: true }, rare: 0.2, advice: 'the best gear, upgraded and carded, and a big bag of White Potions' },
+      // Hell: the boss as hard and tricky as an MVP (fierce), about 490,000 HP
+      hell: { name: 'Hell', lv: 99, mult: 9, wave: { hp: 3, atk: 0.8, exp: 0.6 }, boss: { hp: 14, atk: 1.2, exp: 0.75, fierce: true }, rare: 0.2, advice: 'the best gear, upgraded and carded, and a big bag of White Potions' },
     },
     // the clear reward at x1 (times the difficulty's mult): perz and [item, count, chance]
     reward: { perz: 3000, items: [['gel', 6, 1], ['dew', 4, 1], ['bloop_core', 2, 1], ['shiny_gel', 1, 0.3]] },
