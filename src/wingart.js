@@ -95,7 +95,8 @@ export function paintWings(g, art, frame = 0) {
 // only when the back is toward us, and a wing's inner face (toward the hero's front) a little darker.
 export const WING_VIEWS = { angel: true };
 export const WING_DIRS = ['down', 'downright', 'right', 'upright', 'up', 'upleft', 'left', 'downleft'];
-const SWEEP = 0.7, BACK = 10; // the wings' sweep back from the spine plane; the back, this far behind the hero's middle (px)
+const SWEEP = 0.55, BACK = 10; // the wings' sweep back from the spine plane; the back, this far behind the hero's middle (px)
+const FLARE = 8; // facing us, the wings stand this far out from the body (px), so they show past it
 export function paintWingsView(g, art, dir, frame = 0) {
   const [, , bx, by] = wingBox(art), t = (WING_DIRS.indexOf(dir) * Math.PI) / 4;
   const cs = Math.cos(SWEEP), sn = Math.sin(SWEEP), ct = Math.cos(t), st = Math.sin(t);
@@ -104,8 +105,8 @@ export function paintWingsView(g, art, dir, frame = 0) {
     const d = 18, depth = -side * d * cs * st + (-BACK - d * sn) * ct;
     const front = -side * sn * st - cs * ct < 0; // its inner face toward us
     return { depth, draw: () => {
-      g.save(); g.translate(bx - BACK * st, by); g.transform(a, 0, 0, 1, 0, 0);
-      if (front) g.filter = 'brightness(0.86)';
+      g.save(); g.translate(bx - BACK * st + side * FLARE * Math.max(0, ct), by); g.transform(a, 0, 0, 1, 0, 0);
+      if (front) g.filter = 'brightness(0.93)';
       (WING_ART[art] || WING_ART.fairy)(g, frame, side);
       g.restore();
     } };
