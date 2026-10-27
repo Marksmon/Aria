@@ -210,3 +210,7 @@ No quest or trial needs one any more: those hunt their kin. Playtested with the 
 | Alpha Wolf (51) | won, 1:48, 20 White Potions | | |
 | Giant Mushroom (40) | won, 2:09, none | | |
 | Elder Willow (23) | | | won, 2:02 |
+
+Hell's BleepBloop on its own (the waves aside), the Lv 99 bot in the best gear at 490,000 HP and
+ATK x1.2: won in 4:04 (67 White Potions) and 5:08 (180), leaving the waves about 5 minutes of the
+10. At 770,000 HP, ATK x2 and DEF 42 the same hero fainted with him at 80%.
