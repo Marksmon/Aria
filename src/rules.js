@@ -93,8 +93,9 @@ export function derive(prog, gear) {
     aspd: Math.round(200 - delay / 10),
     interval: (2 * delay) / 1000,                 // seconds between attacks
     weight: j.weight + 30 * pow,
-    hpRegen: Math.floor(end / 5) + Math.max(1, Math.floor(baseHp(lv, j) * (100 + end) / 100 / 200)),
-    spRegen: 1 + Math.floor(knl / 6) + Math.floor((10 + Math.floor(lv * j.spIncrease / 100)) * (100 + knl) / 100 / 100),
+    // (a card's Bloom or Dream Spores: regen % faster)
+    hpRegen: Math.ceil((Math.floor(end / 5) + Math.max(1, Math.floor(baseHp(lv, j) * (100 + end) / 100 / 200))) * (1 + (gear.perk?.regen || 0) / 100)),
+    spRegen: Math.ceil((1 + Math.floor(knl / 6) + Math.floor((10 + Math.floor(lv * j.spIncrease / 100)) * (100 + knl) / 100 / 100)) * (1 + (gear.perk?.spRegen || 0) / 100)),
   };
 }
 

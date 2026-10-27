@@ -220,7 +220,8 @@ function inflict(m, st, lv, hitDmg = 0) {
   fx.number(m.x, overHead(m, m.sprite.scale.y * 0.8 + 0.35), m.z, STATUS_TEXT[st.kind], 'miss');
 }
 // cards' own effects on each hit or spell that lands (items.js card.perk): the Fire Giant's Meteor
-// Heart sets the monster burning, the Kobold Warlord's Earthshaker stuns it (a boss a third as often,
+// Heart (and the Giant Beetle's Smoulder) sets the monster burning, the Kobold Warlord's Earthshaker
+// (and the Elder Willow's Rooting Seeds) stuns it (a boss a third as often,
 // for half as long, like any status), and the BleepBloop's Gulp heals you a share of the damage
 function cardOnHit(m, dmg) {
   const ps = player.ps;
@@ -384,10 +385,10 @@ player.on('strike', (m, res) => {
     if (res.el < 1) weakTip(m, player.ps.el);
     audio.play('hit');
     cardOnHit(m, res.dmg);
-    // the Goblin Warlord Card's Frenzy: a blow struck up close now and then lands twice
+    // a blow struck up close now and then lands twice (the Goblin Warlord Card's Frenzy, the Great Bear's Maul)
     if (!player.bow && player.ps.double && m.alive && Math.random() * 100 < player.ps.double) {
       m.hit(res.dmg, 0, 0);
-      fx.number(m.x, y + 0.35, m.z, 'Frenzy!', 'skill');
+      fx.number(m.x, y + 0.35, m.z, 'Twice!', 'skill');
       fx.number(m.x, y, m.z, res.dmg, 'dealt');
     }
     if (player.bow) arrowLanded();
