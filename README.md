@@ -92,13 +92,13 @@ and Wolf Hills, for heroes near their second job.
 | Coal Pit | 30–50 | Kobold Assassin, Kobold, Kobold Archer | **Kobold King (50, MVP)** |
 | Burnt Wood | 38–44 | Goblin (38), Goblin Archer (41), Goblin Assassin (44) | |
 | Serpent Wood | 40–55 | Goblin Assassin, Goblin, Goblin Archer | **Goblin King (55, MVP)** |
-| Willow Marsh | 12–24 | Yellow Bloop (12), Willow (17, slowing seeds) | Elder Willow (23) |
-| Old Forest | 16–26 | Treant (24), Willow | |
+| Willow Marsh | 5–10 | Yellow Bloop (7), Willow (8, slowing seeds) | Elder Willow (23) |
+| Old Forest | 8–26 | Treant (24), Willow | |
 | Barley Field | 44–54 | Snake (46), Wolf (48) | Alpha Wolf (51) |
 | Wolf Hills | 46–62 | Wolf, Bear (53), Snake | Great Bear (56) · **Ancient Treant (62, MVP)** |
 | Any field in the valley, more at night (Moss Field and Fen Shore only at night) | | Wisp (11) | |
 
-Moss Field and Fen Shore, by the camp and the city, are a Trainee's fields: a Base 10 Trainee
+Moss Field and Fen Shore, by the camp and the city, and Willow Marsh by Veidheim are a Trainee's fields: a Base 10 Trainee
 beats any of their monsters again and again, and a Trainee earns big Job EXP there (Job 10 in
 about 20–30 kills).
 

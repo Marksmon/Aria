@@ -12,7 +12,8 @@ import { mobAttack, WALK_SCALE } from './rules.js';
 // passive: like most of Ragnarok's field monsters, it minds its own business until you hit it.
 // Levels climb map by map, from the valley (1-14) through the new lands (18-45) to the Fire Giant (60).
 export const MOB_DEFS = {
-  // the fields by the camp and the city (Elder Grove, Fen Shore) are a Trainee's: a Base 10 Trainee
+  // the fields by the camp and the cities (Moss Field, Fen Shore, and Willow Marsh by Veidheim: the
+  // Yellow Bloop and the Willow) are a Trainee's: a Base 10 Trainee
   // beats any of their monsters again and again, and earns big Job EXP there (tjob, a Trainee's
   // Job EXP instead of exp[1]: Job 10 in about 30 kills of a mix)
   slime: { name: 'Bloop', ai: 'hopper', art: 'slime', el: 'water', lv: 1, hp: 50, atk: [7, 10], def: 0, vit: 1, agi: 1, dex: 6, exp: [2, 1], tjob: 8, adelay: 1872, passive: true, walk: 400, aggro: 4.5, chase: 4, reach: 0.8, w: 0.9, r: 0.35, drops: [['gel', 1, 2, 1], ['berry', 1, 1, 0.12], ['shiny_gel', 1, 1, 0.01], ['gooey_ring', 1, 1, 0.005], ['bloop_card', 1, 1, 0.001]] },
@@ -29,7 +30,7 @@ export const MOB_DEFS = {
   // These are their own stats; in the raid each is rebuilt at the difficulty's level (raidDef).
   // The Yellow Bloop also lives in Willow Marsh (passive there, like the valley's bloops); the Red
   // Bloop is only met in the raid (raid: true)
-  yellowSlime: { name: 'Yellow Bloop', ai: 'hopper', art: 'slimeYellow', el: 'wind', lv: 12, hp: 330, atk: [22, 28], def: 2, vit: 10, agi: 12, dex: 20, exp: [30, 21], adelay: 1500, passive: true, walk: 400, aggro: 5, chase: 5, reach: 0.8, w: 1.0, r: 0.38, drops: [['gel', 1, 2, 1], ['dew', 1, 1, 0.4], ['berry', 1, 1, 0.15], ['potion', 1, 1, 0.06], ['shiny_gel', 1, 1, 0.01], ['yellowbloop_card', 1, 1, 0.001]] },
+  yellowSlime: { name: 'Yellow Bloop', ai: 'hopper', art: 'slimeYellow', el: 'wind', lv: 7, hp: 170, atk: [9, 12], def: 1, vit: 6, agi: 6, dex: 12, exp: [16, 11], tjob: 24, adelay: 1500, passive: true, walk: 400, aggro: 5, chase: 5, reach: 0.8, w: 1.0, r: 0.38, drops: [['gel', 1, 2, 1], ['dew', 1, 1, 0.4], ['berry', 1, 1, 0.15], ['potion', 1, 1, 0.06], ['shiny_gel', 1, 1, 0.01], ['yellowbloop_card', 1, 1, 0.001]] },
   redSlime: { raid: true, name: 'Red Bloop', ai: 'hopper', art: 'slimeRed', el: 'fire', lv: 18, hp: 560, atk: [36, 46], def: 4, vit: 16, agi: 16, dex: 30, exp: [75, 52], adelay: 1450, walk: 300, aggro: 5, chase: 6, reach: 0.8, w: 1.05, r: 0.4, drops: [['gel', 1, 2, 1], ['cinder', 1, 1, 0.1], ['shiny_gel', 1, 1, 0.01], ['redbloop_card', 1, 1, 0.001]] },
   // the raid's boss: BleepBloop, a giant old bloop general (white beard, plumed hat, mantle), painted
   // in code (bleepbloop.js). It belly-flops onto you, charges, stomps, and calls Red Bloops; only ever
@@ -91,7 +92,7 @@ export const MOB_DEFS = {
   // Far off, east of Black Wood and Ash Heath, the predators for a hero near the second job (Base
   // 46-56): snakes, wolves and bears attack on sight; snakes and wolves dart in and bite twice now and
   // then (the packs are quick), bears are slow, heavy and hard.
-  willow: { name: 'Willow', ai: 'puffer', art: 'willow', el: 'earth', lv: 17, hp: 560, atk: [34, 44], def: 6, vit: 16, agi: 14, dex: 30, mdef: 10, exp: [72, 50], adelay: 1700, passive: true, walk: 200, aggro: 4.5, chase: 7, reach: 1.0, puff: 'Willow seeds fill the air! You feel sluggish', w: 0.85, r: 0.4, drops: [['willow_twig', 1, 1, 0.55], ['leaf', 1, 2, 0.6], ['herb', 1, 1, 0.25], ['potion', 1, 1, 0.08], ['willow_staff', 1, 1, 0.002], ['willow_n_card', 1, 1, 0.001]] },
+  willow: { name: 'Willow', ai: 'puffer', art: 'willow', el: 'earth', lv: 8, hp: 200, atk: [9, 12], def: 2, vit: 7, agi: 6, dex: 13, mdef: 10, exp: [26, 18], tjob: 36, adelay: 1700, passive: true, walk: 200, aggro: 4.5, chase: 7, reach: 1.0, puff: 'Willow seeds fill the air! You feel sluggish', w: 0.85, r: 0.4, drops: [['willow_twig', 1, 1, 0.55], ['leaf', 1, 2, 0.6], ['herb', 1, 1, 0.25], ['potion', 1, 1, 0.08], ['willow_staff', 1, 1, 0.002], ['willow_n_card', 1, 1, 0.001]] },
   treant: { name: 'Treant', ai: 'tank', art: 'treant', el: 'earth', lv: 24, hp: 1500, atk: [62, 78], def: 16, vit: 26, agi: 14, dex: 40, mdef: 10, exp: [160, 112], adelay: 1800, passive: true, walk: 250, aggro: 4.5, chase: 8, reach: 1.1, w: 1.7, r: 0.65, heavy: true, drops: [['old_bark', 1, 1, 0.5], ['leaf', 1, 2, 0.5], ['potion2', 1, 1, 0.05], ['treant_shield', 1, 1, 0.002], ['bark_card', 1, 1, 0.001]] },
   snake: { name: 'Snake', ai: 'assassin', art: 'snake', el: 'earth', lv: 46, hp: 2600, atk: [164, 205], def: 10, vit: 30, agi: 44, dex: 72, exp: [930, 650], adelay: 1400, walk: 200, aggro: 5, chase: 8, reach: 0.8, double: 0.2, w: 0.95, r: 0.36, drops: [['snake_skin', 1, 1, 0.5], ['herb', 1, 1, 0.2], ['potion2', 1, 1, 0.08], ['snake_boots', 1, 1, 0.0025], ['snake_card', 1, 1, 0.001]] },
   wolf: { name: 'Wolf', ai: 'assassin', art: 'wolf', el: 'earth', lv: 48, hp: 2800, atk: [168, 210], def: 10, vit: 32, agi: 52, dex: 76, exp: [1050, 735], adelay: 1200, walk: 150, aggro: 6, chase: 10, reach: 0.85, double: 0.2, w: 0.8, r: 0.36, drops: [['wolf_pelt', 1, 1, 0.5], ['wolf_fang', 1, 1, 0.12], ['potion3', 1, 1, 0.03], ['wolf_cape', 1, 1, 0.002], ['wolf_card', 1, 1, 0.001]] },

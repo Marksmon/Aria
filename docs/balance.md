@@ -135,11 +135,12 @@ Bloop Island: 120 runs each, the hero at the advised level
 
 ## Veidheim and its lands
 
-The gentle lands on the road to the village sit with Birch Grove: the Willow (Lv 17) next to the
-Red Sprout, the Treant (Lv 24) between the Giant Sprout and the Blue Crab, and the Elder Willow
-(Lv 23) a mini-boss like the Giant Sprout (about a minute at its hinted Base 26 with 20 Orange
-Potions). The Yellow Bloop (Lv 12, Wind) keeps the raid's stats and is a tough bloop for its level
-(at Base 12 the Sorcerer is still a Trainee); in Willow Marsh heroes meet it at 16 and up.
+The gentle lands on the road to the village: Willow Marsh, by Veidheim, is a Trainee's field like
+Moss Field and Fen Shore (the Archer's first trial is there): its Willow (Lv 8) and Yellow Bloop
+(Lv 7, Wind; the raid rebuilds its own from the raid's level) fall to a Base 10 Trainee again and
+again, for big Trainee Job EXP (tjob). The Treant (Lv 24) sits between the Giant Sprout and the
+Blue Crab, and the Elder Willow (Lv 23) is a mini-boss like the Giant Sprout (about a minute at its
+hinted Base 26 with 20 Orange Potions).
 The predators' lands (Snake 46, Wolf 48, Bear 53) sit on the same curve as the goblins and fire
 beasts; the Sorcerer is shorter against the Bear, which is Neutral and hits hard. Their mini-bosses,
 the Alpha Wolf (51) and the Great Bear (56), fit between the Giant Beetle and the MVPs; the Alpha's
