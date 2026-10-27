@@ -153,7 +153,9 @@ are Wolves and Snakes, not Treants and Bears, which would make it a wall.
 The sim's second job (2-4x a first job, SP counted) is far behind a well-built second job in the
 game, where Blue Potions keep the best skill going: the owner's Windrunner (Base 72, FNS 88, QKN 51,
 Goblin Bow, Hurricane Volley, Blue Potions as needed) took the old MVPs (18,000-26,000 HP) in about
-10 seconds. At the owner's call MVPs now have 10x that HP and 2x the ATK, and are enraged below half
+10 seconds. At the owner's call MVPs now have 10x that HP and 2x the ATK (the Kobold King and the
+Ancient Treant, weak to Fire Arrows, more: ATK 330-430 and 480-620, quicker swings, stomps and
+moves of 2-2.2x ATK, the Treant a quicker walk), and are enraged below half
 their HP (`MVP_RAGE` in `src/mobs.js`: +25% damage, attacks 35% faster, 15% faster walk, a stomp
 every 4.5 s, moves sooner); they call guards at 80/50/25% and a minute after the last falls, and
 only give up the chase 22 paces off. Mini-bosses are unchanged: they are made for first jobs at
@@ -166,8 +168,8 @@ circle; a White Potion below half HP, a Blue one below 60 SP):
 |---|---|---|---|---|---|
 | Fire Giant (60) | Iron | 101 s | 94 | 50 | 190 |
 | Goblin King (55) | Fire | 87 s | 76 | 42 | 322 |
-| Ancient Treant (62) | Fire (Earth: weak to it) | 72 s | 16 | 37 | 647 |
-| Kobold King (50) | Fire (Earth: weak to it) | 49 s | 13 | 24 | 696 |
+| Ancient Treant (62) | Fire (Earth: weak to it) | 72 s (one run of two fainted, the Treant at 20%) | 29 | 34 | 46 |
+| Kobold King (50) | Fire (Earth: weak to it) | 49 s | 56 | 23 | 126 |
 
 A hero who stands in the red circles needs a huge bag of potions against the Fire Giant and the
 Goblin King; dodging the moves and stomps is what makes them doable. A second job at an MVP's own
