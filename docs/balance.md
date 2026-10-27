@@ -238,3 +238,11 @@ Two more raids on Bloop Island's ladder of strength (raid.js LADDER), at Base 45
 
 Kobolds are Earth, so the Sorcerer's Ember Bolt walks through the Den. Every raid's rare finds now
 drop at 1% on every difficulty; the cores (3/9/27/81 a clear) buy them from the raid's guide.
+
+The Hell Warlords were too quick next to BleepBloop (the Lv 99 bot in the best gear: the Kobold
+Warlord in 76 s with 8 White Potions, the Goblin Warlord in 69 s with none; BleepBloop 2.5-5 min,
+35-180 potions). Each got a barrage like Bloop Rain that leaves the ground dangerous (the Kobold
+Warlord's Rockslide: slowing rubble; the Goblin Warlord's Firepot Rain: burning ground, his Hurled
+Axe gone for it), the Goblin Warlord a third shadow in his Mirror Image, and both 1.8x HP in Hell
+(FIERCE hpScale). The same bot, the same day: BleepBloop 171 s (73 potions), the Kobold Warlord
+171 s (78), the Goblin Warlord 174 s (74).

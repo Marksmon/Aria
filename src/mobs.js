@@ -220,17 +220,31 @@ export const guardDef = (type) => (guardDefs[type] ||= lesser(MOB_DEFS[type]));
 const STRENGTH = { slime: 0.8, blueSlime: 0.9, yellowSlime: 1, redSlime: 1.1 };
 // a raid boss made as hard and tricky as an MVP (the difficulty's boss scale says fierce: true):
 // enraged below half HP, moves that FLEE can't dodge and that go through most DEF (MVP_MOVE), a
-// matchup (takes), and moves of its own (MOVES)
+// matchup (takes), and moves of its own (MOVES), each with a barrage that leaves the ground
+// dangerous (burns). hpScale: more HP on top, so the Warlords last about as long as BleepBloop
+// (whose Jelly Wall makes his fight long)
 const FIERCE = {
   koboldWarlord: {
-    fierce: true, stomp: 2.0, adelay: 2000, summonCd: 30, stats: { def: 22, vit: 50, dex: 150 }, tribe: 0.7,
-    moves: [{ kind: 'burrow', name: 'Burrow', mult: 2.2, r: 2.0 }, { kind: 'charge', name: "Warlord's Charge", mult: 2.0 }, { kind: 'throw', name: 'Boulder', mult: 1.8, r: 1.8 }],
+    fierce: true, stomp: 2.0, adelay: 2000, summonCd: 30, stats: { def: 22, vit: 50, dex: 150 }, hpScale: 1.8, tribe: 0.7,
+    moves: [
+      { kind: 'burrow', name: 'Burrow', mult: 2.2, r: 2.0 },
+      { kind: 'meteors', name: 'Rockslide', mult: 1.6, r: 1.6, color: '#c8945a', cd: 20 },
+      { kind: 'charge', name: "Warlord's Charge", mult: 2.0 },
+      { kind: 'throw', name: 'Boulder', mult: 1.8, r: 1.8 },
+    ],
+    burns: { r: 1.5, dur: 4, mult: 0.2, slow: true, color: '#a8784a', word: 'Rubble!', text: 'slowing rubble' },
     takes: { ranged: 0.6, magic: 1.3 },
     takesText: 'his warriors\' shields catch arrows (−40%), but kobolds fear sorcery (+30%); and he hides behind his guards (70% less damage while one stands)',
   },
   goblinWarlord: {
-    fierce: true, stomp: 2.0, adelay: 1900, summonCd: 30, stats: { def: 22, vit: 50, dex: 160 },
-    moves: [{ kind: 'mirror', name: 'Mirror Image', decoy: 'warlordShadow', n: 2 }, { kind: 'leap', name: 'War Leap', mult: 2.0, r: 2.0 }, { kind: 'throw', name: 'Hurled Axe', mult: 1.8, r: 1.4 }, { kind: 'frenzy' }],
+    fierce: true, stomp: 2.0, adelay: 1900, summonCd: 30, stats: { def: 22, vit: 50, dex: 160 }, hpScale: 1.8,
+    moves: [
+      { kind: 'mirror', name: 'Mirror Image', decoy: 'warlordShadow', n: 3, text: 'The Goblin Warlord splits into four! Cut down his shadows: he is shrouded while they stand.' },
+      { kind: 'meteors', name: 'Firepot Rain', mult: 1.6, r: 1.6, color: '#ff8a3a', cd: 20 },
+      { kind: 'leap', name: 'War Leap', mult: 2.0, r: 2.0 },
+      { kind: 'frenzy' },
+    ],
+    burns: { r: 1.5, dur: 4, mult: 0.25, color: '#ff7030', word: 'Burning!', text: 'burning ground' },
     takes: { melee: 1.3, ranged: 0.8, magic: 0.8 },
     takesText: 'his war-paint wards off arrows and spells (−20%), but not cold steel (+30%)',
   },
@@ -242,7 +256,7 @@ const FIERCE = {
       { kind: 'leap', name: 'Belly Flop', mult: 2.0, r: 2.4 },
       { kind: 'charge', name: "Veteran's Charge", mult: 1.8 },
     ],
-    burns: { r: 1.5, dur: 4, mult: 0.2, slow: true, color: '#ff7a8a', word: 'Sticky!' },
+    burns: { r: 1.5, dur: 4, mult: 0.2, slow: true, color: '#ff7a8a', word: 'Sticky!', text: 'sticky puddles' },
     takes: { melee: 0.7, magic: 1.3, beast: 0.8 },
     takesText: 'blades and fists sink into his jelly (−30%) and beasts get stuck (−20%), but spells burst it (+30%)',
   },
@@ -253,7 +267,7 @@ export function raidDef(type, lv, s = { hp: 1, atk: 1 }, guard = null) {
     const d = MOB_DEFS[type], k = d.boss ? 1 : STRENGTH[type] ?? 1, exp = 0.0122 * lv ** 3;
     return {
       ...d, ...(s.fierce ? FIERCE[type] : {}), lv, raidLv: lv, raidGuard: guard, passive: false, relentless: true, aggro: 99, chase: 99, split: null, drops: [],
-      hp: Math.round(48 * lv * k * (d.boss ? 7 : 1) * s.hp),
+      hp: Math.round(48 * lv * k * (d.boss ? 7 : 1) * s.hp * ((s.fierce && FIERCE[type].hpScale) || 1)),
       atk: [3.2, 4].map((a) => Math.round(a * lv * k * (d.boss ? 0.6 : 1) * s.atk)),
       def: Math.round(0.4 * lv * k), vit: Math.round(lv * k), agi: Math.round(0.8 * lv), dex: Math.round(1.5 * lv),
       ...(s.fierce ? FIERCE[type].stats : {}), // (an MVP's hide, not a Lv 104 raid boss's: about DEF 22)

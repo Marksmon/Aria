@@ -294,10 +294,13 @@ the clear reward, the cores, the rare finds and the boss's card.
 | Hard | a strong second job, 30 White Potions | x6 | 27 | 3% | 1% each |
 | Hell | the best gear, upgraded and carded, and a big bag of White Potions | x9 | 81 | 3% | 1% each |
 
-- **Hell's Warlords** are fierce like BleepBloop: the Kobold Warlord **Burrows**, and hides behind his
-  guards (70% less damage while one stands); his warriors' shields catch arrows (−40%) but kobolds fear
-  sorcery (+30%). The Goblin Warlord casts **Mirror Image** (two shadows of him; 90% less damage while
-  one stands); his war-paint wards off arrows and spells (−20%) but not steel (+30%).
+- **Hell's Warlords** are fierce like BleepBloop, and as long a fight (about 400,000 HP each). The
+  Kobold Warlord **Burrows**, brings down a **Rockslide** (rocks falling round you, leaving rubble that
+  hurts and slows), and hides behind his guards (70% less damage while one stands); his warriors'
+  shields catch arrows (−40%) but kobolds fear sorcery (+30%). The Goblin Warlord casts **Mirror
+  Image** (three shadows of him; 90% less damage while one stands) and **Firepot Rain** (fire pots
+  round you, leaving burning ground); his war-paint wards off arrows and spells (−20%) but not steel
+  (+30%).
 
 - **Hell's BleepBloop** is as hard and tricky as a field MVP (210,000 HP). He is enraged below half
   his HP, and his stomp and moves can't be dodged with FLEE and go through most of your DEF: step

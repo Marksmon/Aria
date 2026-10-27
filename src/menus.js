@@ -189,7 +189,7 @@ export class Menus {
     const lvs = R.waves.flat().map(([, , off]) => D.lv + off);
     const wavesOf = [...new Set(R.waves.flat().map(([t]) => MOB_DEFS[t].name))];
     const MOVE = { charge: 'Charge', leap: 'Leap', throw: 'Throw', meteors: 'Meteor Rain', mirror: 'Mirror Image', burrow: 'Burrow', roots: 'Roots', bark: 'Bark Armor', frenzy: 'Frenzy' };
-    const skills = [...(B.moves || []).map((m) => m.name || MOVE[m.kind]), 'Stomp', B.summon && `calls ${B.summon.length} ${MOB_DEFS[B.summon[0]].name}s`, B.burns && 'sticky puddles', B.fierce && 'enraged below half HP'].filter(Boolean);
+    const skills = [...(B.moves || []).map((m) => m.name || MOVE[m.kind]), 'Stomp', B.summon && `calls ${B.summon.length} ${MOB_DEFS[B.summon[0]].name}s`, B.burns && (B.burns.text || 'burning ground'), B.fierce && 'enraged below half HP'].filter(Boolean);
     const num = (v) => Math.round(v).toLocaleString();
     const rows = list.map(([id, d]) => `<button class="rbtn raidpick ${id === k ? 'on' : ''} ${shut(d) ? 'locked' : ''}" data-act="raidpick" data-id="${id}">
       <b>${esc(d.name)}</b><small>${d.tutorial ? 'the story run' : `Base ${d.lv}${d.plus ? '+' : ''}${low(d) ? ' 🔒' : ''}`}</small></button>`).join('');
