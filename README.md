@@ -180,6 +180,19 @@ are missing. Once the last guard falls, it calls again a minute later, if it is 
 monsters of their kind (half the HP, 60% of the ATK): they follow their MVP, fight whoever it
 fights, and vanish when it falls (no EXP, no drops). The kings drop ores, a rare accessory (5%) and their **card** (1%), as does the Fire Giant.
 
+**Matchups.** Each MVP takes more from some kinds of blow and less from others, so each is
+easiest for some jobs and hardest for others (it tells you when it first comes for you):
+
+| MVP | Takes more from | Takes less from | Easiest for | Hardest for |
+|---|---|---|---|---|
+| Fire Giant | arrows +40% (a huge target) | spells −40% (its fire soul swallows them), beasts −20% | Archer, Windrunner | Sorcerer, Wizard |
+| Kobold King | spells +40% (kobolds fear sorcery) | arrows −50% (his tribe's shields) | Sorcerer, Wizard | Archer, Windrunner |
+| Goblin King | blades and fists +40% | arrows and spells −30% (his crown's wind ward) | Blader, BladeMaster | the bow jobs and casters |
+| Ancient Treant | beasts +60% (fangs and claws tear bark), spells +10% | blades and fists −40% (the bark turns them) | Beastmaster | Blader, BladeMaster |
+
+The two-path jobs sit between: a Magic Knight's sword is half steel and half spell, a Moon
+Ranger's arrows half arrow and half spell.
+
 **Enraged.** Below half its HP an MVP is enraged for good (it glows red, and calms down only if it
 heals back over 60%): it hits 25% harder and 35% faster, walks 15% faster, stomps every 4.5
 seconds instead of 7, and uses its moves sooner and more often. An MVP doesn't tire of you

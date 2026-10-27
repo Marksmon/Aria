@@ -67,6 +67,7 @@ export function derive(prog, gear) {
     batk: gear.bow ? fns + Math.floor(fns / 10) ** 2 + Math.floor(pow / 5) + Math.floor(ftn / 5) : pow + Math.floor(pow / 10) ** 2 + Math.floor(fns / 5) + Math.floor(ftn / 5),
     watk: gear.atk || 0,
     el: gear.el || 'neutral',                     // the weapon's element
+    ranged: !!gear.bow,                           // shoots (an MVP may take more or less from arrows: takes)
     wlv: gear.wlv || 0,
     fns,
     mastery: gear.mastery || 0,
@@ -108,12 +109,16 @@ export function playerAttack(ps, md, mult = 1, hitMult = 1, skill = false) {
   let dmg = (ps.batk + wdmg) * mult;
   if (!crit) dmg = dmg * (100 - md.def) / 100 - mobSoftDef(md.vit);
   const el = elementMod(ps.el, md.el);
-  dmg = Math.max(1, Math.floor((Math.floor(dmg) + ps.mastery) * el));
+  dmg = Math.max(1, Math.floor((Math.floor(dmg) + ps.mastery) * el * takes(md, ps.beast ? 'beast' : ps.ranged ? 'ranged' : 'melee')));
   return { miss: false, crit, dmg, el };
 }
 
 // A monster hits the player: perfect dodge, then hit vs FLEE, then DEF.
 // Returns { miss, dodge, dmg }.
+// how much of a kind of blow lands on a monster: an MVP takes more from some kinds and less from
+// others (def.takes: { melee, ranged, magic, beast }), so each is easier for some jobs (mobs.js)
+const takes = (md, kind) => md.takes?.[kind] ?? 1;
+
 // opts: { sure: it can't be stepped aside from (FLEE doesn't count; a lucky dodge still does),
 // pierce: the share of DEF it goes through } (an MVP's moves, mobs.js MVP_MOVE)
 export function mobAttack(md, ps, atkMult = 1, opts = {}) {
@@ -133,5 +138,5 @@ export function magicAttack(ps, md, mult = 1, element = 'neutral') {
   let dmg = (lo + rnd(Math.max(1, hi - lo + 1))) * mult;
   dmg = dmg * (100 - (md.mdef || 0)) / 100 - Math.floor(md.vit / 2);
   const el = elementMod(element, md.el);
-  return { miss: false, crit: false, dmg: Math.max(1, Math.floor(dmg * el)), el };
+  return { miss: false, crit: false, dmg: Math.max(1, Math.floor(dmg * el * takes(md, 'magic'))), el };
 }

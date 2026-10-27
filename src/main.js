@@ -173,7 +173,7 @@ function beastStats(kind) {
   const g = inv.gearStats().stats, st = (k) => prog.total(k) + (g[k] || 0), base = prog.baseLv;
   const s = 0.3 + 0.1 * skillLv(prog, SUMMONS[kind]) + 0.02 * skillLv(prog, 'beastbond');
   const quick = buffs.frenzy > 0 ? 1 - 0.03 * frenzyLv : 1, R = Math.round;
-  const common = { crit: 5, dodge: 3, mastery: 0, el: 'neutral', wlv: 2 };
+  const common = { crit: 5, dodge: 3, mastery: 0, el: 'neutral', wlv: 2, beast: true };
   if (kind === 'bear') {
     const hide = skillLv(prog, 'thickhide');
     return { ...common, maxHp: R(player.maxHp * 0.9 * s + st('end') * 15 * s), def: Math.min(60, R(10 + st('end') * 0.6 * s)), end: R(st('end') * s), flee: R(base * 0.6),
@@ -577,6 +577,14 @@ function burnTick(dt) {
     if (Math.hypot(player.x - b.x, player.z - b.z) > b.r || !player.canBeHit() || player.state === 'down') continue;
     const res = mobAttack(b.m.def, player.ps, b.m.def.burns.mult * b.m.fury, MVP_MOVE);
     if (!res.miss) { player.takeDamage(res.dmg, b.x, b.z); fx.number(player.x, overHead(player, 1.6), player.z, 'Burning!', 'miss'); }
+  }
+}
+// an MVP's matchup (mobs.js def.takes): told once when it first comes for you
+function matchupHint() {
+  for (const m of mobs.list) {
+    if (!m.alive || !m.def.takesText || m.def.decoy || m.toldTakes || m.state !== 'chase' || Math.hypot(m.x - player.x, m.z - player.z) > 10) continue;
+    m.toldTakes = true;
+    menus.message(`The ${m.def.name}: ${m.def.takesText}.`);
   }
 }
 // Meteor Rain (the Fire Giant): fireballs fall one after another round you, each a red circle first
@@ -2548,6 +2556,7 @@ function frame() {
   allies.cam = b;
   if (live) mobs.update(dt, player);
   if (live) burnTick(dt);
+  if (live) matchupHint();
   if (live) allies.update(dt, player, mobs, player.goal?.mob || player.cast?.target);
   if (live) dayNight.update(dt, t); else if (!started) dayNight.update(0, t);
   world.update(dt, t);

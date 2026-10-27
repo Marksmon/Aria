@@ -55,7 +55,7 @@ export const MOB_DEFS = {
   // A fight of several minutes for a strong second job. Its own moves (MOVES): Meteor Rain, and
   // burning ground (burns) wherever its meteors and leaps land: keep moving, and fight off the fire.
   jarl: { name: 'Fire Giant', ai: 'boss', art: 'jarl', el: 'fire', lv: 60, hp: 800000, atk: [300, 400], def: 20, vit: 40, agi: 30, dex: 160, mdef: 40, exp: [60000, 42000], adelay: 2400, walk: 130, aggro: 7, chase: 25, reach: 1.9, w: 3.1, r: 1.15, heavy: true,
-    mvp: true, respawn: 900, mvpExp: 30000, stomp: 1.8, moves: [{ kind: 'meteors', name: 'Meteor Rain', mult: 1.8, r: 1.5 }, { kind: 'throw', mult: 2.0, r: 2.0 }, { kind: 'leap', mult: 1.8, r: 2.2 }], burns: { r: 1.5, dur: 6, mult: 0.35 },
+    mvp: true, respawn: 900, mvpExp: 30000, stomp: 1.8, takes: { ranged: 1.4, magic: 0.6, beast: 0.8 }, takesText: 'its fire soul swallows spells (−40%) and its fire cows beasts (−20%), but it is a huge target for arrows (+40%)', moves: [{ kind: 'meteors', name: 'Meteor Rain', mult: 1.8, r: 1.5 }, { kind: 'throw', mult: 2.0, r: 2.0 }, { kind: 'leap', mult: 1.8, r: 2.2 }], burns: { r: 1.5, dur: 6, mult: 0.35 },
     summon: ['emberWisp', 'emberWisp', 'cinderBeetle', 'cinderBeetle', 'cinderBeetle'], summonText: 'The Fire Giant roars, and the fire answers!', mvpDrops: [['potion3', 3], ['ember_heart', 1]],
     wake: 'The ground trembles… the Fire Giant has woken in Ember Hill!',
     drops: [['potion2', 2, 3, 0.8], ['potion3', 1, 2, 0.5], ['stone', 4, 6, 1], ['jarl_horn', 1, 1, 0.25], ['ember_crown', 1, 1, 0.05], ['jarl_mantle', 1, 1, 0.03], ['jarl_staff', 1, 1, 0.02], ['emberbrand', 1, 1, 0.01], ['flame_bow', 1, 1, 0.01], ['devil_wings', 1, 1, 0.03], ['jarl_card', 1, 1, 0.01]] },
@@ -75,11 +75,11 @@ export const MOB_DEFS = {
   // and calls them back every 30 s) and Burrows under you; the Goblin King's Mirror Image sends two
   // Goblin Kings of shadow at you (kingShadow), and shrouds him (90% less damage) until both fall.
   koboldKing: { name: 'Kobold King', ai: 'boss', art: 'koboldKing', el: 'earth', lv: 50, hp: 1200000, atk: [330, 430], def: 22, vit: 45, agi: 30, dex: 140, mdef: 25, exp: [36000, 25200], adelay: 2000, walk: 150, aggro: 7, chase: 25, reach: 1.4, w: 1.3, r: 0.6, heavy: true,
-    mvp: true, respawn: 1200, mvpExp: 18000, stomp: 2.0, moves: [{ kind: 'burrow', name: 'Burrow', mult: 2.4, r: 2.0 }, { kind: 'charge', mult: 2.2 }, { kind: 'throw', mult: 2.0, r: 1.8 }], tribe: 0.8, summonCd: 30, summon: ['koboldWarrior', 'koboldWarrior', 'koboldArcher', 'koboldAssassin'], mvpDrops: [['potion3', 3], ['hard_ore', 2]],
+    mvp: true, respawn: 1200, mvpExp: 18000, stomp: 2.0, takes: { ranged: 0.5, magic: 1.4 }, takesText: 'his tribe\'s shields catch arrows (−50%), but kobolds fear sorcery: spells hit him hard (+40%)', moves: [{ kind: 'burrow', name: 'Burrow', mult: 2.4, r: 2.0 }, { kind: 'charge', mult: 2.2 }, { kind: 'throw', mult: 2.0, r: 1.8 }], tribe: 0.8, summonCd: 30, summon: ['koboldWarrior', 'koboldWarrior', 'koboldArcher', 'koboldAssassin'], mvpDrops: [['potion3', 3], ['hard_ore', 2]],
     wake: 'War drums in the quarry… the Kobold King holds court in Coal Pit!',
     drops: [['potion3', 1, 2, 0.5], ['kobold_fur', 4, 6, 1], ['hard_ore', 1, 2, 0.4], ['armor_ore', 1, 2, 0.4], ['kobold_ring', 1, 1, 0.05], ['kobold_card', 1, 1, 0.01]] },
   goblinKing: { name: 'Goblin King', ai: 'boss', art: 'goblinKing', el: 'wind', lv: 55, hp: 1200000, atk: [276, 360], def: 22, vit: 48, agi: 34, dex: 150, mdef: 30, exp: [48000, 33600], adelay: 2200, walk: 120, aggro: 7, chase: 25, reach: 1.4, w: 1.3, r: 0.6, heavy: true,
-    mvp: true, respawn: 1800, mvpExp: 24000, stomp: 1.7, moves: [{ kind: 'mirror', name: 'Mirror Image' }, { kind: 'leap', mult: 1.7, r: 1.8 }, { kind: 'throw', mult: 1.4, r: 1.3 }, { kind: 'frenzy' }], summon: ['goblinWarrior', 'goblinWarrior', 'goblinArcher', 'goblinAssassin'], mvpDrops: [['potion3', 3], ['hard_ore', 3]],
+    mvp: true, respawn: 1800, mvpExp: 24000, stomp: 1.7, takes: { melee: 1.4, ranged: 0.7, magic: 0.7 }, takesText: 'his crown\'s wind ward turns arrows and spells (−30%), but not cold steel: blades and fists hit him hard (+40%)', moves: [{ kind: 'mirror', name: 'Mirror Image' }, { kind: 'leap', mult: 1.7, r: 1.8 }, { kind: 'throw', mult: 1.4, r: 1.3 }, { kind: 'frenzy' }], summon: ['goblinWarrior', 'goblinWarrior', 'goblinArcher', 'goblinAssassin'], mvpDrops: [['potion3', 3], ['hard_ore', 3]],
     wake: 'Horns in the dark wood… the Goblin King rides out in Serpent Wood!',
     drops: [['potion3', 1, 2, 0.6], ['goblin_tooth', 4, 6, 1], ['hard_ore', 1, 3, 0.45], ['armor_ore', 1, 3, 0.45], ['goblin_charm', 1, 1, 0.05], ['great_bow', 1, 1, 0.02], ['goblin_card', 1, 1, 0.01]] },
   // ---------- Veidheim and its lands (beasts.js) ----------
@@ -106,10 +106,13 @@ export const MOB_DEFS = {
   // two moves of its own (MOVES): Grasping Roots hold a hero who keeps away (a quick Windrunner
   // too) while it comes for them, and Bark Armor sends back what hits it.
   ancientTreant: { name: 'Ancient Treant', ai: 'boss', art: 'ancientTreant', aura: '#ff9ac8', el: 'earth', lv: 62, hp: 1100000, atk: [400, 520], def: 20, vit: 45, agi: 30, dex: 165, mdef: 35, exp: [76000, 53200], adelay: 2000, walk: 170, aggro: 7, chase: 25, reach: 2.0, w: 2.8, r: 1.15, heavy: true,
-    mvp: true, respawn: 2100, mvpExp: 36000, stomp: 2.0, moves: [{ kind: 'roots', name: 'Grasping Roots', mult: 1.0, r: 1.6, hold: 2.5 }, { kind: 'bark', name: 'Bark Armor' }, { kind: 'throw', name: 'Root Stone', mult: 2.2, r: 2.0 }, { kind: 'charge', name: 'Uprooting Charge', mult: 2.2 }], summon: ['wolf', 'wolf', 'snake', 'snake'], summonText: 'The Ancient Treant groans, and the pack answers!', mvpDrops: [['potion3', 3], ['ancient_seed', 1]],
+    mvp: true, respawn: 2100, mvpExp: 36000, stomp: 2.0, takes: { melee: 0.6, magic: 1.1, beast: 1.6 }, takesText: 'its bark turns blades and fists (−40%), but fangs and claws tear it (beasts +60%), and spells find its old wounds (+10%)', moves: [{ kind: 'roots', name: 'Grasping Roots', mult: 1.0, r: 1.6, hold: 2.5 }, { kind: 'bark', name: 'Bark Armor' }, { kind: 'throw', name: 'Root Stone', mult: 2.2, r: 2.0 }, { kind: 'charge', name: 'Uprooting Charge', mult: 2.2 }], summon: ['wolf', 'wolf', 'snake', 'snake'], summonText: 'The Ancient Treant groans, and the pack answers!', mvpDrops: [['potion3', 3], ['ancient_seed', 1]],
     wake: 'The hills shake… the Ancient Treant walks in Wolf Hills!',
     drops: [['potion3', 1, 2, 0.6], ['old_bark', 4, 6, 1], ['ancient_heartwood', 1, 1, 0.25], ['hard_ore', 1, 2, 0.4], ['armor_ore', 1, 2, 0.4], ['oak_ring', 1, 1, 0.05], ['grove_blade', 1, 1, 0.01], ['treant_card', 1, 1, 0.01]] },
 };
+// Matchups (def.takes, rules.js): each MVP takes more from some kinds of blow and less from others,
+// so each is easiest for some jobs: the Fire Giant for bows, the Kobold King for spells, the
+// Goblin King for blades, the Ancient Treant for beasts (and hardest for the jobs it resists).
 // the Goblin King's Mirror Image: a Goblin King of shadow, just like him to look at, that fights
 // beside him (no EXP, no drops). He takes 90% less damage while one stands (MIRROR)
 MOB_DEFS.kingShadow = { ...MOB_DEFS.goblinKing, decoy: true, mvp: false, ai: 'tank', hp: 9000, atk: [140, 180], exp: [0, 0], drops: [], summon: null, moves: null, mvpDrops: null, wake: null, aggro: 12, chase: 30 };
