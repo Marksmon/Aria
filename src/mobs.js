@@ -53,7 +53,7 @@ export const MOB_DEFS = {
   // reward on top of the drops. Stomps the ground around it every few seconds (stomp: x its ATK),
   // and calls 2 Fire Wisps and 3 Fire Beetles (summon: see SUMMON_CD).
   // Made for a Base 50 character in the best gear, alone: about 3 minutes and a bag of potions.
-  jarl: { name: 'Fire Giant', ai: 'boss', art: 'jarl', el: 'fire', lv: 60, hp: 24000, atk: [150, 200], def: 20, vit: 40, agi: 30, dex: 70, mdef: 40, exp: [60000, 42000], adelay: 1600, walk: 130, aggro: 7, chase: 25, reach: 1.9, w: 3.1, r: 1.15, heavy: true,
+  jarl: { name: 'Fire Giant', ai: 'boss', art: 'jarl', el: 'fire', lv: 60, hp: 144000, atk: [195, 260], def: 20, vit: 40, agi: 30, dex: 70, mdef: 40, exp: [60000, 42000], adelay: 1600, walk: 130, aggro: 7, chase: 25, reach: 1.9, w: 3.1, r: 1.15, heavy: true,
     mvp: true, respawn: 900, mvpExp: 30000, stomp: 1.8, moves: [{ kind: 'throw', mult: 2.0, r: 2.0 }, { kind: 'leap', mult: 1.8, r: 2.2 }],
     summon: ['emberWisp', 'emberWisp', 'cinderBeetle', 'cinderBeetle', 'cinderBeetle'], summonText: 'The Fire Giant roars, and the fire answers!', mvpDrops: [['potion3', 3], ['ember_heart', 1]],
     wake: 'The ground trembles… the Fire Giant has woken in Ember Hill!',
@@ -70,11 +70,11 @@ export const MOB_DEFS = {
   goblinAssassin: { name: 'Goblin Assassin', ai: 'assassin', art: 'goblinAssassin', el: 'wind', lv: 44, hp: 1800, atk: [140, 178], def: 8, vit: 26, agi: 60, dex: 82, exp: [850, 595], adelay: 1100, walk: 100, aggro: 6, chase: 10, reach: 0.75, double: 0.25, w: 0.7, r: 0.3, drops: [['goblin_tooth', 1, 2, 0.5], ['quick', 1, 1, 0.04], ['potion3', 1, 1, 0.04], ['hard_ore', 1, 1, 0.025], ['armor_ore', 1, 1, 0.02], ['goblinassassin_card', 1, 1, 0.001], ['goblin_shroud', 1, 1, 0.002]] },
   // the kings: MVPs like the Fire Giant, a step below it. They stomp, and call four guards
   // (summon: see SUMMON_CD). Both are quick on their feet and have moves of their own (see MOVES).
-  koboldKing: { name: 'Kobold King', ai: 'boss', art: 'koboldKing', el: 'earth', lv: 50, hp: 18000, atk: [120, 160], def: 22, vit: 45, agi: 30, dex: 70, mdef: 25, exp: [36000, 25200], adelay: 1500, walk: 150, aggro: 7, chase: 25, reach: 1.4, w: 1.3, r: 0.6, heavy: true,
+  koboldKing: { name: 'Kobold King', ai: 'boss', art: 'koboldKing', el: 'earth', lv: 50, hp: 108000, atk: [156, 208], def: 22, vit: 45, agi: 30, dex: 70, mdef: 25, exp: [36000, 25200], adelay: 1500, walk: 150, aggro: 7, chase: 25, reach: 1.4, w: 1.3, r: 0.6, heavy: true,
     mvp: true, respawn: 1200, mvpExp: 18000, stomp: 1.6, moves: [{ kind: 'charge', mult: 1.7 }, { kind: 'throw', mult: 1.8, r: 1.6 }], summon: ['koboldWarrior', 'koboldWarrior', 'koboldArcher', 'koboldAssassin'], mvpDrops: [['potion3', 3], ['hard_ore', 2]],
     wake: 'War drums in the quarry… the Kobold King holds court in Coal Pit!',
     drops: [['potion3', 1, 2, 0.5], ['kobold_fur', 4, 6, 1], ['hard_ore', 1, 2, 0.4], ['armor_ore', 1, 2, 0.4], ['kobold_ring', 1, 1, 0.05], ['kobold_card', 1, 1, 0.001]] },
-  goblinKing: { name: 'Goblin King', ai: 'boss', art: 'goblinKing', el: 'wind', lv: 55, hp: 21000, atk: [138, 180], def: 22, vit: 48, agi: 34, dex: 74, mdef: 30, exp: [48000, 33600], adelay: 1500, walk: 120, aggro: 7, chase: 25, reach: 1.4, w: 1.3, r: 0.6, heavy: true,
+  goblinKing: { name: 'Goblin King', ai: 'boss', art: 'goblinKing', el: 'wind', lv: 55, hp: 126000, atk: [180, 234], def: 22, vit: 48, agi: 34, dex: 74, mdef: 30, exp: [48000, 33600], adelay: 1500, walk: 120, aggro: 7, chase: 25, reach: 1.4, w: 1.3, r: 0.6, heavy: true,
     mvp: true, respawn: 1800, mvpExp: 24000, stomp: 1.7, moves: [{ kind: 'leap', mult: 1.7, r: 1.8 }, { kind: 'throw', mult: 1.4, r: 1.3 }, { kind: 'frenzy' }], summon: ['goblinWarrior', 'goblinWarrior', 'goblinArcher', 'goblinAssassin'], mvpDrops: [['potion3', 3], ['hard_ore', 3]],
     wake: 'Horns in the dark wood… the Goblin King rides out in Serpent Wood!',
     drops: [['potion3', 1, 2, 0.6], ['goblin_tooth', 4, 6, 1], ['hard_ore', 1, 3, 0.45], ['armor_ore', 1, 3, 0.45], ['goblin_charm', 1, 1, 0.05], ['great_bow', 1, 1, 0.02], ['goblin_card', 1, 1, 0.001]] },
@@ -99,7 +99,7 @@ export const MOB_DEFS = {
   // the MVP of Wolf Hills: the oldest tree in Aria, woken by the jotnar's stirring, has walked out of
   // the Old Forest, and the beasts follow it. Stomps, hurls stones from its roots, and calls wolves
   // and snakes (summon: see SUMMON_CD). Made for a Base 60 second job: about 3 minutes and a bag of White Potions.
-  ancientTreant: { name: 'Ancient Treant', ai: 'boss', art: 'ancientTreant', aura: '#ff9ac8', el: 'earth', lv: 62, hp: 26000, atk: [145, 190], def: 20, vit: 45, agi: 30, dex: 78, mdef: 35, exp: [76000, 53200], adelay: 1700, walk: 200, aggro: 7, chase: 25, reach: 2.0, w: 2.8, r: 1.15, heavy: true,
+  ancientTreant: { name: 'Ancient Treant', ai: 'boss', art: 'ancientTreant', aura: '#ff9ac8', el: 'earth', lv: 62, hp: 156000, atk: [189, 247], def: 20, vit: 45, agi: 30, dex: 78, mdef: 35, exp: [76000, 53200], adelay: 1700, walk: 200, aggro: 7, chase: 25, reach: 2.0, w: 2.8, r: 1.15, heavy: true,
     mvp: true, respawn: 2100, mvpExp: 36000, stomp: 1.7, moves: [{ kind: 'throw', name: 'Root Stone', mult: 1.8, r: 1.8 }, { kind: 'charge', name: 'Uprooting Charge', mult: 1.7 }], summon: ['wolf', 'wolf', 'snake', 'snake'], summonText: 'The Ancient Treant groans, and the pack answers!', mvpDrops: [['potion3', 3], ['ancient_seed', 1]],
     wake: 'The hills shake… the Ancient Treant walks in Wolf Hills!',
     drops: [['potion3', 1, 2, 0.6], ['old_bark', 4, 6, 1], ['ancient_heartwood', 1, 1, 0.25], ['hard_ore', 1, 2, 0.4], ['armor_ore', 1, 2, 0.4], ['oak_ring', 1, 1, 0.05], ['grove_blade', 1, 1, 0.01], ['treant_card', 1, 1, 0.001]] },
@@ -115,13 +115,21 @@ for (const d of Object.values(MOB_DEFS)) d.speed = 1000 / (d.walk * WALK_SCALE);
 //            1 s later, mult x ATK within r.
 //   leap   - from 2.5 to 8 paces: jumps onto where you stand, landing 0.9 s later, mult x ATK within r.
 //   frenzy - below half HP: for 8 s it moves 30% faster and attacks 40% faster.
-// cd: seconds before the same move again (a boss uses one move at a time, and waits 2.5 s between).
+// cd: seconds before the same move again (a boss uses one move at a time, and waits 2.5 s between;
+// an MVP 1.6 s, and enraged 1 s with its moves back 40% sooner).
 export const MOVES = {
   charge: { min: 3, max: 9, cd: 9, wind: 0.6 },
   throw: { min: 3.5, max: 9, cd: 6, wind: 0.5, land: 1.0 },
   leap: { min: 2.5, max: 8, cd: 10, wind: 0.25, air: 0.9 },
   frenzy: { cd: 22, dur: 8, below: 0.5 },
 };
+// An MVP is a fight for a strong second job (or a party): below half its HP it is enraged for good
+// (until it heals back over 60%): it hits 25% harder and 35% faster, walks 15% faster, stomps every
+// 4.5 s instead of 7 and moves sooner (above). It calls its guards at 80%, 50% and 25% of its HP
+// (topping them up to a full set), and again a minute after the last one falls. It chases you
+// across its map: it gives up only when you are 22 paces off, or out of reach (camp, Play Dead).
+export const MVP_RAGE = { below: 0.5, calm: 0.6, atk: 1.25, adelay: 0.65, speed: 1.15, stomp: 4.5, gap: 1, cd: 0.6 };
+const MVP_CALLS = [0.8, 0.5, 0.25], MVP_SUMMON_CD = 60, MVP_GIVE_UP = 22, MVP_GAP = 1.6;
 const RESPAWN = 60;
 // a wounded boss or MVP heals 5% of its HP a minute while it isn't fighting you, on its map or not;
 // what it has left is kept when you leave (bossHp, saved), so a fight can be picked up again
@@ -136,6 +144,8 @@ const STATUS_COL = Object.fromEntries(Object.entries({ freeze: '#8fd0ff', paraly
 // A boss (MVP or mini-boss) first calls its guards when it falls below 60% HP. It calls again only
 // once every guard is gone, and not until 2 minutes after the last one fell, while it still fights.
 const SUMMON_AT = 0.6, SUMMON_CD = 120;
+const callMarks = (d) => (d.mvp ? MVP_CALLS : [SUMMON_AT]);
+const summonCd = (d) => (d.mvp ? MVP_SUMMON_CD : SUMMON_CD);
 // a boss's guards are lesser servants of their kind: half the HP, 60% of the ATK (tuned with
 // build-tools/sim.mjs, so the fight is the boss and not two full-strength monsters at once)
 export const GUARD = { hp: 0.5, atk: 0.6 };
@@ -247,6 +257,8 @@ class Mob {
     this.provokeT = 0; // taunted: it comes for you
     this.stunT = 0;
     this.calls = 0;          // times it has called its guards (bosses)
+    this.marks = 0;          // the HP marks it has passed that call guards (callMarks)
+    this.enraged = false;    // an MVP below half its HP (MVP_RAGE)
     this.act = null;         // a boss move in progress: { kind, t, ... }
     this.moveCd = {};        // per move: seconds until it can be used again
     this.nextMove = 3;       // seconds until any move
@@ -302,8 +314,8 @@ class Mob {
         this.atkAnim = ATTACK_ANIM * 1.6;
         this.mgr.emit('move', this, this.act);
       }
-      this.moveCd[mv.kind] = M.cd;
-      this.nextMove = 2.5;
+      this.moveCd[mv.kind] = M.cd * (this.enraged && mv.kind !== 'frenzy' ? MVP_RAGE.cd : 1);
+      this.nextMove = this.enraged ? MVP_RAGE.gap : d.mvp ? MVP_GAP : 2.5;
       return;
     }
   }
@@ -394,8 +406,8 @@ class Mob {
     if (this.def.ai === 'skittish') this.angry = this.def.angry;
     else if (this.def.passive || this.def.ai === 'archer') this.angry = Math.max(this.angry, 30); // hit a passive monster and it fights back for a while
     if (this.def.boss) this.knock.x = this.knock.z = 0; // bosses stand their ground
-    // a boss first calls its guards when it falls below 60% HP (later calls: see update)
-    if (this.def.summon && !this.calls && this.hp > 0 && this.hp / this.def.hp < SUMMON_AT) { this.calls++; this.mgr.summon(this); }
+    // a boss first calls its guards when it falls below 60% HP, an MVP at 80%, 50% and 25% (later calls: see update)
+    if (this.def.summon && this.hp > 0 && this.passMarks()) { this.calls++; this.mgr.summon(this); }
     if (['hopper', 'tank', 'puffer', 'boss', 'assassin'].includes(this.def.ai)) {
       this.state = 'chase';
       this.chaseT = Math.max(this.chaseT, this.def.chase || 4);
@@ -403,6 +415,16 @@ class Mob {
     }
     if (this.hp <= 0) this.mgr.kill(this);
   }
+
+  // passes the guard-calling HP marks it is now under; true if it passed any
+  passMarks() {
+    const marks = callMarks(this.def), m0 = this.marks;
+    while (this.marks < marks.length && this.hp / this.def.hp < marks[this.marks]) this.marks++;
+    return this.marks > m0;
+  }
+
+  // how much harder than its ATK it hits now (an enraged MVP), for its blows, stomps and moves
+  get fury() { return this.enraged ? MVP_RAGE.atk : 1; }
 
   update(dt, player) {
     const d = this.def, p = player;
@@ -424,7 +446,7 @@ class Mob {
     }
 
     // a boss calls again once all its guards are gone and the cooldown has passed, while it fights
-    if (d.summon && this.calls && this.state === 'chase' && this.t - this.guardsGoneT >= SUMMON_CD && !this.mgr.guardsOf(this).length) {
+    if (d.summon && this.calls && this.state === 'chase' && this.t - this.guardsGoneT >= summonCd(d) && !this.mgr.guardsOf(this).length) {
       this.calls++;
       this.mgr.summon(this);
     }
@@ -453,8 +475,13 @@ class Mob {
     const low = this.hp / d.hp <= 0.3 && d.hp > 1;
     this.rageT -= dt;
     if ((d.mvp || d.boss) && this.state !== 'chase' && this.hp < d.hp) this.hp = Math.min(d.hp, this.hp + d.hp * BOSS_REGEN / 60 * dt);
-    // as in Ragnarok, a monster keeps its pace however hurt it is (a frenzied boss speeds up)
-    const speed = d.speed * (this.rageT > 0 ? 1.3 : 1);
+    // an MVP below half its HP is enraged (MVP_RAGE); healed back over 60% it calms down
+    if (d.mvp && this.alive) {
+      if (!this.enraged && this.hp / d.hp <= MVP_RAGE.below) { this.enraged = true; this.mgr.emit('enrage', this); }
+      else if (this.enraged && this.hp / d.hp > MVP_RAGE.calm) this.enraged = false;
+    }
+    // as in Ragnarok, a monster keeps its pace however hurt it is (a frenzied boss speeds up, an enraged MVP too)
+    const speed = d.speed * (this.rageT > 0 ? 1.3 : 1) * (this.enraged ? MVP_RAGE.speed : 1);
     let lift = 0;
     // Play Dead and safe ground (camp) make monsters lose interest
     const available = p.state !== 'down' && p.state !== 'feign' && !this.mgr.world.isSafe(p.x, p.z);
@@ -479,23 +506,23 @@ class Mob {
     const contact = () => {
       if (available && dist < d.reach + 0.3 && this.atkCd <= 0) {
         if (p.canBeHit()) {
-          const res = mobAttack(d, p.ps);
+          const res = mobAttack(d, p.ps, this.fury);
           if (res.miss) this.mgr.emit('miss', this, res);
           else p.takeDamage(res.dmg, this.x, this.z);
           if (d.double && Math.random() < d.double && p.canBeHit()) { // an assassin's second, quicker cut
-            const again = mobAttack(d, p.ps);
+            const again = mobAttack(d, p.ps, this.fury);
             if (!again.miss) { p.takeDamage(again.dmg, this.x, this.z); this.mgr.emit('double', this); }
           }
           this.mgr.emit('attack', this);
           this.atkAnim = ATTACK_ANIM;
           if (dist > 0.01) this.heading = { x: dx / dist, z: dz / dist };
         }
-        this.atkCd = d.adelay / 1000 * (this.rageT > 0 ? 0.6 : 1);
+        this.atkCd = d.adelay / 1000 * (this.rageT > 0 ? 0.6 : 1) * (this.enraged ? MVP_RAGE.adelay : 1);
       }
     };
 
     // too far from home: back it goes (a roaming boss only when it was chasing you)
-    if (!d.relentless && homeD > (this.provokeT > 0 || d.mvp ? 20 : 11) && this.state !== 'return' && (d.ai !== 'boss' || this.state === 'chase')) this.state = 'return';
+    if (!d.relentless && homeD > (d.mvp ? 40 : this.provokeT > 0 ? 20 : 11) && this.state !== 'return' && (d.ai !== 'boss' || this.state === 'chase')) this.state = 'return';
     if (this.stunT > 0) this.stunT -= dt; // stunned: stands there
     else if (this.state === 'return') {
       moving = this.moveToward(this.home.x, this.home.z, speed, dt) > 0;
@@ -516,7 +543,8 @@ class Mob {
           this.chaseT -= dt;
           this.nextMove -= dt;
           for (const k in this.moveCd) this.moveCd[k] -= dt;
-          if (this.chaseT <= 0 || !available || dist > aggro * 2.2) { this.state = 'wander'; this.tired = 3; }
+          if (d.mvp && dist < MVP_GIVE_UP) this.chaseT = Math.max(this.chaseT, 1); // an MVP doesn't tire of you
+          if (this.chaseT <= 0 || !available || dist > (d.mvp ? MVP_GIVE_UP : aggro * 2.2)) { this.state = 'wander'; this.tired = 3; }
           else if (this.special > 0) { // winding up a stomp: stand still, then it lands
             this.special -= dt;
             if (this.special <= 0) this.mgr.emit('stomp', this);
@@ -524,8 +552,8 @@ class Mob {
             if (dist > d.reach * 0.7) moving = this.moveToward(p.x, p.z, speed, dt) > 0;
             contact();
             if (dist < 3.2 && this.specialCd <= 0) {
-              this.special = 0.8;
-              this.specialCd = 7;
+              this.special = this.enraged ? 0.65 : 0.8;
+              this.specialCd = this.enraged ? MVP_RAGE.stomp : 7;
               this.atkAnim = ATTACK_ANIM * 1.6;
               this.mgr.emit('windup', this);
             } else if (this.nextMove <= 0) this.pickMove(p, dist, dx, dz);
@@ -672,7 +700,8 @@ class Mob {
     // a colour over the monster for what ails it (daynight.js multiplies it in)
     this.mat.userData.fx = this.stunT > 0 && this.status ? STATUS_COL[this.status]
       : this.burnT > 0 ? (Math.sin(this.t * 12) > 0 ? STATUS_COL.burn : STATUS_COL.burn2)
-      : this.rageT > 0 ? (Math.sin(this.t * 10) > 0 ? STATUS_COL.rage : STATUS_COL.rage2) : null;
+      : this.rageT > 0 ? (Math.sin(this.t * 10) > 0 ? STATUS_COL.rage : STATUS_COL.rage2)
+      : this.enraged ? (Math.sin(this.t * 4) > 0 ? STATUS_COL.rage : STATUS_COL.rage2) : null;
     if (!this.mgr.tint.includes(this.mat)) this.mat.color.copy(this.mat.userData.tint || WHITE).multiply(this.mat.userData.fx || WHITE);
 
     const y = this.mgr.world.heightAt(this.x, this.z);
@@ -777,8 +806,8 @@ export class MobManager {
     for (const m of this.list) {
       if (!m.alive || !(m.def.mvp || m.def.boss) || m.temp) continue; // (a raid's boss is not kept)
       const guards = this.guardsOf(m).map((g) => [g.type, Math.ceil(g.hp)]);
-      const cd = m.calls && !guards.length ? Math.max(0, SUMMON_CD - (m.t - m.guardsGoneT)) : 0;
-      if (m.hp < m.def.hp || m.calls || guards.length) this.bossHp[m.type] = { hp: Math.ceil(m.hp), at: Date.now(), calls: m.calls, guards, cd };
+      const cd = m.calls && !guards.length ? Math.max(0, summonCd(m.def) - (m.t - m.guardsGoneT)) : 0;
+      if (m.hp < m.def.hp || m.calls || guards.length) this.bossHp[m.type] = { hp: Math.ceil(m.hp), max: m.def.hp, at: Date.now(), calls: m.calls, guards, cd };
       else delete this.bossHp[m.type];
     }
     return this.bossHp;
@@ -788,8 +817,10 @@ export class MobManager {
 
   // a king's guards: they come running, and don't come back once beaten
   summon(boss) {
+    const list = [...boss.def.summon];
+    for (const g of this.guardsOf(boss)) { const i = list.indexOf(g.type); if (i >= 0) list.splice(i, 1); } // a full set: only those missing come
+    if (!list.length) return;
     boss.mgr.emit('summon', boss);
-    const list = boss.def.summon;
     for (const type of list) {
       const c = this.guard(boss, type, list.length);
       c.state = 'chase';
@@ -873,9 +904,13 @@ export class MobManager {
       const m = this.add(type, s.x, s.z);
       const w = this.bossHp[type]; // as you left it: its wounds (less what it healed since) and its guards
       if (w) {
-        m.hp = Math.min(m.def.hp, w.hp + m.def.hp * BOSS_REGEN * (Date.now() - w.at) / 60000);
+        // (its wounds as a share of its HP, should that have changed; an MVP left wounded before MVPs
+        // got 6x their HP comes back whole)
+        const hp = w.max ? w.hp * m.def.hp / w.max : m.def.mvp ? m.def.hp : w.hp;
+        m.hp = Math.min(m.def.hp, hp + m.def.hp * BOSS_REGEN * (Date.now() - w.at) / 60000);
         m.calls = w.calls || 0;
-        if (w.cd) m.guardsGoneT = m.t - (SUMMON_CD - w.cd);
+        m.passMarks(); // (the marks it is under called their guards before)
+        if (w.cd) m.guardsGoneT = m.t - (summonCd(m.def) - w.cd);
         for (const [g, hp] of w.guards || []) if (MOB_DEFS[g]) this.guard(m, g, w.guards.length).hp = Math.min(MOB_DEFS[g].hp, hp);
       }
       this.emit('mvpSpawn', m);

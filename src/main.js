@@ -471,7 +471,7 @@ mobs.on('stomp', (m) => { // the ground bursts around the boss
   if (Math.hypot(player.x - m.x, player.z - m.z) > 3.2) return;
   cam.shake = 0.35;
   if (!player.canBeHit()) return;
-  const res = mobAttack(m.def, player.ps, m.def.stomp || 1.5);
+  const res = mobAttack(m.def, player.ps, (m.def.stomp || 1.5) * m.fury);
   if (res.miss) fx.number(player.x, overHead(player, 1.3), player.z, 'Miss', 'miss');
   else player.takeDamage(res.dmg, m.x, m.z);
 });
@@ -481,7 +481,7 @@ const MOVE_COL = { fire: '#ff6a1a', earth: '#c8a06a', wind: '#dff7c8', water: '#
 function bossBlow(m, mult, x, z, r) {
   if (Math.hypot(player.x - x, player.z - z) > r + 0.3 || !player.canBeHit() || player.state === 'down') return;
   cam.shake = 0.3;
-  const res = mobAttack(m.def, player.ps, mult);
+  const res = mobAttack(m.def, player.ps, mult * m.fury);
   if (res.miss) fx.number(player.x, overHead(player, 1.3), player.z, 'Miss', 'miss');
   else player.takeDamage(res.dmg, x, z);
 }
@@ -521,6 +521,13 @@ mobs.on('slam', (m, mv) => {
   fx.sparkle(m.x, y + 0.3, m.z, MOVE_COL[m.def.el] || '#ffffff', 20);
   audio.play('hit');
   bossBlow(m, mv.mult, m.x, m.z, mv.r);
+});
+mobs.on('enrage', (m) => { // an MVP below half its HP (mobs.js MVP_RAGE)
+  menus.message(`The ${m.def.name} is enraged! It hits harder and faster now.`);
+  fx.number(m.x, overHead(m, m.sprite.scale.y * 0.8 + 0.4), m.z, 'Enraged!', 'skill');
+  fx.sparkle(m.x, world.heightAt(m.x, m.z) + 1.2, m.z, '#ff3a2a', 28);
+  cam.shake = 0.4;
+  audio.play('night');
 });
 mobs.on('frenzy', (m) => {
   menus.message(`The ${m.def.name} flies into a frenzy!`);

@@ -134,10 +134,11 @@ the ATK): cut them down first. At the level their quests suggest (Giant Sprout 2
 Giant Mushroom 43, Giant Beetle 50) each is about a two-minute fight on a dozen or so Orange
 Potions; see `docs/balance.md`.
 
-**MVP.** The Fire Giant (Lv 60, 24,000 HP, Fire), optional and not part of the story, roams Ember Hill and stomps the
-ground around it every few seconds. It is made for one Base 50 hero in the best gear: about three
-minutes and a bag of potions (a Blader drinks around 50 White Potions; a Sorcerer who keeps
-moving needs far fewer, but Blue Potions too). Whoever brings it down gets **MVP** over their
+**MVP.** The Fire Giant (Lv 60, 144,000 HP, Fire), optional and not part of the story, roams Ember Hill and stomps the
+ground around it every few seconds. MVPs are the hardest fights in Aria, made for a strong second
+job well above their level (or a long, careful fight for one at it): a minute or more of dodging
+and a bag of White and Blue Potions, and the wrong element (Fire Arrows on the Fire Giant) can
+cost you the fight. Whoever brings it down gets **MVP** over their
 head, bonus Base EXP and MVP items straight to the bag, plus its drops (its horn, crown, cape or
 sword). It comes back 15 minutes later, even if you leave the map or close the game.
 
@@ -147,20 +148,26 @@ Treant, charging and calling 2 Bears. Their pelt and heart (30%) make Leif's bes
 
 The **Elder Willow** of Willow Marsh (Lv 23: silvery, wide antlers with fireflies on their tips,
 water-lilies in its hair) is the mini-boss on the road to Veidheim, a step after the Giant Sprout,
-calling Willows out of the reeds. The **Ancient Treant** (Lv 62, 26,000 HP, Earth: pale with age,
+calling Willows out of the reeds. The **Ancient Treant** (Lv 62, 156,000 HP, Earth: pale with age,
 glowing runes carved down its body, blossoms in its crown), the oldest tree in Aria, has walked
 out of the Old Forest into Wolf Hills and is its MVP: it stomps, hurls stones and charges, and calls
-2 Wolves and 2 Snakes. It is made for a Base 60 hero with a second job, and it comes back 35 minutes
+2 Wolves and 2 Snakes. It is the strongest MVP, and it comes back 35 minutes
 after it falls.
 
-Two more MVPs rule the new lands: the **Kobold King** (Lv 50, 18,000 HP, Earth) in
-Coal Pit, and the **Goblin King** (Lv 55, 21,000 HP, Wind) in Serpent Wood. Both
+Two more MVPs rule the new lands: the **Kobold King** (Lv 50, 108,000 HP, Earth) in
+Coal Pit, and the **Goblin King** (Lv 55, 126,000 HP, Wind) in Serpent Wood. Both
 stomp like the Fire Giant, and each MVP keeps its own timer (20 and 30 minutes). **Every MVP calls
-guards** when it first falls below 60% HP: the Fire Giant 2 Fire Wisps and 3 Fire Beetles, each
-king 4 of his own (2 warriors, an archer and an assassin). It never calls while a guard is still
-standing: once the last one falls, it can call again 2 minutes later, if it is still fighting. Guards are lesser
+guards** at 80%, 50% and 25% of its HP: the Fire Giant 2 Fire Wisps and 3 Fire Beetles, each
+king 4 of his own (2 warriors, an archer and an assassin); a call brings back only the guards that
+are missing. Once the last guard falls, it calls again a minute later, if it is still fighting. Guards are lesser
 monsters of their kind (half the HP, 60% of the ATK): they follow their MVP, fight whoever it
-fights, and vanish when it falls (no EXP, no drops). The kings drop ores, a rare accessory (5%) and their **card** (1%), as does the Fire Giant.
+fights, and vanish when it falls (no EXP, no drops). The kings drop ores, a rare accessory (5%) and their **card** (0.1%), as does the Fire Giant.
+
+**Enraged.** Below half its HP an MVP is enraged for good (it glows red, and calms down only if it
+heals back over 60%): it hits 25% harder and 35% faster, walks 15% faster, stomps every 4.5
+seconds instead of 7, and uses its moves sooner and more often. An MVP doesn't tire of you
+either: it chases you over its map and gives up only when you are far away (22 paces), at camp or
+playing dead.
 
 **Where bosses are.** Mini-bosses and MVPs appear at a random spot on their map, away from you and
 the portals, and roam the whole map. A boss you leave behind keeps its wounds and its guards (and

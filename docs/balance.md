@@ -147,3 +147,27 @@ pounce and dodging make it the harder of the two at its own level. The Ancient
 Treant (Lv 62) is the strongest MVP: like the Goblin King, a first-job hero cannot finish it
 (`node build-tools/sim.mjs ancientTreant 62`), a second job hitting 2-4x as hard can. Its guards
 are Wolves and Snakes, not Treants and Bears, which would make it a wall.
+
+## MVPs (6x HP, enraged below half)
+
+The sim's second job (2-4x a first job, SP counted) is far behind a well-built second job in the
+game, where Blue Potions keep the best skill going: the owner's Windrunner (Base 72, FNS 88, QKN 51,
+Goblin Bow, Hurricane Volley, Blue Potions as needed) took the old MVPs (18,000-26,000 HP) in about
+10 seconds. MVPs now have 6x the HP and 1.3x the ATK, and are enraged below half their HP
+(`MVP_RAGE` in `src/mobs.js`: +25% damage, attacks 35% faster, 15% faster walk, a stomp every 4.5 s,
+moves sooner); they call guards at 80/50/25% and a minute after the last falls, and only give up
+the chase 22 paces off. Mini-bosses are unchanged: they are made for first jobs at their level.
+
+That Windrunner, playtested in the browser (standing and shooting, never stepping out of a red
+circle; a White Potion below half HP, a Blue one below 60 SP):
+
+| MVP | Arrows | Time | White Potions | Lowest HP |
+|---|---|---|---|---|
+| Fire Giant (60) | Iron | 63 s | 35 | a third |
+| Fire Giant (60) | Fire (resisted) | lost at 3 min, the giant at 25% | 114 | fainted |
+| Kobold King (50) | Fire (Earth: weak to it) | 30 s | 5 | 40% |
+| Goblin King (55) | Fire | 50 s | 27 | 38% |
+| Ancient Treant (62) | Fire (Earth: weak to it) | 46 s | 2 | 35% |
+
+The same build at Base 60 took about 70 s against the Fire Giant at 5x HP (54 White Potions):
+a second job at an MVP's level can do it, with a big bag of potions and better with dodging.
