@@ -263,14 +263,23 @@ a small round island out in Salt Bay; the **Boatman** by the water rows you out 
   HP while you fight him.
 - **10 minutes** for the lot. After each wave you get back half your HP and SP, and before the boss
   all of it.
-- **Difficulty:** you choose when you set out. The monsters' level and strength follow it.
+- **Difficulty:** you choose when you set out, and each needs its Base Level. The monsters' level
+  and strength follow it.
 
-| Difficulty | Made for | Monsters | Rewards | Rare chance |
-|---|---|---|---|---|
-| Easy | Base 30, no potions needed | Lv 26–35 | x1 | 5% |
-| Normal | Base 40, 20 Orange Potions | Lv 36–45 | x3 | 10% |
-| Hard | Base 50 with a second job, 30 White Potions | Lv 46–55 | x6 | 15% |
-| Hell | Base 60 with a second job, 50 White Potions | Lv 56–65 | x9 | 20% |
+| Difficulty | Needs | Made for | Monsters | Rewards | Rare chance |
+|---|---|---|---|---|---|
+| Easy | Base 60 | a second job, no potions needed | Lv 56–65 | x1 | 5% |
+| Normal | Base 75 | a second job, 20 White Potions | Lv 71–80 | x3 | 10% |
+| Hard | Base 90 | a strong second job, 30 White Potions | Lv 86–95 | x6 | 15% |
+| Hell | Base 99 | the best gear, upgraded and carded, and a big bag of White Potions | Lv 95–104 | x9 | 20% |
+
+- **Hell's BleepBloop** is as hard and tricky as a field MVP (770,000 HP). He is enraged below half
+  his HP, and his stomp and moves can't be dodged with FLEE and go through most of your DEF: step
+  out of the red circles. **Bloop Rain** drops bloops all round you, and each leaves a **sticky
+  puddle** that slows and hurts whoever stands in it. **Jelly Wall** raises three Jelly Cores round
+  him: while one stands he takes 90% less damage, so pop them first. He belly-flops and charges
+  harder too, and his jelly takes spells well (+30%) but swallows blades and fists (−30%) and
+  beasts (−20%).
 
 - **EXP is held while you fight** and paid when the run ends. A clear pays all of it **x1.5**. A
   failed run (the time runs out, you faint, or you leave) pays only the monsters you beat, with no
@@ -282,8 +291,8 @@ a small round island out in Salt Bay; the **Boatman** by the water rows you out 
 - **The Tutorial crossing** (Chapter 5): while the story waits on the raid, the Boatman also offers
   a gentler Tutorial run (Lv 24–33 monsters). It starts no cooldown and pays the clear reward win or
   lose. Lose it, and the Boatman's crew finish BleepBloop for you, this once.
-- Tuned with a whole-run simulation: every monster of a wave at once, natural regen, the breathers.
-  A first job can't clear Hard or Hell.
+- Easy to Hard were tuned with a whole-run simulation (every monster of a wave at once, natural
+  regen, the breathers); Hell was tested in the game like the MVPs.
 
 ## Character
 

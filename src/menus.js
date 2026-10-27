@@ -718,19 +718,20 @@ export class Menus {
         <div class="say"><p>Which town? You have ${this.inv.perz.toLocaleString()} perz.</p><div class="btnrow wrap">${rows || '<span>You have not signed any other Keeper\'s ledger yet.</span>'}</div>
         <div class="btnrow"><button class="rbtn soft" data-act="close">Bye</button></div></div></div>`;
     }
-    if (n.raid && this.ferrying) { // the raid: its difficulties, the advised level, and the shared cooldown
+    if (n.raid && this.ferrying) { // the raid: its difficulties, the Base Level each needs, and the shared cooldown
       const R = RAIDS[n.raid], info = this.hooks.raidInfo?.(n.raid) || { wait: 0 };
       // the Tutorial run only while the story waits on the raid; it never waits on the tide
       const list = Object.entries(R.difficulties).filter(([, d]) => !d.tutorial || info.story);
-      const rows = list.map(([k, d]) => `<button class="rbtn ${p.baseLv < d.lv ? 'warn' : ''}" data-act="raidgo" data-id="${k}" ${info.wait && !d.tutorial ? 'disabled' : ''}>
-        <b>${esc(d.name)}</b> · Lv ${d.lv} · ${esc(d.advice)}${d.tutorial ? '' : ` · rewards x${d.mult}`}</button>`).join('');
+      const low = (d) => !d.tutorial && p.baseLv < d.lv; // (each difficulty needs its Base Level; the Tutorial doesn't)
+      const rows = list.map(([k, d]) => `<button class="rbtn ${low(d) ? 'warn' : ''}" data-act="raidgo" data-id="${k}" ${(info.wait && !d.tutorial) || low(d) ? 'disabled' : ''}>
+        <b>${esc(d.name)}</b> · ${d.tutorial ? `Lv ${d.lv}` : `Base ${d.lv}${d.lv >= 99 ? '+' : ''} needed`} · ${esc(d.advice)}${d.tutorial ? '' : ` · rewards x${d.mult}`}</button>`).join('');
       const note = (info.story ? 'First time out? Take the Tutorial crossing: it costs no tide, and I will pay you whether you beat him or not. ' : '')
         + (info.wait ? `The tide is wrong for a full crossing. Come back in ${waitText(info.wait)}.`
           : `Three waves of bloops, then BleepBloop himself, and only ${R.secs / 60} minutes before the tide turns and I must row you back. After a crossing, the tide keeps me ashore ${R.cooldown / 3600000} hours.`);
       this.wins.talk.querySelector('.rw-title').textContent = n.name;
       return `<div class="talkwrap"><img class="portrait" src="${this.portrait(this.npc)}" alt="">
         <div class="say"><p>${esc(note)}</p><div class="btnrow wrap raids">${rows}</div>
-        ${list.some(([, d]) => p.baseLv < d.lv) ? `<small>Below the advised level (you are Base ${p.baseLv}), it will be a hard fight.</small>` : ''}
+        ${list.some(([, d]) => low(d)) ? `<small>You are Base ${p.baseLv}: I only row heroes to a crossing they have the level for.</small>` : ''}
         <div class="btnrow"><button class="rbtn soft" data-act="close">Bye</button></div></div></div>`;
     }
     if (n.warp && this.ferrying) { // the lands you have walked, and the fare to each

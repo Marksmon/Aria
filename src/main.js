@@ -8,7 +8,7 @@ import { Player } from './player.js';
 import { Input } from './input.js';
 import { UI } from './ui.js';
 import { FX } from './fx.js';
-import { MobManager, MOB_DEFS, MOVES, MVP_MOVE, guardDef, raidDef } from './mobs.js';
+import { MobManager, MOB_DEFS, MOVES, MVP_MOVE, fierce, guardDef, raidDef } from './mobs.js';
 import { Allies } from './allies.js';
 import { RAIDS, rollReward } from './raid.js';
 import { loadSave, writeSave, loadStorage, writeStorage, clearSave, saveCode, loadCode, SLOTS, activeSlot, setActiveSlot } from './save.js';
@@ -472,7 +472,7 @@ mobs.on('stomp', (m) => { // the ground bursts around the boss
   if (Math.hypot(player.x - m.x, player.z - m.z) > 3.2) return;
   cam.shake = 0.35;
   if (!player.canBeHit()) return;
-  const res = mobAttack(m.def, player.ps, (m.def.stomp || 1.5) * m.fury, m.def.mvp ? MVP_MOVE : undefined);
+  const res = mobAttack(m.def, player.ps, (m.def.stomp || 1.5) * m.fury, fierce(m.def) ? MVP_MOVE : undefined);
   if (res.miss) fx.number(player.x, overHead(player, 1.3), player.z, 'Miss', 'miss');
   else player.takeDamage(res.dmg, m.x, m.z);
 });
@@ -482,7 +482,7 @@ const MOVE_COL = { fire: '#ff6a1a', earth: '#c8a06a', wind: '#dff7c8', water: '#
 function bossBlow(m, mult, x, z, r) {
   if (Math.hypot(player.x - x, player.z - z) > r + 0.3 || !player.canBeHit() || player.state === 'down') return;
   cam.shake = 0.3;
-  const res = mobAttack(m.def, player.ps, mult * m.fury, m.def.mvp ? MVP_MOVE : undefined); // (an MVP's: no FLEE, little DEF)
+  const res = mobAttack(m.def, player.ps, mult * m.fury, fierce(m.def) ? MVP_MOVE : undefined); // (an MVP's: no FLEE, little DEF)
   if (res.miss) fx.number(player.x, overHead(player, 1.3), player.z, 'Miss', 'miss');
   else player.takeDamage(res.dmg, x, z);
 }
@@ -564,19 +564,21 @@ const burning = [];
 function burnGround(m, x, z) {
   const b = m.def.burns;
   burning.push({ m, map: world.id, x, z, r: b.r, t: b.dur, tick: 0.5 });
-  fx.warn(x, z, b.r, b.dur, '#ff8a2a');
+  fx.warn(x, z, b.r, b.dur, b.color || '#ff8a2a');
 }
 function burnTick(dt) {
   for (let i = burning.length - 1; i >= 0; i--) {
     const b = burning[i];
     b.t -= dt;
     if (b.t <= 0 || !b.m.alive || world.id !== b.map) { burning.splice(i, 1); continue; }
-    if (Math.random() < dt * 3) fx.sparkle(b.x + (Math.random() - 0.5) * b.r, world.heightAt(b.x, b.z) + 0.2, b.z + (Math.random() - 0.5) * b.r, '#ff7a2a', 2);
+    const B = b.m.def.burns;
+    if (Math.random() < dt * 3) fx.sparkle(b.x + (Math.random() - 0.5) * b.r, world.heightAt(b.x, b.z) + 0.2, b.z + (Math.random() - 0.5) * b.r, B.color || '#ff7a2a', 2);
     if ((b.tick -= dt) > 0) continue;
     b.tick = 0.5;
     if (Math.hypot(player.x - b.x, player.z - b.z) > b.r || !player.canBeHit() || player.state === 'down') continue;
-    const res = mobAttack(b.m.def, player.ps, b.m.def.burns.mult * b.m.fury, MVP_MOVE);
-    if (!res.miss) { player.takeDamage(res.dmg, b.x, b.z); fx.number(player.x, overHead(player, 1.6), player.z, 'Burning!', 'miss'); }
+    if (B.slow) player.slowT = Math.max(player.slowT, 0.8); // (sticky gel: it slows you too)
+    const res = mobAttack(b.m.def, player.ps, B.mult * b.m.fury, MVP_MOVE);
+    if (!res.miss) { player.takeDamage(res.dmg, b.x, b.z); fx.number(player.x, overHead(player, 1.6), player.z, B.word || 'Burning!', 'miss'); }
   }
 }
 // an MVP's matchup (mobs.js def.takes): told once when it first comes for you
@@ -584,13 +586,13 @@ function matchupHint() {
   for (const m of mobs.list) {
     if (!m.alive || !m.def.takesText || m.def.decoy || m.toldTakes || m.state !== 'chase' || Math.hypot(m.x - player.x, m.z - player.z) > 10) continue;
     m.toldTakes = true;
-    menus.message(`The ${m.def.name}: ${m.def.takesText}.`);
+    menus.message(`${TheName(m)}: ${m.def.takesText}.`);
   }
 }
 // Meteor Rain (the Fire Giant): fireballs fall one after another round you, each a red circle first
 mobs.on('meteors', (m, mv, n) => {
   const map = world.id, M = MOVES.meteors;
-  menus.message(`The ${m.def.name} calls down a Meteor Rain! Keep moving!`);
+  menus.message(`${TheName(m)} calls down ${mv.name || 'a Meteor Rain'}! Keep moving!`);
   for (let i = 0; i < n; i++) {
     setTimeout(() => {
       if (world.id !== map || !m.alive) return;
@@ -600,10 +602,10 @@ mobs.on('meteors', (m, mv, n) => {
       const gy = world.heightAt(spot.x, spot.z), fall = 9 / 13; // (fx.bolt flies 13 paces a second)
       setTimeout(() => {
         if (world.id !== map || !m.alive) return;
-        fx.bolt(spot.x, gy + 9, spot.z, { x: spot.x, z: spot.z, alive: true }, '#ff6a1a', () => {
+        fx.bolt(spot.x, gy + 9, spot.z, { x: spot.x, z: spot.z, alive: true }, mv.color || '#ff6a1a', () => {
           if (world.id !== map || !m.alive) return;
           fx.puff(spot.x, gy + 0.2, spot.z, mv.r * 1.2);
-          fx.sparkle(spot.x, gy + 0.3, spot.z, '#ff6a1a', 14);
+          fx.sparkle(spot.x, gy + 0.3, spot.z, mv.color || '#ff6a1a', 14);
           audio.play('hit');
           bossBlow(m, mv.mult, spot.x, spot.z, mv.r);
           if (m.def.burns) burnGround(m, spot.x, spot.z);
@@ -630,21 +632,24 @@ mobs.on('erupt', (m, mv, spot) => {
   bossBlow(m, mv.mult, spot.x, spot.z, mv.r);
 });
 // Mirror Image (the Goblin King): shadows of him, and he hides among them
-mobs.on('mirror', (m) => {
-  menus.message(`The ${m.def.name} splits into three! Cut down his shadows: he is shrouded while they stand.`);
-  fx.number(m.x, overHead(m, m.sprite.scale.y * 0.8 + 0.4), m.z, 'Mirror Image', 'skill');
+mobs.on('mirror', (m, mv) => {
+  menus.message(mv.text || `The ${m.def.name} splits into three! Cut down his shadows: he is shrouded while they stand.`);
+  fx.number(m.x, overHead(m, m.sprite.scale.y * 0.8 + 0.4), m.z, mv.name || 'Mirror Image', 'skill');
   audio.play('night');
 });
 // a blow that barely lands (mobs.js ward): underground, behind his tribe, shrouded by shadows
-const WARD_HINT = { under: 'Underground!', tribe: 'Guarded!', mirror: 'Shrouded!' };
+const WARD_HINT = { under: 'Underground!', tribe: 'Guarded!', mirror: 'Shrouded!', jelly: 'Jelly Wall!' };
 let wardHintAt = 0;
 mobs.on('warded', (m) => {
-  const why = m.under ? 'under' : m.def.tribe ? 'tribe' : 'mirror';
+  const why = m.under ? 'under' : m.def.tribe ? 'tribe' : m.def.raidLv ? 'jelly' : 'mirror';
   fx.number(m.x, overHead(m, m.sprite.scale.y * 0.8 + 0.4), m.z, WARD_HINT[why], 'miss');
   if (why === 'tribe' && performance.now() - wardHintAt > 15000) { wardHintAt = performance.now(); menus.message(`The ${m.def.name} hides behind his tribe! Bring down his guards first.`); }
 });
-mobs.on('enrage', (m) => { // an MVP below half its HP (mobs.js MVP_RAGE)
-  menus.message(`The ${m.def.name} is enraged! It hits harder and faster now.`);
+// "the Fire Giant", but BleepBloop is a name
+const theName = (m) => (m.def.raidLv ? m.def.name : `the ${m.def.name}`);
+const TheName = (m) => theName(m)[0].toUpperCase() + theName(m).slice(1);
+mobs.on('enrage', (m) => { // an MVP (or the Hell raid's boss) below half its HP (mobs.js MVP_RAGE)
+  menus.message(`${TheName(m)} is enraged! It hits harder and faster now.`);
   fx.number(m.x, overHead(m, m.sprite.scale.y * 0.8 + 0.4), m.z, 'Enraged!', 'skill');
   fx.sparkle(m.x, world.heightAt(m.x, m.z) + 1.2, m.z, '#ff3a2a', 28);
   cam.shake = 0.4;
@@ -1011,6 +1016,7 @@ function raidInfo(id) {
 function raidGo(id, diff) {
   const R = RAIDS[id], D = R.difficulties[diff], info = raidInfo(id);
   if (raid || warping || !D || (D.tutorial ? !info.story : info.wait)) return;
+  if (!D.tutorial && prog.baseLv < D.lv) { menus.message(`${D.name} needs Base Level ${D.lv}.`); return; } // (each difficulty needs its level)
   if (!D.tutorial) raidAt = Date.now() + R.cooldown; // the tide, from going in
   raid = { id, diff, left: R.secs, wave: -1, phase: 'land', restT: 2.5, list: [], boss: null, exp: [0, 0], arrived: false, shown: 1 };
   menus.close('talk');

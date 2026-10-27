@@ -116,6 +116,9 @@ export const MOB_DEFS = {
 // the Goblin King's Mirror Image: a Goblin King of shadow, just like him to look at, that fights
 // beside him (no EXP, no drops). He takes 90% less damage while one stands (MIRROR)
 MOB_DEFS.kingShadow = { ...MOB_DEFS.goblinKing, decoy: true, mvp: false, ai: 'tank', hp: 9000, atk: [140, 180], exp: [0, 0], drops: [], summon: null, moves: null, mvpDrops: null, wake: null, aggro: 12, chase: 30 };
+// BleepBloop's Jelly Wall (Hell): a quivering core of royal jelly that barely moves and only
+// slaps whoever stands on it. He takes 90% less damage while one stands (MIRROR)
+MOB_DEFS.jellyCore = { name: 'Jelly Core', ai: 'tank', art: 'slimeYellow', tint: '#ffd86a', el: 'neutral', decoy: true, lv: 99, hp: 18000, atk: [60, 80], def: 30, vit: 60, agi: 1, dex: 60, exp: [0, 0], adelay: 2000, walk: 5000, aggro: 3, chase: 30, reach: 0.9, w: 1.0, r: 0.45, heavy: true, drops: [] };
 // walk: ms a tile, as Ragnarok's monster database has it (Poring 400, Kobold 200, Goblin 150,
 // Goblin Leader 120, Ifrit 130; the hero 150), taken WALK_SCALE times as long. speed: tiles a second.
 for (const d of Object.values(MOB_DEFS)) d.speed = 1000 / (d.walk * WALK_SCALE);
@@ -180,8 +183,10 @@ const STATUS_COL = Object.fromEntries(Object.entries({ bark: '#c8a05a', bark2: '
 // A boss (MVP or mini-boss) first calls its guards when it falls below 60% HP. It calls again only
 // once every guard is gone, and not until 2 minutes after the last one fell, while it still fights.
 const SUMMON_AT = 0.6, SUMMON_CD = 120;
-const callMarks = (d) => (d.mvp ? MVP_CALLS : [SUMMON_AT]);
-const summonCd = (d) => d.summonCd ?? (d.mvp ? MVP_SUMMON_CD : SUMMON_CD);
+// fierce: an MVP, or a boss made as hard as one (the Hell raid's boss: FIERCE)
+export const fierce = (d) => !!(d.mvp || d.fierce);
+const callMarks = (d) => (fierce(d) ? MVP_CALLS : [SUMMON_AT]);
+const summonCd = (d) => d.summonCd ?? (fierce(d) ? MVP_SUMMON_CD : SUMMON_CD);
 // a boss's guards are lesser servants of their kind: half the HP, 60% of the ATK (tuned with
 // build-tools/sim.mjs, so the fight is the boss and not two full-strength monsters at once)
 export const GUARD = { hp: 0.5, atk: 0.6 };
@@ -195,12 +200,29 @@ export const guardDef = (type) => (guardDefs[type] ||= lesser(MOB_DEFS[type]));
 // (relentless), drop nothing (the raid pays at the end) and don't split. A boss is a mini-boss of
 // that level; guard: the scale its guards come at (the waves').
 const STRENGTH = { slime: 0.8, blueSlime: 0.9, yellowSlime: 1, redSlime: 1.1 };
+// a raid boss made as hard and tricky as an MVP (the difficulty's boss scale says fierce: true):
+// enraged below half HP, moves that FLEE can't dodge and that go through most DEF (MVP_MOVE), a
+// matchup (takes), and moves of its own (MOVES)
+const FIERCE = {
+  bleepBloop: {
+    fierce: true, stomp: 2.0, adelay: 2000, dex: 160, summonCd: 30,
+    moves: [
+      { kind: 'mirror', name: 'Jelly Wall', decoy: 'jellyCore', n: 3, swap: false, text: 'BleepBloop wobbles, and three Jelly Cores rise round him! Pop them: he is shielded while they stand.' },
+      { kind: 'meteors', name: 'Bloop Rain', mult: 1.6, r: 1.6, color: '#ff7a8a' },
+      { kind: 'leap', name: 'Belly Flop', mult: 2.0, r: 2.4 },
+      { kind: 'charge', name: "Veteran's Charge", mult: 1.8 },
+    ],
+    burns: { r: 1.6, dur: 6, mult: 0.3, slow: true, color: '#ff7a8a', word: 'Sticky!' },
+    takes: { melee: 0.7, magic: 1.3, beast: 0.8 },
+    takesText: 'blades and fists sink into his jelly (−30%) and beasts get stuck (−20%), but spells burst it (+30%)',
+  },
+};
 const raidDefs = {};
 export function raidDef(type, lv, s = { hp: 1, atk: 1 }, guard = null) {
-  return (raidDefs[`${type}@${lv}:${s.hp},${s.atk},${s.exp}`] ||= (() => {
+  return (raidDefs[`${type}@${lv}:${s.hp},${s.atk},${s.exp},${!!s.fierce}`] ||= (() => {
     const d = MOB_DEFS[type], k = d.boss ? 1 : STRENGTH[type] ?? 1, exp = 0.0122 * lv ** 3;
     return {
-      ...d, lv, raidLv: lv, raidGuard: guard, passive: false, relentless: true, aggro: 99, chase: 99, split: null, drops: [],
+      ...d, ...(s.fierce ? FIERCE[type] : {}), lv, raidLv: lv, raidGuard: guard, passive: false, relentless: true, aggro: 99, chase: 99, split: null, drops: [],
       hp: Math.round(48 * lv * k * (d.boss ? 7 : 1) * s.hp),
       atk: [3.2, 4].map((a) => Math.round(a * lv * k * (d.boss ? 0.6 : 1) * s.atk)),
       def: Math.round(0.4 * lv * k), vit: Math.round(lv * k), agi: Math.round(0.8 * lv), dex: Math.round(1.5 * lv),
@@ -344,7 +366,7 @@ class Mob {
         this.mgr.emit('frenzy', this);
       } else if (mv.kind === 'mirror') {
         if (this.hp / d.hp > M.below || this.mgr.decoysOf(this).length) continue;
-        this.mgr.mirror(this);
+        this.mgr.mirror(this, mv);
       } else if (mv.kind === 'bark') {
         if (this.hp / d.hp > M.below) continue;
         this.barkT = M.dur;
@@ -370,7 +392,7 @@ class Mob {
       }
       this.moveCd[mv.kind] = M.cd * (this.enraged && mv.kind !== 'frenzy' ? MVP_RAGE.cd : 1);
       if (mv.kind === 'bark' || mv.kind === 'mirror') { this.nextMove = 0.5; return; } // (a self move: it can act again at once)
-      this.nextMove = this.enraged ? MVP_RAGE.gap : d.mvp ? MVP_GAP : 2.5;
+      this.nextMove = this.enraged ? MVP_RAGE.gap : fierce(d) ? MVP_GAP : 2.5;
       return;
     }
   }
@@ -575,7 +597,7 @@ class Mob {
     this.barkT -= dt;
     if ((d.mvp || d.boss) && this.state !== 'chase' && this.hp < d.hp) this.hp = Math.min(d.hp, this.hp + d.hp * BOSS_REGEN / 60 * dt);
     // an MVP below half its HP is enraged (MVP_RAGE); healed back over 60% it calms down
-    if (d.mvp && this.alive) {
+    if (fierce(d) && this.alive) {
       if (!this.enraged && this.hp / d.hp <= MVP_RAGE.below) { this.enraged = true; this.mgr.emit('enrage', this); }
       else if (this.enraged && this.hp / d.hp > MVP_RAGE.calm) this.enraged = false;
     }
@@ -917,18 +939,23 @@ export class MobManager {
   guardsOf(boss) { return this.list.filter((o) => o.leader === boss && o.alive); }
   decoysOf(boss) { return this.guardsOf(boss).filter((o) => o.def.decoy); }
 
-  // the Goblin King's Mirror Image: two shadows of him come, and he trades places with one
-  mirror(boss) {
-    const made = [0, 1].map(() => {
-      const c = this.guard(boss, 'kingShadow', 2);
-      c.def = MOB_DEFS.kingShadow; c.hp = c.def.hp;
+  // the Goblin King's Mirror Image: two shadows of him come, and he trades places with one. The
+  // same move with another decoy (mv.decoy, mv.n; mv.swap false: he stays put) makes BleepBloop's
+  // Jelly Wall: jelly cores round him, and he is shielded until they pop
+  mirror(boss, mv = {}) {
+    const type = mv.decoy || 'kingShadow', n = mv.n || 2;
+    const made = Array.from({ length: n }, () => {
+      const c = this.guard(boss, type, n);
+      c.def = MOB_DEFS[type]; c.hp = c.def.hp;
       c.state = 'chase'; c.chaseT = 30; c.angry = 30;
       return c;
     });
-    const o = made[Math.floor(Math.random() * 2)];
-    [boss.x, boss.z, o.x, o.z] = [o.x, o.z, boss.x, boss.z];
+    if (mv.swap !== false) {
+      const o = made[Math.floor(Math.random() * n)];
+      [boss.x, boss.z, o.x, o.z] = [o.x, o.z, boss.x, boss.z];
+    }
     for (const c of [boss, ...made]) this.fx.puff(c.x, this.world.heightAt(c.x, c.z) + 0.4, c.z, 1.2);
-    this.emit('mirror', boss);
+    this.emit('mirror', boss, mv);
   }
 
   // a king's guards: they come running, and don't come back once beaten

@@ -64,8 +64,9 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   within 10 minutes, in a small round arena. Half HP/SP back after each wave, all of it before the
   boss. One 3 h cooldown shared by every difficulty, from setting out. The story's step gets a
   Tutorial run: no cooldown, and the clear reward win or lose (a loss gets the Boatman's "we finished
-  it for you, but not next time"). Easy/Normal/Hard/Hell are made for Base 30/40/50/60: Easy with no
-  potions, Normal with 20 Orange, Hard and Hell for a second job with 30 and 50 White. Clear rewards
+  it for you, but not next time"). Easy/Normal/Hard/Hell need Base 60/75/90/99 (the owner's call):
+  Easy a second job with no potions, Normal with 20 White, Hard with 30; Hell's boss is fierce (as
+  hard and tricky as a field MVP: `FIERCE` in `mobs.js`), for a Lv 99 in the best gear. Clear rewards
   x1/x3/x6/x9 and a rare chance of 5/10/15/20%. Raid EXP is held and paid at the end: x1.5 on a clear,
   the kills alone on a failure.
 - **Character slots and storage** (`src/save.js`): three heroes, picked on the title screen (slot 1
