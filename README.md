@@ -1030,7 +1030,8 @@ ahead. **Job** holds the job trials, **Series** the quest chains people give one
 (The Valley Watch 1, 2, 3...), and **Side** the quests that stand alone and the bounties. Each tab
 lists what is ready to hand in, what is under way (with your progress), what is on offer and from
 whom and where, what waits on a level, and what you have done; a tab's number is how many are
-under way. Tap a quest under way for its Quest View.
+under way. Tap a quest under way for its Quest View; a quest on offer has a **Go there** button
+that walks you to whoever offers it.
 
 **Quest list.** Tap a quest under the clock (or the story step) for its **Quest View**: who gave
 it, the goal, your progress, the reward and where to go. **Go there** walks you to it by itself,

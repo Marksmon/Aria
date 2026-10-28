@@ -526,7 +526,9 @@ button.eq:active { background: var(--w-sel); }
 .raidrow.locked { opacity: .7; }
 .raidrow small.ok { color: #8fe08a; }
 /* the Quests window */
-.qrow { display: block; }
+.qrow { display: flex; align-items: center; gap: 6px; }
+.qrow > div { flex: 1; min-width: 0; }
+.qrow .qgo { flex: none; }
 .qrow[data-act] { cursor: pointer; }
 .qrow[data-act]:hover { background: var(--w-soft); }
 .qrow b { display: block; color: var(--w-gold); }

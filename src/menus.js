@@ -216,7 +216,7 @@ export class Menus {
       const open = r.state === 'active' || r.state === 'ready';
       const what = r.state === 'locked' ? `${STATE.locked} ${r.lv}` : STATE[r.state];
       return `<div class="ritem qrow ${r.state}"${open ? ` data-act="qopen" data-id="${r.id}"` : ''}><div><b>${esc(r.title)}</b>
-        <span><i class="qst">${esc(what)}</i>${r.progress ? ` · ${esc(r.progress)}` : ''}</span><small>${esc(r.giver)}${r.land ? `, ${esc(r.land)}` : ''}${r.lv ? ` · Lv ${r.lv}` : ''}</small></div></div>`;
+        <span><i class="qst">${esc(what)}</i>${r.progress ? ` · ${esc(r.progress)}` : ''}</span><small>${esc(r.giver)}${r.land ? `, ${esc(r.land)}` : ''}${r.lv ? ` · Lv ${r.lv}` : ''}</small></div>${r.state === 'offer' || r.state === 'job' ? `<button class="rbtn qgo" data-act="qgoto" data-id="${r.id}">Go there</button>` : ''}</div>`;
     }).join('');
     const none = { job: 'No job trial yet: a trainer offers one once you are ready for a job.', series: 'No quest series found yet.', side: 'No side quests found yet.' }[tab];
     return `${tabs}<div class="rlist">${list || `<div class="rnote">${none}</div>`}</div>`;
@@ -1052,6 +1052,7 @@ export class Menus {
     if (act === 'raidopen') { const R = RAIDS[t.dataset.id]; this.close('raids'); this.talkTo(R.npc); this.ferrying = true; this.anywhere = true; this.render('talk'); }
     if (act === 'questtab') { this.questTab = t.dataset.id; this.render('journal'); }
     if (act === 'qopen') { this.openQuest(t.dataset.id); }
+    if (act === 'qgoto') { this.close('journal'); this.hooks.questGo?.(t.dataset.id); } // an offered quest: walk to whoever offers it
     if (act === 'raidtab') { this.raidTab = t.dataset.id; this.render('raids'); }
     if (act === 'raidback') { this.close('talk'); this.show('raids'); } // back to the Raids window it came from
     if (act === 'raidpick') { this.raidPick = t.dataset.id; this.render('talk'); }
