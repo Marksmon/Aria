@@ -195,11 +195,14 @@ function heroPic(job, look, dir = 'down', gear = {}) {
   const wings = () => wing && g.drawImage(wing.canvas, pad + W / 2 - ww / 2, wy - wh / 2, ww, wh);
   if (!away) wings();
   g.drawImage(tex.image, pad, 0);
-  const ready = headsReady() && headgearReady(top) && headgearReady(face) && tex.userData.head?.at;
-  if (ready) {
+  // the head as soon as the heads have loaded, and each piece of headgear once its own has (a
+  // piece still loading is left off for now, never the head with it)
+  const hasHead = headsReady() && tex.userData.head?.at, hat = headgearReady(top) ? top : null, mask = headgearReady(face) ? face : null;
+  const ready = hasHead && hat === top && mask === face;
+  if (hasHead) {
     const at = [tex.userData.head.at[0] + pad, tex.userData.head.at[1]];
-    paintHead(g, at, dir, look, gearCut(top, dir), top);
-    paintGears(g, at, dir, top, face, 0);
+    paintHead(g, at, dir, look, gearCut(hat, dir), hat);
+    paintGears(g, at, dir, hat, mask, 0);
   }
   if (away) wings();
   if (!ready) return trimmed(c).toDataURL(); // (not kept: the head and its gear come once loaded)
@@ -1166,7 +1169,7 @@ function mobPortrait(art) {
     const px = g.getImageData(0, 0, c.width, c.height).data;
     let x0 = c.width, y0 = c.height, x1 = -1, y1 = -1;
     for (let y = 0; y < c.height; y++) for (let x = 0; x < c.width; x++) if (px[(y * c.width + x) * 4 + 3] > 8) { x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
-    if (x1 < 0) return (mobPics[art] = null);
+    if (x1 < 0) return set.loaded ? (mobPics[art] = null) : null; // (a sheet still loading: asked again later)
     const w = x1 - x0 + 1, h = y1 - y0 + 1, out = document.createElement('canvas');
     out.width = w; out.height = h;
     out.getContext('2d').drawImage(c, x0, y0, w, h, 0, 0, w, h);
@@ -1658,7 +1661,7 @@ const menus = new Menus(inv, prog, player, {
 menus.quests = quests;
 const portraits = {};
 menus.portrait = (id) => (id === 'player' ? (portraits[`${prog.job}|${player.look.body}|${jobArt().dressed}`] ||= jobArt().anims.down.idle[0].image.toDataURL())
-  : (portraits[id] ||= lib.villagers[id].anims.down.idle[0].image.toDataURL()));
+  : (portraits[id] ||= lib.villagers[id].loaded ? lib.villagers[id].anims.down.idle[0].image.toDataURL() : ''));
 // things in camp and town you tap to use: the player walks over, then it opens. h = height on screen
 const SPOTS = [
   { map: 'camp', ...world.camp.fire, label: 'Campfire', h: 0.9, run: () => menus.message('A warm fire. Crafting is done in Steinborg now: Gunnar forges gear, Ragna brews usables.') },
@@ -3085,5 +3088,8 @@ if (go) { // picked on the title screen before the page started over: the sound 
   window.addEventListener('pointerdown', () => audio.start(), { once: true });
   begin();
 }
+
+const boot = document.getElementById('boot'); // the loading screen: ready now
+if (boot) { boot.classList.add('hide'); setTimeout(() => boot.remove(), 450); }
 
 window.__aria = { lib, warp, enterMap, useSkill, useItem, story, SPOTS, player, world, cam, camera, mobs, allies, fx, inv, prog, quests, villagers, menus, hotbar, dayNight, audio, stats: world.stats, raid: () => raid, raidAt: () => raidAt, gainExp };

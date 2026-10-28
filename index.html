@@ -82,6 +82,11 @@
     <small class="rotate">↻ Turn your phone sideways for the best view</small>
     <small class="ver">v1.0 · Explore, fight, craft, survive the night</small>
   </div>
+  <!-- shown while the game loads (main.js removes it once ready); an error on the way is written on it -->
+  <div id="boot"><h1>Aria</h1><p>Loading…</p><i></i></div>
+  <script>
+    addEventListener('error', (e) => { const p = document.querySelector('#boot p'); if (p) { p.textContent = 'Something went wrong: ' + (e.message || e); p.className = 'err'; } });
+  </script>
   <script type="module" src="/src/main.js"></script>
 </body>
 </html>

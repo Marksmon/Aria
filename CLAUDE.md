@@ -147,6 +147,11 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   differs). Never change that key: phones would refuse the update and players lose their saves.
 - After a build, give the owner the APK link:
   https://github.com/Marksmon/Aria/releases/download/apk-latest/Aria.apk
+- Start-up stays light (phones stalled on a blank sky when it wasn't): a map is built the first time it
+  is entered (`buildWorld`; its people stand there then, `Villagers.build`), a monster's sprite set is
+  made the first time one is met (`mobs` in `createSprites`), and a sheet's frames get their canvas and
+  are drawn the first time an animation is shown (`pixelSet`). New maps, monsters and sheets get this
+  for free; don't paint every frame or build every map at load.
 - `npx vite build` must pass. Test in the browser with Playwright (the game exposes
   `window.__aria`).
 - Never commit the PixelLab API key, or the Ragnarok reference image used as a style reference.

@@ -635,13 +635,27 @@ export function buildWorld(scene, lib) {
     v.faded.depthWrite = false;
     tintMats.push(v.faded);
   }
-  const maps = {};
-  for (const id of Object.keys(MAPS)) maps[id] = buildMap(id, scene, lib, shared);
-  let cur = maps.camp;
-  cur.group.visible = true;
-
+  // each map is built the first time it is needed (entered), not all at load; built: the ids done,
+  // onBuild(id): told of each (the villagers stand their people there)
+  const maps = {}, built = new Set();
+  for (const id of Object.keys(MAPS)) {
+    Object.defineProperty(maps, id, {
+      enumerable: true,
+      configurable: true,
+      get() {
+        const m = buildMap(id, scene, lib, shared);
+        Object.defineProperty(maps, id, { value: m, enumerable: true });
+        built.add(id);
+        api.onBuild?.(id);
+        return m;
+      },
+    });
+  }
+  let cur = null;
   const api = {
     maps,
+    built,
+    onBuild: null,
     tintMats,
     spawn: { x: 32, z: 36.2 },
     camp: { fire: { x: 32, z: 32.4 }, chest: { x: 34.4, z: 30.6 }, tent: { x: 30.2, z: 29.6 } },
@@ -672,6 +686,8 @@ export function buildWorld(scene, lib) {
       return { x: back.x + (dx / d) * 2.6, z: back.z + (dz / d) * 2.6 };
     },
   };
+  cur = maps.camp;
+  cur.group.visible = true;
   return api;
 }
 
