@@ -83,6 +83,8 @@ const JOB_PITCH = {
   magicknight: 'Sword and spell as one: imbue your blade with an element, cut with Elemental Edge, sweep the field with Elemental Nova; Stone Aegis is a barrier of both.',
   moonranger: 'Bow and spell under the moon: arrows that hit with ATK and MATK together. Lunar Multishot fans arrows over a pack, Starfall rains stars, Crescent Arrow pierces a line; Moonveil guards you. Stronger at night.',
   beastmaster: 'Sword or bow, and three beasts at your side: Summon Bear (it grows with END), Summon Wolves (FNS) and Summon Hawk (QKN), all out together, and Pack Frenzy to drive them on. Your own tree is beasts only; your Blader and Archer skills stay.',
+  assassin: 'Quick dagger fighters who strike many times with QKN: Venom Strike poisons, Sonic Blow lands eight blows, Shadow Step and Vanish move through the shadows. Double Attack and Improve Dodge make every swing count and every blow miss. Daggers are lighter than swords but much faster.',
+  phantom: 'A dagger in each hand and illusions: Twin Blades lets the left hand strike with every blow, Dual Rend and Thousand Cuts use both, Phantom Double calls two shadows of you to fight, and Mirage Step leaves one behind to draw the monsters away.',
   windrunner: 'The quickest bow in Aria: Windborne and Gale Rhythm speed every shot, Tailwind and Gale Step give short bursts of speed to reposition, Hurricane Volley and Cyclone Arrow finish the work.',
 };
 
@@ -98,6 +100,9 @@ const CRAFTERS = {
   bloop: { title: "The Boatman's Trades", note: 'The Boatman makes Bloop Island\'s rare finds from Bloop Cores (a clear pays 3, 9, 27 or 81 by difficulty).', button: 'Trade Bloop Cores' },
   kobold: { title: "Brokk's Forge", note: 'Brokk makes the Kobold Camp\'s rare finds from Kobold Cores (a clear pays 3, 9, 27 or 81 by difficulty).', button: 'Trade Kobold Cores' },
   goblin: { title: "Ylva's Trades", note: 'Ylva makes the Goblin Lair\'s rare finds from Goblin Cores (a clear pays 3, 9, 27 or 81 by difficulty).', button: 'Trade Goblin Cores' },
+  tomb: { title: "Sindri's Trades", note: "Sindri makes Pharaoh's Tomb's rare finds from Tomb Cores (a clear pays 3, 9, 27 or 81 by difficulty).", button: 'Trade Tomb Cores' },
+  // Rytingborg: Yrsa's daggers and the desert's shadow gear
+  dagger: { title: "Yrsa's Bladeworks", note: 'Yrsa makes daggers and the Assassins\' gear from what the desert gives.', button: 'Make daggers' },
 };
 
 // the storage's sections: cards apart from the other miscs

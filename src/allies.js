@@ -16,6 +16,11 @@ export const BEAST_KINDS = {
   bear: { name: 'Bear', art: ['allyBear'], w: 1.15, r: 0.5, speed: 4, reach: 0.9, aura: '#ffc04a' },
   wolf: { name: 'Wolf', names: ['Black Wolf', 'White Wolf'], colors: ['#9aa8c8', '#eef2fa'], art: ['allyWolfB', 'allyWolfG'], w: 0.68, r: 0.32, speed: 4.6, reach: 0.8, aura: '#b8c8e8' },
   hawk: { name: 'Hawk', art: ['hawk'], w: 0.62, r: 0.3, speed: 5.2, reach: 2.2, fly: true, aura: '#ffe08a' },
+  // the Phantom's illusions: shadows of the hero (its own body, tinted violet and see-through; height:
+  // its standing height in world units), here only a while (life). A Shade fights the hero's target;
+  // the Mirage (Mirage Step) stands where the hero was and draws every monster near it (taunt)
+  shade: { name: 'Illusion', illusion: true, height: 1.55, r: 0.3, speed: 5, reach: 0.9, aura: '#a88aff', tint: '#a890ff', opacity: 0.62 },
+  mirage: { name: 'Mirage', illusion: true, still: true, height: 1.55, r: 0.3, speed: 0, reach: 0, aura: '#8a9aff', tint: '#98a8ff', opacity: 0.5, taunt: 4 },
 };
 // each beast's instinct: one move of its own, used by itself whenever its foe is in reach and the
 // move is ready (cd s): the Bear's Maul (a heavy blow that stuns), a Wolf's Hamstring (a lunge from up
@@ -33,7 +38,7 @@ const DIVE = 0.6, LUNGE = 0.2; // seconds: the Hawk's climb and drop, a Wolf's l
 const ATTACK_ANIM = 0.45;
 const STRIDE = 2.2;
 // where each waits by the hero, in the hero's frame (x: to the right, z: behind)
-const SLOTS = { bear: [-1.2, 1.1], wolf0: [1.2, 0.9], wolf1: [1.6, -0.2], hawk: [0.2, 1.6] };
+const SLOTS = { bear: [-1.2, 1.1], wolf0: [1.2, 0.9], wolf1: [1.6, -0.2], hawk: [0.2, 1.6], shade0: [-1.1, 0.4], shade1: [1.1, 0.4], mirage: [0, 0] };
 
 let glowTex = null;
 function glow() {
@@ -47,22 +52,24 @@ function glow() {
 }
 
 class Beast {
-  constructor(mgr, kind, i, ps) {
+  // opts: { art (an illusion's: the hero's own body), life (seconds it lasts) }
+  constructor(mgr, kind, i, ps, opts = {}) {
     this.mgr = mgr;
     this.kind = kind;
-    this.slot = kind === 'wolf' ? `wolf${i}` : kind;
+    this.slot = kind === 'wolf' || kind === 'shade' ? `${kind}${i}` : kind;
     this.K = BEAST_KINDS[kind];
     this.name = this.K.names?.[i] || this.K.name; // (the Wolves: the Black Wolf and the White Wolf)
     this.color = this.K.colors?.[i] || this.K.aura;
-    this.art = mgr.lib.mobs[this.K.art[i % this.K.art.length]];
-    this.mat = new THREE.SpriteMaterial({ map: this.art.anims.down.idle[0], alphaTest: 0.5 });
+    this.art = opts.art || mgr.lib.mobs[this.K.art[i % this.K.art.length]];
+    this.life = opts.life;
+    this.mat = new THREE.SpriteMaterial({ map: this.art.anims.down.idle[0], alphaTest: 0.5, ...(this.K.opacity ? { transparent: true, opacity: this.K.opacity, alphaTest: 0.05, depthWrite: false } : {}) });
     this.sprite = new THREE.Sprite(this.mat);
     this.sprite.center.set(0.5, this.art.anchor);
     this.sprite.renderOrder = 2;
-    const upp = this.K.w / this.art.body[0];
+    const upp = this.K.height ? this.K.height / this.art.body[1] : this.K.w / this.art.body[0];
     this.sprite.scale.set(this.art.fw * upp, this.art.fh * upp, 1);
     this.shadow = new THREE.Mesh(mgr.shadowGeo, mgr.shadowMat);
-    this.shadow.scale.setScalar(this.K.w * 0.9);
+    this.shadow.scale.setScalar((this.K.w || 0.7) * 0.9);
     this.disc = new THREE.Mesh(new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({
       map: glow(), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, color: new THREE.Color(this.K.aura), polygonOffset: true, polygonOffsetFactor: -3,
     }));
@@ -126,6 +133,12 @@ class Beast {
   update(dt, hero, mobs, target) {
     const K = this.K, ps = this.ps;
     this.t += dt; this.atkCd -= dt; this.atkAnim -= dt; this.flash -= dt; this.tauntCd -= dt; this.skillCd -= dt;
+    if (this.life !== undefined && (this.life -= dt) <= 0) { this.mgr.emit('fade', this); this.mgr.drop(this); return; } // an illusion's time is up
+    if (K.still) { // the Mirage: it stands where the hero stood, and every monster near it turns on it
+      if (this.tauntCd <= 0) { this.tauntCd = 1; for (const o of mobs.list) if (o.alive && !o.def.decoy && Math.hypot(o.x - this.x, o.z - this.z) < K.taunt) { o.foe = this; o.provoke(); } }
+      this.visuals(0);
+      return;
+    }
     // the foe: the hero's target, else a monster coming for the hero, else whatever is fighting this beast
     if (!this.foe?.alive || Math.hypot(this.foe.x - hero.x, this.foe.z - hero.z) > 11) this.foe = null;
     const near = (m) => m?.alive && Math.hypot(m.x - hero.x, m.z - hero.z) < 10;
@@ -148,7 +161,7 @@ class Beast {
       if (this.diveT <= 0 && m?.alive) this.instinct(m);
     } else if (m) {
       const dx = m.x - this.x, dz = m.z - this.z, d = Math.hypot(dx, dz), reach = (ps.reach ?? K.reach) + m.def.r + K.r; // (the Hawk's grows with QKN)
-      if (this.skillCd <= 0 && d <= reach + I.range) { // its instinct, ready and in reach
+      if (I && this.skillCd <= 0 && d <= reach + I.range) { // its instinct, ready and in reach (an illusion has none)
         this.skillCd = I.cd * (this.ps.sharp?.cd || 1); // (KNL: sooner)
         this.mgr.emit('instinct', this, I);
         if (this.kind === 'hawk') this.diveT = DIVE;
@@ -183,18 +196,24 @@ class Beast {
       else { const dx = hero.x - this.x, dz = hero.z - this.z, d = Math.hypot(dx, dz) || 1; this.heading = { x: hero.face.x || dx / d, z: hero.face.z || dz / d }; }
     }
     this.walked += moving;
+    this.visuals(moving);
+  }
+  visuals(moving) {
+    const K = this.K;
     // ---- visuals ----
     const tex = this.frame(moving > 0);
+    this.art.ensure?.(tex); // (the hero's body, for an illusion: a frame painted when first shown)
     if (this.mat.map !== tex) { this.mat.map = tex; this.sprite.center.y = tex.userData.anchor; }
     const dk = this.diveT > 0 ? 1 - this.diveT / DIVE : -1; // the Dive: a climb to 2.6, then the drop
     const lift = dk >= 0 ? (dk < 0.5 ? 1.15 + dk * 2 * 1.45 : 2.6 - (dk - 0.5) * 2 * 2.3)
       : K.fly ? 1.15 + Math.sin(this.t * 3) * 0.12 - (this.atkAnim > 0 ? 0.5 : 0) : this.lunge ? Math.sin((1 - this.lunge.t / LUNGE) * Math.PI) * 0.45 : 0;
     const y = this.mgr.world.heightAt(this.x, this.z);
     this.sprite.position.set(this.x, y + lift, this.z);
-    this.mat.color.setScalar(this.flash > 0 ? 2.2 : 1);
+    if (K.tint) this.mat.color.set(K.tint).multiplyScalar(this.flash > 0 ? 2.2 : 1); else this.mat.color.setScalar(this.flash > 0 ? 2.2 : 1);
+    if (K.opacity && this.life !== undefined) this.mat.opacity = K.opacity * Math.min(1, this.life / 0.6); // (an illusion fades out at the end)
     this.shadow.position.set(this.x, y + 0.03, this.z);
     this.disc.position.set(this.x, y + 0.05, this.z);
-    this.disc.scale.setScalar(K.w * (1.7 + Math.sin(this.t * 2.4) * 0.1));
+    this.disc.scale.setScalar((K.w || 0.7) * (1.7 + Math.sin(this.t * 2.4) * 0.1));
     this.disc.material.opacity = 0.55 + Math.sin(this.t * 2.4) * 0.15;
   }
   slotAt(hero) {
@@ -206,7 +225,7 @@ class Beast {
     let list = A.idle, k = 0;
     if (this.atkAnim > 0 && A.attack) { list = A.attack; k = 1 - this.atkAnim / ATTACK_ANIM; }
     else if (this.K.fly && A.walk) { list = A.walk; k = (this.t * 2.2) % 1; } // the hawk flaps all the time
-    else if (moving && A.walk) { list = A.walk; k = (this.walked / (STRIDE * this.K.w)) % 1; }
+    else if (moving && A.walk) { list = A.walk; k = (this.walked / (STRIDE * (this.K.w || 0.7))) % 1; }
     return list[Math.max(0, Math.min(list.length - 1, Math.floor(k * list.length)))];
   }
 }
@@ -225,15 +244,20 @@ export class Allies {
   of(kind) { return this.list.filter((b) => b.kind === kind); }
   // call a kind of beast to the hero's side (n of them), with its numbers; a beast of that kind already
   // out is called back fresh
-  summon(kind, n, ps, hero) {
+  // opts (the Phantom's illusions): { art, life, at: where it appears (else its place by the hero) }
+  summon(kind, n, ps, hero, opts = {}) {
     for (const b of this.of(kind)) this.drop(b);
     for (let i = 0; i < n; i++) {
-      const b = new Beast(this, kind, i, ps);
-      const [x, z] = b.slotAt(hero);
+      const b = new Beast(this, kind, i, ps, opts);
+      const [x, z] = opts.at ? [opts.at.x, opts.at.z] : b.slotAt(hero);
       b.place(this.world.walkable(x, z) || b.K.fly ? x : hero.x, this.world.walkable(x, z) || b.K.fly ? z : hero.z);
+      b.heading = { ...hero.face };
       this.list.push(b);
     }
   }
+  // the beasts proper (an illusion is no beast: Beast Bond and Pack Frenzy count only these)
+  get beasts() { return this.list.filter((b) => !b.K.illusion); }
+  get illusions() { return this.list.filter((b) => b.K.illusion); }
   // new numbers (the hero's stats moved): HP keeps its share of the new maximum
   restat(kind, ps) {
     for (const b of this.of(kind)) { const k = b.hp / b.maxHp; b.ps = ps; b.maxHp = ps.maxHp; b.hp = Math.max(1, Math.round(ps.maxHp * k)); }

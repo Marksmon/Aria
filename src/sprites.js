@@ -6,6 +6,7 @@ import * as THREE from 'three';
 import { mulberry32 } from './noise.js';
 import { paintSet, frameSize } from './painted.js';
 import { beastSet, BEASTS } from './beasts.js';
+import { desertSet, DESERT, moundSet, MOUND } from './desert.js';
 import { paintButler, BW, BH } from './butler.js';
 import { paintBleepBloop, BW as BBW, BH as BBH, BODY as BB_BODY } from './bleepbloop.js';
 import { POSES, LEGS, framePainter } from './design-anim.js';
@@ -16,6 +17,7 @@ import { drawMKnight } from './mknights.js';
 import { drawArcher } from './archers.js';
 import { drawRanger } from './rangers.js';
 import { drawBeastmaster } from './beastmasters.js';
+import { drawAssassin } from './assassins.js';
 
 const SHEETS = import.meta.glob('./art/*.png', { eager: true, import: 'default' });
 const LAYOUTS = import.meta.glob('./art/*.json', { eager: true, import: 'default' });
@@ -453,6 +455,149 @@ function woodpile() {
   return c;
 }
 
+// ---------- Rytingborg and the desert: palms, cacti, sandstone, bones and the old kings' ruins ----------
+// a date palm: a curved, ringed trunk and a crown of long drooping fronds over a bunch of dates
+function treePalm(rng) {
+  const { c, g } = mk(170, 230);
+  const lean = (rng() - 0.5) * 36, top = [85 + lean, 70];
+  const at = (t) => [85 + lean * t * t, 226 - (226 - top[1]) * t];
+  for (let i = 0; i < 2; i++) { // the trunk: an outline, then the bark
+    g.beginPath(); g.moveTo(...at(0)); for (let t = 0.05; t <= 1.001; t += 0.05) g.lineTo(...at(t));
+    g.strokeStyle = i ? '#9a7a4e' : OUT; g.lineWidth = i ? 13 : 18; g.stroke();
+  }
+  for (let t = 0.06; t < 0.98; t += 0.07) { const [x, y] = at(t); g.beginPath(); g.moveTo(x - 6, y); g.lineTo(x + 6, y - 2); g.strokeStyle = '#6e5232'; g.lineWidth = 2.5; g.stroke(); }
+  const greens = ['#3f7a2e', '#58963a', '#79b24a'];
+  const frond = (a, len, droop, col) => {
+    const [x0, y0] = top, x1 = x0 + Math.cos(a) * len, y1 = y0 + Math.sin(a) * len * 0.45 + droop;
+    const mx = x0 + Math.cos(a) * len * 0.5, my = y0 - 18 + Math.sin(a) * len * 0.2;
+    g.beginPath(); g.moveTo(x0, y0); g.quadraticCurveTo(mx, my, x1, y1);
+    g.strokeStyle = OUT; g.lineWidth = 5; g.stroke();
+    g.strokeStyle = col; g.lineWidth = 3; g.stroke();
+    for (let k = 0.15; k < 1; k += 0.09) { // the leaflets, hanging down off the rib
+      const u = 1 - k, px = u * u * x0 + 2 * u * k * mx + k * k * x1, py = u * u * y0 + 2 * u * k * my + k * k * y1;
+      g.beginPath(); g.moveTo(px, py); g.lineTo(px + Math.cos(a) * 5, py + 12 + k * 6);
+      g.strokeStyle = OUT; g.lineWidth = 4.5; g.stroke(); g.strokeStyle = col; g.lineWidth = 2.5; g.stroke();
+    }
+  };
+  const fronds = 9;
+  for (let i = 0; i < fronds; i++) { const a = Math.PI + (i / (fronds - 1)) * Math.PI + (rng() - 0.5) * 0.25; frond(a, 58 + rng() * 22, 22 + rng() * 18, greens[i % 3]); }
+  for (let i = 0; i < 5; i++) ell(g, top[0] - 8 + i * 4, top[1] + 8 + (i % 2) * 3, 4, 4, '#b8622a', OUT, 2); // dates
+  frond(-Math.PI / 2 - 0.3, 34, -4, greens[2]); frond(-Math.PI / 2 + 0.3, 34, -4, greens[1]);
+  return c;
+}
+// a tall cactus with two arms, and a round barrel cactus with a flower
+function cactusTall(rng) {
+  const { c, g } = mk(110, 170);
+  const col = '#4f8a3a', lt = '#7cb85a';
+  const arm = (x, y, dir, h) => {
+    g.beginPath(); g.moveTo(55, y); g.lineTo(x, y); g.lineTo(x, y - h);
+    g.strokeStyle = OUT; g.lineWidth = 22; g.lineJoin = 'round'; g.stroke();
+    g.strokeStyle = col; g.lineWidth = 16; g.stroke();
+    g.strokeStyle = lt; g.lineWidth = 3; g.beginPath(); g.moveTo(x - dir * 3, y - 4); g.lineTo(x - dir * 3, y - h); g.stroke();
+  };
+  arm(22, 100 - rng() * 10, -1, 34 + rng() * 10);
+  arm(88, 80 - rng() * 10, 1, 28 + rng() * 12);
+  rrect(g, 40, 18, 30, 150, 15, col, OUT, 4);
+  for (const x of [48, 55, 62]) { g.beginPath(); g.moveTo(x, 26); g.lineTo(x, 164); g.strokeStyle = x === 48 ? lt : '#3e6e2e'; g.lineWidth = 2; g.stroke(); }
+  for (let i = 0; i < 22; i++) { const x = 42 + rng() * 26, y = 24 + rng() * 140; g.fillStyle = '#f2ead0'; g.fillRect(x, y, 2, 2); }
+  return c;
+}
+function cactusRound(rng) {
+  const { c, g } = mk(80, 70);
+  ell(g, 40, 44, 28, 24, '#5a9440', OUT, 4);
+  for (const dx of [-16, -6, 6, 16]) ell(g, 40 + dx, 44, 3, 21, null, '#3e6e2e', 2);
+  ell(g, 32, 34, 10, 8, '#86c062', null);
+  for (let i = 0; i < 18; i++) { const a = rng() * TAU, r = rng() * 22; g.fillStyle = '#f2ead0'; g.fillRect(40 + Math.cos(a) * r, 44 + Math.sin(a) * r * 0.85, 2, 2); }
+  if (rng() < 0.7) for (let i = 0; i < 5; i++) { const a = (i / 5) * TAU; ell(g, 40 + Math.cos(a) * 6, 20 + Math.sin(a) * 4, 5, 4, i % 2 ? '#f26a8a' : '#ff8aa8', OUT, 1.5); }
+  return c;
+}
+// a sandstone boulder, and a tall red crag for the desert's edges
+const rockSand = (rng) => rock(rng, '#c89a62', '#e2bc82', '#9a7046');
+function crag(rng) {
+  const { c, g } = mk(140, 240);
+  const pts = [[14, 236], [22, 150], [36, 120], [40, 70], [58, 20 + rng() * 16], [80, 40], [92, 90], [106, 110], [118, 170], [128, 236]];
+  poly(g, pts, '#b8663e', OUT, 5);
+  poly(g, [[40, 76], [58, 28], [66, 60], [56, 130], [36, 160], [30, 140]], '#d8865a', null);
+  poly(g, [[90, 96], [104, 116], [116, 176], [122, 232], [90, 232], [96, 170]], '#8a4628', null);
+  for (let y = 60; y < 230; y += 26) { g.beginPath(); g.moveTo(30 + rng() * 10, y); g.lineTo(110 - rng() * 10, y + 6); g.strokeStyle = 'rgba(90,40,20,.45)'; g.lineWidth = 2.5; g.stroke(); }
+  return c;
+}
+// a natural rock arch, worn through by the wind
+function rockArch() {
+  const { c, g } = mk(280, 200);
+  g.beginPath();
+  g.moveTo(10, 198); g.lineTo(24, 110); g.quadraticCurveTo(40, 26, 140, 18); g.quadraticCurveTo(244, 22, 258, 104); g.lineTo(272, 198);
+  g.lineTo(204, 198); g.lineTo(200, 120); g.quadraticCurveTo(140, 70, 84, 120); g.lineTo(78, 198); g.closePath();
+  g.fillStyle = '#c47248'; g.fill(); g.strokeStyle = OUT; g.lineWidth = 5; g.stroke();
+  g.beginPath(); g.moveTo(40, 110); g.quadraticCurveTo(60, 44, 140, 34); g.quadraticCurveTo(100, 50, 70, 120); g.closePath(); g.fillStyle = '#e09466'; g.fill();
+  g.beginPath(); g.moveTo(206, 196); g.lineTo(204, 124); g.quadraticCurveTo(240, 90, 250, 120); g.lineTo(262, 196); g.closePath(); g.fillStyle = '#94502e'; g.fill();
+  for (let y = 50; y < 190; y += 22) { g.beginPath(); g.moveTo(20, y + 4); g.lineTo(80, y); g.moveTo(200, y); g.lineTo(262, y + 5); g.strokeStyle = 'rgba(90,40,20,.4)'; g.lineWidth = 2.5; g.stroke(); }
+  return c;
+}
+// sun-bleached bones: a horned skull and a few ribs
+function bones(rng) {
+  const { c, g } = mk(96, 56);
+  for (let i = 0; i < 4; i++) { g.beginPath(); g.arc(58 + i * 8, 52, 16, Math.PI * 1.15, Math.PI * 1.75); g.strokeStyle = OUT; g.lineWidth = 6; g.stroke(); g.strokeStyle = '#efe6cc'; g.lineWidth = 3.5; g.stroke(); }
+  ell(g, 26, 40, 14, 10, '#efe6cc', OUT, 3);
+  for (const s of [-1, 1]) { g.beginPath(); g.moveTo(26 + s * 10, 34); g.quadraticCurveTo(26 + s * 26, 26, 26 + s * 22, 10 + rng() * 4); g.strokeStyle = OUT; g.lineWidth = 6; g.stroke(); g.strokeStyle = '#e2d6b4'; g.lineWidth = 3.5; g.stroke(); }
+  circleFill(g, 21, 39, 3, '#4a3a2a'); circleFill(g, 31, 39, 3, '#4a3a2a');
+  return c;
+}
+// the old kings' ruins: a broken carved column, a fallen block, an obelisk
+function ruinPillar(rng) {
+  const { c, g } = mk(80, 200);
+  const h = 120 + rng() * 60, top = 196 - h;
+  rrect(g, 14, 182, 52, 16, 3, '#c8a670');
+  poly(g, [[22, 184], [22, top + 10], [30, top + 2], [38, top + 12], [48, top], [58, top + 8], [58, 184]], '#d8b880', OUT, 4);
+  for (const x of [30, 40, 50]) { g.beginPath(); g.moveTo(x, top + 14); g.lineTo(x, 180); g.strokeStyle = '#b8945e'; g.lineWidth = 2.5; g.stroke(); }
+  for (let y = top + 30; y < 170; y += 34) { rrect(g, 24, y, 32, 14, 2, '#c8a46a', OUT, 1.5); g.fillStyle = '#3a5a8a'; g.fillRect(30, y + 4, 6, 6); g.fillStyle = '#7a5a2a'; g.fillRect(42, y + 3, 8, 3); g.fillRect(42, y + 8, 5, 3); }
+  return c;
+}
+function ruinBlock(rng) {
+  const { c, g } = mk(110, 70);
+  poly(g, [[8, 66], [14, 26], [70, 18], [100, 30], [102, 66]], '#d4b47c', OUT, 4);
+  poly(g, [[14, 26], [70, 18], [100, 30], [44, 38]], '#e6c892', null);
+  g.fillStyle = '#7a5a2a'; for (let i = 0; i < 4; i++) g.fillRect(24 + i * 16 + rng() * 4, 46, 8, 4);
+  return c;
+}
+function obelisk() {
+  const { c, g } = mk(64, 220);
+  poly(g, [[14, 216], [20, 30], [32, 6], [44, 30], [50, 216]], '#d8b880', OUT, 4);
+  poly(g, [[32, 6], [44, 30], [50, 216], [36, 216], [34, 30]], '#b8945e', null);
+  poly(g, [[20, 30], [32, 6], [44, 30]], '#f2cf5a', OUT, 2.5); // a gold cap
+  for (let y = 50; y < 200; y += 18) { g.fillStyle = '#5a4020'; g.fillRect(24, y, 4, 8); g.fillRect(30, y + 2, 6, 3); g.fillStyle = '#3a5a8a'; g.fillRect(28, y + 9, 5, 4); }
+  rrect(g, 6, 206, 52, 12, 3, '#c8a670');
+  return c;
+}
+// the tomb's things: a wall torch on a pole, a painted urn, a closed sarcophagus
+function torchPole() {
+  const { c, g } = mk(48, 150);
+  rrect(g, 20, 40, 8, 108, 3, '#6e5232');
+  poly(g, [[10, 30], [38, 30], [32, 46], [16, 46]], '#c8a050', OUT, 3);
+  g.beginPath(); g.moveTo(10, 30); g.quadraticCurveTo(12, 6, 24, 0); g.quadraticCurveTo(36, 6, 38, 30); g.closePath(); g.fillStyle = '#ff8a2a'; g.fill();
+  g.beginPath(); g.moveTo(17, 30); g.quadraticCurveTo(19, 14, 24, 8); g.quadraticCurveTo(29, 14, 31, 30); g.closePath(); g.fillStyle = '#ffe07a'; g.fill();
+  return c;
+}
+function urn(rng) {
+  const { c, g } = mk(56, 72);
+  g.beginPath(); g.moveTo(18, 8); g.lineTo(38, 8); g.lineTo(36, 16); g.quadraticCurveTo(54, 30, 44, 60); g.lineTo(12, 60); g.quadraticCurveTo(2, 30, 20, 16); g.closePath();
+  g.fillStyle = rng() < 0.5 ? '#b8663e' : '#c8a050'; g.fill(); g.strokeStyle = OUT; g.lineWidth = 3; g.stroke();
+  rrect(g, 10, 30, 36, 6, 2, '#2f5a8a', null); rrect(g, 12, 44, 32, 4, 2, '#f2cf5a', null);
+  rrect(g, 12, 60, 32, 8, 2, '#8a5a32');
+  return c;
+}
+function sarcophagus() {
+  const { c, g } = mk(80, 150);
+  g.beginPath(); g.moveTo(40, 4); g.quadraticCurveTo(70, 8, 68, 40); g.lineTo(60, 146); g.lineTo(20, 146); g.lineTo(12, 40); g.quadraticCurveTo(10, 8, 40, 4); g.closePath();
+  g.fillStyle = '#e2b84a'; g.fill(); g.strokeStyle = OUT; g.lineWidth = 4; g.stroke();
+  for (let y = 18; y < 52; y += 6) { g.fillStyle = y % 12 ? '#2f5a9a' : '#f2d878'; g.fillRect(16, y, 48, 4); } // the striped headdress
+  ell(g, 40, 30, 11, 13, '#c89a5a', OUT, 2);                                                                 // the face
+  g.fillStyle = '#1e1410'; g.fillRect(33, 27, 5, 2); g.fillRect(43, 27, 5, 2); g.fillRect(37, 37, 7, 2);
+  for (let y = 62; y < 140; y += 14) { rrect(g, 22, y, 36, 9, 2, y % 28 ? '#2f5a9a' : '#3a8a7a', OUT, 1.5); }
+  poly(g, [[28, 60], [52, 60], [40, 84]], '#f2d878', OUT, 2); // crossed arms' gold
+  return c;
+}
+
 // ---------- Ground detail & helpers ----------
 function groundDetail() {
   const { c, g } = mk(256, 256);
@@ -812,7 +957,7 @@ function codeSet(frames, fw, fh, body, anchor) {
 // painted at once, the rest a few at a time in the background, and a frame shown before its turn
 // (ensure, from the Player) is painted right then.
 const DESIGNS = {
-  trainee: drawTrainee, blader: drawBlader, master: drawBlader, sorc: drawMage, wiz: drawMage, mknight: drawMKnight, archer: drawArcher, wind: drawRanger, moon: drawRanger, beast: drawBeastmaster, beastsw: drawBeastmaster,
+  trainee: drawTrainee, blader: drawBlader, master: drawBlader, sorc: drawMage, wiz: drawMage, mknight: drawMKnight, archer: drawArcher, wind: drawRanger, moon: drawRanger, beast: drawBeastmaster, beastsw: drawBeastmaster, assassin: drawAssassin, phantom: drawAssassin,
 };
 function designSet(id) {
   const L = LAYOUTS['./art/trainee.json'];
@@ -954,6 +1099,20 @@ const PROP_DEFS = {
   target: { w: 1.2, coll: 0.4, shadow: 0.5, space: 0, variants: 1, make: () => target() },
   rack: { w: 2.0, coll: 0.5, shadow: 0.8, space: 0, variants: 1, make: () => rack() },
   woodpile: { w: 1.4, coll: 0.55, shadow: 0.7, space: 0, variants: 1, make: () => woodpile() },
+  // Rytingborg and the desert
+  tree_palm: { w: 3.0, coll: 0.35, shadow: 1.2, space: 1.7, variants: 3, make: (r) => treePalm(r) },
+  cactus: { w: 1.3, coll: 0.35, shadow: 0.6, space: 1.3, variants: 3, make: (r) => cactusTall(r) },
+  cactus_round: { w: 0.9, coll: 0.3, shadow: 0.4, space: 0.9, variants: 2, make: (r) => cactusRound(r) },
+  rock_sand: { w: 1.6, coll: 0.55, shadow: 0.9, space: 1.3, variants: 3, make: (r) => rockSand(r) },
+  crag: { w: 2.8, coll: 0.9, shadow: 1.4, space: 2.2, variants: 3, make: (r) => crag(r) },
+  rock_arch: { w: 6.5, coll: 0.8, shadow: 2.2, space: 4.5, variants: 1, make: () => rockArch() },
+  bones: { w: 1.1, coll: 0, shadow: 0, space: 1.2, variants: 2, make: (r) => bones(r) },
+  ruin_pillar: { w: 1.2, coll: 0.45, shadow: 0.7, space: 1.4, variants: 3, make: (r) => ruinPillar(r) },
+  ruin_block: { w: 1.6, coll: 0.6, shadow: 0.8, space: 1.4, variants: 2, make: (r) => ruinBlock(r) },
+  obelisk: { w: 1.1, coll: 0.5, shadow: 0.8, space: 0, variants: 1, make: () => obelisk() },
+  torch: { w: 0.5, coll: 0.15, shadow: 0.3, space: 0, variants: 1, make: () => torchPole() },
+  urn: { w: 0.7, coll: 0.3, shadow: 0.4, space: 0.8, variants: 2, make: (r) => urn(r) },
+  sarcophagus: { w: 1.0, coll: 0.45, shadow: 0.6, space: 0, variants: 1, make: () => sarcophagus() },
 };
 
 export function createSprites() {
@@ -994,6 +1153,9 @@ export function createSprites() {
   for (const id of ['koboldKing', 'goblinKing']) mobs[id] = paintedSet(id, [26, 48]);
   // Veidheim's beasts: wolves, bears, snakes, willows and treants, painted in code (beasts.js)
   for (const [id, B] of Object.entries(BEASTS)) mobs[id] = codeSet(beastSet(id), ...B.size, B.body, 2 / B.size[1]);
+  // the desert's monsters and Pharaoh's Tomb's, painted in code (desert.js); the Sand Wyrm's mound
+  for (const [id, D] of Object.entries(DESERT)) mobs[id] = codeSet(desertSet(id), ...D.size, D.body, 2 / D.size[1]);
+  { const fr = moundSet(); mobs.wyrmMound = codeSet({ down: { idle: [fr[0]], walk: fr } }, ...MOUND.size, MOUND.body, 2 / MOUND.size[1]); }
   // the camp's and Steinborg's people (one still being drawn borrows the Elder's look)
   const villagers = {};
   for (const id of ['bram', 'tilly', 'wren', 'hild', 'gunnar', 'ragna', 'ulfr', 'saeunn', 'embla']) villagers[id] = SHEETS[`./art/${id}.png`] ? sheet(id) : null;

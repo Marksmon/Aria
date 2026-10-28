@@ -37,7 +37,7 @@ export const NPCS = {
       : c.jobId === 'archer' ? 'An Archer! Point that thing at the wolves, not at my tent.' : null),
     quests: ['bloopcull', 'fenpatrol', 'warden', 'mushroomblight'],
     // a Trainee ready for a job is sent on to Steinborg
-    ready: 'You have learnt all a Trainee can. For the blade, go north through Moss Field to Steinborg: Captain Ulfr trains Bladers. For sorcery, go west to Fen Shore and north to Galdrheim, the city of sorcerers. For the bow, go east past the Red Sprouts to Birch Grove and on through Willow Marsh to Veidheim: Huntmaster Sigrid trains Archers.',
+    ready: 'You have learnt all a Trainee can. For the blade, go north through Moss Field to Steinborg: Captain Ulfr trains Bladers. For sorcery, go west to Fen Shore and north to Galdrheim, the city of sorcerers. For the bow, go east past the Red Sprouts to Birch Grove and on through Willow Marsh to Veidheim: Huntmaster Sigrid trains Archers. For the dagger, ride a carter to Rytingborg, the oasis south of Ember Hill: Master Kol trains Assassins.',
   },
   tilly: {
     name: 'Astrid the Cook', x: 36.2, z: 33.2,
@@ -451,11 +451,127 @@ export const NPCS = {
     lore: ['East through Birch Grove, past Willow Marsh, is Veidheim, the hunters\' village. Good folk, and every one of them can shoot the eye out of a sparrow.'],
   },
 
+  // ---------- Rytingborg, the oasis city south of Ember Hill: sand, daggers, and old secrets ----------
+  keeper_sand: {
+    name: 'Keeper', map: 'sand', x: 22.6, z: 46.2, dress: ROLE.keeper, keeper: true,
+    hello: 'Rytingborg\'s Keeper. Water, shade and a ledger: everything a traveller needs. Sign, and the oasis remembers you.',
+    later: () => '', bye: 'Rytingborg remembers.', quests: [],
+  },
+  // Master Kol trains the Assassins in the dark-domed hall by the north gate, and their Phantoms
+  kol: {
+    name: 'Master Kol', map: 'sand', x: 12.0, z: 25.4, dress: { body: 'blader', main: [270, 0.25, 0.45], accent: [40, 0.55, 1.05], hair: 'messy', dye: 'black' },
+    trial: ['assassin_trial', 'assassin_trial2', 'assassin_trial3'], job: 'assassin',
+    trial2: ['phantom_trial', 'phantom_trial2', 'phantom_trial3'], job2: 'phantom',
+    trialHint: 'Trainees who have learnt all their basics can take the Assassin\'s Trial with me: Trainee Job Level 10 and Basic Training 9.',
+    trial2Hint: 'At Job Level 40 an Assassin may take the Phantom\'s trial with me. If you walk other paths too, the dagger must have the most of your skill points.',
+    hello: 'You walked right up to me. Most people never see me until I want them to. I am Kol. I teach the dagger: small, quick, and always where they are not looking.',
+    later: (lv) => `Not yet. Come back at Base Level ${lv}, and come quietly.`,
+    bye: 'Walk softly.',
+    greet: (c) => ({ assassin: 'One of mine. Your feet were louder than a camel. Again.',
+      phantom: 'Phantom. I counted three of you just now. Only one was real. I think.',
+      swordman: 'A Blader. All that steel, and still you swing it like a door.',
+      mage: 'A Sorcerer. Your spells are loud. Mine have no sound at all.',
+      archer: 'An Archer. Five paces is a long way to miss from.' })[c.jobId] || null,
+    quests: [],
+    lore: ['Daggers are not weak. They are quick. Strike eight times while a sword strikes once, and who is weak then?', 'The Phantoms learn to leave a shadow behind them. The monsters fight the shadow. The Phantom does not miss.'],
+  },
+  dalla: {
+    name: 'Dalla the Trader', map: 'sand', x: 28, z: 43.2, shop: 'dalla', dress: { body: 'trainee', main: [28, 0.6, 1.0], accent: [195, 0.55, 1.0], hair: 'long', dye: 'black', top: 'flower_wreath' },
+    hello: 'Welcome to the bazaar! Potions, dates, cold water in good leather skins. And I buy whatever the desert gives you, even the sand.',
+    later: (lv) => `I will have work for you at Base Level ${lv}. Meanwhile, buy something!`,
+    bye: 'Drink before you are thirsty, friend. The desert never warns you.',
+    quests: ['warmgel', 'ratsofsand'],
+    lore: ['Dates for the road, water for the soul. In that order, if you ask the camels.'],
+  },
+  steinar: {
+    name: 'Steinar the Smith', map: 'sand', x: 42.4, z: 52.4, shop: 'steinar', craft: 'gear', dress: ROLE.smith,
+    hello: 'Bring me hide, needles and feathers, and I make boots and rings fit for the dunes. Daggers on the rack, swords too, for the old-fashioned.',
+    later: (lv) => `The forge is busy. Come back at Base Level ${lv}.`,
+    bye: 'Keep the sand out of your boots, and your boots out of the quicksand.',
+    quests: ['chitin'],
+    lore: ['Worm Hide is the best leather in Aria. The trick is getting it off the worm.'],
+  },
+  yrsa: {
+    name: 'Yrsa the Bladewright', map: 'sand', x: 41.4, z: 49.4, shop: 'yrsa', craft: 'dagger', dress: { body: 'trainee', main: [0, 0.0, 0.55], accent: [10, 0.65, 0.95], hair: 'pony', dye: 'red', face: 'raven_mask' },
+    hello: 'Daggers. Only daggers. Bring me Mandibles, Stings, Cactus Hearts, and I make blades that sing. Any hand can hold one, and every hand should.',
+    later: (lv) => `My venom is still steeping. Base Level ${lv}, then.`,
+    bye: 'Point away from you. Always.',
+    quests: ['venomsteel'],
+    lore: ['A Scorpion\'s sting set in a hilt keeps its venom for years. I have one that still bites me.'],
+  },
+  saga: {
+    name: 'Saga the Healer', map: 'sand', x: 17.2, z: 41.0, heal: true, dress: { body: 'sorc', main: [40, 0.35, 1.25], accent: [190, 0.5, 1.0], hair: 'long', dye: 'brown' },
+    hello: 'Sunburn, stings, a Cactus needle in a place you will not name? Sit in the shade. I have seen it all.',
+    later: () => '', bye: 'Drink water. Then drink more water.', quests: [],
+  },
+  geir: {
+    name: 'Geir the Trainer', map: 'sand', x: 17.6, z: 33.0, retrain: true, dress: { body: 'blader', main: [35, 0.4, 0.95], accent: [0, 0.6, 0.9], hair: 'mane', dye: 'brown' },
+    hello: 'Dagger or sword, a bad habit is a bad habit. Want your stats or skills placed over again?',
+    later: () => '', bye: 'Again tomorrow. And the day after.', quests: [],
+  },
+  orvar: {
+    name: 'Orvar the Caravaneer', map: 'sand', x: 12.0, z: 46.6, dress: ROLE.ferry, warp: true,
+    hello: 'My caravan runs to any land you have walked, for a fee. The camels complain, but they always arrive.',
+    later: () => '', bye: 'Hold on, and do not feed the camels.', quests: [],
+  },
+  // Old Gunnhild by the lake keeps the Sphinx's riddle. She has nothing to say about it until a hero has
+  // walked every sand round the city (needZones); then the series begins (The Sphinx's Riddle 1-6)
+  gunnhild: {
+    name: 'Old Gunnhild', map: 'sand', x: 38.8, z: 39.0, dress: { body: 'sorc', main: [45, 0.25, 0.8], accent: [205, 0.55, 1.05], hair: 'mane', dye: 'silver', face: 'round_glasses' },
+    hello: 'Sit, sit. The water is cool and my stories are long. Have you heard the one about the stone that watches the desert?',
+    later: () => 'The sands keep their secrets from those who have not walked them all. Come back when you have seen every one of them: the red sands, the cactus dunes, the scorpions\' sands and the great desert beyond.',
+    bye: 'The eye is closed. But it is only sleeping.',
+    quests: ['sphinx1', 'sphinx2', 'sphinx3', 'sphinx4', 'sphinx5', 'sphinx6'],
+    lore: ['My grandmother\'s grandmother saw a great stone face in the deep desert. Then the sand took it, and the wind made a riddle of the road.', 'There are doors that open for gold, and doors that open for steel. Some open only for the patient.'],
+  },
+  thora: {
+    name: 'Thora the Caravan Master', map: 'sand', x: 49.4, z: 42.6, dress: { body: 'blader', main: [30, 0.45, 0.8], accent: [45, 0.7, 1.05], hair: 'long', dye: 'blonde', top: 'woven_cap' },
+    hello: 'My caravans cross the desert every week, and every week something eats a wagon. Help me keep the roads clear and I pay well.',
+    later: (lv) => `The deep desert would eat you alive. Come back at Base Level ${lv}.`,
+    bye: 'Safe roads, friend.',
+    quests: ['caravan1', 'caravan2', 'caravan3', 'caravanbounty'],
+    lore: ['The Great Desert has a thing under it. You feel it before you see it: the sand starts to hum.'],
+  },
+  ketil: {
+    name: 'Ketil the Water-seller', map: 'sand', x: 35.6, z: 43.2, dress: { body: 'trainee', main: [200, 0.5, 1.05], accent: [30, 0.6, 1.0], hair: 'messy', dye: 'brown' },
+    hello: 'Water! Cold water from the oasis! Well, not for you: you look like you need work more than water.',
+    later: (lv) => `Nothing for you yet. Base Level ${lv}, and then we talk.`,
+    bye: 'Stay wet, friend.',
+    quests: ['waterskins', 'shadefeathers'],
+    lore: ['The oasis never dries. The palace says it is magic. My father said it was a hole. I believe my father.'],
+  },
+  arne: {
+    name: 'Arne the Gate Guard', map: 'sand', x: 17.6, z: 12.4, dress: { body: 'blader', main: [40, 0.45, 0.9], accent: [210, 0.55, 1.0], hair: 'messy', dye: 'black', top: 'horned_helm' },
+    hello: 'North is Ember Hill, and the Fire Giant. West, the Red Sands: soft country, for new blades. East and south, the deep desert. Do not go there soft.',
+    later: (lv) => `The Red Sands are crawling. Come back at Base Level ${lv}.`,
+    bye: 'Keep your water skin full.',
+    quests: ['redwatch'],
+    lore: ['The Red Bloops out west are harmless. Warm, though. Children carry them in winter.'],
+  },
+  toki: {
+    name: 'Little Toki', map: 'sand', x: 33.8, z: 31.4, dress: { body: 'trainee', main: [100, 0.5, 1.15], accent: [10, 0.6, 1.0], hair: 'messy', dye: 'blonde' },
+    hello: 'Did you see the boats? I am going to sail one across the whole lake. It takes almost a minute!',
+    later: () => '', bye: 'Bye! Watch out for Master Kol, he is always behind you.',
+    quests: [],
+    lore: ['Old Gunnhild says there is a stone giant asleep in the desert, bigger than the palace. I am going to find it when I am big.', 'The Assassins can disappear. I tried. My mother still saw me.'],
+  },
+  // Pharaoh's Tomb, the fourth raid (raid.js): Sindri waits at the Pyramid's door in Scorpion Sands
+  sindri: {
+    name: 'Sindri the Tomb Guide', map: 'scorpion', x: 44.6, z: 28.8, raid: 'tomb', craft: 'tomb',
+    dress: { body: 'blader', main: [40, 0.3, 0.9], accent: [45, 0.75, 1.1], hair: 'mane', dye: 'silver', top: 'woven_cap' },
+    hello: 'Behind this door is the Pharaoh\'s burial hall, and the Pharaoh is not as dead as he should be. His servants rise in waves. I can take you in, and I can bring you out. Usually.',
+    later: () => '', bye: 'Mind the jars. Never break the jars. Well: break the jars.', quests: [],
+  },
+
 };
 
 // the Ferryman's fares, by map (only lands you have already walked)
 export const FARES = { camp: 300, city: 500, magic: 500, grove: 300, fen: 400, hollow: 600, birch: 700, coast: 900, ridge: 1200, deep: 1500, heath: 1800, stones: 2000, coalpit: 2400, burnt: 2600, serpent: 3000,
-  marsh: 800, hunt: 900, oldwood: 1000, farm: 2400, wolfhill: 2400 };
+  marsh: 800, hunt: 900, oldwood: 1000, farm: 2400, wolfhill: 2400,
+  sand: 1500, redsands: 1600, dunes: 2600, scorpion: 2800, desert: 3200 };
+// lands every Ferryman rides to even before you have walked there: Rytingborg, so a Trainee bound for
+// the Assassin's trial need not cross Ember Hill past the Fire Giant
+export const ALWAYS_FARES = ['sand'];
 
 // reward: { xp (Base EXP; Job EXP is 70% of it), perz, items: { id: n } }. Levels and EXP follow
 // the Ragnarok curve at 1x: a quest is a big job, worth a fair share of a level.
@@ -1075,6 +1191,193 @@ export const QUESTS = {
     thanks: 'Bounty paid. These hides are worth a king\'s ransom.',
     reward: { xp: 1700000, perz: 50000, items: { potion3: 20 } },
   },
+  // ---------- Rytingborg ----------
+  // the Assassin's trial (Master Kol): a hunt in Red Sands, a blade oiled with him, his questions
+  assassin_trial: {
+    title: "Assassin's Trial 1: Red Marks", job: true, kind: 'kill', mob: 'redSlime', n: 5, lv: 1,
+    intro: 'Out the west gate lie the Red Sands, and the Red Bloops warm themselves on them. Five of them. Quick in, quick out: never stand where they can hit you back.',
+    thanks: 'Five, and quietly. Good. Now the blade.',
+    reward: { xp: 120, perz: 100 },
+  },
+  assassin_trial2: {
+    title: "Assassin's Trial 2: Oil for the Blade", job: true, kind: 'quiz', items: { ant_jaw: 5 }, lv: 1, task: 'oil a blade with Master Kol',
+    intro: 'A dry blade drags. We oil ours with what the Giant Ants carry in their jaws, ground fine. Bring me five Ant Mandibles from the Red Sands and oil a blade with me: grind the jaws, warm the paste, and draw it along the edge from the hilt to the point, never back.',
+    questions: [
+      { q: 'The paste is warm. Which way do you draw it along the blade?',
+        options: ['From the point to the hilt', 'From the hilt to the point, never back', 'Round and round'], a: 1,
+        why: 'Hilt to point, never back. Backwards and you feed the rust.',
+        hint: 'No. Listen again: from the hilt out to the point.' },
+      { q: 'Why does an Assassin carry a dagger and not a sword?',
+        options: ['A dagger is quicker: many blows while a sword lands one', 'A dagger is heavier', 'Swords are not allowed in Rytingborg'], a: 0,
+        why: 'Quick. A dagger strikes again before a sword has finished swinging.',
+        hint: 'Think about speed, not weight.' },
+      { q: 'And who else may carry a dagger?',
+        options: ['Only Assassins', 'Anyone at all: a Sorcerer, a Blader, an Archer', 'Nobody, it is a secret'], a: 1,
+        why: 'Anyone. Every hand should hold one. Only an Assassin knows what to do with it.',
+        hint: 'A dagger is the most common blade in Aria. Who carries one?' },
+    ],
+    thanks: 'A good edge, and you kept your fingers. My questions, then, and you are one of us.',
+    reward: { xp: 150, perz: 150, items: { potion: 5 } },
+  },
+  assassin_trial3: {
+    title: "Assassin's Trial 3: Master Kol's Questions", job: true, kind: 'quiz', lv: 1, task: "Answer Master Kol's three questions",
+    intro: 'Quick hands are half of it. The rest is knowing when not to be seen.',
+    questions: [
+      { q: 'Three monsters come for you at once. What do you do?',
+        options: ['Fight all three where you stand', 'Vanish, and strike the first that loses you', 'Shout for help'], a: 1,
+        why: 'Vanish. They lose you; you choose which one dies first.',
+        hint: 'An Assassin is never where three monsters want them to be.' },
+      { q: 'A monster is too tough for one blow. Which of your skills wears it down?',
+        options: ['Venom Strike: poison keeps biting after the blade is gone', 'Pilfer', 'Nothing: run'], a: 0,
+        why: 'Venom. The poison works while you strike again.',
+        hint: 'Which blow keeps on hurting after it lands?' },
+      { q: 'Your dagger hand is empty. Can you still Sonic Blow?',
+        options: ['Yes, with your fists', 'No: Sonic Blow needs a dagger in hand', 'Yes, with a sword'], a: 1,
+        why: 'A dagger in hand, always. A sword is no dagger, and a fist is no blade at all.',
+        hint: 'Sonic Blow is a dagger\'s skill. What must be in your hand?' },
+    ],
+    thanks: 'You were never here, and you answered every question. Welcome to the shadows, Assassin.',
+    reward: { xp: 250, perz: 300 },
+  },
+  // the Phantom's trial (Master Kol, from Job 40): what is hard to hit, what hides, what comes in numbers
+  phantom_trial: {
+    title: 'Phantom Trial 1: The Sting', job: true, kind: 'kill', mob: 'scorpion', n: 20, lv: 1,
+    intro: 'A Phantom fights two-handed, and two hands mean two chances to be stung. Twenty Sand Scorpions round the Pyramid. Learn their sting by heart.',
+    thanks: 'Twenty, and only a little poisoned. Next, what hides.',
+    reward: { xp: 15000, perz: 3000 },
+  },
+  phantom_trial2: {
+    title: 'Phantom Trial 2: What Hides in the Sand', job: true, kind: 'kill', mob: 'duneWorm', n: 20, lv: 1,
+    intro: 'The Dune Worms of Cactus Dunes come up out of nowhere and go back into it. Twenty of them. Strike them before they strike you, the way a shadow does.',
+    thanks: 'They never saw you coming. Now: many at once.',
+    reward: { xp: 20000, perz: 4000 },
+  },
+  phantom_trial3: {
+    title: 'Phantom Trial 3: An Army of Shadows', job: true, kind: 'kill', mob: 'soldierAnt', n: 25, lv: 1,
+    intro: 'In the Great Desert the Soldier Ants march in columns. Twenty-five of them. Too many for one blade; enough for two, and a shadow or two of your own. Leave the Wyrm under the sand alone.',
+    thanks: 'Which one of you came back? Ah: all of you. Rise, Phantom.',
+    reward: { xp: 30000, perz: 6000 },
+  },
+  // Dalla's bazaar, the gate's watch, the caravans, the water-seller, the smiths
+  warmgel: {
+    title: 'The Bazaar 1: Warm Gel', kind: 'fetch', items: { red_gel: 8 }, lv: 6,
+    intro: 'The nights out here are cold, and Red Gel stays warm till morning. Bring me eight from the Red Sands and I sell them as pocket warmers. Do not tell anyone where they come from.',
+    thanks: 'Warm and squishy. They will sell by the dozen.',
+    reward: { xp: 900, perz: 600, items: { dates: 2 } },
+  },
+  ratsofsand: {
+    title: 'The Bazaar 2: Jaws in the Sacks', kind: 'kill', mob: 'giantAnt', n: 15, lv: 10,
+    intro: 'Giant Ants keep getting into my date sacks. They are as big as dogs and twice as rude. Fifteen of them, out in the Red Sands, and they will learn.',
+    thanks: 'Not one ant in the sacks this morning. You are a hero, a small one.',
+    reward: { xp: 2500, perz: 1500, items: { dates: 4 } },
+  },
+  redwatch: {
+    title: 'The Gate Watch: Red Sands', kind: 'kill', mob: 'redSlime', n: 20, lv: 8,
+    intro: 'The Red Bloops roll right up to the west gate when the sun goes down. Twenty of them, and the gate watch sleeps easier.',
+    thanks: 'Quiet at the gate. Thank you, friend.',
+    reward: { xp: 2000, perz: 1200, items: { potion: 5 } },
+  },
+  caravan1: {
+    title: 'The Caravan 1: Needles on the Road', kind: 'kill', mob: 'cactus', n: 20, lv: 56,
+    intro: 'The Cacti of Cactus Dunes throw their needles at anything that passes, camels included. Twenty of them, east of the city.',
+    thanks: 'The camels thank you. They do not say so, but they do.',
+    reward: { xp: 190000, perz: 15000, items: { potion3: 8 } },
+  },
+  caravan2: {
+    title: 'The Caravan 2: The Stinging Road', kind: 'kill', mob: 'scorpion', n: 25, lv: 62,
+    intro: 'Past the dunes the road runs by the Pyramid, and the Sand Scorpions own it. Twenty-five of them. Carry Green Herbs: their sting poisons.',
+    thanks: 'The road is clear to the Pyramid. The tomb robbers will be pleased. I am not, but the money is good.',
+    reward: { xp: 290000, perz: 22000, items: { potion3: 10 } },
+  },
+  caravan3: {
+    title: 'The Caravan 3: The Humming Sand', kind: 'kill', mobs: { soldierAnt: 20, duneWorm: 10 }, lv: 66,
+    intro: 'The Great Desert. Soldier Ants in columns, Dune Worms under every dune, and something bigger under them. Twenty ants, ten worms, and if the sand starts to hum, run.',
+    thanks: 'You came back. Most do not. The caravan rides at dawn.',
+    reward: { xp: 420000, perz: 30000, items: { potion3: 12 } },
+  },
+  caravanbounty: {
+    title: 'Caravan Bounty: The Great Desert', kind: 'kill', mobs: { soldierAnt: 30, scorpion: 20 }, lv: 68, repeat: true,
+    intro: 'The caravans pay a bounty on every Soldier Ant and Sand Scorpion of the deep desert. Thirty ants and twenty scorpions, as often as you like.',
+    thanks: 'Bounty paid. The road is yours, for a while.',
+    reward: { xp: 560000, perz: 28000, items: { potion3: 15 } },
+  },
+  waterskins: {
+    title: 'The Water-seller 1: Skins for Water', kind: 'fetch', items: { worm_hide: 8 }, lv: 58,
+    intro: 'Worm Hide makes the best water skins: nothing leaks, nothing gets in. Eight from the Dune Worms, and I make a skin for every caravan.',
+    thanks: 'Not a drop lost. Here, have some water. Free. This once.',
+    reward: { xp: 200000, perz: 16000, items: { water_skin: 10 } },
+  },
+  shadefeathers: {
+    title: 'The Water-seller 2: Feathers for the Shade', kind: 'fetch', items: { runner_feather: 10 }, lv: 63,
+    intro: 'My stall needs shade, and nothing makes shade like a fan of Runner Feathers. Ten of them, from the Sand Runners by the Pyramid. They kick, so do not stand behind them.',
+    thanks: 'Shade! Cold water and shade. I will be rich.',
+    reward: { xp: 300000, perz: 22000, items: { water_skin: 12 } },
+  },
+  chitin: {
+    title: "The Smith: Soldier's Shells", kind: 'fetch', items: { ant_jaw: 20, worm_hide: 6 }, lv: 62,
+    intro: 'Soldier Ant jaws ground into the edge, Worm Hide for the grip: the best dagger guard in the desert. Twenty Mandibles from the Great Desert and six Worm Hides.',
+    thanks: 'Good jaws, these. Sharp, and only a little bitey.',
+    reward: { xp: 290000, perz: 22000, items: { potion3: 8 } },
+  },
+  venomsteel: {
+    title: 'The Bladewright: Venom for Steel', kind: 'fetch', items: { scorpion_tail: 10, cactus_needle: 10 }, lv: 60,
+    intro: 'Venom from the Scorpions, needles from the Cacti: ground together and steeped, it makes an oil that poisons whatever the blade touches. Ten of each.',
+    thanks: 'Smell that? No, do not smell that. It is perfect.',
+    reward: { xp: 260000, perz: 22000, items: { potion3: 8 } },
+  },
+  // The Sphinx's Riddle (Old Gunnhild): a secret series, offered only to a hero who has walked all
+  // four of the desert's sands (needZones). Its last step opens the hidden portal in the Great Desert
+  // (world.js: MAPS.desert, need: 'sphinx6') to Sphinx Sands, where the Giant Sphinx sleeps
+  sphinx1: {
+    title: "The Sphinx's Riddle 1: Sand in the Glass", kind: 'fetch', items: { cactus_needle: 10, worm_hide: 5 }, lv: 60, needZones: ['redsands', 'dunes', 'scorpion', 'desert'],
+    intro: 'You have walked all the sands. Good: then you can hear this. My hourglass is broken, and it is no ordinary glass: it counts the years the great stone has slept. Ten Cactus Needles to pin it, five Worm Hides to bind it, and I will tell you the riddle.',
+    thanks: 'Listen: the sand runs again. "I have a face but no eyes that open, a body of a lion that never runs, and a door that no hand may push." Think on it.',
+    reward: { xp: 240000, perz: 15000 },
+  },
+  sphinx2: {
+    title: "The Sphinx's Riddle 2: The First Riddle", kind: 'quiz', lv: 60, task: "answer Old Gunnhild's riddles",
+    intro: 'Riddles are doors too. Answer mine, and the next one opens.',
+    questions: [
+      { q: 'A face but no eyes that open, a lion\'s body that never runs. What is it?',
+        options: ['A Sand Runner asleep', 'A statue of stone, a lion with a face', 'The Pharaoh'], a: 1,
+        why: 'Stone. A great stone lion with a face, sleeping in the sand.',
+        hint: 'Think of something that never moves at all.' },
+      { q: 'What walks on sand but leaves no footprints?',
+        options: ['The wind', 'A Cactus', 'The Keeper'], a: 0,
+        why: 'The wind. It moves the dunes, and the dunes hide the stone.',
+        hint: 'It moves everything in the desert, and you never see it.' },
+      { q: 'And what opens a door no hand may push?',
+        options: ['A key of gold', 'A heavy blow', 'An eye that sees it'], a: 2,
+        why: 'An eye. The stone\'s own eye, if it can be found.',
+        hint: 'No hand, no gold, no steel. What else can open a door?' },
+    ],
+    thanks: 'Clever. Now the old tablet: there is one buried by an obelisk in the Cactus Dunes. The worms guard it, though they do not know it.',
+    reward: { xp: 240000, perz: 15000 },
+  },
+  sphinx3: {
+    title: "The Sphinx's Riddle 3: The Buried Tablet", kind: 'defend', map: 'dunes', at: { x: 44, z: 22.4 }, place: 'the old obelisk', waves: [['duneWorm', 3], ['duneWorm', 4], ['duneWorm', 5]], lv: 62,
+    intro: 'Go to the old obelisk in the Cactus Dunes and dig at its foot. The Dune Worms will come up through the sand at the noise. Hold the obelisk against three waves of them, and the tablet is yours.',
+    thanks: 'The tablet! Here: "Where the runners race, a feather of every colour; where the scorpions sting, the venom of many." Bring me both.',
+    reward: { xp: 290000, perz: 20000 },
+  },
+  sphinx4: {
+    title: "The Sphinx's Riddle 4: The Runner's Road", kind: 'fetch', items: { rainbow_plume: 1, scorpion_tail: 10 }, lv: 62,
+    intro: 'A feather of every colour: a Rainbow Plume, from the Rainbow Runner by the Pyramid, if you can catch it. And the venom of many: ten Scorpion Tails.',
+    thanks: 'Colour and venom: the ink of the old priests. With it the carvings on the Pyramid will show themselves.',
+    reward: { xp: 300000, perz: 22000 },
+  },
+  sphinx5: {
+    title: "The Sphinx's Riddle 5: Words on the Pyramid", kind: 'search', map: 'scorpion', thing: 'Carving', spots: [[34.6, 30.2], [50.6, 30.4], [52, 16]], verb: 'Carving read', lv: 64,
+    intro: 'Three carvings on the Pyramid in Scorpion Sands, hidden until the ink touches them. Find them and read them, all three, and come back to me.',
+    thanks: 'The carvings say: "The eye sleeps in the hand of the keeper of tales." Ha! That is me. My grandmother\'s grandmother found it, and we have kept it ever since. Here: the Sphinx Eye.',
+    reward: { xp: 320000, perz: 22000, items: { sphinx_eye: 1 } },
+  },
+  sphinx6: {
+    title: "The Sphinx's Riddle 6: The Sleeping Eye", kind: 'search', map: 'desert', thing: 'Obelisk', spots: [[32, 52.4]], verb: 'The eye is set', items: { sphinx_eye: 1 }, lv: 64,
+    intro: 'In the Great Desert there is an obelisk with an empty socket. Set the Sphinx Eye in it. What happens then, I do not know. Nobody in my family ever dared. Watch out for the Wyrm.',
+    thanks: 'You felt it too, did you not? The whole desert sighed. The way is open: south of the Great Desert. Go and see what has been sleeping there.',
+    reward: { xp: 450000, perz: 40000, items: { potion3: 10 } },
+  },
 };
 
 // quests that come in a series (the job trials): each step's next one, accepted as soon as it is
@@ -1110,6 +1413,7 @@ export class Quests {
   constructor() {
     this.active = {}; // id -> kills so far, or list of zones visited
     this.done = [];
+    this.seen = null; // the lands the hero has walked (main.js), for a secret series (needZones)
   }
 
   // what a villager has for you: { q, id, state } with state
@@ -1140,6 +1444,8 @@ export class Quests {
     if (!id) return { state: 'finished' };
     const q = QUESTS[id];
     if (id in this.active) return { id, q, state: this.ready(id, inv) ? 'ready' : 'active' };
+    // (a secret series waits until the hero has walked every land it names: needZones, seen = the lands walked)
+    if (q.needZones && !q.needZones.every((z) => this.seen?.has(z))) return { id, q, state: 'locked', secret: true };
     return { id, q, state: prog.baseLv >= q.lv ? 'offer' : 'locked' };
   }
 

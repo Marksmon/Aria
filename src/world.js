@@ -11,6 +11,12 @@
 //                                   |        Moss Field  -  Dark Dale  -  Black Wood - Barley Field
 //                                   |            |           |           |                   |
 // Coal Pit - Stone Field - Salt Bay - Fen Shore - Eldrun Camp   Ember Hill  -  Ash Heath - Wolf Hills
+//                                                                  |
+//                                        Red Sands - Rytingborg - Cactus Dunes
+//                                                                                |
+//                                                       Great Desert - Scorpion Sands (the Pyramid)
+//                                                            |
+//                                                     (hidden) Sphinx Sands
 //
 // (Dark Dale's east portal is Black Wood. Veidheim, the hunters' village, is reached from Birch
 // Grove through Willow Marsh; the predators' lands lie east of Black Wood and Ash Heath.)
@@ -20,6 +26,7 @@ import * as THREE from 'three';
 import { makeNoise, mulberry32, sstep, lerp, clamp } from './noise.js';
 import { buildCity, WALL } from './city.js';
 import { SOIL, soilAt, cropSpots, fences } from './farm.js';
+import { buildPyramid, buildSphinx } from './monuments.js';
 
 export const SIZE = 64;
 export const CENTER = 32;
@@ -50,6 +57,13 @@ export const ZONE_NAMES = {
   wolfhill: 'Wolf Hills',  // the packs' green hills, east of Ash Heath
   marsh: 'Willow Marsh',   // the walking willows' pond, between Birch Grove and the village
   oldwood: 'Old Forest',   // the great oaks north of the village, where the gentle treants walk
+  sand: 'Rytingborg',      // "dagger-fort": the oasis city of sand and daggers, south of Ember Hill
+  redsands: 'Red Sands',   // the red bloops' and giant ants' sands west of the city (a Trainee's field)
+  dunes: 'Cactus Dunes',   // the cacti and the dune worms, east of the city
+  scorpion: 'Scorpion Sands', // the scorpions and the runners, and the Pyramid
+  desert: 'Great Desert',  // the deep desert, where the Sand Wyrm swims under the dunes
+  sphinx: 'Sphinx Sands',  // the Giant Sphinx's sands, open only to who solves its riddle
+  tomb: "Pharaoh's Tomb",  // the fourth raid (raid.js): the burial hall under the Pyramid
 };
 
 const CAMP_R = 17;   // the camp clearing's walkable radius
@@ -67,7 +81,7 @@ export const MAPS = {
   birch:  { portals: [{ to: 'city', ...W }, { to: 'hollow', ...S }, { to: 'marsh', ...E }], clear: { x: 40, z: 22, r: 5 } },
   hollow: { portals: [{ to: 'grove', ...W }, { to: 'birch', ...N }, { to: 'deep', ...E }, { to: 'ridge', ...S }], lift: [-0.15, 0] },
   // an open bowl in the south of Ember Hill (the Fire Giant roams the whole map; see mobs.js roam)
-  ridge:  { portals: [{ to: 'hollow', ...N }, { to: 'heath', ...E }], clear: { x: 32, z: 48, r: 6 }, lift: [1.3, 1.8] },
+  ridge:  { portals: [{ to: 'hollow', ...N }, { to: 'heath', ...E }, { to: 'sand', ...S }], clear: { x: 32, z: 48, r: 6 }, lift: [1.3, 1.8] },
   coast:  { portals: [{ to: 'fen', ...E }, { to: 'stones', ...W }], lake: { x: 20, z: 31, rx: 11, rz: 17 }, clear: { x: 44, z: 46, r: 5 } },
   deep:   { portals: [{ to: 'hollow', ...W }, { to: 'heath', ...S }, { to: 'farm', ...E }], lift: [-0.1, 0.5], clear: { x: 40, z: 40, r: 5 } },
   heath:  { portals: [{ to: 'ridge', ...W }, { to: 'deep', ...N }, { to: 'wolfhill', ...E }], lift: [0.8, 1.2], clear: { x: 40, z: 44, r: 5 } },
@@ -96,6 +110,22 @@ export const MAPS = {
   wolfhill: { portals: [{ to: 'farm', ...N }, { to: 'heath', ...W }], lift: [0.8, 1.6], camps: [[20, 20], [46, 44], [44, 18]], hunt: true, clear: { x: 32, z: 44, r: 6 } },
   marsh:    { portals: [{ to: 'birch', ...W }, { to: 'hunt', ...E }], lake: { x: 28, z: 30, rx: 10, rz: 7 }, clear: { x: 44, z: 44, r: 5 } },
   oldwood:  { portals: [{ to: 'hunt', ...S }], lift: [-0.1, 0.6], clear: { x: 34, z: 26, r: 7 } },
+  // Rytingborg, the oasis city south of Ember Hill (city.js): its lake fills the middle of the city,
+  // two bridges cross it over an island (keep: dry ground left under them), the palace stands on its
+  // rock at the back (north), so the north gate is off to one side.
+  // The desert round it has no water at all: dunes (rolling sand ridges, `dunes`: their height),
+  // sandstone, cacti and bones. Paths are packed sand (desert). obelisk: [x, z] of an old obelisk (the
+  // Sphinx's Riddle, quests.js); pyramid / sphinx: the monuments (monuments.js); keep: rects no prop is
+  // scattered in.
+  sand:     { portals: [{ to: 'ridge', x: 15, z: 5 }, { to: 'redsands', x: 5, z: 44 }, { to: 'dunes', x: 59, z: 44 }], city: 'sand', desert: true,
+    lake: { x: 32, z: 29, rx: 11.5, rz: 7.5, keep: [{ x0: 30.9, z0: 18, x1: 33.1, z1: 40 }, { x0: 18, z0: 27.8, x1: 46, z1: 30.2 }, { x: 32, z: 29, r: 3.4 }] } },
+  redsands: { portals: [{ to: 'sand', ...E }], lift: [0.1, 0.5], dunes: 0.7, desert: true, clear: { x: 30, z: 30, r: 5 } },
+  dunes:    { portals: [{ to: 'sand', ...W }, { to: 'scorpion', ...S }], lift: [0.3, 0.6], dunes: 1.3, desert: true, obelisk: [44, 20], clear: { x: 22, z: 42, r: 6 } },
+  scorpion: { portals: [{ to: 'dunes', ...N }, { to: 'desert', ...W }], lift: [0.2, 0.5], dunes: 0.9, desert: true,
+    pyramid: { x: 42, z: 21, half: 7, h: 9.5 }, keep: [{ x0: 33, z0: 11, x1: 51, z1: 31 }], clear: { x: 24, z: 44, r: 6 } },
+  desert:   { portals: [{ to: 'scorpion', ...E }, { to: 'sphinx', ...S, need: 'sphinx6' }], lift: [0.3, 0.8], dunes: 1.5, desert: true, obelisk: [32, 50], clear: { x: 30, z: 26, r: 8 } },
+  sphinx:   { portals: [{ to: 'desert', ...S }], lift: [0, 0.2], dunes: 0.5, desert: true, sphinx: { x: 32, z: 30 }, keep: [{ x0: 21, z0: 6, x1: 43, z1: 50 }] },
+  tomb:     { portals: [], arena: { r: 13, land: true, near: 'ruin_pillar' }, lift: [0, 0.2], tomb: true },
 };
 const SEG = 128; // terrain vertices per side - 1 (0.5 unit spacing)
 
@@ -123,8 +153,16 @@ const GROUND = {
   wolfhill: ['#5f9444', '#7cac56'],
   marsh: ['#5a7a40', '#768e4a'],
   oldwood: ['#2f4a2c', '#3e5a34'],
+  sand: ['#dcc390', '#e8d2a0'],
+  redsands: ['#c87a4c', '#d8925e'],
+  dunes: ['#dcb878', '#ecca8c'],
+  scorpion: ['#d2ac6c', '#e0bc7e'],
+  desert: ['#d6b070', '#e8c686'],
+  sphinx: ['#dab676', '#eacb8e'],
+  tomb: ['#8a7252', '#9e8664'],
   dirt: '#b49a6c',
-  sand: '#c6b483',
+  sandpath: '#c8a46c',
+  beach: '#c6b483', // (a lake's or the sea's sandy edge)
 };
 const TABLE = {
   grove: [['tree_grove', 30], ['bush', 16], ['flowers', 22], ['grass', 26], ['stump', 3], ['rock_grey', 3]],
@@ -150,8 +188,18 @@ const TABLE = {
   marsh: [['tree_willow', 20], ['reeds', 26], ['grass', 26], ['bush', 8], ['stump', 6], ['mushrooms', 4], ['flowers', 6]],
   oldwood: [['tree_oak', 30], ['tree_pine', 6], ['bush', 10], ['mushrooms', 10], ['grass_dark', 22], ['stump', 6], ['flowers', 4], ['mushroom_big', 3], ['rock_grey', 4]],
   serpent: [['tree_dark', 36], ['mushroom_big', 10], ['mushrooms', 18], ['grass_dark', 22], ['stump', 6], ['tree_dead', 6]],
+  sand: [['grass_dry', 4]],
+  redsands: [['rock_sand', 16], ['rock_small', 18], ['shrub_dry', 14], ['grass_dry', 24], ['bones', 5], ['cactus_round', 6], ['tree_palm', 3]],
+  dunes: [['cactus', 26], ['cactus_round', 18], ['grass_dry', 22], ['shrub_dry', 10], ['rock_sand', 10], ['bones', 6], ['tree_dead', 3]],
+  scorpion: [['rock_sand', 18], ['rock_small', 18], ['grass_dry', 18], ['bones', 8], ['cactus', 8], ['ruin_pillar', 5], ['ruin_block', 5], ['shrub_dry', 10]],
+  desert: [['rock_sand', 14], ['cactus', 14], ['cactus_round', 8], ['grass_dry', 18], ['bones', 9], ['ruin_block', 4], ['shrub_dry', 8], ['rock_small', 12]],
+  sphinx: [['ruin_pillar', 18], ['ruin_block', 18], ['rock_sand', 10], ['grass_dry', 16], ['bones', 4], ['rock_small', 10]],
+  tomb: [['urn', 10], ['ruin_block', 4], ['rock_small', 12], ['bones', 6]],
 };
-const BORDER = { grove: 'tree_grove', hollow: 'tree_dark', ridge: 'rock', fen: 'tree_willow', camp: 'tree_grove', city: 'tree_grove', magic: 'tree_birch', birch: 'tree_birch', coast: 'rock_grey', deep: 'tree_dark', heath: 'tree_dead', stones: 'rock', coalpit: 'rock_grey', burnt: 'tree_dead', serpent: 'tree_dark', hunt: 'tree_pine', farm: 'tree_grove', wolfhill: 'tree_pine', marsh: 'tree_willow', oldwood: 'tree_oak', koboldcamp: 'rock_grey', goblinlair: 'tree_dark' };
+const BORDER = { grove: 'tree_grove', hollow: 'tree_dark', ridge: 'rock', fen: 'tree_willow', camp: 'tree_grove', city: 'tree_grove', magic: 'tree_birch', birch: 'tree_birch', coast: 'rock_grey', deep: 'tree_dark', heath: 'tree_dead', stones: 'rock', coalpit: 'rock_grey', burnt: 'tree_dead', serpent: 'tree_dark', hunt: 'tree_pine', farm: 'tree_grove', wolfhill: 'tree_pine', marsh: 'tree_willow', oldwood: 'tree_oak', koboldcamp: 'rock_grey', goblinlair: 'tree_dark',
+  sand: 'tree_palm', redsands: 'crag', dunes: 'crag', scorpion: 'crag', desert: 'crag', sphinx: 'crag', tomb: 'ruin_pillar' };
+// a desert's edge: mostly red crags, now and then a rock arch, a palm or a sandstone boulder
+const DESERT_EDGE = [['crag', 70], ['rock_sand', 18], ['rock_arch', 3], ['tree_palm', 6], ['cactus', 6]];
 // inside the city walls (and a step beyond them)
 const inWalls = (x, z, m = 0) => x > WALL.x0 - m && x < WALL.x1 + m && z > WALL.z0 - m && z < WALL.z1 + m;
 
@@ -172,7 +220,8 @@ function buildMap(id, scene, lib, shared) {
   const SEA = ARENA && !ARENA.land, PIT = ARENA && ARENA.land; // an island arena, or a clearing walled in
   const soilCols = SOIL.map((c) => new THREE.Color(c));
   const edgeDist = (x, z) => Math.min(x, z, SIZE - x, SIZE - z);
-  const lakeD = (x, z) => (LAKE ? Math.hypot((x - LAKE.x) / LAKE.rx, (z - LAKE.z) / LAKE.rz) : 9);
+  const kept = (x, z) => LAKE?.keep?.some((k) => (k.r ? Math.hypot(x - k.x, z - k.z) < k.r : x > k.x0 && x < k.x1 && z > k.z0 && z < k.z1));
+  const lakeD = (x, z) => (LAKE && !kept(x, z) ? Math.hypot((x - LAKE.x) / LAKE.rx, (z - LAKE.z) / LAKE.rz) : 9); // (kept: dry ground under a bridge, an island)
   const campR = (x, z) => Math.hypot(x - CENTER, z - CENTER);
 
   // dirt trails from each portal to the middle of the map, wandering a little
@@ -192,6 +241,7 @@ function buildMap(id, scene, lib, shared) {
   function heightAt(x, z) {
     let h = (noise.fbm(x * 0.06, z * 0.06) - 0.5) * 1.4;
     h += lift + (rough ? (noise.fbm(x * 0.15 + 9, z * 0.15) - 0.5) * rough : 0);
+    if (def.dunes) h += duneAt(x, z);
     if (isCity) h = lerp(0.05, h * 0.6 + 0.05, sstep(1, 4, -Math.min(x - WALL.x0, WALL.x1 - x, z - WALL.z0, WALL.z1 - z))); // flat inside the walls
     if (isCamp) {
       const r = campR(x, z);
@@ -213,8 +263,14 @@ function buildMap(id, scene, lib, shared) {
     if (e < 6) h += Math.pow((6 - e) / 6, 2) * 3.5;
     return h;
   }
+  // rolling ridges of sand, a little crooked, steeper on one side like wind-blown dunes
+  function duneAt(x, z) {
+    const u = (x * 0.82 + z * 0.4) * 0.3 + noise.fbm(x * 0.05 + 3, z * 0.05) * 5;
+    const w = (Math.sin(u) + 1) / 2, sharp = Math.pow(w, 1.6);
+    return sharp * def.dunes * (0.6 + noise.fbm(x * 0.08, z * 0.08 + 7) * 0.8);
+  }
   function heightNoPortal(x, z) {
-    let h = (noise.fbm(x * 0.06, z * 0.06) - 0.5) * 1.4 + lift;
+    let h = (noise.fbm(x * 0.06, z * 0.06) - 0.5) * 1.4 + lift + (def.dunes ? duneAt(x, z) : 0);
     if (isCamp) h = lerp(0.05, h * 0.5, sstep(4, 12, campR(x, z)));
     if (isCity) h = lerp(0.05, h * 0.6 + 0.05, sstep(1, 4, -Math.min(x - WALL.x0, WALL.x1 - x, z - WALL.z0, WALL.z1 - z)));
     return Math.max(h, WATER_Y + 0.25);
@@ -239,8 +295,8 @@ function buildMap(id, scene, lib, shared) {
     const so = PLOTS.length ? soilAt(PLOTS, x, z) : -1;
     if (so >= 0) out.copy(soilCols[so]);
     const pd = pathDist(x, z);
-    if (pd < 1.4 && so < 0) out.lerp(groundCols.dirt, sstep(1.4, 0.5, pd + (noise.n(x * 0.9, z * 0.9) - 0.5) * 0.6) * 0.9);
-    if ((SEA || lakeD(x, z) < 1.6) && h < WATER_Y + 0.45) out.lerp(groundCols.sand, sstep(WATER_Y + 0.45, WATER_Y + 0.05, h) * 0.85);
+    if (pd < 1.4 && so < 0) out.lerp(def.desert ? groundCols.sandpath : groundCols.dirt, sstep(1.4, 0.5, pd + (noise.n(x * 0.9, z * 0.9) - 0.5) * 0.6) * 0.9);
+    if ((SEA || lakeD(x, z) < 1.6) && h < WATER_Y + 0.45) out.lerp(groundCols.beach, sstep(WATER_Y + 0.45, WATER_Y + 0.05, h) * 0.85);
     const e = Math.min(edgeDist(x, z), isCamp ? CAMP_R + 3 - campR(x, z) : 99);
     if (e < 6) out.multiplyScalar(1 - 0.3 * sstep(6, 1.5, e));
     out.multiplyScalar(0.9 + noise.fbm(x * 0.4, z * 0.4, 2) * 0.2);
@@ -268,6 +324,7 @@ function buildMap(id, scene, lib, shared) {
       // keep portals clear
       if (def.portals.some((p) => Math.hypot(p.x - x, p.z - z) < 2.6 + (pd.coll > 0 ? 0.8 : 0))) return false;
       if (def.clear && Math.hypot(def.clear.x - x, def.clear.z - z) < def.clear.r && pd.coll > 0) return false;
+      if (def.keep?.some((k) => x > k.x0 && x < k.x1 && z > k.z0 && z < k.z1)) return false;
     }
     const v = Math.floor(rng() * pd.variants.length);
     const s = force ? 1 : 0.85 + rng() * 0.3;
@@ -312,6 +369,21 @@ function buildMap(id, scene, lib, shared) {
     }, def.city);
   }
 
+  // the desert's monuments (monuments.js): the Pyramid, the Giant Sphinx
+  const mctx = { group, heightAt: (x, z) => heightAt(x, z), addBox: (x0, z0, x1, z1) => boxes.push({ x0, z0, x1, z1, kind: 'monument' }) };
+  const monument = def.pyramid ? buildPyramid(mctx, def.pyramid) : def.sphinx ? buildSphinx(mctx, def.sphinx) : null;
+  // an old obelisk with a few fallen stones round it (the Sphinx's Riddle)
+  if (def.obelisk) {
+    const [ox, oz] = def.obelisk;
+    place('obelisk', ox, oz, true);
+    place('ruin_block', ox - 2.6, oz + 1.2, true); place('ruin_pillar', ox + 2.4, oz - 1.4, true); place('bones', ox + 1.8, oz + 2, true);
+  }
+  // the Pharaoh's burial hall: torches round the ring, sarcophagi along the back wall
+  if (def.tomb) {
+    for (let i = 0; i < 10; i++) { const a = (i / 10) * Math.PI * 2; place('torch', CENTER + Math.cos(a) * (ARENA.r - 0.7), CENTER + Math.sin(a) * (ARENA.r - 0.7), true); }
+    for (const dx of [-6, -2, 2, 6]) place('sarcophagus', CENTER + dx, CENTER - ARENA.r + 1.8, true);
+  }
+
   // kobold and goblin camps: a tent, crates and barrels round a log seat (hunters: a drying rack and a woodpile)
   for (const [x, z] of def.camps || []) {
     place('tent', x, z, true);
@@ -340,7 +412,7 @@ function buildMap(id, scene, lib, shared) {
     const e = isCamp ? campR(x, z) - CAMP_R : PIT ? campR(x, z) - ARENA.r : 3.6 - edgeDist(x, z);
     if (isCity && (inWalls(x, z, 1.6) || pathDist(x, z) < 4.5 || edgeDist(x, z) > 3.4)) continue; // keep the walls in view
     if (isCity ? edgeDist(x, z) < 0.8 : isCamp || PIT ? e < 0.3 || e > 9 : e < 0 || edgeDist(x, z) < 0.8) continue;
-    const type = id === 'ridge' && rng() < 0.3 ? 'tree_dead' : PIT && ARENA.near && z > CENTER + 4 ? ARENA.near : BORDER[id];
+    const type = id === 'ridge' && rng() < 0.3 ? 'tree_dead' : PIT && ARENA.near && z > CENTER + 4 ? ARENA.near : def.desert && !isCity ? pick(DESERT_EDGE) : BORDER[id];
     place(type, x, z);
   }
 
@@ -422,6 +494,7 @@ function buildMap(id, scene, lib, shared) {
   // neither hides under a wide canopy
   function updateOcclusion(px, pz, cam, also = null) {
     city?.occlude(px, pz, cam);
+    monument?.occlude(px, pz, cam);
     const hides = (t, x, z) => {
       const dx = t.x - x, dz = t.z - z;
       if (Math.abs(dx) >= 6 || Math.abs(dz) >= 6) return false;
@@ -479,7 +552,9 @@ function buildMap(id, scene, lib, shared) {
       if (fireMat.map !== lib.fire.frames[f]) fireMat.map = lib.fire.frames[f];
       fireLight.intensity = (5.5 + Math.sin(t * 9) * 0.6 + Math.sin(t * 23) * 0.4) * shared.fireBoost;
     }
+    monument?.update?.(dt);
     for (const p of portals) {
+      if (p.need) { const open = shared.open(p.need); p.disc.visible = p.glow.visible = open; for (const m of p.motes) m.s.visible = open; if (!open) continue; } // (a hidden portal: shut until its quest is done)
       p.disc.rotation.y = t * 1.6;
       p.glow.scale.y = 2.6 + Math.sin(t * 3) * 0.2;
       for (const m of p.motes) {
@@ -555,7 +630,8 @@ function buildMap(id, scene, lib, shared) {
     mg.lineWidth = 1.5;
     mg.beginPath(); mg.moveTo(64, 57); mg.lineTo(70, 66); mg.lineTo(58, 66); mg.closePath(); mg.fill(); mg.stroke();
   }
-  for (const p of def.portals) { // portals: little blue rings
+  monument?.minimap(mg);
+  for (const p of def.portals.filter((q) => !q.need)) { // portals: little blue rings (a hidden one isn't marked)
     mg.strokeStyle = '#1a2a48'; mg.lineWidth = 4;
     mg.beginPath(); mg.arc(p.x * 2, p.z * 2, 3.5, 0, Math.PI * 2); mg.stroke();
     mg.strokeStyle = '#8fd8ff'; mg.lineWidth = 2;
@@ -564,7 +640,7 @@ function buildMap(id, scene, lib, shared) {
 
   return {
     id, group, heightAt, walkable, wading, isSafe, resolve, addSolid, update, terrain, updateOcclusion, portals,
-    minimap: mini, fireMat, fireLight, stats: { props: props.length, interior },
+    minimap: mini, fireMat, fireLight, stats: { props: props.length, interior }, monument,
     zoneAt: () => id,
   };
 }
@@ -620,6 +696,7 @@ export function buildWorld(scene, lib) {
   pg.rotateX(-Math.PI / 2);
   const shared = {
     fireBoost: 1,
+    open: () => true, // is a hidden portal (portal.need: a quest's id) open? (main.js sets it)
     portalGeo: pg,
     portalMat: new THREE.MeshBasicMaterial({ map: tex.swirl, ...add }),
     glowMat: new THREE.SpriteMaterial({ map: tex.glow, ...add }),
@@ -648,7 +725,9 @@ export function buildWorld(scene, lib) {
     get id() { return cur.id; },
     get terrain() { return cur.terrain; },
     get minimap() { return cur.minimap; },
-    get portals() { return cur.portals; },
+    get portals() { return cur.portals.filter((p) => !p.need || shared.open(p.need)); },
+    get monument() { return cur.monument; },
+    set open(fn) { shared.open = fn; },
     get fireBoost() { return shared.fireBoost; },
     set fireBoost(v) { shared.fireBoost = v; },
     get stats() { return cur.stats; },

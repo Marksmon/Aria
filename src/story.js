@@ -37,6 +37,8 @@ export const CALLINGS = {
     rune: "Kenaz, the torch-rune, burns on top of the pile. Yours is the Rune: fire and frost at a word, for those patient enough to learn them. Archmage Vigdis teaches Sorcerers in Galdrheim, north of Fen Shore." },
   bow: { job: 'archer', jobName: 'Archer', city: 'hunt', name: 'the Bow', trainer: 'Huntmaster Sigrid', where: 'in Veidheim, east past Willow Marsh',
     rune: "Raido, the road-rune, points away to the horizon. Yours is the Bow: quick feet and a sure eye, striking from where nothing can reach you. Huntmaster Sigrid trains Archers in Veidheim, past Willow Marsh." },
+  dagger: { job: 'assassin', jobName: 'Assassin', city: 'sand', name: 'the Dagger', trainer: 'Master Kol', where: 'in Rytingborg, the oasis city south of Ember Hill (a Carter will ride you there)',
+    rune: "Perthro, the hidden-rune, falls face down. Yours is the Dagger: quick hands and the shadows, many blows where others strike one. Master Kol trains Assassins in Rytingborg, south of Ember Hill." },
 };
 // the path the hero picked at Eldrun (the 'paths' step), else the runes' calling, else the Blade
 export const pickOf = (flags) => CALLINGS[flags?.pick] ? flags.pick : callingOf(flags) || 'blade';
@@ -196,13 +198,15 @@ export const STORY = [
     reward: { xp: 60, job: 250 } },
   // the jobs explained, and the hero's pick (flags.pick): the story then sends them to that trainer
   { id: 'paths', ch: 'Chapter 2: The Three Paths', title: 'By the Fire', kind: 'talk', npc: 'bram', goal: 'Go home to Eldrun Camp: Elder Halvard will help you choose a path',
-    say: [['bram', 'Sit, sit. You have grown since the morning I shook you awake. It is time you chose a path. Three masters train the young of Aria, and each path grows into something greater.'],
+    say: [['bram', 'Sit, sit. You have grown since the morning I shook you awake. It is time you chose a path. Four masters train the young of Aria, and each path grows into something greater.'],
       [null, 'THE BLADE: Captain Ulfr, Steinborg. Sword in hand, POW and END: you stand in front and take the blows. A Blader grows into a BladeMaster: the steadiest damage in Aria, with Blade Dance and Sword Storm.',
         { pics: [{ job: 'swordman', label: 'Blader' }, '→', { job: 'blademaster', label: 'BladeMaster' }] }],
       [null, 'THE RUNE: Archmage Vigdis, Galdrheim. Fire, frost, wind and earth at a word, with KNL behind them. A Sorcerer grows into a Wizard: storms and meteors that break whole crowds, every element turned against the one it beats.',
         { pics: [{ job: 'mage', label: 'Sorcerer' }, '→', { job: 'wizard', label: 'Wizard' }] }],
       [null, 'THE BOW: Huntmaster Sigrid, Veidheim. You shoot from five paces, with FNS for aim and quick feet. An Archer grows into a Windrunner: lightning-fast shots, and bursts of wind that carry you out of harm\'s way.',
         { pics: [{ job: 'archer', label: 'Archer' }, '→', { job: 'windrunner', label: 'Windrunner' }] }],
+      [null, 'THE DAGGER: Master Kol, Rytingborg, the oasis city south of Ember Hill. Quick hands, QKN and a blade that strikes again and again. An Assassin grows into a Phantom: a dagger in each hand, and shadows of yourself that fight beside you.',
+        { pics: [{ job: 'assassin', label: 'Assassin' }, '→', { job: 'phantom', label: 'Phantom' }] }],
       ['bram', 'And some walk two paths at once. Learn two first jobs, raise each to 20 skill points by Job 40, and a mixed second job opens.'],
       [null, 'THE MAGIC KNIGHT, of the Blade and the Rune (Sir Eirik the Runeblade, Steinborg), lays spells along the blade: fire, frost and lightning in every cut.',
         { pics: [{ job: 'swordman', label: 'Blader' }, '+', { job: 'mage', label: 'Sorcerer' }, '→', { job: 'magicknight', label: 'Magic Knight' }] }],
@@ -211,9 +215,9 @@ export const STORY = [
       [null, 'THE BEASTMASTER, of the Blade and the Bow (Bjarki, Veidheim), fights up close with a cleaver and from afar with a bow, and never alone: a Bear, a pack of Wolves and a Hawk come at a call and fight at your side.',
         { pics: [{ job: 'swordman', label: 'Blader' }, '+', { job: 'archer', label: 'Archer' }, '→', { job: 'beastmaster', label: 'Beastmaster' }] }],
       ['bram', (flags) => { const c = CALLINGS[callingOf(flags)]; return `So, young one: which path will you walk first?${c ? ` (Saeunn's runes named ${c.name}.)` : ''}`; },
-        { choices: [['The Blade: a Blader, with Captain Ulfr in Steinborg', 'pick:blade'], ['The Rune: a Sorcerer, with Archmage Vigdis in Galdrheim', 'pick:rune'], ['The Bow: an Archer, with Huntmaster Sigrid in Veidheim', 'pick:bow']] }],
+        { choices: [['The Blade: a Blader, with Captain Ulfr in Steinborg', 'pick:blade'], ['The Rune: a Sorcerer, with Archmage Vigdis in Galdrheim', 'pick:rune'], ['The Bow: an Archer, with Huntmaster Sigrid in Veidheim', 'pick:bow'], ['The Dagger: an Assassin, with Master Kol in Rytingborg', 'pick:dagger']] }],
       ['bram', (flags) => { const c = CALLINGS[pickOf(flags)]; return `${c.name.slice(4)} it is! Go to ${c.trainer}, ${c.where}. Reach Trainee Job 10 with Basic Training 9, and the trial is yours to take.`; }, { sound: 'heart' }],
-      ['bram', 'Change your mind on the road? Any of the three will try you instead, no harm done. And mark this: once you pass one trial, the other two stay open to you. Pass them as well, wear whichever first job you like at a Keeper, and that is how the mixed paths begin.']],
+      ['bram', 'Change your mind on the road? Any of the four will try you instead, no harm done. And mark this: once you pass one trial, the others stay open to you. Pass them as well, wear whichever first job you like at a Keeper, and that is how the mixed paths begin.']],
     reward: { xp: 40 } },
   { id: 'journey', ch: 'Chapter 2: The Three Paths', title: 'The Road to the Trainer', kind: 'visit',
     map: (flags) => CALLINGS[pickOf(flags)].city,
@@ -223,7 +227,7 @@ export const STORY = [
     reward: { xp: 40 } },
   { id: 'path', ch: 'Chapter 2: The Three Paths', title: 'The Job Trial', kind: 'job',
     map: (flags) => (flags.pick ? CALLINGS[flags.pick].city : null),
-    goal: (flags) => { const c = CALLINGS[flags.pick]; return c ? `Pass the ${c.jobName} trial with ${c.trainer} in ${ZONE_NAMES[c.city]} (Trainee Job 10 and Basic Training 9 first). Changed your mind? Any first-job trainer will try you` : 'Reach Trainee Job 10 with Basic Training 9, then pass a job trial: Captain Ulfr in Steinborg (Blader), Archmage Vigdis in Galdrheim, north of Fen Shore (Sorcerer), or Huntmaster Sigrid in Veidheim, east past Willow Marsh (Archer)'; },
+    goal: (flags) => { const c = CALLINGS[flags.pick]; return c ? `Pass the ${c.jobName} trial with ${c.trainer} in ${ZONE_NAMES[c.city]} (Trainee Job 10 and Basic Training 9 first). Changed your mind? Any first-job trainer will try you` : 'Reach Trainee Job 10 with Basic Training 9, then pass a job trial: Captain Ulfr in Steinborg (Blader), Archmage Vigdis in Galdrheim, north of Fen Shore (Sorcerer), Huntmaster Sigrid in Veidheim, east past Willow Marsh (Archer), or Master Kol in Rytingborg, south of Ember Hill (Assassin)'; },
     // a hint may depend on the hero: whether the trials are open yet, and the path they picked
     hint: (prog, flags) => {
       const c = CALLINGS[pickOf(flags)];

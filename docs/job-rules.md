@@ -10,14 +10,14 @@ quests. Code: `src/progress.js` (jobs, levels, points), `src/skills.js` (trees, 
 | Tier | Jobs | Job Level |
 |---|---|---|
 | 0 | Trainee (`novice`) | 1–10 |
-| 1 | Blader (`swordman`), Sorcerer (`mage`), Archer (`archer`) | 1–50, one level shared by all |
-| 2 | BladeMaster (`blademaster`, from Blader), Wizard (`wizard`, from Sorcerer), Magic Knight (`magicknight`, from Blader and Sorcerer), Windrunner (`windrunner`, from Archer), Moon Ranger (`moonranger`, from Sorcerer and Archer), Beastmaster (`beastmaster`, from Blader and Archer) | 1–50, starts again at 1 |
+| 1 | Blader (`swordman`), Sorcerer (`mage`), Archer (`archer`), Assassin (`assassin`) | 1–50, one level shared by all |
+| 2 | BladeMaster (`blademaster`, from Blader), Wizard (`wizard`, from Sorcerer), Magic Knight (`magicknight`, from Blader and Sorcerer), Windrunner (`windrunner`, from Archer), Moon Ranger (`moonranger`, from Sorcerer and Archer), Beastmaster (`beastmaster`, from Blader and Archer), Phantom (`phantom`, from Assassin) | 1–50, starts again at 1 |
 
 ## First jobs: walking several paths
 
 - A Trainee takes one first job through its trial: Trainee Job 10 and Basic Training 9.
-- A first-job hero may also take **another** first job's trial (a Blader the Sorcerer's or the
-  Archer's, and so on). They then hold each one earned.
+- A first-job hero may also take **another** first job's trial (a Blader the Sorcerer's, the
+  Archer's or the Assassin's, and so on). They then hold each one earned.
 - The first jobs share **one Job Level and one pool of skill points**. Example: at Job 40 there
   are 40 first-job points (plus the Trainee's 9), which may be split, e.g. 20 as a Blader and 20
   as a Sorcerer.
@@ -43,6 +43,41 @@ quests. Code: `src/progress.js` (jobs, levels, points), `src/skills.js` (trees, 
 - Balance: about the Blader's damage on one target (`build-tools/sim.mjs`); it takes less damage
   by shooting first and stepping back, and has fewer HP and less DEF.
 
+## The Assassin and daggers
+
+- Trained by **Master Kol** in Rytingborg, the desert's oasis city. Trial: 5 Red Bloops in the Red
+  Sands, oil a blade with 5 Ant Mandibles (a quiz with items), his three questions. A new Assassin
+  is handed a **Rusty Dagger**, put on at once unless a dagger is already in hand.
+- **Daggers** (`kind: 'dagger'`) have **no `jobs` list: every job can hold one**, the Trainee too
+  (the owner's call). Lower ATK than a sword of the same tier (about 75%) but quicker: a job with no
+  `delay.dagger` swings one at `delay.sword * DAGGER` (0.8, `rules.js`). A dagger is no sword:
+  Blade skills still need a sword. Spells, buffs and moves work with a dagger in hand. Daggers go
+  with a shield.
+- Five actives (Venom Strike, Sonic Blow, Shadow Step, Vanish, Pilfer) and passives (Dagger
+  Mastery, Double Attack, Improve Dodge, Lethal Edge). Pilfer and Lethal Edge come free at Job 10.
+  Sonic Blow is eight hits Ragnarok style (`hits`/`every`).
+- **Poison** (Venom Strike, Thousand Cuts, the Stinger, the Cactus Lord Card) is a status like
+  burn: a fifth of the blow that set it, each second, for its time; a new poison replaces the old.
+  Bosses resist (a third of the chance, half as long). Sand Scorpions poison the hero: 1.5% of Max
+  HP a second for 6 s, cured by a Green Herb.
+- Balance: about the Blader's damage on one target (`build-tools/sim.mjs` has an Assassin build):
+  weaker blows, quicker swings, Double Attack, more FLEE and fewer HP (`hpFactor` 70).
+
+## The Phantom (the Assassin's second job)
+
+- Master Kol's second trial: 20 Sand Scorpions, 20 Dune Worms, 25 Soldier Ants. A one-path second
+  job like the BladeMaster: open for the first job with the most points.
+- **Two daggers** (the owner's call: "double weapon"): only a Phantom puts a second dagger in the
+  Shield slot (`inv.dual`); switching away from the Phantom puts the left dagger away
+  (`dropUnwearable`). Every blow of the right hand is followed by the left at Twin Blades' share
+  (55–100%) of the left dagger's own damage (`leftHit`); the pair swings `DUAL` (1.15x) slower.
+  Dual Rend cuts right and left in turn.
+- **Illusions** (the owner's call): Phantom Double sends two illusions of the hero to fight
+  (`allies.js`, kind `shade`), Mirage Step leaves one behind that draws every monster near it
+  (`mirage`, `still`, a 4-pace taunt). Illusions are companions without a health panel; Lingering
+  Shade and Phantom Grace feed on them.
+- Actives: Dual Rend, Phantom Double, Mirage Step, Thousand Cuts (four, the owner's rule).
+
 ## Skill points
 
 - Points go into **any tree the hero earned**, active job or not (`trainTrees`, the owner's call): a
@@ -66,12 +101,15 @@ quests. Code: `src/progress.js` (jobs, levels, points), `src/skills.js` (trees, 
 | Elemental Edge, Elemental Blade, Elemental Nova (Magic Knight) | Lunar Multishot, Crescent Arrow (Moon Ranger) | War Cry, Stand Firm (Blader); Focus, Hunter's Mark, Leap Back (Archer); Tailwind, Gale Step (Windrunner) |
 | | | Starfall, Moonveil (Moon Ranger), Stone Aegis (Magic Knight), the Beastmaster's summons and Pack Frenzy; Mend, Thrust, Guard, Rest (Trainee) |
 
+Needs a **dagger**: Venom Strike, Sonic Blow (Assassin), Dual Rend, Thousand Cuts (Phantom). Needs no
+weapon: Shadow Step, Vanish, Pilfer (Assassin), Phantom Double, Mirage Step (Phantom).
+
 Bare hands are no sword: with no weapon a hero fights hand to hand and has no blade skills, and an
 Archer or Windrunner with no bow fights hand to hand too. Starfall needs no bow and still falls from
 bow range.
 
 - Gear follows **the job worn** (`wearJobs`): a Blader holds swords, a Sorcerer staves, an Archer
-  bows; a second job, those of the first jobs it stands on (a Magic Knight swords and staves, a
+  bows, anyone daggers; a second job, those of the first jobs it stands on (a Magic Knight swords and staves, a
   Beastmaster swords and bows). Switching jobs at a Keeper puts away what the new job can't use
   (`dropUnwearable`), e.g. a Blader's sword when switching to Archer (the owner's call).
 
@@ -83,7 +121,7 @@ bow range.
 - **Moon Ranger:** the Sorcerer and the Archer earned, and **at least 20 skill points spent in
   each** of their trees. **Beastmaster:** the same with the Blader and the Archer. The two-path rule (`secondJobOpen`) takes the pair from the job's `from`,
   so the Magic Knight and the Moon Ranger follow the same rule.
-- **BladeMaster / Wizard / Windrunner (one path):** for a hero who earned only one first job, the matching
+- **BladeMaster / Wizard / Windrunner / Phantom (one path):** for a hero who earned only one first job, the matching
   second job. For a hero who earned several, only the second job of the first job with the **most
   points spent** of all those walked. A tie opens each tied one.
 - The 20/20 rule opens only the Magic Knight. It does not open both BladeMaster and Wizard.
@@ -119,7 +157,8 @@ bow range.
 
 - **Three or four active skills per second job** (the owner's rule). Windrunner: Tailwind, Gale
   Step, Hurricane Volley, Cyclone Arrow. Moon Ranger: Lunar Multishot, Starfall, Crescent Arrow,
-  Moonveil. Beastmaster: Summon Bear, Summon Wolves, Summon Hawk, Pack Frenzy.
+  Moonveil. Beastmaster: Summon Bear, Summon Wolves, Summon Hawk, Pack Frenzy. Phantom: Dual Rend,
+  Phantom Double, Mirage Step, Thousand Cuts.
 
 ## The Beastmaster and its beasts (the owner's rules)
 
@@ -170,6 +209,8 @@ MATK part), used by both the damage and the skill text.
   sword). About 1.05x the Windrunner on one target by day and 1.2x at night (Moonlit Hunter), the
   best of the bow jobs on packs (Lunar Multishot, Starfall). "Night" is `dayNight.isNight`
   (`night > 0.6`), the same test as the night monsters.
+- **Phantom:** Dual Rend's damage for its SP is about the BladeMaster's Twin Fang, and every normal
+  attack lands twice (both hands); its illusions add to it and draw blows away.
 - **Magic Knight:** between the two on one target, close to the BladeMaster on packs, with the most
   HP and its Stone Aegis barrier.
 
@@ -194,6 +235,7 @@ MATK part), used by both the damage and the skill text.
   - Bjarki the Beastmaster (Beastmaster), Veidheim: 15 Wolves, 10 Bears, 12 more Bears. The Windrunner's trial: 20 Wolves, 10 Snakes,
     25 more Wolves (all in Barley Field).
   - Sir Eirik the Runeblade (Magic Knight), Steinborg.
+  - Master Kol (Assassin, Phantom), Rytingborg.
 - Taking a second job:
   - Job Level goes back to 1, and the first-job level is kept for its points (`firstLv`).
   - The look: second jobs wear the first job's outfit recoloured, with an aura. The Magic Knight

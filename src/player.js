@@ -451,12 +451,22 @@ export class Player {
     const land = () => {
       if (!target.alive) return;
       const md = sk?.defMul !== undefined ? { ...target.effDef(), def: target.effDef().def * sk.defMul } : target.effDef();
-      const mult = (sk?.mult || 1) * this.atkMul * (this.dmgMod?.(target) ?? 1);
+      const mult = (sk?.mult || 1) * this.atkMul * (this.dmgMod?.(target) ?? 1) * (this.nextBlow || 1); // (nextBlow: Shadow Step's, Vanish's)
+      this.nextBlow = 1;
       const res = playerAttack(sk?.el ? { ...this.ps, el: sk.el } : this.ps, md, mult, sk?.hitMult || 1, !!sk);
+      res.skill = !!sk;
       if (!res.miss && !sk && this.bonusDmg) res.dmg += this.bonusDmg();
       const kx = target.x - this.x, kz = target.z - this.z, k = Math.hypot(kx, kz) || 1;
       if (!res.miss) target.hit(res.dmg, kx / k * (this.bow ? 0.4 : 1), kz / k * (this.bow ? 0.4 : 1));
       this.emit('strike', target, res);
+      // a Phantom's left-hand dagger strikes with every normal blow, at its share (Twin Blades)
+      const L = this.ps.left;
+      if (L && !sk && target.alive) {
+        const lr = playerAttack({ ...this.ps, watk: L.atk, wlv: L.wlv, el: L.el || 'neutral' }, md, mult * (this.leftShare || 0.5), 1, false);
+        lr.left = true;
+        if (!lr.miss) target.hit(lr.dmg, 0, 0);
+        this.emit('strike', target, lr);
+      }
       sk?.done?.(target, res);
     };
     this.emit('swing');

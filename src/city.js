@@ -14,6 +14,8 @@ import * as THREE from 'three';
 import { mulberry32 } from './noise.js';
 import { SOIL, cropSpots, fences } from './farm.js';
 
+const WATER_LEVEL = -0.35; // (world.js WATER_Y: the lake's surface)
+
 export const WALL = { x0: 9, x1: 55, z0: 9, z1: 55, t: 1.1, h: 2.8 };
 export const GATE = 2.5; // half the width of a gateway
 // where things stand (the people are in quests.js)
@@ -29,6 +31,15 @@ export const HUNT = {
   // the village's farm plots and the archery range's fence (farm.js; the range has no crop)
   plots: [{ x0: 12, z0: 37, x1: 24, z1: 45, crop: 'wheat', gate: 'e' }, { x0: 12, z0: 47, x1: 20, z1: 53, crop: 'cabbage', gate: 'e' }],
   range: { x0: 37, z0: 11.5, x1: 53, z1: 23, gate: 's' },
+};
+// Rytingborg, the oasis city: the lake in the middle (world.js MAPS.sand.lake), its bridges and
+// island, the palace's rock at the back
+export const SAND = {
+  lake: { x: 32, z: 29, rx: 11.5, rz: 7.5 },
+  island: { x: 32, z: 29, r: 3.4 },
+  terrace: { x0: 21, z0: 9.2, x1: 50, z1: 16.4, h: 3.6 },
+  chest: { x: 20.6, z: 46.8 },
+  stall: { x: 28, z: 40.6 },
 };
 export const MAGIC = {
   circle: { x: 32, z: 33, r: 3 },
@@ -79,6 +90,26 @@ function cobbleTex(rng, base = '#a39b8c', gap = '#6a645a') {
     }
   }, true);
 }
+// an onion dome: a bulb swelling out over its base and drawn to a point (lathed), its base at y = 0
+function onion(r, h) {
+  const pts = [];
+  for (let i = 0; i <= 16; i++) {
+    const t = i / 16, y = t * h;
+    const w = t < 0.55 ? r * (1 + Math.sin((t / 0.55) * Math.PI * 0.5) * 0.18) : r * 1.18 * Math.cos(((t - 0.55) / 0.45) * Math.PI * 0.5);
+    pts.push(new THREE.Vector2(Math.max(0.001, w), y));
+  }
+  return new THREE.LatheGeometry(pts, 18);
+}
+// a dome's tiles: lapis blue with lighter diamonds and gold ribs
+function domeTex(rng, base) {
+  return canvasTex(64, 64, (g) => {
+    g.fillStyle = base; g.fillRect(0, 0, 64, 64);
+    for (let y = 0; y < 64; y += 8) for (let x = (y / 8) % 2 ? 4 : 0; x < 64; x += 8) {
+      g.fillStyle = vary(rng, '#5a82d0', 30); g.beginPath(); g.moveTo(x + 4, y); g.lineTo(x + 8, y + 4); g.lineTo(x + 4, y + 8); g.lineTo(x, y + 4); g.fill();
+    }
+    g.fillStyle = '#e3b341'; for (let x = 0; x < 64; x += 16) g.fillRect(x, 0, 2, 64);
+  }, true);
+}
 function roofTex(rng, base) {
   return canvasTex(64, 64, (g) => {
     g.fillStyle = '#2e2118'; g.fillRect(0, 0, 64, 64);
@@ -120,6 +151,23 @@ function houseFace(rng, w, front, plaster = '#e8dcc0', timber = '#5a3a22', door 
       g.fillStyle = '#e3b341'; g.beginPath(); g.arc(cx + 5, 54, 2, 0, 7); g.fill();
       if (W > 110) { win(cx - W * 0.3); win(cx + W * 0.3); }
     } else for (let i = 0; i < panes; i++) win((W / panes) * (i + 0.5));
+  });
+}
+// a desert wall: sandstone plaster, pointed arched windows with blue shutters; front = an arched door
+function archFace(rng, w, front, plaster = '#e8d4a8', door = '#6b4426') {
+  const W = Math.max(64, Math.round(w * 32)), H = 84;
+  return canvasTex(W, H, (g) => {
+    g.fillStyle = plaster; g.fillRect(0, 0, W, H);
+    for (let i = 0; i < 300; i++) { g.fillStyle = `rgba(120,80,30,${rng() * 0.07})`; g.fillRect(rng() * W, rng() * H, 3, 3); }
+    g.fillStyle = 'rgba(120,80,30,.25)'; g.fillRect(0, H - 8, W, 8); g.fillRect(0, 0, W, 4);
+    const arch = (x, y, w2, h2, col) => { g.fillStyle = col; g.beginPath(); g.moveTo(x - w2, y + h2); g.lineTo(x - w2, y + w2); g.quadraticCurveTo(x - w2, y, x, y - w2 * 0.6); g.quadraticCurveTo(x + w2, y, x + w2, y + w2); g.lineTo(x + w2, y + h2); g.fill(); };
+    const win = (x) => { arch(x, 20, 8, 18, '#a8885a'); arch(x, 22, 6, 15, '#2e3f6a'); g.fillStyle = '#5a82d0'; g.fillRect(x - 6, 30, 12, 2); };
+    const cx = W / 2, n = Math.max(1, Math.round(w / 2.2));
+    if (front) {
+      arch(cx, 34, 13, 42, '#a8885a'); arch(cx, 37, 10, 39, door);
+      g.fillStyle = '#e3b341'; g.beginPath(); g.arc(cx + 5, 58, 2, 0, 7); g.fill();
+      if (W > 110) { win(cx - W * 0.3); win(cx + W * 0.3); }
+    } else for (let i = 0; i < n; i++) win((W / n) * (i + 0.5));
   });
 }
 // a palisade: upright logs, rounded with light and shade, bound by a rope
@@ -218,6 +266,20 @@ const THEMES = {
       g.lineWidth = 2; g.beginPath(); g.moveTo(8, 20); g.lineTo(27, 20); g.stroke(); // the arrow
       g.fillStyle = '#f2ead8'; g.beginPath(); g.moveTo(29, 20); g.lineTo(25, 17); g.lineTo(25, 23); g.fill();
     } },
+  // Rytingborg: sandstone walls, onion domes of lapis blue tipped with gold; a blue banner with a gold
+  // dagger over a palm
+  sand: { stone: ['#d8b880', '#8a6a40'], stoneDark: '#c09a62', cobble: ['#e2cc9e', '#a89070'], sand: true, dome: true,
+    roofs: ['#2e4f9a', '#3a6ab8', '#3a9a8a', '#c8a050'], towerRoof: '#2e4f9a',
+    plaster: ['#e8d4a8', '#efdcb4', '#e2c898', '#f2e2c0'], timber: '#8a6a40',
+    banner: (g) => {
+      g.fillStyle = '#2a3f8a'; g.fillRect(0, 0, 32, 40); g.beginPath(); g.moveTo(0, 40); g.lineTo(16, 48); g.lineTo(32, 40); g.fill();
+      g.strokeStyle = '#f0c850'; g.lineWidth = 1.5; g.strokeRect(2, 2, 28, 37);
+      g.fillStyle = '#f0c850';
+      for (const a of [-0.9, -0.45, 0, 0.45, 0.9]) { g.save(); g.translate(16, 16); g.rotate(a); g.beginPath(); g.ellipse(0, -6, 2, 6, 0, 0, 7); g.fill(); g.restore(); } // the palm's crown
+      g.fillRect(15, 6, 2, 30); g.fillRect(10, 26, 12, 2); // the dagger: blade and guard
+      g.beginPath(); g.moveTo(16, 4); g.lineTo(18, 8); g.lineTo(14, 8); g.fill();
+      g.fillRect(15, 28, 2, 6); g.beginPath(); g.arc(16, 35, 2, 0, 7); g.fill();
+    } },
 };
 
 // ctx: { group, lib, heightAt, place(type, x, z, force), addBox(x0, z0, x1, z1, kind), addSolid(x, z, r), boxes,
@@ -226,9 +288,10 @@ const THEMES = {
 export function buildCity(ctx, variant = 'city') {
   const { group, place, addBox, addSolid } = ctx;
   const T = THEMES[variant];
-  const rng = mulberry32({ city: 512, magic: 733, hunt: 911 }[variant]);
+  const rng = mulberry32({ city: 512, magic: 733, hunt: 911, sand: 1213 }[variant]);
   const fades = []; // { meshes, x, z, r, h }
   const fadeMats = new Map();
+  const anims = []; // (now) => void: boats drifting, waterfalls running
   const spin = []; // meshes that turn and bob: floating crystals
   const turn = []; // meshes that turn on their own axis: windmill sails
   const lam = (opts) => new THREE.MeshLambertMaterial(opts);
@@ -244,6 +307,7 @@ export function buildCity(ctx, variant = 'city') {
     plankDark: lam({ map: plankTex(rng, '#5a3a22') }),
     water: lam({ map: waterTex(), color: '#bfe6ff' }),
     gold: lam({ color: '#e3b341' }),
+    dome: T.dome ? lam({ map: domeTex(rng, T.roofs[0]) }) : null,
   };
   M.cobble.map.repeat.set(1, 1);
   for (const m of [...M.roofs, M.towerRoof, M.roofPurple]) m.map.repeat.set(0.8, 0.8);
@@ -276,7 +340,7 @@ export function buildCity(ctx, variant = 'city') {
   pave.rotateX(-Math.PI / 2);
   const puv = pave.attributes.uv;
   for (let i = 0; i < puv.count; i++) puv.setXY(i, puv.getX(i) * pw / 2, puv.getY(i) * pd / 2);
-  mesh(pave, M.floor || M.cobble, (WALL.x0 + WALL.x1) / 2, Y + 0.02, (WALL.z0 + WALL.z1) / 2).renderOrder = 0;
+  if (!T.sand) mesh(pave, M.floor || M.cobble, (WALL.x0 + WALL.x1) / 2, Y + 0.02, (WALL.z0 + WALL.z1) / 2).renderOrder = 0; // (Rytingborg's floor is the sand, its lake and its own paving)
   // paved roads out through the gates
   const G = gateAt;
   for (const [x, z, w, d] of [G.s !== undefined && [G.s, 58.5, GATE * 2, 7], G.n !== undefined && [G.n, 5.5, GATE * 2, 7],
@@ -328,10 +392,11 @@ export function buildCity(ctx, variant = 'city') {
     // a watchtower of logs: square, a pyramid roof on four posts over the platform
     const body = T.wood ? mesh(boxUV(new THREE.BoxGeometry(r * 1.7, th, r * 1.7), r * 1.7, th, r * 1.7, 2), M.stone, tx, Y + th / 2, tz)
       : mesh(cylUV(new THREE.CylinderGeometry(r, r * 1.08, th, 14), r, th, 2), M.stone, tx, Y + th / 2, tz);
-    const roofGeo = T.wood ? new THREE.ConeGeometry(r * 1.45, 1.5, 4) : new THREE.ConeGeometry(r * 1.3, variant === 'magic' ? 2.6 : 1.8, 14);
+    const roofGeo = T.wood ? new THREE.ConeGeometry(r * 1.45, 1.5, 4) : T.dome ? onion(r * 1.05, 1.9) : new THREE.ConeGeometry(r * 1.3, variant === 'magic' ? 2.6 : 1.8, 14);
     if (T.wood) roofGeo.rotateY(Math.PI / 4);
-    const roof = mesh(roofGeo, M.towerRoof, tx, Y + th + (T.wood ? 1.55 : variant === 'magic' ? 1.3 : 0.9), tz);
+    const roof = mesh(roofGeo, T.dome ? M.dome : M.towerRoof, tx, Y + th + (T.wood ? 1.55 : T.dome ? 0 : variant === 'magic' ? 1.3 : 0.9), tz);
     const parts = [body, roof];
+    if (T.dome) parts.push(mesh(new THREE.ConeGeometry(0.1, 0.9, 6), M.gold, tx, Y + th + 2.3, tz)); // a gold spike on each dome
     if (T.wood) for (const [sx, sz] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) parts.push(mesh(new THREE.BoxGeometry(0.14, 0.85, 0.14), M.plankDark, tx + sx * r * 0.75, Y + th + 0.42, tz + sz * r * 0.75));
     if (orb) { const o = mesh(new THREE.OctahedronGeometry(0.28), orb, tx, Y + th + 3.2, tz); spin.push(o); parts.push(o); } // a crystal over each tower
     addSolid(tx, tz, r);
@@ -388,12 +453,12 @@ export function buildCity(ctx, variant = 'city') {
     return [body, roof, door];
   }
   const P = (type, x, z) => place(type, x, z, true);
-  const api = { M, Y, rng, mesh, lam, house, stall, tower, fadeable, spin, turn, P, addBox, addSolid, group };
+  const api = { M, Y, rng, mesh, lam, house, stall, tower, fadeable, spin, turn, anims, P, addBox, addSolid, group, T, ctx };
   const extra = LAYOUTS[variant](api);
 
   // ---------- minimap ----------
   function minimap(mg) {
-    mg.fillStyle = { magic: '#b6b0c8', hunt: '#7aa050' }[variant] || '#b3ab9c';
+    mg.fillStyle = { magic: '#b6b0c8', hunt: '#7aa050', sand: '#e2cc9a' }[variant] || '#b3ab9c';
     mg.fillRect(x0 * 2, z0 * 2, (x1 - x0) * 2, (z1 - z0) * 2);
     extra?.underlay?.(mg);
     mg.fillStyle = variant === 'magic' ? '#5a3a7a' : '#8a5a3a';
@@ -408,6 +473,7 @@ export function buildCity(ctx, variant = 'city') {
     const now = performance.now() / 1000;
     for (const m of spin) { m.rotation.y = now * 0.8; m.position.y = (m.userData.y0 ??= m.position.y) + Math.sin(now * 1.6 + m.position.x) * 0.12; }
     for (const m of turn) m.rotation.z = now * 0.7;
+    for (const a of anims) a(now);
     for (const f of fades) {
       const dx = f.x - px, dz = f.z - pz;
       let fade = false;
@@ -561,6 +627,219 @@ const LAYOUTS = {
     };
   },
 
+
+  // ---------- Rytingborg, the oasis city (after the owner's picture) ----------
+  // The lake fills the middle of the city (world.js carves it), crossed by two arched bridges that
+  // meet on a palm island with a domed kiosk; little sailboats drift on it. At the back, the palace
+  // on its sandstone rock: a great blue dome, minarets, two waterfalls pouring down into pools. Round
+  // the shore, domed sandstone houses, palms, and the bazaar's awnings along the road between the
+  // west and east gates; the Assassins' guild, dark-domed, in the palace's shadow by the north gate.
+  sand({ M, Y, rng, mesh, lam, stall, fadeable, anims, P, addBox, addSolid, group, T }) {
+    const [lapis, sky, teal] = M.roofs;
+    const sandstone = lam({ map: stoneTex(rng, '#d8b880', '#a8885a') });
+    sandstone.map.repeat.set(0.5, 0.5);
+    const cliff = lam({ map: stoneTex(rng, '#c8a068', '#8a6a40') });
+    const pave = lam({ map: cobbleTex(rng, '#e2cc9e', '#b49a74'), polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1 });
+    const flat = (w, d, mat, x, z, y = Y + 0.03) => {
+      const g = new THREE.PlaneGeometry(w, d); g.rotateX(-Math.PI / 2);
+      const u = g.attributes.uv; for (let i = 0; i < u.count; i++) u.setXY(i, u.getX(i) * w / 2, u.getY(i) * d / 2);
+      return mesh(g, mat, x, y, z);
+    };
+    const dome = (x, y, z, r, mat = M.dome) => {
+      const d = mesh(onion(r, r * 1.7), mat, x, y, z);
+      const spike = mesh(new THREE.ConeGeometry(r * 0.08, r * 0.7, 6), M.gold, x, y + r * 1.7 + r * 0.3, z);
+      return [d, spike];
+    };
+    // a sandstone house: arched windows and door, a flat roof with a low parapet, maybe a dome
+    const house = (x, z, w, d, o = {}) => {
+      const wh = o.h || 2.6, plaster = o.plaster || T.plaster[Math.floor(rng() * T.plaster.length)];
+      const face = (fw, front) => lam({ map: archFace(rng, fw, front, plaster, o.door) });
+      const roofM = lam({ color: plaster });
+      const body = mesh(new THREE.BoxGeometry(w, wh, d), [face(d, false), face(d, false), roofM, roofM, face(w, true), face(w, false)], x, Y + wh / 2, z);
+      const parapet = mesh(new THREE.BoxGeometry(w + 0.2, 0.35, d + 0.2), [roofM, roofM, lam({ color: '#c8aa78' }), roofM, roofM, roofM], x, Y + wh + 0.17, z);
+      const parts = [body, parapet];
+      if (o.dome) parts.push(...dome(x + (o.dx || 0), Y + wh + 0.3, z + (o.dz || 0), o.dome, o.domeMat));
+      if (o.awning) { // a striped cloth over the door
+        const a = mesh(new THREE.BoxGeometry(Math.min(w - 0.6, 2.6), 0.06, 1.0), lam({ map: stripeTex(o.awning, '#f2ead8') }), x, Y + wh * 0.62, z + d / 2 + 0.45);
+        a.rotation.x = 0.35; parts.push(a);
+      }
+      addBox(x - w / 2, z - d / 2, x + w / 2, z + d / 2);
+      fadeable(parts, x, z, Math.max(w, d) / 2, wh + (o.dome ? o.dome * 2.2 : 0.4));
+      return parts;
+    };
+    // a minaret: a slim round tower, a balcony ring, a little onion dome
+    const minaret = (x, z, h, y0 = Y, solid = true) => {
+      const parts = [
+        mesh(cylUV(new THREE.CylinderGeometry(0.42, 0.55, h, 12), 0.5, h, 2), sandstone, x, y0 + h / 2, z),
+        mesh(new THREE.CylinderGeometry(0.72, 0.6, 0.3, 14), M.stoneDark, x, y0 + h * 0.78, z),
+        mesh(cylUV(new THREE.CylinderGeometry(0.34, 0.34, 0.9, 10), 0.34, 0.9, 1), lam({ map: domeTex(rng, sky) }), x, y0 + h + 0.45, z),
+        ...dome(x, y0 + h + 0.9, z, 0.46),
+      ];
+      if (solid) addSolid(x, z, 0.6);
+      fadeable(parts, x, z, 0.7, h + 2);
+      return parts;
+    };
+
+    // ---------- the lake's shore, the bridges and the island ----------
+    const L = SAND.lake;
+    { // a paved rim round the water (a ring of stone just above it)
+      const ring = new THREE.Shape(); ring.absellipse(0, 0, L.rx + 1.1, L.rz + 1.1, 0, Math.PI * 2);
+      const hole = new THREE.Path(); hole.absellipse(0, 0, L.rx - 0.4, L.rz - 0.4, 0, Math.PI * 2, true); ring.holes.push(hole);
+      const g = new THREE.ShapeGeometry(ring, 48); g.rotateX(-Math.PI / 2);
+      const u = g.attributes.uv; for (let i = 0; i < u.count; i++) u.setXY(i, u.getX(i) / 2, u.getY(i) / 2);
+      mesh(g, pave, L.x, Y + 0.04, L.z).renderOrder = 0;
+    }
+    const arches = canvasTex(128, 32, (g) => { // a bridge's side: stone with arches over the water
+      g.fillStyle = '#d0b07a'; g.fillRect(0, 0, 128, 32);
+      g.fillStyle = 'rgba(90,60,30,.4)'; for (let x = 0; x < 128; x += 16) g.fillRect(x, 0, 1, 8);
+      g.fillStyle = '#5a7a8a'; for (let x = 8; x < 128; x += 32) { g.beginPath(); g.moveTo(x, 32); g.lineTo(x, 18); g.arc(x + 8, 18, 8, Math.PI, 0); g.lineTo(x + 16, 32); g.fill(); }
+      g.fillStyle = '#e8d0a0'; g.fillRect(0, 0, 128, 3);
+    });
+    arches.wrapS = THREE.RepeatWrapping;
+    const banMat = lam({ map: canvasTex(32, 48, T.banner), transparent: true, alphaTest: 0.5, side: THREE.DoubleSide });
+    const bridge = (x0, z0, x1, z1) => { // along x or along z, its deck level with the street
+      const alongX = x1 - x0 > z1 - z0, len = alongX ? x1 - x0 : z1 - z0, w = 2.7, cx = (x0 + x1) / 2, cz = (z0 + z1) / 2;
+      const side = lam({ map: arches.clone() }); side.map.repeat.set(len / 8, 1); side.map.needsUpdate = true;
+      const deck = mesh(new THREE.BoxGeometry(alongX ? len : w, 0.9, alongX ? w : len), [alongX ? sandstone : side, alongX ? sandstone : side, pave, sandstone, alongX ? side : sandstone, alongX ? side : sandstone], cx, Y - 0.41, cz);
+      const parts = [deck];
+      for (const s of [-1, 1]) { // the parapets, with a blue banner pole at each end
+        const px = alongX ? cx : cx + s * (w / 2 - 0.12), pz = alongX ? cz + s * (w / 2 - 0.12) : cz;
+        parts.push(mesh(new THREE.BoxGeometry(alongX ? len : 0.24, 0.5, alongX ? 0.24 : len), sandstone, px, Y + 0.3, pz));
+        for (const e of [-1, 1]) {
+          const bx = alongX ? cx + e * (len / 2 - 0.3) : px, bz = alongX ? pz : cz + e * (len / 2 - 0.3);
+          parts.push(mesh(new THREE.CylinderGeometry(0.08, 0.08, 2.6, 6), M.plankDark, bx, Y + 1.3, bz));
+          parts.push(mesh(new THREE.PlaneGeometry(0.6, 0.9), banMat, bx + (alongX ? 0 : s * 0.38), Y + 2.1, bz + 0.05)); // (facing the camera)
+        }
+      }
+      fadeable(parts, cx, cz, 1.4, 1);
+    };
+    bridge(30.9, L.z - L.rz - 0.8, 33.1, L.z - SAND.island.r + 0.2); bridge(30.9, L.z + SAND.island.r - 0.2, 33.1, L.z + L.rz + 0.8);
+    bridge(L.x - L.rx - 0.8, 27.8, L.x - SAND.island.r + 0.2, 30.2); bridge(L.x + SAND.island.r - 0.2, 27.8, L.x + L.rx + 0.8, 30.2);
+    { // the island: a paved round, palms, and a kiosk: four slim columns under a blue dome
+      const { x, z, r } = SAND.island;
+      const g = new THREE.CircleGeometry(r, 28); g.rotateX(-Math.PI / 2);
+      const u = g.attributes.uv; for (let i = 0; i < u.count; i++) u.setXY(i, u.getX(i) * r, u.getY(i) * r);
+      mesh(g, pave, x, Y + 0.05, z);
+      const parts = [];
+      for (const [sx, sz] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) { parts.push(mesh(new THREE.CylinderGeometry(0.14, 0.16, 2.4, 8), sandstone, x + sx * 1.15, Y + 1.2, z + sz * 1.15)); addSolid(x + sx * 1.15, z + sz * 1.15, 0.2); }
+      parts.push(mesh(new THREE.BoxGeometry(2.8, 0.3, 2.8), sandstone, x, Y + 2.5, z));
+      parts.push(...dome(x, Y + 2.65, z, 1.2));
+      fadeable(parts, x, z, 1.5, 5);
+      for (const [dx, dz] of [[-2.5, -2.3], [2.6, -2.2], [-2.6, 2.4], [2.4, 2.5]]) P('tree_palm', x + dx, z + dz);
+    }
+    // the sailboats: a hull, a mast, a white lateen sail; each drifts round its own corner of the lake
+    const sail = canvasTex(64, 64, (g) => { g.fillStyle = '#f4ecd8'; g.beginPath(); g.moveTo(4, 60); g.lineTo(60, 60); g.lineTo(10, 2); g.closePath(); g.fill(); g.strokeStyle = '#c8b898'; g.lineWidth = 2; for (let y = 16; y < 60; y += 12) { g.beginPath(); g.moveTo(8, y); g.lineTo(8 + (y / 60) * 50, y); g.stroke(); } });
+    sail.wrapS = sail.wrapT = THREE.ClampToEdgeWrapping;
+    for (const [bx, bz, ph] of [[26.5, 25.4, 0], [37.5, 25.6, 2.1], [26.4, 32.6, 4.2], [37.6, 32.4, 1.2]]) {
+      const boat = new THREE.Group();
+      const hullShape = new THREE.Shape(); hullShape.moveTo(-1.1, 0); hullShape.quadraticCurveTo(0, -0.5, 1.2, 0.1); hullShape.lineTo(-1.1, 0.25); hullShape.closePath();
+      const hull = new THREE.Mesh(new THREE.ExtrudeGeometry(hullShape, { depth: 0.7, bevelEnabled: false }).translate(0, 0, -0.35), lam({ color: '#8a5a33' }));
+      hull.scale.set(1, 0.9, 1); hull.position.y = 0.1;
+      const mast = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.05, 2.2, 6), M.plankDark); mast.position.set(0.1, 1.2, 0);
+      const sl = new THREE.Mesh(new THREE.PlaneGeometry(1.8, 1.9), lam({ map: sail, transparent: true, alphaTest: 0.5, side: THREE.DoubleSide })); sl.position.set(0.15, 1.35, 0.02);
+      boat.add(hull, mast, sl);
+      boat.position.set(bx, WATER_LEVEL, bz);
+      group.add(boat);
+      anims.push((now) => {
+        const a = now * 0.12 + ph;
+        boat.position.x = bx + Math.cos(a) * 1.2; boat.position.z = bz + Math.sin(a) * 0.7;
+        boat.rotation.y = -a - Math.PI / 2; boat.position.y = WATER_LEVEL + Math.sin(now * 1.3 + ph) * 0.04;
+        boat.rotation.z = Math.sin(now * 0.9 + ph) * 0.04;
+      });
+    }
+
+    // ---------- the palace on its rock, and the waterfalls ----------
+    const Tr = SAND.terrace;
+    {
+      const w = Tr.x1 - Tr.x0, d = Tr.z1 - Tr.z0, cx = (Tr.x0 + Tr.x1) / 2, cz = (Tr.z0 + Tr.z1) / 2, h = Tr.h;
+      const rock = mesh(boxUV(new THREE.BoxGeometry(w, h, d), w, h, d, 2), cliff, cx, Y + h / 2, cz);
+      addBox(Tr.x0, Tr.z0, Tr.x1, Tr.z1, 'wall');
+      const top = Y + h, parts = [rock];
+      // the palace: a long arcaded hall, a great dome over its middle, smaller domes, four minarets
+      const pw = 15, pd = 4.6, ph = 3.4, px = cx + 1.5, pz = cz - 0.6;
+      const hall = mesh(new THREE.BoxGeometry(pw, ph, pd), [lam({ map: archFace(rng, pd, false, '#efdcb4') }), lam({ map: archFace(rng, pd, false, '#efdcb4') }), lam({ color: '#efdcb4' }), sandstone, lam({ map: archFace(rng, pw, true, '#efdcb4', '#2e4f9a') }), sandstone], px, top + ph / 2, pz);
+      parts.push(hall, mesh(new THREE.CylinderGeometry(2.6, 2.8, 1.2, 20), sandstone, px, top + ph + 0.6, pz));
+      parts.push(...dome(px, top + ph + 1.2, pz, 2.6));
+      for (const s of [-1, 1]) {
+        parts.push(mesh(new THREE.BoxGeometry(3.6, 2.6, 3.6), sandstone, px + s * 5.4, top + ph + 1.3 - 0.01, pz));
+        parts.push(...dome(px + s * 5.4, top + ph + 2.6, pz, 1.35));
+      }
+      for (const [mx, mz] of [[px - pw / 2 - 0.6, pz + pd / 2], [px + pw / 2 + 0.6, pz + pd / 2], [px - pw / 2 + 1, pz - pd / 2 - 0.6], [px + pw / 2 - 1, pz - pd / 2 - 0.6]]) parts.push(...minaret(mx, mz, 4.6, top, false));
+      // stairs up the rock's face, and blue banners hung down it
+      for (let i = 0; i < 8; i++) { // the steps
+        const sh = (h * (8 - i)) / 8;
+        parts.push(mesh(new THREE.BoxGeometry(3.2, sh, 0.26), sandstone, px, Y + sh / 2, Tr.z1 + 0.13 + i * 0.26));
+      }
+      for (const s of [-1, 1]) parts.push(mesh(new THREE.BoxGeometry(0.3, 1.0, 2.1), sandstone, px + s * 1.75, Y + 0.5 + h * 0.3, Tr.z1 + 1.0));
+      addBox(px - 1.6, Tr.z1, px + 1.6, Tr.z1 + 2);
+      for (const bx of [Tr.x0 + 2.4, px - 4, px + 4, Tr.x1 - 2.4]) {
+        const ban = mesh(new THREE.PlaneGeometry(1.0, 2.2), lam({ map: canvasTex(32, 48, T.banner), transparent: true, alphaTest: 0.5 }), bx, Y + h - 1.3, Tr.z1 + 0.03);
+        parts.push(ban);
+      }
+      void parts; // (the rock is always behind the hero: nothing to fade)
+      // the waterfalls: water spilling over the rock's lip into a pool at its foot
+      const fallTex = canvasTex(32, 64, (g) => { g.fillStyle = 'rgba(120,200,235,.85)'; g.fillRect(0, 0, 32, 64); g.fillStyle = 'rgba(255,255,255,.55)'; for (let i = 0; i < 18; i++) g.fillRect((i * 7) % 30, (i * 13) % 60, 2, 10); });
+      fallTex.wrapS = fallTex.wrapT = THREE.RepeatWrapping;
+      for (const fx of [Tr.x0 + 4.5, Tr.x1 - 4.5]) {
+        const fm = new THREE.MeshBasicMaterial({ map: fallTex.clone(), transparent: true, depthWrite: false });
+        fm.map.needsUpdate = true; fm.map.repeat.set(1, 1.5);
+        const fall = mesh(new THREE.PlaneGeometry(1.6, h + 0.3), fm, fx, Y + h / 2, Tr.z1 + 0.06);
+        fall.renderOrder = 1;
+        const pool = new THREE.CircleGeometry(1.5, 20); pool.rotateX(-Math.PI / 2);
+        mesh(pool, M.water, fx, Y + 0.08, Tr.z1 + 1.2);
+        const rim = new THREE.Shape(); rim.absarc(0, 0, 1.75, 0, Math.PI * 2); const hl = new THREE.Path(); hl.absarc(0, 0, 1.5, 0, Math.PI * 2, true); rim.holes.push(hl);
+        mesh(new THREE.ExtrudeGeometry(rim, { depth: 0.35, bevelEnabled: false, curveSegments: 20 }).rotateX(-Math.PI / 2), sandstone, fx, Y, Tr.z1 + 1.2);
+        addSolid(fx, Tr.z1 + 1.2, 1.8);
+        const foam = mesh(new THREE.SphereGeometry(0.7, 10, 6, 0, Math.PI * 2, 0, Math.PI / 2), new THREE.MeshBasicMaterial({ color: '#f2fbff', transparent: true, opacity: 0.6, depthWrite: false }), fx, Y + 0.05, Tr.z1 + 0.7);
+        anims.push((now) => { fm.map.offset.y = now * 1.4; foam.scale.setScalar(1 + Math.sin(now * 7 + fx) * 0.12); });
+      }
+    }
+
+    // ---------- the Assassins' guild: a dark sandstone hall with a dark dome, by the north gate ----------
+    house(11.9, 21.4, 4.0, 5, { h: 3.0, plaster: '#a8865a', door: '#2a1e2e', dome: 1.5, domeMat: lam({ map: domeTex(rng, '#3a2a4a') }) });
+    P('urn', 10.6, 24.6); P('crate', 13.2, 24.5);
+
+    // ---------- homes round the shore ----------
+    house(12, 31.2, 4, 4.6, { dome: 1.3 });
+    house(12, 38.4, 4, 4.6, { awning: '#c8463c' });
+    house(51, 21.4, 5, 5, { dome: 1.4, domeMat: lam({ map: domeTex(rng, teal) }) });
+    house(51, 29.6, 5, 4.6, { awning: '#e8862a' });
+    house(51, 37.2, 5, 4.6, { dome: 1.2 });
+    house(26.4, 52, 5.2, 4.2, { awning: '#e3b341' });
+    house(38, 52, 5.2, 4.2, { dome: 1.3 });
+    house(46.6, 51.6, 5, 4.6, { awning: '#c8463c', plaster: '#e2c898' }); // the forge
+    house(16.2, 52, 4.6, 4.2, { dome: 1.1, domeMat: lam({ map: domeTex(rng, lapis) }) });
+    for (const [mx, mz] of [[19.4, 18.2], [52.6, 17.4], [10.6, 27.4], [53.4, 49]]) minaret(mx, mz, 5.2);
+
+    // ---------- the bazaar: the road from the west gate to the east, awnings on both sides ----------
+    flat(46, 2.8, pave, 32, 44); // the road
+    flat(2.4, 34, pave, 15.3, 26); // from the north gate down to it
+    stall(SAND.stall.x, SAND.stall.z, stripeTex('#c8463c', '#f2ead8'));
+    stall(35.6, 40.6, stripeTex('#e3b341', '#f2ead8'));
+    stall(42.6, 47.4, stripeTex('#e8862a', '#f2ead8'));
+    stall(31, 47.6, stripeTex('#3a6ab8', '#f2ead8'));
+    P('chest', SAND.chest.x, SAND.chest.z);
+    P('anvil', 43.4, 49.6); P('barrel', 49.8, 48.4); P('crate', 50.8, 48.8); // the forge's yard
+    P('urn', 31.4, 40.4); P('urn', 32.4, 40.2); P('crate', 39.4, 40.2); P('barrel', 24.6, 40.2); P('urn', 46, 40.4);
+    P('crate', 50.2, 40.4); P('crate', 51.2, 40.6); P('barrel', 52.4, 40.5); // the caravan's bales by the east gate
+    // palms everywhere, along the shore and in the yards
+    for (const [x, z] of [[19.2, 23.6], [44.6, 23.2], [18.6, 34.4], [45.6, 34.6], [21.6, 38.6], [42.4, 38.8], [24.8, 20.2], [39.4, 20.4],
+      [11.2, 48.6], [53.2, 33.6], [11.4, 34.8], [33.8, 50.2], [21.4, 52.6], [42.2, 53.4], [29.2, 38.8], [35, 38.8]]) P('tree_palm', x, z);
+    for (const [x, z] of [[10.6, 51.2], [53.4, 25.4], [24.2, 50.2], [40.6, 49.8]]) P('cactus_round', x, z);
+    void addBox;
+    return {
+      underlay: (mg) => {
+        mg.fillStyle = '#c8b088'; mg.fillRect(18, 85, 92, 6); mg.fillRect(27, 18, 6, 68);
+        mg.fillStyle = '#8a6a40'; mg.fillRect(Tr.x0 * 2, Tr.z0 * 2, (Tr.x1 - Tr.x0) * 2, (Tr.z1 - Tr.z0) * 2);
+      },
+      minimap: (mg) => {
+        mg.fillStyle = '#4fb0c8'; mg.beginPath(); mg.ellipse(L.x * 2, L.z * 2, L.rx * 2, L.rz * 2, 0, 0, Math.PI * 2); mg.fill();
+        mg.fillStyle = '#d8c08a'; mg.fillRect(61.8, (L.z - L.rz) * 2, 4.4, L.rz * 4); mg.fillRect((L.x - L.rx) * 2, 55.6, L.rx * 4, 4.4);
+        mg.beginPath(); mg.arc(L.x * 2, L.z * 2, SAND.island.r * 2, 0, Math.PI * 2); mg.fill();
+        mg.fillStyle = '#2e4f9a'; mg.beginPath(); mg.arc(36.5 * 2, 12.2 * 2, 5, 0, Math.PI * 2); mg.fill();
+      },
+    };
+  },
 
   // ---------- Steinborg ----------
   city({ M, Y, rng, mesh, lam, house, stall, tower, P, addSolid }) {
