@@ -1056,10 +1056,10 @@ leads to each.
 | Ottar the Farmer | Veidheim, by the barn | The Farmer: The Lost Lambs (16): find 3 lambs in Willow Marsh · Snakes in the Barley (46): 20 Snakes · Guard the Harvest (56): 25 Snakes, 15 Wolves |
 | Leif the Tanner | Veidheim | makes hunters' gear (Hunter's Cloak and Boots, Claw Charm, Bark Armor, Alpha Cloak, Bear Heart Charm) · Pelts for the Winter (50): 10 Wolf Pelts, 5 Bear Claws · The Great Bear's Kin (59): 12 Bears · Winter Hides (64): 20 Wolf Pelts, 10 Bear Claws · Tanner's Bounty (90, again and again): the Great Bear and 20 Bears |
 | Bjarki the Beastmaster | Veidheim, by the lodge | the Beastmaster's trial; his wolf Grimr never bites (unless asked) |
-| Asa the Fletcher | Veidheim | shop: bows and arrows · makes bows (Vine, Ice, Willow, Fire, Steel, Gale, Heartwood) · The Fletcher: Wood for Bows (22): 12 Willow Twigs, 4 Old Bark · Fang and Feather (48): 6 Wolf Fangs, 10 Willow Twigs |
+| Asa the Fletcher | Veidheim | shop: bows and arrows · makes bows (Vine, Ice, Willow, Fire, Steel, Gale, Heartwood) · The Fletcher: Wood for Bows (22): 12 Willow Twigs, 4 Thorns · Fang and Feather (48): 6 Wolf Fangs, 10 Willow Twigs |
 | Eydis the Trader | Veidheim | shop: potions (White too), Honey, Speed Potions, feathers |
 | Halla the Healer | Veidheim | heals HP and SP for free |
-| Kalf the Gate Archer | Veidheim, at the north gate | The Gate Watch: Marsh Patrol (8): 12 Yellow Bloops, 8 Willows · Walking Trees (22): 15 Treants in the Old Forest · The Old Forest (28): 30 Treants |
+| Kalf the Gate Archer | Veidheim, at the north gate | The Gate Watch: Marsh Patrol (8): 12 Yellow Bloops, 8 Willows (no early quests send you into the Old Forest: the Ancient Treant roams it) |
 | Bodil the Sentry, Finn the Young Archer | Veidheim | tales of the village and its lands |
 | Tove the Carter | Veidheim | carts to any land you have walked |
 

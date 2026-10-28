@@ -421,9 +421,9 @@ export const NPCS = {
   },
   kalf: {
     name: 'Kalf the Gate Archer', map: 'hunt', x: 35.6, z: 12.6, dress: { ...ROLE.sentry, main: [80, 0.35, 0.7], dye: 'blonde' },
-    hello: 'North is the Old Forest. The Treants there walk about like old men looking for their pipes. They will not touch you unless you start it.',
+    hello: 'North is the Old Forest. Keep out of it until you have grown: the Ancient Treant has woken in there, and even our best hunters walk around it.',
     later: (lv) => `The Treants hit like falling trees. Come back at Base Level ${lv}.`,
-    bye: 'Mind the roots.', quests: ['marshwatch', 'treants', 'oldwoodwatch'],
+    bye: 'Mind the roots.', quests: ['marshwatch'], // (no early quests into the Old Forest: the Ancient Treant roams it)
     lore: ['West is Willow Marsh, the way you came in. There is an old willow by the water, bigger than the rest: the Elder Willow, we call it. It does not like visitors.'],
   },
   halla: {
@@ -834,8 +834,8 @@ export const QUESTS = {
     reward: { xp: 200000, perz: 18000, items: { potion3: 12, honey: 6 } },
   },
   bowstaves: {
-    title: 'The Fletcher 1: Wood for Bows', kind: 'fetch', items: { willow_twig: 12, old_bark: 4 }, lv: 22,
-    intro: 'Bows need willow that still wants to bend, and the bow-grips need bark that will not crack. Bring me twelve Willow Twigs from the marsh and four slabs of Old Bark from the Treants.',
+    title: 'The Fletcher 1: Wood for Bows', kind: 'fetch', items: { willow_twig: 12, thorn: 4 }, lv: 22,
+    intro: 'Bows need willow that still wants to bend, and the bow-grips need something with a bite. Bring me twelve Willow Twigs from the marsh and four Thorns from the Red Sprouts of Birch Grove, to wind the grips tight.',
     thanks: 'Lovely wood. Still twitching, too. Every archer in the village will shoot a little straighter because of you.',
     reward: { xp: 9000, perz: 4000, items: { potion2: 6, quick: 2 } },
   },
@@ -844,12 +844,6 @@ export const QUESTS = {
     intro: 'The Elder Willow of Willow Marsh, west of the gate, is calling the willows out of the water, and they walk farther every night. Nobody can fell the Elder, but cut down twenty Willows before they reach the fields.',
     thanks: 'The marsh is still at last. Even the frogs are quieter. Veidheim owes you a great deal.',
     reward: { xp: 6000, perz: 3000, items: { potion2: 6 } },
-  },
-  treants: {
-    title: 'The Gate Watch 2: Walking Trees', kind: 'kill', mob: 'treant', n: 15, lv: 22,
-    intro: 'The Treants of the Old Forest have started wandering up to the north gate and leaning on the palisade. It creaks. Fell fifteen of them and the rest will keep their distance.',
-    thanks: 'Fifteen! The palisade has stopped groaning, and so have I. Here, from the watch.',
-    reward: { xp: 8000, perz: 3500, items: { potion2: 6 } },
   },
   ancienttreant: {
     title: 'The Waking Wood', kind: 'kill', mobs: { greatBear: 1, alphaWolf: 1 }, lv: 70,
@@ -992,16 +986,10 @@ export const QUESTS = {
     reward: { xp: 180000, perz: 18000, items: { potion3: 10 } },
   },
   marshwatch: {
-    title: 'The Gate Watch 1: Marsh Patrol', kind: 'kill', mobs: { yellowSlime: 12, willow: 8 }, lv: 8,
+    title: 'The Gate Watch: Marsh Patrol', kind: 'kill', mobs: { yellowSlime: 12, willow: 8 }, lv: 8,
     intro: 'Willow Marsh, west of the gate, is crawling with Yellow Bloops and walking Willows. Twelve Bloops and eight Willows.',
     thanks: 'The marsh road is clear. Not bad for a new hand.',
     reward: { xp: 800, perz: 600, items: { potion: 6 } },
-  },
-  oldwoodwatch: {
-    title: 'The Gate Watch 3: The Old Forest', kind: 'kill', mob: 'treant', n: 30, lv: 28,
-    intro: 'The Treants of the Old Forest, north of the gate, walk closer every night. Thirty of them back to sleep.',
-    thanks: 'The forest is still. Good shooting.',
-    reward: { xp: 6700, perz: 5000, items: { potion2: 8 } },
   },
   fletching: {
     title: 'The Fletcher 2: Fang and Feather', kind: 'fetch', items: { wolf_fang: 6, willow_twig: 10 }, lv: 48,
