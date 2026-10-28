@@ -41,7 +41,7 @@ export class Villagers {
       this.groups[map].add(s, shadow, mark);
       let tag = null; // a raid guide wears a RAID tag over their head, always
       if (n.raid) {
-        tag = new THREE.Sprite(new THREE.SpriteMaterial({ map: lib.marks.raid, alphaTest: 0.5 }));
+        tag = new THREE.Sprite(new THREE.SpriteMaterial({ map: lib.marks.raid, transparent: true, alphaTest: 0.05, depthWrite: false }));
         tag.scale.set(1.2, 0.36, 1);
         tag.center.set(0.5, 0);
         tag.renderOrder = 3;

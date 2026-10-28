@@ -372,8 +372,8 @@ crystal earrings and a band round the back of the head; QKN +4, FNS +4, HIT +10,
   ready. Once you have done a raid at its guide (win or lose), you can set out on it from anywhere
   through this window, and you come back to where you were when it ends. Opened from here, a
   raid's panel has a Back button to the list.
-- **Raid guides** (the Boatman in Salt Bay, Brokk in the Coal Pit, Ylva in Serpent Wood) wear a red
-  ✦ RAID tag over their heads.
+- **Raid guides** (the Boatman in Salt Bay, Brokk in the Coal Pit, Ylva in Serpent Wood) have a gold
+  ✦ RAID over their heads.
 - **Cooldowns:** each raid has one 3-hour cooldown for all its difficulties, from setting out; the
   three are separate.
 - **The Tutorial crossing** (Chapter 5): while the story waits on the raid, the Boatman also offers

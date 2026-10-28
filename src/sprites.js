@@ -515,15 +515,12 @@ function questMark(ch, fill) {
 // the tag over a raid guide's head (the Boatman, Brokk, Ylva), like a boss's name tag
 function raidTag() {
   const { c, g } = mk(160, 48);
-  g.beginPath();
-  g.roundRect(5, 5, 150, 38, 19);
-  g.fillStyle = '#b8302a'; g.fill();
-  g.strokeStyle = '#ffd23a'; g.lineWidth = 4; g.stroke();
-  g.font = '900 26px system-ui, sans-serif';
+  g.font = '900 30px system-ui, sans-serif';
   g.textAlign = 'center';
   g.textBaseline = 'middle';
-  g.strokeStyle = OUT; g.lineWidth = 5; g.strokeText('✦ RAID', 80, 25);
-  g.fillStyle = '#fff'; g.fillText('✦ RAID', 80, 25);
+  g.lineJoin = 'round';
+  g.strokeStyle = '#000'; g.lineWidth = 6; g.strokeText('✦ RAID', 80, 25);
+  g.fillStyle = '#ffd23a'; g.fillText('✦ RAID', 80, 25);
   return c;
 }
 

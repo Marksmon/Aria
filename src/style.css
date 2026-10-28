@@ -180,7 +180,7 @@ html, body {
 #toasts {
   position: absolute;
   left: calc(12px + env(safe-area-inset-left));
-  top: calc(132px + env(safe-area-inset-top));
+  top: calc(156px + env(safe-area-inset-top));
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -238,7 +238,7 @@ html, body {
 /* ---------- M9: villagers and quests ---------- */
 #quests {
   position: absolute;
-  top: calc(156px + env(safe-area-inset-top));
+  top: calc(182px + env(safe-area-inset-top));
   right: calc(12px + env(safe-area-inset-right));
   width: 178px;
   display: flex;
@@ -327,7 +327,7 @@ img { -webkit-user-drag: none; user-select: none; }
   position: absolute;
   top: calc(8px + env(safe-area-inset-top));
   left: calc(8px + env(safe-area-inset-left));
-  width: 210px;
+  width: 196px;
   padding: 6px 8px 7px;
   border-radius: 9px;
   background: rgba(24, 30, 44, .72);
@@ -340,7 +340,7 @@ img { -webkit-user-drag: none; user-select: none; }
 #info .heroname { font-size: 13px; font-weight: 700; color: #ffe37a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 #info .heroname[hidden] { display: none; }
 body.named #winbtns { top: calc(123px + env(safe-area-inset-top)); }
-body.named #toasts { top: calc(151px + env(safe-area-inset-top)); }
+body.named #toasts { top: calc(175px + env(safe-area-inset-top)); }
 #info .who { display: flex; align-items: baseline; gap: 6px; white-space: nowrap; min-width: 0; }
 #info .jobname { font-size: 14px; color: #fff; }
 #info .lv { font-weight: 600; color: #cfd8ea; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
@@ -384,22 +384,31 @@ body.named #toasts { top: calc(151px + env(safe-area-inset-top)); }
   position: absolute;
   top: calc(104px + env(safe-area-inset-top));
   left: calc(8px + env(safe-area-inset-left));
-  width: 210px; /* as wide as the hero's panel above it, never past it */
-  display: flex;
+  width: 196px; /* as wide as the hero's panel above it, never past it: rows of three, all one size */
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 2px;
   pointer-events: auto;
 }
-#winbtns button {
-  flex: 1 1 auto;
+#winbtns button, #optbtn {
   min-width: 0;
   border: 1px solid var(--w-line);
   border-radius: 4px;
   padding: 3px 0;
   background: var(--w-bg);
   color: var(--w-text);
-  font: 700 11px system-ui, sans-serif;
+  font: 700 12px system-ui, sans-serif;
   white-space: nowrap;
 }
+/* the options button: under the map and its clock, over the quest list */
+#optbtn {
+  position: absolute;
+  top: calc(154px + env(safe-area-inset-top));
+  right: calc(12px + env(safe-area-inset-right));
+  width: 110px;
+  pointer-events: auto;
+}
+#optbtn.pressed { background: var(--w-press); }
 #winbtns button.pressed { background: var(--w-press); }
 
 #windows { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
