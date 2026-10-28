@@ -90,6 +90,7 @@ const save = loadSave();
 let lookBefore = null; // the look kept, while one is being tried on
 mobs.mvpAt = typeof save?.mvpAt === 'number' ? { jarl: save.mvpAt } : save?.mvpAt || {}; // older saves timed the Fire Giant alone
 mobs.bossHp = save?.bossHp || {};
+mobs.heroTier = () => JOBS[prog.job]?.tier || 0; // (mini-bosses come only for second jobs: mobs.js picksFight)
 mobs.bossAt = save?.bossAt || {};
 mobs.fieldAt = save?.fieldAt || {};
 const prog = new Progress();

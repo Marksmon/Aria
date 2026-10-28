@@ -81,7 +81,7 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   their own that need a plan (Fire Giant: Meteor Rain and burning ground; Kobold King: Tribe's
   Shield and Burrow; Goblin King: Mirror Image; Ancient Treant: Grasping Roots and Bark Armor), and
   enraged below half HP (`MVP_RAGE`). Even a Lv 99 hero without good, upgraded gear should not beat
-  one. Mini-bosses are half as hard as an MVP and fierce like one (the owner's call). So no main story
+  one. Mini-bosses are half as hard as an MVP and fierce like one (the owner's call). Their levels say so (55–66: Giant Sprout and Elder Willow 55, King Crab 58, Giant Mushroom 60, Giant Beetle 62, Alpha Wolf 64, Great Bear 66), and they come only for second-job heroes (the owner's call, `picksFight` in `mobs.js`): a Trainee or first job is left be unless it strikes or taunts one. So no main story
   step or job trial needs a boss (they hunt the boss's kin); the one quest that does is Sigrid's The
   Waking Wood (Lv 70: the Great Bear and the Alpha Wolf, two mini-bosses), and it can be quit. Boss and MVP cards drop at 1%
   (other cards 0.1%). **Cards are monsters** (the owner's call): one card per monster, named after it,
