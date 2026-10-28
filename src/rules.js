@@ -35,6 +35,7 @@ export const JOB_RULES = {
   swordman: { hpFactor: 70, hpIncrease: 500, spIncrease: 200, delay: { fist: 400, sword: 550 }, weight: 2800 },
   mage:     { hpFactor: 30, hpIncrease: 500, spIncrease: 600, delay: { fist: 500, sword: 650 }, weight: 2200 },
   archer:   { hpFactor: 50, hpIncrease: 500, spIncrease: 250, delay: { fist: 500, sword: 700, bow: 600 }, weight: 2600 },
+  assassin: { hpFactor: 70, hpIncrease: 500, spIncrease: 220, delay: { fist: 420, sword: 680, dagger: 440 }, weight: 2600 }, // quick with a dagger
   // second jobs, modelled on Ragnarok's Knight, Wizard and Crusader
   blademaster: { hpFactor: 150, hpIncrease: 500, spIncrease: 300, delay: { fist: 380, sword: 480 }, weight: 3200 },
   wizard:      { hpFactor: 55, hpIncrease: 500, spIncrease: 900, delay: { fist: 500, sword: 620 }, weight: 2400 },
@@ -42,7 +43,11 @@ export const JOB_RULES = {
   moonranger:  { hpFactor: 70, hpIncrease: 500, spIncrease: 600, delay: { fist: 480, sword: 640, bow: 540 }, weight: 2600 }, // bow and spell
   beastmaster: { hpFactor: 120, hpIncrease: 500, spIncrease: 400, delay: { fist: 420, sword: 540, bow: 560 }, weight: 3200 }, // sword and bow, and the beasts
   windrunner:  { hpFactor: 85, hpIncrease: 500, spIncrease: 350, delay: { fist: 450, sword: 620, bow: 470 }, weight: 2800 }, // the Hunter's quick bow
+  phantom:     { hpFactor: 95, hpIncrease: 500, spIncrease: 330, delay: { fist: 400, sword: 640, dagger: 400 }, weight: 2800 }, // Ragnarok's Assassin: a blade in each hand
 };
+// a dagger swings quicker than a sword: at the job's own dagger delay, else 80% of its sword's. Two
+// daggers (a Phantom's, gear.left) swing together, a little slower than one (DUAL)
+export const DAGGER = 0.8, DUAL = 1.15;
 
 function baseHp(lv, j) {
   let hp = 35 + Math.floor(lv * j.hpIncrease / 100);
@@ -59,13 +64,15 @@ export function derive(prog, gear) {
   const pow = s('pow'), qkn = s('qkn'), end = s('end'), knl = s('knl'), fns = s('fns'), ftn = s('ftn');
   // a bow draws at its own pace (a job with no bow delay of its own draws like it swings)
   // (never under 100 ms: Ragnarok's ASPD 190 cap)
-  const delay = Math.max(100, (gear.wlv ? (gear.bow ? j.delay.bow ?? j.delay.sword * 1.15 : j.delay.sword) : j.delay.fist) * (1 - (4 * qkn + fns) / 1000) * (gear.aspdRate ?? 1));
+  const weapon = gear.bow ? j.delay.bow ?? j.delay.sword * 1.15 : gear.dagger ? (j.delay.dagger ?? j.delay.sword * DAGGER) * (gear.left ? DUAL : 1) : j.delay.sword;
+  const delay = Math.max(100, (gear.wlv ? weapon : j.delay.fist) * (1 - (4 * qkn + fns) / 1000) * (gear.aspdRate ?? 1));
   return {
     maxHp: Math.floor((Math.floor(baseHp(lv, j) * (100 + end) / 100) + (gear.mhp || 0)) * (100 + (gear.mhpRate || 0)) / 100),
     maxSp: Math.floor((Math.floor((10 + Math.floor(lv * j.spIncrease / 100)) * (100 + knl) / 100) + (gear.msp || 0)) * (100 + (gear.mspRate || 0)) / 100),
     // status ATK: from POW, or with a bow from FNS (Ragnarok's ranged rule)
     batk: gear.bow ? fns + Math.floor(fns / 10) ** 2 + Math.floor(pow / 5) + Math.floor(ftn / 5) : pow + Math.floor(pow / 10) ** 2 + Math.floor(fns / 5) + Math.floor(ftn / 5),
     watk: gear.atk || 0,
+    left: gear.left || null,                      // a Phantom's second dagger: { atk, wlv, el } (player.js swing)
     el: gear.el || 'neutral',                     // the weapon's element
     ranged: !!gear.bow,                           // shoots (an MVP may take more or less from arrows: takes)
     wlv: gear.wlv || 0,
@@ -87,6 +94,10 @@ export function derive(prog, gear) {
     pierce: gear.perk?.pierce || 0,        // % of a monster's DEF your blows go through (the Giant Beetle Card)
     sureFoot: !!gear.perk?.sureFoot,       // never slowed: spores, sticky or rubbled ground (the King Crab Card)
     fury: gear.perk?.fury || 0,            // % harder blows below 40% HP (the Great Bear Card)
+    venom: gear.perk?.venom || 0,          // % chance a hit or spell poisons (the Cactus Lord Card, a Stinger)
+    swift: gear.perk?.swift || 0,          // % faster attacks for 5 s after a kill (the Rainbow Runner Card)
+    devour: gear.perk?.devour || 0,        // % of HP and SP back on a kill (the Sand Wyrm Card)
+    soultax: gear.perk?.soultax || 0,      // % of damage dealt back as SP (the Pharaoh Card)
     def: clamp(gear.def || 0, 0, 100),            // hard DEF from equipment
     end,                                          // soft DEF comes from END each hit
     mdef: knl + Math.floor(end / 2),

@@ -10,7 +10,7 @@
 // file is its data.
 //
 // A difficulty needs its Base Level (lv; the Tutorial excepted): Bloop Island 40/55/70/85, the
-// Kobold Camp 45/60/75/90, the Goblin Lair 50/65/80/95 (plus: the Hell one is shown as 95+).
+// Kobold Camp 45/60/75/90, the Goblin Lair 50/65/80/95, Pharaoh's Tomb 55/70/85/99 (plus: the Hell one is shown as 95+).
 // Strength (hp, atk on raidDef; exp, if given, sets the EXP apart from the HP) was tuned with a
 // whole-run simulation (build-tools/raid-sim.mjs: every monster of a wave at once, natural regen,
 // the breathers and the full heal): Easy for a first job without potions, Normal for a second job
@@ -112,6 +112,29 @@ export const RAIDS = {
       wave: 'Goblins creep out of the dark!', boss: 'drops down from his totem, axe in hand!',
       timeUp: 'The torches gutter out! Ylva drags you out of the dark before the horde closes in.', leave: 'You slip out of the lair, and Ylva leads you back to Serpent Wood.',
       cooldown: 'After a cleared raid the lair stays stirred up 3 hours.',
+    },
+  },
+  // the fourth raid: the Pharaoh's burial hall under the Pyramid in Scorpion Sands
+  tomb: {
+    name: "Pharaoh's Tomb", map: 'tomb', from: 'scorpion', npc: 'sindri', ...COMMON,
+    landing: { x: 32, z: 42 },
+    waves: [
+      [['scarab', 6, -4], ['mummy', 2, -2]],
+      [['mummy', 4, -2], ['scarab', 3, 0], ['tombScorpion', 2, 0]],
+      [['tombScorpion', 4, 0], ['mummy', 4, 2]],
+    ],
+    boss: ['pharaoh', 5],
+    difficulties: ladder([55, 70, 85, 99]),
+    reward: { perz: 7500, items: [['red_gel', 6, 1], ['scorpion_tail', 2, 1], ['hard_ore', 1, 0.3]], cores: ['tomb_core', 3] },
+    rares: ['khopesh', 'tomb_mail', 'scarab_kris', 'falcon_charm', 'ankh_charm', 'gold_scarab', 'canopic_shield', 'linen_wrap'],
+    ultra: ['pharaoh_nemes', 0.01],
+    card: ['pharaoh_card', 0.01],
+    words: {
+      pitch: 'Three waves of the Pharaoh\'s dead servants in his burial hall, then the Pharaoh himself, all in 10 minutes before the torches burn out.',
+      wait: 'The tomb is sealed', arrive: 'three waves of the dead, then the Pharaoh', time: 'before the torches burn out',
+      wave: 'The dead rise from their niches!', boss: 'rises from his sarcophagus, crook and flail in hand!',
+      timeUp: 'The torches burn out! Sindri pulls you out of the dark before the doors close.', leave: 'You climb out of the tomb, and Sindri leads you back into the sun.',
+      cooldown: 'After a cleared raid the tomb stays sealed 3 hours.',
     },
   },
 };

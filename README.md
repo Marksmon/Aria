@@ -75,13 +75,21 @@ reached by travelling on. The fields have plain names; the towns' are Old Norse 
                                   |        Moss Field  -  Dark Dale  -  Black Wood - Barley Field
                                   |            |           |           |                 |
 Coal Pit - Stone Field - Salt Bay - Fen Shore - Eldrun Camp   Ember Hill  -  Ash Heath - Wolf Hills
+                                                                  |
+                                                 Red Sands - Rytingborg - Cactus Dunes
+                                                                                |
+                                                        Great Desert  -  Scorpion Sands
+                                                             :
+                                               (hidden) Sphinx Sands
 ```
 
 Goblin country (Burnt Wood, then Serpent Wood) lies beyond Galdrheim's north gate; the kobolds' hills
 (Stone Field, then Coal Pit) lie west of Salt Bay, along the road round its bay. East of Birch
 Grove, through Willow Marsh, is **Veidheim**, the hunters' village, with the gentle Old Forest north
 of its gate. Far from it, east of Black Wood and Ash Heath, lie the predators' lands, Barley Field
-and Wolf Hills, for heroes near their second job.
+and Wolf Hills, for heroes near their second job. South of Ember Hill lies the desert, and in its heart the oasis city of **Rytingborg**, the city of
+sand and daggers. West of it are the Red Sands, a Trainee's field; east, the Cactus Dunes, then
+Scorpion Sands with its Pyramid, then the Great Desert, where the Sand Wyrm hunts.
 
 | Map | Level | Monsters | Boss |
 |---|---|---|---|
@@ -101,9 +109,13 @@ and Wolf Hills, for heroes near their second job.
 | Old Forest | 8–26 | Treant (24), Willow | **Ancient Treant (62, MVP)** |
 | Barley Field | 44–54 | Snake (46), Wolf (48) | Alpha Wolf (64) |
 | Wolf Hills | 46–62 | Wolf, Bear (53), Snake | Great Bear (66) |
+| Red Sands | 6–14 | Red Bloop (9), Giant Ant (12) | |
+| Cactus Dunes | 55–60 | Cactus (55, throws needles), Dune Worm (58) | Cactus Lord (60) |
+| Scorpion Sands | 60–66 | Sand Scorpion (61, poison), Sand Runner (64) | Rainbow Runner (64) |
+| Great Desert | 62–70 | Soldier Ant (62), Cactus, Dune Worm, Sand Scorpion, Sand Runner | **Sand Wyrm (70, MVP)** |
 | Any field in the valley, more at night (Moss Field and Fen Shore only at night) | | Wisp (11) | |
 
-Moss Field and Fen Shore, by the camp and the city, and Willow Marsh by Veidheim are a Trainee's fields: a Base 10 Trainee
+Moss Field and Fen Shore, by the camp and the city, Willow Marsh by Veidheim and the Red Sands by Rytingborg are a Trainee's fields: a Base 10 Trainee
 beats any of their monsters again and again, and a Trainee earns big Job EXP there (Job 10 in
 about 20–30 kills).
 
@@ -129,7 +141,15 @@ in to bite, sometimes twice; Wolves run in packs and are as quick; Bears are slo
 hard. They drop twigs, bark, pelts, skins and claws for Leif's leatherworks, Honey, and their own
 rare gear.
 
-**Bosses.** Each new field has a mini-boss: big, stomping the ground around it, back 5–8
+**The desert's monsters** (painted in code, `src/desert.js`). Red Bloops warm themselves on the Red
+Sands beside Giant Ants, red-brown and busy; both only fight back. Further out, Cacti stand still and
+throw needles from afar, Dune Worms rise out of the sand to bite, Sand Scorpions sting (a sting may
+**poison** you: you lose a little HP each second for 6 seconds, and a Green Herb cures it), and Sand
+Runners, big saddled desert birds with a spiky crest, run as fast as you and kick twice. Black
+Soldier Ants guard the Great Desert. They drop needles, hides, stingers, feathers and jaws for
+Rytingborg's dagger-smiths.
+
+Moss Field and Fen Shore, by the camp and the city, Willow Marsh by Veidheim and the Red Sands by Rytingborg are a Trainee's fields: big, stomping the ground around it, back 5–8
 minutes after it falls (its timer holds when you leave the map or close the game, as an MVP's does).
 Mini-bosses are big game for heroes of a **second job**: their levels (55–66) say so, and they
 come for a second-job hero on sight. A Trainee or a first job they leave be as they roam, unless
@@ -202,6 +222,7 @@ easiest for some jobs and hardest for others (it tells you when it first comes f
 | Kobold King | spells +40% (kobolds fear sorcery) | arrows −50% (his tribe's shields) | Sorcerer, Wizard | Archer, Windrunner |
 | Goblin King | blades and fists +40% | arrows and spells −30% (his crown's wind ward) | Blader, BladeMaster | the bow jobs and casters |
 | Ancient Treant | beasts +60% (fangs and claws tear bark), spells +10% | blades and fists −40% (the bark turns them) | Beastmaster | Blader, BladeMaster |
+| Sand Wyrm | blades, daggers and fists +30% (soft flesh between its plates) | beasts −40%, arrows −10% (its plated hide) | Blader, Assassin and their second jobs | Beastmaster |
 
 The two-path jobs sit between: a Magic Knight's sword is half steel and half spell, a Moon
 Ranger's arrows half arrow and half spell.
@@ -211,6 +232,21 @@ heals back over 60%): it hits 25% harder and 35% faster, walks 15% faster, stomp
 seconds instead of 7, and uses its moves sooner and more often. An MVP doesn't tire of you
 either: it chases you over its map and gives up only when you are far away (22 paces), at camp or
 playing dead.
+
+**The desert's bosses.** The **Cactus Lord** (Lv 60, Cactus Dunes: a tall dark cactus with a crown
+of spikes, yellow diamond eyes and a jagged grin) rains needles round you (**Needle Storm**) and
+charges, calling Cacti. The **Rainbow Runner** (Lv 64, Scorpion Sands: a white Sand Runner in
+rainbow plumage) charges and leaps on you, calling Sand Runners. The **Sand Wyrm** (Lv 70, 900,000
+HP, Earth), the Great Desert's MVP, is a giant ringed worm bristling with hooked bone spikes down its
+flanks and back, whose maw opens like a flower round rings of hooked teeth. It spends almost half the fight **under the sand**, where nothing can hit it: a
+mound of sand with spines breaking through swims after you, then bursts up beneath you (a red
+circle shows it just before). **Up**, it can't move: it stays where it rose, and that is the time to
+hit it. Up, it bites, sweeps the ground, spits sand (**Sand Spit**), drops sand from the sky
+(**Sandfall**) and leaves quicksand that burns; it calls Dune Worms and Soldier Ants. Enraged, it
+stays up for less time and dives sooner. Blades, daggers and fists find the soft flesh between its
+plates (+30%); arrows glance off (−10%) and claws and fangs barely scratch it (beasts −40%). It comes
+back 30 minutes after it falls, and drops the Wyrm Fang (a dagger), the Dune Bow, the Dune Staff,
+the Wyrmhide Cloak, Sandwalker Boots, the Wyrm Ring and its card.
 
 **How bosses fight.** Every boss (mini-boss, raid boss and MVP) reads you:
 - **It aims where you're going.** Once you have been running a moment, its throws, leaps, roots,
@@ -296,17 +332,32 @@ cabbages and pumpkins with haystacks and scarecrows in Barley Field (the old far
 pines and hunters' camps in Wolf Hills, willows round a pond in Willow Marsh, and huge old oaks in
 the Old Forest.
 
+**Rytingborg.** The desert's oasis city, south of Ember Hill: sandstone walls and houses with arched
+windows, blue domes with gold tips and slim minarets. In its heart lies a turquoise lake with an
+island kiosk, crossed by four stone bridges, with little sailboats drifting on it. At the back a
+palace stands on a rock terrace, two waterfalls pouring from it into the lake. Round the shore are a
+bazaar of striped awnings, palms, and the Assassins' guild hall in the palace's shadow. Gates lead
+north to Ember Hill, west to the Red Sands and east to the Cactus Dunes. Assassins take their job
+trial here, daggers are forged here, and it has a storehouse (the same chest). The Carters always
+offer the ride to Rytingborg, so a Trainee can get there without crossing Ember Hill.
+
+**The Sphinx.** Someone in Rytingborg knows an old secret, but only tells it to a hero who has walked
+every sand round the city. It opens a hidden way out of the Great Desert to **Sphinx Sands**, where a
+Giant Sphinx half the size of the map lies among ruins. Its great door is still sealed: the halls
+inside are Aria's first dungeon, still being dug out.
+
 ## Raids
 
 A raid is a timed run in an arena of its own: **three waves** of monsters that attack on sight and
 never stop following you, then a **boss**, all within the time limit (`src/raid.js`). There are
-three, each with its own guide and its own cooldown:
+four, each with its own guide and its own cooldown:
 
 | Raid | Guide | Where | Difficulties need |
 |---|---|---|---|
 | **Bloop Island**, a small round island out in Salt Bay | the Boatman | Salt Bay, by the water | Base 40 / 55 / 70 / 85 |
 | **Kobold Camp**, the kobolds' walled war camp beyond Coal Pit: Coal Pit's dark stone, rock walls and kobold tents | Brokk the Miner | Coal Pit, by the east portal | Base 45 / 60 / 75 / 90 |
 | **Goblin Lair**, the goblins' lair under Serpent Wood's dark trees: giant mushrooms and goblin tents | Ylva the Scout | Serpent Wood, by the south portal | Base 50 / 65 / 80 / 95 |
+| **Pharaoh's Tomb**, the Pharaoh's burial hall under the Pyramid: sandstone pillars, torches and sarcophagi | Sindri the Tomb Guide | Scorpion Sands, at the Pyramid's door | Base 55 / 70 / 85 / 99 |
 
 A guide's window lists the difficulties down the left (locked until you have the level) and, for
 the one you pick, the boss (its picture, level, HP, ATK, element, skills and matchup), the waves,
@@ -322,6 +373,9 @@ the clear reward, the cores, the rare finds and the boss's card.
   Warlord**, the Kobold King's look in war-paint: he charges and hurls boulders and calls his
   warriors. **The Goblin Lair:** Goblins and Goblin Archers, then Goblin Assassins, then the
   **Goblin Warlord**: he leaps on you, hurls axes, flies into frenzies and calls the horde.
+  **Pharaoh's Tomb:** Scarabs and Mummies, then Tomb Scorpions, then the **Pharaoh**, a mummy king in a
+  gold headdress with crook and flail. On Hell he seals himself in his **Sarcophagus**: four Canopic
+  Jars rise round him, and he takes 90% less damage until they are broken.
 - **Difficulty:** you choose when you set out, and each needs its Base Level (above). The monsters'
   level and strength follow it.
 
@@ -357,7 +411,7 @@ the clear reward, the cores, the rare finds and the boss's card.
   or 81), a 3% chance at one of its rare finds, and 1% chances at its **ultra rare** and at its boss's
   card. Bloop Island
   pays Bloop Gel, Water Drops and maybe Shiny Gel; the Kobold Camp Kobold Fur, Iron and Steel Ore;
-  the Goblin Lair Goblin Teeth, Steel and Armor Ore.
+  the Goblin Lair Goblin Teeth, Steel and Armor Ore; Pharaoh's Tomb Red Gel, Scorpion Tails and Hard Ore.
 - **Cores buy the rare finds.** Each guide makes its raid's rare finds from its cores (and a few
   materials): the rarer the piece, the more cores. A Hell clear pays enough for most pieces at once.
 
@@ -366,12 +420,14 @@ the clear reward, the cores, the rare finds and the boss's card.
 | Bloop Island | Bloop Ring, Water Necklace (25 Bloop Cores) · Sea-Glass Charm (40) · Bleep Ring, Hopper Boots (60) · Bloop Buckler, Veteran's Boots, Bubble Robe (80) · ultra rare: **Angel Wings** (500) |
 | Kobold Camp | Pickaxe Charm (30 Kobold Cores) · Miner's Lamp Charm (40) · Ore-Heart Ring, Lucky Nugget (60) · Earthshaker Boots, Stonehide Mantle (80) · Miner's Plate (120) · Quarry Shield (150) · ultra rare: **Giant Goat Horn Helm** (500) |
 | Goblin Lair | Totem Charm (30 Goblin Cores) · Fang Charm (40) · War-Drum Pendant (60) · Windstep Boots, Raider's Cloak (80) · Horde Leather, Shaman's Robe (120) · Spiked Buckler (150) · ultra rare: **Elven Ears** (500) |
+| Pharaoh's Tomb | Golden Scarab, Falcon Eye Charm, Ankh Charm (40 Tomb Cores) · Royal Linen (80) · Scarab Kris (100) · Tomb Guard Mail (120) · Canopic Shield, Khopesh (150) · ultra rare: **Pharaoh's Headdress** (500) |
 
 **Ultra rares** are worn where everyone can see them: the Giant Goat Horn Helm (Head: a
 gunmetal helm worked in gold with a gold crest, two great dark horns banded in gold curling round
 beside it, and the ears left bare; DEF 6, POW +4, END +4, Max HP +10%), Elven Ears
 (Face: long pointed ears over the hero's own, dressed in silver: cuffs and spikes, sapphires,
-crystal earrings and a band round the back of the head; QKN +4, FNS +4, HIT +10, FLEE +5) and Angel Wings (Wings: folded white wings trimmed in gold, a crystal crest between them; KNL +4, FTN +4, FLEE +6, Max SP +80, Max HP +5%).
+crystal earrings and a band round the back of the head; QKN +4, FNS +4, HIT +10, FLEE +5) and Angel Wings (Wings: folded white wings trimmed in gold, a crystal crest between them; KNL +4, FTN +4, FLEE +6, Max SP +80, Max HP +5%). The Pharaoh's Headdress (Head: a striped cloth of gold and lapis over the head, a gold cobra rearing
+in the middle of the brow, its hood set with lapis and a red jewel, lappets to the shoulders and a tail at the back; DEF 6, KNL +4, FTN +4, END +2, Max SP +10%).
 
 Each raid has a rare find for every kind of hero: blades (POW), the toughest (END, Max HP), the
 quick (QKN, FLEE), archers (FNS, HIT), casters (KNL, SP) and the lucky (FTN).
@@ -402,20 +458,29 @@ quick (QKN, FLEE), archers (FNS, HIT), casters (KNL, SP) and the lucky (FTN).
 | Goblin Lair | Fang Charm | Accessory | FNS +3, HIT +5 | archer |
 | Goblin Lair | Totem Charm | Accessory | KNL +3, Max SP +60 | caster |
 | Goblin Lair | Shaman's Robe | Armor | DEF 4, KNL +3, Max SP +80 | caster |
+| Pharaoh's Tomb | Khopesh | Weapon (Blader) | ATK 100, POW +3 | blade |
+| Pharaoh's Tomb | Tomb Guard Mail | Armor | DEF 8, END +2, Max HP +160 | tough |
+| Pharaoh's Tomb | Canopic Shield | Shield | DEF 6, END +1, Max HP +100 | tough |
+| Pharaoh's Tomb | Scarab Kris | Dagger | ATK 74, QKN +3 | quick |
+| Pharaoh's Tomb | Royal Linen | Garment | DEF 3, FLEE +8, QKN +2 | quick |
+| Pharaoh's Tomb | Falcon Eye Charm | Accessory | FNS +3, HIT +6 | archer |
+| Pharaoh's Tomb | Ankh Charm | Accessory | KNL +3, Max SP +60 | caster |
+| Pharaoh's Tomb | Golden Scarab | Accessory | FTN +4, Max HP +60 | lucky |
 
 | Raid boss card | Slot | Effect |
 |---|---|---|
 | Kobold Warlord Card | Head or face card | DEF +7, Max HP +25%, END +7, POW +4; **Earthshaker:** blows and spells stun a monster 8% of the time (Kobold Camp, 1%) |
 | Goblin Warlord Card | Head or face card | ATK +60, QKN +7, POW +4, blows up close (not arrows) +15%; **Frenzy:** 10% of them land twice (Goblin Lair, 1%) |
+| Pharaoh Card | Head or face card | MATK +15, Max SP +15%, KNL +6, FTN +4; **Soul Tax:** 4% of the damage you deal comes back as SP (Pharaoh's Tomb, 1%) |
 
 - **The Raids window** (the Raids button): every raid, its boss, levels, guide and whether it is
   ready. Once you have done a raid at its guide (win or lose), you can set out on it from anywhere
   through this window, and you come back to where you were when it ends. Opened from here, a
   raid's panel has a Back button to the list.
-- **Raid guides** (the Boatman in Salt Bay, Brokk in the Coal Pit, Ylva in Serpent Wood) have a gold
+- **Raid guides** (the Boatman in Salt Bay, Brokk in the Coal Pit, Ylva in Serpent Wood, Sindri in Scorpion Sands) have a gold
   ✦ RAID over their heads.
 - **Cooldowns:** each raid has one 3-hour cooldown for all its difficulties, counted from setting
-  out, but only a clear starts it; the three are separate.
+  out, but only a clear starts it; the four are separate.
 - **The Tutorial crossing** (Chapter 5): while the story waits on the raid, the Boatman also offers
   a gentler Tutorial run (Lv 24–33 monsters). It starts no cooldown; only a clear of it moves the
   story on and pays the clear reward. Lose it and it pays nothing, but you can try again at once.
@@ -461,8 +526,11 @@ Bladers (6 Bloops and 4 Sprouts in Moss Field, 5 Bloop Gel and 3 Seeds as proof,
 on fighting); **Archmage Vigdis** in Galdrheim tests Sorcerers (4 Blue Bloops in Fen Shore, brew a
 Blue Draught from 3 Bloop Gel and 2 Water Drops, three questions on elements and chanting);
 **Huntmaster Sigrid** in Veidheim tests Archers (5 Yellow Bloops in Willow Marsh, wax a bowstring
-with 5 Bloop Gel, three questions on range, arrows and Leap Back). Pass, and they change your job.
-Elder Halvard sends ready Trainees on to the city.
+with 5 Bloop Gel, three questions on range, arrows and Leap Back); **Master Kol** in Rytingborg
+tests Assassins (5 Red Bloops in the Red Sands, oil a blade with 5 Ant Mandibles, three questions
+on daggers, venom and Vanish). Pass, and they change your job.
+Elder Halvard sends ready Trainees on to the city: pick a path by his fire, and he sends you straight to
+its trainer's town.
 
 | Trainee | | |
 |---|---|---|
@@ -523,10 +591,34 @@ drop rare bows.
 | Leap Back | Job 10 | spring 3 paces back, away from the nearest monster |
 | Steady Aim | Job 10, passive | +10% damage with a bow to a monster 4 or more paces away |
 
+**Assassins** fight with **daggers**: lighter blows than a sword, but much quicker, and Double
+Attack makes many of them land twice. They have far fewer HP than a Blader and dodge instead (Improve
+Dodge), and pay for it in damage: an Assassin kills about 1.4x as fast as a Blader, and a Phantom
+deals 1.2–1.4x a BladeMaster's damage. **Poison**, their venom, makes a monster lose a fifth of the blow that poisoned it every
+second for 6 s (it shows green); bosses resist it like any status. A new Assassin is handed a
+**Rusty Dagger**, put on at once if no dagger is in hand. Yrsa the Dagger-smith in Rytingborg sells
+daggers and makes better ones (**Make daggers**); the desert's monsters drop them too.
+
+| Assassin | | |
+|---|---|---|
+| Dagger Mastery | passive, 10 | +4 ATK per level with daggers |
+| Double Attack | passive, 10 | with a dagger, 5% of your normal attacks per level strike twice |
+| Improve Dodge | passive, 10 | +3 FLEE per level |
+| Venom Strike | 10, 6–11 SP | 198–450%, +3% hit per level; 26–80% to poison for 6 s |
+| Sonic Blow | 10, needs Venom Strike 3, 15–24 SP | eight venomed cuts in a blur, 63–135% each to the target and to every monster within 2 paces of it; then 35–80% to poison each of them for 6 s. 2 s cooldown |
+| Shadow Step | 5, needs Improve Dodge 3 | step to your target's back from up to 6 paces; your next blow +10–50% |
+| Vanish | 5, needs Improve Dodge 5 | 4–8 s in the shadows: monsters lose you (bosses and MVPs see through it); attacking ends it, and your first blow out of it deals 10–50% more |
+| Pilfer | Job 10 | lift something off a monster: a chance (more with FNS) at one of its drops (never a card), once per monster |
+| Lethal Edge | Job 10, passive | +5% crits with a dagger |
+
+**Daggers** can be held by every job, the Trainee too: a Sorcerer with a dagger still casts, and an
+Archer with a dagger fights hand to hand without its bow skills. A dagger is no sword: Blade skills
+still need a sword. Daggers go with a shield.
+
 ### Walking several paths
 
-A Blader can also take the Sorcerer's trial with Archmage Vigdis or the Archer's with Huntmaster
-Sigrid (and so on, for any of the three). Every first job then shares **one Job Level and one pool
+A Blader can also take the Sorcerer's trial with Archmage Vigdis, the Archer's with Huntmaster
+Sigrid or the Assassin's with Master Kol (and so on, for any of the four). Every first job then shares **one Job Level and one pool
 of skill points**: at Job 40 you have the same points whichever you are, and could put 20 into two
 trees. Points go into any path you earned, whichever job you are wearing; switch between them at
 any **Keeper** you have signed with to change the job you wear. A second job trains every first
@@ -535,7 +627,7 @@ than into its own (a Wizard's Blader tree stays at or under its Sorcerer tree).
 
 Every skill you have learnt keeps working, whatever job you wear. Passives always apply; actives
 need the right weapon in hand (spells need none). Gear follows the job you wear: a Blader holds
-swords, a Sorcerer staves, an Archer bows (a second job, those of the first jobs it stands on), and
+swords, a Sorcerer staves, an Archer bows, and anyone daggers (a second job, those of the first jobs it stands on), and
 switching jobs at a Keeper puts away what the new job can't use and, if your hands are empty, puts
 on the best weapon in your bag that it can (and arrows, for a bow).
 
@@ -545,6 +637,9 @@ on the best weapon in your bag that it can (and arrows, for a bow).
 | Twin Fang, Piercing Edge, Final Blade, Blade Dance (BladeMaster) | Hurricane Volley, Cyclone Arrow (Windrunner) | Stone Spike, Earthquake, Meteor Storm, Storm Gust, Thunderstorm (Wizard) |
 | Elemental Edge, Elemental Blade, Elemental Nova (Magic Knight) | Lunar Multishot, Crescent Arrow (Moon Ranger) | War Cry, Stand Firm (Blader); Focus, Hunter's Mark, Leap Back (Archer); Tailwind, Gale Step (Windrunner) |
 | | | Starfall, Moonveil (Moon Ranger), Stone Aegis (Magic Knight), the Beastmaster's summons and Pack Frenzy; Mend, Thrust, Guard, Rest (Trainee) |
+
+Venom Strike and Sonic Blow (Assassin), Dual Rend and Thousand Cuts (Phantom) need a **dagger**;
+Shadow Step, Vanish and Pilfer (Assassin), Phantom Double and Mirage Step (Phantom) need no weapon.
 
 Bare hands are no sword: with no weapon a hero fights hand to hand and has no blade skills, and an
 Archer or Windrunner with no bow fights hand to hand too. Starfall needs no bow and still falls from
@@ -569,7 +664,8 @@ points stay. Second jobs wear their first job's outfit in new colours and glow w
 - **Beastmaster** (Bjarki, by Veidheim's lodge, his wolf Grimr at his side): 15 Wolves, 10 Bears,
   12 more Bears. Only for heroes who walked the Blader's and the Archer's paths with **at least 20
   skill points in each tree**.
-- A hero of several paths may take the BladeMaster, Wizard or Windrunner trial only for the first
+- **Phantom** (Master Kol, Rytingborg): 20 Sand Scorpions, 20 Dune Worms, 25 Soldier Ants.
+- A hero of several paths may take the BladeMaster, Wizard, Windrunner or Phantom trial only for the first
   job with the most points (a tie opens each tied one). A Job 50 hero with 30 points as a Blader and 20 as a Sorcerer may
   become a BladeMaster or a Magic Knight; with 25 and 25, any of the three; with 35 and 15, only a
   BladeMaster. Only one second job can be taken: once you accept a step of one trial, the other
@@ -656,12 +752,27 @@ bite may turn on them. One that falls can be called again after 20 s, and they a
 faint. The Beastmaster keeps every Blader and Archer skill, and holds a cleaver or a bow (its look
 changes with the weapon).
 
+The Phantom dresses the part: a black coat with a high collar lined in violet, two-tiered silver
+pauldrons set with violet gems, a chain belt with a gem buckle, silver bracers and knee guards,
+violet runes glowing down the coat's long torn tails, and a glowing eye-sigil on its back.
+
+| Phantom: two daggers and illusions | |
+|---|---|
+| Twin Blades | passive, 10: a dagger in your left hand (the Shield slot) strikes with every blow of the right, at 55–100% of its own damage. Only a Phantom holds two daggers; the pair swings a little slower than one |
+| Lingering Shade | passive, 5, needs Phantom Double 1: your illusions last 2–10 s longer and strike 6–30% harder |
+| Phantom Grace | passive, 5: +1–5 QKN, and +2–10 FLEE for each illusion you have out |
+| Dual Rend | 10: six cuts, right hand and left in turn, 101–200% each. 1 s cooldown |
+| Phantom Double | 5: two illusions of you step out of your shadow for 15 s and fight your target with 36–60% of your damage; monsters they strike may turn on them. 20 s cooldown |
+| Mirage Step | 5, needs Phantom Double 1: dash 4 paces away, untouchable, leaving an illusion where you stood: for 4–8 s every monster within 4 paces turns on it. 8 s cooldown |
+| Thousand Cuts | 10, needs Dual Rend 3: spin with both blades five times, 61–115% each to every monster within 2.6 paces; 2–20% each to poison. 5 s cooldown |
+
 Walking speed is never raised for long in Aria: the Windrunner's bursts (Tailwind's rush, the
 moment after Gale Step) are the only haste, a few seconds at a time.
 
 **Status effects.** Some skills may **freeze**, **paralyze** or **stun** a monster (it stands
 helpless, tinted blue, yellow or grey) or set it **burning** (it loses a fifth of the hit that lit it
-every second for 3 s, flickering orange). Bosses and MVPs resist: a third of the chance, for half as
+every second for 3 s, flickering orange) or **poisoned** (a fifth of the blow every second for its
+time, tinted green). Bosses and MVPs resist: a third of the chance, for half as
 long, and nothing takes hold while a boss is in the middle of a move.
 
 **Elements.** Every monster has an element, and so do spells and some weapons.
@@ -682,7 +793,8 @@ A strong hit (150%) shows in gold, a weak one (25–50%) in grey.
 Water: the bloops, crabs, King Crab · Earth: Sprouts, Mushrooms, beetles, Giant Sprout ·
 Fire: Fire Beetles, Fire Wisps, Giant Beetle, Fire Giant · Wind: Wisps, goblins, Goblin King ·
 Earth also: kobolds, Kobold King · Shadow:
-Dark Mushrooms, Dark Wisps, Giant Mushroom.
+Dark Mushrooms, Dark Wisps, Giant Mushroom · the desert: Earth for ants, cacti, worms, scorpions and
+the Sand Wyrm, Wind for the Runners, Shadow for the Pharaoh's tomb.
 
 **Staves** raise MATK: Wooden (+15%, given on the job change), Birch (+20%, Orm), Rune (+25%),
 Ice (+28%), Root (+30%), Water (+32%), Dark (+34%, Dark Wisp 0.2%), Fire (+38%), Mushroom (+40%,
@@ -991,7 +1103,7 @@ rings the portal to take, or the person to talk to. A purple **!** marks who the
 |---|---|
 | Prologue (the tutorial) | The Elder: the Heart-Ember is stolen · **guided lessons** on stats (a guide rings the Status window and says what each stat does and which path wants it, before a point is spent), equipment (it shows you where the Elder's Traveler's Cloak is and how to wear it), skills (Basic Training) and items (a hand shows a Red Potion dragged onto the hotbar; **Add to hotbar** in the Items window does it with a tap) · each guide shows once by itself, and **Guide me through it** in the story's Quest View brings it back · defeat 3 Bloops in Moss Field · **the Gel Thief**: a gold arrow at the screen's edge (and over it, once in sight) leads to the golden bloop; chase it, and after a few seconds of running it is out of breath and turns to fight (cornering it, or landing a blow, does too) · **the Ember's Light**: the ember's glow draws every bloop in the field, so hold the old stone ring for 40 seconds · bring the Heart-Ember home · the **quests** lesson: take a quest from someone with a ! and open the Quests window |
 | 1: The Stone-Fort | Travel to Steinborg (Ember Hill rumbles as you arrive) · tell Captain Ulfr the fires are failing · sign the Keeper's ledger (the Keepers: healing, storage, save point, teleport) · **Saeunn reads your runes**: answer her three questions, and the runes name your calling, the Blade, the Rune or the Bow · **the hunters' village**: take her warning east to Veidheim, where young Finn swears the willows walk at night · **the Marsh Road**: hold the old way-stone in Willow Marsh for 40 seconds against the willows and bloops coming out of the water · Huntmaster Sigrid hears the warning. A Trainee who reaches **Job 9** anywhere after the Seeress is **called home** to choose a path at once (what was left of the chapter is skipped), so the trials need next to no grinding |
-| 2: The Three Paths | **By the fire** in Eldrun: the Elder tells what each first job grows into (Blader to BladeMaster, Sorcerer to Wizard, Archer to Windrunner) and the mixed second jobs of two paths (Magic Knight, Moon Ranger, Beastmaster), each shown as it would look on your own hero (a mixed job with the two first jobs it comes from), and you pick your first path · the story sends you to that trainer's town (Steinborg, Galdrheim or Veidheim) · pass a job trial. Any trainer will still try you if you change your mind, and once you have passed one trial the other first-job trials stay open: the story says so, and notices which path you took |
+| 2: The Three Paths | **By the fire** in Eldrun: the Elder tells what each first job grows into (Blader to BladeMaster, Sorcerer to Wizard, Archer to Windrunner, Assassin to Phantom) and the mixed second jobs of two paths (Magic Knight, Moon Ranger, Beastmaster), each shown as it would look on your own hero (a mixed job with the two first jobs it comes from), and you pick your first path · the Elder sends you straight to that trainer's town (Steinborg, Galdrheim, Veidheim or Rytingborg) · pass a job trial. Any trainer will still try you if you change your mind, and once you have passed one trial the other first-job trials stay open: the story says so, and notices which path you took |
 | 3: Embers in the Wilds | Saeunn's warning · defeat 12 Red Sprouts in Birch Grove · travel to Ember Hill |
 | 4: The Fire-Ring | Archmage Vigdis will sing the fire-ring's runes anew · **the Vigil on Ember Hill**: stand in her rune circle and hold off the Giant's heralds for 75 seconds while her song reaches him · bring the song home: the fire-ring rekindled |
 | 5: The Salt Road | Captain Ulfr: kobolds rob the salt carts · Hakon the Carter in Salt Bay · **Bloop Island**: the Boatman's Tutorial crossing (the first raid) · defeat 12 kobolds in Stone Field · Saeunn and the glowing red coal · go down into Coal Pit · Dag the Miner: the goblins drive the kobolds to dig for a "Waking Fire" |
@@ -1029,7 +1141,7 @@ leads to each.
 | Astrid the Cook | camp | Astrid's Kitchen: A Feast for Eldrun (10): bring 10 Bloop Gel, 5 Crab Legs, 5 Spores, then cook it with her · Crab Boil (12): 8 Crab Legs, 10 Shells · Forest Stew (16): 12 Spores, 4 Green Herbs · Salted Supper (24): 10 Salt, 10 Bloop Gel · Honey Cake (56): 6 Honey |
 | Sigrun the Scout | camp | Sigrun's Map: The Lantern Wisp (14): hunt the golden Wisp that rises over Fen Shore's pond at night · The Southern Lands (32): walk Ember Hill, Black Wood and Ash Heath · The Far Lands (46): walk Barley Field, Wolf Hills, Serpent Wood and Coal Pit |
 | Gyda the Healer | camp | heals HP and SP for free |
-| The Keepers (butlers in black) | camp, Steinborg, Galdrheim, Veidheim | sign the ledger, then: storage (shared by all your heroes), healing, Save here (where you wake after fainting, and where Return Feathers go), switch first jobs, and teleport to any other Keeper you signed with (300–500 perz) |
+| The Keepers (butlers in black) | camp, Steinborg, Galdrheim, Veidheim, Rytingborg | sign the ledger, then: storage (shared by all your heroes), healing, Save here (where you wake after fainting, and where Return Feathers go), switch first jobs, and teleport to any other Keeper you signed with (300–500 perz) |
 | Sir Eirik the Runeblade | Steinborg | the Magic Knight's trial |
 | Hild the Trader | Steinborg | shop · The Trade Road: Hild's Crate (24): take a crate of potions to Hakon in Salt Bay · Kobold Fur (30): 15 · Goblin Teeth (40): 15 · Snakeskin (48): 12 |
 | Gunnar the Gear Crafter | Steinborg | shop, forge · The Forge: Stone for the Forge (34): 30 Stone, 15 Burnt Shells · Iron and Steel (44): 10 Iron Ore, 4 Steel Ore · Claws and Fangs (58): 12 Bear Claws, 6 Wolf Fangs |
@@ -1040,7 +1152,7 @@ leads to each.
 | Embla the Stylist | Steinborg | hairstyle and dye, 1,000 perz |
 | Ivar the Ferryman | Steinborg | carts to any land you have walked, 300–3,000 perz |
 | Liv the Guide | Steinborg | who does what in the city · **Reset stats / skills**: one free stat reset and one free skill reset, then 20,000 perz each. A second job's reset unlearns its first-job skills too: rebuild those first (a Magic Knight: 20 points in Blader and 20 in Sorcerer, and every first-job point spent) before its own skills open again |
-| Ingrid the Tutor · Sven the Trainer | Galdrheim · Veidheim (beside the Keeper) | **Reset stats / skills**, as Liv does |
+| Ingrid the Tutor · Sven the Trainer · Geir the Trainer | Galdrheim · Veidheim · Rytingborg (beside the Keeper) | **Reset stats / skills**, as Liv does |
 | Bjorn the Gate Guard | Steinborg | which monsters attack on sight |
 | Hakon the Carter | Salt Bay, by the west road | the story (Chapter 5) |
 | Boatman | Salt Bay, by the water | rows you out to **Bloop Island**, the raid (see Raids) |
@@ -1063,6 +1175,15 @@ leads to each.
 | Kalf the Gate Archer | Veidheim, at the north gate | The Gate Watch: Marsh Patrol (8): 12 Yellow Bloops, 8 Willows (no early quests send you into the Old Forest: the Ancient Treant roams it) |
 | Bodil the Sentry, Finn the Young Archer | Veidheim | tales of the village and its lands |
 | Tove the Carter | Veidheim | carts to any land you have walked |
+| Master Kol | Rytingborg | The Assassin's Trial · the Phantom's trial |
+| Dalla the Trader | Rytingborg, the bazaar | shop (potions, Dates, Water Skins) · The Bazaar: Warm Gel (6): 8 Red Gel · Jaws in the Sacks (10): 15 Giant Ants |
+| Steinar the Smith | Rytingborg | shop, forge · The Smith: Soldier's Shells (62): 20 Ant Mandibles, 6 Worm Hides |
+| Yrsa the Bladewright | Rytingborg | daggers, **Make daggers** · The Bladewright: Venom for Steel (60): 10 Scorpion Tails, 10 Cactus Needles |
+| Thora the Caravan Master | Rytingborg | The Caravan: Needles on the Road (56): 20 Cacti · The Stinging Road (62): 25 Sand Scorpions · The Humming Sand (66): 20 Soldier Ants, 10 Dune Worms · Caravan Bounty (68, again and again): 30 Soldier Ants, 20 Sand Scorpions |
+| Ketil the Water-seller | Rytingborg | The Water-seller: Skins for Water (58): 8 Worm Hides · Feathers for the Shade (63): 10 Runner Feathers |
+| Arne the Gate Guard | Rytingborg, the north gate | The Gate Watch: Red Sands (8): 20 Red Bloops |
+| Saga the Healer · Orvar the Caravaneer · Little Toki | Rytingborg | healing · carts to any land you have walked · lore |
+| Sindri the Tomb Guide | Scorpion Sands, at the Pyramid | leads you into **Pharaoh's Tomb**, the raid, and makes its rare finds from Tomb Cores |
 
 People without a PixelLab sprite of their own are dressed from a bald hero body (Trainee, Blader,
 Sorcerer or Magic Knight) in their own colours, with the shared head, a hairstyle, a dye and
@@ -1107,8 +1228,10 @@ to restore HP, save, and sleep until morning.
 - [x] Classic MMORPG-style controls, rules, windows, maps and portals; Aria's own skills; MVP boss
 - [x] Steinborg, four new lands, mini-bosses, perz and shops, the Sorcerer and job trials
 - [x] Cards, more jobs, raids, the Beastmaster's pack
-- [ ] **Ten cities.** Five early-game cities (Steinborg, Galdrheim and Veidheim so far, two more to
-  come), then five late-game ones. The first half of Aria's making ends with the fifth city.
+- [x] Rytingborg and the desert: the Assassin and the Phantom, the Sand Wyrm, Pharaoh's Tomb, the Sphinx's secret
+- [ ] **The Sphinx's halls**, Aria's first dungeon (four maps inside the Giant Sphinx)
+- [ ] **Ten cities.** Five early-game cities (Steinborg, Galdrheim, Veidheim and Rytingborg so far,
+  one more to come), then five late-game ones. The first half of Aria's making ends with the fifth city.
 
 ## Dev
 

@@ -140,8 +140,9 @@ export class Inventory {
   equip(id) {
     const it = ITEMS[id];
     if (it?.type !== 'equip' || !canWear(id, this.job())) return false;
-    // a second accessory goes in the free hand
-    const slot = it.slot === 'acc' && this.gear.acc && !this.gear.acc2 ? 'acc2' : it.slot;
+    // a second accessory goes in the free hand; a Phantom's second dagger, in the left hand (the Shield slot)
+    const slot = it.slot === 'acc' && this.gear.acc && !this.gear.acc2 ? 'acc2'
+      : it.kind === 'dagger' && this.dual?.() && ITEMS[this.gear.weapon]?.kind === 'dagger' && ITEMS[this.gear.shield]?.kind !== 'dagger' ? 'shield' : it.slot; // (both hands full: it takes the right hand's place)
     const old = this.gear[slot];
     // (a bow and a shield go together: an Archer's shield is strapped to the forearm, so the hand still
     // draws the string; the owner's call)
@@ -170,7 +171,7 @@ export class Inventory {
   dropUnwearable() {
     const off = [];
     for (const [slot, id] of Object.entries(this.gear)) {
-      if (!id || canWear(id, this.job())) continue;
+      if (!id || (canWear(id, this.job()) && !(slot === 'shield' && ITEMS[id].kind === 'dagger' && !this.dual?.()))) continue; // (a left-hand dagger: a Phantom's only)
       this.gear[slot] = null;
       if (!this.bag.add(id, 1)) this.chest.add(id, 1);
       off.push(id);
@@ -270,18 +271,19 @@ export class Inventory {
   // equipment as the battle rules see it (rules.js derive)
   gearStats() {
     const w = ITEMS[this.gear.weapon], bow = w?.kind === 'bow', arrows = bow ? ITEMS[this.gear.ammo] : null;
+    const dagger = w?.kind === 'dagger', lh = ITEMS[this.gear.shield], left = dagger && lh?.kind === 'dagger' ? { atk: lh.atk, wlv: lh.wlv, el: lh.el } : null; // a Phantom's second dagger
     let def = 0, hit = 0, flee = 0, mhp = 0, msp = 0, mhpRate = 0, mspRate = 0, cardAtk = 0;
     const stats = {}, perk = {}; // perk: cards' own effects (items.js card.perk), added up
     for (const id of Object.values(this.gear)) {
       if (!id) continue;
       const it = ITEMS[id];
-      if (it.slot !== 'weapon' && it.slot !== 'ammo') cardAtk += it.atk || 0; // (ATK from a card in other gear: a head or wings card)
+      if (it.slot !== 'weapon' && it.slot !== 'ammo') cardAtk += it.atk || 0; // (a left-hand dagger's ATK is its own: gear.left) // (ATK from a card in other gear: a head or wings card)
       def += it.def || 0; hit += it.hit || 0; flee += it.flee || 0; mhp += it.mhp || 0; msp += it.msp || 0; mhpRate += it.mhpRate || 0; mspRate += it.mspRate || 0;
       for (const [k, v] of Object.entries(it.stats || {})) stats[k] = (stats[k] || 0) + v;
       for (const [k, v] of Object.entries(it.perk || {})) perk[k] = (perk[k] || 0) + v;
     }
     // with a bow, the arrows' ATK adds to its own and an elemental arrow sets the shot's element
-    return { atk: (w?.atk || 0) + (arrows?.atk || 0) + cardAtk, wlv: w?.wlv || 0, matk: w?.matk || 0, el: arrows?.el || w?.el, bow, def, hit, flee, mhp, msp, mhpRate, mspRate, stats, perk, mastery: 0, aspdRate: (this.wearing('aspd') ? 0.9 : 1) * (1 - (w?.aspd || 0) / 100) };
+    return { atk: (w?.atk || 0) + (arrows?.atk || 0) + cardAtk, wlv: w?.wlv || 0, matk: w?.matk || 0, el: arrows?.el || w?.el, bow, dagger, left, def, hit, flee, mhp, msp, mhpRate, mspRate, stats, perk, mastery: 0, aspdRate: (this.wearing('aspd') ? 0.9 : 1) * (1 - (w?.aspd || 0) / 100) };
   }
 
   // the chest is not the hero's: it is the shared storage, saved on its own (save.js)
@@ -296,7 +298,7 @@ export class Inventory {
       if (g.light && !g.wings) { if (ITEMS[g.light]?.slot === 'wings') g.wings = g.light; else if (ITEMS[g.light]) this.bag.add(g.light, 1); }
       for (const slot of Object.keys(SLOTS)) {
         const id = g[slot] && renamed(g[slot]);
-        this.gear[slot] = ITEMS[id]?.slot === (slot === 'acc2' ? 'acc' : slot) ? id : null;
+        this.gear[slot] = ITEMS[id]?.slot === (slot === 'acc2' ? 'acc' : slot) || (slot === 'shield' && ITEMS[id]?.kind === 'dagger') ? id : null; // (a Phantom's left-hand dagger)
       }
       return;
     }

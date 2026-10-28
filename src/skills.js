@@ -21,7 +21,7 @@ import { MAX_JOB } from './ro-tables.js';
 // status: a spell (or sword sweep) may freeze, paralyze or stun a monster (it stands helpless) or set
 // it burning (damage each second). chance(lv) in %, dur in s; bosses resist: a third of the chance
 // for half as long (main.js inflict). hits/every: a skill that strikes again and again (power is per hit).
-const STATUS_WORD = { freeze: 'freeze', paralyze: 'paralyze', stun: 'stun', burn: 'set burning' };
+const STATUS_WORD = { freeze: 'freeze', paralyze: 'paralyze', stun: 'stun', burn: 'set burning', poison: 'poison' };
 const statusText = (sk, lv, each = '') => `${sk.status.chance(lv)}% chance${each} to ${STATUS_WORD[sk.status.kind]} for ${sk.status.dur} s (bosses resist)`;
 
 // what an Elemental Edge or Nova does by element (main.js): the status, and for how long
@@ -175,6 +175,87 @@ export const SKILLS = {
   steadyaim: {
     name: 'Steady Aim', job: 'archer', kind: 'passive', max: 1, free: { jobLv: 10 }, icon: 'skill_steadyaim',
     desc: () => '+10% damage with a bow to a monster 4 or more paces away.',
+  },
+
+  // ---------- Assassin (Rytingborg): daggers, quick and many blows, poison and shadows. Five actives
+  // like the other first jobs; Pilfer and Lethal Edge come free at Job 10. Poison: a fifth of the
+  // blow that set it, each second, for its time (main.js inflict; bosses resist) ----------
+  daggermastery: {
+    name: 'Dagger Mastery', job: 'assassin', kind: 'passive', max: 10, icon: 'skill_daggermastery',
+    desc: (lv) => `+${4 * lv} ATK with daggers.`,
+  },
+  doubleattack: {
+    name: 'Double Attack', job: 'assassin', kind: 'passive', max: 10, icon: 'skill_doubleattack',
+    desc: (lv) => `With a dagger, ${5 * lv}% of your normal attacks strike twice.`,
+  },
+  improvedodge: {
+    name: 'Improve Dodge', job: 'assassin', kind: 'passive', max: 10, icon: 'skill_improvedodge',
+    desc: (lv) => `+${3 * lv} FLEE.`,
+  },
+  venomstrike: {
+    name: 'Venom Strike', job: 'assassin', kind: 'active', max: 10, target: 'mob', range: 1.35, weapon: 'dagger', icon: 'skill_venomstrike',
+    sp: (lv) => 6 + Math.floor(lv / 2), power: (lv) => 170 + 28 * lv, status: { kind: 'poison', chance: (lv) => 20 + 6 * lv, dur: 6 },
+    desc: (lv) => `A blade dipped in venom: ${SKILLS.venomstrike.power(lv)}% damage, +${3 * lv}% hit chance; ${statusText(SKILLS.venomstrike, lv)} (a fifth of the blow each second).`,
+  },
+  sonicblow: {
+    name: 'Sonic Blow', job: 'assassin', kind: 'active', max: 10, needs: { venomstrike: 3 }, target: 'mob', range: 1.35, weapon: 'dagger', cd: 2, icon: 'skill_sonicblow',
+    sp: (lv) => 14 + lv, power: (lv) => 55 + 8 * lv, hits: () => 8, every: 0.08, area: 2, status: { kind: 'poison', chance: (lv) => 30 + 5 * lv, dur: 6 },
+    desc: (lv) => `Eight venomed cuts in a blur, ${SKILLS.sonicblow.power(lv)}% damage each to your target and to every monster within ${SKILLS.sonicblow.area} paces of it; then ${statusText(SKILLS.sonicblow, lv, ' each')}.`,
+  },
+  shadowstep: {
+    name: 'Shadow Step', job: 'assassin', kind: 'active', max: 5, needs: { improvedodge: 3 }, target: 'mob', range: 6, cd: 6, icon: 'skill_shadowstep',
+    sp: () => 12,
+    desc: (lv) => `Step through the shadows to your target's back (up to 6 paces): your next blow deals ${10 * lv}% more.`,
+  },
+  vanish: {
+    name: 'Vanish', job: 'assassin', kind: 'active', max: 5, needs: { improvedodge: 5 }, cd: 15, icon: 'skill_vanish',
+    sp: () => 16,
+    desc: (lv) => `Melt into the shadows for ${3 + lv} s: monsters lose you (bosses and MVPs see through it). Attacking ends it; your first blow out of it deals ${10 * lv}% more.`,
+  },
+  pilfer: {
+    name: 'Pilfer', job: 'assassin', kind: 'active', max: 1, free: { jobLv: 10 }, target: 'mob', range: 1.35, cd: 2, icon: 'skill_pilfer',
+    sp: () => 10,
+    desc: () => 'Lift something off a monster: a chance (more with FNS) at one of the things it drops (never a card), once per monster.',
+  },
+  lethaledge: {
+    name: 'Lethal Edge', job: 'assassin', kind: 'passive', max: 1, free: { jobLv: 10 }, icon: 'skill_lethaledge',
+    desc: () => '+5% critical hits with a dagger.',
+  },
+
+  // ---------- Phantom (from the Assassin, after the owner's sheet): a dagger in each hand (the second
+  // in the Shield slot) and illusions. Its normal attacks strike with both blades; its illusions
+  // fight beside it and draw the monsters' eyes ----------
+  twinblades: {
+    name: 'Twin Blades', job: 'phantom', kind: 'passive', max: 10, icon: 'skill_twinblades',
+    desc: (lv) => `A dagger in your left hand (the Shield slot) strikes with every blow of the right: ${50 + 5 * lv}% of its own damage.`,
+  },
+  lingeringshade: {
+    name: 'Lingering Shade', job: 'phantom', kind: 'passive', max: 5, needs: { phantomdouble: 1 }, icon: 'skill_shade',
+    desc: (lv) => `Your illusions last ${2 * lv} s longer and strike ${6 * lv}% harder.`,
+  },
+  phantomgrace: {
+    name: 'Phantom Grace', job: 'phantom', kind: 'passive', max: 5, icon: 'skill_grace',
+    desc: (lv) => `+${lv} QKN, and +${2 * lv} FLEE for each illusion you have out.`,
+  },
+  dualrend: {
+    name: 'Dual Rend', job: 'phantom', kind: 'active', max: 10, target: 'mob', range: 1.35, weapon: 'dagger', cd: 1, icon: 'skill_dualrend',
+    sp: (lv) => 10 + lv, power: (lv) => 90 + 11 * lv, hits: () => 6, every: 0.1,
+    desc: (lv) => `Six cuts, right hand and left in turn: ${SKILLS.dualrend.power(lv)}% damage each (a left-hand cut with your left dagger, at Twin Blades' share; with none, the right hand cuts six times).`,
+  },
+  phantomdouble: {
+    name: 'Phantom Double', job: 'phantom', kind: 'active', max: 5, cd: 20, icon: 'skill_double',
+    sp: (lv) => 30 + 4 * lv, dur: () => 15,
+    desc: (lv) => `Two illusions of you step out of your shadow for 15 s and fight your target with ${30 + 6 * lv}% of your damage. Monsters they strike may turn on them.`,
+  },
+  miragestep: {
+    name: 'Mirage Step', job: 'phantom', kind: 'active', max: 5, needs: { phantomdouble: 1 }, cd: 8, icon: 'skill_mirage',
+    sp: () => 18,
+    desc: (lv) => `Dash 4 paces away (nothing can touch you on the way), leaving an illusion where you stood: for ${3 + lv} s every monster within 4 paces of it turns on it.`,
+  },
+  thousandcuts: {
+    name: 'Thousand Cuts', job: 'phantom', kind: 'active', max: 10, needs: { dualrend: 3 }, weapon: 'dagger', cd: 5, icon: 'skill_thousandcuts',
+    sp: (lv) => 32 + 2 * lv, power: (lv) => 55 + 6 * lv, hits: () => 5, every: 0.22, area: 2.6, status: { kind: 'poison', chance: (lv) => 2 * lv, dur: 4 },
+    desc: (lv) => `Spin with both blades, five times: ${SKILLS.thousandcuts.power(lv)}% damage each spin to every monster within ${SKILLS.thousandcuts.area} paces; ${statusText(SKILLS.thousandcuts, lv, ' each')}.`,
   },
 
   // ---------- Windrunner (from the Archer): quick shots, and short bursts of speed to reposition.
@@ -412,11 +493,12 @@ export function skillLv(prog, id) {
 }
 
 // the weapon an active skill needs in hand, and whether it is there ('sword' = a sword, 'staff' = a
-// staff, 'bow' = a bow; bare hands, 'none', are none of them). The owner's rules: Blader, BladeMaster
+// staff, 'bow' = a bow, 'dagger' = a dagger (no sword: Blade skills don't take one); bare hands,
+// 'none', are none of them). The Assassin's and the Phantom's blade skills need a dagger. The owner's rules: Blader, BladeMaster
 // and Magic Knight blade skills need a sword; Archer, Windrunner and Moon Ranger shots a bow; spells
 // (Sorcerer, Wizard, Starfall), buffs and moves (War Cry, Stand Firm, Focus, Hunter's Mark, Leap
 // Back, Tailwind, Gale Step) and the Beastmaster's beasts need nothing
-export const WEAPON_NAMES = { sword: 'a sword', staff: 'a staff', bow: 'a bow' };
+export const WEAPON_NAMES = { sword: 'a sword', staff: 'a staff', bow: 'a bow', dagger: 'a dagger' };
 export const BOW_RANGE = 5; // paces a bow reaches, before Long Sight
 export const weaponOk = (id, weaponKind) => !SKILLS[id].weapon || SKILLS[id].weapon === weaponKind;
 
@@ -506,7 +588,7 @@ export function secondJobBlock(prog) {
 }
 export const pointsIn = (prog, job) => Object.entries(prog.skills).reduce((a, [id, n]) => a + (SKILLS[id]?.job === job ? n : 0), 0);
 export const MK_POINTS = 20; // a second job of two paths (the Magic Knight) wants this many points in each path's tree
-// may this hero take a second job's trial? From Job Level 40 of a first job. A second job of two
+// may this hero take a second job's trial? From Job Level 40 of a first job (the Phantom: the Assassin's). A second job of two
 // paths needs both earned and 20 points in each one's tree. A second job of one path (BladeMaster,
 // Wizard, Windrunner) opens for a hero who walked only that path, or put the most points into it
 // of all the paths walked (a tie opens each tied one).

@@ -6,31 +6,38 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
 ## Rules agreed with the owner (keep them in future updates)
 
 - **The plan (the owner's roadmap):** Aria will have at least 10 cities: 5 early-game cities (the
-  first three are Steinborg, Galdrheim and Veidheim; the owner will add the next ones), then 5
+  first four are Steinborg, Galdrheim, Veidheim and Rytingborg, the desert's oasis city; the owner will add the fifth), then 5
   late-game cities. The first half of development ends when the 5 early-game cities are done; the
   late-game cities come after. Build new cities and their maps to the map defaults below.
 
 - **Jobs, skill points and second jobs:** read `docs/job-rules.md` before touching jobs, skills
   or job quests. In short:
-  - The first jobs (Blader, Sorcerer, Archer) share one Job Level and one pool of skill points.
+  - The first jobs (Blader, Sorcerer, Archer, Assassin) share one Job Level and one pool of skill points.
     Points go into any tree the hero earned, active or not (`trainTrees`); switching first jobs at
     a Keeper changes the job worn. Job Lv 1 of a first
     or second job counts: a Job 50 Blader has 50 points (the Trainee's stay 9).
   - Learnt skills stay usable with the right weapon. Blade skills need a sword (bare hands are no
-    sword); Archer, Windrunner and Moon Ranger shots need a bow; spells (Sorcerer, Wizard,
+    sword); Archer, Windrunner and Moon Ranger shots need a bow; Venom Strike, Sonic Blow, Dual Rend and Thousand Cuts need a dagger (a sword is no dagger); spells (Sorcerer, Wizard,
     Starfall), buffs and moves (War Cry, Stand Firm, Focus, Hunter's Mark, Leap Back, Tailwind,
-    Gale Step) and the Beastmaster's skills need none. With no bow an Archer
+    Gale Step, Shadow Step, Vanish, Pilfer, Phantom Double, Mirage Step) and the Beastmaster's skills need none. With no bow an Archer
     fights hand to hand. Gear follows the job worn (and a second job's first jobs); switching jobs
     puts away what the new job can't use.
   - The Archer (Huntmaster Sigrid, Veidheim) shoots from 5 paces with ATK from FNS; a bow needs
     arrows in the Arrows slot, bought once and never used up (an elemental arrow sets the shot's
     element). Its second job, the Windrunner (also Sigrid's), is about attack speed and short
     bursts of movement.
+  - The Assassin (Master Kol, Rytingborg) fights with daggers. **Daggers can be held by every job**
+    (no `jobs` list, the Trainee too: the owner's call): weaker than a sword (about 75%), quicker
+    (`DAGGER` 0.8 of the sword's delay), with a shield. Poison is a status like burn (a fifth of
+    the blow a second). Its second job, the **Phantom** (also Kol's), is about double weapons and
+    illusions (the owner's call): a second dagger in the Shield slot only for a Phantom (`inv.dual`),
+    the left hand striking with every blow (Twin Blades, `DUAL` 1.15x slower), and illusions
+    (`allies.js` `shade`/`mirage`) that fight and draw the monsters.
   - Second jobs open at Job 40. The Magic Knight needs 20+ points in both the Blader and
     Sorcerer trees; the Moon Ranger (Hrafn the Stargazer) 20+ in both the Sorcerer and Archer trees;
     the Beastmaster (Bjarki, Veidheim) 20+ in both the Blader and Archer trees. The Beastmaster uses
     swords and bows, and its own tree holds only beast skills: the Bear (END), the Wolves (FNS) and
-    the Hawk (QKN) can all be out together, and the hero's stats feed theirs (`src/allies.js`, `beastStats` in `main.js`; the owner's call: END mostly the Bear's HP and DEF, FNS mostly the Wolves' HIT and ATK, QKN mostly the Hawk's attack speed and reach, FTN every beast's crit and lucky dodge, POW every beast's ATK, KNL their instincts: harder, sooner, longer stuns and slows (`sharp`), every other stat a little, `MINOR`). The Wolves are the Black Wolf and the White Wolf. Each beast has one instinct it uses by itself on its own cooldown (the owner's call, `INSTINCTS`: the Bear's Maul stuns, the Wolves' Hamstring leaps and slows, the Hawk's Dive never misses; bosses resist as ever); they are the beasts' moves, not the hero's skills, and the Bear keeps its Roar, a war cry (the owner's call: every 10 s while it fights it taunts the monsters round it and the pack hits 10% harder for 6 s, `ROAR`). The Hawk is out of reach of melee (the owner's call): only arrows and a boss's thrown or falling blows reach it. The beasts' health bars sit beside the hero's panel (`#pets`). BladeMaster/Wizard open only for the first job with the most points (a tie
+    the Hawk (QKN) can all be out together, and the hero's stats feed theirs (`src/allies.js`, `beastStats` in `main.js`; the owner's call: END mostly the Bear's HP and DEF, FNS mostly the Wolves' HIT and ATK, QKN mostly the Hawk's attack speed and reach, FTN every beast's crit and lucky dodge, POW every beast's ATK, KNL their instincts: harder, sooner, longer stuns and slows (`sharp`), every other stat a little, `MINOR`). The Wolves are the Black Wolf and the White Wolf. Each beast has one instinct it uses by itself on its own cooldown (the owner's call, `INSTINCTS`: the Bear's Maul stuns, the Wolves' Hamstring leaps and slows, the Hawk's Dive never misses; bosses resist as ever); they are the beasts' moves, not the hero's skills, and the Bear keeps its Roar, a war cry (the owner's call: every 10 s while it fights it taunts the monsters round it and the pack hits 10% harder for 6 s, `ROAR`). The Hawk is out of reach of melee (the owner's call): only arrows and a boss's thrown or falling blows reach it. The beasts' health bars sit beside the hero's panel (`#pets`). BladeMaster/Wizard/Windrunner/Phantom open only for the first job with the most points (a tie
     opens each tied one). Only one second job can be taken; quitting a trial midway starts it over and
     lets the hero pick again. Job trials pay only when the whole series is done.
   - A second job's own skills are raised only while its opening rule still holds (MK: 20 Blader and
@@ -39,11 +46,14 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
     two-path second job's tree that has 20 points takes no more until the other path's has 20, and
     a third first-job tree (a Magic Knight's Archer) takes none until both have 20.
   - Second jobs also train every other first job they earned (`trainTrees`), but for BladeMaster,
-    Wizard and Windrunner another first-job tree never passes the path's own (Wizard: Blader <= Sorcerer).
+    Wizard, Windrunner and Phantom another first-job tree never passes the path's own (Wizard: Blader <= Sorcerer).
 - **Damage balance:** second jobs hit about 2–4x their first job; Blader and Sorcerer stay close.
+  The Assassin and the Phantom out-damage the Blader and the BladeMaster (the owner's call: they are
+  much squishier): the Assassin about 1.4x the Blader, the Phantom 1.2–1.4x the BladeMaster.
+  Sonic Blow is the Assassin's area poison skill (the owner's call).
   Do not even out the BladeMaster and the Wizard: the BladeMaster is not elemental and keeps the
   higher steady damage, while the Wizard's elements make up the gap (see `docs/job-rules.md`).
-- **Second-job skills:** every second job keeps to 3–4 active skills (the Beastmaster's are its three summons and Pack Frenzy) (add
+- **Second-job skills:** every second job keeps to 3–4 active skills (the Beastmaster's are its three summons and Pack Frenzy; the Phantom's Dual Rend, Phantom Double, Mirage Step, Thousand Cuts) (add
   passives, not actives). Area and multi-hit skills work Ragnarok style; their freeze, paralyze, stun
   and burn work on bosses too, at a third of the chance for half as long.
 - **Walking speed:** Ragnarok's walk times (ms a tile: hero 150, monsters from Ragnarok's monster
@@ -88,20 +98,21 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   away (`fieldAt`, saved; a map whose spawn list changed spawns afresh).
 - **MVPs are the hardest fights in Aria** (the owner's call): several minutes each, with skills of
   their own that need a plan (Fire Giant: Meteor Rain and burning ground; Kobold King: Tribe's
-  Shield and Burrow; Goblin King: Mirror Image; Ancient Treant: Grasping Roots and Bark Armor), and
+  Shield and Burrow; Goblin King: Mirror Image; Ancient Treant: Grasping Roots and Bark Armor; Sand Wyrm: almost half the fight under the sand,
+  unhittable, moving only while under and rooted while up, `WYRM`/`wyrmTick` in `mobs.js`), and
   enraged below half HP (`MVP_RAGE`). Even a Lv 99 hero without good, upgraded gear should not beat
-  one. Mini-bosses are half as hard as an MVP and fierce like one (the owner's call). Their levels say so (55–66: Giant Sprout and Elder Willow 55, King Crab 58, Giant Mushroom 60, Giant Beetle 62, Alpha Wolf 64, Great Bear 66), and they come only for second-job heroes (the owner's call, `picksFight` in `mobs.js`): a Trainee or first job is left be unless it strikes or taunts one. So no main story
+  one. Mini-bosses are half as hard as an MVP and fierce like one (the owner's call). Their levels say so (55–66: Giant Sprout and Elder Willow 55, King Crab 58, Giant Mushroom 60, Giant Beetle 62, Alpha Wolf 64, Great Bear 66; the desert's Cactus Lord 60 and Rainbow Runner 64), and they come only for second-job heroes (the owner's call, `picksFight` in `mobs.js`): a Trainee or first job is left be unless it strikes or taunts one. So no main story
   step or job trial needs a boss (they hunt the boss's kin); the one quest that does is Sigrid's The
   Waking Wood (Lv 70: the Great Bear and the Alpha Wolf, two mini-bosses), and it can be quit. Boss and MVP cards drop at 1%
   (other cards 0.1%). **Cards are monsters** (the owner's call): one card per monster, named after it,
   never a second card or a card that is not a monster. More Head/Face cards (for fighters: today's
   lean to casters and archers) wait for new monsters in a map extension. The MVP and raid boss cards
   each have an effect of their own, after the boss's moves (`card.perk`: Fire Giant burn, Kobold
-  King guard, Goblin King lucky dodge, Ancient Treant reflect; BleepBloop lifesteal, Kobold Warlord
-  stun, Goblin Warlord melee and double blows). Mini-boss cards have smaller ones of their own,
+  King guard, Goblin King lucky dodge, Ancient Treant reflect, Sand Wyrm devour; BleepBloop lifesteal, Kobold Warlord
+  stun, Goblin Warlord melee and double blows, Pharaoh soul tax). Mini-boss cards have smaller ones of their own,
   never a weaker copy of an MVP's or raid boss's (the owner's call: Giant Sprout HP regen, King Crab
   never slowed, Giant Mushroom SP regen, Giant Beetle DEF pierce, Elder Willow faster casting,
-  Alpha Wolf crits, Great Bear harder blows at low HP). Every card keeps its stats
+  Alpha Wolf crits, Great Bear harder blows at low HP, Cactus Lord venom, Rainbow Runner quick after a kill). Every card keeps its stats
   (the owner's call; MVP and boss cards too); an effect comes on top.
   **Boss AI** (`BRAIN` in `mobs.js`, every mini-boss, raid boss and MVP): it aims where a running
   hero is going (not a step aside), picks moves for the moment (gap-closers on kiters and casters,
@@ -111,13 +122,20 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   A* over the map (`src/path.js`), roaming or hunting.
   Each MVP has a matchup (`takes` in `mobs.js`, applied in `rules.js`): easiest for one job family
   and hardest for another (Fire Giant: bows / casters; Kobold King: casters / bows; Goblin King:
-  blades / bows and casters; Ancient Treant: beasts / blades).
+  blades / bows and casters; Ancient Treant: beasts / blades; Sand Wyrm: blades and daggers / beasts).
+- **The desert and the Sphinx:** Rytingborg (`sand`), the Red Sands (a Trainee's field), the Cactus
+  Dunes, Scorpion Sands (the Pyramid: the raid guide) and the Great Desert (the Sand Wyrm). The
+  Carters always offer Rytingborg (`ALWAYS_FARES`). A secret 6-step series (Old Gunnhild, The
+  Sphinx's Riddle) stays out of sight until the hero has walked all four sands (`needZones`); its
+  last step opens a hidden portal (`need: 'sphinx6'` on the portal) to Sphinx Sands: the Giant
+  Sphinx (about half the map), no monsters, and a sealed door. Its inside is the **first dungeon**,
+  four maps still to come (the owner's plan); until then the door only says it is sealed.
 - **Quests:** side quests and job trials can be quit from the Quest View; the main story quest
   can never be quit.
 - **EXP rates:** battles pay x4 (`RATES`: monsters, mini-bosses, MVPs, raids); quests pay x2
   (`QUEST_RATE`: side quests, job trials, the main story).
-- **Raids** (`src/raid.js`): Bloop Island (the Boatman, Salt Bay), the Kobold Camp (Brokk, Coal Pit)
-  and the Goblin Lair (Ylva, Serpent Wood). 3 waves of relentless monsters, then a boss with a
+- **Raids** (`src/raid.js`): Bloop Island (the Boatman, Salt Bay), the Kobold Camp (Brokk, Coal Pit),
+  the Goblin Lair (Ylva, Serpent Wood) and Pharaoh's Tomb (Sindri, Scorpion Sands, at the Pyramid). 3 waves of relentless monsters, then a boss with a
   big health bar, all within 10 minutes, in a small round arena. Half HP/SP back after each wave,
   all of it before the boss. Each raid has one 3 h cooldown shared by its difficulties, from
   setting out, started only by a clear (the owner's call): a failed run (left, fainted, out of time,
@@ -126,11 +144,11 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   tab: cleared or failed and why, perz, EXP, items). A clear pays the raid's cores x1/x3/x9/x27 by difficulty (3/9/27/81), its rare finds
   at 3% on any difficulty (each raid has a rare for every build: blade POW, tough END, quick QKN,
   archer FNS, caster KNL, lucky FTN: the owner's call), and its ultra rare (a Head, Face or Wings piece: Angel Wings, the Giant Goat
-  Horn Helm, Elven Ears) and its card at 1%; its guide makes the rares and the ultra rare
+  Horn Helm, Elven Ears, the Pharaoh's Headdress) and its card at 1%; its guide makes the rares and the ultra rare
   from cores (the rarer, the more; an ultra rare 500, always made, 10% of them with a card slot). The story's step gets a
   Tutorial run: no cooldown; only a clear of it completes the story step and pays (the owner's call:
   a lost Tutorial is a failed run, and Easy and up don't complete the step). Easy/Normal/Hard/Hell need Base 40/55/70/85 (the owner's call):
-  (the Kobold Camp 45/60/75/90, the Goblin Lair 50/65/80/95). Easy a first job with no potions,
+  (the Kobold Camp 45/60/75/90, the Goblin Lair 50/65/80/95, Pharaoh's Tomb 55/70/85/99). Easy a first job with no potions,
   Normal a second job with 20 White, Hard with 30. Once a hero has done a raid at its guide, the Raids
   window sets out on it from anywhere and brings them back where they were (`raidsDone`, `raid.back`; a Back button returns to the list), and the guides wear a RAID tag; Hell's boss is fierce (as
   hard and tricky as a field MVP: `FIERCE` in `mobs.js`), for a hero in the best gear. Clear rewards
@@ -143,6 +161,8 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   paints the shared head, hair and headgear. Each hairstyle is for one body only (the owner's call,
   `HAIR_BODY` in `hair.js`): Tousled and Long for male heroes, Straight and Ponytail for female; a
   save with the other body's style gets one of its own on load.
+- **Picking a path:** once the hero picks a first job by Elder Halvard's fire, he sends them straight
+  to that job's town, beside its trainer (the owner's call, `toTrainer` in `main.js`).
 - **Names:** plain common names in game; the cooler Old Norse names wait in `docs/names-later.md`.
 - **README:** never mention Ragnarok (or its names: Poring, zeny...) in `README.md`; describe Aria
   on its own. The design notes in `docs/` and the code may still refer to it.

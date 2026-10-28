@@ -34,9 +34,9 @@ export const MOB_DEFS = {
   // the raid's bloops (Bloop Island, raid.js): stronger colours of the Bloop, recoloured sheets (sprites.js).
   // These are their own stats; in the raid each is rebuilt at the difficulty's level (raidDef).
   // The Yellow Bloop also lives in Willow Marsh (passive there, like the valley's bloops); the Red
-  // Bloop is only met in the raid (raid: true)
+  // Bloop in Red Sands, by Rytingborg (a Trainee's field, like the marsh)
   yellowSlime: { name: 'Yellow Bloop', ai: 'hopper', art: 'slimeYellow', el: 'wind', lv: 7, hp: 170, atk: [9, 12], def: 1, vit: 6, agi: 6, dex: 12, exp: [16, 11], tjob: 24, adelay: 1500, passive: true, walk: 400, aggro: 5, chase: 5, reach: 0.8, w: 1.0, r: 0.38, drops: [['gel', 1, 2, 1], ['dew', 1, 1, 0.4], ['berry', 1, 1, 0.15], ['potion', 1, 1, 0.06], ['shiny_gel', 1, 1, 0.01], ['yellowbloop_card', 1, 1, 0.001]] },
-  redSlime: { raid: true, name: 'Red Bloop', ai: 'hopper', art: 'slimeRed', el: 'fire', lv: 18, hp: 560, atk: [36, 46], def: 4, vit: 16, agi: 16, dex: 30, exp: [75, 52], adelay: 1450, walk: 300, aggro: 5, chase: 6, reach: 0.8, w: 1.05, r: 0.4, drops: [['gel', 1, 2, 1], ['cinder', 1, 1, 0.1], ['shiny_gel', 1, 1, 0.01], ['redbloop_card', 1, 1, 0.001]] },
+  redSlime: { name: 'Red Bloop', ai: 'hopper', art: 'slimeRed', el: 'fire', lv: 9, hp: 230, atk: [10, 14], def: 1, vit: 8, agi: 8, dex: 14, exp: [22, 15], tjob: 30, adelay: 1450, passive: true, walk: 400, aggro: 5, chase: 6, reach: 0.8, w: 1.05, r: 0.4, drops: [['gel', 1, 2, 1], ['red_gel', 1, 1, 0.5], ['potion', 1, 1, 0.06], ['shiny_gel', 1, 1, 0.01], ['redbloop_card', 1, 1, 0.001]] },
   // the raid's boss: BleepBloop, a giant old bloop general (white beard, plumed hat, mantle), painted
   // in code (bleepbloop.js). It belly-flops onto you, charges, stomps, and calls Red Bloops; only ever
   // met in the raid, at the raid's level
@@ -121,10 +121,46 @@ export const MOB_DEFS = {
     mvp: true, respawn: 2100, mvpExp: 36000, stomp: 2.0, takes: { melee: 0.6, magic: 1.1, beast: 1.6 }, takesText: 'its bark turns blades and fists (−40%), but fangs and claws tear it (beasts +60%), and spells find its old wounds (+10%)', moves: [{ kind: 'roots', name: 'Grasping Roots', mult: 1.0, r: 1.6, hold: 2.5 }, { kind: 'bark', name: 'Bark Armor' }, { kind: 'throw', name: 'Root Stone', mult: 2.2, r: 2.0 }, { kind: 'charge', name: 'Uprooting Charge', mult: 2.2 }], summon: ['treant', 'treant', 'willow', 'willow'], summonText: 'The Ancient Treant groans, and the Old Forest answers: Treants and Willows uproot themselves!', mvpDrops: [['potion3', 3], ['ancient_seed', 1]],
     wake: 'The hills shake… the Ancient Treant walks in Wolf Hills!',
     drops: [['potion3', 1, 2, 0.6], ['old_bark', 4, 6, 1], ['ancient_heartwood', 1, 1, 0.25], ['hard_ore', 1, 2, 0.4], ['armor_ore', 1, 2, 0.4], ['oak_ring', 1, 1, 0.05], ['barkskin_mail', 1, 1, 0.03], ['elder_staff', 1, 1, 0.02], ['grove_blade', 1, 1, 0.01], ['ancient_bow', 1, 1, 0.01], ['treant_card', 1, 1, 0.01]] },
+  // ---------- Rytingborg's desert (desert.js) ----------
+  // Red Sands, west of the city, is a Trainee's field (the Assassin's trial): Red Bloops and Giant
+  // Ants, both passive. East and south the desert is for a hero near the end of a second job's first
+  // half (Base 55-70): cacti that throw their needles from afar (archer) and fight only back, dune
+  // worms that dart out of the sand, sand scorpions whose sting may poison you (poison: the chance),
+  // runner birds that kick twice, quick and passive, and in the Great Desert the soldier ants, and the
+  // Sand Wyrm under it all.
+  giantAnt: { name: 'Giant Ant', ai: 'tank', art: 'giantAnt', el: 'earth', lv: 12, hp: 340, atk: [16, 21], def: 6, vit: 12, agi: 10, dex: 22, exp: [34, 24], tjob: 44, adelay: 1500, passive: true, walk: 200, aggro: 4.5, chase: 6, reach: 0.8, w: 1.0, r: 0.4, drops: [['ant_jaw', 1, 1, 0.55], ['red_gel', 1, 1, 0.1], ['potion', 1, 1, 0.08], ['ant_knife', 1, 1, 0.003], ['giantant_card', 1, 1, 0.001]] },
+  cactus: { name: 'Cactus', ai: 'archer', art: 'cactus', el: 'earth', lv: 55, hp: 4200, atk: [180, 225], def: 20, vit: 50, agi: 30, dex: 80, mdef: 15, exp: [1500, 1050], adelay: 1800, passive: true, walk: 400, aggro: 5, chase: 8, range: 4.5, reach: 0.8, w: 0.9, r: 0.4, shot: '#9ad050', drops: [['cactus_needle', 1, 1, 0.5], ['potion3', 1, 1, 0.04], ['needle_ring', 1, 1, 0.003], ['cactus_card', 1, 1, 0.001]] },
+  duneWorm: { name: 'Dune Worm', ai: 'assassin', art: 'duneWorm', el: 'earth', lv: 58, hp: 4600, atk: [205, 255], def: 18, vit: 46, agi: 46, dex: 82, exp: [1700, 1190], adelay: 1300, walk: 200, aggro: 5.5, chase: 9, reach: 0.9, double: 0.15, w: 1.2, r: 0.45, drops: [['worm_hide', 1, 1, 0.5], ['potion3', 1, 1, 0.05], ['wormhide_boots', 1, 1, 0.002], ['duneworm_card', 1, 1, 0.001]] },
+  scorpion: { name: 'Sand Scorpion', ai: 'tank', art: 'scorpion', el: 'earth', lv: 61, hp: 4800, atk: [215, 270], def: 26, vit: 52, agi: 40, dex: 84, exp: [1850, 1300], adelay: 1400, walk: 200, aggro: 5.5, chase: 9, reach: 0.9, poison: 0.15, w: 1.1, r: 0.45, heavy: true, drops: [['scorpion_tail', 1, 1, 0.5], ['potion3', 1, 1, 0.05], ['stinger', 1, 1, 0.0025], ['scorpion_card', 1, 1, 0.001]] },
+  runner: { name: 'Sand Runner', ai: 'assassin', art: 'runner', el: 'wind', lv: 64, hp: 5200, atk: [230, 290], def: 16, vit: 48, agi: 62, dex: 90, exp: [2100, 1470], adelay: 1200, passive: true, walk: 120, aggro: 6, chase: 10, reach: 0.95, double: 0.2, w: 1.15, r: 0.45, drops: [['runner_feather', 1, 1, 0.5], ['potion3', 1, 1, 0.05], ['runner_boots', 1, 1, 0.002], ['runner_card', 1, 1, 0.001]] },
+  soldierAnt: { name: 'Soldier Ant', ai: 'tank', art: 'soldierAnt', el: 'earth', lv: 62, hp: 5000, atk: [220, 275], def: 30, vit: 56, agi: 34, dex: 80, exp: [1950, 1365], adelay: 1400, walk: 200, aggro: 5.5, chase: 9, reach: 0.9, w: 1.15, r: 0.45, heavy: true, drops: [['ant_jaw', 1, 2, 0.6], ['potion3', 1, 1, 0.05], ['chitin_shield', 1, 1, 0.002], ['soldierant_card', 1, 1, 0.001]] },
+  // the desert's mini-bosses: the Cactus Lord of Cactus Dunes (a storm of needles, a thorny rush) and
+  // the Rainbow Runner of Scorpion Sands (a dash and a flying kick)
+  cactusLord: { name: 'Cactus Lord', ai: 'boss', art: 'cactusLord', aura: '#b8f060', el: 'earth', boss: true, lv: 60, hp: 300000, atk: [210, 270], def: 24, vit: 55, agi: 34, dex: 145, mdef: 20, exp: [52000, 36400], adelay: 1900, fierce: true, walk: 300, moves: [{ kind: 'meteors', name: 'Needle Storm', mult: 1.3, r: 1.4, color: '#9ad050', cd: 16 }, { kind: 'charge', name: 'Thorn Rush', mult: 1.6 }], aggro: 5.5, chase: 12, reach: 1.5, w: 2.0, r: 0.8, heavy: true, summon: ['cactus', 'cactus'], summonText: 'The Cactus Lord rattles its spines, and Cacti hop out of the sand!', respawn: 540, drops: [['cactus_heart', 1, 1, 0.3], ['cactus_needle', 3, 5, 1], ['potion3', 1, 2, 0.5], ['thorn_coat', 1, 1, 0.03], ['cactus_spine', 1, 1, 0.02], ['cactuslord_card', 1, 1, 0.01]] },
+  rainbowRunner: { name: 'Rainbow Runner', ai: 'boss', art: 'rainbowRunner', aura: '#ff8ad8', el: 'wind', boss: true, lv: 64, hp: 310000, atk: [225, 290], def: 20, vit: 50, agi: 60, dex: 160, exp: [64000, 44800], adelay: 1500, fierce: true, walk: 100, moves: [{ kind: 'charge', name: 'Rainbow Dash', mult: 1.6 }, { kind: 'leap', name: 'Rainbow Kick', mult: 1.7, r: 1.8 }], aggro: 6, chase: 12, reach: 1.3, w: 1.6, r: 0.6, summon: ['runner', 'runner'], summonText: 'The Rainbow Runner crows, and Sand Runners come racing!', respawn: 540, drops: [['rainbow_plume', 1, 1, 0.3], ['runner_feather', 3, 5, 1], ['potion3', 1, 2, 0.5], ['rainbow_sash', 1, 1, 0.03], ['runner_talon', 1, 1, 0.02], ['rainbow_card', 1, 1, 0.01]] },
+  // the MVP of the Great Desert, after the owner's picture: a massive armoured worm whose head opens
+  // like a flower round a maw of hooked teeth. Almost half the time it is under the sand (wyrm,
+  // WYRM): it can't be hit there, and only there does it move, a mound swimming toward you, until it
+  // bursts up beneath you (Ambush, a red circle first). Up, it stays put and can be hit: it bites,
+  // sweeps its tail (stomp), spits sand (throw) and brings the dunes down on you (Sandfall), each
+  // leaving quicksand that slows you; it calls Dune Worms and a Soldier Ant
+  sandWyrm: { name: 'Sand Wyrm', ai: 'boss', art: 'sandWyrm', el: 'earth', lv: 70, hp: 900000, atk: [430, 560], def: 26, vit: 60, agi: 30, dex: 170, mdef: 30, exp: [98000, 68600], adelay: 2000, walk: 150, aggro: 7.5, chase: 25, reach: 2.4, w: 4.0, r: 1.4, heavy: true,
+    mvp: true, wyrm: true, mound: 'wyrmMound', respawn: 1800, mvpExp: 42000, stomp: 2.0, takes: { melee: 1.3, ranged: 0.9, beast: 0.6 }, takesText: 'its plated hide turns claws and fangs (beasts −40%) and arrows glance off it (−10%), but a blade between its plates finds soft flesh (blades, daggers and fists +30%)',
+    moves: [{ kind: 'throw', name: 'Sand Spit', mult: 2.2, r: 2.0 }, { kind: 'meteors', name: 'Sandfall', mult: 1.8, r: 1.6, color: '#d8b070' }], burns: { r: 1.6, dur: 6, mult: 0.25, slow: true, color: '#c89a50', word: 'Quicksand!', text: 'quicksand' },
+    summon: ['duneWorm', 'duneWorm', 'duneWorm', 'soldierAnt'], summonText: 'The Sand Wyrm roars, and the sand boils with worms!', mvpDrops: [['potion3', 3], ['wyrm_tooth', 1]],
+    wake: 'The dunes heave… the Sand Wyrm hunts under the Great Desert!',
+    drops: [['potion3', 1, 2, 0.6], ['worm_hide', 4, 6, 1], ['wyrm_tooth', 1, 1, 0.25], ['hard_ore', 1, 2, 0.4], ['armor_ore', 1, 2, 0.4], ['wyrm_ring', 1, 1, 0.05], ['wyrm_cloak', 1, 1, 0.03], ['sandwalker_boots', 1, 1, 0.03], ['dune_staff', 1, 1, 0.02], ['wyrm_fang', 1, 1, 0.01], ['dune_bow', 1, 1, 0.01], ['wyrm_card', 1, 1, 0.01]] },
 };
+// the Sand Wyrm's rhythm (def.wyrm): seconds up (it can be hit, it doesn't move) and under (it
+// can't be hit, it swims for you), shorter enraged; swim: its pace under the sand against its walk;
+// mark: the warning before it bursts up; it bursts up once this close to you (but not with more than
+// early s of its time under left: it stays under most of it), or when its time under runs out
+export const WYRM = { up: 9, upRage: 6.5, under: 7.5, underRage: 6, swim: 1.6, mark: 0.9, near: 2.2, early: 1.5 };
+const AMBUSH = { kind: 'burrow', name: 'Ambush', mult: 2.6, r: 2.3 };
 // Matchups (def.takes, rules.js): each MVP takes more from some kinds of blow and less from others,
 // so each is easiest for some jobs: the Fire Giant for bows, the Kobold King for spells, the
-// Goblin King for blades, the Ancient Treant for beasts (and hardest for the jobs it resists).
+// Goblin King for blades, the Ancient Treant for beasts, the Sand Wyrm for daggers and blades up
+// close (and hardest for the jobs it resists).
 // the Goblin King's Mirror Image: a Goblin King of shadow, just like him to look at, that fights
 // beside him (no EXP, no drops). He takes 90% less damage while one stands (MIRROR)
 // the bosses of the Kobold Camp and the Goblin Lair (raid.js): warlords of their kind, the kings'
@@ -136,6 +172,18 @@ MOB_DEFS.koboldWarlord = { raid: true, name: 'Kobold Warlord', ai: 'boss', art: 
 MOB_DEFS.goblinWarlord = { raid: true, name: 'Goblin Warlord', ai: 'boss', art: 'goblinKing', tint: '#9ad0ff', el: 'wind', boss: true, lv: 55, hp: 9600, atk: [62, 80], def: 14, vit: 35, agi: 30, dex: 60, exp: [9000, 6300], adelay: 1400, walk: 130,
   moves: [{ kind: 'leap', name: 'War Leap', mult: 1.6, r: 1.8 }, { kind: 'throw', name: 'Hurled Axe', mult: 1.4, r: 1.3 }, { kind: 'frenzy' }], stomp: 1.5,
   aggro: 99, chase: 99, reach: 1.6, w: 2.0, r: 0.8, heavy: true, summon: ['goblinWarrior', 'goblinArcher', 'goblinAssassin'], summonText: 'The Goblin Warlord blows his war-horn, and the horde answers!', drops: [] };
+// Pharaoh's Tomb (raid.js, under the Pyramid in Scorpion Sands): scarabs, mummies and tomb scorpions
+// in the waves, the Pharaoh at the end, a mummy king in his gold mask and striped headdress. He
+// calls down a Sandstorm, throws a Curse of the Sands, and calls his mummies. Only ever met in the
+// raid, rebuilt at its level (raidDef); Hell makes him fierce (FIERCE: the Sarcophagus)
+MOB_DEFS.scarab = { raid: true, name: 'Scarab', ai: 'hopper', art: 'scarab', el: 'earth', lv: 50, hp: 2000, atk: [120, 150], def: 20, vit: 30, agi: 30, dex: 60, exp: [600, 420], adelay: 1300, walk: 150, aggro: 6, chase: 8, reach: 0.7, w: 0.75, r: 0.3, drops: [] };
+MOB_DEFS.mummy = { raid: true, name: 'Mummy', ai: 'tank', art: 'mummy', el: 'shadow', lv: 55, hp: 3000, atk: [150, 190], def: 22, vit: 40, agi: 20, dex: 60, exp: [800, 560], adelay: 1600, walk: 250, aggro: 6, chase: 8, reach: 0.85, w: 0.75, r: 0.32, drops: [] };
+MOB_DEFS.tombScorpion = { raid: true, name: 'Tomb Scorpion', ai: 'tank', art: 'tombScorpion', el: 'shadow', lv: 60, hp: 3600, atk: [170, 210], def: 26, vit: 44, agi: 34, dex: 70, exp: [900, 630], adelay: 1400, walk: 200, aggro: 6, chase: 8, reach: 0.9, poison: 0.12, w: 1.05, r: 0.42, heavy: true, drops: [] };
+MOB_DEFS.pharaoh = { raid: true, name: 'Pharaoh', ai: 'boss', art: 'pharaoh', el: 'shadow', boss: true, lv: 60, hp: 9600, atk: [62, 80], def: 14, vit: 35, agi: 26, dex: 56, exp: [9000, 6300], adelay: 1600, walk: 200,
+  moves: [{ kind: 'meteors', name: 'Sandstorm', mult: 1.4, r: 1.5, color: '#d8b070', cd: 16 }, { kind: 'throw', name: 'Curse of the Sands', mult: 1.5, r: 1.6 }], stomp: 1.5,
+  aggro: 99, chase: 99, reach: 1.5, w: 1.8, r: 0.75, heavy: true, summon: ['mummy', 'mummy', 'scarab'], summonText: 'The Pharaoh raises his crook, and the dead rise with him!', drops: [] };
+// Hell's Pharaoh's Sarcophagus: four canopic jars round him; he takes 90% less damage while one stands (MIRROR)
+MOB_DEFS.canopicJar = { name: 'Canopic Jar', ai: 'tank', art: 'canopicJar', el: 'neutral', decoy: true, lv: 99, hp: 9000, atk: [60, 80], def: 10, vit: 30, agi: 1, dex: 60, exp: [0, 0], adelay: 2000, walk: 5000, aggro: 3, chase: 30, reach: 0.8, w: 0.6, r: 0.3, heavy: true, drops: [] };
 // Hell's Goblin Warlord's Mirror Image: shadows like him (MIRROR)
 MOB_DEFS.warlordShadow = { ...MOB_DEFS.goblinWarlord, raid: false, decoy: true, boss: false, ai: 'tank', hp: 12000, atk: [150, 190], exp: [0, 0], summon: null, moves: null, aggro: 12, chase: 30 };
 MOB_DEFS.kingShadow = { ...MOB_DEFS.goblinKing, decoy: true, mvp: false, ai: 'tank', hp: 9000, atk: [140, 180], exp: [0, 0], drops: [], summon: null, moves: null, mvpDrops: null, wake: null, aggro: 12, chase: 30 };
@@ -248,7 +296,7 @@ const PORTAL_KEEP = 2.2;
 const portalGap = (w, x, z) => Math.min(Infinity, ...w.portals.map((p) => Math.hypot(p.x - x, p.z - z)));
 const nearPortal = (w, x, z, r = 0) => portalGap(w, x, z) < PORTAL_KEEP + r;
 const WHITE = new THREE.Color('#ffffff');
-const STATUS_COL = Object.fromEntries(Object.entries({ bark: '#c8a05a', bark2: '#9a7a48', freeze: '#8fd0ff', paralyze: '#fff27a', stun: '#d8c8a8', burn: '#ff9a6a', burn2: '#ffc08a', rage: '#ff8a7a', rage2: '#ffb0a0' })
+const STATUS_COL = Object.fromEntries(Object.entries({ bark: '#c8a05a', bark2: '#9a7a48', freeze: '#8fd0ff', paralyze: '#fff27a', stun: '#d8c8a8', burn: '#ff9a6a', burn2: '#ffc08a', poison: '#9aff7a', poison2: '#c8ffb0', rage: '#ff8a7a', rage2: '#ffb0a0' })
   .map(([k, c]) => [k, new THREE.Color(c)]));
 // A boss (MVP or mini-boss) first calls its guards when it falls below 60% HP. It calls again only
 // once every guard is gone, and not until 2 minutes after the last one fell, while it still fights.
@@ -269,13 +317,25 @@ export const guardDef = (type) => (guardDefs[type] ||= lesser(MOB_DEFS[type]));
 // so its monsters are a swarm of weaker ones). Raid monsters attack on sight and never give up
 // (relentless), drop nothing (the raid pays at the end) and don't split. A boss is a mini-boss of
 // that level; guard: the scale its guards come at (the waves').
-const STRENGTH = { slime: 0.8, blueSlime: 0.9, yellowSlime: 1, redSlime: 1.1 };
+const STRENGTH = { slime: 0.8, blueSlime: 0.9, yellowSlime: 1, redSlime: 1.1, scarab: 0.9, mummy: 1.1, tombScorpion: 1.05 };
 // a raid boss made as hard and tricky as an MVP (the difficulty's boss scale says fierce: true):
 // enraged below half HP, moves that FLEE can't dodge and that go through most DEF (MVP_MOVE), a
 // matchup (takes), and moves of its own (MOVES), each with a barrage that leaves the ground
 // dangerous (burns). hpScale: more HP on top, so the Warlords last about as long as BleepBloop
 // (whose Jelly Wall makes his fight long)
 const FIERCE = {
+  pharaoh: {
+    fierce: true, stomp: 2.0, adelay: 1900, summonCd: 30, stats: { def: 22, vit: 50, dex: 160 }, hpScale: 1.4,
+    moves: [
+      { kind: 'mirror', name: 'Sarcophagus', decoy: 'canopicJar', n: 4, swap: false, text: 'The Pharaoh seals himself in his Sarcophagus, and four Canopic Jars rise round him! Break them: he is sealed while they stand.' },
+      { kind: 'meteors', name: 'Sandstorm', mult: 1.6, r: 1.6, color: '#d8b070', cd: 20 },
+      { kind: 'throw', name: 'Curse of the Sands', mult: 1.8, r: 1.8 },
+      { kind: 'frenzy' },
+    ],
+    burns: { r: 1.5, dur: 4, mult: 0.2, slow: true, color: '#c89a50', word: 'Quicksand!', text: 'quicksand' },
+    takes: { melee: 1.2, magic: 1.2, ranged: 0.7, beast: 0.8 },
+    takesText: 'his wrappings turn arrows (−30%) and beasts gag on the dust (−20%), but blades and spells tear the old linen (+20%)',
+  },
   koboldWarlord: {
     fierce: true, stomp: 2.0, adelay: 2000, summonCd: 30, stats: { def: 22, vit: 50, dex: 150 }, hpScale: 1.8, tribe: 0.7,
     moves: [
@@ -383,6 +443,17 @@ class Mob {
       mgr.scene.add(disc);
       this.aura = { disc, motes };
     }
+    if (this.def.mound) { // the Sand Wyrm swimming under the sand: a mound of sand, spines breaking through
+      this.moundArt = mgr.lib.mobs[this.def.mound];
+      this.moundMat = new THREE.SpriteMaterial({ map: this.moundArt.anims.down.walk[0], alphaTest: 0.5 });
+      mgr.tint.push(this.moundMat);
+      this.moundSprite = new THREE.Sprite(this.moundMat);
+      this.moundSprite.center.set(0.5, this.moundArt.anchor);
+      const k = this.def.w * 0.9 / this.moundArt.body[0];
+      this.moundSprite.scale.set(this.moundArt.fw * k, this.moundArt.fh * k, 1);
+      this.moundSprite.renderOrder = 2;
+      mgr.scene.add(this.moundSprite);
+    }
     this.home = { x, z };
     this.spawn = { x, z }; // where it first appeared: a dead one comes back here (FOLLOW)
     this.reset(x, z);
@@ -421,6 +492,7 @@ class Mob {
     this.rageT = 0;          // frenzy left
     this.barkT = 0;          // Bark Armor left (MOVES.bark)
     this.under = false;      // burrowed (MOVES.burrow): can't be hit
+    this.wy = null;          // the Sand Wyrm's rhythm, up and under (wyrmTick)
     this.wardSaid = -9;      // when it last showed that a blow was shielded
     this.kiteT = 0;          // how long you have kept out of its reach (BRAIN)
     this.rushT = 0; this.rushCd = 0; // its burst of pursuit, and when it may give chase again
@@ -428,6 +500,7 @@ class Mob {
     this.lastMove = null;
     this.status = null;      // why it is helpless while stunT lasts: freeze, paralyze, stun
     this.burnT = 0;          // burning (main.js inflict)
+    this.poisonT = 0;        // poisoned (main.js inflict: a Venom Strike, the Cactus Lord Card)
     this.foe = null;         // a companion beast it has turned on (allies.js), else it fights the hero
     this.mat.userData.fx = null;
     this.guardsGoneT = -1e9; // when (its own clock, this.t) its last guard fell
@@ -610,6 +683,54 @@ class Mob {
     }
     this.act = null;
     return { moving: false, lift: 0 };
+  }
+
+  // the Sand Wyrm (def.wyrm, WYRM): under the sand it can't be hit and swims for you (or roams the
+  // map, while it isn't fighting); it bursts up beneath you (Ambush) and stays up a while, rooted,
+  // fighting like any MVP (bite, tail sweep, its moves), then dives again. Returns: did it move
+  wyrmTick(dt, p, dist, speed, hunt, aggro, contact) {
+    const d = this.def, W = this.wy ||= { phase: 'under', t: WYRM.under };
+    if (this.state === 'wander' && hunt && this.tired <= 0 && dist < aggro) { this.state = 'chase'; this.chaseT = d.chase; W.t = Math.min(W.t, 2.5); }
+    if (this.state === 'chase' && (!hunt || dist > MVP_GIVE_UP)) { this.state = 'wander'; this.tired = 3; }
+    W.t -= dt;
+    let moving = false;
+    if (W.phase === 'under') {
+      this.under = true;
+      if (this.state !== 'chase') { this.roam(dt, speed * 0.6, (m) => { moving = m; }); return moving; }
+      if (!W.spot) {
+        if (dist > 0.8) moving = this.moveToward(p.x, p.z, speed * WYRM.swim, dt) > 0;
+        if ((dist < WYRM.near && W.t <= WYRM.early) || W.t <= 0) { W.spot = this.aimAt(p, WYRM.mark); W.mark = WYRM.mark; this.mgr.emit('burrowMark', this, W.spot, AMBUSH, WYRM.mark); }
+      } else if ((W.mark -= dt) <= 0) { // it bursts up where its red circle was
+        const w = this.mgr.world, s = W.spot;
+        if (w.walkable(s.x, s.z) && !w.isSafe(s.x, s.z) && !nearPortal(w, s.x, s.z, d.r)) { this.x = s.x; this.z = s.z; }
+        this.under = false; W.phase = 'up'; W.t = this.enraged ? WYRM.upRage : WYRM.up; W.spot = null;
+        this.atkAnim = ATTACK_ANIM * 1.6; this.nextMove = 1.5; this.specialCd = Math.max(this.specialCd, 2);
+        this.mgr.emit('erupt', this, AMBUSH, s);
+      }
+      return moving;
+    }
+    // up: rooted where it came up, and open to blows
+    this.under = false;
+    if (this.state !== 'chase') W.t = Math.min(W.t, 1.5); // nobody to fight: down it goes
+    if (W.t <= 0 && !this.act && !(this.special > 0)) { W.phase = 'under'; W.t = this.enraged ? WYRM.underRage : WYRM.under; this.under = true; this.mgr.emit('burrow', this); return false; }
+    if (this.act) { this.acting(dt, p, dist, p.x - this.x, p.z - this.z); return false; } // (only its moves that stay put: throw, meteors)
+    if (this.state !== 'chase') return false;
+    this.nextMove -= dt;
+    for (const k in this.moveCd) this.moveCd[k] -= dt;
+    if (dist > 0.01) this.heading = { x: (p.x - this.x) / dist, z: (p.z - this.z) / dist };
+    if (this.special > 0) { // the tail sweep: winding up, then it lands
+      this.special -= dt;
+      if (this.special <= 0) this.mgr.emit('stomp', this);
+      return false;
+    }
+    contact();
+    if (dist < 3.6 && this.specialCd <= 0) {
+      this.special = this.enraged ? 0.65 : 0.8;
+      this.specialCd = this.enraged ? MVP_RAGE.stomp : 7;
+      this.atkAnim = ATTACK_ANIM * 1.6;
+      this.mgr.emit('windup', this);
+    } else if (this.nextMove <= 0) this.pickMove(p, dist, p.x - this.x, p.z - this.z);
+    return false;
   }
 
   // where a step would end (resolved against rocks and walls), or null if it may not go there
@@ -823,7 +944,8 @@ class Mob {
       * (this.slowT > 0 ? 1 - (this.slowBy || 0) : 1); // (hobbled: a Wolf's Hamstring)
     let lift = 0;
     // Play Dead and safe ground (camp) make monsters lose interest
-    const available = p.state !== 'down' && p.state !== 'feign' && !this.mgr.world.isSafe(p.x, p.z);
+    const available = p.state !== 'down' && p.state !== 'feign' && !this.mgr.world.isSafe(p.x, p.z)
+      && !(p.hiddenT > 0 && !d.boss && !d.mvp); // (an Assassin's Vanish: lost, but bosses see through it)
     const aggro = this.provokeT > 0 ? 14 : d.aggro;
     const hostile = !this.lulled && (!d.passive || this.angry > 0 || this.provokeT > 0); // a passive monster only fights back; a lulled one (the vigil's song) not at all
     // a roaming boss's home is where it was headed; once a fight starts, its home is where the fight
@@ -851,7 +973,7 @@ class Mob {
         if (p.canBeHit()) {
           const res = mobAttack(d, p.ps, this.fury);
           if (res.miss) this.mgr.emit('miss', this, res);
-          else { p.takeDamage(res.dmg, this.x, this.z); this.thorns(p, res.dmg); }
+          else { p.takeDamage(res.dmg, this.x, this.z); this.thorns(p, res.dmg); if (d.poison && Math.random() < d.poison) this.mgr.emit('venom', this); } // (a scorpion's sting may poison you)
           if (d.double && Math.random() < d.double && p.canBeHit()) { // an assassin's second, quicker cut
             const again = mobAttack(d, p.ps, this.fury);
             if (!again.miss) { p.takeDamage(again.dmg, this.x, this.z); this.thorns(p, again.dmg); this.mgr.emit('double', this); }
@@ -865,13 +987,14 @@ class Mob {
     };
 
     // a boss too far from where the fight began: back it goes
-    if (!d.relentless && d.ai === 'boss' && homeD > (d.mvp ? 40 : 30) && this.state !== 'return' && this.state === 'chase') this.state = 'return'; // (other monsters are tied to no spot: FOLLOW)
+    if (!d.relentless && !d.wyrm && d.ai === 'boss' && homeD > (d.mvp ? 40 : 30) && this.state !== 'return' && this.state === 'chase') this.state = 'return'; // (other monsters are tied to no spot: FOLLOW)
     if (this.stunT > 0) this.stunT -= dt; // stunned: stands there
     else if (this.state === 'return') {
       moving = this.moveToward(this.home.x, this.home.z, speed, dt) > 0;
       if (homeD < 2 || !moving) { this.state = 'wander'; this.tired = 2; }
     } else switch (d.ai) {
       case 'boss': {
+        if (d.wyrm) { moving = this.wyrmTick(dt, p, dist, speed, available && hostile, aggro, contact); break; }
         if (this.state === 'wander' && available && hostile && this.tired <= 0 && dist < aggro && this.picksFight(p)) {
           this.state = 'chase';
           this.chaseT = d.chase;
@@ -886,7 +1009,7 @@ class Mob {
           this.chaseT -= dt;
           this.nextMove -= dt;
           for (const k in this.moveCd) this.moveCd[k] -= dt;
-          const giveUp = d.mvp ? MVP_GIVE_UP : BRAIN.giveUp; // (a boss hunts you: it doesn't tire of you this side of it)
+          const giveUp = d.relentless ? Infinity : d.mvp ? MVP_GIVE_UP : BRAIN.giveUp; // (a boss hunts you: it doesn't tire of you this side of it)
           if (dist < giveUp) this.chaseT = Math.max(this.chaseT, 1);
           // kept out of its reach, it gives chase in a burst (BRAIN)
           this.kiteT = dist > d.reach + 1.5 ? this.kiteT + dt : Math.max(0, this.kiteT - dt * 2);
@@ -917,7 +1040,7 @@ class Mob {
         }
         if (this.state === 'chase') {
           this.chaseT -= dt;
-          if (!available || dist > aggro * FOLLOW.lose) { this.state = 'wander'; this.tired = 3; } // (it follows you while you are near: FOLLOW)
+          if (!available || (!d.relentless && dist > aggro * FOLLOW.lose)) { this.state = 'wander'; this.tired = 3; } // (it follows you while you are near: FOLLOW; a raid's never gives up)
           else {
             const hopping = d.ai !== 'hopper' || (this.hop % 1) < 0.55;
             if (this.special > 0) { // winding up a stomp: stand still, then it lands
@@ -951,7 +1074,7 @@ class Mob {
         if (this.state === 'wander' && available && hostile && this.tired <= 0 && dist < aggro) { this.state = 'chase'; this.chaseT = d.chase; }
         if (this.state === 'chase') {
           this.chaseT -= dt;
-          if (!available || dist > aggro * FOLLOW.lose) { this.state = 'wander'; this.tired = 3; } // (it follows you while you are near: FOLLOW)
+          if (!available || (!d.relentless && dist > aggro * FOLLOW.lose)) { this.state = 'wander'; this.tired = 3; } // (it follows you while you are near: FOLLOW; a raid's never gives up)
           else if (this.special > 0) { // the dash
             this.special -= dt;
             const dash = d.speed * 2.2 * dt; // a dart, much quicker than its walk
@@ -1013,7 +1136,7 @@ class Mob {
         if (this.state === 'wander' && available && hostile && dist < aggro && this.tired <= 0) { this.state = 'chase'; this.chaseT = d.chase; }
         if (this.state === 'chase') {
           this.chaseT -= dt;
-          if (!available || dist > aggro * FOLLOW.lose) { this.state = 'wander'; this.tired = 3; } // (it follows you while you are near: FOLLOW)
+          if (!available || (!d.relentless && dist > aggro * FOLLOW.lose)) { this.state = 'wander'; this.tired = 3; } // (it follows you while you are near: FOLLOW; a raid's never gives up)
           else {
             if (dist > d.reach * 0.7) moving = this.moveToward(p.x, p.z, speed, dt) > 0;
             if (dist < 2.3 && this.specialCd <= 0) {
@@ -1058,6 +1181,7 @@ class Mob {
     // a colour over the monster for what ails it (daynight.js multiplies it in)
     this.mat.userData.fx = this.stunT > 0 && this.status ? STATUS_COL[this.status]
       : this.burnT > 0 ? (Math.sin(this.t * 12) > 0 ? STATUS_COL.burn : STATUS_COL.burn2)
+      : this.poisonT > 0 ? (Math.sin(this.t * 8) > 0 ? STATUS_COL.poison : STATUS_COL.poison2)
       : this.barkT > 0 ? (Math.sin(this.t * 6) > 0 ? STATUS_COL.bark : STATUS_COL.bark2)
       : this.rageT > 0 ? (Math.sin(this.t * 10) > 0 ? STATUS_COL.rage : STATUS_COL.rage2)
       : this.enraged ? (Math.sin(this.t * 4) > 0 ? STATUS_COL.rage : STATUS_COL.rage2) : null;
@@ -1065,6 +1189,14 @@ class Mob {
 
     const y = this.mgr.world.heightAt(this.x, this.z);
     this.sprite.visible = this.shadow.visible = !this.under; // (burrowed: out of sight)
+    if (this.moundSprite) {
+      this.moundSprite.visible = this.under && this.alive;
+      if (this.under) {
+        const fr = this.moundArt.anims.down.walk, tex = fr[Math.floor(this.t * 6) % fr.length];
+        if (this.moundMat.map !== tex) this.moundMat.map = tex;
+        this.moundSprite.position.set(this.x, y, this.z);
+      }
+    }
     this.sprite.position.set(this.x, y + lift, this.z);
     this.shadow.position.set(this.x, y + 0.03, this.z);
     if (this.aura) { // the glow pulses under the boss; motes rise round it, over its whole height
@@ -1319,13 +1451,15 @@ export class MobManager {
     this.list = this.list.filter((o) => o !== m);
     this.scene.remove(m.sprite, m.shadow);
     if (m.aura) { this.scene.remove(m.aura.disc); for (const q of m.aura.motes) this.scene.remove(q.s); }
+    if (m.moundSprite) { this.scene.remove(m.moundSprite); m.moundMat.dispose(); }
     m.mat.dispose();
-    this.tint = this.tint.filter((t) => t !== m.mat);
+    this.tint = this.tint.filter((t) => t !== m.mat && t !== m.moundMat);
   }
 
   kill(m) {
     m.alive = false;
     m.sprite.visible = m.shadow.visible = false;
+    if (m.moundSprite) m.moundSprite.visible = false;
     if (m.aura) { m.aura.disc.visible = false; for (const q of m.aura.motes) q.s.visible = false; }
     const y = this.world.heightAt(m.x, m.z) + (m.def.fly ? 0.7 : 0.3);
     this.fx.puff(m.x, y, m.z, m.def.w);
@@ -1412,9 +1546,11 @@ export class MobManager {
       const a = alive[i], b = alive[j];
       const dx = b.x - a.x, dz = b.z - a.z, d = Math.hypot(dx, dz), min = a.def.r + b.def.r;
       if (d < min && d > 1e-4) {
-        const push = (min - d) / 2;
-        a.tryMove((-dx / d) * push, (-dz / d) * push);
-        b.tryMove((dx / d) * push, (dz / d) * push);
+        const rootA = a.def.wyrm && !a.under, rootB = b.def.wyrm && !b.under; // (the Sand Wyrm up: rooted, the others make way)
+        if (rootA && rootB) continue;
+        const push = (min - d) / (rootA || rootB ? 1 : 2);
+        if (!rootA) a.tryMove((-dx / d) * push, (-dz / d) * push);
+        if (!rootB) b.tryMove((dx / d) * push, (dz / d) * push);
       }
     }
     // respawn out of view: twice as fast at night, and twice as fast for what a quest is hunting

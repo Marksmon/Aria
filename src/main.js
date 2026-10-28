@@ -14,8 +14,8 @@ import { RAIDS, rollReward } from './raid.js';
 import { loadSave, writeSave, loadStorage, writeStorage, clearSave, saveCode, loadCode, SLOTS, activeSlot, setActiveSlot } from './save.js';
 import { Inventory } from './inventory.js';
 import { Progress, JOBS, RATES, QUEST_RATE, STAT_KEYS } from './progress.js';
-import { Quests, QUESTS, NPCS, FARES, NEXT, SERIES, giverOf } from './quests.js';
-import { Story, INTRO, STORY, CALL_HOME, route } from './story.js';
+import { Quests, QUESTS, NPCS, FARES, ALWAYS_FARES, NEXT, SERIES, giverOf } from './quests.js';
+import { Story, INTRO, STORY, CALLINGS, CALL_HOME, route } from './story.js';
 import { playCutscene } from './cutscene.js';
 import { Villagers } from './villagers.js';
 import { Tiles } from './tiles.js';
@@ -81,6 +81,14 @@ const SPAWNS = {
   oldwood: [['treant', 9], ['willow', 4], ['ancientTreant', 1], ['treant', 2, true], ['wisp', 2, true]], // (the Ancient Treant, the oldest of them, roams its own forest)
   farm: [['snake', 10], ['wolf', 6], ['alphaWolf', 1], ['snake', 2, true], ['wolf', 3, true]],
   wolfhill: [['wolf', 10], ['bear', 5], ['snake', 2], ['greatBear', 1], ['wolf', 3, true]],
+  // Rytingborg's desert: Red Sands (a Trainee's field, the Assassin's trial), then the cacti and dune
+  // worms, the scorpions and runners round the Pyramid, and the Great Desert where all of them roam
+  // over the Sand Wyrm. Sphinx Sands keeps no monsters; the tomb (raid) spawns its own
+  sand: [], sphinx: [], tomb: [],
+  redsands: [['redSlime', 12], ['giantAnt', 8], ['redSlime', 3, true], ['giantAnt', 2, true]],
+  dunes: [['cactus', 9], ['duneWorm', 7], ['cactusLord', 1], ['duneWorm', 2, true], ['cactus', 2, true]],
+  scorpion: [['scorpion', 9], ['runner', 6], ['rainbowRunner', 1], ['scorpion', 3, true], ['runner', 1, true]],
+  desert: [['soldierAnt', 7], ['cactus', 3], ['duneWorm', 4], ['scorpion', 4], ['runner', 3], ['sandWyrm', 1], ['soldierAnt', 2, true], ['scorpion', 2, true]],
 };
 
 // which build this is, on the title screen (matches the APK's version, 1.0.<build>)
@@ -97,7 +105,7 @@ mobs.fieldAt = save?.fieldAt || {};
 const prog = new Progress();
 prog.load(save?.prog);
 // the hero's body follows the job and the look's body (male or female), painted in code (sprites.js designSet)
-const JOB_BODY = { novice: 'trainee', swordman: 'blader', mage: 'sorc', archer: 'archer', blademaster: 'master', wizard: 'wiz', magicknight: 'mknight', windrunner: 'wind', moonranger: 'moon', beastmaster: 'beast' };
+const JOB_BODY = { novice: 'trainee', swordman: 'blader', mage: 'sorc', archer: 'archer', blademaster: 'master', wizard: 'wiz', magicknight: 'mknight', windrunner: 'wind', moonranger: 'moon', beastmaster: 'beast', assassin: 'assassin', phantom: 'phantom' };
 // (the Beastmaster's follows the weapon in hand: the cleaver, or the bow; held() is set once the
 // inventory is loaded)
 let held = () => save?.inv?.gear?.weapon;
@@ -156,6 +164,7 @@ fx.landAt = (x, z) => {
 const inv = new Inventory();
 inv.level = () => prog.baseLv;
 inv.job = () => prog.wearJobs; // the job worn and the first jobs it stands on: switching jobs puts away the rest
+inv.dual = () => prog.job === 'phantom'; // a Phantom's second dagger goes in the left hand (the Shield slot)
 // the player's look follows the job: the Trainee's clothes, then the first and second jobs'
 const jobArt = () => bodyArt(player.look);
 // a picture cut down to what is drawn (a sprite's frame has room around it to move in)
@@ -260,9 +269,24 @@ function beastStats(kind) {
     reach: 2.2 + qkn * 0.025 * s }; // (QKN: it strikes from further off)
 }
 // a beast's damage rate on a monster: Pack Frenzy, and Pack Tactics when both wolves bite the same one
-allies.mult = (b, m) => (buffs.frenzy > 0 ? 1 + 0.03 * frenzyLv : 1) * (allies.rallyT > 0 ? 1 + ROAR.atk : 1) // (the Bear's Roar)
+allies.mult = (b, m) => (b.K.illusion ? 1 + 0.06 * skillLv(prog, 'lingeringshade') : 1) // (a Phantom's illusions: Lingering Shade)
+  * (buffs.frenzy > 0 && !b.K.illusion ? 1 + 0.03 * frenzyLv : 1) * (allies.rallyT > 0 ? 1 + ROAR.atk : 1) // (the Bear's Roar)
   * (b.kind === 'wolf' && allies.of('wolf').filter((w) => w.foe === m).length > 1 ? 1 + 0.06 * skillLv(prog, 'packtactics') : 1);
 const moonSkill = () => (nightUp ? 1 + 0.02 * skillLv(prog, 'moonlit') : 1); // Moonlit Hunter, on every skill
+// a Phantom's illusion's numbers: a share of the hero's own (Phantom Double's level), the hero's
+// weapon and pace; a shade fights hand to hand, the Mirage only stands there and draws the monsters
+function illusionStats() {
+  const ps = player.ps, s = 0.3 + 0.06 * skillLv(prog, 'phantomdouble'), R = Math.round;
+  return { ...ps, left: null, batk: R(ps.batk * s), watk: R(ps.watk * s), mastery: R(ps.mastery * s), maxHp: R(player.maxHp * 0.35), interval: ps.interval * 1.1, double: 0, guard: 0 };
+}
+// Vanish: the hero melts into the shadows (monsters lose them, mobs.js); attacking ends it, and the
+// first blow out of it strikes harder
+let vanishBonus = 1;
+function unhide(attack = false) {
+  player.hiddenT = 0;
+  player.mat.transparent = false; player.mat.opacity = 1;
+  if (attack) player.nextBlow = Math.max(player.nextBlow || 1, vanishBonus);
+}
 let nav = null; // auto-navigation: { quest, map, npc, why } while walking to a quest by itself
 // second-job synergies: the BladeMaster's Momentum stacks, the last spell's element (Resonance),
 // the last Edge's element (Elemental Chain)
@@ -277,7 +301,7 @@ const repeat = (sk, lv, fn) => { for (let i = 0; i < sk.hits(lv); i++) later(i *
 // a status from a skill (skills.js status): freeze, paralyze and stun leave a monster helpless; a burn
 // hurts it each second for a fifth of the hit that lit it. Bosses resist: a third of the chance, for
 // half as long, and nothing takes hold while a boss is in the middle of a move.
-const STATUS_TEXT = { freeze: 'Frozen', paralyze: 'Paralyzed', stun: 'Stunned', burn: 'Burning' };
+const STATUS_TEXT = { freeze: 'Frozen', paralyze: 'Paralyzed', stun: 'Stunned', burn: 'Burning', poison: 'Poisoned' };
 function inflict(m, st, lv, hitDmg = 0) {
   if (!st || !m.alive || m.act) return;
   const boss = m.def.boss || m.def.mvp;
@@ -288,6 +312,11 @@ function inflict(m, st, lv, hitDmg = 0) {
     if (!(m.burnT > 0)) m.burnTick = 1;
     m.burnT = dur;
     m.burnDmg = Math.max(1, Math.round(hitDmg * 0.2));
+  } else if (st.kind === 'poison') { // (a fifth of the blow each second, like a burn: the Assassin's venom)
+    if (!hitDmg) return;
+    if (!(m.poisonT > 0)) m.poisonTick = 1;
+    m.poisonT = dur;
+    m.poisonDmg = Math.max(1, Math.round(hitDmg * 0.2));
   } else {
     m.stunT = Math.max(m.stunT, dur);
     m.status = st.kind;
@@ -301,14 +330,16 @@ function cardOnHit(m, dmg) {
   const ps = player.ps;
   if (ps.burn && m.alive) inflict(m, { kind: 'burn', chance: () => ps.burn, dur: 3 }, 1, dmg);
   if (ps.stun && m.alive) inflict(m, { kind: 'stun', chance: () => ps.stun, dur: 1.5 }, 1, dmg);
+  if (ps.venom && m.alive) inflict(m, { kind: 'poison', chance: () => ps.venom, dur: 4 }, 1, dmg); // (the Cactus Lord Card, a Stinger)
+  if (ps.soultax && dmg > 0) player.healSp(Math.max(1, Math.round(dmg * ps.soultax / 100))); // (the Pharaoh Card)
   if (ps.lifesteal && dmg > 0) {
     const n = player.heal(Math.max(1, Math.round(dmg * ps.lifesteal / 100)));
     if (n > 0) fx.number(player.x, overHead(player, 1.3), player.z, n, 'heal');
   }
 }
 let skillClock = 0; // seconds since the game started, for those windows
-// what is in hand: 'sword', 'staff', 'bow', or 'none' (bare hands: no blade skills, no sword mastery)
-const weaponKind = () => { const it = ITEMS[inv.gear.weapon]; return !it ? 'none' : it.kind === 'staff' || it.kind === 'bow' ? it.kind : 'sword'; };
+// what is in hand: 'sword', 'staff', 'bow', 'dagger', or 'none' (bare hands: no blade skills, no sword mastery)
+const weaponKind = () => { const it = ITEMS[inv.gear.weapon]; return !it ? 'none' : it.kind === 'staff' || it.kind === 'bow' || it.kind === 'dagger' ? it.kind : 'sword'; };
 // an Archer's bonuses on one monster: Hunter's Mark on it, Steady Aim from 4 paces
 function bowMul(m) {
   let k = 1;
@@ -334,16 +365,24 @@ function applyStats() {
   st.fns = (st.fns || 0) + skillLv(prog, 'keeneye') + (buffs.focus > 0 ? focusLv : 0);
   if (buffs.focus > 0) st.qkn = (st.qkn || 0) + focusLv;
   gear.hit += bow ? skillLv(prog, 'longsight') : 0;
-  gear.mastery = skillLv(prog, 'basics') + (sword ? 2 * skillLv(prog, 'discipline') + 3 * skillLv(prog, 'blademastery') : 0);
+  const dagger = weaponKind() === 'dagger';
+  if (prog.trees.has('phantom')) st.qkn = (st.qkn || 0) + skillLv(prog, 'phantomgrace'); // Phantom Grace
+  gear.mastery = skillLv(prog, 'basics') + (sword ? 2 * skillLv(prog, 'discipline') + 3 * skillLv(prog, 'blademastery') : 0) + (dagger ? 4 * skillLv(prog, 'daggermastery') : 0);
+  gear.flee += 3 * skillLv(prog, 'improvedodge') + 2 * skillLv(prog, 'phantomgrace') * allies.illusions.length; // Improve Dodge; Phantom Grace, per illusion out
+  if (buffs.swift > 0) gear.aspdRate *= 1 - (gear.perk.swift || 0) / 100; // the Rainbow Runner Card's Rainbow Rush, after a kill
+  if (!(prog.job === 'phantom')) gear.left = null; // (only a Phantom fights with a dagger in each hand)
   gear.hit += sword ? skillLv(prog, 'blademastery') : 0;
   gear.flee += (skillLv(prog, 'footwork') ? 3 : 0) + (nightUp ? skillLv(prog, 'moonlit') : 0);
-  gear.def += hide + (buffs.aegis > 0 && player.barrier > 0 ? aegisLv : 0) + skillLv(prog, 'beastbond') * allies.list.length; // Beast Bond
+  gear.def += hide + (buffs.aegis > 0 && player.barrier > 0 ? aegisLv : 0) + skillLv(prog, 'beastbond') * allies.beasts.length; // Beast Bond
   if (buffs.aspd > 0) gear.aspdRate *= 0.9;
   if (bow) gear.aspdRate *= (1 - 0.02 * skillLv(prog, 'windborne')) * (buffs.tailwind > 0 ? 1 - 0.02 * tailLv : 1) * (1 - skillLv(prog, 'galerhythm') * galeStacks / 100);
   if (buffs.imbue > 0 && imbueEl && sword) gear.el = imbueEl; // Elemental Blade
   player.statBonus = { ...gear.stats }; // (what gear, cards and skills add to each stat: the Status window shows it)
   const ps = derive(prog, gear);
   ps.maxHp = Math.floor(ps.maxHp * (1 + hide / 100));
+  if (dagger && skillLv(prog, 'lethaledge')) ps.crit += 5; // Lethal Edge
+  player.leftShare = 0.5 + 0.05 * skillLv(prog, 'twinblades'); // a Phantom's left dagger: its share of a blow (Twin Blades)
+  player.doubleAttack = dagger ? 5 * skillLv(prog, 'doubleattack') : 0; // Double Attack: % of normal attacks that strike twice
   ps.maxSp = Math.floor(ps.maxSp * (1 + skillLv(prog, 'manawell') / 50));
   player.ps = ps;
   player.maxHp = ps.maxHp;
@@ -384,6 +423,10 @@ const cam = { yaw: save?.yaw ?? 0, dist: save?.dist ?? 12, target: new THREE.Vec
 // ---------- maps and warp portals ----------
 // go to a map: its monsters, tiles and ground; at = where to stand (else beside the portal back)
 const visited = new Set(save?.visited || ['camp']); // lands walked, for the Ferryman
+quests.seen = visited; // (a secret series waits for every land it names: quests.js needZones)
+// a hidden portal (world.js portal.need) opens once its quest is done, or its last task is: the Sphinx
+// Eye set in the Great Desert's obelisk (The Sphinx's Riddle 6) opens the way to Sphinx Sands
+world.open = (need) => quests.done.includes(need) || (need in quests.active && quests.ready(need, inv));
 // Keepers whose ledger you have signed (the camp's is signed from the start), and where you saved
 const keepers = new Set(save?.keepers || ['keeper_camp']);
 let savePoint = save?.savePoint || null; // { keeper, map, x, z }; none = the camp fire
@@ -446,7 +489,7 @@ const audio = new Audio();
 // ---------- combat wiring ----------
 // damage numbers float up from whoever was hit, Ragnarok style
 const overHead = (o, h) => world.heightAt(o.x, o.z) + h;
-player.on('swing', () => audio.play('swing'));
+player.on('swing', () => { audio.play('swing'); if (player.hiddenT > 0) unhide(true); }); // (attacking out of Vanish ends it)
 player.on('noammo', () => menus.message('Equip arrows to shoot (the Arrows slot)'));
 // the first weak elemental hit ever explains the grey number, once
 function weakTip(m, el) {
@@ -456,13 +499,19 @@ function weakTip(m, el) {
   menus.message(`A weak hit! ${E(el)} barely hurts the ${m.def.name}, which is ${E(m.def.el)}. Grey numbers mean the wrong element: try another weapon or spell.`);
 }
 player.on('strike', (m, res) => {
-  const y = overHead(m, m.sprite.scale.y * 0.8);
+  const y = overHead(m, m.sprite.scale.y * 0.8) + (res.left ? 0.3 : 0); // (a Phantom's left-hand blow, a little above the right's)
   if (res.miss) fx.number(m.x, y, m.z, 'Miss', 'miss');
   else {
     fx.number(m.x, y, m.z, res.dmg, res.crit || res.el > 1 ? 'crit' : res.el < 1 ? 'miss' : 'dealt');
     if (res.el < 1) weakTip(m, player.ps.el);
     audio.play('hit');
     cardOnHit(m, res.dmg);
+    // Double Attack (an Assassin's dagger): a normal blow now and then strikes twice
+    if (!res.skill && !res.left && player.doubleAttack && m.alive && Math.random() * 100 < player.doubleAttack) {
+      m.hit(res.dmg, 0, 0);
+      fx.number(m.x, y + 0.35, m.z, 'Double!', 'skill');
+      fx.number(m.x, y, m.z, res.dmg, 'dealt');
+    }
     // the Goblin Warlord Card's Frenzy: a blow struck up close now and then lands twice
     if (!player.bow && player.ps.double && m.alive && Math.random() * 100 < player.ps.double) {
       m.hit(res.dmg, 0, 0);
@@ -507,8 +556,10 @@ allies.on('strike', (b, m, res) => {
 allies.on('instinct', (b, I) => { fx.number(b.x, overHead(b, b.sprite.scale.y * 0.9), b.z, `${I.name}!`, 'skill'); audio.play(b.kind === 'bear' ? 'night' : 'swing'); });
 allies.on('hurt', (b, n) => fx.number(b.x, overHead(b, b.sprite.scale.y * 0.7), b.z, n, 'taken'));
 allies.on('taunt', (b) => { fx.number(b.x, overHead(b, b.sprite.scale.y * 0.9), b.z, 'Roar!', 'skill'); audio.play('night'); for (const o of allies.list) if (o !== b) fx.sparkle(o.x, overHead(o, o.sprite.scale.y * 0.6), o.z, '#ffc04a', 4); });
+allies.on('fade', (b) => { fx.sparkle(b.x, world.heightAt(b.x, b.z) + 0.8, b.z, b.K.aura, 10); applyStats(); }); // an illusion's time runs out
 allies.on('fall', (b) => {
-  fx.puff(b.x, world.heightAt(b.x, b.z) + 0.4, b.z, b.K.w);
+  fx.puff(b.x, world.heightAt(b.x, b.z) + 0.4, b.z, b.K.w || 0.7);
+  if (b.K.illusion) { menus.message(`Your ${b.name.toLowerCase()} shatters.`); applyStats(); return; }
   const id = SUMMONS[b.kind];
   skillCd[id] = Math.max(skillCd[id] || 0, 20); // a fallen beast can be called back after a rest
   menus.message(`Your ${b.name} falls back to the wild to lick its wounds. Call it again in 20 s.`);
@@ -544,6 +595,9 @@ player.on('faint', () => {
 });
 mobs.on('death', (m, drops) => {
   audio.play('kill');
+  const ps = player.ps; // the cards' kill effects: Rainbow Rush (attack speed), Devour (HP and SP back)
+  if (ps.swift && !m.def.decoy) { buffs.swift = 5; applyStats(); }
+  if (ps.devour && !m.def.decoy && player.state !== 'down') { player.heal(Math.round(player.maxHp * ps.devour / 100)); player.healSp(Math.round(player.maxSp * ps.devour / 100)); }
   if (raid && m.def.raidLv) { raid.exp[0] += m.def.exp[0] * RATES.base; raid.exp[1] += m.def.exp[1] * RATES.job; } // a raid holds its EXP until the run ends
   else gainExp(m.def.exp[0], prog.job === 'novice' && m.def.tjob ? m.def.tjob : m.def.exp[1], RATES); // (a Trainee earns a bloop field's big Job EXP: tjob)
   for (const id of quests.onKill(m.type)) questComplete(id);
@@ -559,6 +613,12 @@ mobs.on('death', (m, drops) => {
   }
 });
 
+// a Sand Scorpion's sting (def.poison): poisoned for 6 s
+mobs.on('venom', (m) => {
+  if (!(player.poisonT > 0)) { player.poisonTick = 1; menus.message(`The ${m.def.name}'s sting poisons you! Green Herbs cure it.`); }
+  player.poisonT = 6;
+  fx.number(player.x, overHead(player, 1.7), player.z, 'Poisoned', 'miss');
+});
 mobs.on('spore', (m) => {
   audio.play('spore');
   const y = world.heightAt(m.x, m.z) + 0.4;
@@ -739,7 +799,7 @@ mobs.on('burrow', (m) => {
   fx.puff(m.x, y + 0.2, m.z, 1.4);
   fx.sparkle(m.x, y + 0.3, m.z, '#c8a06a', 16);
   audio.play('dodge');
-  menus.message(`The ${m.def.name} burrows into the ground! Watch your feet.`);
+  menus.message(m.def.wyrm ? `The ${m.def.name} dives under the sand! Watch for its mound, and keep moving.` : `The ${m.def.name} burrows into the ground! Watch your feet.`);
 });
 mobs.on('burrowMark', (m, spot, mv, t) => fx.warn(spot.x, spot.z, mv.r, t));
 mobs.on('erupt', (m, mv, spot) => {
@@ -757,10 +817,10 @@ mobs.on('mirror', (m, mv) => {
   audio.play('night');
 });
 // a blow that barely lands (mobs.js ward): underground, behind his tribe, shrouded by shadows
-const WARD_HINT = { under: 'Underground!', tribe: 'Guarded!', mirror: 'Shrouded!', jelly: 'Jelly Wall!' };
+const WARD_HINT = { under: 'Underground!', tribe: 'Guarded!', mirror: 'Shrouded!', jelly: 'Jelly Wall!', jar: 'Sealed!' };
 let wardHintAt = 0;
 mobs.on('warded', (m) => {
-  const why = m.under ? 'under' : m.def.tribe && mobs.guardsOf(m).some((g) => !g.def.decoy) ? 'tribe' : mobs.decoysOf(m)[0]?.type === 'jellyCore' ? 'jelly' : 'mirror';
+  const why = m.under ? 'under' : m.def.tribe && mobs.guardsOf(m).some((g) => !g.def.decoy) ? 'tribe' : mobs.decoysOf(m)[0]?.type === 'jellyCore' ? 'jelly' : mobs.decoysOf(m)[0]?.type === 'canopicJar' ? 'jar' : 'mirror';
   fx.number(m.x, overHead(m, m.sprite.scale.y * 0.8 + 0.4), m.z, WARD_HINT[why], 'miss');
   if (why === 'tribe' && performance.now() - wardHintAt > 15000) { wardHintAt = performance.now(); menus.message(`The ${m.def.name} hides behind his tribe! Bring down his guards first.`); }
 });
@@ -786,7 +846,7 @@ mobs.on('shoot', (m) => {
   audio.play('swing');
   const y = world.heightAt(m.x, m.z) + m.sprite.scale.y * 0.45;
   const foe = m.foe || player; // a beast it turned on, or the hero
-  fx.bolt(m.x, y, m.z, foe === player ? playerMark : foe, '#efe2c0', () => {
+  fx.bolt(m.x, y, m.z, foe === player ? playerMark : foe, m.def.shot || '#efe2c0', () => {
     if (!m.alive && !mobs.list.includes(m)) return;
     if (!foe.canBeHit(true) || foe.state === 'down') return; // (an arrow: it reaches the Hawk too)
     const res = mobAttack(m.def, foe.ps);
@@ -958,7 +1018,7 @@ function hops(from, to) {
   while (queue.length) {
     const m = queue.shift();
     for (const p of MAPS[m].portals) {
-      if (p.to in seen) continue;
+      if (p.to in seen || (p.need && !world.open(p.need))) continue; // (a hidden portal still shut)
       seen[p.to] = seen[m] + 1;
       if (p.to === to) return seen[p.to];
       queue.push(p.to);
@@ -1237,7 +1297,7 @@ function tickRaid(dt) {
     raid.arrived = true;
     menus.message(`${R.name}, ${D.name}: ${R.words.arrive}. ${R.secs / 60} minutes ${R.words.time}!`);
   }
-  if (world.id !== R.map) { endRaid(false, 'You left the island, and the raid is lost.', true, 'Left the arena'); return; }
+  if (world.id !== R.map) { endRaid(false, 'You left the arena, and the raid is lost.', true, 'Left the arena'); return; }
   if (player.state === 'down') { endRaid(false, 'You fainted, and the raid is lost.', true, 'Fainted'); return; }
   raid.left -= dt;
   if (raid.left <= 0) { endRaid(false, R.words.timeUp, false, 'Out of time'); return; }
@@ -1247,7 +1307,7 @@ function tickRaid(dt) {
     player.heal(Math.ceil(player.maxHp * k));
     player.healSp(Math.ceil(player.maxSp * k));
     fx.sparkle(player.x, world.heightAt(player.x, player.z) + 0.6, player.z, '#9fe8a8', 14);
-    menus.message(last ? 'The last wave falls, and the island shakes... Your HP and SP are restored. Get ready!' : `Wave ${raid.wave + 1} cleared! Catch your breath (HP and SP partly restored).`);
+    menus.message(last ? 'The last wave falls, and the ground shakes... Your HP and SP are restored. Get ready!' : `Wave ${raid.wave + 1} cleared! Catch your breath (HP and SP partly restored).`);
     raid.phase = 'rest';
     raid.restT = R.rest;
     raid.list = [];
@@ -1353,9 +1413,27 @@ function tickQuestWorld(dt) {
     audio.play('pickup');
     fx.sparkle(player.x, y(player.x, player.z) + 0.8, player.z, '#ffe37a', 18);
     menus.message(`${q.verb || 'Found'}: ${q.thing} ${n}/${q.spots.length}`);
+    if (id === 'sphinx6') { // the Sphinx Eye set in the obelisk: the hidden way south opens
+      cam.shake = 0.6; audio.play('night');
+      fx.sparkle(player.x, y(player.x, player.z) + 1.2, player.z, '#7ad8ff', 30);
+      menus.message('The Sphinx Eye clicks into the obelisk, and the whole desert sighs. To the south, a way opens through the sand...');
+    }
     if (quests.ready(id, inv)) questComplete(id); else refreshQuests();
   }
   tickDefense(dt);
+  sphinxDoor();
+}
+// the Giant Sphinx's door (Sphinx Sands): sealed for now; the first dungeon lies behind it, still being dug out
+let doorSaid = false;
+function sphinxDoor() {
+  const door = world.id === 'sphinx' && world.monument?.door;
+  const near = door && Math.hypot(door.x - player.x, door.z - player.z) < 2.2;
+  if (near && !doorSaid) {
+    doorSaid = true;
+    audio.play('night');
+    fx.sparkle(door.x, world.heightAt(door.x, door.z) + 1.4, door.z - 1.2, '#7ad8ff', 16);
+    menus.message('The great door is sealed. Deep inside, something old is waking... (The Sphinx\'s halls are still being dug out: coming soon.)');
+  } else if (!near && doorSaid && (!door || Math.hypot(door.x - player.x, door.z - player.z) > 5)) doorSaid = false;
 }
 function startWave(id) {
   const q = QUESTS[id], [type, count] = q.waves[quests.active[id]];
@@ -1405,7 +1483,16 @@ function storyDone() {
     if (next) menus.message(`Story: ${next.title}. ${next.goal}`);
     refreshQuests();
     persist();
+    if (s.id === 'paths') toTrainer(); // (the Elder sends the hero on to the path they picked)
   });
+}
+// Elder Halvard's choice made: the hero is taken straight to the picked path's city, beside its trainer
+function toTrainer() {
+  const c = CALLINGS[story.flags.pick];
+  if (!c || world.id === c.city) return;
+  const [, n] = Object.entries(NPCS).find(([, v]) => v.map === c.city && v.job === c.job) || [];
+  menus.message(`Elder Halvard sends you on to ${ZONE_NAMES[c.city]}: ${c.trainer} is waiting.`);
+  warp(c.city, null, n ? { x: n.x, z: n.z + 1.6 } : null);
 }
 function checkStory() {
   if (!storyLive() || menus.isOpen('story')) return;
@@ -1595,7 +1682,7 @@ const menus = new Menus(inv, prog, player, {
     warp(n.map || 'camp', null, { x: n.x, z: n.z + 1.4 });
   },
   // Ivar the Ferryman: the lands you have walked, and his fares
-  ferryList: () => Object.entries(FARES).filter(([m]) => visited.has(m) && m !== world.id),
+  ferryList: () => Object.entries(FARES).filter(([m]) => (visited.has(m) || ALWAYS_FARES.includes(m)) && m !== world.id),
   // the Boatman: the raid's difficulties and the tide
   raidInfo: (id) => raidInfo(id),
   mobPortrait: (art) => mobPortrait(art),
@@ -1619,7 +1706,7 @@ const menus = new Menus(inv, prog, player, {
     for (const id of Object.keys(quests.active)) row(id, quests.ready(id, inv) ? 'ready' : 'active');
     for (const npc of Object.keys(NPCS)) {
       const st = quests.status(npc, prog, inv);
-      if (st.id && ['offer', 'locked', 'job'].includes(st.state)) row(st.id, st.state, npc);
+      if (st.id && !st.secret && ['offer', 'locked', 'job'].includes(st.state)) row(st.id, st.state, npc); // (a secret series stays out of sight)
     }
     for (const id of quests.done) row(id, 'done');
     return { main, chapters, rows, storyDone: story.done };
@@ -1627,7 +1714,7 @@ const menus = new Menus(inv, prog, player, {
   raidList: () => Object.entries(RAIDS).map(([id, R]) => ({ id, R, guide: NPCS[R.npc].name, land: ZONE_NAMES[R.from], done: raidsDone.has(id), ...raidInfo(id) })),
   ferry(map) {
     const fare = FARES[map];
-    if (!visited.has(map) || inv.perz < fare) return;
+    if ((!visited.has(map) && !ALWAYS_FARES.includes(map)) || inv.perz < fare) return;
     inv.perz -= fare;
     menus.close('talk');
     warpTo(map);
@@ -1649,6 +1736,11 @@ const menus = new Menus(inv, prog, player, {
     const off = inv.dropUnwearable();
     if (job === 'mage' && !inv.gear.weapon) inv.equip('oak_staff'); // straight into the new Sorcerer's hand
     // a new Archer is handed a bow and a quiver of arrows, put on at once
+    // a new Assassin is handed a Rusty Dagger, put in hand at once
+    if (job === 'assassin' && first) {
+      if (!inv.bag.count('rusty_dagger') && !Object.values(inv.gear).includes('rusty_dagger')) { inv.add('rusty_dagger', 1); menus.toast('rusty_dagger', 1); }
+      if (ITEMS[inv.gear.weapon]?.kind !== 'dagger' && inv.bag.count('rusty_dagger')) inv.equip('rusty_dagger');
+    }
     if (job === 'archer' && first) {
       for (const id of ['hunting_bow', 'wooden_arrow']) if (!inv.bag.count(id) && !Object.values(inv.gear).includes(id)) { inv.add(id, 1); menus.toast(id, 1); }
       if (ITEMS[inv.gear.weapon]?.kind !== 'bow' && inv.bag.count('hunting_bow')) inv.equip('hunting_bow');
@@ -1863,7 +1955,7 @@ function useItem(id) {
     fx.number(player.x, y, player.z, n, 'heal');
   }
   if (u.sp) fx.number(player.x, y, player.z, player.healSp(roll(u.sp)), 'sp');
-  if (u.cure) player.slowT = 0;
+  if (u.cure) { player.slowT = 0; player.poisonT = 0; } // (spores' slow, and a scorpion's venom)
   if (u.buff) { buffs[u.buff] = u.t; applyStats(); menus.message(`${ITEMS[id].name}: ${ITEMS[id].desc}`); }
   if (u.warp === 'random') warpRandom();
   if (u.warp === 'camp') { if (savePoint) warp(savePoint.map, null, { x: savePoint.x, z: savePoint.z }); else warpTo('camp'); } // to your save point
@@ -2009,12 +2101,12 @@ function useSkill(id) {
     return;
   }
   if (id === 'packfrenzy') {
-    if (!allies.list.length) { menus.message('Call your beasts first'); return; }
+    if (!allies.beasts.length) { menus.message('Call your beasts first'); return; }
     if (!pay()) return;
     buffs.frenzy = 15; frenzyLv = lv;
     applyStats();
     say('Pack Frenzy'); audio.play('night');
-    for (const b of allies.list) fx.sparkle(b.x, world.heightAt(b.x, b.z) + 0.6, b.z, '#ff7a4a', 10);
+    for (const b of allies.beasts) fx.sparkle(b.x, world.heightAt(b.x, b.z) + 0.6, b.z, '#ff7a4a', 10);
     return;
   }
   // ---- Moon Ranger ----
@@ -2091,6 +2183,68 @@ function useSkill(id) {
       for (const m of [...mobs.list]) {
         if (!m.alive || Math.hypot(m.x - cx, m.z - cz) > r + m.def.r) continue;
         inflict(m, st, lv, edgeHit(m, sk.power(lv) / 100, sk.mpower(lv) / 100, el));
+      }
+    });
+    return;
+  }
+  // ---- Assassin: Vanish ----
+  if (id === 'vanish') {
+    if (!pay()) return;
+    player.hiddenT = 3 + lv; vanishBonus = 1 + 0.1 * lv;
+    player.mat.transparent = true; player.mat.opacity = 0.35;
+    player.stop();
+    fx.puff(player.x, y + 0.3, player.z, 1.0);
+    say('Vanish'); audio.play('dodge');
+    return;
+  }
+  // ---- Phantom: Phantom Double, Mirage Step, Thousand Cuts ----
+  if (id === 'phantomdouble') {
+    if (!pay()) return;
+    allies.summon('shade', 2, illusionStats(), player, { art: player.art, life: sk.dur(lv) + 2 * skillLv(prog, 'lingeringshade') });
+    applyStats();
+    say('Phantom Double'); audio.play('night');
+    for (const b of allies.of('shade')) fx.sparkle(b.x, world.heightAt(b.x, b.z) + 0.8, b.z, '#a88aff', 14);
+    return;
+  }
+  if (id === 'miragestep') { // a dash away, untouchable, leaving an illusion that draws the monsters
+    if (player.rootT > 0) { menus.message('Roots hold you fast!'); return; }
+    const near = mobs.nearest(player.x, player.z, 8);
+    let ax = near ? player.x - near.x : player.face.x, az = near ? player.z - near.z : player.face.z;
+    const d = Math.hypot(ax, az) || 1;
+    ax /= d; az /= d;
+    let bx = player.x, bz = player.z;
+    for (let k = 0.5; k <= 4; k += 0.5) {
+      const x = player.x + ax * k, z = player.z + az * k, t = player.tiles.tileAt(x, z);
+      if (!player.tiles.free(t[0], t[1]) || !world.walkable(x, z)) break;
+      bx = x; bz = z;
+    }
+    if (bx === player.x && bz === player.z) { menus.message('No room to step away'); return; }
+    if (!pay()) return;
+    const from = { x: player.x, z: player.z };
+    allies.summon('mirage', 1, { ...illusionStats(), maxHp: Math.round(player.maxHp * 0.5) }, player, { art: player.art, life: 3 + lv + 2 * skillLv(prog, 'lingeringshade'), at: from });
+    fx.zap({ x: player.x, y: y + 0.7, z: player.z }, { x: bx, y: world.heightAt(bx, bz) + 0.7, z: bz }, '#a88aff');
+    player.stop();
+    player.setPos(bx, bz);
+    player.iframes = Math.max(player.iframes, 0.5);
+    for (const m of mobs.list) if (m.alive && m.foe !== allies.of('mirage')[0] && Math.hypot(m.x - from.x, m.z - from.z) < 4 && !m.def.decoy) { m.foe = allies.of('mirage')[0]; m.provoke(); }
+    applyStats();
+    say('Mirage Step'); audio.play('dodge');
+    return;
+  }
+  if (id === 'thousandcuts') { // five spins with both blades, everything close takes each
+    if (!pay()) return;
+    say('Thousand Cuts');
+    player.atkAnim = player.atkDur = 0.35;
+    const cx = player.x, cz = player.z, mult = sk.power(lv) / 100;
+    repeat(sk, lv, (i) => {
+      const gy = world.heightAt(player.x, player.z);
+      for (let j = 0; j < 10; j++) { const a = (j / 10) * Math.PI * 2 + i; fx.sparkle(player.x + Math.cos(a) * sk.area * 0.8, gy + 0.6, player.z + Math.sin(a) * sk.area * 0.8, j % 2 ? '#a88aff' : '#e8e0ff', 1); }
+      audio.play('swing');
+      void cx; void cz;
+      for (const m of [...mobs.list]) {
+        if (!m.alive || Math.hypot(m.x - player.x, m.z - player.z) > sk.area + m.def.r) continue;
+        const r = dualHit(m, mult);
+        inflict(m, sk.status, lv, r);
       }
     });
     return;
@@ -2252,6 +2406,74 @@ function useSkill(id) {
       if (t.alive) { t.knock.x *= 1.5; t.knock.z *= 1.5; }
     });
   }
+  // ---- Assassin: Venom Strike, Sonic Blow, Shadow Step, Pilfer ----
+  if (id === 'venomstrike') strike(sk.power(lv) / 100, 1 + 0.03 * lv, (t, res) => { say('Venom Strike'); if (!res.miss) inflict(t, sk.status, lv, res.dmg); });
+  if (id === 'sonicblow') { // eight cuts in a blur at the target, each catching every monster close by it; then the venom takes them all
+    const m = sk.power(lv) / 100;
+    strike(m, 1, (t, res0) => {
+      say('Sonic Blow');
+      cam.shake = 0.15;
+      const cx = t.x, cz = t.z, gy = world.heightAt(cx, cz), dealt = new Map([[t, res0?.dmg || 0]]);
+      repeat(sk, lv, (i) => { // (the swing's own blow was the target's first)
+        for (const o of [...mobs.list]) {
+          if (!o.alive || (o === t ? !i : Math.hypot(o.x - cx, o.z - cz) > sk.area + o.def.r)) continue;
+          dealt.set(o, (dealt.get(o) || 0) + (bladeHit(o, m).dmg || 0));
+          if (o === t) fx.slash(t.x, overHead(t, t.sprite.scale.y * 0.5), t.z, { x: Math.cos(i * 2.3), z: Math.sin(i * 2.3) }, cam);
+        }
+        const a = i * 2.4; fx.sparkle(cx + Math.cos(a) * sk.area * 0.7, gy + 0.4, cz + Math.sin(a) * sk.area * 0.7, i % 2 ? '#8ad04a' : '#c8f080', 3); // the venom's green mist
+        if (i === sk.hits(lv) - 1) for (const [o, d] of dealt) if (o.alive && d > 0) inflict(o, sk.status, lv, d / 4); // (each poisoned for a quarter of the cuts it took, a fifth of that a second)
+      });
+    });
+  }
+  if (id === 'shadowstep') { // to the target's back, and the next blow strikes harder
+    const run = (t) => {
+      if (!t.alive || !pay()) return;
+      const dx = t.x - player.x, dz = t.z - player.z, d = Math.hypot(dx, dz) || 1, gap = t.def.r + 0.6;
+      const bx = t.x + (dx / d) * gap, bz = t.z + (dz / d) * gap;
+      fx.puff(player.x, y + 0.3, player.z, 0.8);
+      if (world.walkable(bx, bz) && !world.isSafe(bx, bz)) { player.x = bx; player.z = bz; player.sync(); }
+      player.face = { x: -dx / d, z: -dz / d };
+      player.iframes = Math.max(player.iframes, 0.3);
+      player.nextBlow = 1 + 0.1 * lv;
+      fx.puff(player.x, world.heightAt(player.x, player.z) + 0.3, player.z, 0.8);
+      say('Shadow Step'); audio.play('dodge');
+      player.command({ mob: t });
+    };
+    player.command({ mob: target, spell: { range: sk.range, time: 0, run, name: sk.name } });
+    return;
+  }
+  if (id === 'pilfer') { // a chance at one of its drops (never a card), once per monster
+    const run = (t) => {
+      if (!t.alive || !pay()) return;
+      say('Pilfer'); audio.play('swing');
+      player.atkAnim = player.atkDur = 0.25;
+      const boss = t.def.boss || t.def.mvp, pool = (t.def.drops || []).filter(([it]) => !ITEMS[it]?.card && !t.def.decoy);
+      if (t.pilfered || !pool.length) { fx.number(t.x, overHead(t, t.sprite.scale.y * 0.8), t.z, t.pilfered ? 'Nothing left' : 'Nothing', 'miss'); player.command({ mob: t }); return; }
+      const chance = (20 + player.ps.fns / 2) / 100 * (boss ? 1 / 3 : 1);
+      if (Math.random() >= chance) { fx.number(t.x, overHead(t, t.sprite.scale.y * 0.8), t.z, 'Missed', 'miss'); player.command({ mob: t }); return; }
+      t.pilfered = true;
+      const tot = pool.reduce((a, [, , , c]) => a + c, 0);
+      let r = Math.random() * tot, got = pool[0][0];
+      for (const [it, , , c] of pool) if ((r -= c) <= 0) { got = it; break; }
+      if (inv.bag.add(got, 1)) { fx.number(t.x, overHead(t, t.sprite.scale.y * 0.8), t.z, ITEMS[got].name, 'skill'); menus.message(`You lifted ${ITEMS[got].name} off the ${t.def.name}.`); inv.changed(); }
+      else menus.message('Your bag is full');
+      player.command({ mob: t });
+    };
+    player.command({ mob: target, spell: { range: sk.range, time: 0.05, run, name: sk.name } });
+    return;
+  }
+  // ---- Phantom: Dual Rend, right hand and left in turn ----
+  if (id === 'dualrend') {
+    const m = sk.power(lv) / 100;
+    strike(m, 1, (t) => {
+      say('Dual Rend');
+      repeat(sk, lv, (i) => {
+        if (!i || !t.alive) return;
+        if (i % 2 && player.ps.left) leftHit(t, m); else bladeHit(t, m);
+        fx.slash(t.x, overHead(t, t.sprite.scale.y * 0.5), t.z, { x: i % 2 ? 1 : -1, z: 0.3 }, cam);
+      });
+    });
+  }
   if (id === 'thrust') strike(1.25, 1, (t) => { say('Thrust'); combo(t); });
   if (id === 'cleave') {
     strike(sk.power(lv) / 100, 1, (t) => {
@@ -2399,6 +2621,20 @@ function bladeHit(t, mult, opts = {}) {
   audio.play('hit');
   return res;
 }
+// a Phantom's left-hand cut (Dual Rend): the left dagger's ATK and element, at Twin Blades' share
+function leftHit(t, mult) {
+  const L = player.ps.left;
+  if (!L || !t.alive) return { miss: true, dmg: 0 };
+  const res = playerAttack({ ...player.ps, watk: L.atk, wlv: L.wlv, el: L.el || 'neutral' }, t.effDef(), mult * player.atkMul * player.leftShare, 1, true);
+  const yy = overHead(t, t.sprite.scale.y * 0.8) + 0.3;
+  if (res.miss) { fx.number(t.x, yy, t.z, 'Miss', 'miss'); return res; }
+  fx.number(t.x, yy, t.z, res.dmg, 'dealt');
+  t.hit(res.dmg, 0, 0);
+  audio.play('hit');
+  return res;
+}
+// both blades on one monster (Thousand Cuts): the right, then the left if there is one; the damage done
+const dualHit = (t, mult) => (bladeHit(t, mult).dmg || 0) + (player.ps.left ? leftHit(t, mult).dmg || 0 : 0);
 // Combo Edge: a blade skill may chain a free extra strike, and each Combo stacks Momentum
 function combo(t) {
   const lv = skillLv(prog, 'comboedge');
@@ -2570,6 +2806,25 @@ function tickSkills(dt) {
     const t = timers.splice(i, 1)[0];
     if (t.map === world.id) t.fn();
   }
+  for (const m of mobs.list) { // poisoned monsters
+    if (!m.alive || !(m.poisonT > 0)) continue;
+    m.poisonT -= dt;
+    if ((m.poisonTick -= dt) > 0) continue;
+    m.poisonTick = 1;
+    fx.number(m.x, overHead(m, m.sprite.scale.y * 0.8), m.z, m.poisonDmg, 'dealt');
+    fx.sparkle(m.x, overHead(m, m.sprite.scale.y * 0.4), m.z, '#8aff5a', 4);
+    m.hit(m.poisonDmg, 0, 0);
+  }
+  // a scorpion's venom in the hero: 1.5% of Max HP a second, never the last of it
+  if (player.poisonT > 0 && player.state !== 'down') {
+    player.poisonT -= dt;
+    if ((player.poisonTick -= dt) <= 0) {
+      player.poisonTick = 1;
+      const n = Math.min(player.hp - 1, Math.max(1, Math.round(player.maxHp * 0.015)));
+      if (n > 0) { player.hp -= n; fx.number(player.x, overHead(player, 1.3), player.z, n, 'taken'); fx.sparkle(player.x, overHead(player, 0.8), player.z, '#8aff5a', 3); }
+    }
+  }
+  if (player.hiddenT > 0 && (player.hiddenT -= dt) <= 0) unhide(); // Vanish wears off
   for (const m of mobs.list) { // burning monsters
     if (!m.alive || !(m.burnT > 0)) continue;
     m.burnT -= dt;
@@ -2588,7 +2843,7 @@ function tickSkills(dt) {
     if (buffs[k] <= 0 && k === 'momentum') momentum = 0;
     if (buffs[k] <= 0 && k === 'imbue') { imbueEl = null; applyStats(); menus.message('Your blade loses its element'); }
     if (buffs[k] <= 0 && k === 'aegis') { player.barrier = 0; applyStats(); }
-    if (buffs[k] <= 0 && ['focus', 'tailwind', 'rush', 'gust', 'frenzy'].includes(k)) applyStats();
+    if (buffs[k] <= 0 && ['focus', 'tailwind', 'rush', 'gust', 'frenzy', 'swift'].includes(k)) applyStats();
     if (buffs[k] <= 0 && k === 'rhythm') { galeStacks = 0; applyStats(); }
   }
   if (buffs.aegis > 0 && player.barrier <= 0) { buffs.aegis = 0; applyStats(); menus.message('Stone Aegis breaks'); }
@@ -2734,7 +2989,7 @@ function persist() {
 }
 
 // second jobs glow: a soft aura behind the hero and a ring at their feet, in the job's colour
-const AURA = { blademaster: '#ff7a4a', wizard: '#b48aff', magicknight: '#6ad8ff', windrunner: '#8af0c8', moonranger: '#b8c8ff', beastmaster: '#ff9a5a' };
+const AURA = { blademaster: '#ff7a4a', wizard: '#b48aff', magicknight: '#6ad8ff', windrunner: '#8af0c8', moonranger: '#b8c8ff', beastmaster: '#ff9a5a', phantom: '#9a6aff' };
 // a small moon by the hotbar while the Moon Ranger's night passives work
 // ---------- the buff bar: what is on the hero, with the time left; hold an icon for what it does ----------
 const buffBar = document.createElement('div');
@@ -2894,7 +3149,7 @@ let petsKey = '', petsT = 0;
 function tickPets(dt) {
   if ((petsT -= dt) > 0) return;
   petsT = 0.15;
-  const list = allies.list.filter((b) => b.alive);
+  const list = allies.beasts.filter((b) => b.alive); // (the beasts' bars: an illusion isn't shown)
   const key = list.map((b) => `${b.kind}${Math.ceil(b.hp)}/${b.maxHp}`).join('|');
   if (key === petsKey) return;
   petsKey = key;
@@ -3227,4 +3482,4 @@ if (go || toSelect) { title.classList.remove('wait'); bootGone(); } else {
   addEventListener('keydown', tap);
 }
 
-window.__aria = { lib, warp, enterMap, useSkill, useItem, story, SPOTS, player, world, cam, camera, mobs, allies, fx, inv, prog, quests, villagers, menus, hotbar, dayNight, audio, stats: world.stats, raid: () => raid, raidAt: () => raidAt, gainExp };
+window.__aria = { scene, renderer, lib, warp, enterMap, useSkill, useItem, story, SPOTS, player, world, cam, camera, mobs, allies, fx, inv, prog, quests, villagers, menus, hotbar, dayNight, audio, stats: world.stats, raid: () => raid, raidAt: () => raidAt, raidGo, raidLog: () => raidLog, storyDone, gainExp };

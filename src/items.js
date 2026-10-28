@@ -50,6 +50,18 @@ const BASE_ITEMS = {
   ancient_heartwood: { type: 'misc', rare: true, name: 'Ancient Heartwood', desc: 'Golden wood from the heart of the Ancient Treant, a thousand rings deep. Nothing in Aria is harder, or older.', from: 'the Ancient Treant (25%)' },
   ancient_seed: { type: 'misc', name: 'Ancient Seed', desc: 'A seed as big as a fist from the Ancient Treant. Plant it, and in a thousand years there will be another: proof that you were the one who felled it.', from: 'the Ancient Treant (MVP reward)' },
   ember_heart: { type: 'misc', name: 'Fire Heart', desc: 'The Fire Giant\'s smouldering heart, still beating: proof that you were the one who brought it down.', from: 'the Fire Giant (MVP reward)' },
+  // Rytingborg's desert
+  red_gel:      { type: 'misc', name: 'Red Gel', desc: 'Warm red gel from a Red Bloop. It stays warm at night, so desert folk carry it in their pockets.', from: 'Red Bloops and Giant Ants' },
+  ant_jaw:      { type: 'misc', name: 'Ant Mandible', desc: 'A Giant Ant\'s jaw, hard as horn and sharp inside. The dagger-smiths of Rytingborg grind it into knives.', from: 'Giant Ants and Soldier Ants' },
+  cactus_needle: { type: 'misc', name: 'Cactus Needle', desc: 'A long white needle from a Cactus that threw it at you. It went through your boot. Smiths and tailors use them.', from: 'Cacti' },
+  worm_hide:    { type: 'misc', name: 'Worm Hide', desc: 'A ring of rough, sand-coloured hide from a Dune Worm. Nothing wears it through; boots and cloaks of it last for years.', from: 'Dune Worms' },
+  scorpion_tail: { type: 'misc', name: 'Scorpion Tail', desc: 'A Sand Scorpion\'s tail, the sting carefully broken off. Its venom still makes a fine poison for a blade.', from: 'Sand Scorpions' },
+  runner_feather: { type: 'misc', name: 'Runner Feather', desc: 'A big golden feather from a Sand Runner. The caravans tie them to their wagons for a fast road.', from: 'Sand Runners' },
+  cactus_heart: { type: 'misc', rare: true, name: 'Cactus Heart', desc: 'The green, dripping heart of the Cactus Lord. It holds water for a year, and a sting for longer.', from: 'the Cactus Lord (30%)' },
+  rainbow_plume: { type: 'misc', rare: true, name: 'Rainbow Plume', desc: 'A plume from the Rainbow Runner\'s crest, every colour at once. It never stops fluttering, even in still air.', from: 'the Rainbow Runner (30%)' },
+  wyrm_tooth:   { type: 'misc', rare: true, name: 'Wyrm Tooth', desc: 'A hooked tooth as long as your arm from the Sand Wyrm\'s maw: proof that you were the one who brought it down.', from: 'the Sand Wyrm (25%, and its MVP reward)' },
+  tomb_core:    { type: 'misc', name: 'Tomb Core', desc: 'A gold scarab amulet every dead servant of the Pharaoh wore, still warm with old magic. Sindri the Tomb Guide makes the Tomb\'s rare gear from it.', from: "Pharaoh's Tomb (a clear: 3, x3 a difficulty up)" },
+  sphinx_eye:   { type: 'misc', name: 'Sphinx Eye', desc: 'A blue stone eye as big as a fist, cold in the hottest sun. Old Gunnhild says it once looked out of the Sphinx itself.', from: "Old Gunnhild (The Sphinx's Riddle)" },
 
   // usables, like Ragnarok's potions and wings. use: hp/sp [min, max], warp (random | camp),
   // buff + t (seconds), cure (ends the Mushling spores' slow)
@@ -63,8 +75,21 @@ const BASE_ITEMS = {
   quick:   { type: 'use', usable: true, name: 'Speed Potion', use: { buff: 'aspd', t: 180 }, desc: 'A fizzing potion that makes your hands faster than your thoughts. +10% attack speed for 3 minutes.' },
   wander:  { type: 'use', usable: true, name: 'Teleport Feather', use: { warp: 'random' }, desc: 'A feather a Wisp left behind. Throw it up and the wind whisks you to a random spot on this map.', from: 'Wisps' },
   honey:   { type: 'use', usable: true, name: 'Honey', use: { hp: [150, 210] }, desc: 'Wild honey from a Bear\'s stolen hive, still on the comb. Sweet, sticky and strong. Restores 150–210 HP.', from: 'Bears' },
+  dates:   { type: 'use', usable: true, name: 'Dates', use: { hp: [120, 170] }, desc: 'A handful of sticky dates from Rytingborg\'s palms. Sweet enough to keep a caravan walking. Restores 120–170 HP.' },
+  water_skin: { type: 'use', usable: true, name: 'Water Skin', use: { sp: [30, 45] }, desc: 'Cold oasis water in a leather skin. In the desert it is worth more than gold. Restores 30–45 SP.' },
   homeward: { type: 'use', usable: true, name: 'Return Feather', use: { warp: 'camp' }, desc: 'A feather that remembers where you saved. Hold it tight and it carries you back to your save point (the camp, until you save with a Keeper).' },
 
+  // daggers (kind: dagger): the Assassin's weapon, and any job's. Weaker blows than a sword of the same
+  // level, but quicker (rules.js: a dagger swings at the job's delay.dagger, else 80% of its sword's)
+  rusty_dagger: { type: 'equip', slot: 'weapon', kind: 'dagger', name: 'Rusty Dagger', atk: 18, wlv: 1, icon: 'dagger_rusty', desc: 'An old dagger, rust on the blade and sand in the grip. Every Assassin\'s first, and they all keep it.' },
+  knife:        { type: 'equip', slot: 'weapon', kind: 'dagger', name: 'Knife', atk: 26, wlv: 1, icon: 'dagger_knife', desc: 'A plain, sharp knife from the bazaar. It cuts rope, bread and Red Bloops equally well.' },
+  ant_knife:    { type: 'equip', slot: 'weapon', kind: 'dagger', el: 'earth', name: 'Ant-Jaw Knife', atk: 34, wlv: 1, icon: 'dagger_ant', desc: 'A Giant Ant\'s mandible ground to an edge, bound to a bone grip. It bites like the ant did.', from: 'Giant Ants (0.3%)' },
+  sand_kris:    { type: 'equip', slot: 'weapon', kind: 'dagger', name: 'Sand Kris', atk: 44, wlv: 2, icon: 'dagger_kris', desc: 'A wavy-bladed kris from Rytingborg\'s forges. The waves widen the wound; the sand keeps the edge.' },
+  main_gauche:  { type: 'equip', slot: 'weapon', kind: 'dagger', name: 'Main Gauche', atk: 54, wlv: 2, hit: 3, icon: 'dagger_gauche', desc: 'A steel parrying dagger with a basket guard, made for the left hand. Phantoms favour it.' },
+  stinger:      { type: 'equip', slot: 'weapon', kind: 'dagger', name: 'Stinger', atk: 68, wlv: 3, perk: { venom: 4 }, icon: 'dagger_stinger', desc: 'A Sand Scorpion\'s sting set in a dagger\'s hilt. Its venom still works: 4% of your blows poison a monster.', from: 'Sand Scorpions (0.25%)' },
+  cactus_spine: { type: 'equip', slot: 'weapon', kind: 'dagger', el: 'earth', name: 'Cactus Spine', atk: 76, wlv: 3, stats: { end: 1 }, icon: 'dagger_cactus', desc: 'A spine from the Cactus Lord, as long as a forearm and green to the point. Earth element.', from: 'the Cactus Lord (2%)' },
+  runner_talon: { type: 'equip', slot: 'weapon', kind: 'dagger', el: 'wind', name: 'Runner Talon', atk: 80, wlv: 3, aspd: 5, icon: 'dagger_talon', desc: 'A Rainbow Runner\'s claw on a feathered grip. It wants to move as fast as its bird did. Wind element.', from: 'the Rainbow Runner (2%)' },
+  wyrm_fang:    { type: 'equip', slot: 'weapon', kind: 'dagger', el: 'earth', rare: true, name: 'Wyrm Fang', atk: 102, wlv: 4, stats: { qkn: 2, pow: 2 }, icon: 'dagger_wyrm', desc: 'A hooked tooth from the Sand Wyrm\'s maw, wrapped in its own hide. Nothing cuts deeper. Earth element.', from: 'the Sand Wyrm (1%)' },
   // one-handed swords (Ragnarok rules, see rules.js)
   twig_sword:   { type: 'equip', slot: 'weapon', jobs: ['novice', 'swordman'], name: 'Wooden Sword',  atk: 15, wlv: 1, icon: 'weapon0', desc: 'A practice sword whittled from a branch. A stick with ambitions; every Trainee starts with one.' },
   stone_blade:  { type: 'equip', slot: 'weapon', el: 'earth', jobs: ['novice', 'swordman'], name: 'Stone Sword', atk: 25, wlv: 1, icon: 'weapon1', desc: 'Ridge stone knapped to an edge and bound to a grip. Crude, but it bites.' },
@@ -271,6 +296,42 @@ const BASE_ITEMS = {
   veteran_boots: { type: 'equip', slot: 'shoes', rare: true, name: "Veteran's Boots", def: 3, flee: 3, mhp: 60, stats: { end: 1 }, icon: 'boots_veteran', desc: "BleepBloop's old marching boots, iron-toed and patched from a hundred battles. Somehow they fit a hero's feet.", from: 'Bloop Island (a clear: 3%), or made from Bloop Cores' },
   bloop_buckler: { type: 'equip', slot: 'shield', rare: true, name: 'Bloop Buckler', def: 4, mhp: 80, icon: 'r_bloopbuckler', desc: 'A round shield of hardened orange bloop. Blows bounce off it, mostly.', from: 'Bloop Island (a clear: 3%), or made from Bloop Cores' },
   bleep_ring:   { type: 'equip', slot: 'acc', rare: true, name: 'Bleep Ring', stats: { ftn: 3, pow: 1 }, icon: 'r_bleep', desc: 'A ring with a tiny orange bloop set in it, which bleeps when danger is near.', from: 'Bloop Island (a clear: 3%), or made from Bloop Cores' },
+  // Rytingborg's desert: what its monsters drop, its crafters make, and its bosses guard
+  needle_ring:  { type: 'equip', slot: 'acc', name: 'Needle Ring', hit: 4, stats: { fns: 1 }, icon: 'r_needle', desc: 'A ring of braided Cactus needles. It pricks your finger when your aim drifts.', from: 'Cacti (0.3%)' },
+  wormhide_boots: { type: 'equip', slot: 'shoes', name: 'Wormhide Boots', def: 4, mhp: 80, icon: 'boots_wormhide', desc: 'Boots of Dune Worm hide, rough and sand-coloured. The sand never gets in.', from: 'Dune Worms (0.2%), or Steinar in Rytingborg' },
+  runner_boots: { type: 'equip', slot: 'shoes', name: 'Runner Boots', def: 2, flee: 5, stats: { qkn: 1 }, icon: 'boots_runner', desc: 'Light boots trimmed with golden Runner feathers. You run like a Runner, nearly.', from: 'Sand Runners (0.2%), or Steinar in Rytingborg' },
+  chitin_shield: { type: 'equip', slot: 'shield', name: 'Chitin Shield', def: 5, mhp: 60, icon: 'shield_chitin', desc: 'A Soldier Ant\'s black head-plate on a leather grip. Light, and blades skid off it.', from: 'Soldier Ants (0.2%)' },
+  desert_wrap:  { type: 'equip', slot: 'garment', name: 'Desert Wrap', def: 2, flee: 4, icon: 'r_desertwrap', desc: 'A long sand-coloured wrap for the head and shoulders. It keeps out the sun, the sand and curious eyes.' },
+  assassin_garb: { type: 'equip', slot: 'armor', jobs: ['assassin'], name: 'Assassin Garb', def: 4, flee: 6, stats: { qkn: 1 }, icon: 'armor_garb', desc: 'Dark leathers under a hooded sand wrap, every buckle muffled. Assassins only.' },
+  shade_leathers: { type: 'equip', slot: 'armor', jobs: ['assassin'], name: 'Shade Leathers', def: 6, flee: 8, stats: { qkn: 2 }, icon: 'armor_shade', desc: 'Black worm-hide leathers lined with violet silk, for those who walk in the Phantom\'s shadow. Assassins only.' },
+  thorn_coat:   { type: 'equip', slot: 'armor', name: 'Thorn Coat', def: 7, stats: { end: 2 }, mhp: 100, icon: 'armor_thorn', desc: 'A coat of green Cactus Lord hide, its spines still on the outside. Nobody hugs you twice.', from: 'the Cactus Lord (3%)' },
+  rainbow_sash: { type: 'equip', slot: 'garment', name: 'Rainbow Sash', def: 3, flee: 7, stats: { ftn: 2 }, icon: 'r_rainbowsash', desc: 'A sash woven from Rainbow Plumes. It flutters in every colour, and luck seems to follow it.', from: 'the Rainbow Runner (3%)' },
+  wyrm_ring:    { type: 'equip', slot: 'acc', rare: true, name: 'Wyrm Ring', stats: { pow: 3, end: 2 }, mhp: 80, icon: 'r_wyrmring', desc: 'A ring cut from one of the Sand Wyrm\'s teeth. It hums when the sand stirs.', from: 'the Sand Wyrm (5%)' },
+  wyrm_cloak:   { type: 'equip', slot: 'garment', rare: true, name: 'Wyrmhide Cloak', def: 6, mhpRate: 8, stats: { end: 2 }, icon: 'r_wyrmcloak', desc: 'A cloak of the Sand Wyrm\'s plated hide, heavy as a door. Sandstorms break on it.', from: 'the Sand Wyrm (3%)' },
+  sandwalker_boots: { type: 'equip', slot: 'shoes', rare: true, name: 'Sandwalker Boots', def: 5, flee: 6, stats: { qkn: 3 }, icon: 'boots_sandwalker', desc: 'Boots soled with Wyrm hide. They never sink, not even in quicksand.', from: 'the Sand Wyrm (3%)' },
+  dune_staff:   { type: 'equip', slot: 'weapon', el: 'earth', jobs: ['mage'], kind: 'staff', rare: true, name: 'Dune Staff', atk: 55, wlv: 4, matk: 58, stats: { knl: 5, fns: 2 }, icon: 'staff_dune', desc: 'A staff of petrified palm crowned with a Wyrm\'s eye-stone. The sand rises when it speaks. Earth element.', from: 'the Sand Wyrm (2%)' },
+  dune_bow:     { type: 'equip', slot: 'weapon', el: 'earth', jobs: ['archer'], kind: 'bow', rare: true, name: 'Dune Bow', atk: 124, wlv: 4, stats: { fns: 3 }, icon: 'bow_dune', desc: 'A great recurve of Wyrm bone strung with its sinew. Its arrows hiss like blown sand. Earth element.', from: 'the Sand Wyrm (1%)' },
+  // the desert's cards
+  giantant_card: { type: 'misc', rare: true, name: 'Giant Ant Card', adj: 'Toiling', icon: 'card_giantant', card: { on: 'armor', def: 2, mhp: 60 }, desc: 'A Giant Ant on a card, carrying something twice its size. In an armor with a slot: DEF +2, Max HP +60.', from: 'Giant Ants (0.1%)' },
+  soldierant_card: { type: 'misc', rare: true, name: 'Soldier Ant Card', adj: 'Armoured', icon: 'card_soldierant', card: { on: 'shield', def: 3, mhpRate: 4 }, desc: 'A Soldier Ant on a card, jaws open. In a shield with a slot: DEF +3, Max HP +4%.', from: 'Soldier Ants (0.1%)' },
+  cactus_card: { type: 'misc', rare: true, name: 'Cactus Card', adj: 'Prickly', icon: 'card_cactus', card: { on: 'garment', flee: 3, def: 1 }, desc: 'A Cactus on a card, scowling. Things think twice before they touch you. In a garment with a slot: FLEE +3, DEF +1.', from: 'Cacti (0.1%)' },
+  duneworm_card: { type: 'misc', rare: true, name: 'Dune Worm Card', adj: 'Burrowing', icon: 'card_duneworm', card: { on: 'shoes', mhpRate: 6, stats: { end: 1 } }, desc: 'A Dune Worm on a gritty card, rising out of the sand. In shoes with a slot: Max HP +6%, END +1.', from: 'Dune Worms (0.1%)' },
+  scorpion_card: { type: 'misc', rare: true, name: 'Sand Scorpion Card', adj: 'Venomous', icon: 'card_scorpion', card: { on: 'weapon', atk: 10, stats: { qkn: 1 } }, desc: 'A Sand Scorpion on a card, tail raised. In a weapon with a slot: ATK +10, QKN +1.', from: 'Sand Scorpions (0.1%)' },
+  runner_card: { type: 'misc', rare: true, name: 'Sand Runner Card', adj: 'Fleet', icon: 'card_runner', card: { on: 'acc', flee: 3, stats: { qkn: 1, ftn: 1 } }, desc: 'A Sand Runner on a card, mid-stride. In an accessory with a slot: QKN +1, FTN +1, FLEE +3.', from: 'Sand Runners (0.1%)' },
+  cactuslord_card: { type: 'misc', rare: true, name: 'Cactus Lord Card', adj: 'Thorned', icon: 'card_cactuslord', card: { on: 'weapon', atk: 25, stats: { qkn: 4 }, perk: { venom: 6 }, perkName: 'Venom Spines' }, desc: 'The Cactus Lord on a card bristling with spines, grinning. In a weapon with a slot: ATK +25, QKN +4, and Venom Spines: 6% of your blows and spells poison a monster.', from: 'the Cactus Lord (1%)' },
+  rainbow_card: { type: 'misc', rare: true, name: 'Rainbow Runner Card', adj: 'Prismatic', icon: 'card_rainbow', card: { on: 'garment', flee: 8, stats: { qkn: 4 }, perk: { swift: 15 }, perkName: 'Rainbow Rush' }, desc: 'The Rainbow Runner on a card in every colour. In a garment with a slot: QKN +4, FLEE +8, and Rainbow Rush: for 5 s after each kill you attack 15% faster.', from: 'the Rainbow Runner (1%)' },
+  wyrm_card:    { type: 'misc', rare: true, name: 'Sand Wyrm Card', adj: 'Devouring', icon: 'card_wyrm', card: { on: 'armor', def: 6, mhpRate: 25, stats: { end: 6, pow: 4 }, perk: { devour: 3 }, perkName: 'Devour' }, desc: 'The Sand Wyrm on a card, its maw open over the whole of it. In an armor with a slot: DEF +6, Max HP +25%, END +6, POW +4, and Devour: every kill gives you back 3% of your HP and SP.', from: 'the Sand Wyrm (1%)' },
+  // Pharaoh's Tomb (the raid under the Pyramid): its rare finds, one for every build, its ultra rare and its card
+  khopesh:      { type: 'equip', slot: 'weapon', jobs: ['swordman'], rare: true, name: 'Khopesh', atk: 100, wlv: 4, stats: { pow: 3 }, icon: 'weapon_khopesh', desc: 'A sickle-sword of bronze and gold from a royal guard\'s tomb. It hooks a shield aside and cuts behind it.', from: "Pharaoh's Tomb (a clear: 3%), or made from Tomb Cores" },
+  tomb_mail:    { type: 'equip', slot: 'armor', rare: true, name: 'Tomb Guard Mail', def: 8, mhp: 160, stats: { end: 2 }, icon: 'armor_tomb', desc: 'Gilded scale mail from the Pharaoh\'s guard, still standing watch three thousand years on.', from: "Pharaoh's Tomb (a clear: 3%), or made from Tomb Cores" },
+  scarab_kris:  { type: 'equip', slot: 'weapon', kind: 'dagger', rare: true, name: 'Scarab Kris', atk: 74, wlv: 3, stats: { qkn: 3 }, icon: 'dagger_scarab', desc: 'A wavy dagger with a gold scarab for a pommel. It is never quite where you left it.', from: "Pharaoh's Tomb (a clear: 3%), or made from Tomb Cores" },
+  falcon_charm: { type: 'equip', slot: 'acc', rare: true, name: 'Falcon Eye Charm', hit: 6, stats: { fns: 3 }, icon: 'r_falcon', desc: 'A painted eye in a falcon\'s gold frame. Nothing it watches can hide.', from: "Pharaoh's Tomb (a clear: 3%), or made from Tomb Cores" },
+  ankh_charm:   { type: 'equip', slot: 'acc', rare: true, name: 'Ankh Charm', msp: 60, stats: { knl: 3 }, icon: 'r_ankh', desc: 'A little gold ankh, the old priests\' sign of life. Your thoughts run deep and clear holding it.', from: "Pharaoh's Tomb (a clear: 3%), or made from Tomb Cores" },
+  gold_scarab:  { type: 'equip', slot: 'acc', rare: true, name: 'Golden Scarab', mhp: 60, stats: { ftn: 4 }, icon: 'r_goldscarab', desc: 'A beetle of beaten gold, its wings set with lapis. The old kings were buried with them for luck.', from: "Pharaoh's Tomb (a clear: 3%), or made from Tomb Cores" },
+  canopic_shield: { type: 'equip', slot: 'shield', rare: true, name: 'Canopic Shield', def: 6, mhp: 100, stats: { end: 1 }, icon: 'r_canopic', desc: 'A round shield of painted cedar with a jackal\'s head on its boss. It guards what is kept.', from: "Pharaoh's Tomb (a clear: 3%), or made from Tomb Cores" },
+  linen_wrap:   { type: 'equip', slot: 'garment', rare: true, name: 'Royal Linen', def: 3, flee: 8, stats: { qkn: 2 }, icon: 'r_linen', desc: 'Fine white linen with a gold hem, the Pharaoh\'s own. Light as air, and blows slide off it.', from: "Pharaoh's Tomb (a clear: 3%), or made from Tomb Cores" },
+  pharaoh_nemes: { type: 'equip', slot: 'head', rare: true, ultra: true, name: "Pharaoh's Headdress", def: 6, mspRate: 10, stats: { knl: 4, ftn: 4, end: 2 }, desc: 'The Pharaoh\'s own striped headdress of gold and lapis, a golden cobra rising from its brow. Cloth falls in bands to your shoulders and gathers into a tail at your back. Kings were buried in less.', from: "Pharaoh's Tomb (a clear: 1%), or made from 500 Tomb Cores" },
+  pharaoh_card: { type: 'misc', rare: true, name: 'Pharaoh Card', adj: 'Royal', icon: 'card_pharaoh', card: { on: ['head', 'face'], matk: 15, mspRate: 15, stats: { knl: 6, ftn: 4 }, perk: { soultax: 4 }, perkName: 'Soul Tax' }, desc: 'The Pharaoh in his gold mask, crook and flail crossed, on a card that smells of myrrh. In head or face gear with a slot: MATK +15%, Max SP +15%, KNL +6, FTN +4, and Soul Tax: 4% of the damage you deal comes back as SP.', from: "Pharaoh's Tomb (a clear: 1%)" },
   shiny_gel:    { type: 'misc', rare: true, name: 'Shiny Gel', desc: 'Bloop gel that shimmers with every colour, found once in a hundred bloops. Collectors and ring-makers prize it.', from: 'any bloop (1%)' },
 
   // headgear: worn on the head and seen on your character (see headgear.js): Head pieces on the
@@ -386,6 +447,10 @@ const PERK_TEXT = {
   crit: (v) => `+${v}% critical hits`,
   fury: (v) => `below 40% HP your blows hit ${v}% harder`,
   sureFoot: () => 'nothing slows you (roots still hold)',
+  venom: (v) => `${v}% of your blows and spells poison a monster`,
+  swift: (v) => `for 5 s after each kill you attack ${v}% faster`,
+  devour: (v) => `every kill gives you back ${v}% of your HP and SP`,
+  soultax: (v) => `${v}% of the damage you deal comes back as SP`,
 };
 // Seyla draws the cards out of a piece again (they come back whole), for this much a card
 export const UNCARD_FEE = 50000;
@@ -444,6 +509,13 @@ export const maybeSlotted = (id, roll = Math.random()) => (canBeSlotted(id) && r
 
 // Prices in perz (Aria's coin, like Ragnarok's zeny): what a shop asks; any shop buys for half. 0 = can't be sold.
 export const PRICES = {
+  khopesh: 50000, tomb_mail: 30000, scarab_kris: 30000, falcon_charm: 22000, ankh_charm: 22000, gold_scarab: 24000, canopic_shield: 28000, linen_wrap: 28000, pharaoh_nemes: 60000, pharaoh_card: 40000,
+  red_gel: 40, ant_jaw: 90, cactus_needle: 600, worm_hide: 700, scorpion_tail: 760, runner_feather: 800, cactus_heart: 7000, rainbow_plume: 8000, wyrm_tooth: 12000, tomb_core: 1500, sphinx_eye: 0,
+  dates: 400, water_skin: 450,
+  rusty_dagger: 60, knife: 400, ant_knife: 1200, sand_kris: 3200, main_gauche: 5200, stinger: 14000, cactus_spine: 20000, runner_talon: 22000, wyrm_fang: 64000,
+  needle_ring: 8000, wormhide_boots: 14000, runner_boots: 14000, chitin_shield: 14000, desert_wrap: 2400, assassin_garb: 3000, shade_leathers: 16000, thorn_coat: 26000, rainbow_sash: 26000,
+  wyrm_ring: 30000, wyrm_cloak: 36000, sandwalker_boots: 36000, dune_staff: 56000, dune_bow: 66000,
+  giantant_card: 3000, soldierant_card: 9000, cactus_card: 9000, duneworm_card: 9000, scorpion_card: 9000, runner_card: 9000, cactuslord_card: 24000, rainbow_card: 26000, wyrm_card: 64000,
   // early drops (gel to spore) pay enough to keep a beginner in potions
   bloop_core: 600, veteran_boots: 24000, bloop_buckler: 20000, bleep_ring: 22000,
   kobold_core: 900, goblin_core: 1200, kwarlord_card: 40000, gwarlord_card: 40000, goat_horns: 60000, elf_ears: 60000,
@@ -492,6 +564,11 @@ export const SHOPS = {
   asa: ['hunting_bow', 'composite_bow', 'wooden_arrow', 'iron_arrow', 'fire_arrow', 'ice_arrow', 'wind_arrow', 'earth_arrow'],
   eydis: ['potion', 'potion2', 'potion3', 'tonic', 'honey', 'herb', 'quick', 'wander', 'homeward'],
   orm: ['oak_staff', 'birch_staff', 'frost_staff', 'rune_staff', 'mage_robe', 'wool_cape', 'leather_boots'],
+  // Rytingborg: Dalla's bazaar stall (dates and water for the road), Steinar's forge (daggers and
+  // desert gear), Yrsa's daggers
+  dalla: ['potion', 'potion2', 'potion3', 'tonic', 'dates', 'water_skin', 'herb', 'quick', 'wander', 'homeward'],
+  steinar: ['knife', 'sand_kris', 'iron_sword', 'clothes', 'chain_mail', 'round_shield', 'desert_wrap', 'leather_boots'],
+  yrsa: ['rusty_dagger', 'knife', 'sand_kris', 'main_gauche', 'assassin_garb'],
 };
 // who crafts a recipe: 'use' (Ragna's brews), 'magic' (Orm's staves and sorcerers' gear), 'gear' (Gunnar's forge)
 export const recipeKind = (r) => {
@@ -502,10 +579,10 @@ export const recipeKind = (r) => {
 };
 
 // equipment slots, in the Equipment window's order
-export const JOB_NAMES = { novice: 'Trainee', swordman: 'Blader', mage: 'Sorcerer', archer: 'Archer' };
+export const JOB_NAMES = { novice: 'Trainee', swordman: 'Blader', mage: 'Sorcerer', archer: 'Archer', assassin: 'Assassin' };
 // job: one job id, or the list of jobs a hero has earned (any of them will do); second jobs wear
 // what the jobs before them wear
-const WEARS_AS = { blademaster: ['swordman'], wizard: ['mage'], magicknight: ['swordman', 'mage'], windrunner: ['archer'], moonranger: ['mage', 'archer'], beastmaster: ['swordman', 'archer'] };
+const WEARS_AS = { blademaster: ['swordman'], wizard: ['mage'], magicknight: ['swordman', 'mage'], windrunner: ['archer'], moonranger: ['mage', 'archer'], beastmaster: ['swordman', 'archer'], phantom: ['assassin'] };
 export const canWear = (id, job) => {
   const it = ITEMS[id], jobs = [job].flat().flatMap((j) => [j, ...(WEARS_AS[j] || [])]);
   return !it?.jobs || jobs.some((j) => it.jobs.includes(j));
@@ -609,6 +686,18 @@ export const RECIPES = [
   { item: 'spore_charm',  lv: 4, cost: { spore: 5, gel: 3 } },
   { item: 'shell_charm',  lv: 4, cost: { shell: 5, stone: 2 } },
   { item: 'glow_charm',   lv: 5, cost: { glow: 4, dew: 2 } },
+  // Rytingborg: Steinar's forge, Yrsa's daggers ('dagger')
+  { item: 'wormhide_boots', lv: 56, cost: { worm_hide: 8, leather_boots: 1 } },
+  { item: 'runner_boots', lv: 60, cost: { runner_feather: 8, worm_hide: 2 } },
+  { item: 'needle_ring', lv: 56, cost: { cactus_needle: 10, steel_ore: 2 } },
+  { item: 'ant_knife', lv: 8, by: 'dagger', cost: { ant_jaw: 6, red_gel: 4 } },
+  { item: 'main_gauche', lv: 20, by: 'dagger', cost: { steel_ore: 4, ant_jaw: 6, iron_ore: 4 } },
+  { item: 'stinger', lv: 58, by: 'dagger', cost: { scorpion_tail: 10, steel_ore: 4 } },
+  { item: 'cactus_spine', lv: 60, by: 'dagger', cost: { cactus_heart: 1, cactus_needle: 8, hard_ore: 1 } },
+  { item: 'runner_talon', lv: 62, by: 'dagger', cost: { rainbow_plume: 1, runner_feather: 8, hard_ore: 1 } },
+  { item: 'shade_leathers', lv: 56, by: 'dagger', cost: { worm_hide: 10, shade: 4, scorpion_tail: 2 } },
+  { item: 'thorn_coat', lv: 60, by: 'dagger', cost: { cactus_heart: 1, cactus_needle: 10, worm_hide: 4 } },
+  { item: 'rainbow_sash', lv: 62, by: 'dagger', cost: { rainbow_plume: 1, runner_feather: 10 } },
   // a raid's rare finds, made by its guide from its cores (a clear pays 3, 9, 27 or 81 by
   // difficulty): the rarer the piece, the more cores
   { item: 'gooey_ring', lv: 28, by: 'bloop', cost: { bloop_core: 25, gel: 20 } },
@@ -638,6 +727,15 @@ export const RECIPES = [
   { item: 'fang_charm', lv: 50, by: 'goblin', cost: { goblin_core: 40, goblin_tooth: 20 } },
   { item: 'shaman_robe', lv: 50, by: 'goblin', cost: { goblin_core: 120, goblin_tooth: 30, steel_ore: 5 } },
   { item: 'elf_ears', lv: 50, by: 'goblin', cost: { goblin_core: 500, hard_ore: 5, goblin_tooth: 50 } },
+  { item: 'gold_scarab', lv: 55, by: 'tomb', cost: { tomb_core: 40, red_gel: 20 } },
+  { item: 'falcon_charm', lv: 55, by: 'tomb', cost: { tomb_core: 40, runner_feather: 10 } },
+  { item: 'ankh_charm', lv: 55, by: 'tomb', cost: { tomb_core: 40, cactus_needle: 10 } },
+  { item: 'linen_wrap', lv: 55, by: 'tomb', cost: { tomb_core: 80, worm_hide: 10 } },
+  { item: 'scarab_kris', lv: 55, by: 'tomb', cost: { tomb_core: 100, scorpion_tail: 10, hard_ore: 2 } },
+  { item: 'tomb_mail', lv: 55, by: 'tomb', cost: { tomb_core: 120, worm_hide: 10, armor_ore: 3 } },
+  { item: 'canopic_shield', lv: 55, by: 'tomb', cost: { tomb_core: 150, ant_jaw: 20, armor_ore: 3 } },
+  { item: 'khopesh', lv: 55, by: 'tomb', cost: { tomb_core: 150, hard_ore: 4, scorpion_tail: 10 } },
+  { item: 'pharaoh_nemes', lv: 55, by: 'tomb', cost: { tomb_core: 500, hard_ore: 5, rainbow_plume: 1 } },
 ];
 
 // ---------- icons ----------
@@ -666,6 +764,19 @@ function swordIcon(g, blade, guard, edge) {
   g.restore();
 }
 
+// a dagger: a short blade, a crossguard, a wrapped grip and a pommel (wave: a kris's wavy edge)
+function daggerIcon(g, blade, guard, grip = '#6b4426', wave = false) {
+  g.save(); g.translate(32, 34); g.rotate(Math.PI / 4);
+  shape(g, () => {
+    g.moveTo(-4, 2); g.lineTo(4, 2);
+    if (wave) { for (let y = 0; y > -18; y -= 6) g.quadraticCurveTo(7, y - 3, 4, y - 6); } else g.lineTo(4, -16);
+    g.lineTo(0, -24); g.lineTo(-4, -16); g.closePath();
+  }, blade);
+  shape(g, () => g.roundRect(-10, 1, 20, 5, 2), guard, 2.5);
+  shape(g, () => g.roundRect(-3, 6, 6, 10, 2), grip, 2.5);
+  shape(g, () => g.arc(0, 18, 3.5, 0, Math.PI * 2), guard, 2.5);
+  g.restore();
+}
 function armorIcon(g, main, trim) {
   shape(g, () => {
     g.moveTo(16, 16); g.lineTo(26, 11); g.quadraticCurveTo(32, 17, 38, 11); g.lineTo(48, 16);
@@ -789,6 +900,61 @@ function iconArrow(g, x0, y0, x1, y1, w = 3) {
 }
 
 const PAINT = {
+  // Rytingborg's desert
+  red_gel: (g) => { shape(g, () => { g.moveTo(10, 50); g.bezierCurveTo(6, 26, 22, 14, 32, 14); g.bezierCurveTo(42, 14, 58, 26, 54, 50); g.quadraticCurveTo(32, 56, 10, 50); }, '#ff6a5a'); gloss(g, 24, 26, 7, 4.5); },
+  ant_jaw: (g) => { for (const s of [-1, 1]) shape(g, () => { g.moveTo(32 + s * 4, 54); g.quadraticCurveTo(32 + s * 22, 40, 32 + s * 8, 10); g.quadraticCurveTo(32 + s * 12, 34, 32 + s * 2, 50); g.closePath(); }, '#e8c890', 3); },
+  cactus_needle: (g) => { for (const [x, a] of [[24, -0.3], [32, 0], [40, 0.3]]) { g.save(); g.translate(x, 54); g.rotate(a); shape(g, () => { g.moveTo(-2, 0); g.lineTo(0, -46); g.lineTo(2, 0); g.closePath(); }, '#f4ecd8', 2.5); g.restore(); } shape(g, () => g.roundRect(18, 48, 28, 8, 3), '#5a9440', 2.5); },
+  worm_hide: (g) => { shape(g, () => { g.moveTo(12, 14); g.lineTo(52, 12); g.lineTo(54, 52); g.lineTo(10, 54); g.closePath(); }, '#a88a6a'); for (const y of [22, 32, 42]) { g.beginPath(); g.moveTo(14, y); g.quadraticCurveTo(32, y + 4, 52, y); g.strokeStyle = '#7a5e44'; g.lineWidth = 3; g.stroke(); } },
+  scorpion_tail: (g) => { for (let i = 0; i < 5; i++) shape(g, () => g.arc(16 + i * 7, 48 - i * 7 - (i > 2 ? (i - 2) * 2 : 0), 6 - i * 0.5, 0, 7), '#c0803e', 2.5); shape(g, () => { g.moveTo(44, 16); g.lineTo(56, 8); g.lineTo(50, 22); g.closePath(); }, '#2a1a10', 2); },
+  runner_feather: (g) => featherIcon(g, '#f2c43a', '#c8922a'),
+  rainbow_plume: (g) => { featherIcon(g, '#ff8ab0', '#6a4ad8'); for (const [c, t] of [['#ffa03a', 0.3], ['#ffe04a', 0.45], ['#6ad85a', 0.6], ['#4aa8ff', 0.75]]) { g.beginPath(); g.moveTo(14 + t * 30, 52 - t * 40); g.lineTo(26 + t * 26, 46 - t * 36); g.strokeStyle = c; g.lineWidth = 4; g.stroke(); } },
+  cactus_heart: (g) => { shape(g, () => { g.moveTo(32, 54); g.bezierCurveTo(4, 34, 14, 10, 32, 22); g.bezierCurveTo(50, 10, 60, 34, 32, 54); }, '#4f8a3a'); for (const [x, y] of [[22, 28], [40, 26], [30, 40], [38, 40]]) { g.fillStyle = '#f4ecd8'; g.fillRect(x, y, 2, 2); } gloss(g, 24, 26, 4, 3); },
+  wyrm_tooth: (g) => { shape(g, () => { g.moveTo(20, 10); g.quadraticCurveTo(36, 6, 44, 14); g.quadraticCurveTo(46, 40, 26, 58); g.quadraticCurveTo(32, 34, 20, 10); }, '#f6eedc'); shape(g, () => g.roundRect(16, 6, 30, 9, 3), '#9a8064', 2.5); },
+  tomb_core: (g) => { shape(g, () => g.ellipse(32, 34, 16, 20, 0, 0, 7), '#f0c040'); shape(g, () => g.ellipse(32, 30, 9, 11, 0, 0, 7), '#2e4f9a', 2.5); for (const s of [-1, 1]) shape(g, () => { g.moveTo(32 + s * 14, 26); g.lineTo(32 + s * 28, 20); g.lineTo(32 + s * 26, 32); g.closePath(); }, '#f0c040', 2.5); gloss(g, 26, 24, 3, 3); },
+  sphinx_eye: (g) => { shape(g, () => { g.moveTo(6, 32); g.quadraticCurveTo(32, 8, 58, 32); g.quadraticCurveTo(32, 56, 6, 32); }, '#efe2c4'); shape(g, () => g.arc(32, 32, 11, 0, 7), '#3a8ad8', 2.5); shape(g, () => g.arc(32, 32, 4, 0, 7), '#102040', 2); gloss(g, 28, 28, 3, 2); },
+  dates: (g) => { for (const [x, y] of [[22, 36], [36, 30], [30, 46], [44, 42]]) shape(g, () => g.ellipse(x, y, 8, 11, 0.4, 0, 7), '#8a3a1a', 2.5); gloss(g, 34, 26, 3, 2); },
+  water_skin: (g) => { shape(g, () => { g.moveTo(24, 14); g.lineTo(40, 14); g.quadraticCurveTo(56, 30, 48, 52); g.quadraticCurveTo(32, 60, 16, 52); g.quadraticCurveTo(8, 30, 24, 14); g.closePath(); }, '#a87a4e'); shape(g, () => g.roundRect(26, 6, 12, 10, 3), '#5a3a22', 2.5); g.beginPath(); g.moveTo(18, 36); g.quadraticCurveTo(32, 42, 46, 36); g.strokeStyle = '#6cc4ef'; g.lineWidth = 4; g.stroke(); },
+  dagger_rusty: (g) => daggerIcon(g, '#a8846a', '#6a5a4a'),
+  dagger_knife: (g) => daggerIcon(g, '#cfd6de', '#7a7f8a'),
+  dagger_ant: (g) => daggerIcon(g, '#e8c890', '#b8542a', '#efe2c0'),
+  dagger_kris: (g) => daggerIcon(g, '#d8dce4', '#c8a050', '#6b4426', true),
+  dagger_gauche: (g) => daggerIcon(g, '#e8ecf2', '#8a8e9a', '#3a2a2a'),
+  dagger_stinger: (g) => daggerIcon(g, '#2a1a10', '#c0803e', '#7a4a22'),
+  dagger_cactus: (g) => daggerIcon(g, '#7cb85a', '#3e6e2e', '#efe2c0'),
+  dagger_talon: (g) => daggerIcon(g, '#2a2228', '#ff8ab0', '#f2c43a'),
+  dagger_wyrm: (g) => daggerIcon(g, '#f6eedc', '#9a8064', '#6a5240', true),
+  r_needle: (g) => charmIcon(g, '#9ad050', '#f4ecd8'),
+  boots_wormhide: (g) => bootIcon(g, '#a88a6a', '#7a5e44'),
+  boots_runner: (g) => bootIcon(g, '#6a4226', '#f2c43a', '#d8b050'),
+  boots_sandwalker: (g) => bootIcon(g, '#9a8064', '#e2d2b0', '#c8a060'),
+  shield_chitin: (g) => shieldIcon(g, 'kite', '#3a3036', '#6a5a66', '#d8c8a8'),
+  r_desertwrap: (g) => capeIcon(g, '#d8c08a', '#c8463c'),
+  r_rainbowsash: (g) => { capeIcon(g, '#fbf4ec', '#ffe04a'); ['#ff5a5a', '#ffa03a', '#ffe04a', '#6ad85a', '#4aa8ff', '#a86aff'].forEach((c, i) => { g.beginPath(); g.moveTo(16, 22 + i * 5); g.lineTo(50, 22 + i * 5); g.strokeStyle = c; g.lineWidth = 3; g.stroke(); }); },
+  r_wyrmcloak: (g) => capeIcon(g, '#9a8064', '#e2d2b0'),
+  r_wyrmring: (g) => charmIcon(g, '#f6eedc', '#9a8064'),
+  armor_garb: (g) => armorIcon(g, '#3a3036', '#d8c08a'),
+  armor_shade: (g) => armorIcon(g, '#2a2230', '#8a5ad8'),
+  armor_thorn: (g) => armorIcon(g, '#4f8a3a', '#f4ecd8'),
+  staff_dune: (g) => staffIcon(g, '#c8a060', '#3a8ad8'),
+  bow_dune: (g) => bowIcon(g, '#efe2c4', '#9a8064', '#c8a060'),
+  card_giantant: (g) => cardIcon(g, '#b8542a', '#e8c890'),
+  card_soldierant: (g) => cardIcon(g, '#3a3036', '#d8c8a8'),
+  card_cactus: (g) => cardIcon(g, '#4f8a3a', '#ff7aa0'),
+  card_duneworm: (g) => cardIcon(g, '#a88a6a', '#9a3a3a'),
+  card_scorpion: (g) => cardIcon(g, '#c0803e', '#2a1a10'),
+  card_runner: (g) => cardIcon(g, '#f2c43a', '#f29a3a'),
+  card_cactuslord: (g) => cardIcon(g, '#2f6a3a', '#ffd23a'),
+  card_rainbow: (g) => cardIcon(g, '#fbf4ec', '#ff5a8a'),
+  card_wyrm: (g) => cardIcon(g, '#9a8064', '#f6eedc'),
+  card_pharaoh: (g) => cardIcon(g, '#e8b840', '#2e4f9a'),
+  weapon_khopesh: (g) => swordIcon(g, '#d8a04a', '#2e4f9a', '#f2d878'),
+  armor_tomb: (g) => armorIcon(g, '#d8a04a', '#2e4f9a'),
+  dagger_scarab: (g) => daggerIcon(g, '#e8ecf2', '#e8b840', '#2e4f9a', true),
+  r_falcon: (g) => charmIcon(g, '#2e4f9a', '#e8b840'),
+  r_ankh: (g) => { g.lineCap = 'round'; for (const [col, w] of [['#2e2118', 9], ['#e8b840', 5]]) { g.strokeStyle = col; g.lineWidth = w; g.beginPath(); g.ellipse(32, 18, 8, 10, 0, 0, 7); g.moveTo(32, 28); g.lineTo(32, 56); g.moveTo(18, 32); g.lineTo(46, 32); g.stroke(); } },
+  r_goldscarab: (g) => { shape(g, () => g.ellipse(32, 36, 14, 17, 0, 0, 7), '#e8b840'); shape(g, () => g.ellipse(32, 16, 7, 6, 0, 0, 7), '#e8b840', 2.5); g.beginPath(); g.moveTo(32, 22); g.lineTo(32, 52); g.strokeStyle = '#2e4f9a'; g.lineWidth = 3; g.stroke(); gloss(g, 26, 30, 4, 3); },
+  r_canopic: (g) => shieldIcon(g, 'round', '#b8663e', '#2e4f9a', '#e8b840'),
+  r_linen: (g) => capeIcon(g, '#f4ecd8', '#e8b840'),
   gel: (g) => {
     shape(g, () => { g.moveTo(10, 50); g.bezierCurveTo(6, 26, 22, 14, 32, 14); g.bezierCurveTo(42, 14, 58, 26, 54, 50); g.quadraticCurveTo(32, 56, 10, 50); }, '#7fd05a');
     gloss(g, 24, 26, 7, 4.5);
@@ -943,6 +1109,23 @@ const PAINT = {
   skill_steadyaim: (g) => skillIcon(g, '#4a5a2a', () => { g.beginPath(); g.moveTo(20, 10); g.quadraticCurveTo(4, 32, 20, 54); g.lineWidth = 4; g.stroke(); g.beginPath(); g.moveTo(20, 10); g.lineTo(34, 32); g.lineTo(20, 54); g.lineWidth = 1.5; g.stroke(); iconArrow(g, 30, 32, 56, 32); }),
   // the Windrunner's: teals, wind swirls
   skill_windborne: (g) => skillIcon(g, '#2a8a7a', () => { for (const [y, w] of [[22, 30], [32, 36], [42, 26]]) { g.beginPath(); g.moveTo(14, y); g.lineTo(14 + w - 6, y); g.arc(14 + w - 6, y - 4, 4, Math.PI / 2, -Math.PI / 2, true); g.lineWidth = 3; g.stroke(); } }),
+  // the Assassin's and the Phantom's: daggers, poison, shadows (sand and violet)
+  skill_daggermastery: (g) => skillIcon(g, '#8a6a3a', () => { g.save(); g.translate(32, 34); g.rotate(Math.PI / 4); g.beginPath(); g.moveTo(-4, 4); g.lineTo(4, 4); g.lineTo(4, -12); g.lineTo(0, -20); g.lineTo(-4, -12); g.closePath(); g.fill(); g.fillRect(-9, 4, 18, 4); g.fillRect(-2, 8, 4, 10); g.restore(); }),
+  skill_doubleattack: (g) => skillIcon(g, '#8a4a3a', () => { for (const dx of [-7, 7]) { g.beginPath(); g.moveTo(32 + dx - 3, 48); g.lineTo(32 + dx + 3, 48); g.lineTo(32 + dx + 3, 22); g.lineTo(32 + dx, 14); g.lineTo(32 + dx - 3, 22); g.closePath(); g.fill(); } }),
+  skill_improvedodge: (g) => skillIcon(g, '#5a7a6a', () => { g.lineWidth = 4; for (const r of [10, 16, 22]) { g.beginPath(); g.arc(38, 32, r, Math.PI * 0.7, Math.PI * 1.3); g.stroke(); } g.beginPath(); g.arc(40, 32, 5, 0, 7); g.fill(); }),
+  skill_venomstrike: (g) => skillIcon(g, '#4a8a3a', () => { g.beginPath(); g.moveTo(32, 12); g.bezierCurveTo(42, 26, 46, 34, 46, 40); g.arc(32, 40, 14, 0, Math.PI); g.bezierCurveTo(18, 34, 22, 26, 32, 12); g.fill(); }),
+  skill_sonicblow: (g) => skillIcon(g, '#4a8a3a', () => { g.lineWidth = 3; for (let i = 0; i < 8; i++) { const a = (i / 8) * Math.PI * 2; g.beginPath(); g.moveTo(32 + Math.cos(a) * 6, 32 + Math.sin(a) * 6); g.lineTo(32 + Math.cos(a) * 20, 32 + Math.sin(a) * 20); g.stroke(); } }),
+  skill_shadowstep: (g) => skillIcon(g, '#3a3050', () => { for (const [x, o] of [[22, 0.4], [32, 0.7], [42, 1]]) { g.globalAlpha = o; g.beginPath(); g.arc(x, 24, 4.5, 0, 7); g.fill(); g.fillRect(x - 4, 30, 8, 16); } g.globalAlpha = 1; }),
+  skill_vanish: (g) => skillIcon(g, '#2a2a3a', () => { g.globalAlpha = 0.45; g.beginPath(); g.arc(32, 24, 6, 0, 7); g.fill(); g.fillRect(26, 31, 12, 18); g.globalAlpha = 1; g.lineWidth = 2; for (let i = 0; i < 5; i++) { g.beginPath(); g.moveTo(16 + i * 8, 52); g.lineTo(20 + i * 8, 44); g.stroke(); } }),
+  skill_pilfer: (g) => skillIcon(g, '#a8843a', () => { g.beginPath(); g.ellipse(32, 38, 12, 10, 0, 0, 7); g.fill(); g.fillRect(28, 20, 8, 8); g.beginPath(); g.arc(44, 20, 4, 0, 7); g.fill(); }),
+  skill_lethaledge: (g) => skillIcon(g, '#7a2a3a', () => { g.beginPath(); g.moveTo(32, 10); g.lineTo(38, 30); g.lineTo(32, 54); g.lineTo(26, 30); g.closePath(); g.fill(); }),
+  skill_twinblades: (g) => skillIcon(g, '#4a3a6a', () => { for (const s of [-1, 1]) { g.save(); g.translate(32 + s * 6, 34); g.rotate(s * 0.5); g.beginPath(); g.moveTo(-3, 14); g.lineTo(3, 14); g.lineTo(3, -10); g.lineTo(0, -18); g.lineTo(-3, -10); g.closePath(); g.fill(); g.restore(); } }),
+  skill_shade: (g) => skillIcon(g, '#5a4a8a', () => { for (const [x, o] of [[24, 0.5], [40, 0.5], [32, 1]]) { g.globalAlpha = o; g.beginPath(); g.arc(x, 24, 5, 0, 7); g.fill(); g.fillRect(x - 5, 31, 10, 18); } g.globalAlpha = 1; }),
+  skill_grace: (g) => skillIcon(g, '#6a5aa8', () => { g.beginPath(); for (let i = 0; i < 8; i++) { const a = (i / 8) * Math.PI * 2, r = i % 2 ? 7 : 18; g.lineTo(32 + Math.cos(a) * r, 32 + Math.sin(a) * r); } g.closePath(); g.fill(); }),
+  skill_dualrend: (g) => skillIcon(g, '#6a2a4a', () => { g.lineWidth = 4; for (const s of [-1, 1]) for (const dy of [-8, 0, 8]) { g.beginPath(); g.moveTo(32 - s * 16, 30 + dy - 6); g.lineTo(32 + s * 16, 30 + dy + 6); g.stroke(); } }),
+  skill_double: (g) => skillIcon(g, '#4a3a7a', () => { for (const [x, o] of [[22, 0.55], [42, 0.55]]) { g.globalAlpha = o; g.beginPath(); g.arc(x, 24, 5, 0, 7); g.fill(); g.fillRect(x - 5, 31, 10, 18); } g.globalAlpha = 1; g.beginPath(); g.arc(32, 22, 6, 0, 7); g.fill(); g.fillRect(26, 30, 12, 20); }),
+  skill_mirage: (g) => skillIcon(g, '#5a6aa8', () => { g.globalAlpha = 0.45; g.beginPath(); g.arc(20, 26, 5, 0, 7); g.fill(); g.fillRect(15, 32, 10, 16); g.globalAlpha = 1; g.beginPath(); g.arc(44, 24, 5, 0, 7); g.fill(); g.fillRect(39, 30, 10, 16); iconArrow(g, 24, 40, 38, 40, 3); }),
+  skill_thousandcuts: (g) => skillIcon(g, '#8a3a6a', () => { g.lineWidth = 3; for (let i = 0; i < 6; i++) { const a = (i / 6) * Math.PI * 2; g.beginPath(); g.arc(32, 32, 18, a, a + 0.7); g.stroke(); } g.beginPath(); g.arc(32, 32, 5, 0, 7); g.fill(); }),
   skill_rhythm2: (g) => skillIcon(g, '#3a7a8a', () => { for (let i = 0; i < 5; i++) { g.beginPath(); g.rect(12 + i * 8, 44 - i * 6, 5, 6 + i * 6); g.fill(); } }),
   skill_skirmisher: (g) => skillIcon(g, '#5a7a3a', () => { iconArrow(g, 14, 40, 50, 18); g.setLineDash([2, 3]); g.beginPath(); g.moveTo(12, 50); g.quadraticCurveTo(26, 46, 30, 54); g.lineWidth = 2; g.stroke(); g.setLineDash([]); }),
   skill_tailwind: (g) => skillIcon(g, '#2a9a8a', () => { g.lineWidth = 3; for (const r of [8, 14, 20]) { g.beginPath(); g.arc(32, 32, r, Math.PI * 0.9, Math.PI * 1.9); g.stroke(); } g.beginPath(); g.moveTo(48, 20); g.lineTo(54, 14); g.lineTo(52, 24); g.closePath(); g.fill(); }),

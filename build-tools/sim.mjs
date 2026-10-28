@@ -32,12 +32,17 @@ const GEAR = {
     ? { atk: 30 + 2, wlv: 1, def: 2 + 1, bow: true } // Hunting Bow, Wooden Arrows, Leaf Tunic, Leaf Cap
     : lv < 35 ? { atk: 55 + 10 + 10, wlv: 2, def: 5 + 1 + 1, bow: true } // +5 Composite Bow, Iron Arrows, Chain Mail, Wool Cape, Leather Boots
     : { atk: 55 + 12 + 10, wlv: 2, def: 5 + 1 + 1 + 8, bow: true }, // the same, the bow at +6 and two pieces at the safe +4
+  assassin: (lv) => lv < 20
+    ? { atk: 26, wlv: 1, def: 2 + 1, dagger: true } // Knife, Leaf Tunic, Leaf Cap
+    : lv < 35 ? { atk: 44 + 15, wlv: 2, def: 5 + 2 + 1 + 1, dagger: true } // +5 Sand Kris, Chain Mail, Round Shield, Wool Cape, Leather Boots
+    : { atk: 44 + 18, wlv: 2, def: 5 + 2 + 1 + 1 + 8, dagger: true }, // the same, the kris at +6 and two pieces at the safe +4
 };
 // how stat points are split, and what the skill points buy, in order
 const BUILD = {
   blader: { job: 'swordman', stats: { pow: 0.45, end: 0.25, fns: 0.15, qkn: 0.15 }, skills: [['cleave', 3], ['heavy', 10], ['discipline', 10], ['ironhide', 10], ['warcry', 3], ['standfirm', 5]] },
   sorcerer: { job: 'mage', stats: { knl: 0.5, fns: 0.25, end: 0.2, qkn: 0.05 }, skills: [['spark', 5], ['arc', 5], ['spark', 10], ['manawell', 5], ['frost', 5], ['flamering', 5], ['ward', 3]] },
   archer: { job: 'archer', stats: { fns: 0.45, qkn: 0.2, end: 0.25, pow: 0.1 }, skills: [['doubleshot', 5], ['keeneye', 5], ['doubleshot', 10], ['keeneye', 10], ['focus', 5], ['longsight', 5], ['arrowrain', 5], ['huntmark', 3]] },
+  assassin: { job: 'assassin', stats: { pow: 0.35, qkn: 0.3, end: 0.2, fns: 0.15 }, skills: [['venomstrike', 10], ['sonicblow', 5], ['doubleattack', 5], ['daggermastery', 5], ['sonicblow', 10], ['doubleattack', 10], ['daggermastery', 10], ['improvedodge', 10]] },
 };
 // the first-job Job Level a hero of this Base Level usually has
 const jobLvAt = (base) => Math.max(1, Math.min(50, Math.round((base - 10) * 1.1)));
@@ -61,7 +66,8 @@ export function hero(kind, base) {
   const gear = { hit: 0, flee: 0, aspdRate: 1, ...GEAR[kind](base) };
   if (kind === 'archer') { gear.stats = { fns: p.skills.keeneye || 0 }; gear.hit += p.skills.longsight || 0; }
   const hide = p.skills.ironhide || 0;
-  gear.mastery = 9 + (kind === 'blader' ? 2 * (p.skills.discipline || 0) : 0);
+  gear.mastery = 9 + (kind === 'blader' ? 2 * (p.skills.discipline || 0) : kind === 'assassin' ? 4 * (p.skills.daggermastery || 0) : 0);
+  gear.flee += 3 * (p.skills.improvedodge || 0);
   gear.def += hide;
   const ps = derive(p, gear);
   ps.maxHp = Math.floor(ps.maxHp * (1 + hide / 100));
@@ -84,8 +90,33 @@ function fight(h, def, opts = {}) {
   let hp = ps.maxHp, sp = ps.maxSp, mob = def.hp, t = 0, potions = 0, next = 0, mobNext = def.adelay / 1000, stompAt = def.boss || def.mvp ? 7 : Infinity;
   // a boss's moves reach 3 to 9 paces: they find a Sorcerer kiting it, not a Blader at its side
   const moves = h.kind !== 'blader' ? (def.moves || []).filter((m) => MOVES[m.kind]?.min).map((m) => ({ ...m, at: MOVES[m.kind].cd })) : [];
-  const guards = []; let called = false, goneT = -1e9, hits = 0;
+  const guards = []; let called = false, goneT = -1e9, hits = 0, sonicAt = 0, pois = 0, poisUntil = 0;
   const strike = (d) => {
+    if (h.kind === 'assassin') { // Sonic Blow when it is ready, Venom Strike between (its poison: a fifth of the blow each second for 6 s), Double Attack on normal attacks
+      const lv = h.prog.skills.sonicblow || 0, vlv = h.prog.skills.venomstrike || 0;
+      const venom = (wait) => (t < poisUntil ? pois * Math.min(wait, poisUntil - t) : 0);
+      // (Sonic Blow's eight small cuts each meet the monster's soft DEF: against an armoured one a
+      // player keeps to Venom Strike, so the sim casts Sonic Blow only where it pays more for its SP)
+      const avg = (k, l, hm) => { let x = 0; for (let i = 0; i < 40; i++) x += playerAttack(ps, d, SKILLS[k].power(l) / 100, hm, true).dmg; return x / 40; };
+      const sonicPays = lv && (!vlv || avg('sonicblow', lv, 1) * 8 * 1.3 / spCost('sonicblow', lv) > avg('venomstrike', vlv, 1 + 0.03 * vlv) * 1.9 / spCost('venomstrike', vlv)); // (each with the poison it leaves)
+      if (sonicPays && sp >= spCost('sonicblow', lv) && t >= sonicAt) {
+        sp -= spCost('sonicblow', lv); sonicAt = t + SKILLS.sonicblow.cd;
+        let dmg = 0; for (let i = 0; i < 8; i++) dmg += playerAttack(ps, d, SKILLS.sonicblow.power(lv) / 100, 1, true).dmg;
+        const wait = Math.max(ps.interval, 8 * SKILLS.sonicblow.every), out = dmg + venom(wait), boss = d.boss || d.mvp;
+        if (dmg > 0 && Math.random() * 100 < SKILLS.sonicblow.status.chance(lv) / (boss ? 3 : 1)) { pois = Math.max(1, Math.round(dmg / 4 * 0.2)); poisUntil = t + 6 / (boss ? 2 : 1); } // (its venom: a quarter of the cuts, a fifth of that a second)
+        return [out, wait];
+      }
+      if (vlv && sp >= spCost('venomstrike', vlv)) {
+        sp -= spCost('venomstrike', vlv);
+        const r = playerAttack(ps, d, SKILLS.venomstrike.power(vlv) / 100, 1 + 0.03 * vlv, true), boss = d.boss || d.mvp;
+        const out = r.dmg + venom(ps.interval);
+        if (!r.miss && Math.random() * 100 < SKILLS.venomstrike.status.chance(vlv) / (boss ? 3 : 1)) { pois = Math.max(1, Math.round(r.dmg * 0.2)); poisUntil = t + 6 / (boss ? 2 : 1); }
+        return [out, ps.interval];
+      }
+      let dmg = playerAttack(ps, d).dmg;
+      if (Math.random() * 100 < 5 * (h.prog.skills.doubleattack || 0)) dmg += playerAttack(ps, d).dmg;
+      return [dmg + venom(ps.interval), ps.interval];
+    }
     const sk = h.kind === 'blader' ? 'heavy' : h.kind === 'archer' ? 'doubleshot' : bestBolt(h.prog, d) || 'spark', lv = h.prog.skills[sk] || 0;
     if (h.kind === 'archer') { // Double Shot: two arrows; Steady Aim from Job 10, kiting at 4 paces half the time
       const k = h.prog.jobLv >= 10 ? 1.05 : 1;
@@ -156,18 +187,18 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const [type, lvArg] = process.argv.slice(2);
   if (type) {
     const lv = +lvArg || MOB_DEFS[type].lv;
-    for (const kind of ['blader', 'sorcerer', 'archer']) {
+    for (const kind of ['blader', 'sorcerer', 'archer', 'assassin']) {
       const { ps } = hero(kind, lv);
       console.log(`${kind} Base ${lv}: HP ${ps.maxHp} SP ${ps.maxSp} hit ${ps.hit} flee ${ps.flee} interval ${ps.interval.toFixed(2)} s`);
       console.log('  no potions:      ', fmt(sim(kind, lv, type)));
       console.log('  20 Orange Potions:', fmt(sim(kind, lv, type, { potions: 20 })));
     }
   } else {
-    console.log('| Monster | Lv | Blader at its level | Sorcerer at its level | Archer at its level |\n|---|---|---|---|---|');
+    console.log('| Monster | Lv | Blader at its level | Sorcerer at its level | Archer at its level | Assassin at its level |\n|---|---|---|---|---|---|');
     for (const [t, d] of Object.entries(MOB_DEFS).sort((a, b) => a[1].lv - b[1].lv)) {
       if (d.mvp || d.night || d.raid || d.decoy || t === 'slimelet') continue; // (raid monsters: build-tools/raid-sim.mjs)
       const opts = d.boss ? { potions: 20 } : {};
-      console.log(`| ${d.name} | ${d.lv} | ${fmt(sim('blader', d.lv, t, opts))} | ${fmt(sim('sorcerer', d.lv, t, opts))} | ${fmt(sim('archer', d.lv, t, opts))} |`);
+      console.log(`| ${d.name} | ${d.lv} | ${fmt(sim('blader', d.lv, t, opts))} | ${fmt(sim('sorcerer', d.lv, t, opts))} | ${fmt(sim('archer', d.lv, t, opts))} | ${fmt(sim('assassin', d.lv, t, opts))} |`);
     }
   }
 }
