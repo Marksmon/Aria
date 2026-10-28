@@ -291,7 +291,10 @@ export class Menus {
       </div></div>`;
   }
 
-  // story pages: [[speaker id or null (the narrator), line], ...], one at a time; done() after the last
+  // story pages: [[speaker id or null (the narrator), line, opts?], ...], one at a time; done() after
+  // the last. A line may be a function of the story's flags (read as the page shows, so it can tell
+  // what was chosen on the pages before). opts: { choices: [[label, key], ...] } asks the hero (the
+  // pick goes to hooks.storyChoice, then the next page); { shake, sound } play as the page shows
   story(pages, title, done) {
     this.storyPages = pages.length ? pages : [[null, '…']];
     this.storyAt = 0;
@@ -299,6 +302,7 @@ export class Menus {
     this.close('talk');
     this.show('story');
     this.wins.story.querySelector('.rw-title').textContent = title;
+    this.hooks.storyFx?.(this.storyPages[0][2]);
   }
 
   // the hair picker: a new character's look, or the Stylist's chair (mode 'new' | 'stylist')
@@ -369,7 +373,7 @@ export class Menus {
       const s = this.hooks.storyStep?.();
       if (!s) return '<div class="rnote">The story is over, for now.</div>';
       this.wins.quest.querySelector('.rw-title').textContent = 'Story';
-      const hint = typeof s.hint === 'function' ? s.hint(this.prog) : s.hint; // the advice, wherever you are
+      const hint = typeof s.hint === 'function' ? s.hint(this.prog, this.hooks.storyFlags?.()) : s.hint; // the advice, wherever you are
       return `<div class="qview story"><small>${esc(s.ch)}</small><b>★ ${esc(s.title)}</b><p>${esc(s.goal)}${esc(this.hooks.storyProgress?.() || '')}</p>${hint ? `<div class="rnote">${esc(hint)}</div>` : ''}${where}<div class="rnote">The main story can't be given up.</div>${go('Go there')}</div>`;
     }
     const q = QUESTS[id], st = this.quests, active = id in st.active, ready = active && st.ready(id, inv), giver = NPCS[giverOf(id)];
@@ -944,10 +948,14 @@ export class Menus {
   }
 
   storyPage() {
-    const [who, line] = this.storyPages[this.storyAt], last = this.storyAt >= this.storyPages.length - 1;
+    const [who, said, opts] = this.storyPages[this.storyAt], last = this.storyAt >= this.storyPages.length - 1;
+    const line = typeof said === 'function' ? said(this.hooks.storyFlags?.() || {}) : said;
     const pic = who ? `<img class="portrait" src="${this.portrait(who)}" alt="">` : '<div class="portrait narr">✦</div>';
+    const btns = opts?.choices
+      ? `<div class="storych">${opts.choices.map(([label, key]) => `<button class="rbtn" data-act="storychoice" data-id="${esc(key)}">${esc(label)}</button>`).join('')}</div>`
+      : `<div class="btnrow"><span class="rtag">${this.storyAt + 1} / ${this.storyPages.length}</span><button class="rbtn" data-act="storynext">${last ? 'Continue' : 'Next ▸'}</button></div>`;
     return `<div class="talkwrap story">${pic}<div class="say">${who ? `<b class="who">${esc(NPCS[who].name)}</b>` : ''}<p class="${who ? '' : 'narr'}">${esc(line)}</p>
-      <div class="btnrow"><span class="rtag">${this.storyAt + 1} / ${this.storyPages.length}</span><button class="rbtn" data-act="storynext">${last ? 'Continue' : 'Next ▸'}</button></div></div></div>`;
+      ${btns}</div></div>`;
   }
 
   // redraw one window, or every open one
@@ -985,8 +993,9 @@ export class Menus {
       this.hooks.lookDone?.(this.lookDraft, mode);
     }
     if (act === 'stylist') this.openLook('stylist', this.hooks.currentLook());
-    if (act === 'storynext') {
-      if (this.storyAt < this.storyPages.length - 1) { this.storyAt++; this.render('story'); this.hooks.ui?.(); } else this.close('story');
+    if (act === 'storychoice') this.hooks.storyChoice?.(t.dataset.id); // (then on to the next page, below)
+    if (act === 'storynext' || act === 'storychoice') {
+      if (this.storyAt < this.storyPages.length - 1) { this.storyAt++; this.render('story'); this.hooks.ui?.(); this.hooks.storyFx?.(this.storyPages[this.storyAt][2]); } else this.close('story');
     }
     // ▲ only places a point; Confirm locks them all in, Reset takes back what isn't locked in
     if (act === 'raise') {

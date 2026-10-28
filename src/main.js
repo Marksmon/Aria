@@ -816,7 +816,7 @@ let trackerHTML = '';
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 function refreshQuests() {
   // a rare hunt's monster leaves once its quest is done or given up
-  for (const m of [...mobs.list]) if (m.temp && m.alive && MOB_DEFS[m.type].noRespawn && !Object.keys(quests.active).some((k) => QUESTS[k].mob === m.type && !quests.ready(k, inv))) mobs.remove(m);
+  for (const m of [...mobs.list]) if (m.temp && m.alive && !m.story && MOB_DEFS[m.type].noRespawn && !Object.keys(quests.active).some((k) => QUESTS[k].mob === m.type && !quests.ready(k, inv))) mobs.remove(m);
   // monsters an active kill quest still wants come back twice as fast
   mobs.hunted = new Set(Object.keys(quests.active).flatMap((k) => {
     const q = QUESTS[k];
@@ -964,7 +964,9 @@ function tickWading(dt) {
   }
 }
 
-// ---------- the vigil on Ember Hill: hold the heralds off while Vigdis sings (a survive step) ----------
+// ---------- survive steps: hold a spot against waves (the Ember's Light in Moss Field, the vigil on Ember
+// Hill while Vigdis sings). A step may set its own heralds ({ early, late, after }), wave gap (every),
+// how many may stand before the next wave comes (most), colour, and words (startText, breakText) ----------
 let vigil = null, giantWarnT = -99; // vigil: { t, next, list }
 const VIGIL_WAVE = 15; // seconds between waves of heralds (lesser ones, like a boss's guards)
 const giantOf = () => mobs.list.find((m) => m.alive && m.def.mvp && m.type === 'jarl');
@@ -983,7 +985,7 @@ function tickVigil(dt) {
   const y = world.heightAt(s.at.x, s.at.z);
   if (!vigil) {
     if (world.id !== s.map) return;
-    if (Math.random() < dt * 3) fx.sparkle(s.at.x, y + 0.4, s.at.z, '#b48aff', 4); // where to stand
+    if (Math.random() < dt * 3) fx.sparkle(s.at.x, y + 0.4, s.at.z, s.color || '#b48aff', 4); // where to stand
     if (Math.hypot(s.at.x - player.x, s.at.z - player.z) > 3 || player.state !== 'normal') return;
     // the Fire Giant roams the hill: the song would only wake him if he stood close, and once it
     // begins it lulls him while it lasts
@@ -994,20 +996,22 @@ function tickVigil(dt) {
     }
     if (g) { g.lulled = true; g.state = 'wander'; }
     vigil = { t: 0, next: 2, list: [], giant: g };
-    menus.message('The runes in the circle light up, and Vigdis\'s song rises out of them. The hill trembles: the heralds are coming!');
+    menus.message(s.startText || 'The runes in the circle light up, and Vigdis\'s song rises out of them. The hill trembles: the heralds are coming!');
+    cam.shake = 0.35;
     audio.play('night');
     return;
   }
-  if (world.id !== s.map || player.state === 'down') { endVigil('The song breaks off. Go back to the hill road and begin again.'); return; }
-  if (Math.hypot(s.at.x - player.x, s.at.z - player.z) > 12) { endVigil('You strayed too far, and the song breaks off. Stand by the rune circle and begin again.'); return; }
+  if (world.id !== s.map || player.state === 'down') { endVigil(s.breakText || 'The song breaks off. Go back to the hill road and begin again.'); return; }
+  if (Math.hypot(s.at.x - player.x, s.at.z - player.z) > 12) { endVigil(s.breakText || 'You strayed too far, and the song breaks off. Stand by the rune circle and begin again.'); return; }
   if (vigil.giant?.alive && !vigil.giant.lulled) { endVigil('You struck the Fire Giant: he wakes, and the song breaks off. Let him wander off, then begin again.'); return; }
   vigil.t += dt;
   story.count = Math.floor(vigil.t);
-  if (Math.random() < dt * 6) fx.sparkle(s.at.x + (Math.random() - 0.5) * 3, y + 0.3, s.at.z + (Math.random() - 0.5) * 3, '#b48aff', 3); // the song in the air
+  if (Math.random() < dt * 6) fx.sparkle(s.at.x + (Math.random() - 0.5) * 3, y + 0.3, s.at.z + (Math.random() - 0.5) * 3, s.color || '#b48aff', 3); // the song in the air
   const up = vigil.list.filter((m) => m.alive).length;
-  if (vigil.t >= vigil.next && vigil.t < s.secs - 4 && up < 4) { // a wave of heralds from all round the hill (held back while four still stand)
-    vigil.next += VIGIL_WAVE;
-    const kinds = vigil.t > 30 ? ['beetle', 'beetle', 'wisp'] : ['beetle', 'wisp'], a0 = Math.random() * Math.PI * 2; // the hill grows angrier
+  if (vigil.t >= vigil.next && vigil.t < s.secs - 4 && up < (s.most || 4)) { // a wave of heralds from all round the hill (held back while four still stand)
+    vigil.next += s.every || VIGIL_WAVE;
+    const H = s.heralds || { early: ['beetle', 'wisp'], late: ['beetle', 'beetle', 'wisp'], after: 30 };
+    const kinds = vigil.t > H.after ? H.late : H.early, a0 = Math.random() * Math.PI * 2; // the hill grows angrier
     kinds.forEach((type, i) => {
       const a = a0 + (i / kinds.length) * Math.PI * 2;
       let x = s.at.x + Math.cos(a) * 8, z = s.at.z + Math.sin(a) * 8;
@@ -1023,6 +1027,18 @@ function tickVigil(dt) {
     cam.shake = 0.3;
   }
   if (vigil.t >= s.secs) { story.flag(s.id); endVigil(); }
+}
+
+// ---------- a story step's own monster (spawn: { mob, at }): there whenever the hero is on its map ----------
+function tickStorySpawn() {
+  const s = story.step, sp = s?.spawn;
+  if (!storyLive() || !sp || world.id !== s.map || story.count >= s.n || warping) return;
+  if (mobs.list.some((m) => m.type === sp.mob && m.alive)) return;
+  const at = world.walkable(sp.at.x, sp.at.z) ? sp.at : mobs.findSpot(Math.random, player);
+  if (!at) return;
+  const m = mobs.add(sp.mob, at.x, at.z);
+  m.temp = true; // (gone when the hero leaves; back when they return, until it is beaten)
+  m.story = true; // (not a quest's rare hunt: refreshQuests leaves it be)
 }
 
 // ---------- raids (raid.js): three waves and a boss against the clock ----------
@@ -1287,7 +1303,7 @@ const storyLive = () => !!story.flags.intro && !story.done; // after the opening
 // a step is done: its lines play, then the reward, then the next step is announced
 function storyDone() {
   const s = story.advance();
-  const say = typeof s.say === 'function' ? s.say(story.flags) : s.say; // (a step's lines may depend on how it went)
+  const say = typeof s.say === 'function' ? s.say(story.flags, prog) : s.say; // (a step's lines may depend on how it went)
   menus.story(say || [], `${s.ch} · ${s.title}`, () => {
     if (s.reward) giveReward(s.reward);
     audio.play('heart');
@@ -1345,6 +1361,10 @@ const menus = new Menus(inv, prog, player, {
     persist();
   },
   storyStep: () => (storyLive() ? story.step : null),
+  // story pages that ask (the Seeress's rune-reading): each answer counts toward a calling
+  storyFlags: () => story.flags,
+  storyChoice: (key) => { const c = (story.flags.calling ||= {}); c[key] = (c[key] || 0) + 1; story.flags.lastCall = key; audio.play('ui'); },
+  storyFx: (o) => { if (o?.shake) cam.shake = o.shake; if (o?.sound) audio.play(o.sound); },
   storyProgress: () => story.progress(),
   // the Keepers: sign their ledger, save there, and teleport between the ones you have signed
   keeperKnown: (k) => keepers.has(k),
@@ -2667,7 +2687,7 @@ function frame() {
   if (live) fx.update(dt);
   if (live) { naturalRegen(dt); tickSkills(dt); checkPortals(); tickNav(); tickQuestWorld(dt); }
   if (live) tickWading(dt);
-  if (live) tickVigil(dt);
+  if (live) { tickVigil(dt); tickStorySpawn(); }
   if (live) tickRaid(dt);
   dressPeople();
   tickAura(dt, t, b);

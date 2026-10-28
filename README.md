@@ -934,7 +934,8 @@ gear comes from boss materials:
 **The Last Fire-Ring.** Long ago the fire-jotnar slept beneath the hills of Aria, and the first
 settlers lit a ring of fires to keep them dreaming: Eldrun, the fire-ring. Now the fires burn low,
 the ground of Ember Hill shakes, and the Fire Giant is waking. You arrive as a stranger with a
-practice sword, asleep by the camp's last fire.
+practice sword, asleep by the camp's last fire, and wake to the Elder's shout: a thief has stolen
+the fire-ring's Heart-Ember.
 
 The story runs beside the other quests, in chapters. Its current step sits at the top of the
 quest list (purple), with directions to the next map ("Head north to Steinborg"); the minimap
@@ -942,9 +943,9 @@ rings the portal to take, or the person to talk to. A purple **!** marks who the
 
 | Chapter | Steps |
 |---|---|
-| Prologue (the tutorial) | Talk to the Elder · raise a stat · defeat 3 Bloops in Moss Field · learn Basic Training · put a potion on the hotbar · back to the Elder |
-| 1: The Stone-Fort | Travel to Steinborg · tell Captain Ulfr the fires are failing · sign the Keeper's ledger (the Keepers: healing, storage, save point, teleport) · meet Saeunn the Seeress · sell something for perz |
-| 2: Blade or Rune | Pass a job trial and become a Blader, a Sorcerer or an Archer |
+| Prologue (the tutorial) | The Elder: the Heart-Ember is stolen · raise a stat · defeat 3 Bloops in Moss Field · learn Basic Training · **the Gel Thief**: chase down the golden bloop that runs from you (corner it, or land a blow, and it turns to fight) · put a potion on the hotbar · **the Ember's Light**: the ember's glow draws every bloop in the field, so hold the old stone ring for 40 seconds · bring the Heart-Ember home to the Elder |
+| 1: The Stone-Fort | Travel to Steinborg (Ember Hill rumbles as you arrive) · tell Captain Ulfr the fires are failing · sign the Keeper's ledger (the Keepers: healing, storage, save point, teleport) · **Saeunn reads your runes**: answer her three questions, and the runes name your calling, the Blade, the Rune or the Bow · sell something for perz |
+| 2: The Three Paths | A Trainee's road: 15 Blue Bloops or Crabs in Fen Shore · pass a job trial and become a Blader, a Sorcerer or an Archer (the one the runes named, or any other: the story notices) |
 | 3: Embers in the Wilds | Saeunn's warning · defeat 12 Red Sprouts in Birch Grove · travel to Ember Hill |
 | 4: The Fire-Ring | Archmage Vigdis will sing the fire-ring's runes anew · **the Vigil on Ember Hill**: stand in her rune circle and hold off the Giant's heralds for 75 seconds while her song reaches him · bring the song home: the fire-ring rekindled |
 | 5: The Salt Road | Captain Ulfr: kobolds rob the salt carts · Hakon the Carter in Salt Bay · **Bloop Island**: the Boatman's Tutorial crossing (the first raid) · defeat 12 kobolds in Stone Field · Saeunn and the glowing red coal · go down into Coal Pit · Dag the Miner: the goblins drive the kobolds to dig for a "Waking Fire" |

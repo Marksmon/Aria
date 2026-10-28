@@ -8,13 +8,18 @@
 //
 // Step kinds:
 //   talk  - talk to someone (npc); their lines play as the step completes
+//   survive - hold a spot (at) for secs against waves (heralds, every, most: main.js tickVigil)
 //   kill  - defeat n of a monster (counted from when the step starts)
 //   visit - set foot on a map
 //   stat  - raise any stat once            skill - learn a skill (skill, lv)
 //   hotbar - put an item or skill on the hotbar   sell - sell something in a shop
 //   job   - change job                     level - reach a Base Level (lv)
 //   job2  - take a second job              keeper - sign a second Keeper's ledger
-// kill steps may name one monster (mob) or several (mobs: any of them counts).
+// kill steps may name one monster (mob) or several (mobs: any of them counts), and may bring their own
+// (spawn: { mob, at }: a story monster there whenever the hero is on the map: main.js tickStorySpawn).
+// A line may be a function of the story's flags, and carry options: { shake, sound } as it shows, or
+// { choices: [[label, key], ...] } to ask the hero (the Seeress's reading: CALLINGS, callingOf).
+// A step's say may be a function (flags, prog) of how it went.
 // say: [[speaker npc id, or null for the narrator, line], ...] shown when the step completes.
 // map: where it happens, for the directions (talk steps use the speaker's map).
 import { NPCS } from './quests.js';
@@ -22,44 +27,89 @@ import { MAPS, ZONE_NAMES } from './world.js';
 import { JOBS } from './progress.js';
 import { skillLv } from './skills.js';
 
+// the three callings the Seeress's runes can name (the 'seeress' step asks; callingOf reads the answers)
+export const CALLINGS = {
+  blade: { job: 'swordman', name: 'the Blade', trainer: 'Captain Ulfr', where: 'by the south gate of Steinborg',
+    rune: "Tiwaz, the spear-rune, lands on top, bright as steel. Yours is the Blade: to stand in front and take the blow, so that others need not. Captain Ulfr trains Bladers, here in Steinborg." },
+  rune: { job: 'mage', name: 'the Rune', trainer: 'Archmage Vigdis', where: 'in Galdrheim, north of Fen Shore',
+    rune: "Kenaz, the torch-rune, burns on top of the pile. Yours is the Rune: fire and frost at a word, for those patient enough to learn them. Archmage Vigdis teaches Sorcerers in Galdrheim, north of Fen Shore." },
+  bow: { job: 'archer', name: 'the Bow', trainer: 'Huntmaster Sigrid', where: 'in Veidheim, east past Willow Marsh',
+    rune: "Raido, the road-rune, points away to the horizon. Yours is the Bow: quick feet and a sure eye, striking from where nothing can reach you. Huntmaster Sigrid trains Archers in Veidheim, past Willow Marsh." },
+};
+// the calling the hero's answers point to (a tie goes to the last answer among the tied), or null
+export function callingOf(flags) {
+  const c = flags?.calling || {};
+  let best = null;
+  for (const k of Object.keys(CALLINGS)) {
+    const n = c[k] || 0, b = best ? c[best] || 0 : -1;
+    if (n > b || (n === b && flags.lastCall === k)) best = k;
+  }
+  return best && c[best] ? best : null;
+}
+
 export const INTRO = [
   [null, 'Long ago, the fire-jotnar slept beneath the hills of Aria. The first settlers lit a ring of fires around their camp to keep them dreaming, and named it Eldrun: the fire-ring.'],
-  [null, 'The fires have burnt low. The ground of Ember Hill trembles, monsters roam the fields, and strange lights drift through the night.'],
-  [null, 'You crossed the mountains with a practice sword and a head full of songs. The old Elder of Eldrun found you asleep beside the camp\'s last fire...'],
-  ['bram', 'Awake at last! Come and talk to me, young one. Tap me to walk over.'],
+  [null, 'Tonight the ground trembles. Far to the south, beneath Ember Hill, something vast turns over in its sleep...', { shake: 0.45, sound: 'night' }],
+  [null, 'You crossed the mountains with a practice sword and a head full of songs, and fell asleep beside the camp\'s last fire. You dreamt of an eye like a forge, slowly opening.'],
+  ['bram', 'Wake up! Wake up, young one! Thieves in the stores, and the fire-ring\'s Heart-Ember is gone! Come here, quickly. Tap me to walk over.', { shake: 0.2 }],
 ];
 
 export const STORY = [
-  // ---------- Prologue: the tutorial ----------
+  // ---------- Prologue: the tutorial, told as a chase: the Heart-Ember stolen, hunted down and brought home ----------
   { id: 'wake', ch: 'Prologue', title: 'Awake by the Fire', kind: 'talk', npc: 'bram', goal: 'Talk to Elder Halvard by the campfire',
-    say: [['bram', 'Welcome to Eldrun, the last fire-ring of Aria. If you mean to stay, you must learn to stand on your own two feet.'],
-      ['bram', 'First, know your strength. Open the Status window (the button under your HP), place points with ▲ and press Confirm to lock them in. POW for a strong arm, KNL for a sharp mind.']],
+    say: [['bram', 'The Heart-Ember: the coal at the heart of the fire-ring, burning since the first settlers. It keeps the ring alight, and the ring keeps the Giant dreaming.'],
+      ['bram', 'A bloop took it. A golden one, fat with the ember\'s warmth, out of the north portal into Moss Field. Bloops love a warm thing more than their own jelly.'],
+      ['bram', 'I am too old to chase bloops. You are not. But first, know your strength: open the Status window (the button under your HP), place points with ▲ and press Confirm. POW for a strong arm, KNL for a sharp mind, FNS for a sure aim.']],
     reward: { xp: 4, items: { potion: 3 } } },
   { id: 'stats', ch: 'Prologue', title: 'Know Your Strength', kind: 'stat', goal: 'Open the Status window, place a point with ▲ and press Confirm',
-    say: [['bram', 'Good. Now, the bloops have been at our stores again. Go through the north portal to Moss Field and chase off three Bloops. Tap a monster to fight it, and tap what it drops to pick it up.']],
+    say: [['bram', 'Good. Now go: through the north portal to Moss Field. Bloops crowd the way. Chase off three of them: tap a monster to fight it, and tap what it drops to pick it up.'],
+      ['bram', 'Then find the thief. It glitters gold, and it runs.']],
     reward: { xp: 4 } },
   { id: 'slimes', ch: 'Prologue', title: 'Into Moss Field', kind: 'kill', mob: 'slime', n: 3, map: 'grove', goal: 'Defeat 3 Bloops in Moss Field (north portal)',
     say: [[null, 'Your Job Level rises with every fight, and each Job Level brings a skill point.'],
-      ['bram', 'Open the Skills window and raise Basic Training with ▲. Every Trainee starts there.']],
+      [null, 'Open the Skills window and raise Basic Training with ▲ before you go after the thief. Every Trainee starts there.']],
     reward: { xp: 6 } },
   { id: 'training', ch: 'Prologue', title: 'Basic Training', kind: 'skill', skill: 'basics', lv: 1, goal: 'Raise Basic Training in the Skills window',
-    say: [['bram', 'One more thing. Open your Items window and drag a Red Potion onto the hotbar at the bottom. Then one tap drinks it, even in the middle of a fight.']],
+    say: [[null, 'Something glitters gold between the trees: the Gel Thief! The Heart-Ember glows inside it like a coal in jelly.', { sound: 'heart' }],
+      [null, 'It is quick, and it will run from you. Corner it against the trees, and it will have to fight.']],
     reward: { xp: 4 } },
+  // a chase: the Gel Thief (mobs.js) runs from the hero, and fights only once cornered (main.js tickStorySpawn)
+  { id: 'thief', ch: 'Prologue', title: 'The Gel Thief', kind: 'kill', mob: 'gelThief', n: 1, map: 'grove', spawn: { mob: 'gelThief', at: { x: 22, z: 26 } },
+    goal: 'Catch the Gel Thief in Moss Field: corner the golden bloop and win back the Heart-Ember',
+    hint: 'It runs when you come near. Drive it against the trees or the field\'s edge, and it turns to fight.',
+    say: [[null, 'The Gel Thief bursts in a shower of golden jelly, and the Heart-Ember drops into the moss, still warm.', { shake: 0.25 }],
+      [null, 'Before you carry it home: open your Items window and drag a Red Potion onto the hotbar at the bottom. One tap drinks it, even in the middle of a fight. Something tells you that you will need it.']],
+    reward: { xp: 10, job: 30 } },
   { id: 'hotbar', ch: 'Prologue', title: 'Ready at Hand', kind: 'hotbar', item: 'potion', goal: 'Drag a Red Potion onto the hotbar',
-    say: [[null, 'Skills go on the hotbar the same way, from the Skills window.']],
+    say: [[null, 'Skills go on the hotbar the same way, from the Skills window.'],
+      [null, 'You lift the Heart-Ember, and its glow spills across the field. All over Moss Field, the bloops stop... and turn towards the light.', { shake: 0.3, sound: 'night' }],
+      [null, 'An old stone ring stands in the south of the field, by the road home. Steady the ember there, and hold your ground until its glow settles.']],
     reward: { xp: 4 } },
-  { id: 'report', ch: 'Prologue', title: 'The Elder\'s Errand', kind: 'talk', npc: 'bram', goal: 'Return to Elder Halvard at camp',
-    say: [['bram', 'You learn quickly. Listen, then: the fire-ring cannot hold much longer. Each night the flames are lower, and the ground of Ember Hill shakes.'],
+  // the first stand: hold the stone ring while the ember's glow draws the field's bloops (a survive step)
+  { id: 'ember', ch: 'Prologue', title: 'The Ember\'s Light', kind: 'survive', map: 'grove', at: { x: 32, z: 42 }, secs: 40, color: '#ffb84a',
+    heralds: { early: ['slime', 'slime'], late: ['slime', 'blueSlime', 'slime'], after: 15 }, every: 10, most: 5,
+    startText: 'The Heart-Ember blazes up in your hands, and every bloop in Moss Field comes hopping towards the light! Hold your ground until the glow settles.',
+    breakText: 'The Heart-Ember\'s glow flickers wildly: you left the stone ring. Go back and steady it again.',
+    goal: 'Stand in the glowing stone ring in the south of Moss Field and hold off the bloops until the Heart-Ember settles',
+    hint: 'Waves of bloops come for 40 seconds. Stay close to the ring, and drink a potion from the hotbar if you need one.',
+    say: [[null, 'The glow sinks to a steady, gentle warmth. The bloops lose interest one by one and hop away into the grass.'],
+      [null, 'The Heart-Ember is safe. Take it home to Elder Halvard.']],
+    reward: { xp: 20, job: 40, items: { potion: 3 } } },
+  { id: 'report', ch: 'Prologue', title: 'The Elder\'s Errand', kind: 'talk', npc: 'bram', goal: 'Bring the Heart-Ember home to Elder Halvard at camp',
+    say: [['bram', 'The Heart-Ember! Here, into the fire with it...', { sound: 'heart' }],
+      [null, 'The fire-ring roars up, gold and white, higher than the tents. For a moment the whole camp is bright as noon.', { shake: 0.35 }],
+      ['bram', '...and sinks again. Lower than last night. Lower than the night before. The ember is home, but the ring is failing all the same, and the ground of Ember Hill still shakes.'],
       ['bram', 'North past Moss Field stands Steinborg, the stone-fort. Take word to Captain Ulfr of the Watch that Eldrun\'s fires are failing. He will know what it means.'],
       ['bram', 'And whenever you have a quest of your own to finish, look for the ! over people\'s heads. There is always someone who needs help.']],
     reward: { xp: 10, perz: 100 } },
 
   // ---------- Chapter 1: the stone-fort ----------
   { id: 'north', ch: 'Chapter 1: The Stone-Fort', title: 'The Road North', kind: 'visit', map: 'city', goal: 'Travel north through Moss Field to Steinborg',
-    say: [[null, 'Steinborg: stone walls, a busy market square and the smell of the forge. The Watch house stands by the south gate.']],
+    say: [[null, 'Steinborg: stone walls, a busy market square and the smell of the forge. The Watch house stands by the south gate.'],
+      [null, 'Then the cobbles jump under your feet. Far to the south, Ember Hill rumbles like a giant clearing its throat, and every dog in the city howls at once.', { shake: 0.6, sound: 'night' }]],
     reward: { xp: 40, perz: 200 } },
   { id: 'captain', ch: 'Chapter 1: The Stone-Fort', title: 'Word for the Captain', kind: 'talk', npc: 'ulfr', goal: 'Tell Captain Ulfr (by the south gate) about the fires',
-    say: [['ulfr', 'Eldrun\'s fires, failing? ... Then the old tales are more than tales.'],
+    say: [['ulfr', 'You felt that too. Third time this week... And now Eldrun\'s fires are failing? Then the old tales are more than tales.'],
       ['ulfr', 'Saeunn the Seeress has been seeing fire in her runes for a month. Her tower is in the north-east of the city. Go to her. I will double the watch on the south road.'],
       ['ulfr', 'But first, sign the Keeper\'s ledger by the west houses. A Keeper mends you, keeps your things, saves your place, and sends you to any other Keeper you have signed. You will walk these roads a great deal.']],
     reward: { xp: 40 } },
@@ -69,24 +119,47 @@ export const STORY = [
     say: [['keeper_city', 'There: Steinborg remembers you now. Tap me whenever you need me. Heal me mends you. Storage keeps what your bag cannot carry. Save here makes this the place you wake after a fall.'],
       ['keeper_city', 'And Teleport takes you to any other Keeper whose ledger you have signed, for a fare: the one at your camp already, and one waits in Galdrheim too. Now go on to the Seeress.']],
     reward: { xp: 40, perz: 300 } },
+  // the Seeress reads the hero's runes: three questions, and the calling they point to (CALLINGS)
   { id: 'seeress', ch: 'Chapter 1: The Stone-Fort', title: 'The Seeress', kind: 'talk', npc: 'saeunn', goal: 'Find Saeunn the Seeress at her tower (north-east of the city)',
     say: [['saeunn', 'So. You are the one the runes showed me: a stranger by a dying fire.'],
-      ['saeunn', 'Beneath Ember Hill sleeps the Fire Giant, the last of the fire-jotnar. The fire-ring kept him dreaming. When the ring goes out, he wakes, and all of Aria burns.'],
-      ['saeunn', 'You cannot face him as you are. Train. Choose a path: the blade, with Captain Ulfr, the runes, in Galdrheim north of Fen Shore, where Archmage Vigdis taught me, or the bow, with Huntmaster Sigrid in Veidheim, past Willow Marsh. Hild in the square will buy what you find; Gunnar forges gear.']],
+      ['saeunn', 'Beneath Ember Hill sleeps the Fire Giant, the last of the fire-jotnar. The fire-ring kept him dreaming. When the ring goes out, he wakes, and all of Aria burns.', { shake: 0.25 }],
+      ['saeunn', 'You cannot face him as you are. But the runes know what you could become. Sit. Answer from the heart: the runes hear the truth, and nothing else.'],
+      ['saeunn', 'A wolf blocks the road at dusk, teeth bared. What do you do?', { choices: [['Draw steel and meet it head-on.', 'blade'], ['Speak a word of fire, and watch it run.', 'rune'], ['Climb a rock and strike it from afar.', 'bow']] }],
+      ['saeunn', 'You set out into lands no one has mapped. What do you carry?', { choices: [['A shield and a steady arm.', 'blade'], ['A book of old words.', 'rune'], ['Sharp eyes and a light pack.', 'bow']] }],
+      ['saeunn', 'And when the skalds sing of you, what should the song say?', { choices: [['That I stood my ground when others ran.', 'blade'], ['That I knew what all the others had forgotten.', 'rune'], ['That I never once missed.', 'bow']] }],
+      [null, 'Saeunn shakes the rune-bones in her cupped hands and casts them across the table. They clatter, spin... and lie still.', { sound: 'heart' }],
+      ['saeunn', (flags) => CALLINGS[callingOf(flags) || 'blade'].rune],
+      ['saeunn', 'But runes advise; they do not command. Once you are ready (Trainee Job 10, Basic Training 9), the Blade, the Rune and the Bow will each try you. The road you walk is yours.'],
+      ['saeunn', 'Until then, grow strong. Hild in the square will buy what you find, and Gunnar forges gear.']],
     reward: { xp: 60 } },
   { id: 'trade', ch: 'Chapter 1: The Stone-Fort', title: 'Coin for the Road', kind: 'sell', goal: 'Sell something to Hild the Trader (or Gunnar)',
-    say: [[null, 'Perz is the coin of Aria. Monsters don\'t carry any: you earn it by selling what they drop, and from quests.']],
+    say: [[null, 'Perz is the coin of Aria. Monsters don\'t carry any: you earn it by selling what they drop, and from quests.'],
+      [null, 'Now to grow strong enough for a trial. Fen Shore, west of Eldrun, swarms with Blue Bloops and Crabs: good practice for a Trainee.']],
     reward: { xp: 40, perz: 150 } },
 
-  // ---------- Chapter 2: the blade or the rune ----------
+  // ---------- Chapter 2: the three paths ----------
   // story EXP (x2 with QUEST_RATE) is paced so each chapter brings a hero to the next one's hinted level:
   // the Giant Sprout at about Base 28, Chapter 5's kobolds at about 32
-  { id: 'path', ch: 'Chapter 2: Blade or Rune', title: 'Choose Your Path', kind: 'job', goal: 'Reach Trainee Job 10 with Basic Training 9, then pass a job trial: Captain Ulfr in Steinborg (Blader), Archmage Vigdis in Galdrheim, north of Fen Shore (Sorcerer), or Huntmaster Sigrid in Veidheim, east past Willow Marsh (Archer)',
-    // a hint may depend on the hero: here, whether the trials are open yet
-    hint: (prog) => (prog && prog.jobLv >= 10 && skillLv(prog, 'basics') >= 9
-      ? "You're ready: take a trial with Captain Ulfr (Steinborg), Archmage Vigdis (Galdrheim) or Huntmaster Sigrid (Veidheim)."
-      : 'Fight in Moss Field, Fen Shore or Dark Dale to gain Job Levels, and raise Basic Training to 9.'),
-    say: [[null, 'The path is chosen. Your new skills are waiting in the Skills window.']],
+  { id: 'trainee', ch: 'Chapter 2: The Three Paths', title: 'A Trainee\'s Road', kind: 'kill', mobs: ['blueSlime', 'crab'], n: 15, map: 'fen', goal: 'Toughen up in Fen Shore (west of the camp): defeat 15 Blue Bloops or Crabs',
+    hint: 'Every fight brings Job EXP. A job trial wants Trainee Job 10 and Basic Training 9, so spend each skill point as it comes.',
+    say: [[null, 'The fen goes quiet around you. Your arm is steadier, your feet quicker: a Trainee no more, in all but name.'],
+      [null, (flags) => { const c = CALLINGS[callingOf(flags)]; return c ? `The runes named ${c.name}: ${c.trainer} waits ${c.where}. But any of the three will try you, once you are ready.` : 'The Blade, the Rune or the Bow: Captain Ulfr in Steinborg, Archmage Vigdis in Galdrheim, Huntmaster Sigrid in Veidheim. Any of them will try you, once you are ready.'; }]],
+    reward: { xp: 60, job: 250 } },
+  { id: 'path', ch: 'Chapter 2: The Three Paths', title: 'Choose Your Path', kind: 'job', goal: 'Reach Trainee Job 10 with Basic Training 9, then pass a job trial: Captain Ulfr in Steinborg (Blader), Archmage Vigdis in Galdrheim, north of Fen Shore (Sorcerer), or Huntmaster Sigrid in Veidheim, east past Willow Marsh (Archer)',
+    // a hint may depend on the hero: whether the trials are open yet, and the calling the runes named
+    hint: (prog, flags) => {
+      const c = CALLINGS[callingOf(flags)];
+      if (!(prog && prog.jobLv >= 10 && skillLv(prog, 'basics') >= 9)) return 'Fight in Moss Field, Fen Shore or Dark Dale to gain Job Levels, and raise Basic Training to 9.';
+      return c ? `You're ready! The runes named ${c.name}: ${c.trainer}, ${c.where}. Or take another trial: the choice is yours.` : "You're ready: take a trial with Captain Ulfr (Steinborg), Archmage Vigdis (Galdrheim) or Huntmaster Sigrid (Veidheim).";
+    },
+    // the job taken, and whether it was the one the runes named
+    say: (flags, prog) => {
+      const name = JOBS[prog?.job]?.name || 'hero', named = CALLINGS[callingOf(flags)];
+      const fits = named && named.job === prog?.job;
+      return [[null, `You are a ${name} now.`, { shake: 0.3, sound: 'levelup' }],
+        ['saeunn', !named ? 'I felt it from my tower: a new path taken. Walk it well.' : fits ? 'I felt it from my tower: the runes were right. They usually are. Walk it well.' : 'I felt it from my tower, and laughed: the runes said otherwise. I have never been so glad to be wrong. Walk it well.'],
+        [null, 'Your new skills are waiting in the Skills window. And far to the south, beneath Ember Hill, something stirs, as if it heard.']];
+    },
     reward: { xp: 500, perz: 300 } },
 
   // ---------- Chapter 3: embers in the wilds ----------
@@ -265,7 +338,7 @@ export class Story {
 
   // the tracker's line on where to go: "Head north to Moss Field"
   directions(here, prog) {
-    const s = this.step, where = this.map(), hint = typeof s?.hint === 'function' ? s.hint(prog) : s?.hint || '';
+    const s = this.step, where = this.map(), hint = typeof s?.hint === 'function' ? s.hint(prog, this.flags) : s?.hint || '';
     if (!s || !where) return hint;
     if (where === here) return s.kind === 'talk' ? `${NPCS[s.npc].name} is on this map` : hint;
     const p = route(here, where);

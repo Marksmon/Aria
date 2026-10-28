@@ -274,6 +274,8 @@ html, body {
 .talkwrap.story .btnrow { align-items: center; }
 .talkwrap.story .say p { min-height: 4.2em; } /* three lines: Next stays put from page to page */
 .talkwrap.story .btnrow .rtag { margin-right: auto; }
+.talkwrap.story .storych { display: flex; flex-direction: column; gap: 4px; }
+.talkwrap.story .storych .rbtn { text-align: left; white-space: normal; }
 
 /* ---------- Tap controls: hotbar ---------- */
 #hud { z-index: 25; }
