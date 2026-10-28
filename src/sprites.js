@@ -863,22 +863,43 @@ export const outfit = (body, { main, accent }) => recolorer([
 // PixelLab draws some animations lower in the canvas than the standing pose, so each one gets
 // its own anchor: the median of its frames' feet. Planting every frame separately would make
 // the character jump by a few pixels per frame; the median keeps the animation's own bob.
+const EMPTY = mk(1, 1).c;
 function pixelSet(url, { fw, fh, body, foot = 0, hair = [], anims, bald = false, recolor = null }) {
   const at = (px) => px / fh;
+  // a frame's texture starts on a shared empty pixel and gets its own canvas when first drawn (a
+  // sheet has hundreds of frames, and most are never shown)
   const blank = () => {
-    const t = tex(mk(fw, fh).c);
+    const t = tex(EMPTY);
     t.magFilter = t.minFilter = THREE.NearestFilter;
     t.generateMipmaps = false;
     return t;
   };
+  const canvasOf = (t, read) => {
+    if (t.image === EMPTY) {
+      const c = document.createElement('canvas');
+      c.width = fw; c.height = fh;
+      c.getContext('2d', { willReadFrequently: read }); // a recoloured body is read back pixel by pixel
+      t.image = c;
+    }
+    return t.image.getContext('2d');
+  };
   const set = { pixel: true, fw, fh, body, bald, loaded: false, anchor: at(foot), hair: hair.map((c) => c.map((v) => v / 255)), anims: {}, flash: {} };
-  const cuts = [];
+  // Frames are drawn by animation (a direction's walk, say) the first time the game reads it, not
+  // all at load: a sheet holds 8 directions x 4 animations and most are never shown on a map's first
+  // look (or ever, for a far-off map's people). group: { cuts, drawn, lit } (lit: its flash copies)
+  const groups = [], of = new Map();
+  let paint = null;
+  const img = new Image();
+  const want = (g, flash) => {
+    if (!set.loaded) { g.wanted = true; return; }
+    if (!g.drawn) { drawBody(g.cuts); g.drawn = true; g.lit = false; }
+    if (flash && !g.lit) { drawFlash(g.cuts); g.lit = true; }
+  };
   for (const [dir, list] of Object.entries(anims)) {
     set.anims[dir] = {};
     set.flash[dir] = {};
     for (const [anim, [row, n, feet, heads, spots]] of Object.entries(list)) {
-      set.anims[dir][anim] = [];
-      set.flash[dir][anim] = [];
+      const T = [], F = [], g = { cuts: [], drawn: false, lit: false, wanted: false };
       const anchor = feet ? at([...feet].sort((a, b) => a - b)[feet.length >> 1]) : set.anchor;
       for (let i = 0; i < n; i++) {
         const t = blank(), f = blank();
@@ -886,37 +907,46 @@ function pixelSet(url, { fw, fh, body, foot = 0, hair = [], anims, bald = false,
         // where the head is in this frame (frame pixels), for headgear: { x, crown, neck, w, eyes: [x, y, ...] }
         // and, on a body made bald, where the standard head is painted: its cell's top-left corner
         if (heads?.[i]) t.userData.head = f.userData.head = { x: heads[i][0], crown: heads[i][1], neck: heads[i][2], w: heads[i][3], eyes: heads[i].slice(4), at: spots?.[i] || null };
-        set.anims[dir][anim].push(t);
-        set.flash[dir][anim].push(f);
-        cuts.push([t, f, i * fw, row * fh, dir]);
+        T.push(t);
+        F.push(f);
+        const c = [t, f, i * fw, row * fh, dir];
+        g.cuts.push(c);
+        of.set(t, [c, g]);
       }
+      groups.push(g);
+      Object.defineProperty(set.anims[dir], anim, { enumerable: true, get: () => { if (!g.drawn) want(g, false); return T; } });
+      Object.defineProperty(set.flash[dir], anim, { enumerable: true, get: () => { if (!g.lit) want(g, true); return F; } });
     }
   }
-  // draw every frame: the body, then paint(ctx, frame's userData, dir) over it (a bald body's head
-  // and hair, on its pixel grid), and the white copy for the hit flash
-  let paint = null;
-  const img = new Image();
-  const of = new Map(cuts.map((c) => [c[0], c]));
-  const draw = (list = cuts) => {
-    for (const [t, f, x, y, dir] of list) {
-      const b = t.image.getContext('2d');
+  // the body, then paint(ctx, frame's userData, dir) over it (a bald body's head and hair, on its
+  // pixel grid); and the white copies for the hit flash
+  const drawBody = (list) => {
+    for (const [t, , x, y, dir] of list) {
+      const b = canvasOf(t, !!recolor);
       b.clearRect(0, 0, fw, fh);
       b.drawImage(img, x, y, fw, fh, 0, 0, fw, fh);
       if (recolor) { const d = b.getImageData(0, 0, fw, fh); recolor(d.data, fw); b.putImageData(d, 0, 0); } // a second job's colours
       if (paint) paint(b, t.userData, dir);
-      const g = f.image.getContext('2d');
+      t.needsUpdate = true;
+    }
+  };
+  const drawFlash = (list) => {
+    for (const [t, f] of list) {
+      const g = canvasOf(f, false);
       g.globalCompositeOperation = 'source-over';
       g.clearRect(0, 0, fw, fh);
       g.drawImage(t.image, 0, 0);
       g.globalCompositeOperation = 'source-in';
       g.fillStyle = '#ffffff';
       g.fillRect(0, 0, fw, fh);
-      t.needsUpdate = f.needsUpdate = true;
+      f.needsUpdate = true;
     }
   };
-  set.dress = (fn) => { paint = fn; if (set.loaded) draw(); };
-  set.repaint = (t) => { if (set.loaded && of.has(t)) draw([of.get(t)]); }; // one frame (an animated hat)
-  img.onload = () => { set.loaded = true; draw(); };
+  // dressed anew: what was drawn is drawn again at once, the rest when it is first read
+  const redo = () => { for (const g of groups) { const was = g.drawn || g.wanted, lit = g.lit; g.drawn = g.lit = g.wanted = false; if (was) want(g, lit); } };
+  set.dress = (fn) => { paint = fn; if (set.loaded) redo(); };
+  set.repaint = (t) => { const e = of.get(t); if (set.loaded && e?.[1].drawn) { drawBody([e[0]]); if (e[1].lit) drawFlash([e[0]]); } }; // one frame (an animated hat)
+  img.onload = () => { set.loaded = true; redo(); };
   img.src = url;
   return set;
 }
@@ -1132,30 +1162,35 @@ export function createSprites() {
   const fireAspect = 112 / 96;
 
   const sheet = (name, opts = {}) => pixelSet(SHEETS[`./art/${name}.png`], { ...LAYOUTS[`./art/${name}.json`], ...opts });
-  const mobs = {
-    slime: sheet('slime'),
-    slimeBlue: sheet('blueslime'),
-    sprout: sheet('sprout'),
-    crab: sheet('crab'),
-    mushling: sheet('mushling'),
-    beetle: sheet('beetle'),
-    wisp: sheet('wisp'),
-    jarl: SHEETS['./art/jarl.png'] ? sheet('jarl') : sheet('beetle'), // the MVP (PixelLab art, packed like the rest)
+  // a monster's set is made the first time one is met (most maps show a few kinds, and the code-painted
+  // ones take a while to paint)
+  const mobs = {};
+  const lazy = (id, make) => Object.defineProperty(mobs, id, { enumerable: true, configurable: true, get() { const v = make(); Object.defineProperty(mobs, id, { value: v, enumerable: true }); return v; } });
+  const MADE = {
+    slime: () => sheet('slime'),
+    slimeBlue: () => sheet('blueslime'),
+    sprout: () => sheet('sprout'),
+    crab: () => sheet('crab'),
+    mushling: () => sheet('mushling'),
+    beetle: () => sheet('beetle'),
+    wisp: () => sheet('wisp'),
+    jarl: () => (SHEETS['./art/jarl.png'] ? sheet('jarl') : sheet('beetle')), // the MVP (PixelLab art, packed like the rest)
     // the raid's bloops: the green Bloop's body in new colours (its blush and outline stay)
-    slimeYellow: sheet('slime', { recolor: bloopColour(50, 1.7, 1.1, 0.22) }), // a bright gold
-    slimeRed: sheet('blueslime', { recolor: bloopColour(354, 1.05, 1, 0, BLUE_BODY) }), // the Blue Bloop's drop, in red
-    bleepBloop: codeSet(paintBleepBloop(), BBW, BBH, BB_BODY, 3 / BBH), // the raid boss, painted in code (bleepbloop.js)
+    slimeYellow: () => sheet('slime', { recolor: bloopColour(50, 1.7, 1.1, 0.22) }), // a bright gold
+    slimeRed: () => sheet('blueslime', { recolor: bloopColour(354, 1.05, 1, 0, BLUE_BODY) }), // the Blue Bloop's drop, in red
+    bleepBloop: () => codeSet(paintBleepBloop(), BBW, BBH, BB_BODY, 3 / BBH), // the raid boss, painted in code (bleepbloop.js)
   };
   // the mini-bosses drawn with PixelLab: their kind's sheet redone as a boss of its own (BOSS_LOOKS)
-  for (const [id, [base, recolor]] of Object.entries(BOSS_LOOKS)) mobs[id] = sheet(base, { recolor });
+  for (const [id, [base, recolor]] of Object.entries(BOSS_LOOKS)) MADE[id] = () => sheet(base, { recolor });
   // kobolds and goblins, painted in code (painted.js) until they get PixelLab art
-  for (const id of ['koboldWarrior', 'koboldArcher', 'koboldAssassin', 'goblinWarrior', 'goblinArcher', 'goblinAssassin']) mobs[id] = paintedSet(id, [16, 30]);
-  for (const id of ['koboldKing', 'goblinKing']) mobs[id] = paintedSet(id, [26, 48]);
+  for (const id of ['koboldWarrior', 'koboldArcher', 'koboldAssassin', 'goblinWarrior', 'goblinArcher', 'goblinAssassin']) MADE[id] = () => paintedSet(id, [16, 30]);
+  for (const id of ['koboldKing', 'goblinKing']) MADE[id] = () => paintedSet(id, [26, 48]);
   // Veidheim's beasts: wolves, bears, snakes, willows and treants, painted in code (beasts.js)
-  for (const [id, B] of Object.entries(BEASTS)) mobs[id] = codeSet(beastSet(id), ...B.size, B.body, 2 / B.size[1]);
+  for (const [id, B] of Object.entries(BEASTS)) MADE[id] = () => codeSet(beastSet(id), ...B.size, B.body, 2 / B.size[1]);
   // the desert's monsters and Pharaoh's Tomb's, painted in code (desert.js); the Sand Wyrm's mound
-  for (const [id, D] of Object.entries(DESERT)) mobs[id] = codeSet(desertSet(id), ...D.size, D.body, 2 / D.size[1]);
-  { const fr = moundSet(); mobs.wyrmMound = codeSet({ down: { idle: [fr[0]], walk: fr } }, ...MOUND.size, MOUND.body, 2 / MOUND.size[1]); }
+  for (const [id, D] of Object.entries(DESERT)) MADE[id] = () => codeSet(desertSet(id), ...D.size, D.body, 2 / D.size[1]);
+  MADE.wyrmMound = () => { const fr = moundSet(); return codeSet({ down: { idle: [fr[0]], walk: fr } }, ...MOUND.size, MOUND.body, 2 / MOUND.size[1]); };
+  for (const [id, make] of Object.entries(MADE)) lazy(id, make);
   // the camp's and Steinborg's people (one still being drawn borrows the Elder's look)
   const villagers = {};
   for (const id of ['bram', 'tilly', 'wren', 'hild', 'gunnar', 'ragna', 'ulfr', 'saeunn', 'embla']) villagers[id] = SHEETS[`./art/${id}.png`] ? sheet(id) : null;

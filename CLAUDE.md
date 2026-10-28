@@ -89,7 +89,7 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   Shield and Burrow; Goblin King: Mirror Image; Ancient Treant: Grasping Roots and Bark Armor; Sand Wyrm: almost half the fight under the sand,
   unhittable, moving only while under and rooted while up, `WYRM`/`wyrmTick` in `mobs.js`), and
   enraged below half HP (`MVP_RAGE`). Even a Lv 99 hero without good, upgraded gear should not beat
-  one. Mini-bosses are half as hard as an MVP and fierce like one (the owner's call). So no main story
+  one. Mini-bosses are half as hard as an MVP and fierce like one (the owner's call). Their levels say so (55–66: Giant Sprout and Elder Willow 55, King Crab 58, Giant Mushroom 60, Giant Beetle 62, Alpha Wolf 64, Great Bear 66; the desert's Cactus Lord 60 and Rainbow Runner 64), and they come only for second-job heroes (the owner's call, `picksFight` in `mobs.js`): a Trainee or first job is left be unless it strikes or taunts one. So no main story
   step or job trial needs a boss (they hunt the boss's kin); the one quest that does is Sigrid's The
   Waking Wood (Lv 70: the Great Bear and the Alpha Wolf, two mini-bosses), and it can be quit. Boss and MVP cards drop at 1%
   (other cards 0.1%). **Cards are monsters** (the owner's call): one card per monster, named after it,
@@ -162,6 +162,11 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   differs). Never change that key: phones would refuse the update and players lose their saves.
 - After a build, give the owner the APK link:
   https://github.com/Marksmon/Aria/releases/download/apk-latest/Aria.apk
+- Start-up stays light (phones stalled on a blank sky when it wasn't): a map is built the first time it
+  is entered (`buildWorld`; its people stand there then, `Villagers.build`), a monster's sprite set is
+  made the first time one is met (`mobs` in `createSprites`), and a sheet's frames get their canvas and
+  are drawn the first time an animation is shown (`pixelSet`). New maps, monsters and sheets get this
+  for free; don't paint every frame or build every map at load.
 - `npx vite build` must pass. Test in the browser with Playwright (the game exposes
   `window.__aria`).
 - Never commit the PixelLab API key, or the Ragnarok reference image used as a style reference.

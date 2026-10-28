@@ -95,19 +95,19 @@ Scorpion Sands with its Pyramid, then the Great Desert, where the Sand Wyrm hunt
 | Moss Field | 1–6 | Bloop (Lv 1), Sprout (3) | |
 | Fen Shore | 3–10 | Blue Bloop (4, splits), Crab (6); Wisps only at night | |
 | Dark Dale | 12–18 | Mushroom (14, slowing spores) | |
-| Birch Grove | 16–26 | Red Sprout (18), Sprout, Bloop | Giant Sprout (25) |
-| Salt Bay | 20–32 | Sea Bloop (22), Blue Crab (26), Crab | King Crab (32) |
+| Birch Grove | 16–26 | Red Sprout (18), Sprout, Bloop | Giant Sprout (55) |
+| Salt Bay | 20–32 | Sea Bloop (22), Blue Crab (26), Crab | King Crab (58) |
 | Ember Hill | 28–36 | Beetle (30) | **Fire Giant (60, MVP)** |
-| Black Wood | 32–42 | Dark Mushroom (34), Dark Wisp (38), Mushroom | Giant Mushroom (40) |
-| Ash Heath | 40–50 | Fire Beetle (42), Fire Wisp (45), Beetle | Giant Beetle (48) |
+| Black Wood | 32–42 | Dark Mushroom (34), Dark Wisp (38), Mushroom | Giant Mushroom (60) |
+| Ash Heath | 40–50 | Fire Beetle (42), Fire Wisp (45), Beetle | Giant Beetle (62) |
 | Stone Field | 28–34 | Kobold (28), Kobold Archer (30), Kobold Assassin (33) | |
 | Coal Pit | 30–50 | Kobold Assassin, Kobold, Kobold Archer | **Kobold King (50, MVP)** |
 | Burnt Wood | 38–44 | Goblin (38), Goblin Archer (41), Goblin Assassin (44) | |
 | Serpent Wood | 40–55 | Goblin Assassin, Goblin, Goblin Archer | **Goblin King (55, MVP)** |
-| Willow Marsh | 5–10 | Yellow Bloop (7), Willow (8, slowing seeds) | Elder Willow (23) |
-| Old Forest | 8–26 | Treant (24), Willow | |
-| Barley Field | 44–54 | Snake (46), Wolf (48) | Alpha Wolf (51) |
-| Wolf Hills | 46–62 | Wolf, Bear (53), Snake | Great Bear (56) · **Ancient Treant (62, MVP)** |
+| Willow Marsh | 5–10 | Yellow Bloop (7), Willow (8, slowing seeds) | Elder Willow (55) |
+| Old Forest | 8–26 | Treant (24), Willow | **Ancient Treant (62, MVP)** |
+| Barley Field | 44–54 | Snake (46), Wolf (48) | Alpha Wolf (64) |
+| Wolf Hills | 46–62 | Wolf, Bear (53), Snake | Great Bear (66) |
 | Red Sands | 6–14 | Red Bloop (9), Giant Ant (12) | |
 | Cactus Dunes | 55–60 | Cactus (55, throws needles), Dune Worm (58) | Cactus Lord (60) |
 | Scorpion Sands | 60–66 | Sand Scorpion (61, poison), Sand Runner (64) | Rainbow Runner (64) |
@@ -150,7 +150,9 @@ Rytingborg's dagger-smiths.
 
 Moss Field and Fen Shore, by the camp and the city, Willow Marsh by Veidheim and the Red Sands by Rytingborg are a Trainee's fields: big, stomping the ground around it, back 5–8
 minutes after it falls (its timer holds when you leave the map or close the game, as an MVP's does).
-Mini-bosses are **half as hard as an MVP** (190,000–290,000 HP) and fierce like one: enraged below
+Mini-bosses are big game for heroes of a **second job**: their levels (55–66) say so, and they
+come for a second-job hero on sight. A Trainee or a first job they leave be as they roam, unless
+it strikes or taunts one first; then it fights like any mini-boss. Mini-bosses are **half as hard as an MVP** (190,000–290,000 HP) and fierce like one: enraged below
 half their HP, and their stomps and moves can't be dodged by FLEE and go through most of your DEF.
 They are fights for a hero in good gear whatever their level, and no quest needs one (the quests
 and trials that once did now hunt their kin). Like the MVPs, each calls 2 guards of its own kind at
@@ -178,16 +180,15 @@ anyone who stands in it. Keep moving, fight from clear ground, and bring Ice Arr
 head, bonus Base EXP and MVP items straight to the bag, plus its drops (its horn, crown, cape or
 sword). It comes back 15 minutes later, even if you leave the map or close the game.
 
-The predators have two mini-bosses: the **Alpha Wolf** (Lv 51) leads the packs of Barley Field and
-pounces from afar, calling 2 Wolves; the **Great Bear** (Lv 56) rules Wolf Hills beside the Ancient
+The predators have two mini-bosses: the **Alpha Wolf** (Lv 64) leads the packs of Barley Field and
+pounces from afar, calling 2 Wolves; the **Great Bear** (Lv 66) rules Wolf Hills beside the Ancient
 Treant, charging and calling 2 Bears. Their pelt and heart (30%) make Leif's best hunting gear.
 
-The **Elder Willow** of Willow Marsh (Lv 23: silvery, wide antlers with fireflies on their tips,
+The **Elder Willow** of Willow Marsh (Lv 55: silvery, wide antlers with fireflies on their tips,
 water-lilies in its hair) is the mini-boss on the road to Veidheim, a step after the Giant Sprout,
 calling Willows out of the reeds. The **Ancient Treant** (Lv 62, 550,000 HP, Earth: pale with age,
-glowing runes carved down its body, blossoms in its crown), the oldest tree in Aria, has walked
-out of the Old Forest into Wolf Hills and is its MVP: it stomps, hurls stones and charges, and calls
-2 Wolves and 2 Snakes. It is the hardest MVP, a fight of several minutes, with two skills of its
+glowing runes carved down its body, blossoms in its crown), the oldest tree in Aria, has woken in the Old Forest
+and is its MVP: it stomps, hurls stones and charges, and calls 2 Treants and 2 Willows. It is the hardest MVP, a fight of several minutes, with two skills of its
 own. **Grasping Roots** burst out where you stand (a red circle first) and hold you there for 3
 seconds (4 when it is enraged, and then in three patches): you can still fight, but not walk, dash
 or leap away, so even a quick hero who keeps their distance gets caught while it comes for them.
@@ -1161,10 +1162,10 @@ leads to each.
 | Ottar the Farmer | Veidheim, by the barn | The Farmer: The Lost Lambs (16): find 3 lambs in Willow Marsh · Snakes in the Barley (46): 20 Snakes · Guard the Harvest (56): 25 Snakes, 15 Wolves |
 | Leif the Tanner | Veidheim | makes hunters' gear (Hunter's Cloak and Boots, Claw Charm, Bark Armor, Alpha Cloak, Bear Heart Charm) · Pelts for the Winter (50): 10 Wolf Pelts, 5 Bear Claws · The Great Bear's Kin (59): 12 Bears · Winter Hides (64): 20 Wolf Pelts, 10 Bear Claws · Tanner's Bounty (90, again and again): the Great Bear and 20 Bears |
 | Bjarki the Beastmaster | Veidheim, by the lodge | the Beastmaster's trial; his wolf Grimr never bites (unless asked) |
-| Asa the Fletcher | Veidheim | shop: bows and arrows · makes bows (Vine, Ice, Willow, Fire, Steel, Gale, Heartwood) · The Fletcher: Wood for Bows (22): 12 Willow Twigs, 4 Old Bark · Fang and Feather (48): 6 Wolf Fangs, 10 Willow Twigs |
+| Asa the Fletcher | Veidheim | shop: bows and arrows · makes bows (Vine, Ice, Willow, Fire, Steel, Gale, Heartwood) · The Fletcher: Wood for Bows (22): 12 Willow Twigs, 4 Thorns · Fang and Feather (48): 6 Wolf Fangs, 10 Willow Twigs |
 | Eydis the Trader | Veidheim | shop: potions (White too), Honey, Speed Potions, feathers |
 | Halla the Healer | Veidheim | heals HP and SP for free |
-| Kalf the Gate Archer | Veidheim, at the north gate | The Gate Watch: Marsh Patrol (8): 12 Yellow Bloops, 8 Willows · Walking Trees (22): 15 Treants in the Old Forest · The Old Forest (28): 30 Treants |
+| Kalf the Gate Archer | Veidheim, at the north gate | The Gate Watch: Marsh Patrol (8): 12 Yellow Bloops, 8 Willows (no early quests send you into the Old Forest: the Ancient Treant roams it) |
 | Bodil the Sentry, Finn the Young Archer | Veidheim | tales of the village and its lands |
 | Tove the Carter | Veidheim | carts to any land you have walked |
 | Master Kol | Rytingborg | The Assassin's Trial · the Phantom's trial |

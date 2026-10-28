@@ -77,9 +77,9 @@ const SPAWNS = {
   // the predators far off past Black Wood and Ash Heath, more of them at night
   hunt: [],
   marsh: [['willow', 9], ['yellowSlime', 8], ['elderWillow', 1], ['willow', 2, true], ['wisp', 3, true]],
-  oldwood: [['treant', 9], ['willow', 4], ['treant', 2, true], ['wisp', 2, true]],
+  oldwood: [['treant', 9], ['willow', 4], ['ancientTreant', 1], ['treant', 2, true], ['wisp', 2, true]], // (the Ancient Treant, the oldest of them, roams its own forest)
   farm: [['snake', 10], ['wolf', 6], ['alphaWolf', 1], ['snake', 2, true], ['wolf', 3, true]],
-  wolfhill: [['wolf', 10], ['bear', 5], ['snake', 2], ['greatBear', 1], ['ancientTreant', 1], ['wolf', 3, true]],
+  wolfhill: [['wolf', 10], ['bear', 5], ['snake', 2], ['greatBear', 1], ['wolf', 3, true]],
   // Rytingborg's desert: Red Sands (a Trainee's field, the Assassin's trial), then the cacti and dune
   // worms, the scorpions and runners round the Pyramid, and the Great Desert where all of them roam
   // over the Sand Wyrm. Sphinx Sands keeps no monsters; the tomb (raid) spawns its own
@@ -98,6 +98,7 @@ const save = loadSave();
 let lookBefore = null; // the look kept, while one is being tried on
 mobs.mvpAt = typeof save?.mvpAt === 'number' ? { jarl: save.mvpAt } : save?.mvpAt || {}; // older saves timed the Fire Giant alone
 mobs.bossHp = save?.bossHp || {};
+mobs.heroTier = () => JOBS[prog.job]?.tier || 0; // (mini-bosses come only for second jobs: mobs.js picksFight)
 mobs.bossAt = save?.bossAt || {};
 mobs.fieldAt = save?.fieldAt || {};
 const prog = new Progress();
@@ -203,11 +204,14 @@ function heroPic(job, look, dir = 'down', gear = {}) {
   const wings = () => wing && g.drawImage(wing.canvas, pad + W / 2 - ww / 2, wy - wh / 2, ww, wh);
   if (!away) wings();
   g.drawImage(tex.image, pad, 0);
-  const ready = headsReady() && headgearReady(top) && headgearReady(face) && tex.userData.head?.at;
-  if (ready) {
+  // the head as soon as the heads have loaded, and each piece of headgear once its own has (a
+  // piece still loading is left off for now, never the head with it)
+  const hasHead = headsReady() && tex.userData.head?.at, hat = headgearReady(top) ? top : null, mask = headgearReady(face) ? face : null;
+  const ready = hasHead && hat === top && mask === face;
+  if (hasHead) {
     const at = [tex.userData.head.at[0] + pad, tex.userData.head.at[1]];
-    paintHead(g, at, dir, look, gearCut(top, dir), top);
-    paintGears(g, at, dir, top, face, 0);
+    paintHead(g, at, dir, look, gearCut(hat, dir), hat);
+    paintGears(g, at, dir, hat, mask, 0);
   }
   if (away) wings();
   if (!ready) return trimmed(c).toDataURL(); // (not kept: the head and its gear come once loaded)
@@ -1225,7 +1229,7 @@ function mobPortrait(art) {
     const px = g.getImageData(0, 0, c.width, c.height).data;
     let x0 = c.width, y0 = c.height, x1 = -1, y1 = -1;
     for (let y = 0; y < c.height; y++) for (let x = 0; x < c.width; x++) if (px[(y * c.width + x) * 4 + 3] > 8) { x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
-    if (x1 < 0) return (mobPics[art] = null);
+    if (x1 < 0) return set.loaded ? (mobPics[art] = null) : null; // (a sheet still loading: asked again later)
     const w = x1 - x0 + 1, h = y1 - y0 + 1, out = document.createElement('canvas');
     out.width = w; out.height = h;
     out.getContext('2d').drawImage(c, x0, y0, w, h, 0, 0, w, h);
@@ -1717,6 +1721,7 @@ const menus = new Menus(inv, prog, player, {
     if (raidOf(world.id)) { menus.message('Finish the raid first.'); return; }
     persist();
     resetting = true;
+    toSelectNext();
     location.reload();
   },
   // the hair picker tries looks on as you choose; lookDone keeps one (the stylist charges for it)
@@ -1740,7 +1745,7 @@ const menus = new Menus(inv, prog, player, {
 menus.quests = quests;
 const portraits = {};
 menus.portrait = (id) => (id === 'player' ? (portraits[`${prog.job}|${player.look.body}|${jobArt().dressed}`] ||= jobArt().anims.down.idle[0].image.toDataURL())
-  : (portraits[id] ||= lib.villagers[id].anims.down.idle[0].image.toDataURL()));
+  : (portraits[id] ||= lib.villagers[id].loaded ? lib.villagers[id].anims.down.idle[0].image.toDataURL() : ''));
 // things in camp and town you tap to use: the player walks over, then it opens. h = height on screen
 const SPOTS = [
   { map: 'camp', ...world.camp.fire, label: 'Campfire', h: 0.9, run: () => menus.message('A warm fire. Crafting is done in Steinborg now: Gunnar forges gear, Ragna brews usables.') },
@@ -3250,10 +3255,11 @@ codeGo.addEventListener('click', async () => {
     return;
   }
   const got = loadCode(codeText.value, picked);
-  if (!got) { codeMsg.textContent = 'That is not a save code. Check it was copied whole.'; return; }
+  if (!got) { codeMsg.textContent = 'That code did not load: it is cut short or not a save code. Copy it whole, from ARIA2: to its last letter.'; return; }
   if (got === 'slot') setActiveSlot(picked);
   codeMsg.textContent = 'Save restored. Starting…';
   resetting = true; // don't let the running game write over it
+  toSelectNext();
   setTimeout(() => location.reload(), 600);
 });
 // Delete: the picked hero is gone for good (the shared storage stays), so it asks twice
@@ -3272,7 +3278,7 @@ tNew.addEventListener('click', () => {
   confirmNew = false; tNew.textContent = 'Delete'; tNew.classList.remove('warn'); tNew.classList.add('ghost');
   clearSave(picked);
   heroes[picked] = null;
-  if (picked === slotHere) { resetting = true; location.reload(); return; } // the hero in the game: start the page over without it
+  if (picked === slotHere) { resetting = true; toSelectNext(); location.reload(); return; } // the hero in the game: start the page over without it
   audio.play('ui');
   drawSlots();
 });
@@ -3317,13 +3323,37 @@ function enterGame() {
     setTimeout(() => hint.classList.remove('show'), 6000);
   }, 450);
 }
-const GO_KEY = 'aria.go';
+const GO_KEY = 'aria.go', SELECT_KEY = 'aria.select'; // (SELECT_KEY: back to the hero select, not the tap-to-start screen)
+function toSelectNext() { try { sessionStorage.setItem(SELECT_KEY, '1'); } catch { /* the tap-to-start screen first, then */ } }
 drawSlots();
 let go = false;
 try { go = sessionStorage.getItem(GO_KEY) === '1'; sessionStorage.removeItem(GO_KEY); } catch { /* storage unavailable */ }
 if (go) { // picked on the title screen before the page started over: the sound waits for a tap
   window.addEventListener('pointerdown', () => audio.start(), { once: true });
   begin();
+}
+
+// the loading screen, ready now: it turns into the tap-to-start screen over the world (the tap also
+// lets the sound start), and the hero select comes up behind it. Straight on, with no tap, into a hero
+// already picked, or back to the select after a restore or a delete started the page over
+const boot = document.getElementById('boot');
+const bootGone = () => { boot.classList.add('hide'); setTimeout(() => boot.remove(), 500); };
+let toSelect = false;
+try { toSelect = sessionStorage.getItem(SELECT_KEY) === '1'; sessionStorage.removeItem(SELECT_KEY); } catch { /* storage unavailable */ }
+if (go || toSelect) { title.classList.remove('wait'); bootGone(); } else {
+  boot.querySelector('.bver').textContent = `v1.0.${__BUILD__}`;
+  boot.classList.add('ready');
+  const tap = (e) => {
+    if (e.type === 'keydown' && e.repeat) return;
+    removeEventListener('keydown', tap);
+    boot.removeEventListener('pointerdown', tap);
+    audio.start();
+    audio.play('ui');
+    title.classList.remove('wait');
+    bootGone();
+  };
+  boot.addEventListener('pointerdown', tap);
+  addEventListener('keydown', tap);
 }
 
 window.__aria = { scene, renderer, lib, warp, enterMap, useSkill, useItem, story, SPOTS, player, world, cam, camera, mobs, allies, fx, inv, prog, quests, villagers, menus, hotbar, dayNight, audio, stats: world.stats, raid: () => raid, raidAt: () => raidAt, raidGo, raidLog: () => raidLog, gainExp };
