@@ -796,8 +796,9 @@ class Mob {
       else if (this.enraged && this.hp / d.hp > MVP_RAGE.calm) this.enraged = false;
     }
     // as in Ragnarok, a monster keeps its pace however hurt it is (a frenzied boss speeds up, an enraged MVP too)
-    this.rushT -= dt; this.rushCd -= dt;
-    const speed = d.speed * (this.rageT > 0 ? 1.3 : 1) * (this.enraged ? MVP_RAGE.speed : 1) * (this.rushT > 0 ? BRAIN.rush : 1);
+    this.rushT -= dt; this.rushCd -= dt; this.slowT = (this.slowT || 0) - dt;
+    const speed = d.speed * (this.rageT > 0 ? 1.3 : 1) * (this.enraged ? MVP_RAGE.speed : 1) * (this.rushT > 0 ? BRAIN.rush : 1)
+      * (this.slowT > 0 ? 1 - (this.slowBy || 0) : 1); // (hobbled: a Wolf's Hamstring)
     let lift = 0;
     // Play Dead and safe ground (camp) make monsters lose interest
     const available = p.state !== 'down' && p.state !== 'feign' && !this.mgr.world.isSafe(p.x, p.z);

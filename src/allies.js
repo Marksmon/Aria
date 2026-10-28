@@ -17,6 +17,17 @@ export const BEAST_KINDS = {
   wolf: { name: 'Wolf', art: ['allyWolfB', 'allyWolfG'], w: 0.68, r: 0.32, speed: 4.6, reach: 0.8, aura: '#b8c8e8' },
   hawk: { name: 'Hawk', art: ['hawk'], w: 0.62, r: 0.3, speed: 5.2, reach: 2.2, fly: true, aura: '#ffe08a' },
 };
+// each beast's instinct: one move of its own, used by itself whenever its foe is in reach and the
+// move is ready (cd s): the Bear's Maul (a heavy blow that stuns), a Wolf's Hamstring (a lunge from up
+// to range paces that bites and slows), the Hawk's Dive (it climbs, then drops on the foe: a blow that
+// never misses). mult: the blow's damage over a plain one. The stun and the slow land in main.js
+// (bosses: a third of the chance, half as long). The Bear's Roar (taunt) is its nature, not its instinct
+export const INSTINCTS = {
+  bear: { name: 'Maul', cd: 12, mult: 2.5, range: 0 },
+  wolf: { name: 'Hamstring', cd: 10, mult: 1.8, range: 4 },
+  hawk: { name: 'Dive', cd: 9, mult: 3, range: 3, sure: true },
+};
+const DIVE = 0.6, LUNGE = 0.2; // seconds: the Hawk's climb and drop, a Wolf's leap
 const ATTACK_ANIM = 0.45;
 const STRIDE = 2.2;
 // where each waits by the hero, in the hero's frame (x: to the right, z: behind)
@@ -66,6 +77,18 @@ class Beast {
     this.flash = 0;
     this.foe = null;
     this.tauntCd = 1;
+    this.skillCd = 2 + Math.random() * 2; // its instinct (INSTINCTS), first ready a moment after it comes
+    this.diveT = 0; // the Hawk's Dive under way
+    this.lunge = null; // a Wolf's Hamstring leap under way: { t, fx, fz, tx, tz, m }
+  }
+  // its instinct lands on m: a heavier blow (the Hawk's never misses), marked for main.js's stun or slow
+  instinct(m) {
+    const I = INSTINCTS[this.kind];
+    this.atkAnim = ATTACK_ANIM;
+    this.atkCd = Math.max(this.atkCd, this.ps.interval * 0.5);
+    const res = playerAttack(this.ps, m.effDef(), this.mgr.mult(this, m) * I.mult, I.sure ? 10 : 1, true);
+    res.instinct = this.kind;
+    this.mgr.emit('strike', this, m, res);
   }
   canBeHit() { return this.alive && (!this.K.fly || Math.random() < 0.3); } // most blows pass under a flying hawk
   takeDamage(dmg, fx, fz) {
@@ -96,7 +119,7 @@ class Beast {
 
   update(dt, hero, mobs, target) {
     const K = this.K, ps = this.ps;
-    this.t += dt; this.atkCd -= dt; this.atkAnim -= dt; this.flash -= dt; this.tauntCd -= dt;
+    this.t += dt; this.atkCd -= dt; this.atkAnim -= dt; this.flash -= dt; this.tauntCd -= dt; this.skillCd -= dt;
     // the foe: the hero's target, else a monster coming for the hero, else whatever is fighting this beast
     if (!this.foe?.alive || Math.hypot(this.foe.x - hero.x, this.foe.z - hero.z) > 11) this.foe = null;
     const near = (m) => m?.alive && Math.hypot(m.x - hero.x, m.z - hero.z) < 10;
@@ -105,10 +128,30 @@ class Beast {
     const far = Math.hypot(hero.x - this.x, hero.z - this.z);
     if (far > 14) { const [sx, sz] = this.slotAt(hero); this.place(sx, sz); } // left behind: it catches up at once
     let moving = 0;
-    const m = this.foe;
-    if (m) {
+    const m = this.foe, I = INSTINCTS[this.kind];
+    if (this.lunge) { // a Wolf's Hamstring: it leaps, and bites as it lands
+      const L = this.lunge;
+      L.t -= dt;
+      const k = Math.min(1, 1 - L.t / LUNGE);
+      this.x = L.fx + (L.tx - L.fx) * k; this.z = L.fz + (L.tz - L.fz) * k;
+      moving = 0.1;
+      if (L.t <= 0) { this.lunge = null; if (L.m.alive) this.instinct(L.m); }
+    } else if (this.diveT > 0) { // the Hawk's Dive: up, then down onto the foe
+      this.diveT -= dt;
+      if (m) { this.heading = { x: m.x - this.x, z: m.z - this.z }; this.moveToward(m.x, m.z, K.speed * 1.6, dt); }
+      if (this.diveT <= 0 && m?.alive) this.instinct(m);
+    } else if (m) {
       const dx = m.x - this.x, dz = m.z - this.z, d = Math.hypot(dx, dz), reach = K.reach + m.def.r + K.r;
-      if (d > reach) moving = this.moveToward(m.x - (dx / d) * reach * 0.8, m.z - (dz / d) * reach * 0.8, K.speed, dt);
+      if (this.skillCd <= 0 && d <= reach + I.range) { // its instinct, ready and in reach
+        this.skillCd = I.cd;
+        this.mgr.emit('instinct', this, I);
+        if (this.kind === 'hawk') this.diveT = DIVE;
+        else if (this.kind === 'wolf' && d > reach) {
+          const w = this.mgr.world, [tx, tz] = w.resolve(m.x - (dx / d) * reach * 0.7, m.z - (dz / d) * reach * 0.7, K.r);
+          if (w.walkable(tx, tz)) this.lunge = { t: LUNGE, fx: this.x, fz: this.z, tx, tz, m };
+          else this.skillCd = 1; // (no way to leap there: soon again)
+        } else this.instinct(m);
+      } else if (d > reach) moving = this.moveToward(m.x - (dx / d) * reach * 0.8, m.z - (dz / d) * reach * 0.8, K.speed, dt);
       else {
         this.heading = { x: dx / (d || 1), z: dz / (d || 1) };
         if (this.atkCd <= 0) {
@@ -135,7 +178,10 @@ class Beast {
     // ---- visuals ----
     const tex = this.frame(moving > 0);
     if (this.mat.map !== tex) { this.mat.map = tex; this.sprite.center.y = tex.userData.anchor; }
-    const y = this.mgr.world.heightAt(this.x, this.z), lift = K.fly ? 1.15 + Math.sin(this.t * 3) * 0.12 - (this.atkAnim > 0 ? 0.5 : 0) : 0;
+    const dk = this.diveT > 0 ? 1 - this.diveT / DIVE : -1; // the Dive: a climb to 2.6, then the drop
+    const lift = dk >= 0 ? (dk < 0.5 ? 1.15 + dk * 2 * 1.45 : 2.6 - (dk - 0.5) * 2 * 2.3)
+      : K.fly ? 1.15 + Math.sin(this.t * 3) * 0.12 - (this.atkAnim > 0 ? 0.5 : 0) : this.lunge ? Math.sin((1 - this.lunge.t / LUNGE) * Math.PI) * 0.45 : 0;
+    const y = this.mgr.world.heightAt(this.x, this.z);
     this.sprite.position.set(this.x, y + lift, this.z);
     this.mat.color.setScalar(this.flash > 0 ? 2.2 : 1);
     this.shadow.position.set(this.x, y + 0.03, this.z);

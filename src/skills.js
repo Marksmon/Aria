@@ -255,17 +255,17 @@ export const SKILLS = {
   summonbear: {
     name: 'Summon Bear', job: 'beastmaster', kind: 'active', max: 5, cd: 3, icon: 'skill_sbear', beast: 'bear',
     sp: (lv) => 30 + 5 * lv,
-    desc: (lv) => `Call your Bear, marked with gold runes. It grows with your END and Max HP (${30 + 10 * lv}% of your stats), soaks blows and roars every 6 s so the monsters round it turn on it. Called again, it comes back fresh.`,
+    desc: (lv) => `Call your Bear, marked with gold runes. It grows with your END and Max HP (${30 + 10 * lv}% of your stats), soaks blows and roars every 6 s so the monsters round it turn on it. Instinct, Maul (every 12 s): a heavy blow for 250% that stuns (bosses: a third of the chance, half as long). Called again, it comes back fresh.`,
   },
   summonwolves: {
     name: 'Summon Wolves', job: 'beastmaster', kind: 'active', max: 5, cd: 3, icon: 'skill_swolves', beast: 'wolf',
     sp: (lv) => 30 + 5 * lv,
-    desc: (lv) => `Call your two Wolves in skull barding. They bite with your FNS (${30 + 10 * lv}% of your stats), quickly, sometimes twice.`,
+    desc: (lv) => `Call your two Wolves in skull barding. They bite with your FNS (${30 + 10 * lv}% of your stats), quickly, sometimes twice. Instinct, Hamstring (every 10 s each): a leap at the foe from up to 4 paces and a bite for 180% that slows its walk by 40% for 4 s (bosses 2 s).`,
   },
   summonhawk: {
     name: 'Summon Hawk', job: 'beastmaster', kind: 'active', max: 5, cd: 3, icon: 'skill_shawk', beast: 'hawk',
     sp: (lv) => 25 + 5 * lv,
-    desc: (lv) => `Call your Hawk. It dives with your QKN (${30 + 10 * lv}% of your stats), fast, and most blows pass under it.`,
+    desc: (lv) => `Call your Hawk. It dives with your QKN (${30 + 10 * lv}% of your stats), fast, and most blows pass under it. Instinct, Dive (every 9 s): it climbs, then drops on the foe for 300%, a blow that never misses.`,
   },
   packfrenzy: {
     name: 'Pack Frenzy', job: 'beastmaster', kind: 'active', max: 10, needs: { summonwolves: 1 }, cd: 30, icon: 'skill_frenzy',

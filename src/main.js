@@ -454,8 +454,17 @@ allies.on('strike', (b, m, res) => {
   m.hit(res.dmg, dx / d * 0.3, dz / d * 0.3, b);
   audio.play('hit');
   if (b.kind === 'hawk') { const wt = skillLv(prog, 'windtalons'); if (wt) inflict(m, { kind: 'stun', chance: () => 2 * wt, dur: 1 }, wt, res.dmg); }
+  // the beasts' instincts (allies.js INSTINCTS): the Bear's Maul stuns, a Wolf's Hamstring slows (bosses:
+  // a third of the chance to be stunned, half as long either way)
+  if (res.instinct === 'bear') inflict(m, { kind: 'stun', chance: () => 100, dur: 1.5 }, 1, res.dmg);
+  if (res.instinct === 'wolf' && m.alive) {
+    const boss = m.def.boss || m.def.mvp;
+    m.slowT = boss ? 2 : 4; m.slowBy = 0.4;
+    fx.number(m.x, y + 0.35, m.z, 'Slowed', 'miss');
+  }
   if (m.alive && m.foe?.kind !== 'bear' && Math.random() < 0.35) m.foe = b; // it may turn on the beast that bit it
 });
+allies.on('instinct', (b, I) => { fx.number(b.x, overHead(b, b.sprite.scale.y * 0.9), b.z, `${I.name}!`, 'skill'); audio.play(b.kind === 'bear' ? 'night' : 'swing'); });
 allies.on('hurt', (b, n) => fx.number(b.x, overHead(b, b.sprite.scale.y * 0.7), b.z, n, 'taken'));
 allies.on('taunt', (b) => { fx.number(b.x, overHead(b, b.sprite.scale.y * 0.9), b.z, 'Roar!', 'skill'); audio.play('night'); });
 allies.on('fall', (b) => {
