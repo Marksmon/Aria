@@ -40,7 +40,7 @@
   </div>
   <div id="title">
     <header class="t-top">
-      <div class="t-brand"><h1>Aria</h1><span class="tagline">A little valley adventure</span></div>
+      <div class="t-brand"><h1>Aria</h1></div>
       <div class="t-tools">
         <button id="t-sound" class="ticon" type="button" title="Sound" aria-label="Sound">🔊</button>
         <div class="t-acct">
@@ -59,7 +59,11 @@
         <div id="t-slots"></div>
       </section>
       <section class="t-preview">
-        <div class="tp-stage"><img id="tp-img" alt=""><span class="tp-empty" id="tp-empty">+</span><div class="tp-ped"></div></div>
+        <div class="tp-stage" id="tp-stage" title="Drag to turn">
+          <button class="tp-turn l" data-turn="1" type="button" aria-label="Turn left">◀</button>
+          <img id="tp-img" alt="" draggable="false"><span class="tp-empty" id="tp-empty">+</span><div class="tp-ped"></div>
+          <button class="tp-turn r" data-turn="-1" type="button" aria-label="Turn right">▶</button>
+        </div>
         <div id="tp-info"></div>
         <div class="tp-actions">
           <button id="t-continue" class="tbtn main" type="button">Start</button>

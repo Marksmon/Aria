@@ -208,21 +208,30 @@ let nightUp = false, veilLv = 0, frenzyLv = 0;
 // share of the hero's stats, 40% at a summon's Lv 1 to 80% at Lv 5, plus Beast Bond: the Bear
 // grows with END and Max HP, the Wolves with FNS, the Hawk with QKN
 const SUMMONS = { bear: 'summonbear', wolf: 'summonwolves', hawk: 'summonhawk' };
+// a beast's numbers from the hero's (s: its share of them, from its Summon level and Beast Bond). Each
+// beast stands for one stat, which counts a lot: END the Bear's HP and DEF, FNS the Wolves' HIT and ATK,
+// QKN the Hawk's attack speed and reach. FTN gives every beast its crits and lucky dodges, POW adds to
+// every beast's ATK, and the other stats still count a little (MINOR) for all of them
+const MINOR = 0.25;
 function beastStats(kind) {
   const g = inv.gearStats().stats, st = (k) => prog.total(k) + (g[k] || 0), base = prog.baseLv;
-  const s = 0.3 + 0.1 * skillLv(prog, SUMMONS[kind]) + 0.02 * skillLv(prog, 'beastbond');
+  const s = 0.3 + 0.1 * skillLv(prog, SUMMONS[kind]) + 0.02 * skillLv(prog, 'beastbond'), m = s * MINOR;
   const quick = buffs.frenzy > 0 ? 1 - 0.03 * frenzyLv : 1, R = Math.round;
-  const common = { crit: 5, dodge: 3, mastery: 0, el: 'neutral', wlv: 2, beast: true };
+  const pow = st('pow'), end = st('end'), fns = st('fns'), qkn = st('qkn'), knl = st('knl'), ftn = st('ftn');
+  const common = { crit: R(3 + ftn / 3 * s), dodge: R(2 + ftn / 10 * s), mastery: 0, el: 'neutral', wlv: 2, beast: true };
+  // a little of every stat, for all: END's toughness, FNS and KNL's aim, QKN's pace and footwork
+  const hp = end * 4 * m, def = end * 0.15 * m, hit = (fns + knl) * 0.5 * m, flee = qkn * 0.5 * m, pace = 1 - qkn * 0.003 * m;
   if (kind === 'bear') {
     const hide = skillLv(prog, 'thickhide');
-    return { ...common, maxHp: R(player.maxHp * 0.9 * s + st('end') * 15 * s), def: Math.min(60, R(10 + st('end') * 0.6 * s)), end: R(st('end') * s), flee: R(base * 0.6),
-      batk: R((st('pow') + st('end')) * 1.3 * s + base * 1.2), watk: R(30 + base * 1.2), fns: R(base * 0.8), hit: base + 25, interval: 1.6 * quick, taunt: 3 + 0.5 * hide, guard: 0.04 * hide };
+    return { ...common, maxHp: R(player.maxHp * 0.6 * s + end * 25 * s + base * 4 + hp), def: Math.min(70, R(10 + end * 0.9 * s)), end: R(end * s), flee: R(base * 0.6 + flee),
+      batk: R(pow * s + end * 0.5 * s + base * 1.2), watk: R(30 + base * 1.2), fns: R(base * 0.8), hit: R(base + 25 + hit), interval: 1.6 * quick * pace, taunt: 3 + 0.5 * hide, guard: 0.04 * hide };
   }
-  if (kind === 'wolf') return { ...common, maxHp: R(player.maxHp * 0.35 * s + base * 5), def: 8, end: R(base * 0.3), flee: R(base + st('fns') * 0.5 * s),
-    batk: R(st('fns') * 1.4 * s + base * 0.5), watk: R(20 + base), fns: st('fns'), hit: R(base + st('fns') * s * 2), interval: 1.0 * quick, double: 0.25 };
-  return { ...common, maxHp: R(player.maxHp * 0.3 * s + base * 4), def: 4, end: 0, flee: R(base + st('qkn') * 2 * s),
-    batk: R(st('qkn') * 2.2 * s + base * 0.6), watk: R(15 + base * 0.8), fns: R(base * 0.8), hit: R(base + st('qkn') * s + 30),
-    interval: Math.max(0.45, 1.3 - st('qkn') * 0.008 * s) * quick * (1 - 0.03 * skillLv(prog, 'windtalons')) };
+  if (kind === 'wolf') return { ...common, maxHp: R(player.maxHp * 0.3 * s + base * 5 + hp), def: R(8 + def), end: R(base * 0.3), flee: R(base + fns * 0.3 * s + flee),
+    batk: R(pow * 0.8 * s + fns * 1.8 * s + base * 0.5), watk: R(20 + base), fns, hit: R(base + fns * 2.5 * s + hit), interval: 1.0 * quick * pace, double: 0.25 };
+  return { ...common, maxHp: R(player.maxHp * 0.28 * s + base * 4 + hp), def: R(4 + def), end: 0, flee: R(base + qkn * 1.5 * s),
+    batk: R(pow * 0.9 * s + qkn * 0.7 * s + base * 0.6), watk: R(15 + base * 0.8), fns: R(base * 0.8), hit: R(base + 30 + qkn * 0.6 * s + hit),
+    interval: Math.max(0.35, 1.3 - qkn * 0.012 * s) * quick * (1 - 0.03 * skillLv(prog, 'windtalons')),
+    reach: 2.2 + qkn * 0.025 * s }; // (QKN: it strikes from further off)
 }
 // a beast's damage rate on a monster: Pack Frenzy, and Pack Tactics when both wolves bite the same one
 allies.mult = (b, m) => (buffs.frenzy > 0 ? 1 + 0.03 * frenzyLv : 1) * (allies.rallyT > 0 ? 1 + ROAR.atk : 1) // (the Bear's Roar)
@@ -474,7 +483,7 @@ allies.on('fall', (b) => {
   fx.puff(b.x, world.heightAt(b.x, b.z) + 0.4, b.z, b.K.w);
   const id = SUMMONS[b.kind];
   skillCd[id] = Math.max(skillCd[id] || 0, 20); // a fallen beast can be called back after a rest
-  menus.message(`Your ${b.K.name} falls back to the wild to lick its wounds. Call it again in 20 s.`);
+  menus.message(`Your ${b.name} falls back to the wild to lick its wounds. Call it again in 20 s.`);
   applyStats();
 });
 player.on('block', () => {
@@ -2756,7 +2765,7 @@ function tickPets(dt) {
   document.body.style.setProperty('--pets-h', `${list.length ? list.length * 17 + 8 : 0}px`); // (the toasts step down under them)
   petsEl.innerHTML = list.map((b) => {
     const f = Math.max(0, Math.min(1, b.hp / b.maxHp));
-    return `<div class="pet${f < 0.3 ? ' low' : ''}"><b style="color:${b.K.aura}">${b.K.name}</b><i><s style="width:${(f * 100).toFixed(1)}%;background:${b.K.aura}"></s></i><em>${Math.ceil(b.hp)}</em></div>`;
+    return `<div class="pet${f < 0.3 ? ' low' : ''}"><b style="color:${b.color}">${b.name}</b><i><s style="width:${(f * 100).toFixed(1)}%;background:${b.color}"></s></i><em>${Math.ceil(b.hp)}</em></div>`;
   }).join('');
 }
 
@@ -2882,6 +2891,7 @@ const slotHere = activeSlot(), slotsEl = document.getElementById('t-slots');
 const heroes = Array.from({ length: SLOTS }, (_, i) => (i === slotHere ? save : loadSave(i)));
 let picked = slotHere;
 const heroName = (d) => d.look?.name || 'Hero';
+const gender = (d) => (d.look?.body === 'f' ? '<i class="tsex f" title="Female">♀</i>' : '<i class="tsex m" title="Male">♂</i>');
 const lvLine = (p) => (p.v === 2 ? `Base Lv ${p.baseLv} · Job Lv ${p.jobLv}` : `Lv ${p.level | 0 || 1}`);
 function drawSlots() {
   slotsEl.innerHTML = heroes.map((d, i) => {
@@ -2889,7 +2899,8 @@ function drawSlots() {
     if (!d) return `<button class="tslot empty${on}" data-i="${i}"><span class="tpic">+</span><span><b>Create a hero</b><small>Empty slot</small></span><i class="tslotno">${i + 1}</i></button>`;
     const p = d.prog || {};
     const pic = headsReady() ? `<img class="tpic" src="${lookPortrait({ hair: 'messy', dye: 'brown', ...d.look }, 48)}" alt="">` : '<span class="tpic"></span>';
-    return `<button class="tslot${on}" data-i="${i}">${pic}<span><b>${esc(heroName(d))}</b><small>${esc(JOBS[p.job]?.name || JOBS.novice.name)} · ${lvLine(p)}</small><small>${esc(ZONE_NAMES[d.map] || ZONE_NAMES.camp)}</small></span><i class="tslotno">${i + 1}</i></button>`;
+    // two lines: the name and whether male or female; the job and levels
+    return `<button class="tslot${on}" data-i="${i}">${pic}<span><b>${esc(heroName(d))} ${gender(d)}</b><small>${esc(JOBS[p.job]?.name || JOBS.novice.name)} · ${lvLine(p)}</small></span><i class="tslotno">${i + 1}</i></button>`;
   }).join('');
   tContinue.textContent = !heroes[picked] ? 'Create Hero' : picked === slotHere ? 'Continue' : 'Play';
   tNew.hidden = !heroes[picked];
@@ -2907,9 +2918,26 @@ function drawPreview() {
   if (!d) { tpInfo.innerHTML = '<b>A new hero</b><span>Begin a new tale by the last fire</span>'; return; }
   const p = d.prog || {};
   tpImg.src = heroPic(p.job || 'novice', d.look, TURN[turnAt % TURN.length]);
-  tpInfo.innerHTML = `<b>${esc(heroName(d))}</b><span>${esc(JOBS[p.job]?.name || JOBS.novice.name)} · ${lvLine(p)}</span><small>${esc(ZONE_NAMES[d.map] || ZONE_NAMES.camp)}</small>`;
+  tpInfo.innerHTML = `<b>${esc(heroName(d))} ${gender(d)}</b><span>${esc(JOBS[p.job]?.name || JOBS.novice.name)} · ${lvLine(p)}</span>`;
 }
-const turnTimer = setInterval(() => { if (started || !title.isConnected) { clearInterval(turnTimer); return; } if (heroes[picked] && headsReady()) { turnAt++; tpImg.src = heroPic(heroes[picked].prog?.job || 'novice', heroes[picked].look, TURN[turnAt % TURN.length]); } }, 420);
+// it turns by itself, and by hand: drag across it (or the arrows) to turn it, and it waits a moment
+// before turning by itself again
+let heldT = 0;
+const turnTo = (k) => { turnAt = ((turnAt + k) % TURN.length + TURN.length) % TURN.length; const d = heroes[picked]; if (d && headsReady()) tpImg.src = heroPic(d.prog?.job || 'novice', d.look, TURN[turnAt]); };
+const turnTimer = setInterval(() => { if (started || !title.isConnected) { clearInterval(turnTimer); return; } if (performance.now() > heldT) turnTo(1); }, 420);
+const tpStage = document.getElementById('tp-stage');
+let dragX = null;
+tpStage.addEventListener('pointerdown', (e) => { if (e.target.closest('.tp-turn')) return; dragX = e.clientX; heldT = performance.now() + 3000; tpStage.setPointerCapture?.(e.pointerId); });
+tpStage.addEventListener('pointermove', (e) => {
+  if (dragX === null) return;
+  heldT = performance.now() + 3000;
+  const steps = Math.trunc((e.clientX - dragX) / 28); // a side every 28 pixels dragged
+  if (steps) { turnTo(-steps); dragX += steps * 28; }
+});
+const dragEnd = () => { dragX = null; };
+tpStage.addEventListener('pointerup', dragEnd);
+tpStage.addEventListener('pointercancel', dragEnd);
+tpStage.addEventListener('click', (e) => { const b = e.target.closest('.tp-turn'); if (!b) return; heldT = performance.now() + 3000; turnTo(+b.dataset.turn); audio.play('ui'); });
 slotsEl.addEventListener('click', (e) => {
   const b = e.target.closest('.tslot');
   if (!b || +b.dataset.i === picked) return;

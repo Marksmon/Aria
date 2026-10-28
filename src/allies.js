@@ -14,7 +14,7 @@ import { dirFor } from './noise.js';
 // the hero, to keep up), reach (paces from the monster's edge), glow colour
 export const BEAST_KINDS = {
   bear: { name: 'Bear', art: ['allyBear'], w: 1.15, r: 0.5, speed: 4, reach: 0.9, aura: '#ffc04a' },
-  wolf: { name: 'Wolf', art: ['allyWolfB', 'allyWolfG'], w: 0.68, r: 0.32, speed: 4.6, reach: 0.8, aura: '#b8c8e8' },
+  wolf: { name: 'Wolf', names: ['Black Wolf', 'White Wolf'], colors: ['#9aa8c8', '#eef2fa'], art: ['allyWolfB', 'allyWolfG'], w: 0.68, r: 0.32, speed: 4.6, reach: 0.8, aura: '#b8c8e8' },
   hawk: { name: 'Hawk', art: ['hawk'], w: 0.62, r: 0.3, speed: 5.2, reach: 2.2, fly: true, aura: '#ffe08a' },
 };
 // each beast's instinct: one move of its own, used by itself whenever its foe is in reach and the
@@ -51,6 +51,8 @@ class Beast {
     this.kind = kind;
     this.slot = kind === 'wolf' ? `wolf${i}` : kind;
     this.K = BEAST_KINDS[kind];
+    this.name = this.K.names?.[i] || this.K.name; // (the Wolves: the Black Wolf and the White Wolf)
+    this.color = this.K.colors?.[i] || this.K.aura;
     this.art = mgr.lib.mobs[this.K.art[i % this.K.art.length]];
     this.mat = new THREE.SpriteMaterial({ map: this.art.anims.down.idle[0], alphaTest: 0.5 });
     this.sprite = new THREE.Sprite(this.mat);
@@ -144,7 +146,7 @@ class Beast {
       if (m) { this.heading = { x: m.x - this.x, z: m.z - this.z }; this.moveToward(m.x, m.z, K.speed * 1.6, dt); }
       if (this.diveT <= 0 && m?.alive) this.instinct(m);
     } else if (m) {
-      const dx = m.x - this.x, dz = m.z - this.z, d = Math.hypot(dx, dz), reach = K.reach + m.def.r + K.r;
+      const dx = m.x - this.x, dz = m.z - this.z, d = Math.hypot(dx, dz), reach = (ps.reach ?? K.reach) + m.def.r + K.r; // (the Hawk's grows with QKN)
       if (this.skillCd <= 0 && d <= reach + I.range) { // its instinct, ready and in reach
         this.skillCd = I.cd;
         this.mgr.emit('instinct', this, I);

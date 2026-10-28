@@ -618,16 +618,16 @@ passives are at work.
 
 | Beastmaster: sword or bow, and three beasts | |
 |---|---|
-| Summon Bear | 5: a Bear with gold runes and a spiked collar. Its HP grows with your Max HP and END, its DEF with END; it soaks blows and roars (every 10 s), a war cry: the monsters round it turn on it, and all your beasts hit 10% harder for 6 s. **Instinct: Maul** (every 12 s), a heavy blow for 250% that stuns |
-| Summon Wolves | 5: two Wolves in skull barding, one black, one grey. They bite with your FNS, quickly, sometimes twice. **Instinct: Hamstring** (every 10 s each), a leap from up to 4 paces and a bite for 180% that slows the monster's walk by 40% for 4 s |
-| Summon Hawk | 5: a brown and gold Hawk. It dives with your QKN, fast, and flies out of reach of every blow up close: only arrows and thrown or falling blows (a boss's Boulder, a Meteor Rain) reach it. **Instinct: Dive** (every 9 s), it climbs, then drops on its foe for 300%, a blow that never misses |
+| Summon Bear | 5: a Bear with gold runes and a spiked collar. Its HP and DEF grow mostly with your END; it soaks blows and roars (every 10 s), a war cry: the monsters round it turn on it, and all your beasts hit 10% harder for 6 s. **Instinct: Maul** (every 12 s), a heavy blow for 250% that stuns |
+| Summon Wolves | 5: the Black Wolf and the White Wolf, in skull barding. Their HIT and ATK grow mostly with your FNS; they bite quickly, sometimes twice. **Instinct: Hamstring** (every 10 s each), a leap from up to 4 paces and a bite for 180% that slows the monster's walk by 40% for 4 s |
+| Summon Hawk | 5: a brown and gold Hawk. Its attack speed and reach grow mostly with your QKN; it flies out of reach of every blow up close: only arrows and thrown or falling blows (a boss's Boulder, a Meteor Rain) reach it. **Instinct: Dive** (every 9 s), it climbs, then drops on its foe for 300%, a blow that never misses |
 | Pack Frenzy | 10, needs Summon Wolves 1: for 15 s every beast attacks 3% faster and hits 3% harder per level. 30 s cooldown |
 | Beast Bond | passive, 10: your beasts take 2% more of your stats per level, and you get +1 DEF per level for each beast out |
 | Thick Hide | passive, 5, needs Summon Bear 3: the Bear takes 4% less damage per level, and its roar reaches further |
 | Pack Tactics | passive, 5, needs Summon Wolves 3: the Wolves bite 6% harder per level while both are on the same monster |
 | Wind Talons | passive, 5, needs Summon Hawk 3: the Hawk strikes 3% faster per level, and each dive has 2% per level to stun for 1 s |
 
-The beasts out show under your hero's panel, each with its health bar.
+Each beast stands for one of your stats, which counts a lot for it (END the Bear, FNS the Wolves, QKN the Hawk); FTN gives every beast its crits and lucky dodges, POW adds to every beast's ATK, and your other stats still help each a little. A beast gets 30–80% of your stats by its Summon level (plus Beast Bond). The beasts out show under your hero's panel, each with its health bar.
 
 All three beasts can be out together. Each takes a share of your stats (40% at a summon's Lv 1 to
 80% at Lv 5), so raising END, FNS or QKN makes them stronger at once. They follow you, take your
