@@ -5,6 +5,11 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
 
 ## Rules agreed with the owner (keep them in future updates)
 
+- **The plan (the owner's roadmap):** Aria will have at least 10 cities: 5 early-game cities (the
+  first three are Steinborg, Galdrheim and Veidheim; the owner will add the next ones), then 5
+  late-game cities. The first half of development ends when the 5 early-game cities are done; the
+  late-game cities come after. Build new cities and their maps to the map defaults below.
+
 - **Jobs, skill points and second jobs:** read `docs/job-rules.md` before touching jobs, skills
   or job quests. In short:
   - The first jobs (Blader, Sorcerer, Archer) share one Job Level and one pool of skill points.
@@ -61,6 +66,11 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
 - **Quests window** (the Quests button under the hero's panel, `journal` in `menus.js`, `questBook`
   in `main.js`): tabs Main (the story step and chapters), Job (trials), Series (quest chains, a
   title with a number: "The Forge 2: ..."), Side (standalone quests and bounties).
+- **Refining stones drop almost anywhere** (the owner's call, `ORE_DROPS` in `mobs.js`): Iron Ore
+  5% from most monsters, Steel Ore 2% from Lv 10, Hard Ore and Armor Ore 0.5% from Lv 15 (mini-bosses
+  4%); kobolds, goblins and their kings keep their higher chances. New monsters get them too.
+- **MVP gear is spread over every MVP** (the owner's call): each drops pieces for several builds (weapons
+  for more than one job, plus armor or a garment), not just the Fire Giant.
 - **Bosses and MVPs** spawn at random spots and roam their whole map; each has a respawn timer
   (`mvpAt`, saved) that holds across map changes and restarts. One left alive keeps its spot
   when the hero leaves the map (`bossAt`, saved). Dropped items stay on their map too, their

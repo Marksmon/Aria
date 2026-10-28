@@ -759,6 +759,15 @@ bursts gold on the ground and shows in gold in your bag.
 | Goblin Bow | Weapon (bow) | ATK 95, weapon Lv 3, HIT +5, FNS +2 | Goblin Archer, 0.2% |
 | Flame Bow | Weapon (bow) | ATK 110, weapon Lv 4, Fire, FNS +2 | Fire Giant, 1% |
 | Great Bow | Weapon (bow) | ATK 115, weapon Lv 4, Wind, QKN +2, FNS +1 | Goblin King, 2% |
+| Quarry Cleaver | Weapon (sword) | ATK 116, weapon Lv 4, Earth, POW +2, END +1 | Kobold King, 1% |
+| Runestone Staff | Weapon (staff) | ATK 52, MATK +48%, weapon Lv 4, Earth, KNL +3, FNS +1, Max SP +40 | Kobold King, 2% |
+| King's Mantle | Garment | DEF 5, END +2, FTN +1, Max HP +120 | Kobold King, 3% |
+| Goblin King's Blade | Weapon (sword) | ATK 118, weapon Lv 4, Wind, QKN +2, POW +1 | Goblin King, 1% |
+| Hexbone Staff | Weapon (staff) | ATK 50, MATK +46%, weapon Lv 4, Shadow, KNL +3, FTN +2 | Goblin King, 2% |
+| Trickster Boots | Shoes | DEF 4, FLEE +7, QKN +2, FTN +1 | Goblin King, 3% |
+| Ancient Bow | Weapon (bow) | ATK 122, weapon Lv 4, Earth, FNS +3, QKN +1 | Ancient Treant, 1% |
+| Elder Staff | Weapon (staff) | ATK 58, MATK +54%, weapon Lv 4, Earth, KNL +4, FNS +1, Max SP +60 | Ancient Treant, 2% |
+| Barkskin Mail | Armor | DEF 9, END +2, Max HP +150, Max SP +30 | Ancient Treant, 3% |
 | Thorn Ring · Coral Shield · Dark Hood · Fire Armor · Fire Charm | | | the new lands' monsters, 0.2–0.3% |
 | Thorn Cape · Sea Sword · Mushroom Staff · Fire Boots | | | the mini-bosses, 2–3% |
 
@@ -823,8 +832,10 @@ twice before a risky try.
 | Weapon Lv 4 | +4 | 60 / 40 / 40 / 20 / 20 / 9% | Hard Ore + 20,000 perz |
 | Armor, shield, cape, boots, head | +4 | 60 / 40 / 40 / 20 / 20 / 9% | Armor Ore + 2,000 perz |
 
-Holger sells Iron and Steel Ore; Hard Ore and Armor Ore only drop, from the kobolds, goblins and
-their kings.
+Holger sells Iron and Steel Ore. The refining stones also drop almost anywhere: Iron Ore from most
+monsters (5%), Steel Ore from level 10 (2%), and the precious Hard Ore and Armor Ore from every
+monster from level 15, but only at 0.5% (the mini-bosses 4%); the kobolds, the goblins and their
+kings drop them more often.
 
 **Slotted gear.** Any piece of gear (weapons, armor, shields, garments, shoes, head and face gear,
 accessories and wings; not arrows) also comes in a slotted version with one card slot, written
@@ -1093,7 +1104,9 @@ to restore HP, save, and sleep until morning.
 - [x] **M9** Camp villagers and quest chains
 - [x] Classic MMORPG-style controls, rules, windows, maps and portals; Aria's own skills; MVP boss
 - [x] Steinborg, four new lands, mini-bosses, perz and shops, the Sorcerer and job trials
-- [ ] Cards, more jobs
+- [x] Cards, more jobs, raids, the Beastmaster's pack
+- [ ] **Ten cities.** Five early-game cities (Steinborg, Galdrheim and Veidheim so far, two more to
+  come), then five late-game ones. The first half of Aria's making ends with the fifth city.
 
 ## Dev
 

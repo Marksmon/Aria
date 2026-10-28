@@ -88,11 +88,11 @@ export const MOB_DEFS = {
   koboldKing: { name: 'Kobold King', ai: 'boss', art: 'koboldKing', el: 'earth', lv: 50, hp: 600000, atk: [330, 430], def: 22, vit: 45, agi: 30, dex: 140, mdef: 25, exp: [36000, 25200], adelay: 2000, walk: 150, aggro: 7, chase: 25, reach: 1.4, w: 1.3, r: 0.6, heavy: true,
     mvp: true, respawn: 1200, mvpExp: 18000, stomp: 2.0, takes: { ranged: 0.5, magic: 1.4 }, takesText: 'his tribe\'s shields catch arrows (−50%), but kobolds fear sorcery: spells hit him hard (+40%)', moves: [{ kind: 'burrow', name: 'Burrow', mult: 2.4, r: 2.0 }, { kind: 'charge', mult: 2.2 }, { kind: 'throw', mult: 2.0, r: 1.8 }], tribe: 0.8, summonCd: 30, summon: ['koboldWarrior', 'koboldWarrior', 'koboldArcher', 'koboldAssassin'], mvpDrops: [['potion3', 3], ['hard_ore', 2]],
     wake: 'War drums in the quarry… the Kobold King holds court in Coal Pit!',
-    drops: [['potion3', 1, 2, 0.5], ['kobold_fur', 4, 6, 1], ['hard_ore', 1, 2, 0.4], ['armor_ore', 1, 2, 0.4], ['kobold_ring', 1, 1, 0.05], ['kobold_card', 1, 1, 0.01]] },
+    drops: [['potion3', 1, 2, 0.5], ['kobold_fur', 4, 6, 1], ['hard_ore', 1, 2, 0.4], ['armor_ore', 1, 2, 0.4], ['kobold_ring', 1, 1, 0.05], ['king_mantle', 1, 1, 0.03], ['runestone_staff', 1, 1, 0.02], ['quarry_cleaver', 1, 1, 0.01], ['kobold_card', 1, 1, 0.01]] },
   goblinKing: { name: 'Goblin King', ai: 'boss', art: 'goblinKing', el: 'wind', lv: 55, hp: 600000, atk: [276, 360], def: 22, vit: 48, agi: 34, dex: 150, mdef: 30, exp: [48000, 33600], adelay: 2200, walk: 120, aggro: 7, chase: 25, reach: 1.4, w: 1.3, r: 0.6, heavy: true,
     mvp: true, respawn: 1800, mvpExp: 24000, stomp: 1.7, takes: { melee: 1.4, ranged: 0.7, magic: 0.7 }, takesText: 'his crown\'s wind ward turns arrows and spells (−30%), but not cold steel: blades and fists hit him hard (+40%)', moves: [{ kind: 'mirror', name: 'Mirror Image' }, { kind: 'leap', mult: 1.7, r: 1.8 }, { kind: 'throw', mult: 1.4, r: 1.3 }, { kind: 'frenzy' }], summon: ['goblinWarrior', 'goblinWarrior', 'goblinArcher', 'goblinAssassin'], mvpDrops: [['potion3', 3], ['hard_ore', 3]],
     wake: 'Horns in the dark wood… the Goblin King rides out in Serpent Wood!',
-    drops: [['potion3', 1, 2, 0.6], ['goblin_tooth', 4, 6, 1], ['hard_ore', 1, 3, 0.45], ['armor_ore', 1, 3, 0.45], ['goblin_charm', 1, 1, 0.05], ['great_bow', 1, 1, 0.02], ['goblin_card', 1, 1, 0.01]] },
+    drops: [['potion3', 1, 2, 0.6], ['goblin_tooth', 4, 6, 1], ['hard_ore', 1, 3, 0.45], ['armor_ore', 1, 3, 0.45], ['goblin_charm', 1, 1, 0.05], ['trickster_boots', 1, 1, 0.03], ['great_bow', 1, 1, 0.02], ['hexbone_staff', 1, 1, 0.02], ['goblin_cleaver', 1, 1, 0.01], ['goblin_card', 1, 1, 0.01]] },
   // ---------- Veidheim and its lands (beasts.js) ----------
   // Round the village, reached from Birch Grove, the gentle ones: willow spirits shake their seeds
   // over you (puff: a cloud that slows) and oak treants are slow and heavy; both only fight back.
@@ -119,7 +119,7 @@ export const MOB_DEFS = {
   ancientTreant: { name: 'Ancient Treant', ai: 'boss', art: 'ancientTreant', aura: '#ff9ac8', el: 'earth', lv: 62, hp: 550000, atk: [400, 520], def: 20, vit: 45, agi: 30, dex: 165, mdef: 35, exp: [76000, 53200], adelay: 2000, walk: 170, aggro: 7, chase: 25, reach: 2.0, w: 2.8, r: 1.15, heavy: true,
     mvp: true, respawn: 2100, mvpExp: 36000, stomp: 2.0, takes: { melee: 0.6, magic: 1.1, beast: 1.6 }, takesText: 'its bark turns blades and fists (−40%), but fangs and claws tear it (beasts +60%), and spells find its old wounds (+10%)', moves: [{ kind: 'roots', name: 'Grasping Roots', mult: 1.0, r: 1.6, hold: 2.5 }, { kind: 'bark', name: 'Bark Armor' }, { kind: 'throw', name: 'Root Stone', mult: 2.2, r: 2.0 }, { kind: 'charge', name: 'Uprooting Charge', mult: 2.2 }], summon: ['wolf', 'wolf', 'snake', 'snake'], summonText: 'The Ancient Treant groans, and the pack answers!', mvpDrops: [['potion3', 3], ['ancient_seed', 1]],
     wake: 'The hills shake… the Ancient Treant walks in Wolf Hills!',
-    drops: [['potion3', 1, 2, 0.6], ['old_bark', 4, 6, 1], ['ancient_heartwood', 1, 1, 0.25], ['hard_ore', 1, 2, 0.4], ['armor_ore', 1, 2, 0.4], ['oak_ring', 1, 1, 0.05], ['grove_blade', 1, 1, 0.01], ['treant_card', 1, 1, 0.01]] },
+    drops: [['potion3', 1, 2, 0.6], ['old_bark', 4, 6, 1], ['ancient_heartwood', 1, 1, 0.25], ['hard_ore', 1, 2, 0.4], ['armor_ore', 1, 2, 0.4], ['oak_ring', 1, 1, 0.05], ['barkskin_mail', 1, 1, 0.03], ['elder_staff', 1, 1, 0.02], ['grove_blade', 1, 1, 0.01], ['ancient_bow', 1, 1, 0.01], ['treant_card', 1, 1, 0.01]] },
 };
 // Matchups (def.takes, rules.js): each MVP takes more from some kinds of blow and less from others,
 // so each is easiest for some jobs: the Fire Giant for bows, the Kobold King for spells, the
@@ -143,6 +143,18 @@ MOB_DEFS.kingShadow = { ...MOB_DEFS.goblinKing, decoy: true, mvp: false, ai: 'ta
 MOB_DEFS.jellyCore = { name: 'Jelly Core', ai: 'tank', art: 'slimeYellow', tint: '#ffd86a', el: 'neutral', decoy: true, lv: 99, hp: 10000, atk: [60, 80], def: 10, vit: 30, agi: 1, dex: 60, exp: [0, 0], adelay: 2000, walk: 5000, aggro: 3, chase: 30, reach: 0.9, w: 1.0, r: 0.45, heavy: true, drops: [] };
 // walk: ms a tile, as Ragnarok's monster database has it (Poring 400, Kobold 200, Goblin 150,
 // Goblin Leader 120, Ifrit 130; the hero 150), taken WALK_SCALE times as long. speed: tiles a second.
+// the refining stones drop almost anywhere (the owner's call): Iron Ore from most monsters, Steel Ore
+// from level 10, and the precious Hard Ore and Armor Ore from level 15 at 0.5% (the mini-bosses 4%);
+// a monster that already drops one (the kobolds, the goblins, their kings) keeps its own chance
+export const ORE_DROPS = [['iron_ore', 1, 0.05], ['steel_ore', 10, 0.02], ['hard_ore', 15, 0.005], ['armor_ore', 15, 0.005]];
+for (const d of Object.values(MOB_DEFS)) {
+  if (d.raid || d.decoy || d.noRespawn || d.mvp || !d.drops) continue; // (raid monsters drop nothing; the MVPs have their own)
+  for (const [ore, lv, chance] of ORE_DROPS) {
+    if (d.lv < lv || d.drops.some(([id]) => id === ore)) continue;
+    const big = d.boss && (ore === 'hard_ore' || ore === 'armor_ore');
+    d.drops.splice(d.drops.length - 1, 0, [ore, 1, 1, big ? 0.04 : chance]); // (before its card, last)
+  }
+}
 for (const d of Object.values(MOB_DEFS)) d.speed = 1000 / (d.walk * WALK_SCALE);
 
 // Boss moves (def.moves), each shown first by a red circle on the ground so it can be dodged:
