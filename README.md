@@ -233,6 +233,10 @@ how often it has called them): come back, or wake up at your save point after fa
 fight is where you left it, the boss a little healed (5% of its HP a minute while it isn't
 fighting you). This holds over a restart too. No monster ever steps onto a portal.
 
+**Every monster stays as you left it.** Leave a map and come back (or restart the game) and its
+monsters are where they were, as many, as hurt as you left them; the ones you killed come back
+when their respawn time is up, and that time runs on while you are away.
+
 **Walking speed** suits Aria's small maps: the hero takes 300 ms a tile, and monsters their own
 time (Bloops 800 ms, Kobolds 400, Goblins 300, Goblin Assassins 200, the Kobold King 300, the
 Goblin King 240 and the Fire Giant 260), so some are quicker than you. Speed changes: only the

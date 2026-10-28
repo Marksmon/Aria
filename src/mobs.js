@@ -1065,6 +1065,11 @@ export class MobManager {
     this.mvpAt = {};  // per boss and MVP: when it may next appear (ms since 1970; the game saves it)
     this.bossHp = {}; // per boss and MVP met in a fight: { hp, at, calls, guards: [[type, hp]], cd } (saved)
     this.bossAt = {}; // per boss and MVP alive on a map you left: where it stood, { map, x, z } (saved)
+    // per map left: its monsters as you left them, { sig, at, mobs: [[type, x, z, homeX, homeZ, hp, dead]] }
+    // (dead: seconds till it is back, else null). Coming back, the field is as it was, less the time
+    // away; sig is the map's spawn list, so a changed map spawns afresh (saved)
+    this.fieldAt = {};
+    this.mapId = null;
     this.cam = { fx: 0, fz: -1, rx: 1, rz: 0 }; // camera basis, set by the game each frame
     const sg = new THREE.PlaneGeometry(1, 0.6);
     sg.rotateX(-Math.PI / 2);
@@ -1095,9 +1100,17 @@ export class MobManager {
   // a new map: clear every monster and spawn the map's own. spawns: [[type, count, nightOnly]]
   setMap(spawns, seed = 11) {
     this.bossSnapshot(); // the bosses you leave behind keep their wounds
+    this.fieldSnapshot(); // and every other monster its spot, its wounds and its respawn time
     for (const m of [...this.list]) this.remove(m);
     this.dead = [];
     this.bosses = [];
+    this.mapId = this.world.id;
+    const kept = this.fieldAt[this.mapId], sig = JSON.stringify(spawns);
+    if (kept && kept.sig === sig) { // (its bosses come as ever: update)
+      this.bosses = spawns.map(([type]) => type).filter((type) => MOB_DEFS[type].mvp || MOB_DEFS[type].boss);
+      this.restoreField(kept);
+      return;
+    }
     const rng = mulberry32(seed);
     for (const [type, count, nightOnly] of spawns) {
       for (let i = 0; i < count; i++) {
@@ -1107,7 +1120,41 @@ export class MobManager {
         if (MOB_DEFS[type].mvp || MOB_DEFS[type].boss) { this.bosses.push(type); continue; }
         const m = this.add(type, s.x, s.z);
         m.nightOnly = !!nightOnly;
+        m.field = true;
         if (nightOnly && !this.night) { m.alive = false; m.sprite.visible = m.shadow.visible = false; this.dead.push({ m, t: 0 }); }
+      }
+    }
+    this.fieldAt[this.mapId] = { sig, at: Date.now(), mobs: [] }; // (filled in when you leave: fieldSnapshot)
+  }
+
+  // this map's own monsters as they stand (not bosses, guards or the ones a quest or an event brings)
+  fieldSnapshot() {
+    const f = this.mapId && this.fieldAt[this.mapId];
+    if (!f) return this.fieldAt;
+    const dead = new Map(this.dead.map((e) => [e.m, e.t]));
+    const r = (v) => Math.round(v * 100) / 100;
+    f.mobs = this.list.filter((m) => m.field).map((m) => [m.type, r(m.x), r(m.z), r(m.home.x), r(m.home.z), Math.ceil(m.hp), m.alive ? null : r(Math.max(0, dead.get(m) ?? 0)), m.nightOnly ? 1 : 0]);
+    f.at = Date.now();
+    return this.fieldAt;
+  }
+
+  // the field as you left it: the living where they stood, as hurt as they were; the dead back once
+  // their respawn time has passed while you were away (twice as fast for what a quest hunts)
+  restoreField(f) {
+    const away = Math.max(0, (Date.now() - f.at) / 1000);
+    for (const [type, x, z, hx, hz, hp, dead, nightOnly] of f.mobs) {
+      if (!MOB_DEFS[type]) continue;
+      const m = this.add(type, hx, hz);
+      m.field = true;
+      m.nightOnly = !!nightOnly;
+      const night = m.def.night || m.nightOnly;
+      let left = dead;
+      if (left !== null) left -= away * (this.hunted?.has(type) ? 2 : 1);
+      if (left === null) { m.x = x; m.z = z; m.hp = Math.min(m.def.hp, Math.max(1, hp)); }
+      if ((left !== null && left > 0) || (night && !this.night)) { // still dead (or a night monster by day)
+        m.alive = false;
+        m.sprite.visible = m.shadow.visible = false;
+        this.dead.push({ m, t: Math.max(0, left ?? 0) });
       }
     }
   }

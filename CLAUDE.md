@@ -49,7 +49,9 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
 - **Bosses and MVPs** spawn at random spots and roam their whole map; each has a respawn timer
   (`mvpAt`, saved) that holds across map changes and restarts. One left alive keeps its spot
   when the hero leaves the map (`bossAt`, saved). Dropped items stay on their map too, their
-  45/90 s still counting while the hero is away (`groundLeft` in `main.js`).
+  45/90 s still counting while the hero is away (`groundLeft` in `main.js`). Every map's own
+  monsters are kept the same way: spot, HP, count and respawn timers, the timers running on while
+  away (`fieldAt`, saved; a map whose spawn list changed spawns afresh).
 - **MVPs are the hardest fights in Aria** (the owner's call): several minutes each, with skills of
   their own that need a plan (Fire Giant: Meteor Rain and burning ground; Kobold King: Tribe's
   Shield and Burrow; Goblin King: Mirror Image; Ancient Treant: Grasping Roots and Bark Armor), and
