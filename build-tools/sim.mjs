@@ -42,7 +42,7 @@ const BUILD = {
   blader: { job: 'swordman', stats: { pow: 0.45, end: 0.25, fns: 0.15, qkn: 0.15 }, skills: [['cleave', 3], ['heavy', 10], ['discipline', 10], ['ironhide', 10], ['warcry', 3], ['standfirm', 5]] },
   sorcerer: { job: 'mage', stats: { knl: 0.5, fns: 0.25, end: 0.2, qkn: 0.05 }, skills: [['spark', 5], ['arc', 5], ['spark', 10], ['manawell', 5], ['frost', 5], ['flamering', 5], ['ward', 3]] },
   archer: { job: 'archer', stats: { fns: 0.45, qkn: 0.2, end: 0.25, pow: 0.1 }, skills: [['doubleshot', 5], ['keeneye', 5], ['doubleshot', 10], ['keeneye', 10], ['focus', 5], ['longsight', 5], ['arrowrain', 5], ['huntmark', 3]] },
-  assassin: { job: 'assassin', stats: { pow: 0.35, qkn: 0.3, end: 0.2, fns: 0.15 }, skills: [['venomstrike', 10], ['sonicblow', 5], ['doubleattack', 5], ['daggermastery', 5], ['sonicblow', 10], ['doubleattack', 10], ['daggermastery', 10], ['improvedodge', 10]] },
+  assassin: { job: 'assassin', stats: { pow: 0.35, qkn: 0.3, end: 0.2, fns: 0.15 }, skills: [['venomstrike', 10], ['venomcloud', 5], ['doubleattack', 5], ['daggermastery', 5], ['venomcloud', 10], ['doubleattack', 10], ['daggermastery', 10], ['improvedodge', 10]] },
 };
 // the first-job Job Level a hero of this Base Level usually has
 const jobLvAt = (base) => Math.max(1, Math.min(50, Math.round((base - 10) * 1.1)));
@@ -90,32 +90,34 @@ function fight(h, def, opts = {}) {
   let hp = ps.maxHp, sp = ps.maxSp, mob = def.hp, t = 0, potions = 0, next = 0, mobNext = def.adelay / 1000, stompAt = def.boss || def.mvp ? 7 : Infinity;
   // a boss's moves reach 3 to 9 paces: they find a Sorcerer kiting it, not a Blader at its side
   const moves = h.kind !== 'blader' ? (def.moves || []).filter((m) => MOVES[m.kind]?.min).map((m) => ({ ...m, at: MOVES[m.kind].cd })) : [];
-  const guards = []; let called = false, goneT = -1e9, hits = 0, sonicAt = 0, pois = 0, poisUntil = 0;
+  const guards = []; let called = false, goneT = -1e9, hits = 0, cloudAt = 0, cloud = 0, cloudUntil = 0, pois = 0, poisUntil = 0;
   const strike = (d) => {
-    if (h.kind === 'assassin') { // Sonic Blow when it is ready, Venom Strike between (its poison: a fifth of the blow each second for 6 s), Double Attack on normal attacks
-      const lv = h.prog.skills.sonicblow || 0, vlv = h.prog.skills.venomstrike || 0;
-      const venom = (wait) => (t < poisUntil ? pois * Math.min(wait, poisUntil - t) : 0);
-      // (Sonic Blow's eight small cuts each meet the monster's soft DEF: against an armoured one a
-      // player keeps to Venom Strike, so the sim casts Sonic Blow only where it pays more for its SP)
-      const avg = (k, l, hm) => { let x = 0; for (let i = 0; i < 40; i++) x += playerAttack(ps, d, SKILLS[k].power(l) / 100, hm, true).dmg; return x / 40; };
-      const sonicPays = lv && (!vlv || avg('sonicblow', lv, 1) * 8 * 1.3 / spCost('sonicblow', lv) > avg('venomstrike', vlv, 1 + 0.03 * vlv) * 1.9 / spCost('venomstrike', vlv)); // (each with the poison it leaves)
-      if (sonicPays && sp >= spCost('sonicblow', lv) && t >= sonicAt) {
-        sp -= spCost('sonicblow', lv); sonicAt = t + SKILLS.sonicblow.cd;
-        let dmg = 0; for (let i = 0; i < 8; i++) dmg += playerAttack(ps, d, SKILLS.sonicblow.power(lv) / 100, 1, true).dmg;
-        const wait = Math.max(ps.interval, 8 * SKILLS.sonicblow.every), out = dmg + venom(wait), boss = d.boss || d.mvp;
-        if (dmg > 0 && Math.random() * 100 < SKILLS.sonicblow.status.chance(lv) / (boss ? 3 : 1)) { pois = Math.max(1, Math.round(dmg / 4 * 0.2)); poisUntil = t + 6 / (boss ? 2 : 1); } // (its venom: a quarter of the cuts, a fifth of that a second)
-        return [out, wait];
+    if (h.kind === 'assassin') { // a Venom Cloud whenever it is ready (it bites on its own while the hero fights on), Venom Strike between (its poison: a fifth of the blow each second for 6 s), Double Attack on normal attacks
+      const lv = h.prog.skills.venomcloud || 0, vlv = h.prog.skills.venomstrike || 0, boss = d.boss || d.mvp;
+      const dots = (wait) => (t < poisUntil ? pois * Math.min(wait, poisUntil - t) : 0) + (t < cloudUntil ? cloud * Math.min(wait, cloudUntil - t) : 0);
+      // (a player throws a cloud where it pays: its bites, through DEF, against Venom Strike's blows, each with the poison it leaves)
+      const avg = (k, l, hm, dd) => { let x = 0; for (let i = 0; i < 40; i++) x += playerAttack(ps, dd, SKILLS[k].power(l) / 100, hm, true).dmg; return x / 40; };
+      const pays = lv && (!vlv || avg('venomcloud', lv, 1.5, { ...d, def: 0, vit: 0 }) * SKILLS.venomcloud.hits(lv) * 1.3 / spCost('venomcloud', lv) > avg('venomstrike', vlv, 1 + 0.03 * vlv, d) * 1.9 / spCost('venomstrike', vlv));
+      if (pays && sp >= spCost('venomcloud', lv) && t >= cloudAt) {
+        const C = SKILLS.venomcloud, n = C.hits(lv), last = n * C.every;
+        sp -= spCost('venomcloud', lv); cloudAt = t + C.cd;
+        let sum = 0, poisoned = false;
+        for (let i = 0; i < n; i++) { const r = playerAttack(ps, { ...d, def: 0, vit: 0 }, C.power(lv) / 100, 1.5, true); sum += r.dmg; if (!r.miss && Math.random() * 100 < C.status.chance(lv) / (boss ? 3 : 1)) poisoned = r.dmg; }
+        const out = dots(ps.interval);
+        cloud = sum / last; cloudUntil = t + last; // (its bites, spread over its time)
+        if (poisoned) { pois = Math.max(pois, Math.round(poisoned * 2 * 0.2)); poisUntil = Math.max(poisUntil, t + last / 2 + 6 / (boss ? 2 : 1)); }
+        return [out, ps.interval];
       }
       if (vlv && sp >= spCost('venomstrike', vlv)) {
         sp -= spCost('venomstrike', vlv);
         const r = playerAttack(ps, d, SKILLS.venomstrike.power(vlv) / 100, 1 + 0.03 * vlv, true), boss = d.boss || d.mvp;
-        const out = r.dmg + venom(ps.interval);
+        const out = r.dmg + dots(ps.interval);
         if (!r.miss && Math.random() * 100 < SKILLS.venomstrike.status.chance(vlv) / (boss ? 3 : 1)) { pois = Math.max(1, Math.round(r.dmg * 0.2)); poisUntil = t + 6 / (boss ? 2 : 1); }
         return [out, ps.interval];
       }
       let dmg = playerAttack(ps, d).dmg;
       if (Math.random() * 100 < 5 * (h.prog.skills.doubleattack || 0)) dmg += playerAttack(ps, d).dmg;
-      return [dmg + venom(ps.interval), ps.interval];
+      return [dmg + dots(ps.interval), ps.interval];
     }
     const sk = h.kind === 'blader' ? 'heavy' : h.kind === 'archer' ? 'doubleshot' : bestBolt(h.prog, d) || 'spark', lv = h.prog.skills[sk] || 0;
     if (h.kind === 'archer') { // Double Shot: two arrows; Steady Aim from Job 10, kiting at 4 paces half the time

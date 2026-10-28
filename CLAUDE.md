@@ -17,9 +17,9 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
     a Keeper changes the job worn. Job Lv 1 of a first
     or second job counts: a Job 50 Blader has 50 points (the Trainee's stay 9).
   - Learnt skills stay usable with the right weapon. Blade skills need a sword (bare hands are no
-    sword); Archer, Windrunner and Moon Ranger shots need a bow; Venom Strike, Sonic Blow, Dual Rend and Thousand Cuts need a dagger (a sword is no dagger); spells (Sorcerer, Wizard,
+    sword); Archer, Windrunner and Moon Ranger shots need a bow; Venom Strike, Dual Rend and Thousand Cuts need a dagger (a sword is no dagger); spells (Sorcerer, Wizard,
     Starfall), buffs and moves (War Cry, Stand Firm, Focus, Hunter's Mark, Leap Back, Tailwind,
-    Gale Step, Shadow Step, Vanish, Pilfer, Phantom Double, Mirage Step) and the Beastmaster's skills need none. With no bow an Archer
+    Gale Step, Venom Cloud, Shadow Step, Vanish, Pilfer, Phantom Double, Mirage Step) and the Beastmaster's skills need none. With no bow an Archer
     fights hand to hand. Gear follows the job worn (and a second job's first jobs); switching jobs
     puts away what the new job can't use.
   - The Archer (Huntmaster Sigrid, Veidheim) shoots from 5 paces with ATK from FNS; a bow needs
@@ -50,7 +50,8 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
 - **Damage balance:** second jobs hit about 2–4x their first job; Blader and Sorcerer stay close.
   The Assassin and the Phantom out-damage the Blader and the BladeMaster (the owner's call: they are
   much squishier): the Assassin about 1.4x the Blader, the Phantom 1.2–1.4x the BladeMaster.
-  Sonic Blow is the Assassin's area poison skill (the owner's call).
+  The Assassin's area poison skill is Venom Cloud, a new skill in Sonic Blow's place (the owner's call:
+  a cloud at the target that bites everything in it through DEF while the hero fights on).
   Do not even out the BladeMaster and the Wizard: the BladeMaster is not elemental and keeps the
   higher steady damage, while the Wizard's elements make up the gap (see `docs/job-rules.md`).
 - **Second-job skills:** every second job keeps to 3–4 active skills (the Beastmaster's are its three summons and Pack Frenzy; the Phantom's Dual Rend, Phantom Double, Mirage Step, Thousand Cuts) (add

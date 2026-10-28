@@ -24,6 +24,8 @@ export const STATS = {
 // them at a Keeper. Walking the Blader's and the Sorcerer's opens the Magic Knight; the Sorcerer's
 // and the Archer's, the Moon Ranger; the Blader's and the Archer's, the Beastmaster.
 export const OLD_EDGES = ['flameedge', 'frostedge', 'thunderedge'];
+// skills replaced by new ones: their points (and hotbar slots) go to the new skill
+export const RENAMED_SKILLS = { sonicblow: 'venomcloud' };
 export const JOBS = {
   novice: { name: 'Trainee', tier: 0 },
   swordman: { name: 'Blader', tier: 1 },
@@ -216,6 +218,7 @@ export class Progress {
     // rest of those points come back to be spent again
     const edges = OLD_EDGES.map((k) => this.skills[k] | 0);
     if (edges.some(Boolean)) { this.skills.elemedge = Math.max(this.skills.elemedge | 0, ...edges); for (const k of OLD_EDGES) delete this.skills[k]; }
+    for (const [old, now] of Object.entries(RENAMED_SKILLS)) if (this.skills[old]) { this.skills[now] = Math.max(this.skills[now] | 0, this.skills[old]); delete this.skills[old]; }
     // saves from before the second jobs: the first job held is the one earned
     this.unlocked = (d.unlocked || (this.tier === 1 ? [this.job] : [])).filter((j) => JOBS[j] && j !== 'novice');
     this.firstLv = Math.max(1, Math.min(MAX_JOB.swordman, d.firstLv | 0 || (this.tier === 1 ? this.jobLv : 1)));

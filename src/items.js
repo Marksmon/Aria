@@ -1114,7 +1114,10 @@ const PAINT = {
   skill_doubleattack: (g) => skillIcon(g, '#8a4a3a', () => { for (const dx of [-7, 7]) { g.beginPath(); g.moveTo(32 + dx - 3, 48); g.lineTo(32 + dx + 3, 48); g.lineTo(32 + dx + 3, 22); g.lineTo(32 + dx, 14); g.lineTo(32 + dx - 3, 22); g.closePath(); g.fill(); } }),
   skill_improvedodge: (g) => skillIcon(g, '#5a7a6a', () => { g.lineWidth = 4; for (const r of [10, 16, 22]) { g.beginPath(); g.arc(38, 32, r, Math.PI * 0.7, Math.PI * 1.3); g.stroke(); } g.beginPath(); g.arc(40, 32, 5, 0, 7); g.fill(); }),
   skill_venomstrike: (g) => skillIcon(g, '#4a8a3a', () => { g.beginPath(); g.moveTo(32, 12); g.bezierCurveTo(42, 26, 46, 34, 46, 40); g.arc(32, 40, 14, 0, Math.PI); g.bezierCurveTo(18, 34, 22, 26, 32, 12); g.fill(); }),
-  skill_sonicblow: (g) => skillIcon(g, '#4a8a3a', () => { g.lineWidth = 3; for (let i = 0; i < 8; i++) { const a = (i / 8) * Math.PI * 2; g.beginPath(); g.moveTo(32 + Math.cos(a) * 6, 32 + Math.sin(a) * 6); g.lineTo(32 + Math.cos(a) * 20, 32 + Math.sin(a) * 20); g.stroke(); } }),
+  skill_venomcloud: (g) => skillIcon(g, '#3a7a32', () => { // a cracked vial, a green cloud billowing from it
+    g.fillStyle = 'rgba(170,230,110,.85)'; for (const [x, y, r] of [[22, 24, 9], [36, 20, 11], [44, 30, 8], [28, 34, 8]]) { g.beginPath(); g.arc(x, y, r, 0, Math.PI * 2); g.fill(); }
+    g.fillStyle = '#e8f0f8'; g.fillRect(26, 38, 12, 16); g.fillStyle = '#5aa83a'; g.fillRect(27, 44, 10, 9); g.fillStyle = '#8a6a4a'; g.fillRect(28, 34, 8, 5);
+  }),
   skill_shadowstep: (g) => skillIcon(g, '#3a3050', () => { for (const [x, o] of [[22, 0.4], [32, 0.7], [42, 1]]) { g.globalAlpha = o; g.beginPath(); g.arc(x, 24, 4.5, 0, 7); g.fill(); g.fillRect(x - 4, 30, 8, 16); } g.globalAlpha = 1; }),
   skill_vanish: (g) => skillIcon(g, '#2a2a3a', () => { g.globalAlpha = 0.45; g.beginPath(); g.arc(32, 24, 6, 0, 7); g.fill(); g.fillRect(26, 31, 12, 18); g.globalAlpha = 1; g.lineWidth = 2; for (let i = 0; i < 5; i++) { g.beginPath(); g.moveTo(16 + i * 8, 52); g.lineTo(20 + i * 8, 44); g.stroke(); } }),
   skill_pilfer: (g) => skillIcon(g, '#a8843a', () => { g.beginPath(); g.ellipse(32, 38, 12, 10, 0, 0, 7); g.fill(); g.fillRect(28, 20, 8, 8); g.beginPath(); g.arc(44, 20, 4, 0, 7); g.fill(); }),

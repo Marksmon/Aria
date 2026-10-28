@@ -605,7 +605,7 @@ daggers and makes better ones (**Make daggers**); the desert's monsters drop the
 | Double Attack | passive, 10 | with a dagger, 5% of your normal attacks per level strike twice |
 | Improve Dodge | passive, 10 | +3 FLEE per level |
 | Venom Strike | 10, 6–11 SP | 198–450%, +3% hit per level; 26–80% to poison for 6 s |
-| Sonic Blow | 10, needs Venom Strike 3, 15–24 SP | eight venomed cuts in a blur, 63–135% each to the target and to every monster within 2 paces of it; then 35–80% to poison each of them for 6 s. 2 s cooldown |
+| Venom Cloud | 10, needs Venom Strike 3, 20–38 SP | smash a vial of venom at the target from up to 4 paces: a poison cloud 2.2 paces round hangs there for 5 s, and every half second it bites everything in it for 27–54%, through any DEF, each bite 6–24% to poison for 6 s. You fight on while it works. 7 s cooldown |
 | Shadow Step | 5, needs Improve Dodge 3 | step to your target's back from up to 6 paces; your next blow +10–50% |
 | Vanish | 5, needs Improve Dodge 5 | 4–8 s in the shadows: monsters lose you (bosses and MVPs see through it); attacking ends it, and your first blow out of it deals 10–50% more |
 | Pilfer | Job 10 | lift something off a monster: a chance (more with FNS) at one of its drops (never a card), once per monster |
@@ -638,7 +638,7 @@ on the best weapon in your bag that it can (and arrows, for a bow).
 | Elemental Edge, Elemental Blade, Elemental Nova (Magic Knight) | Lunar Multishot, Crescent Arrow (Moon Ranger) | War Cry, Stand Firm (Blader); Focus, Hunter's Mark, Leap Back (Archer); Tailwind, Gale Step (Windrunner) |
 | | | Starfall, Moonveil (Moon Ranger), Stone Aegis (Magic Knight), the Beastmaster's summons and Pack Frenzy; Mend, Thrust, Guard, Rest (Trainee) |
 
-Venom Strike and Sonic Blow (Assassin), Dual Rend and Thousand Cuts (Phantom) need a **dagger**;
+Venom Strike (Assassin), Dual Rend and Thousand Cuts (Phantom) need a **dagger**; Venom Cloud,
 Shadow Step, Vanish and Pilfer (Assassin), Phantom Double and Mirage Step (Phantom) need no weapon.
 
 Bare hands are no sword: with no weapon a hero fights hand to hand and has no blade skills, and an

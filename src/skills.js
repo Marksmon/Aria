@@ -197,10 +197,10 @@ export const SKILLS = {
     sp: (lv) => 6 + Math.floor(lv / 2), power: (lv) => 170 + 28 * lv, status: { kind: 'poison', chance: (lv) => 20 + 6 * lv, dur: 6 },
     desc: (lv) => `A blade dipped in venom: ${SKILLS.venomstrike.power(lv)}% damage, +${3 * lv}% hit chance; ${statusText(SKILLS.venomstrike, lv)} (a fifth of the blow each second).`,
   },
-  sonicblow: {
-    name: 'Sonic Blow', job: 'assassin', kind: 'active', max: 10, needs: { venomstrike: 3 }, target: 'mob', range: 1.35, weapon: 'dagger', cd: 2, icon: 'skill_sonicblow',
-    sp: (lv) => 14 + lv, power: (lv) => 55 + 8 * lv, hits: () => 8, every: 0.08, area: 2, status: { kind: 'poison', chance: (lv) => 30 + 5 * lv, dur: 6 },
-    desc: (lv) => `Eight venomed cuts in a blur, ${SKILLS.sonicblow.power(lv)}% damage each to your target and to every monster within ${SKILLS.sonicblow.area} paces of it; then ${statusText(SKILLS.sonicblow, lv, ' each')}.`,
+  venomcloud: {
+    name: 'Venom Cloud', job: 'assassin', kind: 'active', max: 10, needs: { venomstrike: 3 }, target: 'mob', range: 4, cd: 7, icon: 'skill_venomcloud',
+    sp: (lv) => 18 + 2 * lv, power: (lv) => 24 + 3 * lv, hits: () => 10, every: 0.5, area: 2.2, status: { kind: 'poison', chance: (lv) => 4 + 2 * lv, dur: 6 },
+    desc: (lv) => `Smash a vial of venom at your target from up to 4 paces: a poison cloud ${SKILLS.venomcloud.area} paces round hangs there for ${SKILLS.venomcloud.hits(lv) * SKILLS.venomcloud.every} s, and every half second it bites everything in it for ${SKILLS.venomcloud.power(lv)}% damage, through any armour (DEF); ${statusText(SKILLS.venomcloud, lv, ' each bite')}. You fight on while it works. Needs no weapon.`,
   },
   shadowstep: {
     name: 'Shadow Step', job: 'assassin', kind: 'active', max: 5, needs: { improvedodge: 3 }, target: 'mob', range: 6, cd: 6, icon: 'skill_shadowstep',

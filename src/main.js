@@ -2308,24 +2308,33 @@ function useSkill(id) {
       if (t.alive) { t.knock.x *= 1.5; t.knock.z *= 1.5; }
     });
   }
-  // ---- Assassin: Venom Strike, Sonic Blow, Shadow Step, Pilfer ----
+  // ---- Assassin: Venom Strike, Venom Cloud, Shadow Step, Pilfer ----
   if (id === 'venomstrike') strike(sk.power(lv) / 100, 1 + 0.03 * lv, (t, res) => { say('Venom Strike'); if (!res.miss) inflict(t, sk.status, lv, res.dmg); });
-  if (id === 'sonicblow') { // eight cuts in a blur at the target, each catching every monster close by it; then the venom takes them all
-    const m = sk.power(lv) / 100;
-    strike(m, 1, (t, res0) => {
-      say('Sonic Blow');
-      cam.shake = 0.15;
-      const cx = t.x, cz = t.z, gy = world.heightAt(cx, cz), dealt = new Map([[t, res0?.dmg || 0]]);
-      repeat(sk, lv, (i) => { // (the swing's own blow was the target's first)
+  if (id === 'venomcloud') { // a vial of venom smashed at the target: the cloud hangs there, biting all in it, while you fight on
+    const run = (t) => {
+      if (!pay()) return;
+      say('Venom Cloud');
+      player.atkAnim = player.atkDur = 0.3;
+      audio.play('swing');
+      const cx = t.x, cz = t.z, gy = world.heightAt(cx, cz), m = sk.power(lv) / 100;
+      fx.warn(cx, cz, sk.area, sk.hits(lv) * sk.every, '#7ac83a'); // (the cloud's ground, for as long as it lasts)
+      fx.puff(cx, gy + 0.3, cz, 1.5);
+      repeat(sk, lv, () => {
+        fx.cloud(cx, gy + 0.35, cz);
         for (const o of [...mobs.list]) {
-          if (!o.alive || (o === t ? !i : Math.hypot(o.x - cx, o.z - cz) > sk.area + o.def.r)) continue;
-          dealt.set(o, (dealt.get(o) || 0) + (bladeHit(o, m).dmg || 0));
-          if (o === t) fx.slash(t.x, overHead(t, t.sprite.scale.y * 0.5), t.z, { x: Math.cos(i * 2.3), z: Math.sin(i * 2.3) }, cam);
+          if (!o.alive || Math.hypot(o.x - cx, o.z - cz) > sk.area + o.def.r) continue;
+          const res = playerAttack(player.ps, { ...o.effDef(), def: 0, vit: 0 }, m * player.atkMul, 1.5, true); // (venom goes through armour: no DEF; a cloud is hard to step out of: +50% hit)
+          const yy = overHead(o, o.sprite.scale.y * 0.8);
+          if (res.miss) { fx.number(o.x, yy, o.z, 'Miss', 'miss'); continue; }
+          fx.number(o.x, yy, o.z, res.dmg, 'dealt');
+          o.hit(res.dmg, 0, 0);
+          inflict(o, sk.status, lv, res.dmg * 2); // (its poison: two bites' worth, a fifth of that a second)
         }
-        const a = i * 2.4; fx.sparkle(cx + Math.cos(a) * sk.area * 0.7, gy + 0.4, cz + Math.sin(a) * sk.area * 0.7, i % 2 ? '#8ad04a' : '#c8f080', 3); // the venom's green mist
-        if (i === sk.hits(lv) - 1) for (const [o, d] of dealt) if (o.alive && d > 0) inflict(o, sk.status, lv, d / 4); // (each poisoned for a quarter of the cuts it took, a fifth of that a second)
       });
-    });
+      player.command({ mob: t }); // and on with the fight
+    };
+    player.command({ mob: target, spell: { range: sk.range, time: 0.15, run, name: sk.name } });
+    return;
   }
   if (id === 'shadowstep') { // to the target's back, and the next blow strikes harder
     const run = (t) => {

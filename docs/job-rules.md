@@ -53,12 +53,14 @@ quests. Code: `src/progress.js` (jobs, levels, points), `src/skills.js` (trees, 
   `delay.dagger` swings one at `delay.sword * DAGGER` (0.8, `rules.js`). A dagger is no sword:
   Blade skills still need a sword. Spells, buffs and moves work with a dagger in hand. Daggers go
   with a shield.
-- Five actives (Venom Strike, Sonic Blow, Shadow Step, Vanish, Pilfer) and passives (Dagger
+- Five actives (Venom Strike, Venom Cloud, Shadow Step, Vanish, Pilfer) and passives (Dagger
   Mastery, Double Attack, Improve Dodge, Lethal Edge). Pilfer and Lethal Edge come free at Job 10.
-  Sonic Blow is the area poison skill (the owner's call): eight cuts Ragnarok style (`hits`/`every`)
-  at the target, each also striking every monster within 2 paces of it (`area`), then a poison roll
-  on each monster it cut.
-- **Poison** (Venom Strike, Sonic Blow, Thousand Cuts, the Stinger, the Cactus Lord Card) is a status like
+  **Venom Cloud** is the area poison skill (the owner's call: a new skill in Sonic Blow's place; old
+  saves' Sonic Blow points and hotbar slots go to it, `RENAMED_SKILLS` in `progress.js`): a vial of
+  venom smashed at the target from 4 paces, a cloud 2.2 paces round that bites everything in it every
+  half second for 5 s (`hits`/`every`/`area`), through DEF (venom goes through armour), each bite a
+  poison roll. It needs no weapon (a vial), and the hero fights on while it works.
+- **Poison** (Venom Strike, Venom Cloud, Thousand Cuts, the Stinger, the Cactus Lord Card) is a status like
   burn: a fifth of the blow that set it, each second, for its time; a new poison replaces the old.
   Bosses resist (a third of the chance, half as long). Sand Scorpions poison the hero: 1.5% of Max
   HP a second for 6 s, cured by a Green Herb.
@@ -106,8 +108,8 @@ quests. Code: `src/progress.js` (jobs, levels, points), `src/skills.js` (trees, 
 | Elemental Edge, Elemental Blade, Elemental Nova (Magic Knight) | Lunar Multishot, Crescent Arrow (Moon Ranger) | War Cry, Stand Firm (Blader); Focus, Hunter's Mark, Leap Back (Archer); Tailwind, Gale Step (Windrunner) |
 | | | Starfall, Moonveil (Moon Ranger), Stone Aegis (Magic Knight), the Beastmaster's summons and Pack Frenzy; Mend, Thrust, Guard, Rest (Trainee) |
 
-Needs a **dagger**: Venom Strike, Sonic Blow (Assassin), Dual Rend, Thousand Cuts (Phantom). Needs no
-weapon: Shadow Step, Vanish, Pilfer (Assassin), Phantom Double, Mirage Step (Phantom).
+Needs a **dagger**: Venom Strike (Assassin), Dual Rend, Thousand Cuts (Phantom). Needs no weapon:
+Venom Cloud, Shadow Step, Vanish, Pilfer (Assassin), Phantom Double, Mirage Step (Phantom).
 
 Bare hands are no sword: with no weapon a hero fights hand to hand and has no blade skills, and an
 Archer or Windrunner with no bow fights hand to hand too. Starfall needs no bow and still falls from
