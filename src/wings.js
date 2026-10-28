@@ -126,9 +126,12 @@ export class Wings {
       const f = this.wingFrames[Math.floor(t * 9) % this.wingFrames.length];
       if (this.wing.material.map !== f) { this.wing.material.map = f; this.wing.material.needsUpdate = true; }
       this.wing.material.rotation = rot;
-      this.wing.position.set(p.x + fwd.x * k, ground + M.y + bob, p.z + fwd.z * k);
-      const [gx, gy] = WING_GROW(look.art);
-      this.wing.scale.set(M.w * gx * sx * (side && !this.views ? 0.7 : 1), M.h * gy * sy, 1);
+      // (pinned at the hero's feet, a step behind them, and drawn up at M.y: a sprite's depth is its pin's,
+      // so the wings sort just behind the hero (in front, turned away) and in front of whoever stands further back)
+      const [gx, gy] = WING_GROW(look.art), h = M.h * gy * sy;
+      this.wing.position.set(p.x + fwd.x * k, ground, p.z + fwd.z * k);
+      this.wing.center.set(0.5, 0.5 - (M.y + bob) / h);
+      this.wing.scale.set(M.w * gx * sx * (side && !this.views ? 0.7 : 1), h, 1);
       this.wing.renderOrder = away ? 5 : 1;
       this.wing.visible = true;
       return;
