@@ -1398,7 +1398,7 @@ const menus = new Menus(inv, prog, player, {
   storyStep: () => (storyLive() ? story.step : null),
   // story pages that ask (the Seeress's rune-reading): each answer counts toward a calling
   storyFlags: () => story.flags,
-  storyPic: (p) => (p.job ? jobPic(p.job) : p.mob ? mobPortrait(p.mob) : ''), // (a mob: the Beastmaster's Bear, Wolf, Hawk)
+  storyPic: (p) => (p.job ? jobPic(p.job) : p.mob ? mobPortrait(p.mob) : ''), // (a job on the hero, or a monster)
   storyChoice: (key) => {
     audio.play('ui');
     if (key.includes(':')) { const [k, v] = key.split(':'); story.flags[k] = v; return; } // a pick (pick:blade): kept as it is
