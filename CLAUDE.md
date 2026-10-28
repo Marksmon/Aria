@@ -90,7 +90,7 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   it for you, but not next time"). Easy/Normal/Hard/Hell need Base 40/55/70/85 (the owner's call):
   (the Kobold Camp 45/60/75/90, the Goblin Lair 50/65/80/95). Easy a first job with no potions,
   Normal a second job with 20 White, Hard with 30. Once a hero has done a raid at its guide, the Raids
-  window sets out on it from anywhere and brings them back where they were (`raidsDone`, `raid.back`); Hell's boss is fierce (as
+  window sets out on it from anywhere and brings them back where they were (`raidsDone`, `raid.back`; a Back button returns to the list), and the guides wear a RAID tag; Hell's boss is fierce (as
   hard and tricky as a field MVP: `FIERCE` in `mobs.js`), for a hero in the best gear. Clear rewards
   (perz, materials) x1/x3/x6/x9. Raid EXP is held and paid at the end: x1.5 on a clear,
   the kills alone on a failure.

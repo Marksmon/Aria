@@ -39,6 +39,15 @@ export class Villagers {
       mark.renderOrder = 3;
       mark.visible = false;
       this.groups[map].add(s, shadow, mark);
+      let tag = null; // a raid guide wears a RAID tag over their head, always
+      if (n.raid) {
+        tag = new THREE.Sprite(new THREE.SpriteMaterial({ map: lib.marks.raid, alphaTest: 0.5 }));
+        tag.scale.set(1.2, 0.36, 1);
+        tag.center.set(0.5, 0);
+        tag.renderOrder = 3;
+        tag.position.set(n.x, y + HEIGHT + 0.12, n.z);
+        this.groups[map].add(tag);
+      }
       where.addSolid(n.x, n.z, 0.35);
       if (n.pet) { // a tame beast sitting by them, that never fights (Bjarki's wolf)
         const pa = lib.mobs[n.pet.art], pm = new THREE.SpriteMaterial({ map: pa.anims.down.idle[0], alphaTest: 0.5 });
@@ -53,7 +62,7 @@ export class Villagers {
         this.groups[map].add(ps, pshadow);
         where.addSolid(px, pz, 0.3);
       }
-      this.list.push({ id, map, x: n.x, z: n.z, y, h, top: HEIGHT, art, mat, s, mark, face: { x: 0, z: 1 }, t: Math.random() * 6 });
+      this.list.push({ id, map, x: n.x, z: n.z, y, h, top: HEIGHT, art, mat, s, mark, tag, face: { x: 0, z: 1 }, t: Math.random() * 6 });
     }
   }
 
@@ -82,7 +91,7 @@ export class Villagers {
       const tex = v.art.anims[turn(v.face.x, v.face.z, cam)].idle[0];
       if (v.mat.map !== tex) { v.mat.map = tex; v.s.center.y = tex.userData.anchor; }
       v.s.scale.y = v.h * (1 + Math.sin(v.t * 2.2) * 0.015);
-      v.mark.position.set(v.x, v.y + v.top + 0.15 + Math.sin(v.t * 3) * 0.06, v.z);
+      v.mark.position.set(v.x, v.y + v.top + (v.tag ? 0.55 : 0.15) + Math.sin(v.t * 3) * 0.06, v.z); // a quest mark sits over a RAID tag
     }
   }
 }

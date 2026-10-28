@@ -512,6 +512,21 @@ function questMark(ch, fill) {
   return c;
 }
 
+// the tag over a raid guide's head (the Boatman, Brokk, Ylva), like a boss's name tag
+function raidTag() {
+  const { c, g } = mk(160, 48);
+  g.beginPath();
+  g.roundRect(5, 5, 150, 38, 19);
+  g.fillStyle = '#b8302a'; g.fill();
+  g.strokeStyle = '#ffd23a'; g.lineWidth = 4; g.stroke();
+  g.font = '900 26px system-ui, sans-serif';
+  g.textAlign = 'center';
+  g.textBaseline = 'middle';
+  g.strokeStyle = OUT; g.lineWidth = 5; g.strokeText('✦ RAID', 80, 25);
+  g.fillStyle = '#fff'; g.fillText('✦ RAID', 80, 25);
+  return c;
+}
+
 // ---------- Effects ----------
 function slashArc() {
   const { c, g } = mk(128, 128);
@@ -1002,7 +1017,7 @@ export function createSprites() {
     villagers,
     person,
     design,
-    marks: { offer: tex(questMark('!', '#e3a13a')), ready: tex(questMark('?', '#5fae45')), story: tex(questMark('!', '#8a6af0')) },
+    marks: { offer: tex(questMark('!', '#e3a13a')), ready: tex(questMark('?', '#5fae45')), story: tex(questMark('!', '#8a6af0')), raid: tex(raidTag()) },
     fx: { slash: tex(slashArc()), puff: tex(puff()) },
     props,
     fire: { frames: fireFrames, aspect: fireAspect, w: 1.2 },
