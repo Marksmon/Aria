@@ -79,7 +79,7 @@ html, body {
     linear-gradient(180deg, rgba(10, 12, 16, .5), rgba(10, 12, 16, .15) 30%, rgba(10, 12, 16, .3) 70%, rgba(10, 12, 16, .8));
   font-family: system-ui, sans-serif; color: #f1e3c2; }
 #title.hide { opacity: 0; }
-.t-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; animation: rise .7s ease-out both; }
+.t-top { position: relative; z-index: 10; display: flex; align-items: center; justify-content: space-between; gap: 10px; animation: rise .7s ease-out both; } /* (above the preview: the Account menu drops over it) */
 .t-brand { display: flex; align-items: baseline; gap: 10px; min-width: 0; }
 #title h1 { margin: 0; font: italic 700 38px Georgia, serif; letter-spacing: .04em; color: #ffe6a8; text-shadow: 0 0 4px #2e2118, 0 2px 14px rgba(255, 150, 60, .45); }
 .t-tools { display: flex; gap: 6px; align-items: flex-start; }
