@@ -270,3 +270,9 @@ The playtest bot (an archer that stands and shoots, and steps out of every red c
 The bot fights like a turret, so it barely meets the new AI's reading and chasing (made for heroes
 who run, kite and cast); against it the bosses are about as hard as before, the mini-bosses harder
 (they now reach it).
+
+Bosses stuck in the terrain: a blocked boss (no nearer for 0.35 s) now finds a way round with A* on a
+one-pace grid of its map (src/path.js: cells it fits in, clear of rocks, trees, tents and walls, off
+safe ground and away from portals) and follows it. Checked on every boss map: four of each boss
+roaming 30 s (none stuck more than 3 s), and four chases each from 8-12 paces at random spots, the
+hero standing still: every boss reached the hero, in 1-10 s (the raid arenas 1-4 s).

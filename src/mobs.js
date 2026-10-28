@@ -3,6 +3,7 @@
 import * as THREE from 'three';
 import { mulberry32, dirFor } from './noise.js';
 import { mobAttack, WALK_SCALE } from './rules.js';
+import { findPath } from './path.js';
 
 
 // Battle stats follow Ragnarok's rules (rules.js): lv, hp, atk [min, max], def (hard DEF %),
@@ -200,7 +201,8 @@ export const MVP_MOVE = { sure: true, pierce: 0.75 };
 //   `rushCd` s at most), and its moves come sooner.
 // - enraged, a fierce one may follow one move straight into the next (combo: the chance); the wait
 //   between its moves is never quite the same, so they can't be counted.
-// - stuck (a rock between you, too tight for it) it makes no headway for `stuck` s: it bounds over
+// - blocked (rocks, trees, walls, a dead-end pocket) it finds a way round (path.js); with no way
+//   round (a rock between you, too tight for it) it makes no headway for `stuck` s and bounds over
 //   onto you (BOUND: a leap, its red circle first), so no rock keeps a boss off you.
 // - a mini-boss hunts you like an MVP: it gives up only `giveUp` paces off, and heals only after
 //   `calm` s out of the fight (so stepping away doesn't reset it).
@@ -419,6 +421,7 @@ class Mob {
     }
     const m = this.moveToward(this.target.x, this.target.z, spd, dt);
     moved(m > 0);
+    if (this.noWay) { this.noWay = false; this.target = null; this.restT = 0.3; return; } // (no way there: somewhere else)
     // stuck against a rock or a tent (it slides but gets nowhere): pick somewhere else
     const c = this.roamCheck ||= { t: 0, x: this.x, z: this.z };
     if ((c.t += dt) > 1.2) { const gone = Math.hypot(this.x - c.x, this.z - c.z); Object.assign(c, { t: 0, x: this.x, z: this.z }); if (gone < spd * 0.3) this.wanderT = 0; }
@@ -441,7 +444,7 @@ class Mob {
   unstick(dt, p, dist) {
     const c = this.stuckCheck ||= { t: 0, d: dist, for: 0 };
     if ((c.t += dt) < 1) return false;
-    c.for = dist > this.def.reach + 0.5 && dist > c.d - 0.3 ? c.for + c.t : 0;
+    c.for = dist > this.def.reach + 0.5 && dist > c.d - 0.3 && !this.path ? c.for + c.t : 0; // (not while it goes the long way round)
     c.t = 0; c.d = dist;
     const w = this.mgr.world;
     if (c.for < BRAIN.stuck || this.act || nearPortal(w, p.x, p.z, this.def.r) || !w.walkable(p.x, p.z) || w.isSafe(p.x, p.z)) return false;
@@ -596,9 +599,40 @@ class Mob {
     return true;
   }
 
-  // a step toward (tx, tz); blocked (a rock, a tree, a tent), it steers round it, trying wider angles
-  // to one side and the other, and keeps to the side that worked a moment so it doesn't dither
+  // a step toward (tx, tz). A boss blocked a moment (a rock, a tree, a wall, a dead-end pocket) finds
+  // a way round (path.js) and follows it, finding it again if you have moved on or it is still
+  // stuck; with no way to where it was going (noWay), a roaming boss picks somewhere else
   moveToward(tx, tz, speed, dt) {
+    const boss = this.def.ai === 'boss' || this.def.boss || this.def.mvp;
+    if (boss && this.path) {
+      const P = this.path;
+      if (Math.hypot(P.goal.x - tx, P.goal.z - tz) < 1.5 && this.t - P.at < 3 && P.pts.length) {
+        if (P.pts.length > 1 && Math.hypot(P.pts[0].x - this.x, P.pts[0].z - this.z) < 0.45) P.pts.shift();
+        const wp = P.pts[0], got = this.step(wp.x, wp.z, speed, dt);
+        if (Math.hypot(wp.x - this.x, wp.z - this.z) < 0.45) P.pts.shift();
+        if (!P.pts.length) this.path = null;
+        if (got > 1e-4) return got;
+      }
+      this.path = null;
+    }
+    const before = Math.hypot(tx - this.x, tz - this.z), s = Math.min(before, speed * dt), got = this.step(tx, tz, speed, dt);
+    if (boss) {
+      // blocked: hardly any nearer for all its stepping (sliding along a rock, or back and forth)
+      const nearer = before - Math.hypot(tx - this.x, tz - this.z);
+      this.blockT = nearer < s * 0.4 ? (this.blockT || 0) + dt : Math.max(0, (this.blockT || 0) - dt);
+      if (this.blockT > 0.35 && this.t - (this.pathTried ?? -9) > 1) {
+        this.pathTried = this.t; this.blockT = 0;
+        const w = this.mgr.world, pts = findPath(w, this.x, this.z, tx, tz, this.def.r, (x, z) => !nearPortal(w, x, z, this.def.r));
+        this.path = pts?.length ? { goal: { x: tx, z: tz }, pts, at: this.t } : null;
+        this.noWay = !pts;
+      }
+    }
+    return got;
+  }
+
+  // one step toward (tx, tz); blocked, it steers round, trying wider angles to one side and the
+  // other, and keeps to the side that worked a moment so it doesn't dither
+  step(tx, tz, speed, dt) {
     const dx = tx - this.x, dz = tz - this.z, d = Math.hypot(dx, dz);
     if (d < 0.05) return 0;
     const s = Math.min(d, speed * dt), base = Math.atan2(dz, dx);

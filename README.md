@@ -215,8 +215,9 @@ playing dead.
   same move twice in a row, and the pause between moves is never quite the same.
 - **Kiting has a limit.** Kept out of reach for a few seconds, it gives chase in a burst
   ("Pursues!"), and its moves come sooner.
-- **Rocks don't save you.** It steers round what is in its way; stuck behind something too tight for
-  it, it bounds over onto you (Bound, a red circle first).
+- **Rocks don't save you.** It finds its way round rocks, trees, tents and walls, out of any dead
+  end, whether it is hunting you or roaming its map; stuck behind something too tight for it, it
+  bounds over onto you (Bound, a red circle first).
 - **An enraged MVP or Hell boss** may follow one move straight into another.
 - **Mini-bosses hunt like MVPs.** They follow you up to 18 paces and heal only after 10 seconds
   out of the fight, so stepping away briefly doesn't reset them.
