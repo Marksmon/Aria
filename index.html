@@ -27,6 +27,7 @@
     <div id="winbtns">
       <button data-btn="status">Status</button><button data-btn="equip">Equip</button><button data-btn="items">Items</button><button data-btn="skills">Skills</button><button data-btn="raids">Raids</button><button data-btn="journal">Quests</button>
     </div>
+    <div id="pets" hidden></div>
     <div id="windows"></div>
     <div id="toasts"></div>
     <div id="hotbar"></div>
@@ -38,28 +39,40 @@
     <div id="fps"></div>
   </div>
   <div id="title">
-    <div class="logo">
-      <h1>Aria</h1>
-      <p class="tagline">A little valley adventure</p>
-    </div>
-    <div class="menu">
-      <div id="t-slots"></div>
-      <button id="t-continue" class="tbtn main">Start</button>
-      <div class="trow">
-        <button id="t-new" class="tbtn small" hidden>Delete</button>
-        <button id="t-sound" class="tbtn small">Sound: On</button>
+    <header class="t-top">
+      <div class="t-brand"><h1>Aria</h1><span class="tagline">A little valley adventure</span></div>
+      <div class="t-tools">
+        <button id="t-sound" class="ticon" type="button" title="Sound" aria-label="Sound">🔊</button>
+        <div class="t-acct">
+          <button id="t-account" class="ticon wide" type="button" aria-haspopup="true" aria-expanded="false">👤 Account</button>
+          <div id="t-acctmenu" hidden>
+            <small>Your heroes and the shared storage</small>
+            <button id="t-backup" type="button" hidden>⬇ Back up save</button>
+            <button id="t-restore" type="button">⬆ Restore save</button>
+          </div>
+        </div>
       </div>
-      <div class="trow">
-        <button id="t-backup" class="tbtn small" hidden>Back up save</button>
-        <button id="t-restore" class="tbtn small">Restore save</button>
-      </div>
-    </div>
+    </header>
+    <main class="t-main">
+      <section class="t-list">
+        <h2>Select your hero</h2>
+        <div id="t-slots"></div>
+      </section>
+      <section class="t-preview">
+        <div class="tp-stage"><img id="tp-img" alt=""><span class="tp-empty" id="tp-empty">+</span><div class="tp-ped"></div></div>
+        <div id="tp-info"></div>
+        <div class="tp-actions">
+          <button id="t-continue" class="tbtn main" type="button">Start</button>
+          <button id="t-new" class="tbtn ghost" type="button" hidden>Delete</button>
+        </div>
+      </section>
+    </main>
     <div id="t-code" hidden>
       <p id="t-code-msg"></p>
       <textarea id="t-code-text" spellcheck="false" autocomplete="off"></textarea>
       <div class="trow">
-        <button id="t-code-go" class="tbtn small">Copy</button>
-        <button id="t-code-close" class="tbtn small">Close</button>
+        <button id="t-code-go" class="tbtn small" type="button">Copy</button>
+        <button id="t-code-close" class="tbtn ghost" type="button">Close</button>
       </div>
     </div>
     <small class="rotate">↻ Turn your phone sideways for the best view</small>

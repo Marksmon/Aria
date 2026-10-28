@@ -27,7 +27,7 @@ export const INSTINCTS = {
   wolf: { name: 'Hamstring', cd: 10, mult: 1.8, range: 4 },
   hawk: { name: 'Dive', cd: 9, mult: 3, range: 3, sure: true },
 };
-export const ROAR = { secs: 6, atk: 0.1 }; // the Bear's Roar: how often, and how much harder the pack hits after it
+export const ROAR = { secs: 6, cd: 10, atk: 0.1 }; // the Bear's Roar: how long the pack hits atk harder after it, and its cooldown
 const DIVE = 0.6, LUNGE = 0.2; // seconds: the Hawk's climb and drop, a Wolf's leap
 const ATTACK_ANIM = 0.45;
 const STRIDE = 2.2;
@@ -91,7 +91,9 @@ class Beast {
     res.instinct = this.kind;
     this.mgr.emit('strike', this, m, res);
   }
-  canBeHit() { return this.alive && (!this.K.fly || Math.random() < 0.3); } // most blows pass under a flying hawk
+  // the Hawk flies out of reach of any blow up close: only shots and things thrown or dropped reach it
+  // (ranged: an archer's arrow, a boss's throw or meteor; main.js)
+  canBeHit(ranged = false) { return this.alive && (!this.K.fly || ranged); }
   takeDamage(dmg, fx, fz) {
     if (!this.alive) return;
     dmg = Math.max(1, Math.round(dmg * (1 - (this.ps.guard || 0))));
@@ -163,10 +165,10 @@ class Beast {
           if (ps.double && Math.random() < ps.double && m.alive) this.mgr.emit('strike', this, m, playerAttack(ps, m.effDef(), this.mgr.mult(this, m))); // a second, quicker bite
         }
       }
-      // the Bear's Roar, a war cry: every 6 s while it fights, the monsters round it turn on it, and the
-      // pack is roused: every beast hits ROAR.atk harder for ROAR.secs (Allies.rallyT, main.js allies.mult)
+      // the Bear's Roar, a war cry: every ROAR.cd s while it fights, the monsters round it turn on it, and
+      // the pack is roused: every beast hits ROAR.atk harder for ROAR.secs (Allies.rallyT, main.js allies.mult)
       if (this.kind === 'bear' && this.tauntCd <= 0) {
-        this.tauntCd = ROAR.secs;
+        this.tauntCd = ROAR.cd;
         let n = 0;
         for (const o of mobs.list) if (o.alive && Math.hypot(o.x - this.x, o.z - this.z) < ps.taunt) { o.foe = this; o.provoke(); n++; }
         this.mgr.rallyT = ROAR.secs;

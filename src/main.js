@@ -171,10 +171,13 @@ function trimmed(src) {
 // a job's look on this hero, front view (its body, with their own head and hair): the Elder's talk of
 // the paths shows what each job looks like (story pages' pics)
 const jobPics = {};
-function jobPic(job) {
-  const look = player.look, key = `${job}|${look.body}|${look.hair}|${look.dye}`;
+const jobPic = (job) => heroPic(job, player.look);
+// any hero in any job, facing dir: the title's preview turns a hero round with these
+function heroPic(job, look, dir = 'down') {
+  look = { hair: 'messy', dye: 'brown', body: 'm', ...look };
+  const key = `${job}|${look.body}|${look.hair}|${look.dye}|${dir}`;
   if (jobPics[key]) return jobPics[key];
-  const tex = lib.design(`${JOB_BODY[job] || 'blader'}${look.body === 'f' ? 'F' : 'M'}`)?.anims?.down?.idle?.[0];
+  const tex = lib.design(`${JOB_BODY[job] || 'blader'}${look.body === 'f' ? 'F' : 'M'}`)?.anims?.[dir]?.idle?.[0];
   if (!tex?.image) return '';
   const c = document.createElement('canvas');
   c.width = tex.image.width; c.height = tex.image.height;
@@ -182,7 +185,7 @@ function jobPic(job) {
   g.imageSmoothingEnabled = false;
   g.drawImage(tex.image, 0, 0);
   if (!headsReady() || !tex.userData.head?.at) return trimmed(c).toDataURL(); // (not kept: the head comes once loaded)
-  paintHead(g, tex.userData.head.at, 'down', look);
+  paintHead(g, tex.userData.head.at, dir, look);
   return (jobPics[key] = trimmed(c).toDataURL());
 }
 
@@ -462,7 +465,7 @@ allies.on('strike', (b, m, res) => {
     m.slowT = boss ? 2 : 4; m.slowBy = 0.4;
     fx.number(m.x, y + 0.35, m.z, 'Slowed', 'miss');
   }
-  if (m.alive && m.foe?.kind !== 'bear' && Math.random() < 0.35) m.foe = b; // it may turn on the beast that bit it
+  if (m.alive && m.foe?.kind !== 'bear' && (!b.K.fly || m.def.ai === 'archer') && Math.random() < 0.35) m.foe = b; // it may turn on the beast that bit it (only a shooter on the Hawk)
 });
 allies.on('instinct', (b, I) => { fx.number(b.x, overHead(b, b.sprite.scale.y * 0.9), b.z, `${I.name}!`, 'skill'); audio.play(b.kind === 'bear' ? 'night' : 'swing'); });
 allies.on('hurt', (b, n) => fx.number(b.x, overHead(b, b.sprite.scale.y * 0.7), b.z, n, 'taken'));
@@ -550,7 +553,13 @@ mobs.on('stomp', (m) => { // the ground bursts around the boss
 // ---------- boss moves (mobs.js MOVES): a red circle shows where each lands ----------
 const MOVE_COL = { fire: '#ff6a1a', earth: '#c8a06a', wind: '#dff7c8', water: '#9fe0ff', shadow: '#a89cff' };
 // a boss move lands: mult x the boss's ATK if you stand within r of (x, z)
-function bossBlow(m, mult, x, z, r) {
+function bossBlow(m, mult, x, z, r, ranged = false) {
+  if (ranged) for (const b of allies.list) { // a thrown or falling blow (Boulder, Meteor Rain...) reaches the Hawk in the air too
+    if (!b.K.fly || !b.canBeHit(true) || Math.hypot(b.x - x, b.z - z) > r + b.K.r) continue;
+    const res = mobAttack(m.def, b.ps, mult * m.fury, fierce(m.def) ? MVP_MOVE : undefined);
+    if (res.miss) fx.number(b.x, overHead(b, b.sprite.scale.y * 0.7), b.z, 'Miss', 'miss');
+    else b.takeDamage(res.dmg, x, z);
+  }
   if (Math.hypot(player.x - x, player.z - z) > r + 0.3 || !player.canBeHit() || player.state === 'down') return;
   cam.shake = 0.3;
   const res = mobAttack(m.def, player.ps, mult * m.fury, fierce(m.def) ? MVP_MOVE : undefined); // (an MVP's: no FLEE, little DEF)
@@ -619,7 +628,7 @@ mobs.on('throw', (m, spot, mv, land) => {
       fx.puff(spot.x, gy + 0.2, spot.z, mv.r * 1.2);
       fx.sparkle(spot.x, gy + 0.3, spot.z, MOVE_COL[m.def.el] || '#ffffff', 16);
       audio.play('hit');
-      bossBlow(m, mv.mult, spot.x, spot.z, mv.r);
+      bossBlow(m, mv.mult, spot.x, spot.z, mv.r, true);
     }, 0.9);
   }, Math.max(0, land - travel) * 1000);
 });
@@ -680,7 +689,7 @@ mobs.on('meteors', (m, mv, n) => {
           fx.puff(spot.x, gy + 0.2, spot.z, mv.r * 1.2);
           fx.sparkle(spot.x, gy + 0.3, spot.z, mv.color || '#ff6a1a', 14);
           audio.play('hit');
-          bossBlow(m, mv.mult, spot.x, spot.z, mv.r);
+          bossBlow(m, mv.mult, spot.x, spot.z, mv.r, true);
           if (m.def.burns) burnGround(m, spot.x, spot.z);
         }, 0.9);
       }, Math.max(0, M.land - fall) * 1000);
@@ -742,7 +751,7 @@ mobs.on('shoot', (m) => {
   const foe = m.foe || player; // a beast it turned on, or the hero
   fx.bolt(m.x, y, m.z, foe === player ? playerMark : foe, '#efe2c0', () => {
     if (!m.alive && !mobs.list.includes(m)) return;
-    if (!foe.canBeHit() || foe.state === 'down') return;
+    if (!foe.canBeHit(true) || foe.state === 'down') return; // (an arrow: it reaches the Hawk too)
     const res = mobAttack(m.def, foe.ps);
     if (res.miss) fx.number(foe.x, overHead(foe, 1.3), foe.z, res.dodge ? 'Lucky!' : 'Miss', 'miss');
     else foe.takeDamage(res.dmg, m.x, m.z);
@@ -2733,6 +2742,24 @@ function playIntro(done) {
   });
 }
 
+// ---------- the beasts' health, under the hero's panel and its buttons: a row and a bar for each ----------
+const petsEl = document.getElementById('pets');
+let petsKey = '', petsT = 0;
+function tickPets(dt) {
+  if ((petsT -= dt) > 0) return;
+  petsT = 0.15;
+  const list = allies.list.filter((b) => b.alive);
+  const key = list.map((b) => `${b.kind}${Math.ceil(b.hp)}/${b.maxHp}`).join('|');
+  if (key === petsKey) return;
+  petsKey = key;
+  petsEl.hidden = !list.length;
+  document.body.style.setProperty('--pets-h', `${list.length ? list.length * 17 + 8 : 0}px`); // (the toasts step down under them)
+  petsEl.innerHTML = list.map((b) => {
+    const f = Math.max(0, Math.min(1, b.hp / b.maxHp));
+    return `<div class="pet${f < 0.3 ? ' low' : ''}"><b style="color:${b.K.aura}">${b.K.name}</b><i><s style="width:${(f * 100).toFixed(1)}%;background:${b.K.aura}"></s></i><em>${Math.ceil(b.hp)}</em></div>`;
+  }).join('');
+}
+
 const clock = new THREE.Clock();
 let started = false;
 let stepT = 0;
@@ -2779,6 +2806,7 @@ function frame() {
   if (live) tickWading(dt);
   if (live) { tickVigil(dt); tickStorySpawn(); }
   if (live) tickRaid(dt);
+  if (live) tickPets(dt);
   dressPeople();
   tickAura(dt, t, b);
   updateCastBar();
@@ -2854,28 +2882,43 @@ const slotHere = activeSlot(), slotsEl = document.getElementById('t-slots');
 const heroes = Array.from({ length: SLOTS }, (_, i) => (i === slotHere ? save : loadSave(i)));
 let picked = slotHere;
 const heroName = (d) => d.look?.name || 'Hero';
+const lvLine = (p) => (p.v === 2 ? `Base Lv ${p.baseLv} · Job Lv ${p.jobLv}` : `Lv ${p.level | 0 || 1}`);
 function drawSlots() {
   slotsEl.innerHTML = heroes.map((d, i) => {
     const on = i === picked ? ' on' : '';
-    if (!d) return `<button class="tslot empty${on}" data-i="${i}"><span class="tpic">+</span><span><b>Empty</b><small>A new hero</small></span></button>`;
-    const p = d.prog || {}, lv = p.v === 2 ? `Lv ${p.baseLv}/${p.jobLv}` : `Lv ${p.level | 0 || 1}`;
+    if (!d) return `<button class="tslot empty${on}" data-i="${i}"><span class="tpic">+</span><span><b>Create a hero</b><small>Empty slot</small></span><i class="tslotno">${i + 1}</i></button>`;
+    const p = d.prog || {};
     const pic = headsReady() ? `<img class="tpic" src="${lookPortrait({ hair: 'messy', dye: 'brown', ...d.look }, 48)}" alt="">` : '<span class="tpic"></span>';
-    return `<button class="tslot${on}" data-i="${i}">${pic}<span><b>${esc(heroName(d))}</b><small>${esc(JOBS[p.job]?.name || JOBS.novice.name)} · ${lv}</small><small>${esc(ZONE_NAMES[d.map] || ZONE_NAMES.camp)}</small></span></button>`;
+    return `<button class="tslot${on}" data-i="${i}">${pic}<span><b>${esc(heroName(d))}</b><small>${esc(JOBS[p.job]?.name || JOBS.novice.name)} · ${lvLine(p)}</small><small>${esc(ZONE_NAMES[d.map] || ZONE_NAMES.camp)}</small></span><i class="tslotno">${i + 1}</i></button>`;
   }).join('');
-  tContinue.textContent = !heroes[picked] ? 'New Hero' : picked === slotHere ? 'Continue' : 'Play';
+  tContinue.textContent = !heroes[picked] ? 'Create Hero' : picked === slotHere ? 'Continue' : 'Play';
   tNew.hidden = !heroes[picked];
   tBackup.hidden = !heroes.some(Boolean);
+  drawPreview();
   if (!headsReady() && heroes.some(Boolean) && !started) setTimeout(drawSlots, 300); // the portraits, once the heads have loaded
 }
+// the picked hero, full size in the job they wear, turning slowly round (all eight sides)
+const TURN = ['down', 'downleft', 'left', 'upleft', 'up', 'upright', 'right', 'downright'];
+const tpImg = document.getElementById('tp-img'), tpEmpty = document.getElementById('tp-empty'), tpInfo = document.getElementById('tp-info');
+let turnAt = 0;
+function drawPreview() {
+  const d = heroes[picked];
+  tpImg.hidden = !d; tpEmpty.hidden = !!d;
+  if (!d) { tpInfo.innerHTML = '<b>A new hero</b><span>Begin a new tale by the last fire</span>'; return; }
+  const p = d.prog || {};
+  tpImg.src = heroPic(p.job || 'novice', d.look, TURN[turnAt % TURN.length]);
+  tpInfo.innerHTML = `<b>${esc(heroName(d))}</b><span>${esc(JOBS[p.job]?.name || JOBS.novice.name)} · ${lvLine(p)}</span><small>${esc(ZONE_NAMES[d.map] || ZONE_NAMES.camp)}</small>`;
+}
+const turnTimer = setInterval(() => { if (started || !title.isConnected) { clearInterval(turnTimer); return; } if (heroes[picked] && headsReady()) { turnAt++; tpImg.src = heroPic(heroes[picked].prog?.job || 'novice', heroes[picked].look, TURN[turnAt % TURN.length]); } }, 420);
 slotsEl.addEventListener('click', (e) => {
   const b = e.target.closest('.tslot');
   if (!b || +b.dataset.i === picked) return;
   picked = +b.dataset.i;
-  confirmNew = false; tNew.textContent = 'Delete'; tNew.classList.remove('warn');
+  confirmNew = false; tNew.textContent = 'Delete'; tNew.classList.remove('warn'); tNew.classList.add('ghost');
   audio.play('ui');
   drawSlots();
 });
-const soundLabel = () => { tSound.textContent = `Sound: ${audio.enabled ? 'On' : 'Off'}`; };
+const soundLabel = () => { tSound.textContent = audio.enabled ? '🔊' : '🔇'; tSound.title = `Sound: ${audio.enabled ? 'On' : 'Off'}`; };
 soundLabel();
 tSound.addEventListener('click', () => { audio.start(); audio.setEnabled(!audio.enabled); soundLabel(); audio.play('ui'); });
 // back up the save as a line of text (to keep in notes or a chat), or paste one back in
@@ -2899,8 +2942,13 @@ const openCode = (mode) => {
     codeGo.textContent = 'Load';
   }
 };
-tBackup.addEventListener('click', () => openCode('backup'));
-tRestore.addEventListener('click', () => openCode('restore'));
+// the Account menu (top right): back up or restore every hero and the storage
+const tAccount = document.getElementById('t-account'), acctMenu = document.getElementById('t-acctmenu');
+const acctOpen = (on) => { acctMenu.hidden = !on; tAccount.setAttribute('aria-expanded', String(on)); };
+tAccount.addEventListener('click', (e) => { e.stopPropagation(); audio.play('ui'); acctOpen(acctMenu.hidden); });
+title.addEventListener('click', (e) => { if (!e.target.closest('.t-acct')) acctOpen(false); });
+tBackup.addEventListener('click', () => { acctOpen(false); openCode('backup'); });
+tRestore.addEventListener('click', () => { acctOpen(false); openCode('restore'); });
 document.getElementById('t-code-close').addEventListener('click', () => { codeBox.hidden = true; audio.play('ui'); });
 codeGo.addEventListener('click', async () => {
   if (codeMode === 'backup') {
@@ -2923,13 +2971,14 @@ tNew.addEventListener('click', () => {
   if (!confirmNew) {
     confirmNew = true;
     tNew.textContent = `Tap again to delete ${heroName(heroes[picked])}`;
+    tNew.classList.remove('ghost');
     tNew.classList.add('warn');
     clearTimeout(confirmT);
-    confirmT = setTimeout(() => { confirmNew = false; tNew.textContent = 'Delete'; tNew.classList.remove('warn'); }, 3000);
+    confirmT = setTimeout(() => { confirmNew = false; tNew.textContent = 'Delete'; tNew.classList.remove('warn'); tNew.classList.add('ghost'); }, 3000);
     return;
   }
   clearTimeout(confirmT);
-  confirmNew = false; tNew.textContent = 'Delete'; tNew.classList.remove('warn');
+  confirmNew = false; tNew.textContent = 'Delete'; tNew.classList.remove('warn'); tNew.classList.add('ghost');
   clearSave(picked);
   heroes[picked] = null;
   if (picked === slotHere) { resetting = true; location.reload(); return; } // the hero in the game: start the page over without it

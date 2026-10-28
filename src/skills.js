@@ -255,7 +255,7 @@ export const SKILLS = {
   summonbear: {
     name: 'Summon Bear', job: 'beastmaster', kind: 'active', max: 5, cd: 3, icon: 'skill_sbear', beast: 'bear',
     sp: (lv) => 30 + 5 * lv,
-    desc: (lv) => `Call your Bear, marked with gold runes. It grows with your END and Max HP (${30 + 10 * lv}% of your stats), soaks blows and roars every 6 s, a war cry: the monsters round it turn on it, and all your beasts hit 10% harder for 6 s. Instinct, Maul (every 12 s): a heavy blow for 250% that stuns (bosses: a third of the chance, half as long). Called again, it comes back fresh.`,
+    desc: (lv) => `Call your Bear, marked with gold runes. It grows with your END and Max HP (${30 + 10 * lv}% of your stats), soaks blows and roars (every 10 s), a war cry: the monsters round it turn on it, and all your beasts hit 10% harder for 6 s. Instinct, Maul (every 12 s): a heavy blow for 250% that stuns (bosses: a third of the chance, half as long). Called again, it comes back fresh.`,
   },
   summonwolves: {
     name: 'Summon Wolves', job: 'beastmaster', kind: 'active', max: 5, cd: 3, icon: 'skill_swolves', beast: 'wolf',
@@ -265,7 +265,7 @@ export const SKILLS = {
   summonhawk: {
     name: 'Summon Hawk', job: 'beastmaster', kind: 'active', max: 5, cd: 3, icon: 'skill_shawk', beast: 'hawk',
     sp: (lv) => 25 + 5 * lv,
-    desc: (lv) => `Call your Hawk. It dives with your QKN (${30 + 10 * lv}% of your stats), fast, and most blows pass under it. Instinct, Dive (every 9 s): it climbs, then drops on the foe for 300%, a blow that never misses.`,
+    desc: (lv) => `Call your Hawk. It dives with your QKN (${30 + 10 * lv}% of your stats), fast, and flies out of reach of every blow up close: only arrows and thrown or falling blows reach it. Instinct, Dive (every 9 s): it climbs, then drops on the foe for 300%, a blow that never misses.`,
   },
   packfrenzy: {
     name: 'Pack Frenzy', job: 'beastmaster', kind: 'active', max: 10, needs: { summonwolves: 1 }, cd: 30, icon: 'skill_frenzy',

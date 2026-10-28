@@ -618,14 +618,16 @@ passives are at work.
 
 | Beastmaster: sword or bow, and three beasts | |
 |---|---|
-| Summon Bear | 5: a Bear with gold runes and a spiked collar. Its HP grows with your Max HP and END, its DEF with END; it soaks blows and roars every 6 s, a war cry: the monsters round it turn on it, and all your beasts hit 10% harder for 6 s. **Instinct: Maul** (every 12 s), a heavy blow for 250% that stuns |
+| Summon Bear | 5: a Bear with gold runes and a spiked collar. Its HP grows with your Max HP and END, its DEF with END; it soaks blows and roars (every 10 s), a war cry: the monsters round it turn on it, and all your beasts hit 10% harder for 6 s. **Instinct: Maul** (every 12 s), a heavy blow for 250% that stuns |
 | Summon Wolves | 5: two Wolves in skull barding, one black, one grey. They bite with your FNS, quickly, sometimes twice. **Instinct: Hamstring** (every 10 s each), a leap from up to 4 paces and a bite for 180% that slows the monster's walk by 40% for 4 s |
-| Summon Hawk | 5: a brown and gold Hawk. It dives with your QKN, fast, and most blows pass under it. **Instinct: Dive** (every 9 s), it climbs, then drops on its foe for 300%, a blow that never misses |
+| Summon Hawk | 5: a brown and gold Hawk. It dives with your QKN, fast, and flies out of reach of every blow up close: only arrows and thrown or falling blows (a boss's Boulder, a Meteor Rain) reach it. **Instinct: Dive** (every 9 s), it climbs, then drops on its foe for 300%, a blow that never misses |
 | Pack Frenzy | 10, needs Summon Wolves 1: for 15 s every beast attacks 3% faster and hits 3% harder per level. 30 s cooldown |
 | Beast Bond | passive, 10: your beasts take 2% more of your stats per level, and you get +1 DEF per level for each beast out |
 | Thick Hide | passive, 5, needs Summon Bear 3: the Bear takes 4% less damage per level, and its roar reaches further |
 | Pack Tactics | passive, 5, needs Summon Wolves 3: the Wolves bite 6% harder per level while both are on the same monster |
 | Wind Talons | passive, 5, needs Summon Hawk 3: the Hawk strikes 3% faster per level, and each dive has 2% per level to stun for 1 s |
+
+The beasts out show under your hero's panel, each with its health bar.
 
 All three beasts can be out together. Each takes a share of your stats (40% at a summon's Lv 1 to
 80% at Lv 5), so raising END, FNS or QKN makes them stronger at once. They follow you, take your
@@ -936,6 +938,12 @@ settlers lit a ring of fires to keep them dreaming: Eldrun, the fire-ring. Now t
 the ground of Ember Hill shakes, and the Fire Giant is waking. You arrive as a stranger with a
 practice sword, asleep by the camp's last fire, and wake to the Elder's shout: a thief has stolen
 the fire-ring's Heart-Ember.
+
+**Character select.** The title screen lists your three hero slots on the left; the one picked
+turns slowly in the middle, full size in the job it wears, with its name, job, levels and where
+it stands; Play (or Create Hero for an empty slot) and Delete sit under it. The **Account** menu
+(top right) backs up or restores every hero and the shared storage; the speaker button turns the
+sound on and off.
 
 **A new hero** first sees the opening cutscene: the world itself tells the old tale, shot by shot
 under letterbox bars (the fire-ring at night, the Fire Giant stirring on Ember Hill, the fields,
