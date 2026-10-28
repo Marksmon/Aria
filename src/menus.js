@@ -98,6 +98,10 @@ const CRAFTERS = {
   goblin: { title: "Ylva's Trades", note: 'Ylva makes the Goblin Lair\'s rare finds from Goblin Cores (a clear pays 3, 9, 27 or 81 by difficulty).', button: 'Trade Goblin Cores' },
 };
 
+// the storage's sections: cards apart from the other miscs
+const CHEST_TABS = { all: 'All', use: 'Usables', equip: 'Equips', misc: 'Miscs', card: 'Cards' };
+const chestKind = (id) => (ITEMS[id].card ? 'card' : ITEMS[id].type === 'equip' ? 'equip' : ITEMS[id].type === 'use' ? 'use' : 'misc');
+
 export class Menus {
   constructor(inv, prog, player, hooks) {
     this.inv = inv;
@@ -685,11 +689,14 @@ export class Menus {
     return h + '</div>';
   }
 
+  // the Keepers' storage beside the bag, in sections (each shows the bag's and the storage's of its kind)
   chest() {
-    const inv = this.inv;
-    return `<div class="rnote">Tap an item to move the whole stack. Storage is shared by all your heroes.</div><div class="chestwrap2">
-      <div><div class="rsub">Bag ${inv.bag.slots.length}/${BAG_SLOTS}</div>${this.grid(inv.bag.slots, 'bag', 18)}</div>
-      <div><div class="rsub">Storage ${inv.chest.slots.length}/${CHEST_SLOTS}</div>${this.grid(inv.chest.slots, 'chest', 18)}</div></div>`;
+    const inv = this.inv, tab = this.chestTab || 'all', of = (store) => store.slots.filter((s) => tab === 'all' || chestKind(s.id) === tab);
+    const n = (k) => inv.chest.slots.filter((s) => chestKind(s.id) === k).length;
+    const tabs = Object.entries(CHEST_TABS).map(([k, name]) => `<button class="rtab${tab === k ? ' on' : ''}" data-act="chesttab" data-id="${k}">${name}${k === 'all' ? '' : ` <small>${n(k)}</small>`}</button>`).join('');
+    return `<div class="rtabs">${tabs}</div><div class="rnote">Tap an item to move the whole stack. Storage is shared by all your heroes.</div><div class="chestwrap2">
+      <div><div class="rsub">Bag ${inv.bag.slots.length}/${BAG_SLOTS}</div>${this.grid(of(inv.bag), 'bag', 18)}</div>
+      <div><div class="rsub">Storage ${inv.chest.slots.length}/${CHEST_SLOTS}</div>${this.grid(of(inv.chest), 'chest', 18)}</div></div>`;
   }
 
   // a quest's reward line; a job trial's steps on the way pay nothing, its last step the lot
@@ -994,6 +1001,7 @@ export class Menus {
       if (r) { this.quizNote = r; this.hooks.answered?.(t.dataset.id, r.ok); this.render('talk'); }
     }
     if (act === 'tab') { this.tab = t.dataset.id; this.selected = null; this.render(id); }
+    if (act === 'chesttab') { this.chestTab = t.dataset.id; this.render(id); }
     if (act === 'equip' && inv.equip(this.selected)) { this.selected = null; this.hooks.equipped?.(); }
     if (act === 'eqpick') {
       const key = t.dataset.id, now = performance.now();

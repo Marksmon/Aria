@@ -3,7 +3,7 @@
 import { ITEMS, RECIPES, SLOTS, PRICES, sellPrice, canWear, parseKey, makeKey, refineInfo, canEnchant, canInsert, ENCHANT, MAX_SLOTS, enchantStep, maybeSlotted, UNCARD_FEE } from './items.js';
 
 export const BAG_SLOTS = 48;
-export const CHEST_SLOTS = 96; // the Keepers' storage, shared by every hero (save.js)
+export const CHEST_SLOTS = 300; // the Keepers' storage, shared by every hero (save.js): room for three heroes' worth
 const STACK = 999;
 // items that changed id: an old save's pieces come back as the new ones (upgrades and cards kept)
 const RENAMED = { ore_crown: 'goat_horns', warlord_mask: 'elf_ears' };
