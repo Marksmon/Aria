@@ -16,6 +16,7 @@ import { Inventory } from './inventory.js';
 import { Progress, JOBS, RATES, QUEST_RATE } from './progress.js';
 import { Quests, QUESTS, NPCS, FARES, NEXT, SERIES, giverOf } from './quests.js';
 import { Story, INTRO, STORY, route } from './story.js';
+import { playCutscene } from './cutscene.js';
 import { Villagers } from './villagers.js';
 import { Tiles } from './tiles.js';
 import { Hotbar } from './hotbar.js';
@@ -1315,7 +1316,7 @@ function storyDone() {
 }
 function checkStory() {
   if (!storyLive() || menus.isOpen('story')) return;
-  if (story.met({ prog, hotbar, skillLv, keepers })) storyDone();
+  if (story.met({ prog, hotbar, skillLv, keepers, inv, quests })) storyDone();
 }
 function startStory() {
   if (story.flags.intro) return;
@@ -1363,7 +1364,11 @@ const menus = new Menus(inv, prog, player, {
   storyStep: () => (storyLive() ? story.step : null),
   // story pages that ask (the Seeress's rune-reading): each answer counts toward a calling
   storyFlags: () => story.flags,
-  storyChoice: (key) => { const c = (story.flags.calling ||= {}); c[key] = (c[key] || 0) + 1; story.flags.lastCall = key; audio.play('ui'); },
+  storyChoice: (key) => {
+    audio.play('ui');
+    if (key.includes(':')) { const [k, v] = key.split(':'); story.flags[k] = v; return; } // a pick (pick:blade): kept as it is
+    const c = (story.flags.calling ||= {}); c[key] = (c[key] || 0) + 1; story.flags.lastCall = key; // an answer: counted toward a calling
+  },
   storyFx: (o) => { if (o?.shake) cam.shake = o.shake; if (o?.sound) audio.play(o.sound); },
   storyProgress: () => story.progress(),
   // the Keepers: sign their ledger, save there, and teleport between the ones you have signed
@@ -1562,7 +1567,7 @@ const menus = new Menus(inv, prog, player, {
     lookBefore = { ...player.look };
     audio.play('craft');
     persist();
-    if (mode === 'new') startStory();
+    if (mode === 'new') { cine = null; cam.dist = 12; cam.yaw = 0; villagers.show(world.id); startStory(); }
   },
 });
 menus.quests = quests;
@@ -2644,6 +2649,46 @@ function tickAura(dt, t, b) {
   ring.rotation.y = t * 0.6;
 }
 
+// ---------- the camera in a cutscene, and while the hero is made: it frames a point (focus: {x, z}),
+// from dist, turning (spin, rad/s), at its own pitch, shifted sideways (side: the hero left of centre) ----------
+let cine = null;
+const CINE_HERO = { x: -999, z: -999, state: 'down', ps: {}, canBeHit: () => false }; // (no hero for the monsters to notice)
+// the opening, before a new hero is made: the old tale, told by the world itself
+const INTRO_SHOTS = [
+  { map: 'camp', time: 0.8, focus: 'fire', dist: 19, yaw: 0.4, spin: 0.05, secs: 6, text: 'Long ago, the fire-jotnar slept beneath the hills of Aria.' },
+  { map: 'camp', time: 0.82, focus: 'fire', dist: 8.5, pitch: 0.55, yaw: 2.2, spin: 0.09, secs: 6, text: 'The first settlers lit a ring of fires to keep them dreaming, and named their camp Eldrun: the fire-ring.' },
+  { map: 'ridge', time: 0.63, focus: 'jarl', dist: 12, pitch: 0.6, yaw: 0.8, spin: 0.06, secs: 6.5, shake: 0.6, sound: 'night', text: 'Now the fires burn low. And beneath Ember Hill, the Fire Giant stirs in his sleep...' },
+  { map: 'grove', time: 0.83, focus: 'field', dist: 13, yaw: 3.6, spin: 0.07, secs: 5.5, text: 'Monsters wander the fields, and strange lights drift through the night.' },
+  { map: 'camp', time: 0.92, focus: 'hero', dist: 7.5, pitch: 0.62, yaw: 5.2, spin: 0.05, secs: 6, text: 'And over the mountains came a stranger, with a practice sword and a head full of songs...' },
+  { map: 'camp', time: 0.92, focus: 'fire', dist: 11, yaw: 5.6, spin: 0.03, secs: 5, card: { title: 'Aria', sub: 'The Last Fire-Ring' } },
+];
+function cineShot(s) {
+  if (world.id !== s.map) enterMap(s.map, null, s.map === 'camp' ? null : { x: 3, z: 3 }); // (the hero out of the shot)
+  dayNight.t = s.time;
+  mobs.update(0.01, CINE_HERO); // (a boss's time come: the Fire Giant appears)
+  const jarl = () => mobs.list.find((m) => m.type === 'jarl' && m.alive);
+  const near = mobs.list.find((m) => m.alive && m.type === 'wisp') || mobs.list.find((m) => m.alive), field = near ? { x: near.x, z: near.z } : { x: 32, z: 32 }; // (where something moves)
+  const focus = { fire: () => ({ x: 32, z: 32 }), field: () => field, hero: () => player, jarl: () => jarl() || { x: 32, z: 40 } }[s.focus];
+  cine = { focus, dist: s.dist, pitch: s.pitch, spin: s.spin, side: 0 };
+  cam.yaw = s.yaw;
+  const f = focus();
+  cam.target.set(f.x, world.heightAt(f.x, f.z), f.z);
+  if (s.shake) cam.shake = s.shake;
+  if (s.sound) audio.play(s.sound);
+}
+// the opening cutscene, then the world as a new hero finds it (no trace of the shots kept)
+function playIntro(done) {
+  playCutscene(INTRO_SHOTS, cineShot, () => {
+    cine = null;
+    mobs.fieldAt = {}; mobs.bossAt = {}; mobs.bossHp = {};
+    for (const k of Object.keys(groundLeft)) delete groundLeft[k];
+    enterMap('camp');
+    dayNight.t = 0.04;
+    cam.yaw = 0; cam.dist = 12;
+    done();
+  });
+}
+
 const clock = new THREE.Clock();
 let started = false;
 let stepT = 0;
@@ -2659,7 +2704,7 @@ function frame() {
 
   const b = camBasis();
   // windows never pause the game, like Ragnarok
-  for (const w of ['items', 'equip', 'skills', 'status', 'raids', 'journal', 'settings']) if (input.tapped(w) && started) menus.toggle(w);
+  for (const w of ['items', 'equip', 'skills', 'status', 'raids', 'journal', 'settings']) if (input.tapped(w) && started) { menus.toggle(w); if (menus.isOpen(w)) story.flags[`opened_${w}`] = true; } // (a story step may ask for a window)
   if (input.tapped('attack') && started) attackNow();
   if (input.tapped('close')) { if (bigmap.open) bigmap.close(); else menus.close(); }
   bigmap.update(dt);
@@ -2674,7 +2719,8 @@ function frame() {
     if (stepT <= 0) { stepT = 1.4 / player.walkSpeed(); audio.play('step'); } // a footstep every 1.4 tiles
   }
   audio.update(dt, dayNight.night);
-  if (!started) cam.yaw += dt * 0.05; // slow orbit behind the title screen
+  if (!started && !cine) cam.yaw += dt * 0.05; // slow orbit behind the title screen
+  if (!started && cine) mobs.update(dt, CINE_HERO); // (the cutscene's world goes on)
   mobs.cam = b;
   allies.cam = b;
   if (live) mobs.update(dt, player);
@@ -2695,9 +2741,17 @@ function frame() {
   hotbar.update();
   world.updateOcclusion(player.x, player.z, b, player.goal?.mob?.alive ? player.goal.mob : null);
 
-  const py = world.heightAt(player.x, player.z);
-  cam.target.lerp(tmpV.set(player.x, py, player.z), 1 - Math.exp(-8 * dt));
-  const pitch = lerp(0.72, 0.98, (cam.dist - 7) / 13);
+  if (cine) { // a cutscene's shot, or the hero's making: the camera frames its own point
+    const f = cine.focus(), up = cine.up || 0; // (side: to the screen's right, so the focus sits left; up: toward the camera, so it sits high)
+    const rx = Math.cos(cam.yaw) * (cine.side || 0) + Math.sin(cam.yaw) * up, rz = -Math.sin(cam.yaw) * (cine.side || 0) + Math.cos(cam.yaw) * up;
+    cam.target.lerp(tmpV.set(f.x + rx, world.heightAt(f.x, f.z), f.z + rz), 1 - Math.exp(-4 * dt));
+    cam.yaw += cine.spin * dt;
+    cam.dist = cine.dist;
+  } else {
+    const py = world.heightAt(player.x, player.z);
+    cam.target.lerp(tmpV.set(player.x, py, player.z), 1 - Math.exp(-8 * dt));
+  }
+  const pitch = cine?.pitch ?? lerp(0.72, 0.98, (cam.dist - 7) / 13);
   const horiz = Math.cos(pitch) * cam.dist;
   cam.shake = Math.max(0, cam.shake - dt);
   const sh = cam.shake * 0.5;
@@ -2853,6 +2907,13 @@ function begin() {
   audio.start();
   audio.play('ui');
   title.classList.add('hide');
+  if (!save && !cine) { // a new hero: the opening cutscene first, then the making
+    setTimeout(() => { title.style.display = 'none'; playIntro(enterGame); }, 450);
+    return;
+  }
+  enterGame();
+}
+function enterGame() {
   document.getElementById('hud').classList.remove('pre');
   started = true;
   input.enabled = true;
@@ -2861,8 +2922,12 @@ function begin() {
   setTimeout(() => {
     title.remove();
     ui.showZone(world.id);
-    if (!save) menus.openLook('new', player.look); // a new character: choose your hair first
-    else startStory();
+    if (!save) { // a new character: their making, the camera close on them as they turn
+      const wide = innerWidth > 640; // (a phone held upright: the hero above the choices)
+      cine = { focus: () => player, dist: wide ? 5.2 : 7, pitch: wide ? 0.38 : 0.5, spin: 0.35, side: wide ? 1.35 : 0, up: wide ? 0 : 5 };
+      villagers.show(null); // (the camp's people step out of the picture)
+      menus.openLook('new', player.look);
+    } else startStory();
     const hint = document.getElementById('hint');
     hint.classList.add('show');
     setTimeout(() => hint.classList.remove('show'), 6000);

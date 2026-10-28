@@ -15,6 +15,8 @@
 //   hotbar - put an item or skill on the hotbar   sell - sell something in a shop
 //   job   - change job                     level - reach a Base Level (lv)
 //   job2  - take a second job              keeper - sign a second Keeper's ledger
+//   equip - wear an item (item)            accept - take any quest from someone
+//   window - open a window (window: its id)
 // kill steps may name one monster (mob) or several (mobs: any of them counts), and may bring their own
 // (spawn: { mob, at }: a story monster there whenever the hero is on the map: main.js tickStorySpawn).
 // A line may be a function of the story's flags, and carry options: { shake, sound } as it shows, or
@@ -29,13 +31,15 @@ import { skillLv } from './skills.js';
 
 // the three callings the Seeress's runes can name (the 'seeress' step asks; callingOf reads the answers)
 export const CALLINGS = {
-  blade: { job: 'swordman', name: 'the Blade', trainer: 'Captain Ulfr', where: 'by the south gate of Steinborg',
+  blade: { job: 'swordman', jobName: 'Blader', city: 'city', name: 'the Blade', trainer: 'Captain Ulfr', where: 'by the south gate of Steinborg',
     rune: "Tiwaz, the spear-rune, lands on top, bright as steel. Yours is the Blade: to stand in front and take the blow, so that others need not. Captain Ulfr trains Bladers, here in Steinborg." },
-  rune: { job: 'mage', name: 'the Rune', trainer: 'Archmage Vigdis', where: 'in Galdrheim, north of Fen Shore',
+  rune: { job: 'mage', jobName: 'Sorcerer', city: 'magic', name: 'the Rune', trainer: 'Archmage Vigdis', where: 'in Galdrheim, north of Fen Shore',
     rune: "Kenaz, the torch-rune, burns on top of the pile. Yours is the Rune: fire and frost at a word, for those patient enough to learn them. Archmage Vigdis teaches Sorcerers in Galdrheim, north of Fen Shore." },
-  bow: { job: 'archer', name: 'the Bow', trainer: 'Huntmaster Sigrid', where: 'in Veidheim, east past Willow Marsh',
+  bow: { job: 'archer', jobName: 'Archer', city: 'hunt', name: 'the Bow', trainer: 'Huntmaster Sigrid', where: 'in Veidheim, east past Willow Marsh',
     rune: "Raido, the road-rune, points away to the horizon. Yours is the Bow: quick feet and a sure eye, striking from where nothing can reach you. Huntmaster Sigrid trains Archers in Veidheim, past Willow Marsh." },
 };
+// the path the hero picked at Eldrun (the 'paths' step), else the runes' calling, else the Blade
+export const pickOf = (flags) => CALLINGS[flags?.pick] ? flags.pick : callingOf(flags) || 'blade';
 // the calling the hero's answers point to (a tie goes to the last answer among the tied), or null
 export function callingOf(flags) {
   const c = flags?.calling || {};
@@ -47,10 +51,9 @@ export function callingOf(flags) {
   return best && c[best] ? best : null;
 }
 
+// after the opening cutscene (main.js INTRO_SHOTS) and the hero's making: the waking
 export const INTRO = [
-  [null, 'Long ago, the fire-jotnar slept beneath the hills of Aria. The first settlers lit a ring of fires around their camp to keep them dreaming, and named it Eldrun: the fire-ring.'],
-  [null, 'Tonight the ground trembles. Far to the south, beneath Ember Hill, something vast turns over in its sleep...', { shake: 0.45, sound: 'night' }],
-  [null, 'You crossed the mountains with a practice sword and a head full of songs, and fell asleep beside the camp\'s last fire. You dreamt of an eye like a forge, slowly opening.'],
+  [null, 'The fire crackles low. Far to the south, the ground groans, and the whole camp trembles...', { shake: 0.45, sound: 'night' }],
   ['bram', 'Wake up! Wake up, young one! Thieves in the stores, and the fire-ring\'s Heart-Ember is gone! Come here, quickly. Tap me to walk over.', { shake: 0.2 }],
 ];
 
@@ -59,15 +62,21 @@ export const STORY = [
   { id: 'wake', ch: 'Prologue', title: 'Awake by the Fire', kind: 'talk', npc: 'bram', goal: 'Talk to Elder Halvard by the campfire',
     say: [['bram', 'The Heart-Ember: the coal at the heart of the fire-ring, burning since the first settlers. It keeps the ring alight, and the ring keeps the Giant dreaming.'],
       ['bram', 'A bloop took it. A golden one, fat with the ember\'s warmth, out of the north portal into Moss Field. Bloops love a warm thing more than their own jelly.'],
-      ['bram', 'I am too old to chase bloops. You are not. But first, know your strength: open the Status window (the button under your HP), place points with ▲ and press Confirm. POW for a strong arm, KNL for a sharp mind, FNS for a sure aim.']],
-    reward: { xp: 4, items: { potion: 3 } } },
+      ['bram', 'I am too old to chase bloops. You are not. Here: three Red Potions, and my old Traveler\'s Cloak. It kept me warm on worse roads than this.'],
+      [null, 'LESSON: STATS. First, know your strength. Open the Status window (Status, under your HP), place points with ▲ and press Confirm to lock them in. POW for a strong arm, KNL for a sharp mind, FNS for a sure aim, END to take a blow, QKN to strike fast, FTN for luck.']],
+    reward: { xp: 4, items: { potion: 3, travel_cloak: 1 } } },
   { id: 'stats', ch: 'Prologue', title: 'Know Your Strength', kind: 'stat', goal: 'Open the Status window, place a point with ▲ and press Confirm',
-    say: [['bram', 'Good. Now go: through the north portal to Moss Field. Bloops crowd the way. Chase off three of them: tap a monster to fight it, and tap what it drops to pick it up.'],
+    say: [['bram', 'Good. Every level brings more points: spend them as you grow.'],
+      [null, 'LESSON: EQUIPMENT. Now put on the cloak. Open the Items window (Items, under your HP), tap the Traveler\'s Cloak and press Equip. The Equip window shows everything you wear (weapon, armor, cloak, shoes, accessories) and what each gives.']],
+    reward: { xp: 4 } },
+  { id: 'equip', ch: 'Prologue', title: 'Dressed for the Road', kind: 'equip', item: 'travel_cloak', goal: 'Wear the Traveler\'s Cloak: Items window, tap the cloak, then Equip',
+    hint: 'Gear raises your DEF, HP and more: the Status window shows the gain. Better gear drops from monsters, and the smiths sell and forge it.',
+    say: [['bram', 'It suits you. Now go: through the north portal to Moss Field. Bloops crowd the way. Chase off three of them: tap a monster to fight it, and tap what it drops to pick it up.'],
       ['bram', 'Then find the thief. It glitters gold, and it runs.']],
     reward: { xp: 4 } },
   { id: 'slimes', ch: 'Prologue', title: 'Into Moss Field', kind: 'kill', mob: 'slime', n: 3, map: 'grove', goal: 'Defeat 3 Bloops in Moss Field (north portal)',
-    say: [[null, 'Your Job Level rises with every fight, and each Job Level brings a skill point.'],
-      [null, 'Open the Skills window and raise Basic Training with ▲ before you go after the thief. Every Trainee starts there.']],
+    say: [[null, 'LESSON: SKILLS. Your Job Level rises with every fight, and each Job Level brings a skill point.'],
+      [null, 'Open the Skills window (Skills, under your HP) and raise Basic Training with ▲ before you go after the thief. Every Trainee starts there, and a job trial wants it at 9.']],
     reward: { xp: 6 } },
   { id: 'training', ch: 'Prologue', title: 'Basic Training', kind: 'skill', skill: 'basics', lv: 1, goal: 'Raise Basic Training in the Skills window',
     say: [[null, 'Something glitters gold between the trees: the Gel Thief! The Heart-Ember glows inside it like a coal in jelly.', { sound: 'heart' }],
@@ -78,7 +87,7 @@ export const STORY = [
     goal: 'Catch the Gel Thief in Moss Field: corner the golden bloop and win back the Heart-Ember',
     hint: 'It runs when you come near. Drive it against the trees or the field\'s edge, and it turns to fight.',
     say: [[null, 'The Gel Thief bursts in a shower of golden jelly, and the Heart-Ember drops into the moss, still warm.', { shake: 0.25 }],
-      [null, 'Before you carry it home: open your Items window and drag a Red Potion onto the hotbar at the bottom. One tap drinks it, even in the middle of a fight. Something tells you that you will need it.']],
+      [null, 'LESSON: ITEMS. Before you carry it home: open your Items window and drag a Red Potion onto the hotbar at the bottom. One tap drinks it, even in the middle of a fight. Something tells you that you will need it.']],
     reward: { xp: 10, job: 30 } },
   { id: 'hotbar', ch: 'Prologue', title: 'Ready at Hand', kind: 'hotbar', item: 'potion', goal: 'Drag a Red Potion onto the hotbar',
     say: [[null, 'Skills go on the hotbar the same way, from the Skills window.'],
@@ -100,8 +109,17 @@ export const STORY = [
       [null, 'The fire-ring roars up, gold and white, higher than the tents. For a moment the whole camp is bright as noon.', { shake: 0.35 }],
       ['bram', '...and sinks again. Lower than last night. Lower than the night before. The ember is home, but the ring is failing all the same, and the ground of Ember Hill still shakes.'],
       ['bram', 'North past Moss Field stands Steinborg, the stone-fort. Take word to Captain Ulfr of the Watch that Eldrun\'s fires are failing. He will know what it means.'],
-      ['bram', 'And whenever you have a quest of your own to finish, look for the ! over people\'s heads. There is always someone who needs help.']],
+      [null, 'LESSON: QUESTS. Before you go, help someone. A ! over a head means a quest for you, a ? one to hand in. Elder Halvard himself has one: tap him.']],
     reward: { xp: 10, perz: 100 } },
+  { id: 'helping', ch: 'Prologue', title: 'A Helping Hand', kind: 'accept', map: 'camp', goal: 'Take a quest from someone with a ! over their head (Elder Halvard has one)',
+    hint: 'Tap them, read what they need, and press Accept.',
+    say: [[null, 'Quests under way show under the clock. Tap one for its Quest View: the goal, the reward, and Go there, which walks you to it.'],
+      [null, 'Now open the Quests window (Quests, under your HP): every quest in one place.']],
+    reward: { xp: 6 } },
+  { id: 'questbook', ch: 'Prologue', title: 'The Quest Book', kind: 'window', window: 'journal', goal: 'Open the Quests window (Quests, under your HP)',
+    say: [[null, 'Main is this story. Job holds the job trials, Series the quests people give one after another, Side the rest. A quest on offer has Go there too.'],
+      ['bram', 'Good. Now north with you, past Moss Field to Steinborg. Captain Ulfr is waiting for news, even if he does not know it yet.']],
+    reward: { xp: 6, perz: 50 } },
 
   // ---------- Chapter 1: the stone-fort ----------
   { id: 'north', ch: 'Chapter 1: The Stone-Fort', title: 'The Road North', kind: 'visit', map: 'city', goal: 'Travel north through Moss Field to Steinborg',
@@ -130,7 +148,7 @@ export const STORY = [
       [null, 'Saeunn shakes the rune-bones in her cupped hands and casts them across the table. They clatter, spin... and lie still.', { sound: 'heart' }],
       ['saeunn', (flags) => CALLINGS[callingOf(flags) || 'blade'].rune],
       ['saeunn', 'But runes advise; they do not command. Once you are ready (Trainee Job 10, Basic Training 9), the Blade, the Rune and the Bow will each try you. The road you walk is yours.'],
-      ['saeunn', 'Until then, grow strong. Hild in the square will buy what you find, and Gunnar forges gear.']],
+      ['saeunn', 'Until then, grow strong. Hild in the square will buy what you find, and Gunnar forges gear. And when you are ready to choose, go home to Eldrun: Halvard has seen many young ones choose.']],
     reward: { xp: 60 } },
   { id: 'trade', ch: 'Chapter 1: The Stone-Fort', title: 'Coin for the Road', kind: 'sell', goal: 'Sell something to Hild the Trader (or Gunnar)',
     say: [[null, 'Perz is the coin of Aria. Monsters don\'t carry any: you earn it by selling what they drop, and from quests.'],
@@ -143,22 +161,46 @@ export const STORY = [
   { id: 'trainee', ch: 'Chapter 2: The Three Paths', title: 'A Trainee\'s Road', kind: 'kill', mobs: ['blueSlime', 'crab'], n: 15, map: 'fen', goal: 'Toughen up in Fen Shore (west of the camp): defeat 15 Blue Bloops or Crabs',
     hint: 'Every fight brings Job EXP. A job trial wants Trainee Job 10 and Basic Training 9, so spend each skill point as it comes.',
     say: [[null, 'The fen goes quiet around you. Your arm is steadier, your feet quicker: a Trainee no more, in all but name.'],
-      [null, (flags) => { const c = CALLINGS[callingOf(flags)]; return c ? `The runes named ${c.name}: ${c.trainer} waits ${c.where}. But any of the three will try you, once you are ready.` : 'The Blade, the Rune or the Bow: Captain Ulfr in Steinborg, Archmage Vigdis in Galdrheim, Huntmaster Sigrid in Veidheim. Any of them will try you, once you are ready.'; }]],
+      [null, 'Time to choose a path. Go home to Eldrun Camp: Elder Halvard is waiting by the fire.']],
     reward: { xp: 60, job: 250 } },
-  { id: 'path', ch: 'Chapter 2: The Three Paths', title: 'Choose Your Path', kind: 'job', goal: 'Reach Trainee Job 10 with Basic Training 9, then pass a job trial: Captain Ulfr in Steinborg (Blader), Archmage Vigdis in Galdrheim, north of Fen Shore (Sorcerer), or Huntmaster Sigrid in Veidheim, east past Willow Marsh (Archer)',
-    // a hint may depend on the hero: whether the trials are open yet, and the calling the runes named
+  // the jobs explained, and the hero's pick (flags.pick): the story then sends them to that trainer
+  { id: 'paths', ch: 'Chapter 2: The Three Paths', title: 'By the Fire', kind: 'talk', npc: 'bram', goal: 'Go home to Eldrun Camp: Elder Halvard will help you choose a path',
+    say: [['bram', 'Sit, sit. You have grown since the morning I shook you awake. It is time you chose a path. Three masters train the young of Aria, and each path grows into something greater.'],
+      [null, 'THE BLADE: Captain Ulfr, Steinborg. Sword in hand, POW and END: you stand in front and take the blows. A Blader grows into a BladeMaster: the steadiest damage in Aria, with Blade Dance and Sword Storm.'],
+      [null, 'THE RUNE: Archmage Vigdis, Galdrheim. Fire, frost, wind and earth at a word, with KNL behind them. A Sorcerer grows into a Wizard: storms and meteors that break whole crowds, every element turned against the one it beats.'],
+      [null, 'THE BOW: Huntmaster Sigrid, Veidheim. You shoot from five paces, with FNS for aim and quick feet. An Archer grows into a Windrunner: lightning-fast shots, and bursts of wind that carry you out of harm\'s way.'],
+      ['bram', 'And some walk two paths at once. Learn two first jobs, raise each to 20 skill points by Job 40, and a mixed second job opens:'],
+      [null, 'THE MAGIC KNIGHT (Blade and Rune: Sir Eirik, Steinborg) lays spells along the blade. THE MOON RANGER (Rune and Bow: Hrafn the Stargazer, Galdrheim) shoots arrows of starfall. THE BEASTMASTER (Blade and Bow: Bjarki, Veidheim) fights beside a bear, wolves and a hawk.'],
+      ['bram', (flags) => { const c = CALLINGS[callingOf(flags)]; return `So, young one: which path will you walk first?${c ? ` (Saeunn's runes named ${c.name}.)` : ''}`; },
+        { choices: [['The Blade: a Blader, with Captain Ulfr in Steinborg', 'pick:blade'], ['The Rune: a Sorcerer, with Archmage Vigdis in Galdrheim', 'pick:rune'], ['The Bow: an Archer, with Huntmaster Sigrid in Veidheim', 'pick:bow']] }],
+      ['bram', (flags) => { const c = CALLINGS[pickOf(flags)]; return `${c.name.slice(4)} it is! Go to ${c.trainer}, ${c.where}. Reach Trainee Job 10 with Basic Training 9, and the trial is yours to take.`; }, { sound: 'heart' }],
+      ['bram', 'Change your mind on the road? Any of the three will try you instead, no harm done. And mark this: once you pass one trial, the other two stay open to you. Pass them as well, wear whichever first job you like at a Keeper, and that is how the mixed paths begin.']],
+    reward: { xp: 40 } },
+  { id: 'journey', ch: 'Chapter 2: The Three Paths', title: 'The Road to the Trainer', kind: 'visit',
+    map: (flags) => CALLINGS[pickOf(flags)].city,
+    goal: (flags) => { const c = CALLINGS[pickOf(flags)]; return `Travel to ${ZONE_NAMES[c.city]} to train as a ${c.jobName} with ${c.trainer}`; },
+    hint: 'Changed your mind? Captain Ulfr (Steinborg), Archmage Vigdis (Galdrheim) and Huntmaster Sigrid (Veidheim) all try Trainees: any of them will do.',
+    say: (flags) => { const c = CALLINGS[pickOf(flags)]; return [[null, `${ZONE_NAMES[c.city]}. Somewhere here, ${c.trainer} trains the ${c.jobName}s of Aria.`], [null, 'A trial wants Trainee Job 10 and Basic Training 9. Fight on until you are ready, then talk to your trainer and take it.']]; },
+    reward: { xp: 40 } },
+  { id: 'path', ch: 'Chapter 2: The Three Paths', title: 'The Job Trial', kind: 'job',
+    map: (flags) => (flags.pick ? CALLINGS[flags.pick].city : null),
+    goal: (flags) => { const c = CALLINGS[flags.pick]; return c ? `Pass the ${c.jobName} trial with ${c.trainer} in ${ZONE_NAMES[c.city]} (Trainee Job 10 and Basic Training 9 first). Changed your mind? Any first-job trainer will try you` : 'Reach Trainee Job 10 with Basic Training 9, then pass a job trial: Captain Ulfr in Steinborg (Blader), Archmage Vigdis in Galdrheim, north of Fen Shore (Sorcerer), or Huntmaster Sigrid in Veidheim, east past Willow Marsh (Archer)'; },
+    // a hint may depend on the hero: whether the trials are open yet, and the path they picked
     hint: (prog, flags) => {
-      const c = CALLINGS[callingOf(flags)];
-      if (!(prog && prog.jobLv >= 10 && skillLv(prog, 'basics') >= 9)) return 'Fight in Moss Field, Fen Shore or Dark Dale to gain Job Levels, and raise Basic Training to 9.';
-      return c ? `You're ready! The runes named ${c.name}: ${c.trainer}, ${c.where}. Or take another trial: the choice is yours.` : "You're ready: take a trial with Captain Ulfr (Steinborg), Archmage Vigdis (Galdrheim) or Huntmaster Sigrid (Veidheim).";
+      const c = CALLINGS[pickOf(flags)];
+      if (!(prog && prog.jobLv >= 10 && skillLv(prog, 'basics') >= 9)) return 'Fight in Moss Field, Fen Shore or Dark Dale to gain Job Levels, and raise Basic Training to 9 (Skills window).';
+      return `You're ready! Talk to ${c.trainer}, ${c.where}, and take the trial. Or any other trainer's: the choice is still yours.`;
     },
     // the job taken, and whether it was the one the runes named
     say: (flags, prog) => {
       const name = JOBS[prog?.job]?.name || 'hero', named = CALLINGS[callingOf(flags)];
       const fits = named && named.job === prog?.job;
+      const picked = CALLINGS[flags.pick], turned = picked && picked.job !== prog?.job; // (set out for one path, took another)
       return [[null, `You are a ${name} now.`, { shake: 0.3, sound: 'levelup' }],
+        ...(turned ? [[null, `You set out for ${picked.name.slice(4)}, and chose another road at the last. When word reaches Eldrun, Halvard will laugh into his beard: a good path is a good path.`]] : []),
         ['saeunn', !named ? 'I felt it from my tower: a new path taken. Walk it well.' : fits ? 'I felt it from my tower: the runes were right. They usually are. Walk it well.' : 'I felt it from my tower, and laughed: the runes said otherwise. I have never been so glad to be wrong. Walk it well.'],
-        [null, 'Your new skills are waiting in the Skills window. And far to the south, beneath Ember Hill, something stirs, as if it heard.']];
+        [null, 'Your new skills are waiting in the Skills window. And the other first-job trials stay open: pass them too, and you can wear any first job you have earned (switch at a Keeper). Walk two of them far enough, and a mixed second job opens.'],
+        [null, 'And far to the south, beneath Ember Hill, something stirs, as if it heard.', { shake: 0.25 }]];
     },
     reward: { xp: 500, perz: 300 } },
 
@@ -326,7 +368,12 @@ export class Story {
     this.flags = {};   // things that happened: sold, intro
   }
 
-  get step() { return STORY[this.i] || null; }
+  // (a step's goal and map may depend on the flags, the path picked: resolved here)
+  get step() {
+    const s = STORY[this.i];
+    if (!s || (typeof s.goal !== 'function' && typeof s.map !== 'function')) return s || null;
+    return { ...s, goal: typeof s.goal === 'function' ? s.goal(this.flags) : s.goal, map: typeof s.map === 'function' ? s.map(this.flags) : s.map };
+  }
   get done() { return this.i >= STORY.length; }
 
   // where the current step happens
@@ -368,6 +415,9 @@ export class Story {
       case 'survive': return !!this.flags[s.id];
       case 'raid': return !!this.flags[s.id];
       case 'stat': return Object.values(state.prog.stats).reduce((a, b) => a + b, 0) > 6;
+      case 'equip': return Object.values(state.inv?.gear || {}).some((k) => k && String(k).startsWith(s.item));
+      case 'accept': return Object.keys(state.quests?.active || {}).length > 0 || (state.quests?.done.length || 0) > 0;
+      case 'window': return !!this.flags[`opened_${s.window}`];
       case 'skill': return state.skillLv(state.prog, s.skill) >= s.lv;
       case 'hotbar': return state.hotbar.has('item', s.item);
       case 'sell': return !!this.flags.sold;

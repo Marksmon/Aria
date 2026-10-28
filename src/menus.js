@@ -160,7 +160,7 @@ export class Menus {
     for (const k of id ? [id] : Object.keys(this.wins)) {
       if (k === 'story' && this.wins[k]) story = true;
       if (k === 'status') this.pend = {}; // points not confirmed are taken back
-      if (k === 'look' && this.wins[k]) this.hooks.look?.(this.lookFrom); // trying on: the old look back
+      if (k === 'look' && this.wins[k]) { this.hooks.look?.(this.lookFrom); document.body.classList.remove('creating'); } // trying on: the old look back
       this.wins[k]?.remove();
       delete this.wins[k];
     }
@@ -311,11 +311,33 @@ export class Menus {
     this.lookFrom = { ...look };
     this.lookDraft = { ...look };
     this.close('talk');
+    if (mode === 'new') document.body.classList.add('creating'); // the hero's making: the HUD steps aside
     this.show('look');
     this.wins.look.querySelector('.rw-title').textContent = mode === 'new' ? 'Your Look' : "Embla's Chair";
   }
 
+  // the hero's making, full screen: the hero turns slowly on the left (main.js points the camera),
+  // and the choices stand on the right: name, body, a hairstyle from pictures of each, hair colour
+  creator() {
+    const d = this.lookDraft, styles = hairstyles(), body = d.body || 'm';
+    const seg = (b, name) => `<button class="cr-opt${body === b ? ' on' : ''}" data-act="lookbody" data-id="${b}" aria-pressed="${body === b}">${name}</button>`;
+    const hair = styles.map((k) => `<button class="cr-hairopt${d.hair === k ? ' on' : ''}" data-act="lookstyle" data-id="${k}" aria-pressed="${d.hair === k}"><img src="${lookPortrait({ ...d, hair: k }, 56)}" alt=""><span>${esc(HAIRSTYLES[k] || k)}</span></button>`).join('');
+    const dyes = Object.entries(DYES).map(([k, v]) => `<button class="swatch${d.dye === k ? ' on' : ''}" data-act="lookdye" data-id="${k}" title="${esc(v.name)}" aria-label="${esc(v.name)}" style="background:${v.swatch}"></button>`).join('');
+    return `<div class="cr-stage"><div class="cr-plate"><b class="cr-name">${esc(d.name?.trim() || 'Your hero')}</b><small>A stranger by the last fire</small></div></div>
+      <div class="cr-panel">
+        <div class="cr-head"><small>The Last Fire-Ring</small><h2>Who are you?</h2></div>
+        <label class="cr-field"><span>Name</span><input id="lookname" type="text" maxlength="16" autocomplete="off" spellcheck="false" placeholder="Your hero's name" value="${esc(d.name || '')}"></label>
+        <div class="cr-field"><span>Body</span><div class="cr-seg">${seg('m', 'Male')}${seg('f', 'Female')}</div></div>
+        <div class="cr-field"><span>Hairstyle</span><div class="cr-hair">${hair}</div></div>
+        <div class="cr-field"><span>Hair colour <i>${esc(DYES[d.dye].name)}</i></span><div class="swatches">${dyes}</div></div>
+        <div class="cr-actions"><button class="rbtn soft" data-act="lookrandom" title="A random look">🎲 Random</button>
+          <button class="rbtn cr-go" data-act="lookok" ${this.lookBlocked() ? 'disabled' : ''}>Begin your journey ▸</button></div>
+        <small class="cr-note">${this.lookBlocked() ? 'Give your hero a name to begin.' : 'You can change your look later at the Stylist in Steinborg.'}</small>
+      </div>`;
+  }
+
   look() {
+    if (this.lookMode === 'new') return this.creator();
     const d = this.lookDraft, styles = hairstyles();
     const price = this.lookMode === 'stylist' ? 1000 : 0;
     const body = (b, name) => `<button class="rbtn${(d.body || 'm') === b ? '' : ' soft'}" data-act="lookbody" data-id="${b}" aria-pressed="${(d.body || 'm') === b}">${name}</button>`;
@@ -346,6 +368,9 @@ export class Menus {
     this.lookDraft.name = clean;
     const ok = this.wins.look?.querySelector('[data-act="lookok"]');
     if (ok) ok.disabled = this.lookBlocked();
+    const plate = this.wins.look?.querySelector('.cr-name'), note = this.wins.look?.querySelector('.cr-note');
+    if (plate) plate.textContent = clean.trim() || 'Your hero';
+    if (note) note.textContent = this.lookBlocked() ? 'Give your hero a name to begin.' : 'You can change your look later at the Stylist in Steinborg.';
   }
 
   openShop(id) {
@@ -405,6 +430,15 @@ export class Menus {
   build(id) {
     const def = WINDOWS[id];
     const el = document.createElement('div');
+    if (id === 'look' && this.lookMode === 'new') { // the hero's making: a screen of its own
+      el.className = 'creator ui-click';
+      el.innerHTML = '<span class="rw-title" hidden></span><div class="rw-body"></div>';
+      this.layer.appendChild(el);
+      this.wins[id] = el;
+      el.addEventListener('click', (e) => this.click(e, id));
+      el.addEventListener('input', (e) => this.input(e));
+      return;
+    }
     el.className = `rw rw-${id} ui-click`;
     el.style.width = `min(${def.w}px, calc(100vw - 16px))`;
     el.innerHTML = `<div class="rw-bar"><span class="rw-title">${esc(def.title)}</span><button class="rw-x" data-act="close" aria-label="Close">×</button></div><div class="rw-body"></div>`;
@@ -981,6 +1015,12 @@ export class Menus {
       const b = t.dataset.id, d = this.lookDraft;
       if ((d.body || 'm') !== b && this.lookMode === 'new') d.hair = b === 'f' ? (d.hair === 'messy' ? 'pony' : d.hair) : (d.hair === 'pony' || d.hair === 'long' ? 'messy' : d.hair);
       d.body = b;
+      this.hooks.look?.(d); this.hooks.ui?.(); this.render(id);
+    }
+    if (act === 'lookstyle') { this.lookDraft.hair = t.dataset.id; this.hooks.look?.(this.lookDraft); this.hooks.ui?.(); this.render(id); }
+    if (act === 'lookrandom') { // any look (the name stays)
+      const pick = (a) => a[Math.floor(Math.random() * a.length)], d = this.lookDraft;
+      d.body = pick(['m', 'f']); d.hair = pick(hairstyles()); d.dye = pick(Object.keys(DYES));
       this.hooks.look?.(d); this.hooks.ui?.(); this.render(id);
     }
     if (act === 'lookdye') { this.lookDraft.dye = t.dataset.id; this.hooks.look?.(this.lookDraft); this.hooks.ui?.(); this.render(id); }
