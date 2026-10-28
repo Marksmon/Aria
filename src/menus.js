@@ -319,7 +319,7 @@ export class Menus {
   // the hero's making, full screen: the hero turns slowly on the left (main.js points the camera),
   // and the choices stand on the right: name, body, a hairstyle from pictures of each, hair colour
   creator() {
-    const d = this.lookDraft, styles = hairstyles(), body = d.body || 'm';
+    const d = this.lookDraft, body = d.body || 'm', styles = hairstyles(body);
     const seg = (b, name) => `<button class="cr-opt${body === b ? ' on' : ''}" data-act="lookbody" data-id="${b}" aria-pressed="${body === b}">${name}</button>`;
     const hair = styles.map((k) => `<button class="cr-hairopt${d.hair === k ? ' on' : ''}" data-act="lookstyle" data-id="${k}" aria-pressed="${d.hair === k}"><img src="${lookPortrait({ ...d, hair: k }, 56)}" alt=""><span>${esc(HAIRSTYLES[k] || k)}</span></button>`).join('');
     const dyes = Object.entries(DYES).map(([k, v]) => `<button class="swatch${d.dye === k ? ' on' : ''}" data-act="lookdye" data-id="${k}" title="${esc(v.name)}" aria-label="${esc(v.name)}" style="background:${v.swatch}"></button>`).join('');
@@ -338,7 +338,7 @@ export class Menus {
 
   look() {
     if (this.lookMode === 'new') return this.creator();
-    const d = this.lookDraft, styles = hairstyles();
+    const d = this.lookDraft, styles = hairstyles(d.body || 'm');
     const price = this.lookMode === 'stylist' ? 1000 : 0;
     const body = (b, name) => `<button class="rbtn${(d.body || 'm') === b ? '' : ' soft'}" data-act="lookbody" data-id="${b}" aria-pressed="${(d.body || 'm') === b}">${name}</button>`;
     return `<div class="lookwrap"><img class="lookpic" src="${lookPortrait(d, 96)}" alt="">
@@ -1007,20 +1007,20 @@ export class Menus {
     const act = t.dataset.act, inv = this.inv;
     if (act === 'close') this.close(id);
     if (act === 'lookhair') {
-      const st = hairstyles(), i = st.indexOf(this.lookDraft.hair);
+      const st = hairstyles(this.lookDraft.body || 'm'), i = st.indexOf(this.lookDraft.hair);
       this.lookDraft.hair = st[(i + +t.dataset.id + st.length) % st.length];
       this.hooks.look?.(this.lookDraft); this.hooks.ui?.(); this.render(id);
     }
-    if (act === 'lookbody') { // the other body; a new hero's hair follows it the first time (it can be changed back)
-      const b = t.dataset.id, d = this.lookDraft;
-      if ((d.body || 'm') !== b && this.lookMode === 'new') d.hair = b === 'f' ? (d.hair === 'messy' ? 'pony' : d.hair) : (d.hair === 'pony' || d.hair === 'long' ? 'messy' : d.hair);
+    if (act === 'lookbody') { // the other body: its own hairstyles (HAIR_BODY), so the hair changes to one of them
+      const b = t.dataset.id, d = this.lookDraft, st = hairstyles(b);
+      if (!st.includes(d.hair)) d.hair = st[0];
       d.body = b;
       this.hooks.look?.(d); this.hooks.ui?.(); this.render(id);
     }
     if (act === 'lookstyle') { this.lookDraft.hair = t.dataset.id; this.hooks.look?.(this.lookDraft); this.hooks.ui?.(); this.render(id); }
     if (act === 'lookrandom') { // any look (the name stays)
       const pick = (a) => a[Math.floor(Math.random() * a.length)], d = this.lookDraft;
-      d.body = pick(['m', 'f']); d.hair = pick(hairstyles()); d.dye = pick(Object.keys(DYES));
+      d.body = pick(['m', 'f']); d.hair = pick(hairstyles(d.body)); d.dye = pick(Object.keys(DYES));
       this.hooks.look?.(d); this.hooks.ui?.(); this.render(id);
     }
     if (act === 'lookdye') { this.lookDraft.dye = t.dataset.id; this.hooks.look?.(this.lookDraft); this.hooks.ui?.(); this.render(id); }

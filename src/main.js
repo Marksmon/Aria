@@ -21,7 +21,7 @@ import { Villagers } from './villagers.js';
 import { Tiles } from './tiles.js';
 import { Hotbar } from './hotbar.js';
 import { BigMap } from './bigmap.js';
-import { headsReady, paintHead, lookPortrait } from './hair.js';
+import { headsReady, paintHead, lookPortrait, hairstyles, HAIR_BODY } from './hair.js';
 import { headgearReady, gearCut, paintGears } from './headgear.js';
 import { derive, playerAttack, mobAttack, magicAttack, elementMod, ELEMENTS } from './rules.js';
 import { SKILLS, EDGE_FX, skillLv, spCost, castTime, learn, skillList, weaponOk, WEAPON_NAMES, BOW_RANGE, unlearnFirstJob, unlearnSecondJob, RETRAIN_COST } from './skills.js';
@@ -103,7 +103,11 @@ const bodyArt = (look) => lib.design(`${JOB_BODY[prog.job] || 'blader'}${prog.jo
 const player = new Player(scene, world, bodyArt({ ...save?.look }), lib.shadow, fx);
 const wings = new Wings(scene);
 player.setPos(save?.x ?? world.spawn.x, save?.z ?? world.spawn.z);
-if (save?.look) player.setLook(save.look);
+if (save?.look) { // (a hairstyle is for one body only: a hero saved with the other body's gets one of their own)
+  const b = save.look.body || 'm';
+  if (HAIR_BODY[save.look.hair] && HAIR_BODY[save.look.hair] !== b) save.look.hair = hairstyles(b)[0] || save.look.hair;
+  player.setLook(save.look);
+}
 lookBefore = { ...player.look };
 const quests = new Quests();
 quests.load(save?.quests);

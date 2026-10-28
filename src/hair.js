@@ -11,7 +11,9 @@ export const HEADS = import.meta.glob('./art/heads.json', { eager: true, import:
 
 // the picker's hairstyles: the packed rows of heads.png, and the ones made in code from them (MADE)
 export const HAIRSTYLES = { messy: 'Tousled', mane: 'Long', long: 'Straight', pony: 'Ponytail' };
-export const hairstyles = () => Object.keys(HAIRSTYLES).filter((k) => HEADS?.rows?.[MADE[k]?.from ?? k] !== undefined);
+// each hairstyle is for one body only (the owner's call): the male styles for a male hero, the female ones for a female
+export const HAIR_BODY = { messy: 'm', mane: 'm', long: 'f', pony: 'f' };
+export const hairstyles = (body = null) => Object.keys(HAIRSTYLES).filter((k) => HEADS?.rows?.[MADE[k]?.from ?? k] !== undefined && (!body || HAIR_BODY[k] === body));
 
 // dyes: shadow → highlight. 'brown' keeps the hair as drawn
 export const DYES = {

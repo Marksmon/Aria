@@ -120,7 +120,9 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   keeps the old save key). The Keepers' storage is one chest shared by every hero, saved apart from
   them; a save code backs up every hero and the storage together.
 - **Character art:** bodies are bald to the standard in `docs/character-standard.md`; the game
-  paints the shared head, hair and headgear.
+  paints the shared head, hair and headgear. Each hairstyle is for one body only (the owner's call,
+  `HAIR_BODY` in `hair.js`): Tousled and Long for male heroes, Straight and Ponytail for female; a
+  save with the other body's style gets one of its own on load.
 - **Names:** plain common names in game; the cooler Old Norse names wait in `docs/names-later.md`.
 - **README:** never mention Ragnarok (or its names: Poring, zeny...) in `README.md`; describe Aria
   on its own. The design notes in `docs/` and the code may still refer to it.

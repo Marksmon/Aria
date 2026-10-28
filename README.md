@@ -941,7 +941,8 @@ the fire-ring's Heart-Ember.
 under letterbox bars (the fire-ring at night, the Fire Giant stirring on Ember Hill, the fields,
 the stranger by the fire), ending on the title card; Skip ends it. Then comes the hero's making, a
 screen of its own: the hero turns slowly beside the choices (name, body, a hairstyle picked from
-pictures of each, hair colour, or Random), and **Begin your journey**.
+pictures of each, hair colour, or Random). Each body has its own hairstyles: Tousled and Long for a
+male hero, Straight and Ponytail for a female one, and **Begin your journey**.
 
 The story runs beside the other quests, in chapters. Its current step sits at the top of the
 quest list (purple), with directions to the next map ("Head north to Steinborg"); the minimap
