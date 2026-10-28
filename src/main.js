@@ -236,7 +236,10 @@ function beastStats(kind) {
   const s = 0.3 + 0.1 * skillLv(prog, SUMMONS[kind]) + 0.02 * skillLv(prog, 'beastbond'), m = s * MINOR;
   const quick = buffs.frenzy > 0 ? 1 - 0.03 * frenzyLv : 1, R = Math.round;
   const pow = st('pow'), end = st('end'), fns = st('fns'), qkn = st('qkn'), knl = st('knl'), ftn = st('ftn');
-  const common = { crit: R(3 + ftn / 3 * s), dodge: R(2 + ftn / 10 * s), mastery: 0, el: 'neutral', wlv: 2, beast: true };
+  // KNL sharpens their instincts (allies.js INSTINCTS: Maul, Hamstring, Dive): harder, sooner, and a
+  // stun or slow that lasts longer (KNL 80 at a full share: about 1.5x the blow, 0.75x the wait, 1.4x as long)
+  const sharp = { mult: 1 + knl * 0.006 * s, cd: Math.max(0.6, 1 - knl * 0.003 * s), dur: 1 + knl * 0.005 * s };
+  const common = { crit: R(3 + ftn / 3 * s), dodge: R(2 + ftn / 10 * s), mastery: 0, el: 'neutral', wlv: 2, beast: true, sharp };
   // a little of every stat, for all: END's toughness, FNS and KNL's aim, QKN's pace and footwork
   const hp = end * 4 * m, def = end * 0.15 * m, hit = (fns + knl) * 0.5 * m, flee = qkn * 0.5 * m, pace = 1 - qkn * 0.003 * m;
   if (kind === 'bear') {
@@ -486,10 +489,11 @@ allies.on('strike', (b, m, res) => {
   if (b.kind === 'hawk') { const wt = skillLv(prog, 'windtalons'); if (wt) inflict(m, { kind: 'stun', chance: () => 2 * wt, dur: 1 }, wt, res.dmg); }
   // the beasts' instincts (allies.js INSTINCTS): the Bear's Maul stuns, a Wolf's Hamstring slows (bosses:
   // a third of the chance to be stunned, half as long either way)
-  if (res.instinct === 'bear') inflict(m, { kind: 'stun', chance: () => 100, dur: 1.5 }, 1, res.dmg);
+  const longer = b.ps.sharp?.dur || 1; // (KNL: a sharper instinct holds it longer)
+  if (res.instinct === 'bear') inflict(m, { kind: 'stun', chance: () => 100, dur: 1.5 * longer }, 1, res.dmg);
   if (res.instinct === 'wolf' && m.alive) {
     const boss = m.def.boss || m.def.mvp;
-    m.slowT = boss ? 2 : 4; m.slowBy = 0.4;
+    m.slowT = (boss ? 2 : 4) * longer; m.slowBy = 0.4;
     fx.number(m.x, y + 0.35, m.z, 'Slowed', 'miss');
   }
   if (m.alive && m.foe?.kind !== 'bear' && (!b.K.fly || m.def.ai === 'archer') && Math.random() < 0.35) m.foe = b; // it may turn on the beast that bit it (only a shooter on the Hawk)

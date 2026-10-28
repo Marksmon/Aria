@@ -20,7 +20,8 @@ export const BEAST_KINDS = {
 // each beast's instinct: one move of its own, used by itself whenever its foe is in reach and the
 // move is ready (cd s): the Bear's Maul (a heavy blow that stuns), a Wolf's Hamstring (a lunge from up
 // to range paces that bites and slows), the Hawk's Dive (it climbs, then drops on the foe: a blow that
-// never misses). mult: the blow's damage over a plain one. The stun and the slow land in main.js
+// never misses). mult: the blow's damage over a plain one; the hero's KNL sharpens all three (ps.sharp:
+// a harder blow, a shorter wait, a longer stun or slow: main.js beastStats). The stun and the slow land in main.js
 // (bosses: a third of the chance, half as long). The Bear's Roar (taunt) is its nature, not its instinct
 export const INSTINCTS = {
   bear: { name: 'Maul', cd: 12, mult: 2.5, range: 0 },
@@ -89,7 +90,7 @@ class Beast {
     const I = INSTINCTS[this.kind];
     this.atkAnim = ATTACK_ANIM;
     this.atkCd = Math.max(this.atkCd, this.ps.interval * 0.5);
-    const res = playerAttack(this.ps, m.effDef(), this.mgr.mult(this, m) * I.mult, I.sure ? 10 : 1, true);
+    const res = playerAttack(this.ps, m.effDef(), this.mgr.mult(this, m) * I.mult * (this.ps.sharp?.mult || 1), I.sure ? 10 : 1, true); // (KNL: sharper)
     res.instinct = this.kind;
     this.mgr.emit('strike', this, m, res);
   }
@@ -148,7 +149,7 @@ class Beast {
     } else if (m) {
       const dx = m.x - this.x, dz = m.z - this.z, d = Math.hypot(dx, dz), reach = (ps.reach ?? K.reach) + m.def.r + K.r; // (the Hawk's grows with QKN)
       if (this.skillCd <= 0 && d <= reach + I.range) { // its instinct, ready and in reach
-        this.skillCd = I.cd;
+        this.skillCd = I.cd * (this.ps.sharp?.cd || 1); // (KNL: sooner)
         this.mgr.emit('instinct', this, I);
         if (this.kind === 'hawk') this.diveT = DIVE;
         else if (this.kind === 'wolf' && d > reach) {

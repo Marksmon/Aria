@@ -255,17 +255,17 @@ export const SKILLS = {
   summonbear: {
     name: 'Summon Bear', job: 'beastmaster', kind: 'active', max: 5, cd: 3, icon: 'skill_sbear', beast: 'bear',
     sp: (lv) => 30 + 5 * lv,
-    desc: (lv) => `Call your Bear, marked with gold runes (${30 + 10 * lv}% of your stats). Its HP and DEF grow mostly with your END, its ATK with POW; it soaks blows and roars (every 10 s), a war cry: the monsters round it turn on it, and all your beasts hit 10% harder for 6 s. Instinct, Maul (every 12 s): a heavy blow for 250% that stuns (bosses: a third of the chance, half as long). Called again, it comes back fresh.`,
+    desc: (lv) => `Call your Bear, marked with gold runes (${30 + 10 * lv}% of your stats). Its HP and DEF grow mostly with your END, its ATK with POW; it soaks blows and roars (every 10 s), a war cry: the monsters round it turn on it, and all your beasts hit 10% harder for 6 s. Instinct (sharper with your KNL: harder, sooner, longer), Maul (every 12 s): a heavy blow for 250% that stuns (bosses: a third of the chance, half as long). Called again, it comes back fresh.`,
   },
   summonwolves: {
     name: 'Summon Wolves', job: 'beastmaster', kind: 'active', max: 5, cd: 3, icon: 'skill_swolves', beast: 'wolf',
     sp: (lv) => 30 + 5 * lv,
-    desc: (lv) => `Call the Black Wolf and the White Wolf (${30 + 10 * lv}% of your stats). Their HIT and ATK grow mostly with your FNS, their ATK with POW too; they bite quickly, sometimes twice. Instinct, Hamstring (every 10 s each): a leap at the foe from up to 4 paces and a bite for 180% that slows its walk by 40% for 4 s (bosses 2 s).`,
+    desc: (lv) => `Call the Black Wolf and the White Wolf (${30 + 10 * lv}% of your stats). Their HIT and ATK grow mostly with your FNS, their ATK with POW too; they bite quickly, sometimes twice. Instinct (sharper with your KNL), Hamstring (every 10 s each): a leap at the foe from up to 4 paces and a bite for 180% that slows its walk by 40% for 4 s (bosses 2 s).`,
   },
   summonhawk: {
     name: 'Summon Hawk', job: 'beastmaster', kind: 'active', max: 5, cd: 3, icon: 'skill_shawk', beast: 'hawk',
     sp: (lv) => 25 + 5 * lv,
-    desc: (lv) => `Call your Hawk (${30 + 10 * lv}% of your stats). Its attack speed and reach grow mostly with your QKN, its ATK with POW. It flies out of reach of every blow up close: only arrows and thrown or falling blows reach it. Instinct, Dive (every 9 s): it climbs, then drops on the foe for 300%, a blow that never misses.`,
+    desc: (lv) => `Call your Hawk (${30 + 10 * lv}% of your stats). Its attack speed and reach grow mostly with your QKN, its ATK with POW. It flies out of reach of every blow up close: only arrows and thrown or falling blows reach it. Instinct (sharper with your KNL), Dive (every 9 s): it climbs, then drops on the foe for 300%, a blow that never misses.`,
   },
   packfrenzy: {
     name: 'Pack Frenzy', job: 'beastmaster', kind: 'active', max: 10, needs: { summonwolves: 1 }, cd: 30, icon: 'skill_frenzy',
