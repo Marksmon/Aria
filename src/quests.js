@@ -358,7 +358,7 @@ export const NPCS = {
     lore: [
       'Veidheim was a hunting camp once, a few tents past Birch Grove. Then the farmers came for the soil, and the hunters stayed to keep the beasts off it.',
       'We had farms past Black Wood too: Barley Field, and the hills beyond it. The snakes and the wolves took them. The packs are never alone, and they come for you on sight.',
-      'The trees of the Old Forest, north of the gate, walk, but they are gentle if you leave them be. The oldest of them, the Ancient Treant, walked away into Wolf Hills, and the beasts there follow it now.',
+      'The trees of the Old Forest, north of the gate, walk, but they are gentle if you leave them be. Not the oldest of them: the Ancient Treant has woken in the deep of the forest, and it is anything but gentle.',
     ],
   },
   // the Beastmaster: sword and bow and three beasts, for heroes who walked the Blader's and the Archer's paths
@@ -853,7 +853,7 @@ export const QUESTS = {
   },
   ancienttreant: {
     title: 'The Waking Wood', kind: 'kill', mobs: { greatBear: 1, alphaWolf: 1 }, lv: 70,
-    intro: 'The Ancient Treant has walked out of the Old Forest into Wolf Hills, and the beasts follow it. Two lead them for it: the Great Bear of Wolf Hills and the Alpha Wolf of Barley Field. No hunter can fell a tree that has stood a thousand years, but its lieutenants can fall. Bring down both, and the old tree walks alone.',
+    intro: 'Since the Ancient Treant woke in the Old Forest, the beasts of the hills have grown bold, as if the whole wild were waking with it. Two lead them: the Great Bear of Wolf Hills and the Alpha Wolf of Barley Field. No hunter can fell a tree that has stood a thousand years, but they can fall. Bring down both, and the wild settles again.',
     thanks: 'The Great Bear and the Alpha, both! Its beasts have no one to follow now. Veidheim sleeps easier tonight, hunter.',
     reward: { xp: 450000, perz: 30000, items: { potion3: 20 } },
   },

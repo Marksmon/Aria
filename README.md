@@ -97,9 +97,9 @@ and Wolf Hills, for heroes near their second job.
 | Burnt Wood | 38–44 | Goblin (38), Goblin Archer (41), Goblin Assassin (44) | |
 | Serpent Wood | 40–55 | Goblin Assassin, Goblin, Goblin Archer | **Goblin King (55, MVP)** |
 | Willow Marsh | 5–10 | Yellow Bloop (7), Willow (8, slowing seeds) | Elder Willow (55) |
-| Old Forest | 8–26 | Treant (24), Willow | |
+| Old Forest | 8–26 | Treant (24), Willow | **Ancient Treant (62, MVP)** |
 | Barley Field | 44–54 | Snake (46), Wolf (48) | Alpha Wolf (64) |
-| Wolf Hills | 46–62 | Wolf, Bear (53), Snake | Great Bear (66) · **Ancient Treant (62, MVP)** |
+| Wolf Hills | 46–62 | Wolf, Bear (53), Snake | Great Bear (66) |
 | Any field in the valley, more at night (Moss Field and Fen Shore only at night) | | Wisp (11) | |
 
 Moss Field and Fen Shore, by the camp and the city, and Willow Marsh by Veidheim are a Trainee's fields: a Base 10 Trainee
@@ -167,9 +167,8 @@ Treant, charging and calling 2 Bears. Their pelt and heart (30%) make Leif's bes
 The **Elder Willow** of Willow Marsh (Lv 55: silvery, wide antlers with fireflies on their tips,
 water-lilies in its hair) is the mini-boss on the road to Veidheim, a step after the Giant Sprout,
 calling Willows out of the reeds. The **Ancient Treant** (Lv 62, 550,000 HP, Earth: pale with age,
-glowing runes carved down its body, blossoms in its crown), the oldest tree in Aria, has walked
-out of the Old Forest into Wolf Hills and is its MVP: it stomps, hurls stones and charges, and calls
-2 Wolves and 2 Snakes. It is the hardest MVP, a fight of several minutes, with two skills of its
+glowing runes carved down its body, blossoms in its crown), the oldest tree in Aria, has woken in the Old Forest
+and is its MVP: it stomps, hurls stones and charges, and calls 2 Treants and 2 Willows. It is the hardest MVP, a fight of several minutes, with two skills of its
 own. **Grasping Roots** burst out where you stand (a red circle first) and hold you there for 3
 seconds (4 when it is enraged, and then in three patches): you can still fight, but not walk, dash
 or leap away, so even a quick hero who keeps their distance gets caught while it comes for them.
