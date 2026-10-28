@@ -233,9 +233,16 @@ how often it has called them): come back, or wake up at your save point after fa
 fight is where you left it, the boss a little healed (5% of its HP a minute while it isn't
 fighting you). This holds over a restart too. No monster ever steps onto a portal.
 
+**Monsters follow you.** A monster that comes for you (or that you hit) follows you round the
+map for as long as you stay near, and gives up only once you are well away (a bit over twice the
+range it spots you from), on safe ground or playing dead. It isn't tied to one spot: it wanders on
+from where it gave up, and only a monster that died comes back where it first appeared.
+
 **Every monster stays as you left it.** Leave a map and come back (or restart the game) and its
 monsters are where they were, as many, as hurt as you left them; the ones you killed come back
 when their respawn time is up, and that time runs on while you are away.
+
+These rules hold on every map, and are the defaults for any new one.
 
 **Walking speed** suits Aria's small maps: the hero takes 300 ms a tile, and monsters their own
 time (Bloops 800 ms, Kobolds 400, Goblins 300, Goblin Assassins 200, the Kobold King 300, the
@@ -335,9 +342,11 @@ the clear reward, the cores, the rare finds and the boss's card.
   harder too, and his jelly takes spells well (+30%) but swallows blades and fists (−30%) and
   beasts (−20%).
 
-- **EXP is held while you fight** and paid when the run ends. A clear pays all of it **x1.5**. A
-  failed run (the time runs out, you faint, or you leave) pays only the monsters you beat, with no
-  bonus.
+- **EXP is held while you fight** and paid when the run ends. A clear pays all of it **x1.5**.
+- **A failed run pays nothing** and costs no cooldown: the time runs out, you faint, you leave, or
+  you close or restart the game mid-run. Try again whenever you are ready.
+- **Raid history:** the Raids window's History tab lists every run, newest first: cleared or failed
+  (and why), when, how long it took, and what it paid (perz, Base and Job EXP, items).
 - **A clear** pays perz and materials (times the difficulty's reward), the raid's **cores** (3, 9, 27
   or 81), a 3% chance at one of its rare finds, and 1% chances at its **ultra rare** and at its boss's
   card. Bloop Island
@@ -381,11 +390,11 @@ crystal earrings and a band round the back of the head; QKN +4, FNS +4, HIT +10,
   raid's panel has a Back button to the list.
 - **Raid guides** (the Boatman in Salt Bay, Brokk in the Coal Pit, Ylva in Serpent Wood) have a gold
   ✦ RAID over their heads.
-- **Cooldowns:** each raid has one 3-hour cooldown for all its difficulties, from setting out; the
-  three are separate.
+- **Cooldowns:** each raid has one 3-hour cooldown for all its difficulties, counted from setting
+  out, but only a clear starts it; the three are separate.
 - **The Tutorial crossing** (Chapter 5): while the story waits on the raid, the Boatman also offers
-  a gentler Tutorial run (Lv 24–33 monsters). It starts no cooldown and pays the clear reward win or
-  lose. Lose it, and the Boatman's crew finish BleepBloop for you, this once.
+  a gentler Tutorial run (Lv 24–33 monsters). It starts no cooldown and pays the clear reward (and
+  its kills' EXP) win or lose. Lose it, and the Boatman's crew finish BleepBloop for you, this once.
 - Easy to Hard were tuned with a whole-run simulation (every monster of a wave at once, natural
   regen, the breathers); Hell was tested in the game like the MVPs.
 

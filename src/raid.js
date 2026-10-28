@@ -1,11 +1,13 @@
 // Raids: a timed run in an arena of its own. Three waves of monsters that attack on sight and never
 // give up (mobs.js raidDef: relentless), then a boss, all inside the time limit. A difficulty sets
 // the monsters' level and strength and the size of the reward. Each raid has its own cooldown, shared
-// by its difficulties, from going in. Bloop Island's story step gets a Tutorial run of its own: open
-// only while the story waits on it, it never starts the cooldown, and win or lose it pays the clear
-// reward and moves the story on.
-// EXP is held while you fight and paid when the run ends: all of it x1.5 on a clear, the kills alone
-// on a failure. The game runs the raid (main.js tickRaid); this file is its data.
+// by its difficulties, from going in, but only a clear starts it: a failed run (left, fainted, out of
+// time, or the game closed mid-run) costs no cooldown and pays nothing. Bloop Island's story step gets
+// a Tutorial run of its own: open only while the story waits on it, it never starts the cooldown, and
+// win or lose it pays the clear reward and moves the story on.
+// EXP is held while you fight and paid on a clear, x1.5 (a lost Tutorial pays its kills). Every run
+// goes in the hero's raid history (main.js raidLog). The game runs the raid (main.js tickRaid); this
+// file is its data.
 //
 // A difficulty needs its Base Level (lv; the Tutorial excepted): Bloop Island 40/55/70/85, the
 // Kobold Camp 45/60/75/90, the Goblin Lair 50/65/80/95 (plus: the Hell one is shown as 95+).
@@ -65,7 +67,7 @@ export const RAIDS = {
       wait: 'The tide is wrong', arrive: 'three waves of bloops, then their boss', time: 'before the tide turns',
       wave: 'The bloops come bouncing in from the shore.', boss: 'rises out of the surf: the old bloop general, beard, plume and all!',
       timeUp: 'The tide turns! The Boatman rows you back before the raid is done.', leave: 'You leave the island, and the Boatman rows you back to Salt Bay.',
-      cooldown: 'After a crossing the tide keeps me ashore 3 hours.',
+      cooldown: 'After a cleared crossing the tide keeps me ashore 3 hours.',
     },
   },
   kobold: {
@@ -87,7 +89,7 @@ export const RAIDS = {
       wait: 'The camp is on watch', arrive: 'three waves of kobolds, then their Warlord', time: 'before the war drums call the tribe',
       wave: 'Kobolds pour out of the tents!', boss: 'stomps out of his war tent, war-paint and shield wall!',
       timeUp: 'War drums all round! Brokk pulls you out before the whole tribe comes.', leave: 'You slip out of the camp, and Brokk leads you back to Coal Pit.',
-      cooldown: 'After a raid the camp stays on watch 3 hours.',
+      cooldown: 'After a cleared raid the camp stays on watch 3 hours.',
     },
   },
   goblin: {
@@ -109,7 +111,7 @@ export const RAIDS = {
       wait: 'The lair is stirred up', arrive: 'three waves of goblins, then their Warlord', time: 'before the torches gutter out',
       wave: 'Goblins creep out of the dark!', boss: 'drops down from his totem, axe in hand!',
       timeUp: 'The torches gutter out! Ylva drags you out of the dark before the horde closes in.', leave: 'You slip out of the lair, and Ylva leads you back to Serpent Wood.',
-      cooldown: 'After a raid the lair stays stirred up 3 hours.',
+      cooldown: 'After a cleared raid the lair stays stirred up 3 hours.',
     },
   },
 };

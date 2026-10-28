@@ -1028,10 +1028,11 @@ function tickVigil(dt) {
 // ---------- raids (raid.js): three waves and a boss against the clock ----------
 // The Boatman rows you out; the waves come in from the shore all round and never give up; after each
 // wave a breather (and before the boss a full heal). EXP is held while you fight and paid when the
-// run ends: x1.5 on a clear, the kills alone otherwise. Leaving, fainting or the tide (the timer)
-// ends it. One cooldown for every difficulty, from going in. The story's Tutorial run (only while the
-// story waits on the raid) starts no cooldown, and pays the clear reward and moves the story on, win
-// or lose.
+// run ends, x1.5, on a clear. Leaving, fainting or the tide (the timer) ends it, and so does closing
+// the game mid-run: a failed run pays nothing and costs no cooldown. One cooldown for every
+// difficulty, from going in, started by a clear. The story's Tutorial run (only while the story waits
+// on the raid) starts no cooldown, and pays the clear reward (and its kills' EXP) and moves the story
+// on, win or lose. Every run goes in the raid history (raidLog), with what it paid.
 // when each raid opens again (ms since 1970): { bloop, kobold, goblin }. A save from when Bloop
 // Island was the only raid kept one number
 let raidAt = typeof save?.raidAt === 'number' ? { bloop: save.raidAt } : { ...(save?.raidAt || {}) };
@@ -1040,8 +1041,14 @@ let raid = null; // { id, diff, left, wave, phase: land | fight | rest, restT, l
 // Raids window), and come back to where they were (raid.back). A hero who set out on one before
 // (raidAt), or took Bloop Island's story crossing, has it open already
 const raidsDone = new Set([...(save?.raidsDone || []), ...Object.keys(raidAt), ...(save?.story?.flags?.bloopisle ? ['bloop'] : [])]);
+// every run, newest first: { id, diff, at, secs, won, why, perz, exp: [base, job], items: [[id, n]] } (saved)
+const raidLog = Array.isArray(save?.raidLog) ? save.raidLog : [];
+const RAID_LOG = 50; // runs kept
+function logRaid(e) { raidLog.unshift(e); raidLog.length = Math.min(raidLog.length, RAID_LOG); }
+// a run the game was closed in the middle of: a failure, nothing paid (save.raidRun)
+if (save?.raidRun && RAIDS[save.raidRun.id] && !raidLog.some((e) => e.at === save.raidRun.at)) logRaid({ ...save.raidRun, secs: null, won: false, why: 'The game was closed mid-run', perz: 0, exp: [0, 0], items: [] });
 const raidBar = document.getElementById('raidbar'), bossBar = document.getElementById('bossbar');
-raidBar.querySelector('.rb-leave').addEventListener('click', () => { if (raid) endRaid(false, RAIDS[raid.id].words.leave); });
+raidBar.querySelector('.rb-leave').addEventListener('click', () => { if (raid) endRaid(false, RAIDS[raid.id].words.leave, false, 'Left the raid'); });
 const raidOf = (map) => Object.entries(RAIDS).find(([, R]) => R.map === map)?.[1] || null;
 const storyRaid = (id) => storyLive() && story.step?.kind === 'raid' && story.step.raid === id;
 const boatSpot = (R) => ({ x: NPCS[R.npc].x, z: NPCS[R.npc].z + 1.4 });
@@ -1074,8 +1081,7 @@ function raidGo(id, diff, anywhere = false) {
   if (anywhere && !raidsDone.has(id)) { menus.message(`Raid once with ${NPCS[R.npc].name} in ${ZONE_NAMES[R.from]} first.`); return; }
   if (anywhere && (raidOf(world.id) || defense)) { menus.message('Not from here.'); return; }
   if (!D.tutorial && prog.baseLv < D.lv) { menus.message(`${D.name} needs Base Level ${D.lv}.`); return; } // (each difficulty needs its level)
-  if (!D.tutorial) raidAt[id] = Date.now() + R.cooldown; // its cooldown, from going in
-  raid = { id, diff, left: R.secs, wave: -1, phase: 'land', restT: 2.5, list: [], boss: null, exp: [0, 0], arrived: false, shown: 1,
+  raid = { id, diff, start: Date.now(), left: R.secs, wave: -1, phase: 'land', restT: 2.5, list: [], boss: null, exp: [0, 0], arrived: false, shown: 1,
     back: anywhere ? { map: world.id, x: player.x, z: player.z } : null }; // (set out from anywhere: back there after)
   menus.close('talk');
   warp(R.map, null, R.landing);
@@ -1121,10 +1127,10 @@ function tickRaid(dt) {
     raid.arrived = true;
     menus.message(`${R.name}, ${D.name}: ${R.words.arrive}. ${R.secs / 60} minutes ${R.words.time}!`);
   }
-  if (world.id !== R.map) { endRaid(false, 'You left the island, and the raid is lost.', true); return; }
-  if (player.state === 'down') { endRaid(false, 'You fainted, and the raid is lost.', true); return; }
+  if (world.id !== R.map) { endRaid(false, 'You left the island, and the raid is lost.', true, 'Left the arena'); return; }
+  if (player.state === 'down') { endRaid(false, 'You fainted, and the raid is lost.', true, 'Fainted'); return; }
   raid.left -= dt;
-  if (raid.left <= 0) { endRaid(false, R.words.timeUp); return; }
+  if (raid.left <= 0) { endRaid(false, R.words.timeUp, false, 'Out of time'); return; }
   if (raid.phase === 'fight' && !raid.list.some((m) => m.alive && mobs.list.includes(m))) {
     if (raid.boss) { winRaid(R, D); return; }
     const last = raid.wave === R.waves.length - 1, k = last && R.bossHeal ? 1 : R.breather;
@@ -1165,26 +1171,31 @@ function winRaid(R, D) {
   menus.message(`${R.name} cleared on ${D.name} with ${Math.floor(raid.left / 60)}:${String(Math.floor(raid.left % 60)).padStart(2, '0')} to spare!`);
   endRaid(true, null);
 }
-// the clear reward: perz, items, and the rare roll
+// the clear reward: perz, items, and the rare roll. Returns what was given: { perz, items: [[id, n]] }
 function raidReward(id, diff) {
-  const r = rollReward(id, diff);
+  const r = rollReward(id, diff), got = [];
   if (r.perz) { inv.addPerz(r.perz); menus.message(`+${r.perz.toLocaleString()} perz`); }
-  const give = (item, n) => { const got = inv.add(item, n); if (got < n) inv.chest.add(item, n - got); menus.toast(item, n); };
+  const give = (item, n) => { const kept = inv.add(item, n); if (kept < n) inv.chest.add(item, n - kept); menus.toast(item, n); got.push([item, n]); };
   for (const [item, n] of Object.entries(r.items)) give(item, n);
   if (r.rare) r.rare = maybeSlotted(r.rare); // a raid's rare can come with a card slot too
   if (r.rare) { give(r.rare, 1); audio.play('heart'); menus.message(`Rare find! ${ITEMS[r.rare].name}!`); }
-  if (r.ultra) { give(maybeSlotted(r.ultra), 1); audio.play('heart'); cam.shake = 0.3; menus.message(`ULTRA RARE! ${ITEMS[r.ultra].name}!`); }
+  if (r.ultra) { const u = maybeSlotted(r.ultra); give(u, 1); audio.play('heart'); cam.shake = 0.3; menus.message(`ULTRA RARE! ${ITEMS[u].name}!`); }
   if (r.card) { give(r.card, 1); audio.play('heart'); menus.message(`Rare find! ${ITEMS[r.card].name}!`); }
+  return { perz: r.perz || 0, items: got };
 }
 // the run is over: its monsters go, the EXP held is paid, and (unless the hero went elsewhere) the
 // Boatman rows them back
-function endRaid(win, why, stay = false) {
-  const R = RAIDS[raid.id], D = R.difficulties[raid.diff], [b, j] = raid.exp, k = win ? 1.5 : 1, run = raid;
+function endRaid(win, why, stay = false, short = why) {
+  const R = RAIDS[raid.id], D = R.difficulties[raid.diff], run = raid;
+  // EXP: all of it x1.5 on a clear, the kills alone on a lost Tutorial, nothing on a failed run
+  const k = win ? 1.5 : D.tutorial ? 1 : 0, b = Math.round(run.exp[0] * k), j = Math.round(run.exp[1] * k);
   for (const m of [...mobs.list]) if (m.def.raidLv) mobs.remove(m);
   raid = null;
   raidsDone.add(run.id); // done once: the Raids window may send them from anywhere now
+  if (win && !D.tutorial) raidAt[run.id] = run.start + R.cooldown; // only a clear starts the cooldown (from going in)
   // a clear pays the reward; so does the story's Tutorial run, win or lose. Either moves the story on
-  if (win || D.tutorial) raidReward(run.id, run.diff);
+  const paid = win || D.tutorial ? raidReward(run.id, run.diff) : { perz: 0, items: [] };
+  logRaid({ id: run.id, diff: run.diff, at: run.start, secs: Math.round(R.secs - Math.max(0, run.left)), won: win, why: win ? null : short, perz: paid.perz, exp: [b, j], items: paid.items });
   if ((win || D.tutorial) && storyRaid(run.id)) {
     if (!win) story.flags[`${story.step.id}_lost`] = true; // the Boatman finishes a lost Tutorial for you (story.js says so)
     story.flag(story.step.id);
@@ -1192,9 +1203,9 @@ function endRaid(win, why, stay = false) {
   raidBar.hidden = bossBar.hidden = true;
   if (why) menus.message(why);
   if (b || j) {
-    menus.message(`Raid EXP: +${Math.round(b * k).toLocaleString()} Base, +${Math.round(j * k).toLocaleString()} Job${win ? ' (x1.5 for the clear)' : ''}`);
-    gainExp(Math.round(b * k), Math.round(j * k)); // already at the battle rate
-  }
+    menus.message(`Raid EXP: +${b.toLocaleString()} Base, +${j.toLocaleString()} Job${win ? ' (x1.5 for the clear)' : ''}`);
+    gainExp(b, j); // already at the battle rate
+  } else if (!win && !D.tutorial) menus.message('The raid failed: no rewards, and no cooldown. Try again when you are ready.');
   if (!stay) setTimeout(() => (run.back ? warp(run.back.map, null, run.back) : warp(R.from, null, boatSpot(R))), win ? 2500 : 700);
   refreshQuests();
   persist();
@@ -1370,6 +1381,7 @@ const menus = new Menus(inv, prog, player, {
   mobPortrait: (art) => mobPortrait(art),
   raidGo: (id, diff, anywhere) => raidGo(id, diff, anywhere),
   // the Raids window: every raid, its guide and land, open to them (done once) or not, and its tide
+  raidLog: () => raidLog,
   raidList: () => Object.entries(RAIDS).map(([id, R]) => ({ id, R, guide: NPCS[R.npc].name, land: ZONE_NAMES[R.from], done: raidsDone.has(id), ...raidInfo(id) })),
   ferry(map) {
     const fare = FARES[map];
@@ -2474,7 +2486,7 @@ let resetting = false;
 function persist() {
   if (!started || resetting) return;
   const isle = raidOf(world.id), back = isle && raid?.back, at = back || (isle ? boatSpot(isle) : player); // a run is never saved: back on the shore (or where they set out from)
-  writeSave({ story: story.toJSON(), look: player.look, visited: [...visited], keepers: [...keepers], savePoint, raidAt, raidsDone: [...raidsDone], map: back ? back.map : isle ? isle.from : world.id, mvpAt: mobs.mvpAt, bossHp: mobs.bossSnapshot(), bossAt: mobs.bossAt, fieldAt: mobs.fieldSnapshot(), x: at.x, z: at.z, yaw: cam.yaw, dist: cam.dist, hp: player.hp, sp: player.sp, inv: inv.toJSON(), prog: prog.toJSON(), quests: quests.toJSON(), hotbar: hotbar.toJSON(), time: dayNight.t });
+  writeSave({ story: story.toJSON(), look: player.look, visited: [...visited], keepers: [...keepers], savePoint, raidAt, raidsDone: [...raidsDone], raidLog, raidRun: raid ? { id: raid.id, diff: raid.diff, at: raid.start } : null, map: back ? back.map : isle ? isle.from : world.id, mvpAt: mobs.mvpAt, bossHp: mobs.bossSnapshot(), bossAt: mobs.bossAt, fieldAt: mobs.fieldSnapshot(), x: at.x, z: at.z, yaw: cam.yaw, dist: cam.dist, hp: player.hp, sp: player.sp, inv: inv.toJSON(), prog: prog.toJSON(), quests: quests.toJSON(), hotbar: hotbar.toJSON(), time: dayNight.t });
   writeStorage(inv.chest.toJSON());
 }
 

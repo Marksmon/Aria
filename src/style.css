@@ -525,6 +525,17 @@ button.eq:active { background: var(--w-sel); }
 .raidrow .bosspic.sm { width: 44px; height: 44px; object-fit: contain; image-rendering: pixelated; flex: none; }
 .raidrow.locked { opacity: .7; }
 .raidrow small.ok { color: #8fe08a; }
+/* the raid history */
+.rlog { display: block; }
+.rlog b { display: block; }
+.rlog small { display: block; color: var(--w-dim); }
+.rlog .ok { color: #8fe08a; }
+.rlog .bad { color: #ff8a7a; }
+.rlog b.perz { display: inline; color: var(--w-gold); }
+.rlog small.dim { opacity: .7; }
+.rlitems { display: flex; flex-wrap: wrap; gap: 2px 8px; margin-top: 2px; font-size: 11px; }
+.rlitem { display: inline-flex; align-items: center; gap: 3px; }
+.rlitem .ico.sm { width: 16px; height: 16px; }
 .costs { display: flex; flex-wrap: wrap; gap: 2px 6px; margin-top: 1px; }
 .cost { display: inline-flex; align-items: center; gap: 2px; font-size: 12px; color: #ff9a80; }
 .cost.ok { color: #9fe08a; }

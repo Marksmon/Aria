@@ -46,6 +46,15 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   follow Ragnarok's rule: only the strongest of each counts, never under 40%. No gear or skill hastes the walk
   (the owner's call: speed is a big buff in Aria), except the Windrunner's short bursts: Tailwind's
   4 s rush and the 2 s after Gale Step (the owner's call: bursts only, never a lasting haste).
+- **Map defaults (every map, and any new map gets them unless the owner says otherwise):**
+  - Monsters follow the hero round the map with no time limit while the hero is near, and give up
+    only past `FOLLOW.lose` x their aggro range (or on safe ground / Play Dead). They are never
+    anchored: once they give up they wander on from there (their home moves); only a dead one
+    respawns at its first spot (`spawn`). No leash back home for field monsters (`mobs.js`).
+  - Every map keeps its monsters as the hero left them: spot, HP, count, respawn timers, the timers
+    running on while away (`fieldAt`, saved). Bosses and MVPs keep their spot, wounds and guards
+    (`bossAt`, `bossHp`). Drops stay on their map with their 45/90 s timer running (`groundLeft`).
+  - A new map only needs its `SPAWNS` entry in `main.js`; all of the above comes with it.
 - **Bosses and MVPs** spawn at random spots and roam their whole map; each has a respawn timer
   (`mvpAt`, saved) that holds across map changes and restarts. One left alive keeps its spot
   when the hero leaves the map (`bossAt`, saved). Dropped items stay on their map too, their
@@ -86,7 +95,10 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   and the Goblin Lair (Ylva, Serpent Wood). 3 waves of relentless monsters, then a boss with a
   big health bar, all within 10 minutes, in a small round arena. Half HP/SP back after each wave,
   all of it before the boss. Each raid has one 3 h cooldown shared by its difficulties, from
-  setting out. A clear pays the raid's cores x1/x3/x9/x27 by difficulty (3/9/27/81), its rare finds
+  setting out, started only by a clear (the owner's call): a failed run (left, fainted, out of time,
+  or the game closed or restarted mid-run: `raidRun` in the save) pays nothing and costs no
+  cooldown. Every run goes in the hero's raid history (`raidLog`, saved, the Raids window's History
+  tab: cleared or failed and why, perz, EXP, items). A clear pays the raid's cores x1/x3/x9/x27 by difficulty (3/9/27/81), its rare finds
   at 3% on any difficulty, and its ultra rare (a Head, Face or Wings piece: Angel Wings, the Giant Goat
   Horn Helm, Elven Ears) and its card at 1%; its guide makes the rares and the ultra rare
   from cores (the rarer, the more; an ultra rare 500, always made, 10% of them with a card slot). The story's step gets a
@@ -97,7 +109,7 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   window sets out on it from anywhere and brings them back where they were (`raidsDone`, `raid.back`; a Back button returns to the list), and the guides wear a RAID tag; Hell's boss is fierce (as
   hard and tricky as a field MVP: `FIERCE` in `mobs.js`), for a hero in the best gear. Clear rewards
   (perz, materials) x1/x3/x6/x9. Raid EXP is held and paid at the end: x1.5 on a clear,
-  the kills alone on a failure.
+  nothing on a failure (a lost Tutorial pays its kills).
 - **Character slots and storage** (`src/save.js`): three heroes, picked on the title screen (slot 1
   keeps the old save key). The Keepers' storage is one chest shared by every hero, saved apart from
   them; a save code backs up every hero and the storage together.

@@ -211,6 +211,12 @@ export const BRAIN = {
   kite: 4, rush: 1.35, rushFor: 2.5, rushCd: 10, combo: 0.35, giveUp: 18, calm: 10, stuck: 2,
 };
 const BOUND = { kind: 'leap', name: 'Bound', mult: 1.0, r: 1.4 };
+// FOLLOW (every map's monsters, the default for new maps too): a monster that comes for you follows
+// you round the map for as long as you are near (no time limit), and gives up only once you are
+// `lose` times its aggro range away (or out of reach: safe ground, Play Dead). It is never tied to
+// one spot: it wanders on from where it gave up (its home moves there), and only a dead one comes
+// back at the spot it first appeared (spawn). Bosses roam their whole map (roam, BRAIN)
+const FOLLOW = { lose: 2.2 };
 const RESPAWN = 60;
 // a wounded boss or MVP heals 5% of its HP a minute while it isn't fighting you, on its map or not;
 // what it has left is kept when you leave (bossHp, saved), so a fight can be picked up again
@@ -356,6 +362,7 @@ class Mob {
       this.aura = { disc, motes };
     }
     this.home = { x, z };
+    this.spawn = { x, z }; // where it first appeared: a dead one comes back here (FOLLOW)
     this.reset(x, z);
   }
 
@@ -825,8 +832,8 @@ class Mob {
       }
     };
 
-    // too far from home: back it goes (a roaming boss only when it was chasing you)
-    if (!d.relentless && homeD > (d.mvp ? 40 : d.ai === 'boss' ? 30 : this.provokeT > 0 ? 20 : 11) && this.state !== 'return' && (d.ai !== 'boss' || this.state === 'chase')) this.state = 'return';
+    // a boss too far from where the fight began: back it goes
+    if (!d.relentless && d.ai === 'boss' && homeD > (d.mvp ? 40 : 30) && this.state !== 'return' && this.state === 'chase') this.state = 'return'; // (other monsters are tied to no spot: FOLLOW)
     if (this.stunT > 0) this.stunT -= dt; // stunned: stands there
     else if (this.state === 'return') {
       moving = this.moveToward(this.home.x, this.home.z, speed, dt) > 0;
@@ -878,7 +885,7 @@ class Mob {
         }
         if (this.state === 'chase') {
           this.chaseT -= dt;
-          if (this.chaseT <= 0 || !available || dist > aggro * 2.2) { this.state = 'wander'; this.tired = 3; }
+          if (!available || dist > aggro * FOLLOW.lose) { this.state = 'wander'; this.tired = 3; } // (it follows you while you are near: FOLLOW)
           else {
             const hopping = d.ai !== 'hopper' || (this.hop % 1) < 0.55;
             if (this.special > 0) { // winding up a stomp: stand still, then it lands
@@ -895,6 +902,7 @@ class Mob {
       case 'archer': {
         // keeps its distance and shoots; backs off when you come close
         if (available && (hostile && dist < aggro || this.angry > 0) && dist < aggro * 2) {
+          this.engaged = true;
           if (dist > d.range) moving = this.moveToward(p.x, p.z, speed, dt) > 0;
           else if (dist < 2.2) moving = this.moveToward(this.x - dx, this.z - dz, speed * 0.8, dt) > 0;
           if (dist > 0.01) this.heading = { x: dx / dist, z: dz / dist }; // it keeps facing you as it steps back
@@ -911,7 +919,7 @@ class Mob {
         if (this.state === 'wander' && available && hostile && this.tired <= 0 && dist < aggro) { this.state = 'chase'; this.chaseT = d.chase; }
         if (this.state === 'chase') {
           this.chaseT -= dt;
-          if (this.chaseT <= 0 || !available || dist > aggro * 2.2) { this.state = 'wander'; this.tired = 3; }
+          if (!available || dist > aggro * FOLLOW.lose) { this.state = 'wander'; this.tired = 3; } // (it follows you while you are near: FOLLOW)
           else if (this.special > 0) { // the dash
             this.special -= dt;
             const dash = d.speed * 2.2 * dt; // a dart, much quicker than its walk
@@ -952,6 +960,7 @@ class Mob {
           if (!moving) this.special = 0;
           contact();
         } else if (available && hostile && dist < aggro) {
+          this.engaged = true;
           const sx = -dz / (dist || 1), sz = dx / (dist || 1);
           const side = Math.sin(this.t * 0.9) > 0 ? 1 : -1;
           const keep = dist > 3 ? 0.6 : dist < 2 ? -0.5 : 0;
@@ -971,7 +980,7 @@ class Mob {
         if (this.state === 'wander' && available && hostile && dist < aggro && this.tired <= 0) { this.state = 'chase'; this.chaseT = d.chase; }
         if (this.state === 'chase') {
           this.chaseT -= dt;
-          if (this.chaseT <= 0 || !available || dist > aggro * 2.2) { this.state = 'wander'; this.tired = 3; }
+          if (!available || dist > aggro * FOLLOW.lose) { this.state = 'wander'; this.tired = 3; } // (it follows you while you are near: FOLLOW)
           else {
             if (dist > d.reach * 0.7) moving = this.moveToward(p.x, p.z, speed, dt) > 0;
             if (dist < 2.3 && this.specialCd <= 0) {
@@ -989,6 +998,7 @@ class Mob {
       case 'wisp': {
         const jitter = { x: Math.sin(this.t * 3.1) * 1.6, z: Math.cos(this.t * 2.3) * 1.6 };
         if (available && hostile && dist < aggro) {
+          this.engaged = true;
           moving = this.moveToward(p.x + jitter.x * 0.6, p.z + jitter.z * 0.6, speed, dt) > 0;
           contact();
         } else {
@@ -997,6 +1007,12 @@ class Mob {
         break;
       }
     }
+
+    // done following you: it wanders on from here, not back to where it was (FOLLOW)
+    const engaged = this.engaged || this.state === 'chase' || (d.ai === 'skittish' && this.angry > 0);
+    if (this.wasEngaged && !engaged && d.ai !== 'boss' && !this.leader && !d.relentless) { this.home = { x: this.x, z: this.z }; this.target = null; }
+    this.wasEngaged = engaged;
+    this.engaged = false;
 
     // ---- visuals ----
     this.walked += Math.hypot(this.x - x0, this.z - z0);
@@ -1065,7 +1081,7 @@ export class MobManager {
     this.mvpAt = {};  // per boss and MVP: when it may next appear (ms since 1970; the game saves it)
     this.bossHp = {}; // per boss and MVP met in a fight: { hp, at, calls, guards: [[type, hp]], cd } (saved)
     this.bossAt = {}; // per boss and MVP alive on a map you left: where it stood, { map, x, z } (saved)
-    // per map left: its monsters as you left them, { sig, at, mobs: [[type, x, z, homeX, homeZ, hp, dead]] }
+    // per map left: its monsters as you left them, { sig, at, mobs: [[type, x, z, homeX, homeZ, hp, dead, nightOnly, spawnX, spawnZ]] }
     // (dead: seconds till it is back, else null). Coming back, the field is as it was, less the time
     // away; sig is the map's spawn list, so a changed map spawns afresh (saved)
     this.fieldAt = {};
@@ -1133,7 +1149,7 @@ export class MobManager {
     if (!f) return this.fieldAt;
     const dead = new Map(this.dead.map((e) => [e.m, e.t]));
     const r = (v) => Math.round(v * 100) / 100;
-    f.mobs = this.list.filter((m) => m.field).map((m) => [m.type, r(m.x), r(m.z), r(m.home.x), r(m.home.z), Math.ceil(m.hp), m.alive ? null : r(Math.max(0, dead.get(m) ?? 0)), m.nightOnly ? 1 : 0]);
+    f.mobs = this.list.filter((m) => m.field).map((m) => [m.type, r(m.x), r(m.z), r(m.home.x), r(m.home.z), Math.ceil(m.hp), m.alive ? null : r(Math.max(0, dead.get(m) ?? 0)), m.nightOnly ? 1 : 0, r(m.spawn.x), r(m.spawn.z)]);
     f.at = Date.now();
     return this.fieldAt;
   }
@@ -1142,9 +1158,10 @@ export class MobManager {
   // their respawn time has passed while you were away (twice as fast for what a quest hunts)
   restoreField(f) {
     const away = Math.max(0, (Date.now() - f.at) / 1000);
-    for (const [type, x, z, hx, hz, hp, dead, nightOnly] of f.mobs) {
+    for (const [type, x, z, hx, hz, hp, dead, nightOnly, sx = hx, sz = hz] of f.mobs) {
       if (!MOB_DEFS[type]) continue;
-      const m = this.add(type, hx, hz);
+      const m = this.add(type, sx, sz);
+      m.home = { x: hx, z: hz };
       m.field = true;
       m.nightOnly = !!nightOnly;
       const night = m.def.night || m.nightOnly;
@@ -1333,10 +1350,11 @@ export class MobManager {
       const e = this.dead[i];
       const wanted = this.hunted?.has(e.m.type) && !e.m.def.boss && !e.m.def.mvp;
       e.t -= dt * (this.night ? 2 : 1) * (wanted ? 2 : 1);
-      const far = Math.hypot(player.x - e.m.home.x, player.z - e.m.home.z) > 14;
+      const far = Math.hypot(player.x - e.m.spawn.x, player.z - e.m.spawn.z) > 14;
       const nightOnly = e.m.def.night || e.m.nightOnly;
       if (e.t <= 0 && far && (!nightOnly || this.night)) {
-        e.m.reset(e.m.home.x, e.m.home.z);
+        e.m.home = { ...e.m.spawn };
+        e.m.reset(e.m.spawn.x, e.m.spawn.z);
         this.dead.splice(i, 1);
       }
     }

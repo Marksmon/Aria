@@ -181,6 +181,7 @@ export class Menus {
   // every raid: its boss, guide and land, and whether it can be set out on from here (done once at
   // its guide). Open shows its usual panel (difficulties, loot, Set out)
   raids() {
+    if (this.raidTab === 'log') return this.raidHistory();
     const rows = (this.hooks.raidList?.() || []).map(({ id, R, guide, land, done, wait }) => {
       const base = MOB_DEFS[R.boss[0]], pic = this.hooks.mobPortrait?.(base.art);
       const lvs = Object.values(R.difficulties).filter((d) => !d.tutorial).map((d) => d.lv);
@@ -189,7 +190,27 @@ export class Menus {
         <div><b>${esc(R.name)}</b><small>${esc(base.name)} · Base ${lvs.join(' / ')} · ${esc(guide)}, ${esc(land)}</small><small class="${done && !wait ? 'ok' : ''}">${state}</small></div>
         <button class="rbtn" data-act="raidopen" data-id="${id}" ${done ? '' : 'disabled'}>Open</button></div>`;
     }).join('');
-    return `<div class="rnote">Do a raid once at its guide, and you can set out on it from anywhere; you come back to where you were.</div><div class="rlist">${rows}</div>`;
+    const tabs = `<div class="rtabs"><button class="rtab on">Raids</button><button class="rtab" data-act="raidtab" data-id="log">History</button></div>`;
+    return `${tabs}<div class="rnote">Do a raid once at its guide, and you can set out on it from anywhere; you come back to where you were. Only a clear starts the cooldown; a failed run pays nothing.</div><div class="rlist">${rows}</div>`;
+  }
+
+  // the raid history: every run (newest first), cleared or failed and why, and what it paid
+  raidHistory() {
+    const log = this.hooks.raidLog?.() || [];
+    const tabs = `<div class="rtabs"><button class="rtab" data-act="raidtab" data-id="list">Raids</button><button class="rtab on">History</button></div>`;
+    const when = (t) => new Date(t).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+    const mmss = (n) => `${Math.floor(n / 60)}:${String(n % 60).padStart(2, '0')}`;
+    const rows = log.map((e) => {
+      const R = RAIDS[e.id], D = R?.difficulties[e.diff];
+      if (!R || !D) return '';
+      const items = e.items.filter(([id]) => ITEMS[id]).map(([id, n]) => `<span class="rlitem">${icon(id, 'sm')}${esc(ITEMS[id].name)}${n > 1 ? ` ×${n}` : ''}</span>`).join('');
+      const paid = e.perz || e.exp[0] || e.exp[1] || e.items.length
+        ? `<small>${e.perz ? `<b class="perz">${e.perz.toLocaleString()} perz</b> · ` : ''}EXP ${e.exp[0].toLocaleString()} Base / ${e.exp[1].toLocaleString()} Job</small>${items ? `<div class="rlitems">${items}</div>` : ''}`
+        : '<small class="dim">No rewards</small>';
+      return `<div class="ritem rlog ${e.won ? 'won' : 'lost'}"><div><b>${esc(R.name)} · ${esc(D.name)}</b>
+        <small><span class="${e.won ? 'ok' : 'bad'}">${e.won ? 'Cleared' : `Failed: ${esc(e.why || 'lost')}`}</span> · ${when(e.at)}${e.secs != null ? ` · ${mmss(e.secs)}` : ''}</small>${paid}</div></div>`;
+    }).join('');
+    return `${tabs}<div class="rlist">${rows || '<div class="rnote">No raids yet.</div>'}</div>`;
   }
 
   // the Boatman's crossings: the difficulties down the left (each needs its Base Level), and the one
@@ -1001,6 +1022,7 @@ export class Menus {
     if (act === 'ferry') this.hooks.ferry?.(t.dataset.id);
     if (act === 'raidgo') this.hooks.raidGo?.(NPCS[this.npc].raid, t.dataset.id, this.anywhere);
     if (act === 'raidopen') { const R = RAIDS[t.dataset.id]; this.close('raids'); this.talkTo(R.npc); this.ferrying = true; this.anywhere = true; this.render('talk'); }
+    if (act === 'raidtab') { this.raidTab = t.dataset.id; this.render('raids'); }
     if (act === 'raidback') { this.close('talk'); this.show('raids'); } // back to the Raids window it came from
     if (act === 'raidpick') { this.raidPick = t.dataset.id; this.render('talk'); }
     if (act === 'shoptab') { this.shopTab = t.dataset.id; this.sellSel = null; this.render(id); }
