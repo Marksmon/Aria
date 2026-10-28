@@ -13,13 +13,14 @@ import { Allies, ROAR } from './allies.js';
 import { RAIDS, rollReward } from './raid.js';
 import { loadSave, writeSave, loadStorage, writeStorage, clearSave, saveCode, loadCode, SLOTS, activeSlot, setActiveSlot } from './save.js';
 import { Inventory } from './inventory.js';
-import { Progress, JOBS, RATES, QUEST_RATE } from './progress.js';
+import { Progress, JOBS, RATES, QUEST_RATE, STAT_KEYS } from './progress.js';
 import { Quests, QUESTS, NPCS, FARES, NEXT, SERIES, giverOf } from './quests.js';
 import { Story, INTRO, STORY, CALL_HOME, route } from './story.js';
 import { playCutscene } from './cutscene.js';
 import { Villagers } from './villagers.js';
 import { Tiles } from './tiles.js';
 import { Hotbar } from './hotbar.js';
+import { Guide } from './guide.js';
 import { BigMap } from './bigmap.js';
 import { headsReady, paintHead, lookPortrait, hairstyles, HAIR_BODY } from './hair.js';
 import { headgearReady, gearCut, paintGears } from './headgear.js';
@@ -477,6 +478,7 @@ player.on('hurt', (n) => {
   ui.hurt(); cam.shake = 0.2; audio.play('hurt');
   fx.number(player.x, overHead(player, 1.3), player.z, n, 'taken');
 });
+mobs.on('cornered', (m) => { if (m.story) fx.number(m.x, overHead(m, m.sprite.scale.y * 0.9), m.z, 'Cornered!', 'skill'); }); // (the Gel Thief turns to fight)
 mobs.on('thorns', (m, n) => fx.number(m.x, overHead(m, m.sprite.scale.y * 0.8), m.z, n, 'dealt')); // Bark Armor's
 mobs.on('miss', (m, res) => {
   const t = m.foe || player; fx.number(t.x, overHead(t, 1.3), t.z, res.dodge ? 'Lucky!' : 'Miss', 'miss');
@@ -932,8 +934,12 @@ function refreshQuests() {
   // the minimap rings where to go: the person to talk to, or the portal on the way
   ui.goal = null;
   const map = s && storyLive() ? story.map() : null;
-  if (map === world.id && s.kind === 'talk') ui.goal = { x: NPCS[s.npc].x, z: NPCS[s.npc].z };
-  else if (map && map !== world.id) { const p = route(world.id, map); if (p) ui.goal = { x: p.x, z: p.z }; }
+  if (map === world.id && s.kind === 'talk') ui.goal = { x: NPCS[s.npc].x, z: NPCS[s.npc].z, label: NPCS[s.npc].name };
+  else if (map === world.id && s.spawn) { // a story monster (the Gel Thief): the ring and the arrow follow it
+    const m = mobs.list.find((o) => o.story && o.type === s.spawn.mob && o.alive);
+    ui.goal = m ? { get x() { return m.x; }, get z() { return m.z; }, label: m.def.name, mob: true } : null;
+  } else if (map === world.id && s.at) ui.goal = { x: s.at.x, z: s.at.z, label: s.kind === 'survive' ? 'Here' : '' };
+  else if (map && map !== world.id) { const p = route(world.id, map); if (p) ui.goal = { x: p.x, z: p.z, label: ZONE_NAMES[p.to] }; }
 }
 
 // tap a quest in the list: its Quest View, with a Go button
@@ -1417,6 +1423,95 @@ function checkStory() {
   }
   if (story.met({ prog, hotbar, skillLv, keepers, inv, quests })) storyDone();
 }
+// ---------- the guided lessons: the Prologue's stats, equipment and hotbar steps, and the chase ----------
+// Each runs once, when its story step comes up (skipped or finished: flags.guide_<step>), and stops
+// when the step is done. guide.js rings what to tap and says what it is.
+const guide = new Guide();
+const $ = (sel, root = document) => root?.querySelector(sel) || null;
+const win = (id) => (menus.isOpen(id) ? menus.wins[id] : null);
+const hudBtn = (id) => $(`[data-btn="${id}"]`);
+const STAT_TALK = {
+  pow: '<b>POW, Power</b>: your blows up close (every point, and a big jump every 10) and how much you can carry. <b>The Blader\'s main stat.</b>',
+  qkn: '<b>QKN, Quickness</b>: attack speed (more than any other stat) and Flee, your chance to dodge a blow. <b>Bladers and Archers</b> both want it.',
+  end: '<b>END, Endurance</b>: Max HP, defense against every blow, HP recovery and some magic defense. <b>Never wasted, on any path.</b>',
+  knl: '<b>KNL, Knowledge</b>: magic attack, Max SP for your skills, SP recovery and magic defense. <b>The Sorcerer\'s main stat.</b>',
+  fns: '<b>FNS, Finesse</b>: hit (how often your blows land), steadier damage, a little attack speed and faster spells. With a bow it is your attack: <b>the Archer\'s main stat.</b>',
+  ftn: '<b>FTN, Fortune</b>: critical hits, lucky dodges and a little attack. Nice to have, <b>never a main stat</b>.',
+};
+const inItems = (tab) => () => menus.isOpen('items') && (!tab || menus.tab === tab);
+const GUIDES = {
+  stats: () => [
+    { at: () => hudBtn('status'), text: 'Your stats decide what kind of fighter you are. Tap <b>Status</b>.', done: () => menus.isOpen('status') },
+    { at: () => $('.stsub', win('status')), need: () => menus.isOpen('status'), text: 'These are your <b>Status Points</b>, and each Base Level brings more. A stat costs more the higher it goes, and taking points back needs a <b>costly reset</b>: so first, what each stat does.' },
+    ...STAT_KEYS.map((k, i) => ({ at: () => win('status')?.querySelectorAll('table.stats tr')[i] || null, need: () => menus.isOpen('status'), text: STAT_TALK[k] })),
+    { at: () => $('table.stats', win('status')), need: () => menus.isOpen('status'), text: 'Not sure which path you will take? <b>END is never wasted.</b> If you know: a Blader wants POW, QKN and END; a Sorcerer KNL, FNS and END; an Archer FNS and QKN.' },
+    { at: () => $('table.stats', win('status')), need: () => menus.isOpen('status'), text: 'Tap <b>▲</b> beside a stat to place a point. Nothing is final yet: <b>Reset</b> takes back points you have not confirmed.', done: () => menus.pendCount() > 0 || story.step?.id !== 'stats' },
+    { at: () => $('[data-act="statconfirm"]', win('status')), need: () => menus.isOpen('status'), text: 'Happy with them? <b>Confirm</b> locks your points in. (Place more first if you like.)', done: () => story.step?.id !== 'stats' },
+  ],
+  equip: () => [
+    { at: () => hudBtn('items'), text: 'Elder Halvard\'s cloak is in your bag. Tap <b>Items</b>.', done: inItems() },
+    { at: () => $('[data-act="tab"][data-id="equip"]', win('items')), need: inItems(), text: 'Gear is under <b>Equips</b>.', done: inItems('equip') },
+    { at: () => $('.rslot[data-id="travel_cloak"]', win('items')), need: inItems('equip'), back: 1, text: 'Tap the <b>Traveler\'s Cloak</b> to see what it gives.', done: () => menus.selected === 'travel_cloak' || story.step?.id !== 'equip' },
+    { at: () => $('[data-act="equip"]', win('items')), need: inItems('equip'), back: 1, text: 'Here is what it gives: DEF, and which jobs can wear it. Tap <b>Equip</b> to put it on.', done: () => story.step?.id !== 'equip' },
+  ],
+  thief: () => [
+    { at: () => null, text: 'The <b>golden bloop</b> is the Gel Thief. Follow the <b>gold arrow</b> to it, and tap it to give chase. It runs from you, but it is fat with the ember: after a few seconds of running, or once you corner it against the trees, it turns to fight.' },
+  ],
+  hotbar: () => [
+    { at: () => hudBtn('items'), text: 'The hotbar along the bottom holds potions and skills, one tap away. Tap <b>Items</b>.', done: inItems() },
+    { at: () => $('[data-act="tab"][data-id="use"]', win('items')), need: inItems(), text: 'Potions are under <b>Usables</b>.', done: inItems('use') },
+    { at: () => $('.rslot[data-id="potion"]', win('items')), need: inItems('use'), back: 1,
+      drag: [() => $('.rslot[data-id="potion"]', win('items')), () => hotbar.nextFree, iconURL('potion')],
+      text: '<b>Press and hold</b> the Red Potion, <b>drag</b> it down onto an empty hotbar slot, and let go. (Or tap it, then <b>Add to hotbar</b>.)', done: () => hotbar.has('item', 'potion') },
+  ],
+};
+let guideFor = null; // the story step the running lesson is for
+function tickGuide(dt) {
+  const s = story.step;
+  if (guide.running && (guideFor !== s?.id || !storyLive())) guide.stop(true);
+  if (!guide.running && storyLive() && s && GUIDES[s.id] && !story.flags[`guide_${s.id}`] && !menus.isOpen('story') && !cine
+    && (s.id !== 'thief' || world.id === s.map)) { // (the chase's, once in Moss Field)
+    guideFor = s.id;
+    guide.start(GUIDES[s.id](), { onEnd: () => { story.flags[`guide_${guideFor}`] = true; } });
+  }
+  guide.update(dt);
+}
+
+// the story's goal on this map, during the Prologue (and for a story monster): a gold arrow at the
+// screen's edge pointing to it while it is off the screen, or over it (a monster) while on it
+const goalArrow = document.createElement('div');
+goalArrow.id = 'goalarrow';
+goalArrow.hidden = true;
+goalArrow.innerHTML = '<i></i><span></span>';
+document.getElementById('hud').appendChild(goalArrow);
+const goalTri = goalArrow.querySelector('i');
+const goalV = new THREE.Vector3();
+function tickGoalArrow() {
+  const s = story.step, g = ui.goal;
+  const on = storyLive() && s && g && story.map() === world.id && (s.ch === 'Prologue' || s.spawn) && !cine;
+  goalArrow.hidden = !on;
+  if (!on) return;
+  goalV.set(g.x, world.heightAt(g.x, g.z) + 1.6, g.z).project(camera);
+  const W = innerWidth, H = innerHeight, behind = goalV.z > 1;
+  let x = (goalV.x + 1) / 2 * W, y = (1 - goalV.y) / 2 * H;
+  if (behind) { x = W - x; y = H - y; }
+  const m = 40, inside = !behind && x > m && x < W - m && y > m && y < H - m;
+  goalArrow.querySelector('span').textContent = inside ? '' : g.label || ''; // (on the screen a monster wears its own name)
+  if (inside) {
+    if (!g.mob) { goalArrow.hidden = true; return; } // (a spot or a person on the screen: the minimap's ring is enough)
+    goalArrow.style.transform = `translate(${x - 30}px, ${y - 52}px)`;
+    goalArrow.style.flexDirection = 'column-reverse'; // (its name over the arrow pointing down at it)
+    goalTri.style.transform = 'rotate(180deg)';
+    return;
+  }
+  // to the screen's edge, along the line from its middle
+  const cx = W / 2, cy = H / 2, dx = x - cx, dy = y - cy, k = Math.min((W / 2 - m) / Math.abs(dx || 1e-6), (H / 2 - m) / Math.abs(dy || 1e-6));
+  const ex = cx + dx * k, ey = cy + dy * k, ang = Math.atan2(dy, dx) + Math.PI / 2;
+  goalArrow.style.transform = `translate(${ex - 30}px, ${ey - 20}px)`;
+  goalArrow.style.flexDirection = Math.cos(ang) < -0.3 ? 'column-reverse' : 'column'; // (the name behind the arrow: over one pointing down)
+  goalTri.style.transform = `rotate(${ang}rad)`; // (only the arrow turns: the name stays upright)
+}
+
 function startStory() {
   if (story.flags.intro) return;
   menus.story(INTRO, 'Prologue · The Last Fire-Ring', () => {
@@ -1461,6 +1556,9 @@ const menus = new Menus(inv, prog, player, {
     persist();
   },
   storyStep: () => (storyLive() ? story.step : null),
+  // the story step's guided lesson, again (it shows once by itself)
+  hasGuide: () => storyLive() && !!GUIDES[story.step?.id] && !guide.running,
+  guideMe() { delete story.flags[`guide_${story.step?.id}`]; },
   // story pages that ask (the Seeress's rune-reading): each answer counts toward a calling
   storyFlags: () => story.flags,
   storyPic: (p) => (p.job ? jobPic(p.job) : p.mob ? mobPortrait(p.mob) : ''), // (a job on the hero, or a monster)
@@ -2881,6 +2979,8 @@ function frame() {
     cam.target.z + Math.cos(cam.yaw) * horiz + (Math.random() - 0.5) * sh,
   );
   camera.lookAt(cam.target.x, cam.target.y + 0.7, cam.target.z);
+  camera.updateMatrixWorld();
+  if (live) { tickGuide(dt); tickGoalArrow(); }
 
   ui.update(dt, player, cam.yaw);
   if (live && ui.zone !== questZone) {

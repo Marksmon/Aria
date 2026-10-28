@@ -21,8 +21,9 @@ export const MOB_DEFS = {
   blueSlime: { name: 'Blue Bloop', ai: 'hopper', art: 'slimeBlue', el: 'water', lv: 4, hp: 110, atk: [8, 11], def: 0, vit: 4, agi: 4, dex: 9, exp: [9, 6], tjob: 18, adelay: 1600, passive: true, walk: 400, aggro: 4.5, chase: 4.5, reach: 0.8, w: 1.0, r: 0.38, split: 'miniSlime', drops: [['gel', 1, 1, 1], ['dew', 1, 1, 0.6], ['tonic', 1, 1, 0.04], ['shiny_gel', 1, 1, 0.01], ['tide_pendant', 1, 1, 0.003], ['bluebloop_card', 1, 1, 0.001]] },
   miniSlime: { name: 'Little Bloop', ai: 'hopper', art: 'slimeBlue', el: 'water', lv: 2, hp: 40, atk: [5, 7], def: 0, vit: 2, agi: 2, dex: 7, exp: [3, 2], tjob: 6, adelay: 1400, walk: 300, aggro: 6, chase: 5, reach: 0.6, w: 0.55, r: 0.22, noRespawn: true, drops: [['dew', 1, 1, 0.5]] }, // split off a Blue Bloop: never gear, never a card
   // the story's first chase (story.js 'thief'): a golden bloop with the fire-ring's Heart-Ember inside.
-  // It runs from you (skittish) and fights only once cornered; it never comes back once beaten
-  gelThief: { name: 'Gel Thief', ai: 'skittish', art: 'slimeYellow', tint: '#ffcf4a', el: 'fire', lv: 3, hp: 130, atk: [6, 9], def: 0, vit: 3, agi: 6, dex: 10, exp: [14, 10], tjob: 60, adelay: 1500, passive: true, walk: 300, flee: 3.15, fear: 4.5, angry: 8, reach: 0.8, w: 1.05, r: 0.4, glow: true, noRespawn: true, drops: [['gel', 2, 3, 1], ['potion', 2, 2, 1]] },
+  // It runs from you (skittish) and fights once cornered, or once out of breath after tire seconds of
+  // running; it never comes back once beaten
+  gelThief: { name: 'Gel Thief', ai: 'skittish', art: 'slimeYellow', tint: '#ffcf4a', el: 'fire', lv: 3, hp: 130, atk: [6, 9], def: 0, vit: 3, agi: 6, dex: 10, exp: [14, 10], tjob: 60, adelay: 1500, passive: true, walk: 300, flee: 3.15, fear: 4.5, angry: 8, tire: 6, reach: 0.8, w: 1.05, r: 0.4, glow: true, noRespawn: true, drops: [['gel', 2, 3, 1], ['potion', 2, 2, 1]] },
   sprout: { name: 'Sprout', ai: 'skittish', art: 'sprout', el: 'earth', lv: 3, hp: 70, atk: [9, 12], def: 0, vit: 3, agi: 3, dex: 8, exp: [4, 3], tjob: 12, adelay: 1456, passive: true, walk: 300, flee: 2.9, fear: 3.5, angry: 6, reach: 0.8, w: 0.95, r: 0.35, drops: [['seed', 1, 1, 1], ['leaf', 1, 1, 0.6], ['berry', 1, 1, 0.2], ['herb', 1, 1, 0.25], ['seedling_band', 1, 1, 0.004], ['flower_wreath', 1, 1, 0.005], ['seed_card', 1, 1, 0.001]] },
   crab: { name: 'Crab', ai: 'crab', art: 'crab', el: 'water', lv: 6, hp: 170, atk: [10, 13], def: 3, vit: 6, agi: 5, dex: 10, exp: [20, 14], tjob: 30, adelay: 1300, passive: true, walk: 200, aggro: 5, reach: 0.85, w: 1.1, r: 0.42, drops: [['shell', 1, 2, 1], ['crableg', 1, 1, 0.25], ['mud_buckler', 1, 1, 0.003], ['shellcrab_card', 1, 1, 0.001]] },
   mushling: { name: 'Mushroom', ai: 'puffer', art: 'mushling', el: 'earth', lv: 14, hp: 520, atk: [19, 26], def: 2, vit: 18, agi: 14, dex: 30, exp: [45, 32], adelay: 1768, passive: true, walk: 200, aggro: 4, chase: 6, reach: 0.8, w: 0.95, r: 0.36, drops: [['spore', 1, 2, 1], ['herb', 1, 1, 0.2], ['potion', 1, 1, 0.08], ['spore_cloak', 1, 1, 0.0025], ['mushling_card', 1, 1, 0.001]] },
@@ -979,7 +980,8 @@ class Mob {
           const m = this.moveToward(this.x - dx, this.z - dz, d.flee, dt);
           moving = m > 0;
           this.blocked = m < want * 0.3 ? this.blocked + dt : 0;
-          if (this.blocked > 0.5) { this.angry = d.angry; this.blocked = 0; this.mgr.emit('cornered', this); }
+          this.ran = (this.ran || 0) + dt; // (tire: a chase that long and it runs out of breath, and turns)
+          if (this.blocked > 0.5 || (d.tire && this.ran > d.tire)) { this.angry = d.angry; this.blocked = 0; this.ran = 0; this.mgr.emit('cornered', this); }
         } else wander();
         break;
       }

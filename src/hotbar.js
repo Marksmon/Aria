@@ -64,6 +64,19 @@ export class Hotbar {
     this.hooks.use(s);
   }
 
+  // put something on the first empty slot of the page showing (else the first slot): the Items
+  // window's Add to hotbar, for those who'd rather not drag
+  place(entry) {
+    const at = Math.max(0, this.slots.findIndex((s) => !s));
+    this.slots = this.slots.map((s) => (s?.kind === entry.kind && s.id === entry.id ? null : s)); // one slot each
+    this.slots[at] = { kind: entry.kind, id: entry.id };
+    this.render();
+    this.hooks.changed?.();
+    return at;
+  }
+  // the slot to drop on next (the guide's hand carries things there)
+  get nextFree() { return this.cells[Math.max(0, this.slots.findIndex((s) => !s))]; }
+
   has(kind, id) { return this.pages.some((pg) => pg.some((s) => s?.kind === kind && s.id === id)); }
 
   cellAt(x, y) {
