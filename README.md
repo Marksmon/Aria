@@ -21,7 +21,7 @@ this phone or another).
 
 The title screen has three character slots. Tap a hero and **Continue** (or **Play**), or tap an
 empty slot to make a new one; **Delete** removes the picked hero (it asks twice). In the game, the **⚙**
-button (next to Skills) opens Settings: Sound on or off, and **Back to main menu**, which saves and
+button (beside the minimap) opens Settings: Sound on or off, and **Back to main menu**, which saves and
 goes back to the title screen to play another hero. Every
 hero keeps their own level, job, bag, gear, perz and quests, but the Keepers' storage (300 slots) is
 shared: what one hero puts away, the others can take out. Its window has sections (All, Usables,
@@ -46,7 +46,7 @@ Classic MMORPG style: no on-screen controller. Landscape.
 | Tap a person, the chest (camp or Steinborg storage) or the tent: talk / open / rest | Click |
 | Step onto a glowing portal: go to the next map | |
 | Tap the minimap: the big map. People, portals and monsters are numbered, and named in a list on the left (mini-bosses and MVPs say if they are out). Tap a person, a portal or open ground, on the map or in the list, and the hero walks there; monsters are only for reading | Click |
-| Hotbar (bottom): nine slots; tap one to use a skill or item; the button at its end flips between 3 pages | 1–9 · Tab: next page |
+| Hotbar (bottom): eight slots; tap one to use a skill or item (a skill shows its SP cost, veiled blue while you lack the SP; after any skill, skills wait half a second); the button at its end flips between 3 pages | 1–8 · Tab: next page |
 | Drag active skills (Skills window) and usable items (Items window) onto the hotbar; drag a slot off to clear it | Drag |
 | Hold a buff icon (left of the minimap: each buff on you, with its time left) to see what it does | Hover |
 | Attack button (left of the hotbar, showing your weapon): attack your target, or the nearest monster in sight if you have none (a melee hero walks to it) | Click |

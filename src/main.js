@@ -1523,7 +1523,7 @@ const STAT_TALK = {
   end: '<b>END, Endurance</b>: Max HP, defense against every blow, HP recovery and some magic defense. <b>Never wasted, on any path.</b>',
   knl: '<b>KNL, Knowledge</b>: magic attack, Max SP for your skills, SP recovery and magic defense. <b>The Sorcerer\'s main stat.</b>',
   fns: '<b>FNS, Finesse</b>: hit (how often your blows land), steadier damage, a little attack speed and faster spells. With a bow it is your attack: <b>the Archer\'s main stat.</b>',
-  ftn: '<b>FTN, Fortune</b>: <b>critical hits and lucky dodges</b>, its main use, and a little attack.',
+  ftn: '<b>FTN, Fortune</b>: <b>critical hits and lucky dodges</b>, its main use, and a little attack. A critical hit never misses and goes through armor (skills never crit), so some build around it: a <b>crit Assassin</b> (POW, QKN, FTN) or a <b>crit Archer</b> (FNS, FTN, QKN).',
 };
 const inItems = (tab) => () => menus.isOpen('items') && (!tab || menus.tab === tab);
 const GUIDES = {
@@ -1531,7 +1531,7 @@ const GUIDES = {
     { at: () => hudBtn('status'), text: 'Your stats decide what kind of fighter you are. Tap <b>Status</b>.', done: () => menus.isOpen('status') },
     { at: () => $('.stsub', win('status')), need: () => menus.isOpen('status'), text: 'These are your <b>Status Points</b>, and each Base Level brings more. A stat costs more the higher it goes, and taking points back needs a <b>costly reset</b>: so first, what each stat does.' },
     ...STAT_KEYS.map((k, i) => ({ at: () => win('status')?.querySelectorAll('table.stats tr')[i] || null, need: () => menus.isOpen('status'), text: STAT_TALK[k] })),
-    { at: () => $('table.stats', win('status')), need: () => menus.isOpen('status'), text: 'Not sure which path you will take? <b>END is never wasted.</b> If you know: a Blader wants POW, QKN and END; a Sorcerer KNL, FNS and END; an Archer FNS and QKN; an Assassin POW and QKN, with a little END and FNS (quick daggers, and dodging instead of taking blows).' },
+    { at: () => $('table.stats', win('status')), need: () => menus.isOpen('status'), text: 'Not sure which path you will take? <b>END is never wasted.</b> If you know: a Blader wants POW, QKN and END; a Sorcerer KNL, FNS and END; an Archer FNS and QKN; an Assassin POW and QKN, with a little END and FNS (quick daggers, and dodging instead of taking blows). For crits, an Assassin or an Archer adds FTN.' },
     { at: () => $('table.stats', win('status')), need: () => menus.isOpen('status'), text: 'Tap <b>▲</b> beside a stat to place a point. Nothing is final yet: <b>Reset</b> takes back points you have not confirmed.', done: () => menus.pendCount() > 0 || story.step?.id !== 'stats' },
     { at: () => $('[data-act="statconfirm"]', win('status')), need: () => menus.isOpen('status'), text: 'Happy with them? <b>Confirm</b> locks your points in. (Place more first if you like.)', done: () => story.step?.id !== 'stats' },
   ],
@@ -1889,8 +1889,10 @@ const hotbar = new Hotbar(document.getElementById('hotbar'), inv, {
   use(s) { if (s.kind === 'skill') useSkill(s.id); else useItem(s.id); },
   cooldown(s) {
     if (s.kind !== 'skill') return 0;
-    return SKILLS[s.id].cd ? Math.max(0, (skillCd[s.id] || 0) / SKILLS[s.id].cd) : 0;
+    const own = SKILLS[s.id].cd ? Math.max(0, (skillCd[s.id] || 0) / SKILLS[s.id].cd) : 0;
+    return Math.max(own, skillLock > 0 ? skillLock / SKILL_LOCK : 0); // (the half second after any skill)
   },
+  skill(id) { const lv = skillLv(prog, id), sp = lv ? spCost(id, lv) : 0; return { lv, sp, ok: player.sp >= sp }; },
   changed() { if (menus.open) menus.render(); persist(); },
 });
 hotbar.load(save?.hotbar);
@@ -1973,9 +1975,12 @@ function useItem(id) {
 }
 
 const skillCd = {}; // skill id -> seconds left
+// after any skill, every skill waits a moment (no spamming): the hotbar sweeps it
+const SKILL_LOCK = 0.5;
+let skillLock = 0;
 function useSkill(id) {
   const sk = SKILLS[id], lv = skillLv(prog, id);
-  if (!lv || sk.kind !== 'active' || player.state === 'down' || (skillCd[id] || 0) > 0) return;
+  if (!lv || sk.kind !== 'active' || player.state === 'down' || (skillCd[id] || 0) > 0 || skillLock > 0) return;
   // skills of every job earned can be used, with the right weapon in hand
   if (!weaponOk(id, weaponKind())) { menus.message(`${sk.name} needs ${WEAPON_NAMES[sk.weapon]} in hand`); return; }
   const sp = spCost(id, lv);
@@ -1983,6 +1988,7 @@ function useSkill(id) {
     if (player.sp < sp) { menus.message('Not enough SP'); return false; }
     player.sp -= sp;
     if (sk.cd) skillCd[id] = sk.cd;
+    skillLock = SKILL_LOCK;
     return true;
   };
   const say = (text) => fx.number(player.x, overHead(player, 1.6), player.z, text, 'skill');
@@ -2854,6 +2860,7 @@ function tickSkills(dt) {
     m.hit(m.burnDmg, 0, 0);
   }
   for (const k in skillCd) skillCd[k] -= dt;
+  skillLock = Math.max(0, skillLock - dt);
   for (const k in buffs) {
     if (buffs[k] <= 0) continue;
     buffs[k] -= dt;

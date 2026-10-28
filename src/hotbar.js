@@ -1,5 +1,5 @@
-// Skill and item hotbar, like Ragnarok's F-key bar: nine slots along the bottom of the screen, on
-// three pages (the button at its end, or Tab, flips to the next). Tap a slot (or press 1-9) to use
+// Skill and item hotbar, like Ragnarok's F-key bar: eight slots along the bottom of the screen, on
+// three pages (the button at its end, or Tab, flips to the next). Tap a slot (or press 1-8) to use
 // it. Skills show their cooldown; items show how many you have. It starts empty: drag active skills
 // (Skills window) and usable items (Items window) onto a slot; drag slots to swap them, or off the
 // bar to clear them.
@@ -7,14 +7,14 @@ import { ITEMS, iconURL } from './items.js';
 import { SKILLS } from './skills.js';
 import { OLD_EDGES, RENAMED_SKILLS } from './progress.js';
 
-export const SLOTS = 9;
+export const SLOTS = 8;
 export const PAGES = 3;
 
 export class Hotbar {
   constructor(el, inv, hooks) {
     this.el = el;
     this.inv = inv;
-    this.hooks = hooks; // { use(entry), cooldown(entry) -> 0..1 left, changed() }
+    this.hooks = hooks; // { use(entry), cooldown(entry) -> 0..1 left, skill(id) -> { lv, sp, ok } (its level, SP cost, whether the hero has the SP), changed() }
     el.classList.add('ui-click');
     this.pages = Array.from({ length: PAGES }, () => Array(SLOTS).fill(null));
     this.page = 0;
@@ -138,6 +138,7 @@ export class Hotbar {
       if (s) img.src = iconURL(s.kind === 'skill' ? SKILLS[s.id].icon : s.id);
       const n = s?.kind === 'item' ? this.inv.bag.count(s.id) : null;
       c.querySelector('b').textContent = n === null ? '' : n;
+      delete c.dataset.sp; // (a skill's SP cost: written by update)
       c.classList.toggle('out', n === 0);
       c.title = s ? (s.kind === 'skill' ? SKILLS[s.id].name : ITEMS[s.id].name) : 'Empty slot';
     });
@@ -145,11 +146,20 @@ export class Hotbar {
     this.flip.title = `Hotbar page ${this.page + 1} of ${PAGES} (Tab: next)`;
   }
 
-  // cooldown sweep over skill slots, every frame
+  // every frame: a skill unlearnt (a skill reset) leaves the bar on every page; each skill shows its
+  // SP cost, under a blue veil while the hero lacks the SP; and the cooldown sweep
   update() {
+    let gone = false;
+    for (const pg of this.pages) pg.forEach((s, i) => { if (s?.kind === 'skill' && !(this.hooks.skill?.(s.id)?.lv > 0)) { pg[i] = null; gone = true; } });
+    if (gone) { this.render(); this.hooks.changed?.(); }
     this.slots.forEach((s, i) => {
+      const c = this.cells[i], k = s?.kind === 'skill' ? this.hooks.skill?.(s.id) : null;
+      const sp = k && k.sp ? `${k.sp}` : null;
+      if (s?.kind === 'skill' && c.dataset.sp !== (sp ?? '')) { c.dataset.sp = sp ?? ''; c.querySelector('b').textContent = sp ? `${sp} SP` : ''; }
+      c.classList.toggle('sp', !!sp);
+      c.classList.toggle('nosp', !!k && !k.ok);
       const left = s ? this.hooks.cooldown(s) : 0;
-      const sweep = this.cells[i].querySelector('i');
+      const sweep = c.querySelector('i');
       sweep.style.display = left > 0 ? 'block' : 'none';
       if (left > 0) sweep.style.background = `conic-gradient(rgba(20,14,10,.62) ${left * 360}deg, transparent 0)`;
     });

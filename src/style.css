@@ -257,7 +257,7 @@ html, body {
 /* ---------- M9: villagers and quests ---------- */
 #quests {
   position: absolute;
-  top: calc(182px + env(safe-area-inset-top));
+  top: calc(156px + env(safe-area-inset-top));
   right: calc(12px + env(safe-area-inset-right));
   width: 178px;
   display: flex;
@@ -313,8 +313,8 @@ html, body {
   bottom: calc(10px + env(safe-area-inset-bottom));
   transform: translateX(-50%);
   display: flex;
-  /* nine slots: as big as fits beside the attack button, never over 50px */
-  --hb: clamp(30px, calc((100vw - 170px) / 10.6), 50px);
+  /* eight slots: as big as fits beside the attack button, never over 50px */
+  --hb: clamp(30px, calc((100vw - 170px) / 9.6), 50px);
   gap: clamp(3px, calc(var(--hb) / 9), 6px);
   padding: 5px;
   border-radius: 12px;
@@ -339,6 +339,10 @@ html, body {
 .hb img { width: calc(var(--hb) * .76); height: calc(var(--hb) * .76); pointer-events: none; }
 .hb.empty { border-style: dashed; background: rgba(60, 42, 28, .35); }
 .hb.out img { opacity: .35; }
+/* a skill's SP cost, and a blue veil while the SP isn't there */
+.hb.sp b { right: 2px; bottom: 1px; font-size: 10px; color: #bcdcff; }
+.hb.nosp::after { content: ''; position: absolute; inset: 0; border-radius: 7px; background: rgba(40, 110, 255, .38); box-shadow: inset 0 0 8px rgba(120, 180, 255, .6); pointer-events: none; }
+.hb.nosp b { color: #fff; }
 .hb.over { border-color: #ffe37a; box-shadow: 0 0 0 2px rgba(255, 227, 122, .5); }
 .hb.pressed { transform: scale(.92); }
 .hb b { position: absolute; right: 3px; bottom: 1px; font: 700 13px system-ui, sans-serif; color: #fff; text-shadow: 0 1px 2px #000; pointer-events: none; }
@@ -446,10 +450,10 @@ body.named #toasts { top: calc(175px + var(--pets-push, 0px) + env(safe-area-ins
   white-space: nowrap;
 }
 /* the options gear: under the map and its clock, over the quest list */
-#optbtn {
+#optbtn { /* beside the minimap, on its left */
   position: absolute;
-  top: calc(154px + env(safe-area-inset-top));
-  right: calc(12px + env(safe-area-inset-right));
+  top: calc(12px + env(safe-area-inset-top));
+  right: calc(128px + env(safe-area-inset-right));
   width: 26px;
   height: 24px;
   font-size: 15px;
