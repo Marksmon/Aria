@@ -108,14 +108,14 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   at 3% on any difficulty, and its ultra rare (a Head, Face or Wings piece: Angel Wings, the Giant Goat
   Horn Helm, Elven Ears) and its card at 1%; its guide makes the rares and the ultra rare
   from cores (the rarer, the more; an ultra rare 500, always made, 10% of them with a card slot). The story's step gets a
-  Tutorial run: no cooldown, and the clear reward win or lose (a loss gets the Boatman's "we finished
-  it for you, but not next time"). Easy/Normal/Hard/Hell need Base 40/55/70/85 (the owner's call):
+  Tutorial run: no cooldown; only a clear of it completes the story step and pays (the owner's call:
+  a lost Tutorial is a failed run, and Easy and up don't complete the step). Easy/Normal/Hard/Hell need Base 40/55/70/85 (the owner's call):
   (the Kobold Camp 45/60/75/90, the Goblin Lair 50/65/80/95). Easy a first job with no potions,
   Normal a second job with 20 White, Hard with 30. Once a hero has done a raid at its guide, the Raids
   window sets out on it from anywhere and brings them back where they were (`raidsDone`, `raid.back`; a Back button returns to the list), and the guides wear a RAID tag; Hell's boss is fierce (as
   hard and tricky as a field MVP: `FIERCE` in `mobs.js`), for a hero in the best gear. Clear rewards
   (perz, materials) x1/x3/x6/x9. Raid EXP is held and paid at the end: x1.5 on a clear,
-  nothing on a failure (a lost Tutorial pays its kills).
+  nothing on a failure (the Tutorial too).
 - **Character slots and storage** (`src/save.js`): three heroes, picked on the title screen (slot 1
   keeps the old save key). The Keepers' storage is one chest shared by every hero, saved apart from
   them; a save code backs up every hero and the storage together.

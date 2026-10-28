@@ -1031,8 +1031,8 @@ function tickVigil(dt) {
 // run ends, x1.5, on a clear. Leaving, fainting or the tide (the timer) ends it, and so does closing
 // the game mid-run: a failed run pays nothing and costs no cooldown. One cooldown for every
 // difficulty, from going in, started by a clear. The story's Tutorial run (only while the story waits
-// on the raid) starts no cooldown, and pays the clear reward (and its kills' EXP) and moves the story
-// on, win or lose. Every run goes in the raid history (raidLog), with what it paid.
+// on the raid) starts no cooldown; only a clear of it moves the story on and pays (a lost one is a
+// failed run like any other). Every run goes in the raid history (raidLog), with what it paid.
 // when each raid opens again (ms since 1970): { bloop, kobold, goblin }. A save from when Bloop
 // Island was the only raid kept one number
 let raidAt = typeof save?.raidAt === 'number' ? { bloop: save.raidAt } : { ...(save?.raidAt || {}) };
@@ -1187,25 +1187,22 @@ function raidReward(id, diff) {
 // Boatman rows them back
 function endRaid(win, why, stay = false, short = why) {
   const R = RAIDS[raid.id], D = R.difficulties[raid.diff], run = raid;
-  // EXP: all of it x1.5 on a clear, the kills alone on a lost Tutorial, nothing on a failed run
-  const k = win ? 1.5 : D.tutorial ? 1 : 0, b = Math.round(run.exp[0] * k), j = Math.round(run.exp[1] * k);
+  // EXP: all of it x1.5 on a clear, nothing on a failed run
+  const k = win ? 1.5 : 0, b = Math.round(run.exp[0] * k), j = Math.round(run.exp[1] * k);
   for (const m of [...mobs.list]) if (m.def.raidLv) mobs.remove(m);
   raid = null;
   raidsDone.add(run.id); // done once: the Raids window may send them from anywhere now
   if (win && !D.tutorial) raidAt[run.id] = run.start + R.cooldown; // only a clear starts the cooldown (from going in)
-  // a clear pays the reward; so does the story's Tutorial run, win or lose. Either moves the story on
-  const paid = win || D.tutorial ? raidReward(run.id, run.diff) : { perz: 0, items: [] };
+  // only a clear pays; a cleared Tutorial run (and only that) moves the story on
+  const paid = win ? raidReward(run.id, run.diff) : { perz: 0, items: [] };
   logRaid({ id: run.id, diff: run.diff, at: run.start, secs: Math.round(R.secs - Math.max(0, run.left)), won: win, why: win ? null : short, perz: paid.perz, exp: [b, j], items: paid.items });
-  if ((win || D.tutorial) && storyRaid(run.id)) {
-    if (!win) story.flags[`${story.step.id}_lost`] = true; // the Boatman finishes a lost Tutorial for you (story.js says so)
-    story.flag(story.step.id);
-  }
+  if (win && D.tutorial && storyRaid(run.id)) story.flag(story.step.id);
   raidBar.hidden = bossBar.hidden = true;
   if (why) menus.message(why);
   if (b || j) {
     menus.message(`Raid EXP: +${b.toLocaleString()} Base, +${j.toLocaleString()} Job${win ? ' (x1.5 for the clear)' : ''}`);
     gainExp(b, j); // already at the battle rate
-  } else if (!win && !D.tutorial) menus.message('The raid failed: no rewards, and no cooldown. Try again when you are ready.');
+  } else if (!win) menus.message(D.tutorial ? 'The raid failed: no rewards. The Boatman will row you out again whenever you are ready.' : 'The raid failed: no rewards, and no cooldown. Try again when you are ready.');
   if (!stay) setTimeout(() => (run.back ? warp(run.back.map, null, run.back) : warp(R.from, null, boatSpot(R))), win ? 2500 : 700);
   refreshQuests();
   persist();

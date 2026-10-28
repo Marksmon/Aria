@@ -280,7 +280,7 @@ export class Menus {
           <small>${esc(skills.join(' · '))}</small>
           ${B.takesText ? `<small class="match">${esc(B.takesText[0].toUpperCase() + B.takesText.slice(1))}.</small>` : ''}</div></div>
         <p class="raidline"><b>Waves</b> ${R.waves.length} · ${esc(wavesOf.join(', '))} (Lv ${Math.min(...lvs)}–${Math.max(...lvs)})</p>
-        <p class="raidline"><b>Made for</b> ${D.tutorial ? 'a hero on the story: no tide, and paid win or lose' : `Base ${D.lv}${D.plus ? '+' : ''}: ${esc(D.advice)}`}</p>
+        <p class="raidline"><b>Made for</b> ${D.tutorial ? 'a hero on the story: no tide; only a clear moves the story on' : `Base ${D.lv}${D.plus ? '+' : ''}: ${esc(D.advice)}`}</p>
         <div class="lootrow"><b>Clear reward</b>${D.tutorial ? '' : ` <span class="rtag">x${D.mult}</span>`}<span class="loot perz">${(R.reward.perz * D.mult).toLocaleString()} perz</span>${loot}</div>
         ${R.reward.cores ? `<div class="lootrow"><b>Cores</b>${D.cores > 1 ? ` <span class="rtag">x${D.cores}</span>` : ''}<span class="loot rare">${icon(R.reward.cores[0], 'xs')}${esc(ITEMS[R.reward.cores[0]].name)} ×${R.reward.cores[1] * (D.cores || 1)}</span><i class="corenote">trade them to ${esc(n.name)} for the rare finds below</i></div>` : ''}
         <div class="lootrow"><b>Rare find</b> <span class="rtag">${Math.round(D.rare * 100)}%</span>${rares}</div>

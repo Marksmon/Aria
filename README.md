@@ -397,8 +397,8 @@ crystal earrings and a band round the back of the head; QKN +4, FNS +4, HIT +10,
 - **Cooldowns:** each raid has one 3-hour cooldown for all its difficulties, counted from setting
   out, but only a clear starts it; the three are separate.
 - **The Tutorial crossing** (Chapter 5): while the story waits on the raid, the Boatman also offers
-  a gentler Tutorial run (Lv 24–33 monsters). It starts no cooldown and pays the clear reward (and
-  its kills' EXP) win or lose. Lose it, and the Boatman's crew finish BleepBloop for you, this once.
+  a gentler Tutorial run (Lv 24–33 monsters). It starts no cooldown; only a clear of it moves the
+  story on and pays the clear reward. Lose it and it pays nothing, but you can try again at once.
 - Easy to Hard were tuned with a whole-run simulation (every monster of a wave at once, natural
   regen, the breathers); Hell was tested in the game like the MVPs.
 

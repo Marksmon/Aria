@@ -4,8 +4,8 @@
 // by its difficulties, from going in, but only a clear starts it: a failed run (left, fainted, out of
 // time, or the game closed mid-run) costs no cooldown and pays nothing. Bloop Island's story step gets
 // a Tutorial run of its own: open only while the story waits on it, it never starts the cooldown, and
-// win or lose it pays the clear reward and moves the story on.
-// EXP is held while you fight and paid on a clear, x1.5 (a lost Tutorial pays its kills). Every run
+// only a clear of it pays the clear reward and moves the story on.
+// EXP is held while you fight and paid on a clear, x1.5. Every run
 // goes in the hero's raid history (main.js raidLog). The game runs the raid (main.js tickRaid); this
 // file is its data.
 //
@@ -50,7 +50,7 @@ export const RAIDS = {
     ],
     boss: ['bleepBloop', 5],
     difficulties: {
-      tutorial: { name: 'Tutorial', lv: 28, mult: 1, cores: 1, wave: { hp: 0.15, atk: 0.08 }, boss: { hp: 0.25, atk: 0.15 }, rare: RARE, tutorial: true, advice: 'the story run: no wait, and the reward win or lose' },
+      tutorial: { name: 'Tutorial', lv: 28, mult: 1, cores: 1, wave: { hp: 0.15, atk: 0.08 }, boss: { hp: 0.25, atk: 0.15 }, rare: RARE, tutorial: true, advice: 'the story run: no wait; clear it to move the story on' },
       ...ladder([40, 55, 70, 85]),
     },
     // the clear reward at x1: perz and [item, count, chance] (times the difficulty's mult), and the
