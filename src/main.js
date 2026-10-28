@@ -9,7 +9,7 @@ import { Input } from './input.js';
 import { UI } from './ui.js';
 import { FX } from './fx.js';
 import { MobManager, MOB_DEFS, MOVES, MVP_MOVE, fierce, guardDef, raidDef } from './mobs.js';
-import { Allies } from './allies.js';
+import { Allies, ROAR } from './allies.js';
 import { RAIDS, rollReward } from './raid.js';
 import { loadSave, writeSave, loadStorage, writeStorage, clearSave, saveCode, loadCode, SLOTS, activeSlot, setActiveSlot } from './save.js';
 import { Inventory } from './inventory.js';
@@ -222,7 +222,7 @@ function beastStats(kind) {
     interval: Math.max(0.45, 1.3 - st('qkn') * 0.008 * s) * quick * (1 - 0.03 * skillLv(prog, 'windtalons')) };
 }
 // a beast's damage rate on a monster: Pack Frenzy, and Pack Tactics when both wolves bite the same one
-allies.mult = (b, m) => (buffs.frenzy > 0 ? 1 + 0.03 * frenzyLv : 1)
+allies.mult = (b, m) => (buffs.frenzy > 0 ? 1 + 0.03 * frenzyLv : 1) * (allies.rallyT > 0 ? 1 + ROAR.atk : 1) // (the Bear's Roar)
   * (b.kind === 'wolf' && allies.of('wolf').filter((w) => w.foe === m).length > 1 ? 1 + 0.06 * skillLv(prog, 'packtactics') : 1);
 const moonSkill = () => (nightUp ? 1 + 0.02 * skillLv(prog, 'moonlit') : 1); // Moonlit Hunter, on every skill
 let nav = null; // auto-navigation: { quest, map, npc, why } while walking to a quest by itself
@@ -466,7 +466,7 @@ allies.on('strike', (b, m, res) => {
 });
 allies.on('instinct', (b, I) => { fx.number(b.x, overHead(b, b.sprite.scale.y * 0.9), b.z, `${I.name}!`, 'skill'); audio.play(b.kind === 'bear' ? 'night' : 'swing'); });
 allies.on('hurt', (b, n) => fx.number(b.x, overHead(b, b.sprite.scale.y * 0.7), b.z, n, 'taken'));
-allies.on('taunt', (b) => { fx.number(b.x, overHead(b, b.sprite.scale.y * 0.9), b.z, 'Roar!', 'skill'); audio.play('night'); });
+allies.on('taunt', (b) => { fx.number(b.x, overHead(b, b.sprite.scale.y * 0.9), b.z, 'Roar!', 'skill'); audio.play('night'); for (const o of allies.list) if (o !== b) fx.sparkle(o.x, overHead(o, o.sprite.scale.y * 0.6), o.z, '#ffc04a', 4); });
 allies.on('fall', (b) => {
   fx.puff(b.x, world.heightAt(b.x, b.z) + 0.4, b.z, b.K.w);
   const id = SUMMONS[b.kind];

@@ -25,7 +25,7 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
     Sorcerer trees; the Moon Ranger (Hrafn the Stargazer) 20+ in both the Sorcerer and Archer trees;
     the Beastmaster (Bjarki, Veidheim) 20+ in both the Blader and Archer trees. The Beastmaster uses
     swords and bows, and its own tree holds only beast skills: the Bear (END), the Wolves (FNS) and
-    the Hawk (QKN) can all be out together, and the hero's stats feed theirs (`src/allies.js`). Each beast has one instinct it uses by itself on its own cooldown (the owner's call, `INSTINCTS`: the Bear's Maul stuns, the Wolves' Hamstring leaps and slows, the Hawk's Dive never misses; bosses resist as ever); they are the beasts' moves, not the hero's skills, and the Bear's Roar taunt stays its nature. BladeMaster/Wizard open only for the first job with the most points (a tie
+    the Hawk (QKN) can all be out together, and the hero's stats feed theirs (`src/allies.js`). Each beast has one instinct it uses by itself on its own cooldown (the owner's call, `INSTINCTS`: the Bear's Maul stuns, the Wolves' Hamstring leaps and slows, the Hawk's Dive never misses; bosses resist as ever); they are the beasts' moves, not the hero's skills, and the Bear keeps its Roar, a war cry (the owner's call: every 6 s while it fights it taunts the monsters round it and the pack hits 10% harder for 6 s, `ROAR`). BladeMaster/Wizard open only for the first job with the most points (a tie
     opens each tied one). Only one second job can be taken; quitting a trial midway starts it over and
     lets the hero pick again. Job trials pay only when the whole series is done.
   - A second job's own skills are raised only while its opening rule still holds (MK: 20 Blader and

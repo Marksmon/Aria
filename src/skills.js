@@ -255,7 +255,7 @@ export const SKILLS = {
   summonbear: {
     name: 'Summon Bear', job: 'beastmaster', kind: 'active', max: 5, cd: 3, icon: 'skill_sbear', beast: 'bear',
     sp: (lv) => 30 + 5 * lv,
-    desc: (lv) => `Call your Bear, marked with gold runes. It grows with your END and Max HP (${30 + 10 * lv}% of your stats), soaks blows and roars every 6 s so the monsters round it turn on it. Instinct, Maul (every 12 s): a heavy blow for 250% that stuns (bosses: a third of the chance, half as long). Called again, it comes back fresh.`,
+    desc: (lv) => `Call your Bear, marked with gold runes. It grows with your END and Max HP (${30 + 10 * lv}% of your stats), soaks blows and roars every 6 s, a war cry: the monsters round it turn on it, and all your beasts hit 10% harder for 6 s. Instinct, Maul (every 12 s): a heavy blow for 250% that stuns (bosses: a third of the chance, half as long). Called again, it comes back fresh.`,
   },
   summonwolves: {
     name: 'Summon Wolves', job: 'beastmaster', kind: 'active', max: 5, cd: 3, icon: 'skill_swolves', beast: 'wolf',

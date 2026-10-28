@@ -27,6 +27,7 @@ export const INSTINCTS = {
   wolf: { name: 'Hamstring', cd: 10, mult: 1.8, range: 4 },
   hawk: { name: 'Dive', cd: 9, mult: 3, range: 3, sure: true },
 };
+export const ROAR = { secs: 6, atk: 0.1 }; // the Bear's Roar: how often, and how much harder the pack hits after it
 const DIVE = 0.6, LUNGE = 0.2; // seconds: the Hawk's climb and drop, a Wolf's leap
 const ATTACK_ANIM = 0.45;
 const STRIDE = 2.2;
@@ -162,12 +163,14 @@ class Beast {
           if (ps.double && Math.random() < ps.double && m.alive) this.mgr.emit('strike', this, m, playerAttack(ps, m.effDef(), this.mgr.mult(this, m))); // a second, quicker bite
         }
       }
-      // the Bear's roar: every 6 s, the monsters round it turn on it
+      // the Bear's Roar, a war cry: every 6 s while it fights, the monsters round it turn on it, and the
+      // pack is roused: every beast hits ROAR.atk harder for ROAR.secs (Allies.rallyT, main.js allies.mult)
       if (this.kind === 'bear' && this.tauntCd <= 0) {
-        this.tauntCd = 6;
+        this.tauntCd = ROAR.secs;
         let n = 0;
         for (const o of mobs.list) if (o.alive && Math.hypot(o.x - this.x, o.z - this.z) < ps.taunt) { o.foe = this; o.provoke(); n++; }
-        if (n) this.mgr.emit('taunt', this, n);
+        this.mgr.rallyT = ROAR.secs;
+        this.mgr.emit('taunt', this, n);
       }
     } else { // follow: its own place by the hero
       const [sx, sz] = this.slotAt(hero);
@@ -209,7 +212,8 @@ export class Allies {
     this.list = [];
     this.handlers = {};
     this.cam = { fx: 0, fz: -1, rx: 1, rz: 0 };
-    this.mult = () => 1; // (beast, monster) -> damage rate (Pack Frenzy, Pack Tactics), set by the game
+    this.mult = () => 1; // (beast, monster) -> damage rate (Pack Frenzy, Pack Tactics, the Roar), set by the game
+    this.rallyT = 0; // the Bear's Roar: seconds the pack still hits harder
   }
   on(name, fn) { (this.handlers[name] ||= []).push(fn); }
   emit(name, ...a) { for (const fn of this.handlers[name] || []) fn(...a); }
@@ -234,5 +238,8 @@ export class Allies {
   clear() { for (const b of [...this.list]) this.drop(b); }
   // a new map: the beasts come along, at their places by the hero
   carry(hero) { for (const b of this.list) { const [x, z] = b.slotAt(hero); b.place(this.world.walkable(x, z) || b.K.fly ? x : hero.x, this.world.walkable(x, z) || b.K.fly ? z : hero.z); b.foe = null; } }
-  update(dt, hero, mobs, target) { for (const b of [...this.list]) if (b.alive) b.update(dt, hero, mobs, target); }
+  update(dt, hero, mobs, target) {
+    this.rallyT = this.of('bear').length ? this.rallyT - dt : 0; // (no Bear, no rally)
+    for (const b of [...this.list]) if (b.alive) b.update(dt, hero, mobs, target);
+  }
 }

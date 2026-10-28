@@ -618,7 +618,7 @@ passives are at work.
 
 | Beastmaster: sword or bow, and three beasts | |
 |---|---|
-| Summon Bear | 5: a Bear with gold runes and a spiked collar. Its HP grows with your Max HP and END, its DEF with END; it soaks blows and roars every 6 s so the monsters round it turn on it. **Instinct: Maul** (every 12 s), a heavy blow for 250% that stuns |
+| Summon Bear | 5: a Bear with gold runes and a spiked collar. Its HP grows with your Max HP and END, its DEF with END; it soaks blows and roars every 6 s, a war cry: the monsters round it turn on it, and all your beasts hit 10% harder for 6 s. **Instinct: Maul** (every 12 s), a heavy blow for 250% that stuns |
 | Summon Wolves | 5: two Wolves in skull barding, one black, one grey. They bite with your FNS, quickly, sometimes twice. **Instinct: Hamstring** (every 10 s each), a leap from up to 4 paces and a bite for 180% that slows the monster's walk by 40% for 4 s |
 | Summon Hawk | 5: a brown and gold Hawk. It dives with your QKN, fast, and most blows pass under it. **Instinct: Dive** (every 9 s), it climbs, then drops on its foe for 300%, a blow that never misses |
 | Pack Frenzy | 10, needs Summon Wolves 1: for 15 s every beast attacks 3% faster and hits 3% harder per level. 30 s cooldown |
