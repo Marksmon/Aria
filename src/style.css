@@ -199,7 +199,7 @@ html, body {
 #toasts {
   position: absolute;
   left: calc(12px + env(safe-area-inset-left));
-  top: calc(156px + var(--pets-h, 0px) + env(safe-area-inset-top)); /* (under the beasts' bars, when they are out) */
+  top: calc(156px + var(--pets-push, 0px) + env(safe-area-inset-top)); /* (under the beasts' bars, when they sit under the panel) */
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -369,13 +369,17 @@ img { -webkit-user-drag: none; user-select: none; }
 #info .heroname { font-size: 13px; font-weight: 700; color: #ffe37a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 #info .heroname[hidden] { display: none; }
 body.named #winbtns { top: calc(123px + env(safe-area-inset-top)); }
-body.named #toasts { top: calc(175px + var(--pets-h, 0px) + env(safe-area-inset-top)); }
-/* the beasts' health: under the hero's panel and its buttons */
-#pets { position: absolute; top: calc(154px + env(safe-area-inset-top)); left: calc(8px + env(safe-area-inset-left)); width: 196px; padding: 4px 8px;
+body.named #toasts { top: calc(175px + var(--pets-push, 0px) + env(safe-area-inset-top)); }
+/* the beasts' health: beside the hero's panel (under it, on a narrow screen held upright) */
+#pets { position: absolute; top: calc(8px + env(safe-area-inset-top)); left: calc(210px + env(safe-area-inset-left)); width: 172px; padding: 4px 8px;
   border-radius: 8px; background: rgba(24, 30, 44, .72); box-shadow: 0 0 0 1.5px rgba(160, 180, 220, .25); display: flex; flex-direction: column; gap: 3px; pointer-events: none; }
 #pets[hidden] { display: none; }
-body.named #pets { top: calc(173px + env(safe-area-inset-top)); }
-#pets .pet { display: grid; grid-template-columns: 64px 1fr 34px; align-items: center; gap: 5px; height: 14px; font: 700 11px system-ui, sans-serif; }
+@media (max-width: 600px) {
+  #pets { top: calc(154px + env(safe-area-inset-top)); left: calc(8px + env(safe-area-inset-left)); width: 196px; }
+  body.named #pets { top: calc(173px + env(safe-area-inset-top)); }
+  body { --pets-push: var(--pets-h, 0px); }
+}
+#pets .pet { display: grid; grid-template-columns: 62px 1fr 32px; align-items: center; gap: 5px; height: 14px; font: 700 11px system-ui, sans-serif; }
 #pets .pet b { white-space: nowrap; text-shadow: 0 1px 1px #000; }
 #pets .pet i { height: 6px; border-radius: 3px; background: rgba(10, 12, 20, .8); overflow: hidden; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .1); }
 #pets .pet s { display: block; height: 100%; transition: width .2s; }

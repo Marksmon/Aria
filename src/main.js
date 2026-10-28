@@ -29,7 +29,7 @@ import { Menus } from './menus.js';
 import { iconTexture, iconURL, ITEMS, baseOf, canWear, maybeSlotted } from './items.js';
 import { DayNight } from './daynight.js';
 import { Audio } from './audio.js';
-import { Wings } from './wings.js';
+import { Wings, wingPicture } from './wings.js';
 import { clamp, lerp } from './noise.js';
 
 const canvas = document.getElementById('game');
@@ -172,22 +172,40 @@ function trimmed(src) {
 // the paths shows what each job looks like (story pages' pics)
 const jobPics = {};
 const jobPic = (job) => heroPic(job, player.look);
-// any hero in any job, facing dir: the title's preview turns a hero round with these
-function heroPic(job, look, dir = 'down') {
+// any hero in any job, facing dir, with what they wear on the head, the face and the back (gear: item
+// ids): the title's preview turns a hero round with these
+const HERO_H = 1.38; // (player.js HEIGHT: a body's standing height in world units, for the wings' size)
+function heroPic(job, look, dir = 'down', gear = {}) {
   look = { hair: 'messy', dye: 'brown', body: 'm', ...look };
-  const key = `${job}|${look.body}|${look.hair}|${look.dye}|${dir}`;
+  const { head: top = null, face = null, wings: wid = null } = gear;
+  const key = `${job}|${look.body}|${look.hair}|${look.dye}|${dir}|${top}|${face}|${wid}`;
   if (jobPics[key]) return jobPics[key];
-  const tex = lib.design(`${JOB_BODY[job] || 'blader'}${look.body === 'f' ? 'F' : 'M'}`)?.anims?.[dir]?.idle?.[0];
+  const art = lib.design(`${JOB_BODY[job] || 'blader'}${look.body === 'f' ? 'F' : 'M'}`), tex = art?.anims?.[dir]?.idle?.[0];
   if (!tex?.image) return '';
-  const c = document.createElement('canvas');
-  c.width = tex.image.width; c.height = tex.image.height;
+  const W = tex.image.width, H = tex.image.height, r = W / art.fw, ppu = (art.body[1] / HERO_H) * r; // (pixels a world unit)
+  const wing = wingPicture(wid, dir), away = dir.startsWith('up');
+  // the wings, sized and placed as on the hero (wings.js): behind them, or over them seen from behind
+  let ww = 0, wh = 0, wy = 0;
+  if (wing) { ww = wing.M.w * ppu * (!wing.views && (dir === 'left' || dir === 'right') ? 0.7 : 1); wh = wing.M.h * ppu; wy = H * (1 - tex.userData.anchor) - wing.M.y * ppu; }
+  const pad = Math.max(0, Math.ceil((ww - W) / 2)), c = document.createElement('canvas');
+  c.width = W + pad * 2; c.height = H;
   const g = c.getContext('2d');
   g.imageSmoothingEnabled = false;
-  g.drawImage(tex.image, 0, 0);
-  if (!headsReady() || !tex.userData.head?.at) return trimmed(c).toDataURL(); // (not kept: the head comes once loaded)
-  paintHead(g, tex.userData.head.at, dir, look);
+  const wings = () => wing && g.drawImage(wing.canvas, pad + W / 2 - ww / 2, wy - wh / 2, ww, wh);
+  if (!away) wings();
+  g.drawImage(tex.image, pad, 0);
+  const ready = headsReady() && headgearReady(top) && headgearReady(face) && tex.userData.head?.at;
+  if (ready) {
+    const at = [tex.userData.head.at[0] + pad, tex.userData.head.at[1]];
+    paintHead(g, at, dir, look, gearCut(top, dir), top);
+    paintGears(g, at, dir, top, face, 0);
+  }
+  if (away) wings();
+  if (!ready) return trimmed(c).toDataURL(); // (not kept: the head and its gear come once loaded)
   return (jobPics[key] = trimmed(c).toDataURL());
 }
+// what a saved hero wears on the head, the face and the back (refined pieces look like the plain one)
+const savedGear = (d) => { const G = d?.inv?.gear || {}; return { head: G.head && baseOf(G.head), face: G.face && baseOf(G.face), wings: G.wings && baseOf(G.wings) }; };
 
 held = () => inv.gear.weapon;
 player.setArt(jobArt());
@@ -2917,13 +2935,13 @@ function drawPreview() {
   tpImg.hidden = !d; tpEmpty.hidden = !!d;
   if (!d) { tpInfo.innerHTML = '<b>A new hero</b><span>Begin a new tale by the last fire</span>'; return; }
   const p = d.prog || {};
-  tpImg.src = heroPic(p.job || 'novice', d.look, TURN[turnAt % TURN.length]);
+  tpImg.src = heroPic(p.job || 'novice', d.look, TURN[turnAt % TURN.length], savedGear(d));
   tpInfo.innerHTML = `<b>${esc(heroName(d))} ${gender(d)}</b><span>${esc(JOBS[p.job]?.name || JOBS.novice.name)} · ${lvLine(p)}</span>`;
 }
 // it turns by itself, and by hand: drag across it (or the arrows) to turn it, and it waits a moment
 // before turning by itself again
 let heldT = 0;
-const turnTo = (k) => { turnAt = ((turnAt + k) % TURN.length + TURN.length) % TURN.length; const d = heroes[picked]; if (d && headsReady()) tpImg.src = heroPic(d.prog?.job || 'novice', d.look, TURN[turnAt]); };
+const turnTo = (k) => { turnAt = ((turnAt + k) % TURN.length + TURN.length) % TURN.length; const d = heroes[picked]; if (d && headsReady()) tpImg.src = heroPic(d.prog?.job || 'novice', d.look, TURN[turnAt], savedGear(d)); };
 const turnTimer = setInterval(() => { if (started || !title.isConnected) { clearInterval(turnTimer); return; } if (performance.now() > heldT) turnTo(1); }, 420);
 const tpStage = document.getElementById('tp-stage');
 let dragX = null;

@@ -34,6 +34,14 @@ const WING_MOVE = {
   angel: { w: 0.94, h: 1.05, y: 0.81, move: 'flap', speed: 1.6, amp: 0.05 }, // folded, tall on the back (a 78 x 114 box)
   devil: { w: 1.5, h: 0.88, y: 0.98, move: 'flap', speed: 1.7, amp: 0.2 },
 };
+// a still picture of the wings an item puts on the back, facing dir, and how they sit (WING_MOVE: their
+// size and height in world units), for pictures of the hero (the title's preview); null for none
+export function wingPicture(id, dir = 'down') {
+  const look = ITEMS[id]?.look;
+  if (look?.kind !== 'wings') return null;
+  const tex = wingsFrames(look.art, WING_VIEWS[look.art] ? dir : undefined)[0];
+  return { canvas: tex.image, M: WING_MOVE[look.art] || WING_MOVE.angel, views: !!WING_VIEWS[look.art] };
+}
 // the frames of a floating light (wingart.js): a Wisp's wings beating, a Lantern's flame flickering
 const FRAMES = 6;
 function floatFrames(look) {

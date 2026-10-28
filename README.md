@@ -627,7 +627,7 @@ passives are at work.
 | Pack Tactics | passive, 5, needs Summon Wolves 3: the Wolves bite 6% harder per level while both are on the same monster |
 | Wind Talons | passive, 5, needs Summon Hawk 3: the Hawk strikes 3% faster per level, and each dive has 2% per level to stun for 1 s |
 
-Each beast stands for one of your stats, which counts a lot for it (END the Bear, FNS the Wolves, QKN the Hawk); FTN gives every beast its crits and lucky dodges, POW adds to every beast's ATK, and your other stats still help each a little. A beast gets 30–80% of your stats by its Summon level (plus Beast Bond). The beasts out show under your hero's panel, each with its health bar.
+Each beast stands for one of your stats, which counts a lot for it (END the Bear, FNS the Wolves, QKN the Hawk); FTN gives every beast its crits and lucky dodges, POW adds to every beast's ATK, and your other stats still help each a little. A beast gets 30–80% of your stats by its Summon level (plus Beast Bond). The beasts out show beside your hero's panel, each with its health bar.
 
 All three beasts can be out together. Each takes a share of your stats (40% at a summon's Lv 1 to
 80% at Lv 5), so raising END, FNS or QKN makes them stronger at once. They follow you, take your
@@ -940,8 +940,8 @@ practice sword, asleep by the camp's last fire, and wake to the Elder's shout: a
 the fire-ring's Heart-Ember.
 
 **Character select.** The title screen lists your three hero slots on the left; the one picked
-turns slowly in the middle, full size in the job it wears, with its name, job, levels and where
-it stands; Play (or Create Hero for an empty slot) and Delete sit under it. The **Account** menu
+turns slowly in the middle (drag it, or the arrows, to turn it by hand), full size in the job it
+wears with its headgear, face piece and wings, and its name (♂ or ♀), job and levels; Play (or Create Hero for an empty slot) and Delete sit under it. The **Account** menu
 (top right) backs up or restores every hero and the shared storage; the speaker button turns the
 sound on and off.
 
