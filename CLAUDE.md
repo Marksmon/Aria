@@ -73,6 +73,10 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
     its stroll, `AWAY` in `mobs.js`: `wander`) and each boss has roamed spot to spot (`roamAway`)
     for the time away (capped at 3 min), done at once on arrival.
   - A new map only needs its `SPAWNS` entry in `main.js`; all of the above comes with it.
+- **The first-job pick comes at Trainee Job 9** (the owner's call: little grinding): a Trainee who reaches
+  `CALL_JOB` anywhere after the Seeress is called home to Eldrun's 'paths' step at once (`Story.callHome`,
+  the rest of Chapter 1 is skipped); there is no grind step before it. Keep Chapter 1 short.
+- **The Keepers' storage opens with a first job** (the owner's call): a Trainee can't open it (`Menus.show`).
 - **Quests window** (the Quests button under the hero's panel, `journal` in `menus.js`, `questBook`
   in `main.js`): tabs Main (the story step and chapters), Job (trials), Series (quest chains, a
   title with a number: "The Forge 2: ..."), Side (standalone quests and bounties).
@@ -146,7 +150,7 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   (perz, materials) x1/x3/x6/x9. Raid EXP is held and paid at the end: x1.5 on a clear,
   nothing on a failure (the Tutorial too).
 - **Character slots and storage** (`src/save.js`): three heroes, picked on the title screen (slot 1
-  keeps the old save key). The Keepers' storage is one chest shared by every hero, saved apart from
+  keeps the old save key). The Keepers' storage is one chest shared by every hero (from a first job on), saved apart from
   them; a save code backs up every hero and the storage together.
 - **Character art:** bodies are bald to the standard in `docs/character-standard.md`; the game
   paints the shared head, hair and headgear. Each hairstyle is for one body only (the owner's call,

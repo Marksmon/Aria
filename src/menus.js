@@ -144,6 +144,8 @@ export class Menus {
 
   show(id) {
     if (!WINDOWS[id]) return;
+    // the Keepers' storage is for heroes with a first job (the owner's call): a Trainee is told so
+    if (id === 'chest' && this.prog.job === 'novice') { this.message('The Keepers keep things only for those who have taken a first job. Pass a job trial, then come back.'); return; }
     if (!this.wins[id]) this.build(id);
     this.raise(this.wins[id]);
     if (id !== 'story' && this.wins.story) this.raise(this.wins.story); // the story is never hidden under another window
