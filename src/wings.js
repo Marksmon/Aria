@@ -15,11 +15,16 @@ const canvas = (w, h) => { const c = document.createElement('canvas'); c.width =
 
 // a pair of wings, each art its own shape (wingart.js), on a canvas twice the painter's box; wings
 // drawn for each direction (WING_VIEWS) get their frames for each: { dir: [frames] }
+// (WING_PAD: room round the box, as a turned pair reaches past it; WING_GROW: how much bigger than the
+// box the picture is, so the sprite grows by as much and the wings keep their size)
+export const WING_PAD = 16;
+const WING_GROW = (art) => { const [w, h] = wingBox(art); return [(w + 2 * WING_PAD) / w, (h + 2 * WING_PAD) / h]; };
 function wingsFrames(art, dir) {
   const [w, h] = wingBox(art);
   return Array.from({ length: WING_FRAMES[art] || 1 }, (_, f) => {
-    const [c, g] = canvas(w * 2, h * 2);
+    const [c, g] = canvas((w + 2 * WING_PAD) * 2, (h + 2 * WING_PAD) * 2);
     g.scale(2, 2);
+    g.translate(WING_PAD, WING_PAD);
     if (dir) paintWingsView(g, art, dir, f); else paintWings(g, art, f);
     return tex(c, true);
   });
@@ -32,7 +37,7 @@ const WING_MOVE = {
   fairy: { w: 1.36, h: 0.8, y: 0.98, move: 'flutter' },
   ember: { w: 1.36, h: 0.8, y: 0.98, move: 'flicker' },
   angel: { w: 0.94, h: 1.05, y: 0.81, move: 'flap', speed: 1.6, amp: 0.05 }, // folded, tall on the back (a 78 x 114 box)
-  devil: { w: 1.5, h: 0.88, y: 0.98, move: 'flap', speed: 1.7, amp: 0.2 },
+  devil: { w: 1.94, h: 1.63, y: 0.72, move: 'flap', speed: 1.7, amp: 0.12 }, // (a tall box for the tail: 124 x 104, the back at 62, 38)
 };
 // a still picture of the wings an item puts on the back, facing dir, and how they sit (WING_MOVE: their
 // size and height in world units), for pictures of the hero (the title's preview); null for none
@@ -40,7 +45,8 @@ export function wingPicture(id, dir = 'down') {
   const look = ITEMS[id]?.look;
   if (look?.kind !== 'wings') return null;
   const tex = wingsFrames(look.art, WING_VIEWS[look.art] ? dir : undefined)[0];
-  return { canvas: tex.image, M: WING_MOVE[look.art] || WING_MOVE.angel, views: !!WING_VIEWS[look.art] };
+  const M = WING_MOVE[look.art] || WING_MOVE.angel, [gx, gy] = WING_GROW(look.art);
+  return { canvas: tex.image, M: { ...M, w: M.w * gx, h: M.h * gy }, views: !!WING_VIEWS[look.art] };
 }
 // the frames of a floating light (wingart.js): a Wisp's wings beating, a Lantern's flame flickering
 const FRAMES = 6;
@@ -120,7 +126,8 @@ export class Wings {
       if (this.wing.material.map !== f) { this.wing.material.map = f; this.wing.material.needsUpdate = true; }
       this.wing.material.rotation = rot;
       this.wing.position.set(p.x + fwd.x * k, ground + M.y + bob, p.z + fwd.z * k);
-      this.wing.scale.set(M.w * sx * (side && !this.views ? 0.7 : 1), M.h * sy, 1);
+      const [gx, gy] = WING_GROW(look.art);
+      this.wing.scale.set(M.w * gx * sx * (side && !this.views ? 0.7 : 1), M.h * gy * sy, 1);
       this.wing.renderOrder = away ? 5 : 1;
       this.wing.visible = true;
       return;

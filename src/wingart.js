@@ -87,13 +87,14 @@ export function paintWings(g, art, frame = 0) {
     (WING_ART[art] || WING_ART.fairy)(g, frame, s);
     g.restore();
   }
-  if (WING_MIDDLE[art]) { g.save(); g.translate(bx, by); WING_MIDDLE[art](g); g.restore(); }
+  if (WING_MIDDLE[art] && !WING_TAILS[art]) { g.save(); g.translate(bx, by); WING_MIDDLE[art](g); g.restore(); }
+  if (WING_TAILS[art]) { g.save(); g.translate(bx, by); paintTail(g, TAIL.front(1)); g.restore(); } // (seen from the front: the tail curls out)
 }
 // Wings drawn for each of the hero's 8 directions (the Angel Wings): each wing a panel swept back
 // from the spine (SWEEP), turned with the hero (yaw: how far the face has turned toward screen right),
 // so it narrows and slides as they turn; the nearer wing over the farther, the crest down the spine
 // only when the back is toward us, and a wing's inner face (toward the hero's front) a little darker.
-export const WING_VIEWS = { angel: true };
+export const WING_VIEWS = { angel: true, leaf: true, fairy: true, ember: true, devil: true }; // (every pair: they turn with the hero)
 export const WING_DIRS = ['down', 'downright', 'right', 'upright', 'up', 'upleft', 'left', 'downleft'];
 const SWEEP = 0.55, BACK = 10; // the wings' sweep back from the spine plane; the back, this far behind the hero's middle (px)
 const FLARE = 8; // facing us, the wings stand this far out from the body (px), so they show past it
@@ -115,10 +116,16 @@ export function paintWingsView(g, art, dir, frame = 0) {
   if (WING_MIDDLE[art] && ct < -0.3) parts.push({ depth: 99, draw: () => {
     g.save(); g.translate(bx - BACK * st, by); g.scale(Math.max(0.25, Math.abs(ct)), 1); WING_MIDDLE[art](g); g.restore();
   } });
+  // a tail (the Devil Wings'): down the spine from behind, curled out past the legs from the front,
+  // out behind seen from the side (c: the side it curls to, behind's side when the hero is turned)
+  if (WING_TAILS[art]) {
+    const c = Math.abs(st) > 0.1 ? -Math.sign(st) : 1, view = ct > 0.35 ? 'front' : ct < -0.35 ? 'back' : 'side';
+    parts.push({ depth: view === 'side' ? -99 : 98, draw: () => { g.save(); g.translate(bx - BACK * st, by); paintTail(g, TAIL[view](c)); g.restore(); } });
+  }
   for (const p of parts.sort((x, y) => x.depth - y.depth)) p.draw();
 }
 // a box other than 96 x 56 with the back at (48, 30): [w, h, back x, back y]
-const WING_BOX = { angel: [78, 114, 39, 35] };
+const WING_BOX = { angel: [78, 114, 39, 35], devil: [124, 104, 62, 38] }; // (the Devil Wings: tall for the tail)
 export const wingBox = (art) => WING_BOX[art] || [96, 56, 48, 30];
 // a pale crystal: a diamond, lit at its upper left
 function crystal(g, x, y, w, h) {
@@ -130,6 +137,17 @@ function crystal(g, x, y, w, h) {
 // what is drawn once, between the two wings: the Angel Wings' gold crest down the spine, a big
 // crystal at its heart and two small ones below
 const WING_MIDDLE = {
+  // the Devil Wings: a spine of dark spiked plates down the back, a red stone and a spike on top
+  devil(g) {
+    for (let i = 0; i < 6; i++) {
+      const y = -8 + i * 4.4, w = 3.4 - i * 0.3;
+      g.beginPath(); g.moveTo(-w, y); g.lineTo(0, y - 3); g.lineTo(w, y); g.lineTo(0, y + 3.6); g.closePath();
+      g.fillStyle = '#3a1a1e'; g.fill(); g.lineWidth = 0.8; g.strokeStyle = '#140608'; g.stroke();
+      for (const sd of [-1, 1]) { g.beginPath(); g.moveTo(sd * w, y); g.lineTo(sd * (w + 3), y - 2.5); g.lineTo(sd * (w - 0.5), y + 1.4); g.closePath(); g.fillStyle = '#d8c4b8'; g.fill(); g.lineWidth = 0.5; g.strokeStyle = '#2a1210'; g.stroke(); }
+    }
+    g.beginPath(); g.moveTo(-2.4, -9); g.lineTo(0, -20); g.lineTo(2.4, -9); g.closePath(); g.fillStyle = '#e8d4c8'; g.fill(); g.lineWidth = 0.8; g.strokeStyle = '#2a1210'; g.stroke();
+    g.beginPath(); g.moveTo(0, -9); g.lineTo(2.6, -5); g.lineTo(0, -1); g.lineTo(-2.6, -5); g.closePath(); g.fillStyle = '#e02a34'; g.fill(); g.lineWidth = 0.8; g.strokeStyle = '#140608'; g.stroke();
+  },
   angel(g) {
     path(g, [[0, -32], [1.5, -20, 2, -14, 4, -8], [5, -5, 4, -1, 2, 3], [1.5, 20, 1.2, 36, 0, 46], [-1.2, 36, -1.5, 20, -2, 3], [-4, -1, -5, -5, -4, -8], [-2, -14, -1.5, -20, 0, -32]]);
     const gold = g.createLinearGradient(-5, 0, 5, 0);
@@ -225,18 +243,89 @@ const WING_ART = {
     crystal(g, 32, 13, 1.5, 3);
   },
   // a bat's: the arm up to a clawed wrist, fingers fanning down, the membrane scalloped between them
+  // the owner's concept (Majestic Devil Wings): a bat's wing of dark spiked bone and torn crimson
+  // membrane. The arm bone climbs to the wrist (a big pale claw on top, thorns along it), four fingers
+  // fan out and down from there, and the membrane between them hangs in torn scallops
   devil(g) {
-    const wrist = [26, -22], tips = [[46, -14], [44, 4], [32, 16], [12, 18]];
-    g.beginPath(); g.moveTo(2, -4); g.lineTo(...wrist);
-    let prev = wrist;
-    for (const t of tips) { const mx = (prev[0] + t[0]) / 2, my = (prev[1] + t[1]) / 2; g.quadraticCurveTo(mx - (t[1] - prev[1]) * 0.22 - 4, my + 2, ...t); prev = t; }
-    g.quadraticCurveTo(6, 12, 2, 4); g.closePath();
-    const skin = g.createLinearGradient(0, -20, 0, 18);
-    skin.addColorStop(0, '#5a1e3a'); skin.addColorStop(1, '#2a0e1e');
-    g.fillStyle = skin; g.fill(); g.lineWidth = 1.6; g.strokeStyle = '#140810'; g.stroke();
-    g.beginPath(); g.moveTo(2, -4); g.lineTo(...wrist); for (const t of tips) { g.moveTo(...wrist); g.lineTo(...t); }
-    g.lineWidth = 2; g.strokeStyle = '#1a0e16'; g.stroke();
-    g.beginPath(); g.moveTo(...wrist); g.lineTo(wrist[0] + 3, wrist[1] - 5); g.lineWidth = 2; g.strokeStyle = '#d8d0c0'; g.stroke(); // the claw
-    g.beginPath(); g.moveTo(8, -2); g.lineTo(22, -16); g.lineWidth = 1; g.strokeStyle = 'rgba(200, 60, 80, .7)'; g.stroke();
+    const sh = [2, -4], el = [20, -28], wr = [44, -38], tips = [[66, -16], [62, 12], [48, 34], [26, 40]], root = [4, 20];
+    // the membrane: shoulder, wrist, each finger's tip, back to the body, every edge torn
+    const torn = (from, to, sag, notches) => { // a scallop from one tip to the next, with ragged nicks
+      const [x0, y0] = from, [x1, y1] = to, nx = -(y1 - y0), ny = x1 - x0, len = Math.hypot(nx, ny) || 1;
+      for (let i = 1; i <= notches; i++) {
+        const k = i / notches, bow = Math.sin(k * Math.PI) * sag, jag = i % 2 ? 1.6 : -1.2;
+        g.lineTo(x0 + (x1 - x0) * k + (nx / len) * (bow + jag), y0 + (y1 - y0) * k + (ny / len) * (bow + jag));
+      }
+    };
+    g.beginPath(); g.moveTo(...sh); g.lineTo(...el); g.lineTo(...wr);
+    let prev = wr;
+    for (const t of tips) { torn(prev, t, 7, 5); prev = t; } // (each scallop cut in toward the wrist: the fingertips stand out as points)
+    torn(prev, root, 5, 4); g.closePath();
+    const skin = g.createLinearGradient(44, -30, 10, 30);
+    skin.addColorStop(0, '#e2353c'); skin.addColorStop(0.5, '#a8182a'); skin.addColorStop(1, '#4a0812');
+    g.fillStyle = skin; g.fill(); g.lineWidth = 1.4; g.strokeStyle = '#1a070a'; g.stroke();
+    // veins in the membrane, and a darker shade toward the body
+    g.save(); g.clip();
+    const shade = g.createRadialGradient(4, 4, 2, 4, 4, 34); shade.addColorStop(0, 'rgba(30, 4, 8, .55)'); shade.addColorStop(1, 'rgba(30, 4, 8, 0)');
+    g.fillStyle = shade; g.fillRect(-10, -40, 80, 80);
+    g.beginPath(); for (const t of tips) { g.moveTo(...wr); g.quadraticCurveTo((wr[0] + t[0]) / 2 + 3, (wr[1] + t[1]) / 2 + 3, t[0], t[1]); }
+    g.lineWidth = 0.6; g.strokeStyle = 'rgba(255, 120, 110, .35)'; g.stroke();
+    g.restore();
+    // the bones: dark, with a pale edge; the arm, then each finger
+    const bone = (pts, w) => {
+      g.beginPath(); g.moveTo(...pts[0]); for (const q of pts.slice(1)) g.lineTo(...q);
+      g.lineCap = 'round'; g.lineJoin = 'round';
+      g.lineWidth = w + 1.6; g.strokeStyle = '#140608'; g.stroke();
+      g.lineWidth = w; g.strokeStyle = '#3a1c1e'; g.stroke();
+      g.lineWidth = w * 0.35; g.strokeStyle = '#b89a90'; g.stroke();
+    };
+    for (const t of tips) bone([wr, [(wr[0] + t[0]) / 2 + 2, (wr[1] + t[1]) / 2 + 1], t], 1.7);
+    bone([sh, el, wr], 3);
+    // thorns along the arm, a claw at each fingertip, and the great claw over the wrist
+    const thorn = (x, y, dx, dy, w = 1.6) => {
+      g.beginPath(); g.moveTo(x - w, y); g.lineTo(x + dx, y + dy); g.lineTo(x + w, y); g.closePath();
+      g.fillStyle = '#e8d4c8'; g.fill(); g.lineWidth = 0.7; g.strokeStyle = '#2a1210'; g.stroke();
+    };
+    thorn(9, -14, -3, -6); thorn(16, -23, -2, -6); thorn(30, -33, -1, -6, 1.4);
+    for (const t of tips) thorn(t[0], t[1], (t[0] - wr[0]) * 0.18, (t[1] - wr[1]) * 0.18, 1.2);
+    thorn(wr[0], wr[1], 6, -13, 2.6);
+    g.beginPath(); g.arc(wr[0], wr[1], 2.2, 0, Math.PI * 2); g.fillStyle = '#c0202c'; g.fill(); g.lineWidth = 0.8; g.strokeStyle = '#140608'; g.stroke(); // the red knuckle
   },
 };
+// the Devil Wings' tail: dark spiked segments with crimson edges, down to a barbed spear tip. It hangs
+// from the small of the back; turned to us it curls out past the legs, so it shows even facing front.
+// pts: the curve, from the back down to the tip (the painter's units, the back at 0, 0)
+function paintTail(g, pts) {
+  const N = 14, at = (k) => { // a point along the curve (a chain of quadratic arcs through pts' midpoints)
+    const n = pts.length - 1, f = Math.min(n - 1e-6, k * n), i = Math.floor(f), u = f - i;
+    const p0 = pts[i], p1 = pts[i + 1];
+    return [p0[0] + (p1[0] - p0[0]) * u, p0[1] + (p1[1] - p0[1]) * u];
+  };
+  const smooth = []; // (a softer curve: each point the mean of its neighbours)
+  for (let i = 0; i <= N; i++) { const a = at(Math.max(0, (i - 0.6) / N)), b = at(i / N), c = at(Math.min(1, (i + 0.6) / N)); smooth.push([(a[0] + b[0] + c[0]) / 3, (a[1] + b[1] + c[1]) / 3]); }
+  for (let i = 0; i < N; i++) {
+    const [x0, y0] = smooth[i], [x1, y1] = smooth[i + 1], w = 3.2 - i * 0.12, dx = x1 - x0, dy = y1 - y0, d = Math.hypot(dx, dy) || 1, nx = -dy / d, ny = dx / d;
+    g.beginPath(); g.moveTo(x0 + nx * w, y0 + ny * w); g.lineTo(x1 + nx * w * 0.8, y1 + ny * w * 0.8); g.lineTo(x1 - nx * w * 0.8, y1 - ny * w * 0.8); g.lineTo(x0 - nx * w, y0 - ny * w); g.closePath();
+    g.fillStyle = i % 2 ? '#3a1a1e' : '#4a2026'; g.fill(); g.lineWidth = 0.8; g.strokeStyle = '#140608'; g.stroke();
+    g.beginPath(); g.moveTo(x0 + nx * w * 0.9, y0 + ny * w * 0.9); g.lineTo(x1 + nx * w * 0.7, y1 + ny * w * 0.7); g.lineWidth = 0.7; g.strokeStyle = '#b8222e'; g.stroke(); // a crimson edge
+    if (i % 2 === 0 && i < N - 2) { // a thorn on every other plate
+      g.beginPath(); g.moveTo(x0 + nx * w, y0 + ny * w); g.lineTo(x0 + nx * (w + 3.2) + dx * 0.2, y0 + ny * (w + 3.2) + dy * 0.2); g.lineTo(x1 + nx * w * 0.8, y1 + ny * w * 0.8); g.closePath();
+      g.fillStyle = '#d8c4b8'; g.fill(); g.lineWidth = 0.6; g.strokeStyle = '#2a1210'; g.stroke();
+    }
+  }
+  // the barbed spear tip, along the tail's last stretch
+  const [ex, ey] = smooth[N], [px, py] = smooth[N - 2], d = Math.hypot(ex - px, ey - py) || 1, ux = (ex - px) / d, uy = (ey - py) / d, vx = -uy, vy = ux;
+  const P = (a, b) => [ex + ux * a + vx * b, ey + uy * a + vy * b];
+  g.beginPath(); g.moveTo(...P(-1, 0)); g.lineTo(...P(2, 4.5)); g.lineTo(...P(0, 5.5)); g.lineTo(...P(9, 1.2)); g.lineTo(...P(13, 0));
+  g.lineTo(...P(9, -1.2)); g.lineTo(...P(0, -5.5)); g.lineTo(...P(2, -4.5)); g.closePath();
+  const red = g.createLinearGradient(...P(0, 0), ...P(13, 0)); red.addColorStop(0, '#6a0c16'); red.addColorStop(0.6, '#d42a34'); red.addColorStop(1, '#ff7a6a');
+  g.fillStyle = red; g.fill(); g.lineWidth = 0.9; g.strokeStyle = '#140608'; g.stroke();
+  g.beginPath(); g.moveTo(...P(0, 0)); g.lineTo(...P(12, 0)); g.lineWidth = 0.6; g.strokeStyle = 'rgba(255, 200, 190, .7)'; g.stroke();
+}
+// where the tail runs, seen from the front (ct > 0: it curls out past the legs on side c), from the
+// back (down the spine, its end curling to side c), or from the side (out behind, b: behind's side)
+const TAIL = {
+  front: (c) => [[0, 10], [c * 2, 28], [c * 8, 42], [c * 20, 52], [c * 32, 56], [c * 42, 54]],
+  back: (c) => [[0, 6], [0, 24], [c * 2, 40], [c * 10, 52], [c * 18, 58], [c * 22, 64]],
+  side: (b) => [[0, 6], [b * 6, 22], [b * 14, 36], [b * 24, 46], [b * 34, 50], [b * 42, 46]],
+};
+export const WING_TAILS = { devil: true };

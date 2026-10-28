@@ -782,7 +782,7 @@ no torch is needed.
 | Dark Wisp | a violet Wisp at your shoulder | KNL +2, Max SP +30 | Dark Wisp, 0.25% |
 | Ember Wings | tongues of flame fanning out, flickering | POW +1, KNL +1, Max HP +50 | Fire Wisp, 0.25% |
 | Angel Wings | folded white wings trimmed in gold, a gold crest set with crystals down the spine | KNL +4, FTN +4, FLEE +6, Max SP +80, Max HP +5% | Bloop Island's ultra rare (a clear: 1%), or the Boatman makes them from 500 Bloop Cores |
-| Devil Wings | a bat's leathery wings | POW +2, END +1, Max HP +80 | Fire Giant, 3% |
+| Devil Wings | crimson bat wings of torn membrane on dark spiked bone, with a spined tail and a barbed spear tip (the tail curls out past the legs, so it shows from the front too) | POW +2, END +1, Max HP +80 | Fire Giant, 3% |
 
 **Weapon levels.** Lv 4 weapons are the best there are: the Giant Sword, Flame Sword, Lava Sword
 and Sea Sword, the Great, Flame, Fire and Mushroom Staves, and the Heartwood, Great and Flame Bows. They refine for the most ATK
