@@ -3013,7 +3013,7 @@ codeGo.addEventListener('click', async () => {
     return;
   }
   const got = loadCode(codeText.value, picked);
-  if (!got) { codeMsg.textContent = 'That is not a save code. Check it was copied whole.'; return; }
+  if (!got) { codeMsg.textContent = 'That code did not load: it is cut short or not a save code. Copy it whole, from ARIA2: to its last letter.'; return; }
   if (got === 'slot') setActiveSlot(picked);
   codeMsg.textContent = 'Save restored. Starting…';
   resetting = true; // don't let the running game write over it
