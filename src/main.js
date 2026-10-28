@@ -156,6 +156,36 @@ inv.level = () => prog.baseLv;
 inv.job = () => prog.wearJobs; // the job worn and the first jobs it stands on: switching jobs puts away the rest
 // the player's look follows the job: the Trainee's clothes, then the first and second jobs'
 const jobArt = () => bodyArt(player.look);
+// a picture cut down to what is drawn (a sprite's frame has room around it to move in)
+function trimmed(src) {
+  const w = src.width, h = src.height, d = src.getContext?.('2d')?.getImageData(0, 0, w, h).data;
+  if (!d) return src;
+  let x0 = w, y0 = h, x1 = -1, y1 = -1;
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (d[(y * w + x) * 4 + 3] > 8) { x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
+  if (x1 < 0) return src;
+  const c = document.createElement('canvas');
+  c.width = x1 - x0 + 1; c.height = y1 - y0 + 1;
+  c.getContext('2d').drawImage(src, -x0, -y0);
+  return c;
+}
+// a job's look on this hero, front view (its body, with their own head and hair): the Elder's talk of
+// the paths shows what each job looks like (story pages' pics)
+const jobPics = {};
+function jobPic(job) {
+  const look = player.look, key = `${job}|${look.body}|${look.hair}|${look.dye}`;
+  if (jobPics[key]) return jobPics[key];
+  const tex = lib.design(`${JOB_BODY[job] || 'blader'}${look.body === 'f' ? 'F' : 'M'}`)?.anims?.down?.idle?.[0];
+  if (!tex?.image) return '';
+  const c = document.createElement('canvas');
+  c.width = tex.image.width; c.height = tex.image.height;
+  const g = c.getContext('2d');
+  g.imageSmoothingEnabled = false;
+  g.drawImage(tex.image, 0, 0);
+  if (!headsReady() || !tex.userData.head?.at) return trimmed(c).toDataURL(); // (not kept: the head comes once loaded)
+  paintHead(g, tex.userData.head.at, 'down', look);
+  return (jobPics[key] = trimmed(c).toDataURL());
+}
+
 held = () => inv.gear.weapon;
 player.setArt(jobArt());
 inv.load(save?.inv);
@@ -1368,6 +1398,7 @@ const menus = new Menus(inv, prog, player, {
   storyStep: () => (storyLive() ? story.step : null),
   // story pages that ask (the Seeress's rune-reading): each answer counts toward a calling
   storyFlags: () => story.flags,
+  storyPic: (p) => (p.job ? jobPic(p.job) : p.mob ? mobPortrait(p.mob) : ''), // (a mob: the Beastmaster's Bear, Wolf, Hawk)
   storyChoice: (key) => {
     audio.play('ui');
     if (key.includes(':')) { const [k, v] = key.split(':'); story.flags[k] = v; return; } // a pick (pick:blade): kept as it is

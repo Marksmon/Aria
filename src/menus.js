@@ -988,8 +988,11 @@ export class Menus {
     const btns = opts?.choices
       ? `<div class="storych">${opts.choices.map(([label, key]) => `<button class="rbtn" data-act="storychoice" data-id="${esc(key)}">${esc(label)}</button>`).join('')}</div>`
       : `<div class="btnrow"><span class="rtag">${this.storyAt + 1} / ${this.storyPages.length}</span><button class="rbtn" data-act="storynext">${last ? 'Continue' : 'Next ▸'}</button></div>`;
+    // pictures under the line (opts.pics: [{ job | mob, label }, or '→' / '+' between two]): the jobs as they look
+    const pics = opts?.pics ? `<div class="storypics">${opts.pics.map((p) => (typeof p === 'string' ? `<i class="sparrow">${esc(p)}</i>`
+      : `<figure class="${p.mob ? 'beast' : 'job'}"><img src="${this.hooks.storyPic?.(p) || ''}" alt=""><figcaption>${esc(p.label)}</figcaption></figure>`)).join('')}</div>` : '';
     return `<div class="talkwrap story">${pic}<div class="say">${who ? `<b class="who">${esc(NPCS[who].name)}</b>` : ''}<p class="${who ? '' : 'narr'}">${esc(line)}</p>
-      ${btns}</div></div>`;
+      ${pics}${btns}</div></div>`;
   }
 
   // redraw one window, or every open one
