@@ -1638,6 +1638,7 @@ const menus = new Menus(inv, prog, player, {
     if (raidOf(world.id)) { menus.message('Finish the raid first.'); return; }
     persist();
     resetting = true;
+    toSelectNext();
     location.reload();
   },
   // the hair picker tries looks on as you choose; lookDone keeps one (the stylist charges for it)
@@ -3017,6 +3018,7 @@ codeGo.addEventListener('click', async () => {
   if (got === 'slot') setActiveSlot(picked);
   codeMsg.textContent = 'Save restored. Starting…';
   resetting = true; // don't let the running game write over it
+  toSelectNext();
   setTimeout(() => location.reload(), 600);
 });
 // Delete: the picked hero is gone for good (the shared storage stays), so it asks twice
@@ -3035,7 +3037,7 @@ tNew.addEventListener('click', () => {
   confirmNew = false; tNew.textContent = 'Delete'; tNew.classList.remove('warn'); tNew.classList.add('ghost');
   clearSave(picked);
   heroes[picked] = null;
-  if (picked === slotHere) { resetting = true; location.reload(); return; } // the hero in the game: start the page over without it
+  if (picked === slotHere) { resetting = true; toSelectNext(); location.reload(); return; } // the hero in the game: start the page over without it
   audio.play('ui');
   drawSlots();
 });
@@ -3080,7 +3082,8 @@ function enterGame() {
     setTimeout(() => hint.classList.remove('show'), 6000);
   }, 450);
 }
-const GO_KEY = 'aria.go';
+const GO_KEY = 'aria.go', SELECT_KEY = 'aria.select'; // (SELECT_KEY: back to the hero select, not the tap-to-start screen)
+function toSelectNext() { try { sessionStorage.setItem(SELECT_KEY, '1'); } catch { /* the tap-to-start screen first, then */ } }
 drawSlots();
 let go = false;
 try { go = sessionStorage.getItem(GO_KEY) === '1'; sessionStorage.removeItem(GO_KEY); } catch { /* storage unavailable */ }
@@ -3089,7 +3092,27 @@ if (go) { // picked on the title screen before the page started over: the sound 
   begin();
 }
 
-const boot = document.getElementById('boot'); // the loading screen: ready now
-if (boot) { boot.classList.add('hide'); setTimeout(() => boot.remove(), 450); }
+// the loading screen, ready now: it turns into the tap-to-start screen over the world (the tap also
+// lets the sound start), and the hero select comes up behind it. Straight on, with no tap, into a hero
+// already picked, or back to the select after a restore or a delete started the page over
+const boot = document.getElementById('boot');
+const bootGone = () => { boot.classList.add('hide'); setTimeout(() => boot.remove(), 500); };
+let toSelect = false;
+try { toSelect = sessionStorage.getItem(SELECT_KEY) === '1'; sessionStorage.removeItem(SELECT_KEY); } catch { /* storage unavailable */ }
+if (go || toSelect) { title.classList.remove('wait'); bootGone(); } else {
+  boot.querySelector('.bver').textContent = `v1.0.${__BUILD__}`;
+  boot.classList.add('ready');
+  const tap = (e) => {
+    if (e.type === 'keydown' && e.repeat) return;
+    removeEventListener('keydown', tap);
+    boot.removeEventListener('pointerdown', tap);
+    audio.start();
+    audio.play('ui');
+    title.classList.remove('wait');
+    bootGone();
+  };
+  boot.addEventListener('pointerdown', tap);
+  addEventListener('keydown', tap);
+}
 
 window.__aria = { lib, warp, enterMap, useSkill, useItem, story, SPOTS, player, world, cam, camera, mobs, allies, fx, inv, prog, quests, villagers, menus, hotbar, dayNight, audio, stats: world.stats, raid: () => raid, raidAt: () => raidAt, gainExp };
