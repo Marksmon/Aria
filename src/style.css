@@ -400,12 +400,15 @@ body.named #toasts { top: calc(175px + env(safe-area-inset-top)); }
   font: 700 12px system-ui, sans-serif;
   white-space: nowrap;
 }
-/* the options button: under the map and its clock, over the quest list */
+/* the options gear: under the map and its clock, over the quest list */
 #optbtn {
   position: absolute;
   top: calc(154px + env(safe-area-inset-top));
   right: calc(12px + env(safe-area-inset-right));
-  width: 110px;
+  width: 26px;
+  height: 24px;
+  font-size: 15px;
+  line-height: 1;
   pointer-events: auto;
 }
 #optbtn.pressed { background: var(--w-press); }
