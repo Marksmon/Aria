@@ -574,7 +574,7 @@ export class Menus {
   status() {
     const p = this.prog, ps = this.player.ps, pts = p.statPoints - this.pendCost(), knl = p.total('knl');
     const stat = (k) => {
-      const st = STATS[k], add = this.pend[k] || 0, v = p.stats[k] + add, cost = statCost(v), bonus = p.bonus(k), can = cost <= pts && v < 99;
+      const st = STATS[k], add = this.pend[k] || 0, v = p.stats[k] + add, cost = statCost(v), bonus = p.bonus(k) + (this.player.statBonus?.[k] || 0), can = cost <= pts && v < 99;
       return `<tr class="${add ? 'pending' : ''}"><th title="${esc(st.full)}: ${esc(st.desc)}">${st.name}<small>${esc(st.full)}</small></th><td class="sv">${v}${bonus ? `<em>+${bonus}</em>` : ''}${add ? `<i>(+${add})</i>` : ''}</td>
         <td class="sc"><button class="splus" data-act="raise" data-stat="${k}" ${can ? '' : 'disabled'} aria-label="Raise ${st.full}">▲</button>${cost}</td></tr>`;
     };

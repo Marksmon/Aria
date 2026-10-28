@@ -497,7 +497,7 @@ export const SLOTS = { head: 'Head', face: 'Face', weapon: 'Weapon', shield: 'Sh
 // one line on what a piece of equipment does
 export function equipLine(it) {
   const p = [];
-  if (it.atk) p.push(`ATK ${it.atk}`, `Weapon Lv ${it.wlv}`);
+  if (it.atk) p.push(...(it.wlv ? [`ATK ${it.atk}`, `Weapon Lv ${it.wlv}`] : [`ATK +${it.atk}`])); // (a card's ATK in other gear)
   if (it.el) p.push(`${it.el[0].toUpperCase() + it.el.slice(1)} element`);
   if (it.def) p.push(`DEF ${it.def}`);
   if (it.hit) p.push(`HIT +${it.hit}`);

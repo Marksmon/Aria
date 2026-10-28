@@ -266,6 +266,7 @@ function applyStats() {
   if (buffs.aspd > 0) gear.aspdRate *= 0.9;
   if (bow) gear.aspdRate *= (1 - 0.02 * skillLv(prog, 'windborne')) * (buffs.tailwind > 0 ? 1 - 0.02 * tailLv : 1) * (1 - skillLv(prog, 'galerhythm') * galeStacks / 100);
   if (buffs.imbue > 0 && imbueEl && sword) gear.el = imbueEl; // Elemental Blade
+  player.statBonus = { ...gear.stats }; // (what gear, cards and skills add to each stat: the Status window shows it)
   const ps = derive(prog, gear);
   ps.maxHp = Math.floor(ps.maxHp * (1 + hide / 100));
   ps.maxSp = Math.floor(ps.maxSp * (1 + skillLv(prog, 'manawell') / 50));
