@@ -187,6 +187,28 @@ const MVP_CALLS = [0.8, 0.5, 0.25], MVP_SUMMON_CD = 60, MVP_GIVE_UP = 22, MVP_GA
 // through 75% of DEF: no armor makes you safe from them, only getting out of the circle. (Its swings
 // stay ordinary blows, but an MVP's DEX is high: they land on all but the nimblest.)
 export const MVP_MOVE = { sure: true, pierce: 0.75 };
+// How a boss (mini-boss, raid boss, MVP) fights you (BRAIN; fierce ones, the MVPs and Hell's raid
+// bosses, read you better):
+// - it reads you: once you have been on the move `moving` s, a move aimed at you (throw, leap,
+//   roots, burrow, charge, the first meteor) lands where you are going (`lead`: that share of the way,
+//   at most `ahead` paces), read times in a hundred; else where you stand. Its red circle shows where.
+//   Running on in a straight line gets you caught; turning or stopping doesn't, and a short step
+//   aside (out of a circle) isn't read as a run.
+// - it picks its move for the moment: a leap, charge or burrow when you keep away or stand casting,
+//   something thrown or rained down when you stand still in reach of it, rarely the same one twice.
+// - kept out of reach (kiting) for `kite` s it gives chase: `rush` x its pace for `rushFor` s (every
+//   `rushCd` s at most), and its moves come sooner.
+// - enraged, a fierce one may follow one move straight into the next (combo: the chance); the wait
+//   between its moves is never quite the same, so they can't be counted.
+// - stuck (a rock between you, too tight for it) it makes no headway for `stuck` s: it bounds over
+//   onto you (BOUND: a leap, its red circle first), so no rock keeps a boss off you.
+// - a mini-boss hunts you like an MVP: it gives up only `giveUp` paces off, and heals only after
+//   `calm` s out of the fight (so stepping away doesn't reset it).
+export const BRAIN = {
+  read: { fierce: 0.75, boss: 0.5 }, moving: 0.6, lead: 0.6, ahead: 2.5,
+  kite: 4, rush: 1.35, rushFor: 2.5, rushCd: 10, combo: 0.35, giveUp: 18, calm: 10, stuck: 2,
+};
+const BOUND = { kind: 'leap', name: 'Bound', mult: 1.0, r: 1.4 };
 const RESPAWN = 60;
 // a wounded boss or MVP heals 5% of its HP a minute while it isn't fighting you, on its map or not;
 // what it has left is kept when you leave (bossHp, saved), so a fight can be picked up again
@@ -369,6 +391,10 @@ class Mob {
     this.barkT = 0;          // Bark Armor left (MOVES.bark)
     this.under = false;      // burrowed (MOVES.burrow): can't be hit
     this.wardSaid = -9;      // when it last showed that a blow was shielded
+    this.kiteT = 0;          // how long you have kept out of its reach (BRAIN)
+    this.rushT = 0; this.rushCd = 0; // its burst of pursuit, and when it may give chase again
+    this.calmT = 99;         // how long it has been out of the fight (it heals only after BRAIN.calm)
+    this.lastMove = null;
     this.status = null;      // why it is helpless while stunT lasts: freeze, paralyze, stun
     this.burnT = 0;          // burning (main.js inflict)
     this.foe = null;         // a companion beast it has turned on (allies.js), else it fights the hero
@@ -399,36 +425,80 @@ class Mob {
     if (Math.hypot(this.target.x - this.x, this.target.z - this.z) < 0.5 || m === 0) { this.target = null; this.restT = 1.5 + Math.random() * 3; }
   }
 
-  // a boss picks a move it is in range for (see MOVES)
+  // where to aim at p: where it is going (BRAIN.read of the time, more for a fierce boss), lead s ahead
+  // at its pace, no more than BRAIN.lead paces and only onto open ground; else where it stands
+  aimAt(p, lead) {
+    const v = p === this.mgr.hero ? this.mgr.pv : null, w = this.mgr.world;
+    if (!v || this.mgr.movingT < BRAIN.moving || Math.random() >= BRAIN.read[fierce(this.def) ? 'fierce' : 'boss']) return { x: p.x, z: p.z };
+    let ax = v.x * lead * BRAIN.lead, az = v.z * lead * BRAIN.lead;
+    const far = Math.hypot(ax, az);
+    if (far > BRAIN.ahead) { ax *= BRAIN.ahead / far; az *= BRAIN.ahead / far; }
+    const s = { x: p.x + ax, z: p.z + az };
+    return w.walkable(s.x, s.z) && !w.isSafe(s.x, s.z) && !nearPortal(w, s.x, s.z, this.def.r) ? s : { x: p.x, z: p.z };
+  }
+
+  // stuck (BRAIN.stuck s out of reach without getting any nearer): it bounds over onto you (BOUND)
+  unstick(dt, p, dist) {
+    const c = this.stuckCheck ||= { t: 0, d: dist, for: 0 };
+    if ((c.t += dt) < 1) return false;
+    c.for = dist > this.def.reach + 0.5 && dist > c.d - 0.3 ? c.for + c.t : 0;
+    c.t = 0; c.d = dist;
+    const w = this.mgr.world;
+    if (c.for < BRAIN.stuck || this.act || nearPortal(w, p.x, p.z, this.def.r) || !w.walkable(p.x, p.z) || w.isSafe(p.x, p.z)) return false;
+    c.for = 0;
+    const L = MOVES.leap, dx = p.x - this.x, dz = p.z - this.z, d = Math.hypot(dx, dz) || 1;
+    this.heading = { x: dx / d, z: dz / d };
+    this.act = { kind: 'leap', mv: BOUND, t: L.wind + L.air, from: { x: this.x, z: this.z }, spot: { x: p.x, z: p.z } };
+    this.atkAnim = ATTACK_ANIM * 1.6;
+    this.mgr.emit('move', this, this.act);
+    return true;
+  }
+
+  // a boss picks the move that suits the moment (BRAIN), of those it is ready and in range for (MOVES)
   pickMove(p, dist, dx, dz) {
-    const d = this.def;
-    for (const mv of d.moves || []) {
+    const d = this.def, still = this.mgr.stillT > 1 && p === this.mgr.hero, casting = !!p.cast;
+    const ready = (d.moves || []).filter((mv) => {
       const M = MOVES[mv.kind];
-      if ((this.moveCd[mv.kind] || 0) > 0) continue;
+      if ((this.moveCd[mv.kind] || 0) > 0) return false;
+      if (mv.kind === 'frenzy' || mv.kind === 'bark') return this.hp / d.hp <= M.below;
+      if (mv.kind === 'mirror') return this.hp / d.hp <= M.below && !this.mgr.decoysOf(this).length;
+      if (dist < M.min || dist > M.max) return false;
+      return !(mv.kind === 'leap' && nearPortal(this.mgr.world, p.x, p.z, d.r)); // not onto a portal
+    });
+    const score = (mv) => {
+      let s = 1 + Math.random() * 0.6;
+      if (['frenzy', 'bark', 'mirror'].includes(mv.kind)) s += 2; // its own: as soon as it may
+      if (['charge', 'leap', 'burrow'].includes(mv.kind)) s += Math.min(this.kiteT, 6) * 0.5 + (casting ? 1.5 : 0) + (dist > 5 ? 0.6 : 0);
+      if (['throw', 'meteors', 'roots'].includes(mv.kind)) s += (still ? 0.8 : 0) + (dist >= 3 && dist <= 9 ? 0.5 : 0);
+      if (mv.kind === this.lastMove) s -= 0.8;
+      return s;
+    };
+    const mv = ready.sort((a, b) => score(b) - score(a))[0];
+    if (!mv) return;
+    this.lastMove = mv.kind;
+    {
+      const M = MOVES[mv.kind];
       if (mv.kind === 'frenzy') {
-        if (this.hp / d.hp > M.below) continue;
         this.rageT = M.dur;
         this.mgr.emit('frenzy', this);
       } else if (mv.kind === 'mirror') {
-        if (this.hp / d.hp > M.below || this.mgr.decoysOf(this).length) continue;
         this.mgr.mirror(this, mv);
       } else if (mv.kind === 'bark') {
-        if (this.hp / d.hp > M.below) continue;
         this.barkT = M.dur;
         this.atkAnim = ATTACK_ANIM * 1.6;
         this.mgr.emit('bark', this, mv);
       } else {
-        if (dist < M.min || dist > M.max) continue;
-        if (mv.kind === 'leap' && nearPortal(this.mgr.world, p.x, p.z, d.r)) continue; // not onto a portal
-        this.heading = { x: dx / dist, z: dz / dist };
-        const spot = { x: p.x, z: p.z };
-        if (mv.kind === 'charge') this.act = { kind: 'charge', mv, t: M.wind, phase: 'wind', left: Math.min(dist + 2, M.max) };
+        // (where it aims: where you are going, more often than not)
+        const spot = this.aimAt(p, mv.kind === 'throw' ? M.wind + M.land : mv.kind === 'leap' ? M.wind + M.air : mv.kind === 'roots' ? M.wind + M.land : mv.kind === 'charge' ? M.wind : 0);
+        const sx = spot.x - this.x, sz = spot.z - this.z, sd = Math.hypot(sx, sz) || 1;
+        this.heading = { x: sx / sd, z: sz / sd };
+        if (mv.kind === 'charge') this.act = { kind: 'charge', mv, t: M.wind, phase: 'wind', left: Math.min(sd + 2, M.max) };
         if (mv.kind === 'throw') this.act = { kind: 'throw', mv, t: M.wind, spot };
         if (mv.kind === 'meteors') this.act = { kind: 'meteors', mv, t: M.wind };
         if (mv.kind === 'burrow') this.act = { kind: 'burrow', mv, t: M.dig, phase: 'dig' };
         if (mv.kind === 'roots') { // where you stand, and enraged two more patches beside you
           const spots = [spot];
-          if (this.enraged) for (let i = 0; i < 2; i++) { const a = Math.random() * Math.PI * 2; spots.push({ x: p.x + Math.cos(a) * 2.4, z: p.z + Math.sin(a) * 2.4 }); }
+          if (this.enraged) for (let i = 0; i < 2; i++) { const a = Math.random() * Math.PI * 2; spots.push({ x: spot.x + Math.cos(a) * 2.4, z: spot.z + Math.sin(a) * 2.4 }); }
           this.act = { kind: 'roots', mv, t: M.wind, spots };
         }
         if (mv.kind === 'leap') this.act = { kind: 'leap', mv, t: M.wind + M.air, from: { x: this.x, z: this.z }, spot };
@@ -436,9 +506,10 @@ class Mob {
         this.mgr.emit('move', this, this.act);
       }
       this.moveCd[mv.kind] = (mv.cd ?? M.cd) * (this.enraged && mv.kind !== 'frenzy' ? MVP_RAGE.cd : 1); // (a move may wait longer than its kind: mv.cd)
-      if (mv.kind === 'bark' || mv.kind === 'mirror') { this.nextMove = 0.5; return; } // (a self move: it can act again at once)
-      this.nextMove = this.enraged ? MVP_RAGE.gap : fierce(d) ? MVP_GAP : 2.5;
-      return;
+      if (mv.kind === 'bark' || mv.kind === 'mirror' || mv.kind === 'frenzy') { this.nextMove = 0.5; return; } // (a self move: it can act again at once)
+      this.nextMove = this.enraged ? (Math.random() < BRAIN.combo ? 0.35 : MVP_RAGE.gap) : fierce(d) ? MVP_GAP : 2.2;
+      this.nextMove *= 0.8 + Math.random() * 0.4; // (never quite the same beat: its moves can't be counted)
+      if (this.kiteT > BRAIN.kite / 2) this.nextMove *= 0.6; // kept away from you: it presses harder
     }
   }
 
@@ -476,7 +547,7 @@ class Mob {
         if (a.t <= 0) { a.phase = 'under'; a.t = M.under; this.under = true; this.mgr.emit('burrow', this); }
         return { moving: false, lift: 0 };
       }
-      if (!a.spot && a.t <= M.mark) { a.spot = { x: p.x, z: p.z }; this.mgr.emit('burrowMark', this, a.spot, a.mv, M.mark); }
+      if (!a.spot && a.t <= M.mark) { a.spot = this.aimAt(p, M.mark); this.mgr.emit('burrowMark', this, a.spot, a.mv, M.mark); }
       if (a.t <= 0) {
         const w = this.mgr.world, s = a.spot || { x: p.x, z: p.z };
         if (w.walkable(s.x, s.z) && !w.isSafe(s.x, s.z) && !nearPortal(w, s.x, s.z, this.def.r)) { this.x = s.x; this.z = s.z; }
@@ -509,24 +580,42 @@ class Mob {
     return { moving: false, lift: 0 };
   }
 
-  tryMove(dx, dz) {
+  // where a step would end (resolved against rocks and walls), or null if it may not go there
+  stepTo(dx, dz) {
     const w = this.mgr.world;
-    const nx = this.x + dx, nz = this.z + dz;
-    const [rx, rz] = w.resolve(nx, nz, this.def.r);
-    if (w.isSafe(rx, rz) || !w.walkable(rx, rz)) return false;
+    const [rx, rz] = w.resolve(this.x + dx, this.z + dz, this.def.r);
+    if (w.isSafe(rx, rz) || !w.walkable(rx, rz)) return null;
     // never onto a portal (though one somehow inside the edge may always step away from it)
-    if (nearPortal(w, rx, rz, this.def.r) && portalGap(w, rx, rz) <= portalGap(w, this.x, this.z)) return false;
-    this.x = rx; this.z = rz;
+    if (nearPortal(w, rx, rz, this.def.r) && portalGap(w, rx, rz) <= portalGap(w, this.x, this.z)) return null;
+    return [rx, rz];
+  }
+  tryMove(dx, dz) {
+    const to = this.stepTo(dx, dz);
+    if (!to) return false;
+    [this.x, this.z] = to;
     return true;
   }
 
+  // a step toward (tx, tz); blocked (a rock, a tree, a tent), it steers round it, trying wider angles
+  // to one side and the other, and keeps to the side that worked a moment so it doesn't dither
   moveToward(tx, tz, speed, dt) {
     const dx = tx - this.x, dz = tz - this.z, d = Math.hypot(dx, dz);
     if (d < 0.05) return 0;
-    const s = Math.min(d, speed * dt);
-    this.heading = { x: dx / d, z: dz / d };
-    const ok = this.tryMove((dx / d) * s, (dz / d) * s);
-    return ok ? s : 0;
+    const s = Math.min(d, speed * dt), base = Math.atan2(dz, dx);
+    const side = this.steerT > 0 ? this.steerSide : 1;
+    let best = null; // (a step that only slides a little along a rock is no step: try the next angle)
+    for (const a of [0, 0.6, -0.6, 1.2, -1.2, 1.7, -1.7, 2.3, -2.3]) {
+      const ux = Math.cos(base + a * side), uz = Math.sin(base + a * side), to = this.stepTo(ux * s, uz * s);
+      if (!to) continue;
+      const got = Math.hypot(to[0] - this.x, to[1] - this.z);
+      if (got >= s * 0.5) { best = { to, ux, uz, a, got }; break; }
+      if (!best || got > best.got) best = { to, ux, uz, a, got };
+    }
+    if (!best || best.got < 1e-4) { this.heading = { x: dx / d, z: dz / d }; return 0; }
+    [this.x, this.z] = best.to;
+    this.heading = { x: best.ux, z: best.uz };
+    if (best.a) { this.steerSide = Math.sign(best.a * side); this.steerT = 0.8; }
+    return best.got;
   }
 
   // the monster's numbers as the battle rules see them
@@ -610,6 +699,7 @@ class Mob {
     this.wanderT -= dt;
     this.atkAnim -= dt;
     this.provokeT -= dt;
+    this.steerT -= dt;
 
     if (Math.abs(this.knock.x) + Math.abs(this.knock.z) > 0.05) {
       this.tryMove(this.knock.x * dt, this.knock.z * dt);
@@ -648,14 +738,16 @@ class Mob {
     const low = this.hp / d.hp <= 0.3 && d.hp > 1;
     this.rageT -= dt;
     this.barkT -= dt;
-    if ((d.mvp || d.boss) && this.state !== 'chase' && this.hp < d.hp) this.hp = Math.min(d.hp, this.hp + d.hp * BOSS_REGEN / 60 * dt);
+    this.calmT = this.state === 'chase' ? 0 : this.calmT + dt;
+    if ((d.mvp || d.boss) && this.calmT > BRAIN.calm && this.hp < d.hp) this.hp = Math.min(d.hp, this.hp + d.hp * BOSS_REGEN / 60 * dt);
     // an MVP below half its HP is enraged (MVP_RAGE); healed back over 60% it calms down
     if (fierce(d) && this.alive) {
       if (!this.enraged && this.hp / d.hp <= MVP_RAGE.below) { this.enraged = true; this.mgr.emit('enrage', this); }
       else if (this.enraged && this.hp / d.hp > MVP_RAGE.calm) this.enraged = false;
     }
     // as in Ragnarok, a monster keeps its pace however hurt it is (a frenzied boss speeds up, an enraged MVP too)
-    const speed = d.speed * (this.rageT > 0 ? 1.3 : 1) * (this.enraged ? MVP_RAGE.speed : 1);
+    this.rushT -= dt; this.rushCd -= dt;
+    const speed = d.speed * (this.rageT > 0 ? 1.3 : 1) * (this.enraged ? MVP_RAGE.speed : 1) * (this.rushT > 0 ? BRAIN.rush : 1);
     let lift = 0;
     // Play Dead and safe ground (camp) make monsters lose interest
     const available = p.state !== 'down' && p.state !== 'feign' && !this.mgr.world.isSafe(p.x, p.z);
@@ -696,7 +788,7 @@ class Mob {
     };
 
     // too far from home: back it goes (a roaming boss only when it was chasing you)
-    if (!d.relentless && homeD > (d.mvp ? 40 : this.provokeT > 0 ? 20 : 11) && this.state !== 'return' && (d.ai !== 'boss' || this.state === 'chase')) this.state = 'return';
+    if (!d.relentless && homeD > (d.mvp ? 40 : d.ai === 'boss' ? 30 : this.provokeT > 0 ? 20 : 11) && this.state !== 'return' && (d.ai !== 'boss' || this.state === 'chase')) this.state = 'return';
     if (this.stunT > 0) this.stunT -= dt; // stunned: stands there
     else if (this.state === 'return') {
       moving = this.moveToward(this.home.x, this.home.z, speed, dt) > 0;
@@ -717,8 +809,13 @@ class Mob {
           this.chaseT -= dt;
           this.nextMove -= dt;
           for (const k in this.moveCd) this.moveCd[k] -= dt;
-          if (d.mvp && dist < MVP_GIVE_UP) this.chaseT = Math.max(this.chaseT, 1); // an MVP doesn't tire of you
-          if (this.chaseT <= 0 || !available || dist > (d.mvp ? MVP_GIVE_UP : aggro * 2.2)) { this.state = 'wander'; this.tired = 3; }
+          const giveUp = d.mvp ? MVP_GIVE_UP : BRAIN.giveUp; // (a boss hunts you: it doesn't tire of you this side of it)
+          if (dist < giveUp) this.chaseT = Math.max(this.chaseT, 1);
+          // kept out of its reach, it gives chase in a burst (BRAIN)
+          this.kiteT = dist > d.reach + 1.5 ? this.kiteT + dt : Math.max(0, this.kiteT - dt * 2);
+          if (this.kiteT > BRAIN.kite && this.rushCd <= 0) { this.rushT = BRAIN.rushFor; this.rushCd = BRAIN.rushCd; this.mgr.emit('pursuit', this); }
+          if (this.chaseT <= 0 || !available || dist > giveUp) { this.state = 'wander'; this.tired = 3; this.kiteT = 0; }
+          else if (this.unstick(dt, p, dist)) { /* bounding over whatever was in its way */ }
           else if (this.special > 0) { // winding up a stomp: stand still, then it lands
             this.special -= dt;
             if (this.special <= 0) this.mgr.emit('stomp', this);
@@ -1092,6 +1189,18 @@ export class MobManager {
   }
 
   update(dt, player) {
+    // the hero's pace (smoothed), and how long they have stood still: a boss reads them (BRAIN)
+    this.hero = player;
+    const pv = this.pv ||= { x: 0, z: 0 };
+    if (this.pLast && dt > 0) {
+      const vx = (player.x - this.pLast.x) / dt, vz = (player.z - this.pLast.z) / dt;
+      if (Math.hypot(vx, vz) < 12) { const k = Math.min(1, dt * 6); pv.x += (vx - pv.x) * k; pv.z += (vz - pv.z) * k; } // (not a jump between maps)
+      else { pv.x = pv.z = 0; }
+    }
+    this.pLast = { x: player.x, z: player.z };
+    const pace = Math.hypot(pv.x, pv.z);
+    this.stillT = pace < 0.3 ? (this.stillT || 0) + dt : 0;
+    this.movingT = pace > 1 ? (this.movingT || 0) + dt : 0; // (on the move: a run, not a step aside)
     // a boss or MVP appears once its time has come, somewhere on the map away from you
     for (const type of this.bosses) {
       if (Date.now() < (this.mvpAt[type] || 0) || this.list.some((m) => m.type === type)) continue;

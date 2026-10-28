@@ -554,6 +554,8 @@ mobs.on('reflect', (m, n, from) => {
   if (foe === player) fx.number(player.x, overHead(player, 1.6), player.z, 'Reflected', 'miss');
   foe.takeDamage(n, m.x, m.z);
 });
+// a boss you keep away from gives chase in a burst (mobs.js BRAIN)
+mobs.on('pursuit', (m) => { fx.number(m.x, overHead(m, m.sprite.scale.y * 0.8 + 0.4), m.z, 'Pursues!', 'skill'); fx.puff(m.x, world.heightAt(m.x, m.z) + 0.15, m.z, 1.0); });
 mobs.on('rush', (m) => { audio.play('dodge'); fx.puff(m.x, world.heightAt(m.x, m.z) + 0.15, m.z, 1.2); });
 mobs.on('rammed', (m, mult) => bossBlow(m, mult, m.x, m.z, m.def.reach + 0.6));
 mobs.on('throw', (m, spot, mv, land) => {
@@ -617,8 +619,8 @@ mobs.on('meteors', (m, mv, n) => {
   for (let i = 0; i < n; i++) {
     setTimeout(() => {
       if (world.id !== map || !m.alive) return;
-      const a = Math.random() * Math.PI * 2, r = i ? 1.2 + Math.random() * 2.8 : 0; // the first right where you are
-      const spot = { x: player.x + Math.cos(a) * r, z: player.z + Math.sin(a) * r };
+      const a = Math.random() * Math.PI * 2, r = 1.2 + Math.random() * 2.8; // the first where you are (or going: mobs.js BRAIN)
+      const spot = i ? { x: player.x + Math.cos(a) * r, z: player.z + Math.sin(a) * r } : m.aimAt(player, M.land);
       fx.warn(spot.x, spot.z, mv.r, M.land);
       const gy = world.heightAt(spot.x, spot.z), fall = 9 / 13; // (fx.bolt flies 13 paces a second)
       setTimeout(() => {

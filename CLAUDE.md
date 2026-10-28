@@ -65,6 +65,11 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   never slowed, Giant Mushroom SP regen, Giant Beetle DEF pierce, Elder Willow faster casting,
   Alpha Wolf crits, Great Bear harder blows at low HP). Every card keeps its stats
   (the owner's call; MVP and boss cards too); an effect comes on top.
+  **Boss AI** (`BRAIN` in `mobs.js`, every mini-boss, raid boss and MVP): it aims where a running
+  hero is going (not a step aside), picks moves for the moment (gap-closers on kiters and casters,
+  area moves on a hero standing still), gives chase in a burst when kited, bounds over a rock that
+  keeps it off you, and a mini-boss hunts like an MVP (gives up only 18 paces off, heals only after
+  10 s out of the fight). Every monster steers round obstacles.
   Each MVP has a matchup (`takes` in `mobs.js`, applied in `rules.js`): easiest for one job family
   and hardest for another (Fire Giant: bows / casters; Kobold King: casters / bows; Goblin King:
   blades / bows and casters; Ancient Treant: beasts / blades).

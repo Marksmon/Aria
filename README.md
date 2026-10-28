@@ -206,6 +206,21 @@ seconds instead of 7, and uses its moves sooner and more often. An MVP doesn't t
 either: it chases you over its map and gives up only when you are far away (22 paces), at camp or
 playing dead.
 
+**How bosses fight.** Every boss (mini-boss, raid boss and MVP) reads you:
+- **It aims where you're going.** Once you have been running a moment, its throws, leaps, roots,
+  burrows, charges and first meteor often land where you are heading, not where you stand. The red
+  circle shows where, so turn or stop rather than run on in a straight line.
+- **It picks its move for the moment:** a leap, charge or burrow when you keep away or stand
+  casting, something thrown or rained down when you stand still in its range. It rarely uses the
+  same move twice in a row, and the pause between moves is never quite the same.
+- **Kiting has a limit.** Kept out of reach for a few seconds, it gives chase in a burst
+  ("Pursues!"), and its moves come sooner.
+- **Rocks don't save you.** It steers round what is in its way; stuck behind something too tight for
+  it, it bounds over onto you (Bound, a red circle first).
+- **An enraged MVP or Hell boss** may follow one move straight into another.
+- **Mini-bosses hunt like MVPs.** They follow you up to 18 paces and heal only after 10 seconds
+  out of the fight, so stepping away briefly doesn't reset them.
+
 **Where bosses are.** Mini-bosses and MVPs appear at a random spot on their map, away from you and
 the portals, and roam the whole map. A boss you leave behind keeps its wounds and its guards (and
 how often it has called them): come back, or wake up at your save point after fainting, and the

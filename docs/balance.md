@@ -246,3 +246,27 @@ Warlord's Rockslide: slowing rubble; the Goblin Warlord's Firepot Rain: burning 
 Axe gone for it), the Goblin Warlord a third shadow in his Mirror Image, and both 1.8x HP in Hell
 (FIERCE hpScale). The same bot, the same day: BleepBloop 171 s (73 potions), the Kobold Warlord
 171 s (78), the Goblin Warlord 174 s (74).
+
+## Boss AI (BRAIN in src/mobs.js)
+
+The bosses got a smarter fight: they read a running hero, pick their moves for the moment, give
+chase when kited, steer round rocks and bound over one that keeps them off you, and mini-bosses hunt
+like MVPs. Testing it turned up two old faults: a mini-boss could be held off for good behind a rock
+the hero stood tucked against (the earlier mini-boss playtests above were won that way, the boss
+never landing a blow), and a boss's aim that led a hero who only stepped aside sent its circles into
+empty ground (now it reads only a hero who has been running 0.6 s).
+
+The playtest bot (an archer that stands and shoots, and steps out of every red circle), new AI:
+| Fight | Hero | Time | White Potions | Old AI |
+|---|---|---|---|---|
+| Fire Giant | Lv 99, best gear | 55-101 s (5 runs) | 2-72 | 90-110 s, 56-92 |
+| Ancient Treant | Lv 99, best gear | 125 s | 76 | 121 s, 70 |
+| Kobold King | Lv 99, best gear | 190 s | 78 | 191 s, 79 |
+| Hell BleepBloop | Lv 99, best gear | 138 s | 19 | 152-308 s |
+| Great Bear | Lv 70, decent gear | 112 s | 68 (down to 885 HP) | never reached the hero |
+| Alpha Wolf | Lv 70, decent gear | 55 s | 28 | 55 s, 27 |
+| Giant Mushroom | Lv 70, decent gear | 70 s | 24 | never reached the hero |
+| Giant Beetle | Lv 70, decent gear | 63 s | 24 | - |
+The bot fights like a turret, so it barely meets the new AI's reading and chasing (made for heroes
+who run, kite and cast); against it the bosses are about as hard as before, the mini-bosses harder
+(they now reach it).
