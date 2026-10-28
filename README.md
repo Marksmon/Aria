@@ -25,7 +25,8 @@ button (next to Skills) opens Settings: Sound on or off, and **Back to main menu
 goes back to the title screen to play another hero. Every
 hero keeps their own level, job, bag, gear, perz and quests, but the Keepers' storage (300 slots) is
 shared: what one hero puts away, the others can take out. Its window has sections (All, Usables,
-Equips, Miscs, Cards), each showing the bag's and the storage's items of that kind.
+Equips, Miscs, Cards), each showing the bag's and the storage's items of that kind; tap a stack to
+choose how many to store or take.
 Download it from **Releases → "Aria — latest build"** → `Aria.apk`.
 New builds install over old ones as an **update**: they share the signing key, and each build's
 version (1.0.*build number*, shown on the title screen) is higher than the last. Just open the new

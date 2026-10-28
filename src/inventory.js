@@ -110,8 +110,9 @@ export class Inventory {
     return made;
   }
 
-  moveStack(from, to, id) {
-    const n = Math.min(from.count(id), ITEMS[id].type === 'equip' ? 1 : STACK);
+  // move n of an item (at most a stack; all of it if n isn't given) between the bag and the storage
+  moveStack(from, to, id, want = Infinity) {
+    const n = Math.min(from.count(id), ITEMS[id].type === 'equip' ? 1 : STACK, Math.max(1, want));
     const got = to.add(id, n);
     if (got) from.remove(id, got);
     this.changed();

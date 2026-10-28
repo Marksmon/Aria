@@ -694,9 +694,20 @@ export class Menus {
     const inv = this.inv, tab = this.chestTab || 'all', of = (store) => store.slots.filter((s) => tab === 'all' || chestKind(s.id) === tab);
     const n = (k) => inv.chest.slots.filter((s) => chestKind(s.id) === k).length;
     const tabs = Object.entries(CHEST_TABS).map(([k, name]) => `<button class="rtab${tab === k ? ' on' : ''}" data-act="chesttab" data-id="${k}">${name}${k === 'all' ? '' : ` <small>${n(k)}</small>`}</button>`).join('');
-    return `<div class="rtabs">${tabs}</div><div class="rnote">Tap an item to move the whole stack. Storage is shared by all your heroes.</div><div class="chestwrap2">
+    return `<div class="rtabs">${tabs}</div><div class="rnote">Tap an item to move it; for a stack, choose how many. Storage is shared by all your heroes.</div><div class="chestwrap2">
       <div><div class="rsub">Bag ${inv.bag.slots.length}/${BAG_SLOTS}</div>${this.grid(of(inv.bag), 'bag', 18)}</div>
-      <div><div class="rsub">Storage ${inv.chest.slots.length}/${CHEST_SLOTS}</div>${this.grid(of(inv.chest), 'chest', 18)}</div></div>`;
+      <div><div class="rsub">Storage ${inv.chest.slots.length}/${CHEST_SLOTS}</div>${this.grid(of(inv.chest), 'chest', 18)}</div></div>${this.chestCount()}`;
+  }
+  // how many of a stack to move: the bar under the bag and storage, once a stack of more than one is picked
+  chestCount() {
+    const c = this.chestSel, inv = this.inv;
+    const have = c ? (c.side === 'bag' ? inv.bag : inv.chest).count(c.id) : 0;
+    if (!c || have < 2) { this.chestSel = null; return ''; }
+    c.n = Math.max(1, Math.min(c.n, have, 999));
+    const step = (d, label) => `<button class="rbtn soft cnt" data-act="chestn" data-id="${d}">${label}</button>`;
+    return `<div class="rdetail chestcount">${icon(c.id, 'xs')}<b>${esc(ITEMS[c.id].name)}</b><small>${have} in your ${c.side === 'bag' ? 'bag' : 'storage'}</small>
+      <div class="btnrow">${step(-10, '−10')}${step(-1, '−1')}<span class="cntn">${c.n}</span>${step(1, '+1')}${step(10, '+10')}${step('all', 'All')}
+      <button class="rbtn" data-act="chestmove">${c.side === 'bag' ? 'Store' : 'Take'} ${c.n}</button></div></div>`;
   }
 
   // a quest's reward line; a job trial's steps on the way pay nothing, its last step the lot
@@ -1002,6 +1013,12 @@ export class Menus {
     }
     if (act === 'tab') { this.tab = t.dataset.id; this.selected = null; this.render(id); }
     if (act === 'chesttab') { this.chestTab = t.dataset.id; this.render(id); }
+    if (act === 'chestn' && this.chestSel) { const d = t.dataset.id; this.chestSel.n = d === 'all' ? 999 : this.chestSel.n + +d; this.render(id); }
+    if (act === 'chestmove' && this.chestSel) {
+      const c = this.chestSel, from = c.side === 'bag' ? inv.bag : inv.chest, to = c.side === 'bag' ? inv.chest : inv.bag;
+      if (!inv.moveStack(from, to, c.id, c.n)) this.message(to === inv.bag ? 'Bag is full' : 'Chest is full');
+      this.chestSel = null; this.render(id);
+    }
     if (act === 'equip' && inv.equip(this.selected)) { this.selected = null; this.hooks.equipped?.(); }
     if (act === 'eqpick') {
       const key = t.dataset.id, now = performance.now();
@@ -1020,7 +1037,10 @@ export class Menus {
       if (id === 'shop') { this.sellSel = t.dataset.id; this.render(id); } else if (id === 'chest') {
         const from = t.dataset.side === 'bag' ? inv.bag : inv.chest;
         const to = t.dataset.side === 'bag' ? inv.chest : inv.bag;
-        if (!inv.moveStack(from, to, t.dataset.id)) this.message(to === inv.bag ? 'Bag is full' : 'Chest is full');
+        if (from.count(t.dataset.id) > 1 && ITEMS[t.dataset.id].type !== 'equip') { // a stack: how many? (all of it to start with)
+          this.chestSel = { side: t.dataset.side, id: t.dataset.id, n: Math.min(999, from.count(t.dataset.id)) };
+          this.render(id);
+        } else if (!inv.moveStack(from, to, t.dataset.id)) this.message(to === inv.bag ? 'Bag is full' : 'Chest is full');
       } else {
         this.selected = t.dataset.id;
         this.render(id);

@@ -510,6 +510,10 @@ button.eq:active { background: var(--w-sel); }
 .cost { display: inline-flex; align-items: center; gap: 2px; font-size: 12px; color: #ff9a80; }
 .cost.ok { color: #9fe08a; }
 .chestwrap2 { display: flex; }
+.chestcount { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; }
+.chestcount .btnrow { display: flex; align-items: center; gap: 4px; margin-left: auto; }
+.chestcount .cnt { min-width: 34px; padding: 3px 6px; }
+.cntn { min-width: 34px; text-align: center; font: 700 14px system-ui, sans-serif; color: var(--w-gold); }
 .chestwrap2 > div { flex: 1; min-width: 0; }
 .chestwrap2 > div + div { border-left: 1px solid var(--w-line2); }
 
