@@ -15,7 +15,7 @@ import { loadSave, writeSave, loadStorage, writeStorage, clearSave, saveCode, lo
 import { Inventory } from './inventory.js';
 import { Progress, JOBS, RATES, QUEST_RATE } from './progress.js';
 import { Quests, QUESTS, NPCS, FARES, NEXT, SERIES, giverOf } from './quests.js';
-import { Story, INTRO, STORY, route } from './story.js';
+import { Story, INTRO, STORY, CALL_HOME, route } from './story.js';
 import { playCutscene } from './cutscene.js';
 import { Villagers } from './villagers.js';
 import { Tiles } from './tiles.js';
@@ -1403,6 +1403,18 @@ function storyDone() {
 }
 function checkStory() {
   if (!storyLive() || menus.isOpen('story')) return;
+  // a Trainee grown to Job 9 on the way through Chapter 1 is called home to choose a path (not in the
+  // middle of a stand)
+  if (!vigil && story.callHome(prog)) {
+    const next = story.step;
+    menus.story(CALL_HOME, `${next.ch} · Called Home`, () => {
+      audio.play('heart');
+      menus.message(`Story: ${next.title}. ${next.goal}`);
+      refreshQuests();
+      persist();
+    });
+    return;
+  }
   if (story.met({ prog, hotbar, skillLv, keepers, inv, quests })) storyDone();
 }
 function startStory() {
@@ -1420,7 +1432,7 @@ function collect(p) {
   if (got) { menus.toast(p.item, got); audio.play('pickup'); }
   if (got < p.count) {
     p.count -= got;
-    if (performance.now() - bagFullNote > 4000) { bagFullNote = performance.now(); menus.message('Bag is full. Store items in the camp chest.'); }
+    if (performance.now() - bagFullNote > 4000) { bagFullNote = performance.now(); menus.message(prog.job === 'novice' ? 'Bag is full. Sell what you can spare to a trader (the Keepers\' storage opens with a first job).' : 'Bag is full. Put things in a Keeper\'s storage.'); }
     return false;
   }
   return true;

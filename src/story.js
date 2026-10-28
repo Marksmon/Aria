@@ -134,7 +134,7 @@ export const STORY = [
   // the Keepers, taught early: storage, healing, a save point, and the Keepers' road between towns
   { id: 'keepers', ch: 'Chapter 1: The Stone-Fort', title: 'The Keepers\' Ledger', kind: 'keeper', map: 'city', npc: 'keeper_city', goal: 'Sign the Keeper\'s ledger (by the west houses of Steinborg)',
     hint: 'Talk to the Keeper and choose Sign the ledger. The Keeper at the camp already knows you.',
-    say: [['keeper_city', 'There: Steinborg remembers you now. Tap me whenever you need me. Heal me mends you. Storage keeps what your bag cannot carry. Save here makes this the place you wake after a fall.'],
+    say: [['keeper_city', 'There: Steinborg remembers you now. Tap me whenever you need me. Heal me mends you. Storage keeps what your bag cannot carry, once you have taken a first job. Save here makes this the place you wake after a fall.'],
       ['keeper_city', 'And Teleport takes you to any other Keeper whose ledger you have signed, for a fare: the one at your camp already, and one waits in Galdrheim too. Now go on to the Seeress.']],
     reward: { xp: 40, perz: 300 } },
   // the Seeress reads the hero's runes: three questions, and the calling they point to (CALLINGS)
@@ -148,20 +148,17 @@ export const STORY = [
       [null, 'Saeunn shakes the rune-bones in her cupped hands and casts them across the table. They clatter, spin... and lie still.', { sound: 'heart' }],
       ['saeunn', (flags) => CALLINGS[callingOf(flags) || 'blade'].rune],
       ['saeunn', 'But runes advise; they do not command. Once you are ready (Trainee Job 10, Basic Training 9), the Blade, the Rune and the Bow will each try you. The road you walk is yours.'],
-      ['saeunn', 'Until then, grow strong. And when you are ready to choose, go home to Eldrun: Halvard has seen many young ones choose.'],
+      ['saeunn', 'Grow strong. When you reach Trainee Job 9, Halvard will call you home to Eldrun to choose: he has seen many young ones choose.'],
       ['saeunn', 'But first, an errand. Huntmaster Sigrid keeps the eastern woods from Veidheim, the hunters\' village past Birch Grove and Willow Marsh. Her trees felt the trembling before my runes did. Take her my warning, and see what she has seen.']],
     reward: { xp: 60 } },
   // ---------- the hunters' village: a low-level visit to Veidheim on the way (Willow Marsh is Lv 7-8) ----------
   { id: 'eastward', ch: 'Chapter 1: The Stone-Fort', title: 'The Hunters\' Village', kind: 'visit', map: 'hunt', goal: 'Travel east to Veidheim, the hunters\' village (through Birch Grove and Willow Marsh)',
     hint: 'Birch Grove\'s Red Sprouts leave you be if you leave them be, but keep well away from the huge Giant Sprout. In Willow Marsh the Willows puff spores that slow you: keep moving.',
     say: [[null, 'Veidheim: log houses round a green, smoke from the tanner\'s yard, and a target on every fence. Somewhere a bowstring thrums, and somebody cheers.'],
-      [null, 'By the green, a boy with a bow too big for him is arguing with the sentry. "I saw them, I tell you! The willows walked right up to the marsh road last night!"']],
-    reward: { xp: 40, perz: 100 } },
-  { id: 'finn', ch: 'Chapter 1: The Stone-Fort', title: 'The Boy Who Saw', kind: 'talk', npc: 'finn', goal: 'Talk to Finn the Young Archer on Veidheim\'s green',
-    say: [['finn', 'You believe me? Nobody believes me. Every night since the ground started shaking, the willows come up out of the marsh, a little closer to the village each time.'],
-      ['finn', 'The Huntmaster says I am too young to stand watch. But you are not! Come and see: there is an old way-stone on the marsh road, just west of the gate. They walk past it every night.'],
+      [null, 'By the green, a boy with a bow too big for him is arguing with the sentry. "I saw them, I tell you! The willows walked right up to the marsh road last night!"'],
+      ['finn', 'You believe me? Every night since the ground started shaking, the willows come up out of the marsh, a little closer each time. There is an old way-stone on the marsh road, just west of the gate. They walk past it every night. Come and see!'],
       [null, 'Finn is already running for the gate. Willow Marsh is through the west gate: find the way-stone on the marsh road, and stand by it.']],
-    reward: { xp: 20 } },
+    reward: { xp: 60, perz: 100 } },
   // a stand on the marsh road with Finn (a survive step: main.js tickVigil), the willows and bloops coming up out of the water
   { id: 'marshroad', ch: 'Chapter 1: The Stone-Fort', title: 'The Marsh Road', kind: 'survive', map: 'marsh', at: { x: 48, z: 33 }, secs: 40, color: '#9fe06a',
     heralds: { early: ['willow', 'yellowSlime'], late: ['willow', 'willow', 'yellowSlime'], after: 15 }, every: 10, most: 5,
@@ -175,25 +172,15 @@ export const STORY = [
   { id: 'sigridword', ch: 'Chapter 1: The Stone-Fort', title: 'The Huntmaster', kind: 'talk', npc: 'sigrid', goal: 'Give Saeunn\'s warning to Huntmaster Sigrid in Veidheim',
     say: [['sigrid', 'So the Seeress sends word: the fire-ring fails, and the Giant stirs. That explains my willows. Whatever wakes under Ember Hill, the old trees feel it in their roots, and they walk.'],
       ['sigrid', 'Finn will stand no watches yet, whatever he thinks. But you held that road like a hunter. If ever you want the bow, my door is open: a trial, when you are ready for one.'],
-      ['sigrid', 'Sign our Keeper\'s ledger before you go: Veidheim is a long walk from Steinborg, and the Keepers can send you back in a blink. And Eydis on the green buys what the marsh gave you.']],
-    reward: { xp: 60, perz: 300 } },
-  { id: 'hunterkeeper', ch: 'Chapter 1: The Stone-Fort', title: 'A Ledger in the Woods', kind: 'keeper', own: true, map: 'hunt', npc: 'keeper_hunt', goal: 'Sign the Keeper\'s ledger in Veidheim',
-    hint: 'Talk to the Keeper on the green and choose Sign the ledger.',
-    say: [['keeper_hunt', 'Veidheim remembers you now. Teleport from any Keeper you have signed brings you back here, for a fare.']],
-    reward: { xp: 40 } },
-  { id: 'trade', ch: 'Chapter 1: The Stone-Fort', title: 'Coin for the Road', kind: 'sell', goal: 'Sell something to Eydis the Trader on Veidheim\'s green (or any trader)',
-    say: [[null, 'Perz is the coin of Aria. Monsters don\'t carry any: you earn it by selling what they drop, and from quests.'],
-      [null, 'Now to grow strong enough for a trial. Fen Shore, west of Eldrun, swarms with Blue Bloops and Crabs: good practice for a Trainee.']],
-    reward: { xp: 40, perz: 150 } },
+      ['sigrid', 'Our Keeper on the green will sign you into her ledger: Veidheim is a long walk from Steinborg, and the Keepers can send you back in a blink. And Eydis the Trader buys what the marsh gave you.'],
+      [null, 'Perz is the coin of Aria. Monsters don\'t carry any: you earn it by selling what they drop to a trader, and from quests.'],
+      [null, 'Now go home to Eldrun Camp. You have grown fast: Elder Halvard will help you choose a path.']],
+    reward: { xp: 80, perz: 450 } },
 
   // ---------- Chapter 2: the three paths ----------
   // story EXP (x2 with QUEST_RATE) is paced so each chapter brings a hero to the next one's hinted level:
-  // the Giant Sprout at about Base 28, Chapter 5's kobolds at about 32
-  { id: 'trainee', ch: 'Chapter 2: The Three Paths', title: 'A Trainee\'s Road', kind: 'kill', mobs: ['blueSlime', 'crab'], n: 15, map: 'fen', goal: 'Toughen up in Fen Shore (west of the camp): defeat 15 Blue Bloops or Crabs',
-    hint: 'Every fight brings Job EXP. A job trial wants Trainee Job 10 and Basic Training 9, so spend each skill point as it comes.',
-    say: [[null, 'The fen goes quiet around you. Your arm is steadier, your feet quicker: a Trainee no more, in all but name.'],
-      [null, 'Time to choose a path. Go home to Eldrun Camp: Elder Halvard is waiting by the fire.']],
-    reward: { xp: 60, job: 250 } },
+  // the Giant Sprout at about Base 28, Chapter 5's kobolds at about 32. A Trainee who reaches Job 9
+  // during Chapter 1 is called home to choose (CALL_JOB, Story.callHome): no grind for the trials
   // the jobs explained, and the hero's pick (flags.pick): the story then sends them to that trainer
   { id: 'paths', ch: 'Chapter 2: The Three Paths', title: 'By the Fire', kind: 'talk', npc: 'bram', goal: 'Go home to Eldrun Camp: Elder Halvard will help you choose a path',
     say: [['bram', 'Sit, sit. You have grown since the morning I shook you awake. It is time you chose a path. Three masters train the young of Aria, and each path grows into something greater.'],
@@ -374,7 +361,9 @@ const OLD_ORDER = ['wake', 'stats', 'slimes', 'training', 'hotbar', 'report', 'n
 // ledger: the Keepers' step moved from Chapter 5 to Chapter 1 ('keepers'); a hero who was on it goes on to the carter
 // matron, furnace: the story's boss fights (the Giant Sprout, the Giant Beetle) became hunts of
 // their kin, so no story step needs a boss
-const RENAMED = { ready: 'runesong', lastfire: 'runesong', jarl: 'rekindled', ledger: 'carter', matron: 'redsprouts', furnace: 'coalfeast' };
+// finn, hunterkeeper, trade, trainee: Chapter 1 made shorter (Finn's lines went to 'eastward', the trade lesson to
+// 'sigridword'); a hero who was on one of the last three goes on to choosing a path
+const RENAMED = { finn: 'marshroad', hunterkeeper: 'paths', trade: 'paths', trainee: 'paths', ready: 'runesong', lastfire: 'runesong', jarl: 'rekindled', ledger: 'carter', matron: 'redsprouts', furnace: 'coalfeast' };
 
 // directions: which way to walk from one map to reach another, through which portal
 export function route(from, to) {
@@ -399,6 +388,11 @@ export function compass(p) {
   const dx = p.x - 32, dz = p.z - 32;
   return Math.abs(dx) > Math.abs(dz) ? (dx > 0 ? 'east' : 'west') : (dz > 0 ? 'south' : 'north');
 }
+
+// a Trainee who reaches this Job Level after the Seeress is called home to choose a path at once
+export const CALL_JOB = 9;
+export const CALL_HOME = [[null, 'A runner from Eldrun finds you on the road, out of breath. "Elder Halvard sends for you! He says you have grown enough: it is time you chose a path."'],
+  [null, 'Go home to Eldrun Camp and talk to Halvard by the fire. (Whatever you left undone on the way can wait: the job trials want Trainee Job 10 and Basic Training 9.)']];
 
 export class Story {
   constructor() {
@@ -466,6 +460,18 @@ export class Story {
       case 'level': return state.prog.baseLv >= s.lv;
       default: return false;
     }
+  }
+
+  // a Trainee at CALL_JOB between the Seeress and the choosing is called home to it: true when that
+  // just happened (the steps between are left undone)
+  callHome(prog) {
+    const seer = STORY.findIndex((s) => s.id === 'seeress'), paths = STORY.findIndex((s) => s.id === 'paths');
+    if (prog.job !== 'novice' || prog.jobLv < CALL_JOB || this.i <= seer || this.i >= paths) return false;
+    this.i = paths;
+    this.count = 0;
+    delete this.flags.visit;
+    delete this.flags.sold;
+    return true;
   }
 
   advance() {
