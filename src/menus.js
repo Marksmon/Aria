@@ -692,8 +692,7 @@ export class Menus {
   // the Keepers' storage beside the bag, in sections (each shows the bag's and the storage's of its kind)
   chest() {
     const inv = this.inv, tab = this.chestTab || 'all', of = (store) => store.slots.filter((s) => tab === 'all' || chestKind(s.id) === tab);
-    const n = (k) => inv.chest.slots.filter((s) => chestKind(s.id) === k).length;
-    const tabs = Object.entries(CHEST_TABS).map(([k, name]) => `<button class="rtab${tab === k ? ' on' : ''}" data-act="chesttab" data-id="${k}">${name}${k === 'all' ? '' : ` <small>${n(k)}</small>`}</button>`).join('');
+    const tabs = Object.entries(CHEST_TABS).map(([k, name]) => `<button class="rtab${tab === k ? ' on' : ''}" data-act="chesttab" data-id="${k}">${name}</button>`).join('');
     return `<div class="rtabs">${tabs}</div><div class="rnote">Tap an item to move it; for a stack, choose how many. Storage is shared by all your heroes.</div><div class="chestwrap2">
       <div><div class="rsub">Bag ${inv.bag.slots.length}/${BAG_SLOTS}</div>${this.grid(of(inv.bag), 'bag', 18)}</div>
       <div><div class="rsub">Storage ${inv.chest.slots.length}/${CHEST_SLOTS}</div>${this.grid(of(inv.chest), 'chest', 18)}</div></div>${this.chestCount()}`;
