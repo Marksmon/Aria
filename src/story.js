@@ -148,9 +148,40 @@ export const STORY = [
       [null, 'Saeunn shakes the rune-bones in her cupped hands and casts them across the table. They clatter, spin... and lie still.', { sound: 'heart' }],
       ['saeunn', (flags) => CALLINGS[callingOf(flags) || 'blade'].rune],
       ['saeunn', 'But runes advise; they do not command. Once you are ready (Trainee Job 10, Basic Training 9), the Blade, the Rune and the Bow will each try you. The road you walk is yours.'],
-      ['saeunn', 'Until then, grow strong. Hild in the square will buy what you find, and Gunnar forges gear. And when you are ready to choose, go home to Eldrun: Halvard has seen many young ones choose.']],
+      ['saeunn', 'Until then, grow strong. And when you are ready to choose, go home to Eldrun: Halvard has seen many young ones choose.'],
+      ['saeunn', 'But first, an errand. Huntmaster Sigrid keeps the eastern woods from Veidheim, the hunters\' village past Birch Grove and Willow Marsh. Her trees felt the trembling before my runes did. Take her my warning, and see what she has seen.']],
     reward: { xp: 60 } },
-  { id: 'trade', ch: 'Chapter 1: The Stone-Fort', title: 'Coin for the Road', kind: 'sell', goal: 'Sell something to Hild the Trader (or Gunnar)',
+  // ---------- the hunters' village: a low-level visit to Veidheim on the way (Willow Marsh is Lv 7-8) ----------
+  { id: 'eastward', ch: 'Chapter 1: The Stone-Fort', title: 'The Hunters\' Village', kind: 'visit', map: 'hunt', goal: 'Travel east to Veidheim, the hunters\' village (through Birch Grove and Willow Marsh)',
+    hint: 'Birch Grove\'s Red Sprouts leave you be if you leave them be, but keep well away from the huge Giant Sprout. In Willow Marsh the Willows puff spores that slow you: keep moving.',
+    say: [[null, 'Veidheim: log houses round a green, smoke from the tanner\'s yard, and a target on every fence. Somewhere a bowstring thrums, and somebody cheers.'],
+      [null, 'By the green, a boy with a bow too big for him is arguing with the sentry. "I saw them, I tell you! The willows walked right up to the marsh road last night!"']],
+    reward: { xp: 40, perz: 100 } },
+  { id: 'finn', ch: 'Chapter 1: The Stone-Fort', title: 'The Boy Who Saw', kind: 'talk', npc: 'finn', goal: 'Talk to Finn the Young Archer on Veidheim\'s green',
+    say: [['finn', 'You believe me? Nobody believes me. Every night since the ground started shaking, the willows come up out of the marsh, a little closer to the village each time.'],
+      ['finn', 'The Huntmaster says I am too young to stand watch. But you are not! Come and see: there is an old way-stone on the marsh road, just west of the gate. They walk past it every night.'],
+      [null, 'Finn is already running for the gate. Willow Marsh is through the west gate: find the way-stone on the marsh road, and stand by it.']],
+    reward: { xp: 20 } },
+  // a stand on the marsh road with Finn (a survive step: main.js tickVigil), the willows and bloops coming up out of the water
+  { id: 'marshroad', ch: 'Chapter 1: The Stone-Fort', title: 'The Marsh Road', kind: 'survive', map: 'marsh', at: { x: 48, z: 33 }, secs: 40, color: '#9fe06a',
+    heralds: { early: ['willow', 'yellowSlime'], late: ['willow', 'willow', 'yellowSlime'], after: 15 }, every: 10, most: 5,
+    startText: 'The way-stone hums as you step up to it. Out in the reeds, branches creak, and the willows start walking up out of the marsh! Hold the road!',
+    breakText: 'You left the way-stone, and the willows slip past onto the road. Go back to the stone and hold it again.',
+    goal: 'Stand by the glowing way-stone on the marsh road (Willow Marsh, just west of Veidheim\'s gate) and hold back the willows',
+    hint: 'Waves of Willows and Yellow Bloops come for 40 seconds. Stay by the stone; a potion from the hotbar if you need one. Keep clear of the Elder Willow, the marsh\'s great tree.',
+    say: [[null, 'The last willow sinks back into the water, and the marsh goes still. Behind you, someone claps slowly.'],
+      [null, 'It is Huntmaster Sigrid, Finn by the ear. "Well. It seems the boy was right, and you can hold a road. Come back to the village, both of you."']],
+    reward: { xp: 120, job: 60, items: { potion: 4 } } },
+  { id: 'sigridword', ch: 'Chapter 1: The Stone-Fort', title: 'The Huntmaster', kind: 'talk', npc: 'sigrid', goal: 'Give Saeunn\'s warning to Huntmaster Sigrid in Veidheim',
+    say: [['sigrid', 'So the Seeress sends word: the fire-ring fails, and the Giant stirs. That explains my willows. Whatever wakes under Ember Hill, the old trees feel it in their roots, and they walk.'],
+      ['sigrid', 'Finn will stand no watches yet, whatever he thinks. But you held that road like a hunter. If ever you want the bow, my door is open: a trial, when you are ready for one.'],
+      ['sigrid', 'Sign our Keeper\'s ledger before you go: Veidheim is a long walk from Steinborg, and the Keepers can send you back in a blink. And Eydis on the green buys what the marsh gave you.']],
+    reward: { xp: 60, perz: 300 } },
+  { id: 'hunterkeeper', ch: 'Chapter 1: The Stone-Fort', title: 'A Ledger in the Woods', kind: 'keeper', own: true, map: 'hunt', npc: 'keeper_hunt', goal: 'Sign the Keeper\'s ledger in Veidheim',
+    hint: 'Talk to the Keeper on the green and choose Sign the ledger.',
+    say: [['keeper_hunt', 'Veidheim remembers you now. Teleport from any Keeper you have signed brings you back here, for a fare.']],
+    reward: { xp: 40 } },
+  { id: 'trade', ch: 'Chapter 1: The Stone-Fort', title: 'Coin for the Road', kind: 'sell', goal: 'Sell something to Eydis the Trader on Veidheim\'s green (or any trader)',
     say: [[null, 'Perz is the coin of Aria. Monsters don\'t carry any: you earn it by selling what they drop, and from quests.'],
       [null, 'Now to grow strong enough for a trial. Fen Shore, west of Eldrun, swarms with Blue Bloops and Crabs: good practice for a Trainee.']],
     reward: { xp: 40, perz: 150 } },
@@ -431,7 +462,7 @@ export class Story {
       case 'sell': return !!this.flags.sold;
       case 'job': return state.prog.job !== 'novice';
       case 'job2': return JOBS[state.prog.job]?.tier === 2;
-      case 'keeper': return (state.keepers?.size || 0) >= 2;
+      case 'keeper': return s.own ? !!state.keepers?.has(s.npc) : (state.keepers?.size || 0) >= 2; // (own: that Keeper's ledger)
       case 'level': return state.prog.baseLv >= s.lv;
       default: return false;
     }
