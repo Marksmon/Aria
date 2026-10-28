@@ -313,7 +313,9 @@ html, body {
   bottom: calc(10px + env(safe-area-inset-bottom));
   transform: translateX(-50%);
   display: flex;
-  gap: 6px;
+  /* nine slots: as big as fits beside the attack button, never over 50px */
+  --hb: clamp(30px, calc((100vw - 170px) / 10.6), 50px);
+  gap: clamp(3px, calc(var(--hb) / 9), 6px);
   padding: 5px;
   border-radius: 12px;
   background: rgba(30, 22, 16, .55);
@@ -324,8 +326,8 @@ html, body {
 #hotbar.dropping { box-shadow: 0 0 0 3px #ffe37a, 0 4px 10px rgba(0, 0, 0, .35); }
 .hb {
   position: relative;
-  width: 50px;
-  height: 50px;
+  width: var(--hb);
+  height: var(--hb);
   padding: 0;
   border-radius: 9px;
   border: 2px solid rgba(255, 230, 180, .35);
@@ -334,7 +336,7 @@ html, body {
   place-items: center;
   touch-action: none;
 }
-.hb img { width: 38px; height: 38px; pointer-events: none; }
+.hb img { width: calc(var(--hb) * .76); height: calc(var(--hb) * .76); pointer-events: none; }
 .hb.empty { border-style: dashed; background: rgba(60, 42, 28, .35); }
 .hb.out img { opacity: .35; }
 .hb.over { border-color: #ffe37a; box-shadow: 0 0 0 2px rgba(255, 227, 122, .5); }
@@ -344,7 +346,6 @@ html, body {
 .hb i { position: absolute; inset: 0; border-radius: 7px; display: none; pointer-events: none; }
 .hb-ghost { position: fixed; left: 0; top: 0; width: 48px; height: 48px; pointer-events: none; z-index: 40; filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .5)); }
 #hint { bottom: calc(76px + env(safe-area-inset-bottom)); }
-@media (max-width: 420px) { .hb { width: 44px; height: 44px; } .hb img { width: 32px; height: 32px; } }
 
 /* the APK is locked to landscape; in a browser held upright, suggest turning the phone */
 #title .rotate { display: none; font: 600 16px system-ui, sans-serif; color: #ffe6a8; padding: 6px 12px; border-radius: 999px; background: rgba(30, 22, 16, .6); }
@@ -710,7 +711,7 @@ button.eq:active { background: var(--w-sel); }
   font: 700 12px system-ui, sans-serif; color: #fff; text-shadow: -1px 0 #000, 1px 0 #000, 0 -1px #000, 0 1px #000; }
 #moblabels .target { color: #ffd23a; }
 /* the hotbar's page button */
-.hb-page { width: 30px; height: 50px; padding: 0; border-radius: 8px; border: 2px solid rgba(255, 230, 180, .35); background: rgba(60, 42, 28, .6);
+.hb-page { width: calc(var(--hb) * .6); height: var(--hb); padding: 0; border-radius: 8px; border: 2px solid rgba(255, 230, 180, .35); background: rgba(60, 42, 28, .6);
   color: #ffe6a8; display: grid; place-content: center; touch-action: none; font: 700 19px system-ui, sans-serif; line-height: 1; }
 .hb-page small { font-size: 13px; color: rgba(255, 244, 220, .7); }
 /* the smith window (Holger, Seyla, inserting cards) */

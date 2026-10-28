@@ -1523,7 +1523,7 @@ const STAT_TALK = {
   end: '<b>END, Endurance</b>: Max HP, defense against every blow, HP recovery and some magic defense. <b>Never wasted, on any path.</b>',
   knl: '<b>KNL, Knowledge</b>: magic attack, Max SP for your skills, SP recovery and magic defense. <b>The Sorcerer\'s main stat.</b>',
   fns: '<b>FNS, Finesse</b>: hit (how often your blows land), steadier damage, a little attack speed and faster spells. With a bow it is your attack: <b>the Archer\'s main stat.</b>',
-  ftn: '<b>FTN, Fortune</b>: critical hits, lucky dodges and a little attack. Nice to have, <b>never a main stat</b>.',
+  ftn: '<b>FTN, Fortune</b>: <b>critical hits and lucky dodges</b>, its main use, and a little attack.',
 };
 const inItems = (tab) => () => menus.isOpen('items') && (!tab || menus.tab === tab);
 const GUIDES = {
@@ -1913,8 +1913,17 @@ atkFace();
 function placeAtkBtn() {
   const hb = document.getElementById('hotbar').getBoundingClientRect();
   if (!hb.width) return;
-  atkBtn.style.left = `${Math.max(6, hb.left - atkBtn.offsetWidth - 8)}px`;
-  atkBtn.style.top = `${hb.top + (hb.height - atkBtn.offsetHeight) / 2}px`;
+  const w = atkBtn.offsetWidth, h = atkBtn.offsetHeight;
+  if (hb.left - w - 8 >= 6) { // beside it, on the left
+    atkBtn.style.left = `${hb.left - w - 8}px`;
+    atkBtn.style.top = `${hb.top + (hb.height - h) / 2}px`;
+  } else { // no room (a phone held upright): over its right end
+    atkBtn.style.left = `${hb.right - w}px`;
+    atkBtn.style.top = `${hb.top - h - 8}px`;
+  }
+  // the quest list ends above the hotbar (on a short screen it scrolls rather than run under it)
+  const ql = document.querySelector('#quests .qlist');
+  if (ql?.offsetParent) ql.style.maxHeight = `${Math.max(56, Math.min(230, innerHeight * 0.34, hb.top - ql.getBoundingClientRect().top - 8))}px`;
 }
 window.addEventListener('resize', placeAtkBtn);
 setInterval(placeAtkBtn, 500);

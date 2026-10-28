@@ -1,5 +1,5 @@
-// Skill and item hotbar, like Ragnarok's F-key bar: six slots along the bottom of the screen, on
-// three pages (the button at its end, or Tab, flips to the next). Tap a slot (or press 1-6) to use
+// Skill and item hotbar, like Ragnarok's F-key bar: nine slots along the bottom of the screen, on
+// three pages (the button at its end, or Tab, flips to the next). Tap a slot (or press 1-9) to use
 // it. Skills show their cooldown; items show how many you have. It starts empty: drag active skills
 // (Skills window) and usable items (Items window) onto a slot; drag slots to swap them, or off the
 // bar to clear them.
@@ -7,7 +7,7 @@ import { ITEMS, iconURL } from './items.js';
 import { SKILLS } from './skills.js';
 import { OLD_EDGES, RENAMED_SKILLS } from './progress.js';
 
-export const SLOTS = 6;
+export const SLOTS = 9;
 export const PAGES = 3;
 
 export class Hotbar {
