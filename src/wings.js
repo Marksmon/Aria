@@ -74,7 +74,8 @@ export class Wings {
       s.renderOrder = order; s.visible = false; scene.add(s);
       return s;
     };
-    this.wing = sprite(1, { alphaTest: 0.05 });
+    // (the wings keep their depth, so a villager or monster standing behind the hero stays behind them)
+    this.wing = sprite(1, { alphaTest: 0.3, depthWrite: true });
     this.halo = sprite(3, { blending: THREE.AdditiveBlending });
     this.orb = sprite(4);
     this.at = null; // where the floating light is (it follows with a lag)
