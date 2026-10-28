@@ -525,6 +525,20 @@ button.eq:active { background: var(--w-sel); }
 .raidrow .bosspic.sm { width: 44px; height: 44px; object-fit: contain; image-rendering: pixelated; flex: none; }
 .raidrow.locked { opacity: .7; }
 .raidrow small.ok { color: #8fe08a; }
+/* the Quests window */
+.qrow { display: block; }
+.qrow[data-act] { cursor: pointer; }
+.qrow[data-act]:hover { background: var(--w-soft); }
+.qrow b { display: block; color: var(--w-gold); }
+.qrow span, .qrow small, .qrow em { display: block; }
+.qrow small { color: var(--w-dim); }
+.qrow em { font-style: normal; color: #9fd4ff; }
+.qrow .qst { font-style: normal; color: #9fd4ff; }
+.qrow.ready .qst { color: #8fe08a; }
+.qrow.offer .qst, .qrow.job .qst { color: #ffd23a; }
+.qrow.locked, .qrow.done { opacity: .65; }
+.qrow.done b { color: var(--w-text); }
+.rtab small { color: var(--w-gold); font-weight: 700; }
 /* the raid history */
 .rlog { display: block; }
 .rlog b { display: block; }

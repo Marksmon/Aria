@@ -15,7 +15,7 @@ import { loadSave, writeSave, loadStorage, writeStorage, clearSave, saveCode, lo
 import { Inventory } from './inventory.js';
 import { Progress, JOBS, RATES, QUEST_RATE } from './progress.js';
 import { Quests, QUESTS, NPCS, FARES, NEXT, SERIES, giverOf } from './quests.js';
-import { Story, INTRO, route } from './story.js';
+import { Story, INTRO, STORY, route } from './story.js';
 import { Villagers } from './villagers.js';
 import { Tiles } from './tiles.js';
 import { Hotbar } from './hotbar.js';
@@ -1382,6 +1382,28 @@ const menus = new Menus(inv, prog, player, {
   raidGo: (id, diff, anywhere) => raidGo(id, diff, anywhere),
   // the Raids window: every raid, its guide and land, open to them (done once) or not, and its tide
   raidLog: () => raidLog,
+  // the Quests window: the story's step and chapters, and every quest by kind (job trials, series,
+  // side quests): under way, ready to hand in, on offer (or waiting on a level), and done
+  questBook: () => {
+    const s = story.step, chapters = [];
+    STORY.forEach((st, i) => { let c = chapters.at(-1); if (!c || c.ch !== st.ch) chapters.push(c = { ch: st.ch, n: 0, done: 0 }); c.n++; if (i < story.i) c.done++; });
+    const main = storyLive() && s ? { ch: s.ch, title: s.title, goal: s.goal + story.progress(), where: story.directions(world.id, prog) } : null;
+    const kind = (id) => (SERIES[id] || QUESTS[id].job ? 'job' : /\d+:/.test(QUESTS[id].title) ? 'series' : 'side');
+    const rows = [], seen = new Set();
+    const row = (id, state, npc = questGiver(id)) => {
+      if (seen.has(id) || !QUESTS[id]) return;
+      seen.add(id);
+      const q = QUESTS[id], n = NPCS[npc];
+      rows.push({ id, kind: kind(id), state, title: q.title, lv: q.lv || 0, progress: state === 'active' ? quests.progress(id, inv) : '', giver: n?.name || '', land: n ? ZONE_NAMES[n.map] : '' });
+    };
+    for (const id of Object.keys(quests.active)) row(id, quests.ready(id, inv) ? 'ready' : 'active');
+    for (const npc of Object.keys(NPCS)) {
+      const st = quests.status(npc, prog, inv);
+      if (st.id && ['offer', 'locked', 'job'].includes(st.state)) row(st.id, st.state, npc);
+    }
+    for (const id of quests.done) row(id, 'done');
+    return { main, chapters, rows, storyDone: story.done };
+  },
   raidList: () => Object.entries(RAIDS).map(([id, R]) => ({ id, R, guide: NPCS[R.npc].name, land: ZONE_NAMES[R.from], done: raidsDone.has(id), ...raidInfo(id) })),
   ferry(map) {
     const fare = FARES[map];
@@ -2620,7 +2642,7 @@ function frame() {
 
   const b = camBasis();
   // windows never pause the game, like Ragnarok
-  for (const w of ['items', 'equip', 'skills', 'status', 'raids', 'settings']) if (input.tapped(w) && started) menus.toggle(w);
+  for (const w of ['items', 'equip', 'skills', 'status', 'raids', 'journal', 'settings']) if (input.tapped(w) && started) menus.toggle(w);
   if (input.tapped('attack') && started) attackNow();
   if (input.tapped('close')) { if (bigmap.open) bigmap.close(); else menus.close(); }
   bigmap.update(dt);

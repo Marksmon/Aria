@@ -54,7 +54,13 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   - Every map keeps its monsters as the hero left them: spot, HP, count, respawn timers, the timers
     running on while away (`fieldAt`, saved). Bosses and MVPs keep their spot, wounds and guards
     (`bossAt`, `bossHp`). Drops stay on their map with their 45/90 s timer running (`groundLeft`).
+  - The map lives on while the hero is away: on return, each monster has wandered (random walk at
+    its stroll, `AWAY` in `mobs.js`: `wander`) and each boss has roamed spot to spot (`roamAway`)
+    for the time away (capped at 3 min), done at once on arrival.
   - A new map only needs its `SPAWNS` entry in `main.js`; all of the above comes with it.
+- **Quests window** (the Quests button under the hero's panel, `journal` in `menus.js`, `questBook`
+  in `main.js`): tabs Main (the story step and chapters), Job (trials), Series (quest chains, a
+  title with a number: "The Forge 2: ..."), Side (standalone quests and bounties).
 - **Bosses and MVPs** spawn at random spots and roam their whole map; each has a respawn timer
   (`mvpAt`, saved) that holds across map changes and restarts. One left alive keeps its spot
   when the hero leaves the map (`bossAt`, saved). Dropped items stay on their map too, their

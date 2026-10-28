@@ -61,6 +61,7 @@ const WINDOWS = {
   smith:  { title: '',           at: [0.50, 0.12], w: 368 },
   quest:  { title: 'Quest',      at: [0.50, 0.16], w: 368 },
   raids:  { title: 'Raids',      at: [0.50, 0.16], w: 368 },
+  journal: { title: 'Quests',    at: [0.50, 0.16], w: 345 },
   settings: { title: 'Settings', at: [0.50, 0.22], w: 253 },
 };
 // the smith window's three jobs: Holger's refining, Seyla's slots, pressing in a card
@@ -192,6 +193,33 @@ export class Menus {
     }).join('');
     const tabs = `<div class="rtabs"><button class="rtab on">Raids</button><button class="rtab" data-act="raidtab" data-id="log">History</button></div>`;
     return `${tabs}<div class="rnote">Do a raid once at its guide, and you can set out on it from anywhere; you come back to where you were. Only a clear starts the cooldown; a failed run pays nothing.</div><div class="rlist">${rows}</div>`;
+  }
+
+  // the Quests window: tabs for the main story, the job trials, the quest series and the side quests.
+  // A quest under way (or the story's step) opens its Quest View
+  journal() {
+    const book = this.hooks.questBook?.() || { rows: [], chapters: [] }, tab = this.questTab || 'main';
+    const TABS = { main: 'Main', job: 'Job', series: 'Series', side: 'Side' };
+    const count = (k) => (k === 'main' ? (book.main ? 1 : 0) : book.rows.filter((r) => r.kind === k && (r.state === 'active' || r.state === 'ready')).length);
+    const tabs = `<div class="rtabs">${Object.entries(TABS).map(([k, name]) => `<button class="rtab${tab === k ? ' on' : ''}" data-act="questtab" data-id="${k}">${name}${count(k) ? ` <small>${count(k)}</small>` : ''}</button>`).join('')}</div>`;
+    if (tab === 'main') {
+      const m = book.main;
+      const now = m ? `<div class="ritem qrow ready" data-act="qopen" data-id="story"><div><small>${esc(m.ch)}</small><b>★ ${esc(m.title)}</b><span>${esc(m.goal)}</span>${m.where ? `<em>➜ ${esc(m.where)}</em>` : ''}</div></div>`
+        : `<div class="rnote">${book.storyDone ? 'The story is told, for now.' : 'The story begins soon.'}</div>`;
+      const chs = book.chapters.map((c) => `<div class="ritem qrow ${c.done === c.n ? 'done' : ''}"><div><b>${esc(c.ch)}</b><span>${c.done === c.n ? 'Done' : c.done ? `${c.done}/${c.n} steps` : 'Ahead'}</span></div></div>`).join('');
+      return `${tabs}<div class="rsub">Now</div><div class="rlist">${now}</div><div class="rsub">Chapters</div><div class="rlist">${chs}</div>`;
+    }
+    const ORDER = { ready: 0, active: 1, job: 2, offer: 3, locked: 4, done: 5 };
+    const rows = book.rows.filter((r) => r.kind === tab).sort((a, b) => ORDER[a.state] - ORDER[b.state] || a.lv - b.lv);
+    const STATE = { ready: 'Ready: hand it in', active: 'Under way', job: 'Trial done: talk to them for the job change', offer: 'On offer', locked: 'Needs Base Lv', done: 'Done' };
+    const list = rows.map((r) => {
+      const open = r.state === 'active' || r.state === 'ready';
+      const what = r.state === 'locked' ? `${STATE.locked} ${r.lv}` : STATE[r.state];
+      return `<div class="ritem qrow ${r.state}"${open ? ` data-act="qopen" data-id="${r.id}"` : ''}><div><b>${esc(r.title)}</b>
+        <span><i class="qst">${esc(what)}</i>${r.progress ? ` · ${esc(r.progress)}` : ''}</span><small>${esc(r.giver)}${r.land ? `, ${esc(r.land)}` : ''}${r.lv ? ` · Lv ${r.lv}` : ''}</small></div></div>`;
+    }).join('');
+    const none = { job: 'No job trial yet: a trainer offers one once you are ready for a job.', series: 'No quest series found yet.', side: 'No side quests found yet.' }[tab];
+    return `${tabs}<div class="rlist">${list || `<div class="rnote">${none}</div>`}</div>`;
   }
 
   // the raid history: every run (newest first), cleared or failed and why, and what it paid
@@ -1022,6 +1050,8 @@ export class Menus {
     if (act === 'ferry') this.hooks.ferry?.(t.dataset.id);
     if (act === 'raidgo') this.hooks.raidGo?.(NPCS[this.npc].raid, t.dataset.id, this.anywhere);
     if (act === 'raidopen') { const R = RAIDS[t.dataset.id]; this.close('raids'); this.talkTo(R.npc); this.ferrying = true; this.anywhere = true; this.render('talk'); }
+    if (act === 'questtab') { this.questTab = t.dataset.id; this.render('journal'); }
+    if (act === 'qopen') { this.openQuest(t.dataset.id); }
     if (act === 'raidtab') { this.raidTab = t.dataset.id; this.render('raids'); }
     if (act === 'raidback') { this.close('talk'); this.show('raids'); } // back to the Raids window it came from
     if (act === 'raidpick') { this.raidPick = t.dataset.id; this.render('talk'); }

@@ -242,6 +242,10 @@ from where it gave up, and only a monster that died comes back where it first ap
 monsters are where they were, as many, as hurt as you left them; the ones you killed come back
 when their respawn time is up, and that time runs on while you are away.
 
+**The map lives on while you are away.** Come back to a map and its monsters have wandered about
+in the meantime, as far as they would have gone in that time, and its bosses have roamed on across
+it; after a long absence they are simply somewhere else.
+
 These rules hold on every map, and are the defaults for any new one.
 
 **Walking speed** suits Aria's small maps: the hero takes 300 ms a tile, and monsters their own
@@ -1019,6 +1023,14 @@ headgear (`dress` in `src/quests.js`). No one's look repeats except a role every
 Keepers share theirs, as do the smiths (Holger, Seyla) and the carters and gate-wardens (Ivar,
 Runa, Tove) and Veidheim's sentries; Galdrheim's Orm and Kari dress like Steinborg's Gunnar and Hild.
 Veidheim's archers wear a longbow and a quiver on their backs (`src/bow.js`), painted onto their frames. People with tales to tell have a **Tell me more** button.
+
+**Quests window** (the Quests button under your hero's panel): every quest in four tabs. **Main**
+is the story: the step you are on (tap it for its Quest View) and each chapter, done, under way or
+ahead. **Job** holds the job trials, **Series** the quest chains people give one after another
+(The Valley Watch 1, 2, 3...), and **Side** the quests that stand alone and the bounties. Each tab
+lists what is ready to hand in, what is under way (with your progress), what is on offer and from
+whom and where, what waits on a level, and what you have done; a tab's number is how many are
+under way. Tap a quest under way for its Quest View.
 
 **Quest list.** Tap a quest under the clock (or the story step) for its **Quest View**: who gave
 it, the goal, your progress, the reward and where to go. **Go there** walks you to it by itself,

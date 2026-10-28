@@ -217,6 +217,12 @@ const BOUND = { kind: 'leap', name: 'Bound', mult: 1.0, r: 1.4 };
 // one spot: it wanders on from where it gave up (its home moves there), and only a dead one comes
 // back at the spot it first appeared (spawn). Bosses roam their whole map (roam, BRAIN)
 const FOLLOW = { lose: 2.2 };
+// AWAY (every map, the default for new ones): while the hero is on another map, its monsters live on.
+// Coming back, each one has wandered as far as it would have in that time (stroll: its wandering pace
+// against its walk; walking: the share of the time it walks, not rests; cap: seconds that count, so
+// after a long absence it is simply somewhere else nearby), and each boss has roamed spot to spot
+// across the map. Done in a moment on arrival (wander, roamAway), not frame by frame
+const AWAY = { stroll: 0.6, walking: 0.5, cap: 180 };
 const RESPAWN = 60;
 // a wounded boss or MVP heals 5% of its HP a minute while it isn't fighting you, on its map or not;
 // what it has left is kept when you leave (bossHp, saved), so a fight can be picked up again
@@ -1143,6 +1149,43 @@ export class MobManager {
     this.fieldAt[this.mapId] = { sig, at: Date.now(), mobs: [] }; // (filled in when you leave: fieldSnapshot)
   }
 
+  // the map lived on while you were away (AWAY): a monster wandered about, a few paces at a time
+  // at its stroll, resting now and then, from wherever it was; it is home where it ended up
+  wander(m, secs) {
+    const w = this.world;
+    let budget = Math.min(secs, AWAY.cap) * m.def.speed * AWAY.stroll * AWAY.walking;
+    for (let i = 0; i < 60 && budget > 0.5; i++) {
+      const a = Math.random() * Math.PI * 2, r = Math.min(budget, 1 + Math.random() * 2.5);
+      const x = m.x + Math.cos(a) * r, z = m.z + Math.sin(a) * r;
+      budget -= r;
+      if (!this.openAt(x, z, m.def.r)) continue; // (a rock or the water: it turned back)
+      m.x = x; m.z = z;
+    }
+    m.home = { x: m.x, z: m.z };
+    m.target = null;
+  }
+  // a boss roamed: from spot to spot across its map (as roam does), resting a little at each
+  roamAway(at, def, secs) {
+    let { x, z } = at, budget = Math.min(secs, AWAY.cap) * def.speed * AWAY.stroll * AWAY.walking;
+    for (let i = 0; i < 12 && budget > 0.5; i++) {
+      const s = this.findSpot(Math.random);
+      if (!s) break;
+      const d = Math.hypot(s.x - x, s.z - z);
+      if (d <= budget) { x = s.x; z = s.z; budget -= d; continue; }
+      const k = budget / d, px = x + (s.x - x) * k, pz = z + (s.z - z) * k; // partway there when you came back
+      if (this.openAt(px, pz, def.r)) { x = px; z = pz; }
+      break;
+    }
+    return { x, z };
+  }
+  // open ground a monster of radius r may stand on (not in a rock, the water, safe ground or a portal)
+  openAt(x, z, r) {
+    const w = this.world;
+    if (!w.walkable(x, z) || w.isSafe(x, z) || nearPortal(w, x, z, r)) return false;
+    const [rx, rz] = w.resolve(x, z, r);
+    return Math.hypot(rx - x, rz - z) < 0.01;
+  }
+
   // this map's own monsters as they stand (not bosses, guards or the ones a quest or an event brings)
   fieldSnapshot() {
     const f = this.mapId && this.fieldAt[this.mapId];
@@ -1167,7 +1210,7 @@ export class MobManager {
       const night = m.def.night || m.nightOnly;
       let left = dead;
       if (left !== null) left -= away * (this.hunted?.has(type) ? 2 : 1);
-      if (left === null) { m.x = x; m.z = z; m.hp = Math.min(m.def.hp, Math.max(1, hp)); }
+      if (left === null) { m.x = x; m.z = z; m.hp = Math.min(m.def.hp, Math.max(1, hp)); this.wander(m, away); }
       if ((left !== null && left > 0) || (night && !this.night)) { // still dead (or a night monster by day)
         m.alive = false;
         m.sprite.visible = m.shadow.visible = false;
@@ -1181,7 +1224,7 @@ export class MobManager {
   bossSnapshot() {
     for (const m of this.list) {
       if (!m.alive || !(m.def.mvp || m.def.boss) || m.temp) continue; // (a raid's boss is not kept)
-      this.bossAt[m.type] = { map: m.map, x: +m.x.toFixed(2), z: +m.z.toFixed(2) }; // it waits there till you come back
+      this.bossAt[m.type] = { map: m.map, x: +m.x.toFixed(2), z: +m.z.toFixed(2), at: Date.now() }; // it waits there till you come back
       const guards = this.guardsOf(m).filter((g) => !g.def.decoy).map((g) => [g.type, Math.ceil(g.hp)]);
       const cd = m.calls && !guards.length ? Math.max(0, summonCd(m.def) - (m.t - m.guardsGoneT)) : 0;
       if (m.hp < m.def.hp || m.calls || guards.length) this.bossHp[m.type] = { hp: Math.ceil(m.hp), max: m.def.hp, at: Date.now(), calls: m.calls, guards, cd };
@@ -1310,7 +1353,9 @@ export class MobManager {
     for (const type of this.bosses) {
       if (Date.now() < (this.mvpAt[type] || 0) || this.list.some((m) => m.type === type)) continue;
       const at = this.bossAt[type], w0 = this.world; // where you left it, if it still stands there
-      const s = at && at.map === w0.id && w0.walkable(at.x, at.z) ? at : this.findSpot(Math.random, player);
+      // (it roamed on while you were away: AWAY; one met before its time was kept stays put)
+      const left = at && at.map === w0.id && w0.walkable(at.x, at.z) ? (at.at ? this.roamAway(at, MOB_DEFS[type], (Date.now() - at.at) / 1000) : at) : null;
+      const s = left || this.findSpot(Math.random, player);
       if (!s) continue;
       const m = this.add(type, s.x, s.z);
       m.map = w0.id; // (the map it walks: setMap snapshots it after the world has moved on)
