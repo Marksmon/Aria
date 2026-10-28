@@ -406,7 +406,7 @@ export class Menus {
       if (!s) return '<div class="rnote">The story is over, for now.</div>';
       this.wins.quest.querySelector('.rw-title').textContent = 'Story';
       const hint = typeof s.hint === 'function' ? s.hint(this.prog, this.hooks.storyFlags?.()) : s.hint; // the advice, wherever you are
-      return `<div class="qview story"><small>${esc(s.ch)}</small><b>★ ${esc(s.title)}</b><p>${esc(s.goal)}${esc(this.hooks.storyProgress?.() || '')}</p>${hint ? `<div class="rnote">${esc(hint)}</div>` : ''}${where}<div class="rnote">The main story can't be given up.</div>${go('Go there')}</div>`;
+      return `<div class="qview story"><small>${esc(s.ch)}</small><b>★ ${esc(s.title)}</b><p>${esc(s.goal)}${esc(this.hooks.storyProgress?.() || '')}</p>${hint ? `<div class="rnote">${esc(hint)}</div>` : ''}${where}<div class="rnote">The main story can't be given up.</div>${this.hooks.hasGuide?.() ? '<div class="btnrow"><button class="rbtn soft" data-act="guideme">Guide me through it</button></div>' : ''}${go('Go there')}</div>`;
     }
     const q = QUESTS[id], st = this.quests, active = id in st.active, ready = active && st.ready(id, inv), giver = NPCS[giverOf(id)];
     this.wins.quest.querySelector('.rw-title').textContent = q.job ? 'Job Quest' : 'Quest';
@@ -564,7 +564,7 @@ export class Menus {
     const inv = this.inv, tabs = { use: 'Usables', equip: 'Equips', misc: 'Miscs' };
     const sel = this.selected && inv.bag.count(this.selected) ? ITEMS[this.selected] : null;
     let act = '';
-    if (sel?.usable) act = '<button class="rbtn" data-act="use">Use</button>';
+    if (sel?.usable) act = `<button class="rbtn" data-act="use">Use</button>${this.hotbar && !this.hotbar.has('item', this.selected) ? '<button class="rbtn soft" data-act="tohotbar">Add to hotbar</button>' : ''}`;
     if (sel?.type === 'equip') act = canWear(this.selected, this.prog.wearJobs) ? '<button class="rbtn" data-act="equip">Equip</button>' : `<span class="rtag">${esc(jobLine(sel))}</span>`;
     if (sel?.card) act = '<button class="rbtn" data-act="insertcard">Insert</button>';
     const up = sel?.type === 'equip' ? upgradeLine(sel) : '';
@@ -1098,6 +1098,7 @@ export class Menus {
     if (act === 'keepsave') { this.hooks.keeperSave?.(this.npc); this.render('talk'); }
     if (act === 'keepgo') this.hooks.keeperGo?.(t.dataset.id);
     if (act === 'qgo') this.hooks.questGo?.(this.questId);
+    if (act === 'guideme') { this.close('quest'); this.hooks.guideMe?.(); }
     if (act === 'qquit') {
       if (!this.quitSure) { this.quitSure = true; this.render(id); return; } // asks twice
       this.quitSure = false;
@@ -1148,6 +1149,7 @@ export class Menus {
       if (!inv.moveStack(from, to, c.id, c.n)) this.message(to === inv.bag ? 'Bag is full' : 'Chest is full');
       this.chestSel = null; this.render(id);
     }
+    if (act === 'tohotbar' && this.selected) { this.hotbar?.place({ kind: 'item', id: this.selected }); this.render('items'); }
     if (act === 'equip' && inv.equip(this.selected)) { this.selected = null; this.hooks.equipped?.(); }
     if (act === 'eqpick') {
       const key = t.dataset.id, now = performance.now();

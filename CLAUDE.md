@@ -77,6 +77,11 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
 - **The first-job pick comes at Trainee Job 9** (the owner's call: little grinding): a Trainee who reaches
   `CALL_JOB` anywhere after the Seeress is called home to Eldrun's 'paths' step at once (`Story.callHome`,
   the rest of Chapter 1 is skipped); there is no grind step before it. Keep Chapter 1 short.
+- **The Prologue's lessons are guided** (the owner's call: a stat point is costly to take back): `GUIDES` in
+  `main.js` (stats, equip, hotbar, the Gel Thief), drawn by `src/guide.js` (a ring round what to tap, a
+  bubble saying what it is, a hand for a drag). The stats guide explains every stat and which path
+  wants it before a point is placed. During the Prologue (and for a story monster) a gold arrow points to
+  the goal (`tickGoalArrow`). A new lesson for a new step only needs its `GUIDES` entry.
 - **The Keepers' storage opens with a first job** (the owner's call): a Trainee can't open it (`Menus.show`).
 - **Quests window** (the Quests button under the hero's panel, `journal` in `menus.js`, `questBook`
   in `main.js`): tabs Main (the story step and chapters), Job (trials), Series (quest chains, a
