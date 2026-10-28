@@ -54,7 +54,9 @@ Classic MMORPG style: no on-screen controller. Landscape.
 
 The hotbar starts empty. Windows are small, can be dragged anywhere by their title bar, and the
 game keeps running while they are open. A monster's name shows over it when the mouse is on it,
-and in gold over the one you are fighting. Rare drops glow gold on the ground.
+and in gold over the one you are fighting. Rare drops glow gold on the ground. A drop lies there
+45 seconds (a rare one 90); leave the map and it is still there when you come back, though its time
+runs on while you are away.
 
 ## Maps
 
@@ -225,7 +227,8 @@ playing dead.
   out of the fight, so stepping away briefly doesn't reset them.
 
 **Where bosses are.** Mini-bosses and MVPs appear at a random spot on their map, away from you and
-the portals, and roam the whole map. A boss you leave behind keeps its wounds and its guards (and
+the portals, and roam the whole map. Struck on its way somewhere, a boss turns and fights there. A
+boss you leave behind stays where it stood, and keeps its wounds and its guards (and
 how often it has called them): come back, or wake up at your save point after fainting, and the
 fight is where you left it, the boss a little healed (5% of its HP a minute while it isn't
 fighting you). This holds over a restart too. No monster ever steps onto a portal.

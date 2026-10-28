@@ -787,6 +787,10 @@ class Mob {
     const available = p.state !== 'down' && p.state !== 'feign' && !this.mgr.world.isSafe(p.x, p.z);
     const aggro = this.provokeT > 0 ? 14 : d.aggro;
     const hostile = !this.lulled && (!d.passive || this.angry > 0 || this.provokeT > 0); // a passive monster only fights back; a lulled one (the vigil's song) not at all
+    // a roaming boss's home is where it was headed; once a fight starts, its home is where the fight
+    // found it (else, struck on the way to a far spot, it turned straight back there and never fought)
+    if (d.ai === 'boss' && this.state === 'chase' && this.was !== 'chase') this.home = { x: this.x, z: this.z };
+    this.was = this.state;
     const homeD = Math.hypot(this.x - this.home.x, this.z - this.home.z);
     let moving = false;
 
@@ -1060,6 +1064,7 @@ export class MobManager {
     this.bosses = []; // this map's bosses and MVPs (types): each appears when its time comes
     this.mvpAt = {};  // per boss and MVP: when it may next appear (ms since 1970; the game saves it)
     this.bossHp = {}; // per boss and MVP met in a fight: { hp, at, calls, guards: [[type, hp]], cd } (saved)
+    this.bossAt = {}; // per boss and MVP alive on a map you left: where it stood, { map, x, z } (saved)
     this.cam = { fx: 0, fz: -1, rx: 1, rz: 0 }; // camera basis, set by the game each frame
     const sg = new THREE.PlaneGeometry(1, 0.6);
     sg.rotateX(-Math.PI / 2);
@@ -1112,6 +1117,7 @@ export class MobManager {
   bossSnapshot() {
     for (const m of this.list) {
       if (!m.alive || !(m.def.mvp || m.def.boss) || m.temp) continue; // (a raid's boss is not kept)
+      this.bossAt[m.type] = { map: m.map, x: +m.x.toFixed(2), z: +m.z.toFixed(2) }; // it waits there till you come back
       const guards = this.guardsOf(m).filter((g) => !g.def.decoy).map((g) => [g.type, Math.ceil(g.hp)]);
       const cd = m.calls && !guards.length ? Math.max(0, summonCd(m.def) - (m.t - m.guardsGoneT)) : 0;
       if (m.hp < m.def.hp || m.calls || guards.length) this.bossHp[m.type] = { hp: Math.ceil(m.hp), max: m.def.hp, at: Date.now(), calls: m.calls, guards, cd };
@@ -1213,6 +1219,7 @@ export class MobManager {
     if (m.leader?.alive && !this.guardsOf(m.leader).some((o) => o !== m)) m.leader.guardsGoneT = m.leader.t;
     if (m.def.noRespawn || m.temp) { this.remove(m); return; }
     if (m.def.mvp || m.def.boss) { // gone until its respawn time comes round, whatever map you go to
+      delete this.bossAt[m.type]; // (and it comes back somewhere new)
       this.mvpAt[m.type] = Date.now() + m.def.respawn * 1000;
       delete this.bossHp[m.type];
       this.emit(m.def.mvp ? 'mvp' : 'bossDown', m);
@@ -1238,9 +1245,11 @@ export class MobManager {
     // a boss or MVP appears once its time has come, somewhere on the map away from you
     for (const type of this.bosses) {
       if (Date.now() < (this.mvpAt[type] || 0) || this.list.some((m) => m.type === type)) continue;
-      const s = this.findSpot(Math.random, player);
+      const at = this.bossAt[type], w0 = this.world; // where you left it, if it still stands there
+      const s = at && at.map === w0.id && w0.walkable(at.x, at.z) ? at : this.findSpot(Math.random, player);
       if (!s) continue;
       const m = this.add(type, s.x, s.z);
+      m.map = w0.id; // (the map it walks: setMap snapshots it after the world has moved on)
       const w = this.bossHp[type]; // as you left it: its wounds (less what it healed since) and its guards
       if (w) {
         // (its wounds as a share of its HP, should that have changed; an MVP left wounded before MVPs

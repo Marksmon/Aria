@@ -89,6 +89,7 @@ const save = loadSave();
 let lookBefore = null; // the look kept, while one is being tried on
 mobs.mvpAt = typeof save?.mvpAt === 'number' ? { jarl: save.mvpAt } : save?.mvpAt || {}; // older saves timed the Fire Giant alone
 mobs.bossHp = save?.bossHp || {};
+mobs.bossAt = save?.bossAt || {};
 const prog = new Progress();
 prog.load(save?.prog);
 // the hero's body follows the job and the look's body (male or female), painted in code (sprites.js designSet)
@@ -312,14 +313,17 @@ const visited = new Set(save?.visited || ['camp']); // lands walked, for the Fer
 // Keepers whose ledger you have signed (the camp's is signed from the start), and where you saved
 const keepers = new Set(save?.keepers || ['keeper_camp']);
 let savePoint = save?.savePoint || null; // { keeper, map, x, z }; none = the camp fire
+const groundLeft = {}; // per map: the drops left lying there (fx.stashPickups); their time runs on
 function enterMap(id, from, at) {
+  if (world.id) groundLeft[world.id] = fx.stashPickups();
   const arrive = world.go(id, from);
   visited.add(id);
   const pos = at || arrive;
   mobs.setMap(SPAWNS[world.id], 11 + world.id.length);
   villagers.show(world.id);
   player.tiles.rebuild();
-  fx.clearPickups();
+  fx.restorePickups(groundLeft[world.id]);
+  delete groundLeft[world.id];
   player.stop();
   player.setPos(pos.x, pos.z);
   allies.carry(player); // the beasts come along
@@ -2469,7 +2473,7 @@ let resetting = false;
 function persist() {
   if (!started || resetting) return;
   const isle = raidOf(world.id), back = isle && raid?.back, at = back || (isle ? boatSpot(isle) : player); // a run is never saved: back on the shore (or where they set out from)
-  writeSave({ story: story.toJSON(), look: player.look, visited: [...visited], keepers: [...keepers], savePoint, raidAt, raidsDone: [...raidsDone], map: back ? back.map : isle ? isle.from : world.id, mvpAt: mobs.mvpAt, bossHp: mobs.bossSnapshot(), x: at.x, z: at.z, yaw: cam.yaw, dist: cam.dist, hp: player.hp, sp: player.sp, inv: inv.toJSON(), prog: prog.toJSON(), quests: quests.toJSON(), hotbar: hotbar.toJSON(), time: dayNight.t });
+  writeSave({ story: story.toJSON(), look: player.look, visited: [...visited], keepers: [...keepers], savePoint, raidAt, raidsDone: [...raidsDone], map: back ? back.map : isle ? isle.from : world.id, mvpAt: mobs.mvpAt, bossHp: mobs.bossSnapshot(), bossAt: mobs.bossAt, x: at.x, z: at.z, yaw: cam.yaw, dist: cam.dist, hp: player.hp, sp: player.sp, inv: inv.toJSON(), prog: prog.toJSON(), quests: quests.toJSON(), hotbar: hotbar.toJSON(), time: dayNight.t });
   writeStorage(inv.chest.toJSON());
 }
 

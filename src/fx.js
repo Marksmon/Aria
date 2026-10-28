@@ -215,7 +215,21 @@ export class FX {
     this.pickups.splice(i, 1);
   }
 
-  // leaving a map: whatever lay on the ground is gone
+  // leaving a map: what lies on the ground stays there, and its time runs on while you are away
+  // (stashPickups gives it back to keep, restorePickups lays it down again on your return)
+  stashPickups() {
+    const at = Date.now();
+    const kept = this.pickups.map((p) => ({ item: p.item, count: p.count, tx: p.tx, tz: p.tz, t: Math.max(p.t, 0.35), life: p.life, tex: p.s.material.map, rare: !!p.glow, at }));
+    this.clearPickups();
+    return kept;
+  }
+  restorePickups(kept = []) {
+    const now = Date.now();
+    for (const k of kept) {
+      const t = k.t + (now - k.at) / 1000;
+      if (t < k.life) this.place({ ...k, x: k.tx, z: k.tz, t });
+    }
+  }
   clearPickups() {
     for (const p of this.pickups) { this.release(p.s); if (p.glow) this.release(p.glow); }
     this.pickups = [];
@@ -238,6 +252,14 @@ export class FX {
 
   // item: id, tex: texture, rare: it glows on the ground. Pickups stay until tapped (see take)
   drop(x, z, item, count, tex, rare = false) {
+    const a = Math.random() * Math.PI * 2, r = 0.3 + Math.random() * 0.6;
+    // it lands where you can reach it: never under a tree or a rock (landAt, set by the game)
+    const [tx, tz] = this.landAt ? this.landAt(x + Math.cos(a) * r, z + Math.sin(a) * r) : [x + Math.cos(a) * r, z + Math.sin(a) * r];
+    if (rare) this.sparkle(x, this.world.heightAt(x, z) + 0.4, z, '#ffd23a', 6); // a few sparkles as it lands
+    return this.place({ item, count, x, z, tx, tz, tex, rare, t: 0, life: rare ? 90 : 45 }); // (rare finds wait longer)
+  }
+  // a pickup on the ground: it pops from x,z over to tx,tz, and is gone when t reaches life
+  place({ item, count, x, z, tx, tz, tex, rare, t, life }) {
     const s = this.sprite(tex, { bottom: true, renderOrder: 2 });
     s.material.depthTest = true;
     s.material.alphaTest = 0.5;
@@ -245,19 +267,11 @@ export class FX {
     s.material.needsUpdate = true;
     const size = 0.55;
     s.scale.set(size, size, 1);
-    const a = Math.random() * Math.PI * 2, r = 0.3 + Math.random() * 0.6;
-    // it lands where you can reach it: never under a tree or a rock (landAt, set by the game)
-    const [tx, tz] = this.landAt ? this.landAt(x + Math.cos(a) * r, z + Math.sin(a) * r) : [x + Math.cos(a) * r, z + Math.sin(a) * r];
-    const p = {
-      s, item, count, x, z, tx, tz,
-      t: 0, life: 45, size,
-    };
-    if (rare) { // a soft halo behind it, and a few sparkles as it lands
+    const p = { s, item, count, x, z, tx, tz, t, life, size };
+    if (rare) { // a soft halo behind it
       p.glow = this.sprite(this.glowTex(), { bottom: true, renderOrder: 1 });
       p.glow.material.blending = THREE.AdditiveBlending;
       p.glow.material.needsUpdate = true;
-      this.sparkle(x, this.world.heightAt(x, z) + 0.4, z, '#ffd23a', 6);
-      p.life = 90; // rare finds wait longer
     }
     this.pickups.push(p);
     return p;
