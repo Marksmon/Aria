@@ -368,6 +368,9 @@ crystal earrings and a band round the back of the head; QKN +4, FNS +4, HIT +10,
 | Kobold Warlord Card | Head or face card | DEF +7, Max HP +25%, END +7, POW +4; **Earthshaker:** blows and spells stun a monster 8% of the time (Kobold Camp, 1%) |
 | Goblin Warlord Card | Head or face card | ATK +60, QKN +7, POW +4, blows up close (not arrows) +15%; **Frenzy:** 10% of them land twice (Goblin Lair, 1%) |
 
+- **The Raids window** (the Raids button): every raid, its boss, levels, guide and whether it is
+  ready. Once you have done a raid at its guide (win or lose), you can set out on it from anywhere
+  through this window, and you come back to where you were when it ends.
 - **Cooldowns:** each raid has one 3-hour cooldown for all its difficulties, from setting out; the
   three are separate.
 - **The Tutorial crossing** (Chapter 5): while the story waits on the raid, the Boatman also offers

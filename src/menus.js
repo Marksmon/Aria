@@ -60,6 +60,7 @@ const WINDOWS = {
   look:   { title: 'Your Look',  at: [0.50, 0.16], w: 299 },
   smith:  { title: '',           at: [0.50, 0.12], w: 368 },
   quest:  { title: 'Quest',      at: [0.50, 0.16], w: 368 },
+  raids:  { title: 'Raids',      at: [0.50, 0.16], w: 368 },
   settings: { title: 'Settings', at: [0.50, 0.22], w: 253 },
 };
 // the smith window's three jobs: Holger's refining, Seyla's slots, pressing in a card
@@ -173,7 +174,22 @@ export class Menus {
     this.loreAt = 0;       // how far into their tales (NPCS lore) they are
     this.quizNote = null;  // what a trainer said about the last answer
     this.retraining = false; // Liv's retraining choices are open
+    this.anywhere = false;   // the raid panel opened from the Raids window, not at the guide
     this.show('talk');
+  }
+
+  // every raid: its boss, guide and land, and whether it can be set out on from here (done once at
+  // its guide). Open shows its usual panel (difficulties, loot, Set out)
+  raids() {
+    const rows = (this.hooks.raidList?.() || []).map(({ id, R, guide, land, done, wait }) => {
+      const base = MOB_DEFS[R.boss[0]], pic = this.hooks.mobPortrait?.(base.art);
+      const lvs = Object.values(R.difficulties).filter((d) => !d.tutorial).map((d) => d.lv);
+      const state = !done ? `🔒 Raid once with ${esc(guide)} in ${esc(land)} to set out from anywhere` : wait ? `${esc(R.words.wait)}: back in ${waitText(wait)}` : 'Ready';
+      return `<div class="ritem raidrow ${done ? '' : 'locked'}">${pic ? `<img class="bosspic sm" src="${pic}" alt="">` : icon(R.card?.[0] || R.boss[0], 'sm')}
+        <div><b>${esc(R.name)}</b><small>${esc(base.name)} · Base ${lvs.join(' / ')} · ${esc(guide)}, ${esc(land)}</small><small class="${done && !wait ? 'ok' : ''}">${state}</small></div>
+        <button class="rbtn" data-act="raidopen" data-id="${id}" ${done ? '' : 'disabled'}>Open</button></div>`;
+    }).join('');
+    return `<div class="rnote">Do a raid once at its guide, and you can set out on it from anywhere; you come back to where you were.</div><div class="rlist">${rows}</div>`;
   }
 
   // the Boatman's crossings: the difficulties down the left (each needs its Base Level), and the one
@@ -202,7 +218,7 @@ export class Menus {
     const card = R.card ? `<span class="loot rare">${icon(R.card[0], 'xs')}${esc(ITEMS[R.card[0]].name)} <i>${Math.round(R.card[1] * 100)}%</i></span>` : '';
     const why = low(D) ? `Needs Base ${D.lv}: you are Base ${p.baseLv}.` : info.wait && !D.tutorial ? `${R.words.wait}: back in ${waitText(info.wait)}.` : '';
     const note = info.story && D.tutorial ? 'First time out? The Tutorial crossing costs no tide, and I pay you whether you beat him or not.'
-      : `${R.words.pitch} ${R.words.cooldown}`;
+      : `${R.words.pitch} ${R.words.cooldown}${this.anywhere ? ' From here, you come back to where you are.' : ''}`;
     const tw = this.wins.talk;
     tw.classList.add('raidwin');
     tw.querySelector('.rw-title').textContent = `${n.name} · ${R.name}`;
@@ -983,7 +999,8 @@ export class Menus {
     if (act === 'chestwin') { this.close('talk'); this.show('chest'); }
     if (act === 'lore') { this.loreAt++; this.render('talk'); }
     if (act === 'ferry') this.hooks.ferry?.(t.dataset.id);
-    if (act === 'raidgo') this.hooks.raidGo?.(NPCS[this.npc].raid, t.dataset.id);
+    if (act === 'raidgo') this.hooks.raidGo?.(NPCS[this.npc].raid, t.dataset.id, this.anywhere);
+    if (act === 'raidopen') { const R = RAIDS[t.dataset.id]; this.close('raids'); this.talkTo(R.npc); this.ferrying = true; this.anywhere = true; this.render('talk'); }
     if (act === 'raidpick') { this.raidPick = t.dataset.id; this.render('talk'); }
     if (act === 'shoptab') { this.shopTab = t.dataset.id; this.sellSel = null; this.render(id); }
     if (act === 'buy') {

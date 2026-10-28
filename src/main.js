@@ -1030,7 +1030,11 @@ function tickVigil(dt) {
 // when each raid opens again (ms since 1970): { bloop, kobold, goblin }. A save from when Bloop
 // Island was the only raid kept one number
 let raidAt = typeof save?.raidAt === 'number' ? { bloop: save.raidAt } : { ...(save?.raidAt || {}) };
-let raid = null; // { id, diff, left, wave, phase: land | fight | rest, restT, list, boss, exp: [base, job], arrived, shown }
+let raid = null; // { id, diff, left, wave, phase: land | fight | rest, restT, list, boss, exp: [base, job], arrived, shown, back }
+// the raids this hero has done once at their guide: from then on they can set out from anywhere (the
+// Raids window), and come back to where they were (raid.back). A hero who set out on one before
+// (raidAt), or took Bloop Island's story crossing, has it open already
+const raidsDone = new Set([...(save?.raidsDone || []), ...Object.keys(raidAt), ...(save?.story?.flags?.bloopisle ? ['bloop'] : [])]);
 const raidBar = document.getElementById('raidbar'), bossBar = document.getElementById('bossbar');
 raidBar.querySelector('.rb-leave').addEventListener('click', () => { if (raid) endRaid(false, RAIDS[raid.id].words.leave); });
 const raidOf = (map) => Object.entries(RAIDS).find(([, R]) => R.map === map)?.[1] || null;
@@ -1059,12 +1063,15 @@ function mobPortrait(art) {
 function raidInfo(id) {
   return { wait: Math.max(0, (raidAt[id] || 0) - Date.now()), story: storyRaid(id) };
 }
-function raidGo(id, diff) {
+function raidGo(id, diff, anywhere = false) {
   const R = RAIDS[id], D = R.difficulties[diff], info = raidInfo(id);
   if (raid || warping || !D || (D.tutorial ? !info.story : info.wait)) return;
+  if (anywhere && !raidsDone.has(id)) { menus.message(`Raid once with ${NPCS[R.npc].name} in ${ZONE_NAMES[R.from]} first.`); return; }
+  if (anywhere && (raidOf(world.id) || defense)) { menus.message('Not from here.'); return; }
   if (!D.tutorial && prog.baseLv < D.lv) { menus.message(`${D.name} needs Base Level ${D.lv}.`); return; } // (each difficulty needs its level)
   if (!D.tutorial) raidAt[id] = Date.now() + R.cooldown; // its cooldown, from going in
-  raid = { id, diff, left: R.secs, wave: -1, phase: 'land', restT: 2.5, list: [], boss: null, exp: [0, 0], arrived: false, shown: 1 };
+  raid = { id, diff, left: R.secs, wave: -1, phase: 'land', restT: 2.5, list: [], boss: null, exp: [0, 0], arrived: false, shown: 1,
+    back: anywhere ? { map: world.id, x: player.x, z: player.z } : null }; // (set out from anywhere: back there after)
   menus.close('talk');
   warp(R.map, null, R.landing);
 }
@@ -1170,6 +1177,7 @@ function endRaid(win, why, stay = false) {
   const R = RAIDS[raid.id], D = R.difficulties[raid.diff], [b, j] = raid.exp, k = win ? 1.5 : 1, run = raid;
   for (const m of [...mobs.list]) if (m.def.raidLv) mobs.remove(m);
   raid = null;
+  raidsDone.add(run.id); // done once: the Raids window may send them from anywhere now
   // a clear pays the reward; so does the story's Tutorial run, win or lose. Either moves the story on
   if (win || D.tutorial) raidReward(run.id, run.diff);
   if ((win || D.tutorial) && storyRaid(run.id)) {
@@ -1182,7 +1190,7 @@ function endRaid(win, why, stay = false) {
     menus.message(`Raid EXP: +${Math.round(b * k).toLocaleString()} Base, +${Math.round(j * k).toLocaleString()} Job${win ? ' (x1.5 for the clear)' : ''}`);
     gainExp(Math.round(b * k), Math.round(j * k)); // already at the battle rate
   }
-  if (!stay) setTimeout(() => warp(R.from, null, boatSpot(R)), win ? 2500 : 700);
+  if (!stay) setTimeout(() => (run.back ? warp(run.back.map, null, run.back) : warp(R.from, null, boatSpot(R))), win ? 2500 : 700);
   refreshQuests();
   persist();
 }
@@ -1355,7 +1363,9 @@ const menus = new Menus(inv, prog, player, {
   // the Boatman: the raid's difficulties and the tide
   raidInfo: (id) => raidInfo(id),
   mobPortrait: (art) => mobPortrait(art),
-  raidGo: (id, diff) => raidGo(id, diff),
+  raidGo: (id, diff, anywhere) => raidGo(id, diff, anywhere),
+  // the Raids window: every raid, its guide and land, open to them (done once) or not, and its tide
+  raidList: () => Object.entries(RAIDS).map(([id, R]) => ({ id, R, guide: NPCS[R.npc].name, land: ZONE_NAMES[R.from], done: raidsDone.has(id), ...raidInfo(id) })),
   ferry(map) {
     const fare = FARES[map];
     if (!visited.has(map) || inv.perz < fare) return;
@@ -2458,8 +2468,8 @@ let questZone = null, questT = 0;
 let resetting = false;
 function persist() {
   if (!started || resetting) return;
-  const isle = raidOf(world.id), at = isle ? boatSpot(isle) : player; // a run is never saved: back on the shore
-  writeSave({ story: story.toJSON(), look: player.look, visited: [...visited], keepers: [...keepers], savePoint, raidAt, map: isle ? isle.from : world.id, mvpAt: mobs.mvpAt, bossHp: mobs.bossSnapshot(), x: at.x, z: at.z, yaw: cam.yaw, dist: cam.dist, hp: player.hp, sp: player.sp, inv: inv.toJSON(), prog: prog.toJSON(), quests: quests.toJSON(), hotbar: hotbar.toJSON(), time: dayNight.t });
+  const isle = raidOf(world.id), back = isle && raid?.back, at = back || (isle ? boatSpot(isle) : player); // a run is never saved: back on the shore (or where they set out from)
+  writeSave({ story: story.toJSON(), look: player.look, visited: [...visited], keepers: [...keepers], savePoint, raidAt, raidsDone: [...raidsDone], map: back ? back.map : isle ? isle.from : world.id, mvpAt: mobs.mvpAt, bossHp: mobs.bossSnapshot(), x: at.x, z: at.z, yaw: cam.yaw, dist: cam.dist, hp: player.hp, sp: player.sp, inv: inv.toJSON(), prog: prog.toJSON(), quests: quests.toJSON(), hotbar: hotbar.toJSON(), time: dayNight.t });
   writeStorage(inv.chest.toJSON());
 }
 
@@ -2593,7 +2603,7 @@ function frame() {
 
   const b = camBasis();
   // windows never pause the game, like Ragnarok
-  for (const w of ['items', 'equip', 'skills', 'status', 'settings']) if (input.tapped(w) && started) menus.toggle(w);
+  for (const w of ['items', 'equip', 'skills', 'status', 'raids', 'settings']) if (input.tapped(w) && started) menus.toggle(w);
   if (input.tapped('attack') && started) attackNow();
   if (input.tapped('close')) { if (bigmap.open) bigmap.close(); else menus.close(); }
   bigmap.update(dt);
