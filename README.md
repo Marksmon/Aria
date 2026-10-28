@@ -361,9 +361,9 @@ the clear reward, the cores, the rare finds and the boss's card.
 
 | Raid | Rare finds, and what the guide asks for them |
 |---|---|
-| Bloop Island | Bloop Ring, Water Necklace (25 Bloop Cores) · Bleep Ring (60) · Bloop Buckler, Veteran's Boots (80) · ultra rare: **Angel Wings** (500) |
-| Kobold Camp | Pickaxe Charm (30 Kobold Cores) · Ore-Heart Ring (60) · Earthshaker Boots, Stonehide Mantle (80) · Miner's Plate (120) · Quarry Shield (150) · ultra rare: **Giant Goat Horn Helm** (500) |
-| Goblin Lair | Totem Charm (30 Goblin Cores) · War-Drum Pendant (60) · Windstep Boots, Raider's Cloak (80) · Horde Leather (120) · Spiked Buckler (150) · ultra rare: **Elven Ears** (500) |
+| Bloop Island | Bloop Ring, Water Necklace (25 Bloop Cores) · Sea-Glass Charm (40) · Bleep Ring, Hopper Boots (60) · Bloop Buckler, Veteran's Boots, Bubble Robe (80) · ultra rare: **Angel Wings** (500) |
+| Kobold Camp | Pickaxe Charm (30 Kobold Cores) · Miner's Lamp Charm (40) · Ore-Heart Ring, Lucky Nugget (60) · Earthshaker Boots, Stonehide Mantle (80) · Miner's Plate (120) · Quarry Shield (150) · ultra rare: **Giant Goat Horn Helm** (500) |
+| Goblin Lair | Totem Charm (30 Goblin Cores) · Fang Charm (40) · War-Drum Pendant (60) · Windstep Boots, Raider's Cloak (80) · Horde Leather, Shaman's Robe (120) · Spiked Buckler (150) · ultra rare: **Elven Ears** (500) |
 
 **Ultra rares** are worn where everyone can see them: the Giant Goat Horn Helm (Head: a
 gunmetal helm worked in gold with a gold crest, two great dark horns banded in gold curling round
@@ -371,20 +371,38 @@ beside it, and the ears left bare; DEF 6, POW +4, END +4, Max HP +10%), Elven Ea
 (Face: long pointed ears over the hero's own, dressed in silver: cuffs and spikes, sapphires,
 crystal earrings and a band round the back of the head; QKN +4, FNS +4, HIT +10, FLEE +5) and Angel Wings (Wings: folded white wings trimmed in gold, a crystal crest between them; KNL +4, FTN +4, FLEE +6, Max SP +80, Max HP +5%).
 
-| New piece | Slot | Effect |
+Each raid has a rare find for every kind of hero: blades (POW), the toughest (END, Max HP), the
+quick (QKN, FLEE), archers (FNS, HIT), casters (KNL, SP) and the lucky (FTN).
+
+| Raid | Piece | Slot | Effect | For |
+|---|---|---|---|---|
+| Bloop Island | Veteran's Boots | Shoes | DEF 3, FLEE +3, END +1, Max HP +60 | tough |
+| Bloop Island | Bloop Buckler | Shield | DEF 4, Max HP +80 | tough |
+| Bloop Island | Bleep Ring | Accessory | FTN +3, POW +1 | lucky |
+| Bloop Island | Bloop Ring | Accessory | FTN +2, Max HP +20 | lucky |
+| Bloop Island | Water Necklace | Accessory | KNL +2, Max SP +15 | caster |
+| Bloop Island | Bubble Robe | Armor | DEF 3, KNL +2, Max SP +50 | caster |
+| Bloop Island | Sea-Glass Charm | Accessory | FNS +2, HIT +5 | archer |
+| Bloop Island | Hopper Boots | Shoes | DEF 2, QKN +2, FLEE +4 | quick |
+| Kobold Camp | Pickaxe Charm | Accessory | POW +3, HIT +6 | blade |
+| Kobold Camp | Earthshaker Boots | Shoes | DEF 4, POW +2, HIT +4 | blade |
+| Kobold Camp | Stonehide Mantle | Garment | DEF 5, END +2, Max HP +150 | tough |
+| Kobold Camp | Miner's Plate | Armor | DEF 8, END +2, Max HP +150 | tough |
+| Kobold Camp | Quarry Shield | Shield | DEF 7, END +2, Max HP +8% | tough |
+| Kobold Camp | Ore-Heart Ring | Accessory | KNL +3, Max SP +5% | caster |
+| Kobold Camp | Miner's Lamp Charm | Accessory | FNS +3, HIT +6 | archer |
+| Kobold Camp | Lucky Nugget | Accessory | FTN +4, Max HP +60 | lucky |
+| Goblin Lair | Spiked Buckler | Shield | DEF 6, POW +2 | blade |
+| Goblin Lair | War-Drum Pendant | Accessory | FTN +3, POW +2 | lucky |
+| Goblin Lair | Windstep Boots | Shoes | DEF 3, FLEE +6, QKN +3 | quick |
+| Goblin Lair | Raider's Cloak | Garment | DEF 3, FLEE +8, QKN +2 | quick |
+| Goblin Lair | Horde Leather | Armor | DEF 6, FNS +2, HIT +6 | archer |
+| Goblin Lair | Fang Charm | Accessory | FNS +3, HIT +5 | archer |
+| Goblin Lair | Totem Charm | Accessory | KNL +3, Max SP +60 | caster |
+| Goblin Lair | Shaman's Robe | Armor | DEF 4, KNL +3, Max SP +80 | caster |
+
+| Raid boss card | Slot | Effect |
 |---|---|---|
-| Pickaxe Charm | Accessory | POW +3, HIT +6 |
-| Ore-Heart Ring | Accessory | DEF 2, POW +2, END +2 |
-| Earthshaker Boots | Shoes | DEF 5, POW +1, END +2, Max HP +100 |
-| Stonehide Mantle | Garment | DEF 5, END +2, Max HP +150 |
-| Miner's Plate | Armor | DEF 8, END +2, Max HP +150 |
-| Quarry Shield | Shield | DEF 7, END +2, Max HP +8% |
-| Totem Charm | Accessory | QKN +2, FNS +2, HIT +5 |
-| War-Drum Pendant | Accessory | POW +2, END +1, Max HP +80 |
-| Windstep Boots | Shoes | DEF 3, FLEE +6, QKN +3 |
-| Raider's Cloak | Garment | DEF 3, FLEE +8, QKN +2 |
-| Horde Leather | Armor | DEF 6, FLEE +5, QKN +2 |
-| Spiked Buckler | Shield | DEF 6, POW +2 |
 | Kobold Warlord Card | Head or face card | DEF +7, Max HP +25%, END +7, POW +4; **Earthshaker:** blows and spells stun a monster 8% of the time (Kobold Camp, 1%) |
 | Goblin Warlord Card | Head or face card | ATK +60, QKN +7, POW +4, blows up close (not arrows) +15%; **Frenzy:** 10% of them land twice (Goblin Lair, 1%) |
 
@@ -723,7 +741,7 @@ bursts gold on the ground and shows in gold in your bag.
 | Shiny Gel | Misc | a collector's prize | Green and Blue Bloops, 1% |
 | Veteran's Boots | Shoes | DEF 3, FLEE +3, END +1, Max HP +60 | Bloop Island (a clear: 3%), or the Boatman makes it from Bloop Cores |
 | Bloop Buckler | Shield | DEF 4, Max HP +80 | Bloop Island (a clear: 3%), or the Boatman makes it from Bloop Cores |
-| Bleep Ring | Accessory | POW +1, QKN +1, FTN +1, Max HP +40 | Bloop Island (a clear: 3%), or the Boatman makes it from Bloop Cores |
+| Bleep Ring | Accessory | FTN +3, POW +1 | Bloop Island (a clear: 3%), or the Boatman makes it from Bloop Cores |
 | Horned Crown | Head | DEF 4, POW +2, END +1 | Fire Giant, 5% |
 | Flame Sword | Weapon | ATK 110, weapon Lv 4 | Fire Giant, 1% |
 | King's Ring | Accessory | POW +2, END +1, Max HP +50 | Kobold King, 5% |

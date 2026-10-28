@@ -105,7 +105,8 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   or the game closed or restarted mid-run: `raidRun` in the save) pays nothing and costs no
   cooldown. Every run goes in the hero's raid history (`raidLog`, saved, the Raids window's History
   tab: cleared or failed and why, perz, EXP, items). A clear pays the raid's cores x1/x3/x9/x27 by difficulty (3/9/27/81), its rare finds
-  at 3% on any difficulty, and its ultra rare (a Head, Face or Wings piece: Angel Wings, the Giant Goat
+  at 3% on any difficulty (each raid has a rare for every build: blade POW, tough END, quick QKN,
+  archer FNS, caster KNL, lucky FTN: the owner's call), and its ultra rare (a Head, Face or Wings piece: Angel Wings, the Giant Goat
   Horn Helm, Elven Ears) and its card at 1%; its guide makes the rares and the ultra rare
   from cores (the rarer, the more; an ultra rare 500, always made, 10% of them with a card slot). The story's step gets a
   Tutorial run: no cooldown; only a clear of it completes the story step and pays (the owner's call:

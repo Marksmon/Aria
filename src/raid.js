@@ -57,7 +57,7 @@ export const RAIDS = {
     // raid's cores (times its cores)
     reward: { perz: 3000, items: [['gel', 6, 1], ['dew', 4, 1], ['shiny_gel', 1, 0.3]], cores: ['bloop_core', 3] },
     // the rare roll: one of these, at the difficulty's chance (the Boatman makes them from Bloop Cores too)
-    rares: ['veteran_boots', 'bloop_buckler', 'bleep_ring', 'gooey_ring', 'tide_pendant'],
+    rares: ['veteran_boots', 'bloop_buckler', 'bleep_ring', 'gooey_ring', 'tide_pendant', 'bubble_robe', 'seaglass_charm', 'hopper_boots'],
     ultra: ['angel_wings', 0.01], // the raid's ultra rare
     // the boss's card: raid monsters drop nothing, so a clear may pay it (a boss card's 1%, any difficulty)
     card: ['bleep_card', 0.01],
@@ -81,7 +81,7 @@ export const RAIDS = {
     boss: ['koboldWarlord', 5],
     difficulties: ladder([45, 60, 75, 90]),
     reward: { perz: 4500, items: [['kobold_fur', 6, 1], ['iron_ore', 4, 1], ['steel_ore', 1, 0.5]], cores: ['kobold_core', 3] },
-    rares: ['quarry_shield', 'stonehide_mantle', 'earthshaker_boots', 'oreheart_ring', 'pickaxe_charm', 'miners_plate'],
+    rares: ['quarry_shield', 'stonehide_mantle', 'earthshaker_boots', 'oreheart_ring', 'pickaxe_charm', 'miners_plate', 'lamp_charm', 'lucky_nugget'],
     ultra: ['goat_horns', 0.01],
     card: ['kwarlord_card', 0.01],
     words: {
@@ -103,7 +103,7 @@ export const RAIDS = {
     boss: ['goblinWarlord', 5],
     difficulties: ladder([50, 65, 80, 95]),
     reward: { perz: 6000, items: [['goblin_tooth', 6, 1], ['steel_ore', 2, 1], ['armor_ore', 1, 0.3]], cores: ['goblin_core', 3] },
-    rares: ['raider_cloak', 'windstep_boots', 'spiked_buckler', 'totem_charm', 'wardrum_pendant', 'horde_leather'],
+    rares: ['raider_cloak', 'windstep_boots', 'spiked_buckler', 'totem_charm', 'wardrum_pendant', 'horde_leather', 'shaman_robe', 'fang_charm'],
     ultra: ['elf_ears', 0.01],
     card: ['gwarlord_card', 0.01],
     words: {

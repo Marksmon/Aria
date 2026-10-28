@@ -232,8 +232,8 @@ const BASE_ITEMS = {
   goblin_core:  { type: 'misc', name: 'Goblin Core', desc: 'A war-charm of bone and red stone every raid goblin wears. Ylva the Scout makes the Lair\'s rare gear from it.', from: 'Goblin Lair (a clear: 3, x3 a difficulty up)' },
   quarry_shield: { type: 'equip', slot: 'shield', rare: true, name: 'Quarry Shield', def: 7, mhpRate: 8, stats: { end: 2 }, icon: 'r_quarryshield', desc: 'A slab of quarry stone bound in iron, the Warlord\'s own. Heavy, and nothing gets through.', from: 'Kobold Camp (a clear: 3%), or made from Kobold Cores' },
   stonehide_mantle: { type: 'equip', slot: 'garment', rare: true, name: 'Stonehide Mantle', def: 5, mhp: 150, stats: { end: 2 }, icon: 'r_stonehide', desc: 'A mantle of kobold fur sewn with flakes of stone. It turns blows like a cave wall.', from: 'Kobold Camp (a clear: 3%), or made from Kobold Cores' },
-  earthshaker_boots: { type: 'equip', slot: 'shoes', rare: true, name: 'Earthshaker Boots', def: 5, mhp: 100, stats: { pow: 1, end: 2 }, icon: 'r_earthshaker', desc: 'Iron-shod miner\'s boots. Every step lands like a hammer.', from: 'Kobold Camp (a clear: 3%), or made from Kobold Cores' },
-  oreheart_ring: { type: 'equip', slot: 'acc', rare: true, name: 'Ore-Heart Ring', def: 2, stats: { pow: 2, end: 2 }, icon: 'r_oreheart', desc: 'A ring around a heart of red ore that never cools.', from: 'Kobold Camp (a clear: 3%), or made from Kobold Cores' },
+  earthshaker_boots: { type: 'equip', slot: 'shoes', rare: true, name: 'Earthshaker Boots', def: 4, hit: 4, stats: { pow: 2 }, icon: 'r_earthshaker', desc: 'Iron-shod miner\'s boots. Every step lands like a hammer.', from: 'Kobold Camp (a clear: 3%), or made from Kobold Cores' },
+  oreheart_ring: { type: 'equip', slot: 'acc', rare: true, name: 'Ore-Heart Ring', mspRate: 5, stats: { knl: 3 }, icon: 'r_oreheart', desc: 'A ring around a heart of red ore that never cools. Kobold rune-carvers hold it to warm their words.', from: 'Kobold Camp (a clear: 3%), or made from Kobold Cores' },
   pickaxe_charm: { type: 'equip', slot: 'acc', rare: true, name: 'Pickaxe Charm', hit: 6, stats: { pow: 3 }, icon: 'r_pickaxe', desc: 'A tiny silver pickaxe on a cord. Kobolds swear it finds the soft spot in any stone.', from: 'Kobold Camp (a clear: 3%), or made from Kobold Cores' },
   miners_plate: { type: 'equip', slot: 'armor', rare: true, name: "Miner's Plate", def: 8, mhp: 150, stats: { end: 2 }, icon: 'r_minersplate', desc: 'Kobold mail riveted with ore plates, made for crawling through rockfalls.', from: 'Kobold Camp (a clear: 3%), or made from Kobold Cores' },
   // the raids' ultra rares (1% a clear, or a guide's 500 cores), worn and seen: each a headgear
@@ -244,13 +244,21 @@ const BASE_ITEMS = {
   raider_cloak: { type: 'equip', slot: 'garment', rare: true, name: "Raider's Cloak", def: 3, flee: 8, stats: { qkn: 2 }, icon: 'r_raidercloak', desc: 'A goblin raider\'s ragged green cloak. It moves before you do.', from: 'Goblin Lair (a clear: 3%), or made from Goblin Cores' },
   windstep_boots: { type: 'equip', slot: 'shoes', rare: true, name: 'Windstep Boots', def: 3, flee: 6, stats: { qkn: 3 }, icon: 'r_windstep', desc: 'Soft boots with wind-runes stitched into the soles. Light as a breath.', from: 'Goblin Lair (a clear: 3%), or made from Goblin Cores' },
   spiked_buckler: { type: 'equip', slot: 'shield', rare: true, name: 'Spiked Buckler', def: 6, stats: { pow: 2 }, icon: 'r_spikedbuckler', desc: 'A goblin buckler bristling with iron spikes. It bites back.', from: 'Goblin Lair (a clear: 3%), or made from Goblin Cores' },
-  totem_charm: { type: 'equip', slot: 'acc', rare: true, name: 'Totem Charm', hit: 5, stats: { qkn: 2, fns: 2 }, icon: 'r_totem', desc: 'A little carved war-totem. Goblin archers kiss it before every shot.', from: 'Goblin Lair (a clear: 3%), or made from Goblin Cores' },
-  wardrum_pendant: { type: 'equip', slot: 'acc', rare: true, name: 'War-Drum Pendant', mhp: 80, stats: { pow: 2, end: 1 }, icon: 'r_wardrum', desc: 'A drum the size of a thumb, still beating faintly with the horde\'s march.', from: 'Goblin Lair (a clear: 3%), or made from Goblin Cores' },
-  horde_leather: { type: 'equip', slot: 'armor', rare: true, name: 'Horde Leather', def: 6, flee: 5, stats: { qkn: 2 }, icon: 'r_hordeleather', desc: 'Painted goblin leathers, light enough to run in all day.', from: 'Goblin Lair (a clear: 3%), or made from Goblin Cores' },
+  totem_charm: { type: 'equip', slot: 'acc', rare: true, name: 'Totem Charm', msp: 60, stats: { knl: 3 }, icon: 'r_totem', desc: 'A little carved war-totem from a goblin shaman\'s staff. It mutters along when you cast.', from: 'Goblin Lair (a clear: 3%), or made from Goblin Cores' },
+  wardrum_pendant: { type: 'equip', slot: 'acc', rare: true, name: 'War-Drum Pendant', stats: { ftn: 3, pow: 2 }, icon: 'r_wardrum', desc: 'A drum the size of a thumb, still beating faintly with the horde\'s march.', from: 'Goblin Lair (a clear: 3%), or made from Goblin Cores' },
+  horde_leather: { type: 'equip', slot: 'armor', rare: true, name: 'Horde Leather', def: 6, hit: 6, stats: { fns: 2 }, icon: 'r_hordeleather', desc: 'A goblin archer\'s painted leathers, light enough to run in all day and loose a hundred arrows.', from: 'Goblin Lair (a clear: 3%), or made from Goblin Cores' },
+  // more raid rares, so each raid has a piece for every build (melee, tank, agile, archer, caster, luck)
+  bubble_robe:  { type: 'equip', slot: 'armor', rare: true, name: 'Bubble Robe', def: 3, msp: 50, stats: { knl: 2 }, icon: 'r_bubblerobe', desc: 'A robe of thin blue bloop, cool and faintly bubbling. Spells come easier wrapped in it.', from: 'Bloop Island (a clear: 3%), or made from Bloop Cores' },
+  seaglass_charm: { type: 'equip', slot: 'acc', rare: true, name: 'Sea-Glass Charm', hit: 5, stats: { fns: 2 }, icon: 'r_seaglass', desc: 'A drop of sea-glass worn smooth by the tide. Look through it and the target stands still.', from: 'Bloop Island (a clear: 3%), or made from Bloop Cores' },
+  hopper_boots: { type: 'equip', slot: 'shoes', rare: true, name: 'Hopper Boots', def: 2, flee: 4, stats: { qkn: 2 }, icon: 'r_hopper', desc: 'Springy boots soled with bloop. Every step wants to be a hop.', from: 'Bloop Island (a clear: 3%), or made from Bloop Cores' },
+  lamp_charm:   { type: 'equip', slot: 'acc', rare: true, name: "Miner's Lamp Charm", hit: 6, stats: { fns: 3 }, icon: 'r_lamp', desc: 'A kobold miner\'s tiny brass lamp. In its light you see the gap in any armor.', from: 'Kobold Camp (a clear: 3%), or made from Kobold Cores' },
+  lucky_nugget: { type: 'equip', slot: 'acc', rare: true, name: 'Lucky Nugget', mhp: 60, stats: { ftn: 4 }, icon: 'r_nugget', desc: 'A gold nugget the size of a thumb, rubbed smooth by a hundred kobold hands for luck.', from: 'Kobold Camp (a clear: 3%), or made from Kobold Cores' },
+  shaman_robe:  { type: 'equip', slot: 'armor', rare: true, name: "Shaman's Robe", def: 4, msp: 80, stats: { knl: 3 }, icon: 'r_shamanrobe', desc: 'A goblin shaman\'s robe hung with bones and feathers. It smells of smoke and old spells.', from: 'Goblin Lair (a clear: 3%), or made from Goblin Cores' },
+  fang_charm:   { type: 'equip', slot: 'acc', rare: true, name: 'Fang Charm', hit: 5, stats: { fns: 3 }, icon: 'r_fang', desc: 'A wolf fang carved with a goblin archer\'s tally marks, one for every shot that found its mark.', from: 'Goblin Lair (a clear: 3%), or made from Goblin Cores' },
   gwarlord_card: { type: 'misc', rare: true, name: 'Goblin Warlord Card', adj: 'Warlike', icon: 'card_gwarlord', card: { on: ['head', 'face'], atk: 60, perk: { melee: 15, double: 10 }, perkName: 'Frenzy', stats: { qkn: 7, pow: 4 } }, desc: 'The Goblin Warlord mid-leap, war-paint and all, axe in hand: a fighter\'s card. In a face piece or headgear with a slot (the Elven Ears, say): ATK +60, QKN +7, POW +4, and for a fighter: blows struck up close (not arrows) hit 15% harder, and Frenzy: 10% of them land twice.', from: 'clearing the Goblin Lair (1%, any difficulty)' },
   veteran_boots: { type: 'equip', slot: 'shoes', rare: true, name: "Veteran's Boots", def: 3, flee: 3, mhp: 60, stats: { end: 1 }, icon: 'boots_veteran', desc: "BleepBloop's old marching boots, iron-toed and patched from a hundred battles. Somehow they fit a hero's feet.", from: 'Bloop Island (a clear: 3%), or made from Bloop Cores' },
   bloop_buckler: { type: 'equip', slot: 'shield', rare: true, name: 'Bloop Buckler', def: 4, mhp: 80, icon: 'r_bloopbuckler', desc: 'A round shield of hardened orange bloop. Blows bounce off it, mostly.', from: 'Bloop Island (a clear: 3%), or made from Bloop Cores' },
-  bleep_ring:   { type: 'equip', slot: 'acc', rare: true, name: 'Bleep Ring', stats: { pow: 1, qkn: 1, ftn: 1 }, mhp: 40, icon: 'r_bleep', desc: 'A ring with a tiny orange bloop set in it, which bleeps when danger is near.', from: 'Bloop Island (a clear: 3%), or made from Bloop Cores' },
+  bleep_ring:   { type: 'equip', slot: 'acc', rare: true, name: 'Bleep Ring', stats: { ftn: 3, pow: 1 }, icon: 'r_bleep', desc: 'A ring with a tiny orange bloop set in it, which bleeps when danger is near.', from: 'Bloop Island (a clear: 3%), or made from Bloop Cores' },
   shiny_gel:    { type: 'misc', rare: true, name: 'Shiny Gel', desc: 'Bloop gel that shimmers with every colour, found once in a hundred bloops. Collectors and ring-makers prize it.', from: 'any bloop (1%)' },
 
   // headgear: worn on the head and seen on your character (see headgear.js): Head pieces on the
@@ -428,6 +436,7 @@ export const PRICES = {
   bloop_core: 600, veteran_boots: 24000, bloop_buckler: 20000, bleep_ring: 22000,
   kobold_core: 900, goblin_core: 1200, kwarlord_card: 40000, gwarlord_card: 40000, goat_horns: 60000, elf_ears: 60000,
   quarry_shield: 30000, stonehide_mantle: 26000, earthshaker_boots: 26000, oreheart_ring: 22000, pickaxe_charm: 16000, miners_plate: 30000,
+  bubble_robe: 18000, seaglass_charm: 16000, hopper_boots: 16000, lamp_charm: 18000, lucky_nugget: 20000, shaman_robe: 28000, fang_charm: 20000,
   raider_cloak: 28000, windstep_boots: 28000, spiked_buckler: 30000, totem_charm: 18000, wardrum_pendant: 22000, horde_leather: 30000,
   gel: 15, dew: 20, seed: 16, leaf: 16, shell: 50, spore: 60, stone: 60, glow: 50, ember_heart: 4000,
   kobold_fur: 260, goblin_tooth: 380, iron_ore: 50, steel_ore: 200, hard_ore: 4000, armor_ore: 4000,
@@ -594,6 +603,9 @@ export const RECIPES = [
   { item: 'bleep_ring', lv: 28, by: 'bloop', cost: { bloop_core: 60, shiny_gel: 1 } },
   { item: 'bloop_buckler', lv: 28, by: 'bloop', cost: { bloop_core: 80, gel: 40 } },
   { item: 'veteran_boots', lv: 28, by: 'bloop', cost: { bloop_core: 80, crableg: 20 } },
+  { item: 'seaglass_charm', lv: 28, by: 'bloop', cost: { bloop_core: 40, dew: 20 } },
+  { item: 'hopper_boots', lv: 28, by: 'bloop', cost: { bloop_core: 60, gel: 30 } },
+  { item: 'bubble_robe', lv: 28, by: 'bloop', cost: { bloop_core: 80, dew: 20, gel: 20 } },
   { item: 'angel_wings', lv: 28, by: 'bloop', cost: { bloop_core: 500, shiny_gel: 5, glow: 40 } }, // (the ultra rares: 500 cores; 10% come slotted, like any craft)
   { item: 'pickaxe_charm', lv: 45, by: 'kobold', cost: { kobold_core: 30, iron_ore: 10 } },
   { item: 'oreheart_ring', lv: 45, by: 'kobold', cost: { kobold_core: 60, armor_ore: 2 } },
@@ -601,6 +613,8 @@ export const RECIPES = [
   { item: 'stonehide_mantle', lv: 45, by: 'kobold', cost: { kobold_core: 80, kobold_fur: 30 } },
   { item: 'miners_plate', lv: 45, by: 'kobold', cost: { kobold_core: 120, steel_ore: 10, armor_ore: 3 } },
   { item: 'quarry_shield', lv: 45, by: 'kobold', cost: { kobold_core: 150, hard_ore: 3, armor_ore: 3 } },
+  { item: 'lamp_charm', lv: 45, by: 'kobold', cost: { kobold_core: 40, iron_ore: 10 } },
+  { item: 'lucky_nugget', lv: 45, by: 'kobold', cost: { kobold_core: 60, kobold_fur: 20 } },
   { item: 'goat_horns', lv: 45, by: 'kobold', cost: { kobold_core: 500, hard_ore: 5, armor_ore: 5 } },
   { item: 'totem_charm', lv: 50, by: 'goblin', cost: { goblin_core: 30, goblin_tooth: 20 } },
   { item: 'wardrum_pendant', lv: 50, by: 'goblin', cost: { goblin_core: 60, goblin_tooth: 30 } },
@@ -608,6 +622,8 @@ export const RECIPES = [
   { item: 'raider_cloak', lv: 50, by: 'goblin', cost: { goblin_core: 80, goblin_tooth: 30 } },
   { item: 'horde_leather', lv: 50, by: 'goblin', cost: { goblin_core: 120, steel_ore: 10, armor_ore: 3 } },
   { item: 'spiked_buckler', lv: 50, by: 'goblin', cost: { goblin_core: 150, hard_ore: 3, armor_ore: 3 } },
+  { item: 'fang_charm', lv: 50, by: 'goblin', cost: { goblin_core: 40, goblin_tooth: 20 } },
+  { item: 'shaman_robe', lv: 50, by: 'goblin', cost: { goblin_core: 120, goblin_tooth: 30, steel_ore: 5 } },
   { item: 'elf_ears', lv: 50, by: 'goblin', cost: { goblin_core: 500, hard_ore: 5, goblin_tooth: 50 } },
 ];
 
@@ -1150,6 +1166,13 @@ const PAINT = {
   card_kwarlord: (g) => cardIcon(g, '#ffb070', '#6e5a48'),
   r_raidercloak: (g) => capeIcon(g, '#5a8a3a', '#e8dcc0'),
   r_windstep: (g) => bootIcon(g, '#8ab86a', '#dff7c8'),
+  r_bubblerobe: (g) => armorIcon(g, '#4a8ad8', '#bfe4ff'),
+  r_seaglass: (g) => charmIcon(g, '#6ad8c8', '#e8f8f4'),
+  r_hopper: (g) => bootIcon(g, '#ff9a3a', '#ffe0b0'),
+  r_lamp: (g) => charmIcon(g, '#ffcf4a', '#a8763a'),
+  r_nugget: (g) => charmIcon(g, '#f0c030', '#fff0a0'),
+  r_shamanrobe: (g) => armorIcon(g, '#5a3a6a', '#c8e06a'),
+  r_fang: (g) => charmIcon(g, '#e8e0d0', '#6a8a3a'),
   r_spikedbuckler: (g) => {
     shieldIcon(g, 'round', '#6e5a3a', '#a8a8b0', '#d8dce4');
     for (let i = 0; i < 8; i++) { const a = (i / 8) * Math.PI * 2; shape(g, () => { g.moveTo(32 + Math.cos(a) * 22, 32 + Math.sin(a) * 22); g.lineTo(32 + Math.cos(a + 0.12) * 29, 32 + Math.sin(a + 0.12) * 29); g.lineTo(32 + Math.cos(a + 0.24) * 22, 32 + Math.sin(a + 0.24) * 22); g.closePath(); }, '#d8dce4', 1.5); }
