@@ -68,7 +68,7 @@ export const STORY = [
       [null, 'LESSON: STATS. First, know your strength. A guide will walk you through the Status window: what each stat does, and which path wants which, before you spend a single point. Points are costly to take back, so read first.']],
     reward: { xp: 4, items: { potion: 3, travel_cloak: 1 } } },
   { id: 'stats', ch: 'Prologue', title: 'Know Your Strength', kind: 'stat', goal: 'Open the Status window, read what each stat does, place a point with ▲ and press Confirm',
-    hint: 'Not sure? END is never wasted. A Blader wants POW, QKN and END; a Sorcerer KNL, FNS and END; an Archer FNS and QKN.',
+    hint: 'Not sure? END is never wasted. A Blader wants POW, QKN and END; a Sorcerer KNL, FNS and END; an Archer FNS and QKN; an Assassin POW and QKN, with a little END and FNS.',
     say: [['bram', 'Good. Every level brings more points: spend them as you grow.'],
       [null, 'LESSON: EQUIPMENT. Now put on the cloak: the guide will show you where it is and how to wear it. The Equip window (Equip, under your HP) shows everything you wear (weapon, armor, cloak, shoes, accessories) and what each gives.']],
     reward: { xp: 4 } },

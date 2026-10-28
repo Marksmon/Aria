@@ -1518,8 +1518,8 @@ const $ = (sel, root = document) => root?.querySelector(sel) || null;
 const win = (id) => (menus.isOpen(id) ? menus.wins[id] : null);
 const hudBtn = (id) => $(`[data-btn="${id}"]`);
 const STAT_TALK = {
-  pow: '<b>POW, Power</b>: your blows up close (every point, and a big jump every 10) and how much you can carry. <b>The Blader\'s main stat.</b>',
-  qkn: '<b>QKN, Quickness</b>: attack speed (more than any other stat) and Flee, your chance to dodge a blow. <b>Bladers and Archers</b> both want it.',
+  pow: '<b>POW, Power</b>: your blows up close (every point, and a big jump every 10) and how much you can carry. <b>The main stat of Bladers and Assassins.</b>',
+  qkn: '<b>QKN, Quickness</b>: attack speed (more than any other stat) and Flee, your chance to dodge a blow. <b>Bladers, Archers and Assassins</b> all want it: an Assassin lives by dodging.',
   end: '<b>END, Endurance</b>: Max HP, defense against every blow, HP recovery and some magic defense. <b>Never wasted, on any path.</b>',
   knl: '<b>KNL, Knowledge</b>: magic attack, Max SP for your skills, SP recovery and magic defense. <b>The Sorcerer\'s main stat.</b>',
   fns: '<b>FNS, Finesse</b>: hit (how often your blows land), steadier damage, a little attack speed and faster spells. With a bow it is your attack: <b>the Archer\'s main stat.</b>',
@@ -1531,7 +1531,7 @@ const GUIDES = {
     { at: () => hudBtn('status'), text: 'Your stats decide what kind of fighter you are. Tap <b>Status</b>.', done: () => menus.isOpen('status') },
     { at: () => $('.stsub', win('status')), need: () => menus.isOpen('status'), text: 'These are your <b>Status Points</b>, and each Base Level brings more. A stat costs more the higher it goes, and taking points back needs a <b>costly reset</b>: so first, what each stat does.' },
     ...STAT_KEYS.map((k, i) => ({ at: () => win('status')?.querySelectorAll('table.stats tr')[i] || null, need: () => menus.isOpen('status'), text: STAT_TALK[k] })),
-    { at: () => $('table.stats', win('status')), need: () => menus.isOpen('status'), text: 'Not sure which path you will take? <b>END is never wasted.</b> If you know: a Blader wants POW, QKN and END; a Sorcerer KNL, FNS and END; an Archer FNS and QKN.' },
+    { at: () => $('table.stats', win('status')), need: () => menus.isOpen('status'), text: 'Not sure which path you will take? <b>END is never wasted.</b> If you know: a Blader wants POW, QKN and END; a Sorcerer KNL, FNS and END; an Archer FNS and QKN; an Assassin POW and QKN, with a little END and FNS (quick daggers, and dodging instead of taking blows).' },
     { at: () => $('table.stats', win('status')), need: () => menus.isOpen('status'), text: 'Tap <b>▲</b> beside a stat to place a point. Nothing is final yet: <b>Reset</b> takes back points you have not confirmed.', done: () => menus.pendCount() > 0 || story.step?.id !== 'stats' },
     { at: () => $('[data-act="statconfirm"]', win('status')), need: () => menus.isOpen('status'), text: 'Happy with them? <b>Confirm</b> locks your points in. (Place more first if you like.)', done: () => story.step?.id !== 'stats' },
   ],
