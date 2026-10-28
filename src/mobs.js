@@ -1008,7 +1008,7 @@ class Mob {
           this.chaseT -= dt;
           this.nextMove -= dt;
           for (const k in this.moveCd) this.moveCd[k] -= dt;
-          const giveUp = d.mvp ? MVP_GIVE_UP : BRAIN.giveUp; // (a boss hunts you: it doesn't tire of you this side of it)
+          const giveUp = d.relentless ? Infinity : d.mvp ? MVP_GIVE_UP : BRAIN.giveUp; // (a boss hunts you: it doesn't tire of you this side of it)
           if (dist < giveUp) this.chaseT = Math.max(this.chaseT, 1);
           // kept out of its reach, it gives chase in a burst (BRAIN)
           this.kiteT = dist > d.reach + 1.5 ? this.kiteT + dt : Math.max(0, this.kiteT - dt * 2);
@@ -1039,7 +1039,7 @@ class Mob {
         }
         if (this.state === 'chase') {
           this.chaseT -= dt;
-          if (!available || dist > aggro * FOLLOW.lose) { this.state = 'wander'; this.tired = 3; } // (it follows you while you are near: FOLLOW)
+          if (!available || (!d.relentless && dist > aggro * FOLLOW.lose)) { this.state = 'wander'; this.tired = 3; } // (it follows you while you are near: FOLLOW; a raid's never gives up)
           else {
             const hopping = d.ai !== 'hopper' || (this.hop % 1) < 0.55;
             if (this.special > 0) { // winding up a stomp: stand still, then it lands
@@ -1073,7 +1073,7 @@ class Mob {
         if (this.state === 'wander' && available && hostile && this.tired <= 0 && dist < aggro) { this.state = 'chase'; this.chaseT = d.chase; }
         if (this.state === 'chase') {
           this.chaseT -= dt;
-          if (!available || dist > aggro * FOLLOW.lose) { this.state = 'wander'; this.tired = 3; } // (it follows you while you are near: FOLLOW)
+          if (!available || (!d.relentless && dist > aggro * FOLLOW.lose)) { this.state = 'wander'; this.tired = 3; } // (it follows you while you are near: FOLLOW; a raid's never gives up)
           else if (this.special > 0) { // the dash
             this.special -= dt;
             const dash = d.speed * 2.2 * dt; // a dart, much quicker than its walk
@@ -1134,7 +1134,7 @@ class Mob {
         if (this.state === 'wander' && available && hostile && dist < aggro && this.tired <= 0) { this.state = 'chase'; this.chaseT = d.chase; }
         if (this.state === 'chase') {
           this.chaseT -= dt;
-          if (!available || dist > aggro * FOLLOW.lose) { this.state = 'wander'; this.tired = 3; } // (it follows you while you are near: FOLLOW)
+          if (!available || (!d.relentless && dist > aggro * FOLLOW.lose)) { this.state = 'wander'; this.tired = 3; } // (it follows you while you are near: FOLLOW; a raid's never gives up)
           else {
             if (dist > d.reach * 0.7) moving = this.moveToward(p.x, p.z, speed, dt) > 0;
             if (dist < 2.3 && this.specialCd <= 0) {

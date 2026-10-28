@@ -55,13 +55,18 @@ quests. Code: `src/progress.js` (jobs, levels, points), `src/skills.js` (trees, 
   with a shield.
 - Five actives (Venom Strike, Sonic Blow, Shadow Step, Vanish, Pilfer) and passives (Dagger
   Mastery, Double Attack, Improve Dodge, Lethal Edge). Pilfer and Lethal Edge come free at Job 10.
-  Sonic Blow is eight hits Ragnarok style (`hits`/`every`).
-- **Poison** (Venom Strike, Thousand Cuts, the Stinger, the Cactus Lord Card) is a status like
+  Sonic Blow is the area poison skill (the owner's call): eight cuts Ragnarok style (`hits`/`every`)
+  at the target, each also striking every monster within 2 paces of it (`area`), then a poison roll
+  on each monster it cut.
+- **Poison** (Venom Strike, Sonic Blow, Thousand Cuts, the Stinger, the Cactus Lord Card) is a status like
   burn: a fifth of the blow that set it, each second, for its time; a new poison replaces the old.
   Bosses resist (a third of the chance, half as long). Sand Scorpions poison the hero: 1.5% of Max
   HP a second for 6 s, cured by a Green Herb.
-- Balance: about the Blader's damage on one target (`build-tools/sim.mjs` has an Assassin build):
-  weaker blows, quicker swings, Double Attack, more FLEE and fewer HP (`hpFactor` 70).
+- Balance (the owner's call): **the Assassin out-damages the Blader, the Phantom the BladeMaster**,
+  because they are far squishier (fewer HP, less DEF; FLEE instead). The Assassin kills about 1.4x as
+  fast as the Blader (`build-tools/sim.mjs` has an Assassin build); the Phantom deals 1.2–1.4x the
+  BladeMaster's single-target damage (`docs/balance.md`). Weaker blows, quicker swings, Double
+  Attack, poison.
 
 ## The Phantom (the Assassin's second job)
 
@@ -209,8 +214,9 @@ MATK part), used by both the damage and the skill text.
   sword). About 1.05x the Windrunner on one target by day and 1.2x at night (Moonlit Hunter), the
   best of the bow jobs on packs (Lunar Multishot, Starfall). "Night" is `dayNight.isNight`
   (`night > 0.6`), the same test as the night monsters.
-- **Phantom:** Dual Rend's damage for its SP is about the BladeMaster's Twin Fang, and every normal
-  attack lands twice (both hands); its illusions add to it and draw blows away.
+- **Phantom:** 1.2–1.4x the BladeMaster on one target (the owner's call: higher than the BladeMaster,
+  being much squishier): Dual Rend, both hands on every blow, Double Attack, and its illusions, which
+  also draw blows away. The Assassin likewise out-damages the Blader (about 1.4x).
 - **Magic Knight:** between the two on one target, close to the BladeMaster on packs, with the most
   HP and its Stone Aegis barrier.
 

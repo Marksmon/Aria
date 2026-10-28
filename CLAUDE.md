@@ -48,6 +48,9 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   - Second jobs also train every other first job they earned (`trainTrees`), but for BladeMaster,
     Wizard, Windrunner and Phantom another first-job tree never passes the path's own (Wizard: Blader <= Sorcerer).
 - **Damage balance:** second jobs hit about 2–4x their first job; Blader and Sorcerer stay close.
+  The Assassin and the Phantom out-damage the Blader and the BladeMaster (the owner's call: they are
+  much squishier): the Assassin about 1.4x the Blader, the Phantom 1.2–1.4x the BladeMaster.
+  Sonic Blow is the Assassin's area poison skill (the owner's call).
   Do not even out the BladeMaster and the Wizard: the BladeMaster is not elemental and keeps the
   higher steady damage, while the Wizard's elements make up the gap (see `docs/job-rules.md`).
 - **Second-job skills:** every second job keeps to 3–4 active skills (the Beastmaster's are its three summons and Pack Frenzy; the Phantom's Dual Rend, Phantom Double, Mirage Step, Thousand Cuts) (add
@@ -149,6 +152,8 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   paints the shared head, hair and headgear. Each hairstyle is for one body only (the owner's call,
   `HAIR_BODY` in `hair.js`): Tousled and Long for male heroes, Straight and Ponytail for female; a
   save with the other body's style gets one of its own on load.
+- **Picking a path:** once the hero picks a first job by Elder Halvard's fire, he sends them straight
+  to that job's town, beside its trainer (the owner's call, `toTrainer` in `main.js`).
 - **Names:** plain common names in game; the cooler Old Norse names wait in `docs/names-later.md`.
 - **README:** never mention Ragnarok (or its names: Poring, zeny...) in `README.md`; describe Aria
   on its own. The design notes in `docs/` and the code may still refer to it.

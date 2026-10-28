@@ -15,7 +15,7 @@ import { loadSave, writeSave, loadStorage, writeStorage, clearSave, saveCode, lo
 import { Inventory } from './inventory.js';
 import { Progress, JOBS, RATES, QUEST_RATE } from './progress.js';
 import { Quests, QUESTS, NPCS, FARES, ALWAYS_FARES, NEXT, SERIES, giverOf } from './quests.js';
-import { Story, INTRO, STORY, route } from './story.js';
+import { Story, INTRO, STORY, CALLINGS, route } from './story.js';
 import { playCutscene } from './cutscene.js';
 import { Villagers } from './villagers.js';
 import { Tiles } from './tiles.js';
@@ -366,7 +366,7 @@ function applyStats() {
   gear.hit += bow ? skillLv(prog, 'longsight') : 0;
   const dagger = weaponKind() === 'dagger';
   if (prog.trees.has('phantom')) st.qkn = (st.qkn || 0) + skillLv(prog, 'phantomgrace'); // Phantom Grace
-  gear.mastery = skillLv(prog, 'basics') + (sword ? 2 * skillLv(prog, 'discipline') + 3 * skillLv(prog, 'blademastery') : 0) + (dagger ? 3 * skillLv(prog, 'daggermastery') : 0);
+  gear.mastery = skillLv(prog, 'basics') + (sword ? 2 * skillLv(prog, 'discipline') + 3 * skillLv(prog, 'blademastery') : 0) + (dagger ? 4 * skillLv(prog, 'daggermastery') : 0);
   gear.flee += 3 * skillLv(prog, 'improvedodge') + 2 * skillLv(prog, 'phantomgrace') * allies.illusions.length; // Improve Dodge; Phantom Grace, per illusion out
   if (buffs.swift > 0) gear.aspdRate *= 1 - (gear.perk.swift || 0) / 100; // the Rainbow Runner Card's Rainbow Rush, after a kill
   if (!(prog.job === 'phantom')) gear.left = null; // (only a Phantom fights with a dagger in each hand)
@@ -1477,7 +1477,16 @@ function storyDone() {
     if (next) menus.message(`Story: ${next.title}. ${next.goal}`);
     refreshQuests();
     persist();
+    if (s.id === 'paths') toTrainer(); // (the Elder sends the hero on to the path they picked)
   });
+}
+// Elder Halvard's choice made: the hero is taken straight to the picked path's city, beside its trainer
+function toTrainer() {
+  const c = CALLINGS[story.flags.pick];
+  if (!c || world.id === c.city) return;
+  const [, n] = Object.entries(NPCS).find(([, v]) => v.map === c.city && v.job === c.job) || [];
+  menus.message(`Elder Halvard sends you on to ${ZONE_NAMES[c.city]}: ${c.trainer} is waiting.`);
+  warp(c.city, null, n ? { x: n.x, z: n.z + 1.6 } : null);
 }
 function checkStory() {
   if (!storyLive() || menus.isOpen('story')) return;
@@ -2289,15 +2298,20 @@ function useSkill(id) {
   }
   // ---- Assassin: Venom Strike, Sonic Blow, Shadow Step, Pilfer ----
   if (id === 'venomstrike') strike(sk.power(lv) / 100, 1 + 0.03 * lv, (t, res) => { say('Venom Strike'); if (!res.miss) inflict(t, sk.status, lv, res.dmg); });
-  if (id === 'sonicblow') {
+  if (id === 'sonicblow') { // eight cuts in a blur at the target, each catching every monster close by it; then the venom takes them all
     const m = sk.power(lv) / 100;
-    strike(m, 1, (t) => {
+    strike(m, 1, (t, res0) => {
       say('Sonic Blow');
       cam.shake = 0.15;
-      repeat(sk, lv, (i) => { // the first blow with the swing, seven more a blur behind it
-        if (!i || !t.alive) return;
-        bladeHit(t, m);
-        fx.slash(t.x, overHead(t, t.sprite.scale.y * 0.5), t.z, { x: Math.cos(i * 2.3), z: Math.sin(i * 2.3) }, cam);
+      const cx = t.x, cz = t.z, gy = world.heightAt(cx, cz), dealt = new Map([[t, res0?.dmg || 0]]);
+      repeat(sk, lv, (i) => { // (the swing's own blow was the target's first)
+        for (const o of [...mobs.list]) {
+          if (!o.alive || (o === t ? !i : Math.hypot(o.x - cx, o.z - cz) > sk.area + o.def.r)) continue;
+          dealt.set(o, (dealt.get(o) || 0) + (bladeHit(o, m).dmg || 0));
+          if (o === t) fx.slash(t.x, overHead(t, t.sprite.scale.y * 0.5), t.z, { x: Math.cos(i * 2.3), z: Math.sin(i * 2.3) }, cam);
+        }
+        const a = i * 2.4; fx.sparkle(cx + Math.cos(a) * sk.area * 0.7, gy + 0.4, cz + Math.sin(a) * sk.area * 0.7, i % 2 ? '#8ad04a' : '#c8f080', 3); // the venom's green mist
+        if (i === sk.hits(lv) - 1) for (const [o, d] of dealt) if (o.alive && d > 0) inflict(o, sk.status, lv, d / 4); // (each poisoned for a quarter of the cuts it took, a fifth of that a second)
       });
     });
   }
@@ -3356,4 +3370,4 @@ if (go || toSelect) { title.classList.remove('wait'); bootGone(); } else {
   addEventListener('keydown', tap);
 }
 
-window.__aria = { scene, renderer, lib, warp, enterMap, useSkill, useItem, story, SPOTS, player, world, cam, camera, mobs, allies, fx, inv, prog, quests, villagers, menus, hotbar, dayNight, audio, stats: world.stats, raid: () => raid, raidAt: () => raidAt, raidGo, raidLog: () => raidLog, gainExp };
+window.__aria = { scene, renderer, lib, warp, enterMap, useSkill, useItem, story, SPOTS, player, world, cam, camera, mobs, allies, fx, inv, prog, quests, villagers, menus, hotbar, dayNight, audio, stats: world.stats, raid: () => raid, raidAt: () => raidAt, raidGo, raidLog: () => raidLog, storyDone, gainExp };

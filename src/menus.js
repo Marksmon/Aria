@@ -83,7 +83,7 @@ const JOB_PITCH = {
   magicknight: 'Sword and spell as one: imbue your blade with an element, cut with Elemental Edge, sweep the field with Elemental Nova; Stone Aegis is a barrier of both.',
   moonranger: 'Bow and spell under the moon: arrows that hit with ATK and MATK together. Lunar Multishot fans arrows over a pack, Starfall rains stars, Crescent Arrow pierces a line; Moonveil guards you. Stronger at night.',
   beastmaster: 'Sword or bow, and three beasts at your side: Summon Bear (it grows with END), Summon Wolves (FNS) and Summon Hawk (QKN), all out together, and Pack Frenzy to drive them on. Your own tree is beasts only; your Blader and Archer skills stay.',
-  assassin: 'Quick dagger fighters who strike many times with QKN: Venom Strike poisons, Sonic Blow lands eight blows, Shadow Step and Vanish move through the shadows. Double Attack and Improve Dodge make every swing count and every blow miss. Daggers are lighter than swords but much faster.',
+  assassin: 'Quick dagger fighters who strike many times with QKN: Venom Strike poisons, Sonic Blow\'s eight venomed cuts take every monster round the target, Shadow Step and Vanish move through the shadows. Double Attack and Improve Dodge make every swing count and every blow miss. Daggers are lighter than swords but much faster.',
   phantom: 'A dagger in each hand and illusions: Twin Blades lets the left hand strike with every blow, Dual Rend and Thousand Cuts use both, Phantom Double calls two shadows of you to fight, and Mirage Step leaves one behind to draw the monsters away.',
   windrunner: 'The quickest bow in Aria: Windborne and Gale Rhythm speed every shot, Tailwind and Gale Step give short bursts of speed to reposition, Hurricane Volley and Cyclone Arrow finish the work.',
 };

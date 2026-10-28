@@ -71,13 +71,27 @@ def parts():
         for k in range(-5, 6):
             u = k / 5
             out.append(((u * w, y, -R * 0.92), (0, 0.1, -1), 0.6, GOLD if v > 0.85 else stripe(y), 0, 'tail'))
-    # the cobra rising from the brow: its hood, and a red eye
-    for i in range(25):
-        v = i / 24
-        out.append(((0, 1.5 + 5 * v, R + 0.6 + 0.8 * math.sin(v * 3)), (0, 0.2, 1), 0.9 - 0.3 * v, GOLD, 0, 'cobra'))
-    for k in range(-4, 5):
-        out.append(((k * 0.45, 6.2, R + 1.2), (0, 0.2, 1), 0.6, GOLD, 1, 'cobra'))
-    out.append(((0, 6.6, R + 1.6), (0, 0.2, 1), 0.45, RED, 0, 'cobra'))
+    # the cobra (the uraeus) rearing in the middle of the brow, big enough to read at a glance: its
+    # gold neck rising off the band, a wide hood inlaid with lapis and a red jewel, and its head on top
+    F = R + 0.9  # (just proud of the cloth)
+    for i in range(31):  # the neck, curving up and out from the brow band
+        v = i / 30
+        out.append(((0, 0.5 + 9.0 * v, F + 2.4 * v), (0, 0.3, 1), 1.5 - 0.3 * v, GOLD, 0, 'cobra'))
+    for i in range(23):  # the hood: a fan widest at its middle, gold-rimmed, lapis inside
+        v = i / 22
+        y = 4.5 + 9.5 * v
+        half = 1.1 + 3.4 * math.sin(math.pi * min(1, v * 1.15))
+        for k in range(-8, 9):
+            u = k / 8
+            x = u * half
+            rim = abs(u) > 0.72 or v > 0.93 or v < 0.06
+            col = GOLD if rim else (RED if (abs(u) < 0.22 and 0.35 < v < 0.6) else (TEAL if int(v * 7) % 2 else LAPIS))
+            out.append(((x, y, F + 2.6 + 0.5 * (1 - abs(u))), (u * 0.4, 0.15, 1), 0.7, col, 1 if rim else 0, 'cobra'))
+    for i in range(9):  # the head, raised over the hood and looking ahead, with two red eyes
+        v = i / 8
+        out.append(((0, 14.2 + 1.8 * v, F + 3.4 + 0.8 * v), (0, 0.4, 1), 1.45 - 0.4 * v, GOLD, 1, 'cobra'))
+    for sx in (-0.55, 0.55):
+        out.append(((sx * 1.2, 15.4, F + 4.6), (0, 0.2, 1), 0.45, RED, 0, 'cobra'))
     return out
 
 def draw_nemes(d, c, cut=None):

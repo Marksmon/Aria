@@ -37,7 +37,7 @@ export const CALLINGS = {
     rune: "Kenaz, the torch-rune, burns on top of the pile. Yours is the Rune: fire and frost at a word, for those patient enough to learn them. Archmage Vigdis teaches Sorcerers in Galdrheim, north of Fen Shore." },
   bow: { job: 'archer', jobName: 'Archer', city: 'hunt', name: 'the Bow', trainer: 'Huntmaster Sigrid', where: 'in Veidheim, east past Willow Marsh',
     rune: "Raido, the road-rune, points away to the horizon. Yours is the Bow: quick feet and a sure eye, striking from where nothing can reach you. Huntmaster Sigrid trains Archers in Veidheim, past Willow Marsh." },
-  dagger: { job: 'assassin', jobName: 'Assassin', city: 'sand', name: 'the Dagger', trainer: 'Master Kol', where: 'in Rytingborg, the oasis city south of Ember Hill (a Carter will ride you there)',
+  dagger: { job: 'assassin', jobName: 'Assassin', city: 'sand', name: 'the Dagger', trainer: 'Master Kol', where: 'in Rytingborg, the oasis city south of Ember Hill',
     rune: "Perthro, the hidden-rune, falls face down. Yours is the Dagger: quick hands and the shadows, many blows where others strike one. Master Kol trains Assassins in Rytingborg, south of Ember Hill." },
 };
 // the path the hero picked at Eldrun (the 'paths' step), else the runes' calling, else the Blade
@@ -216,7 +216,7 @@ export const STORY = [
         { pics: [{ job: 'swordman', label: 'Blader' }, '+', { job: 'archer', label: 'Archer' }, '→', { job: 'beastmaster', label: 'Beastmaster' }] }],
       ['bram', (flags) => { const c = CALLINGS[callingOf(flags)]; return `So, young one: which path will you walk first?${c ? ` (Saeunn's runes named ${c.name}.)` : ''}`; },
         { choices: [['The Blade: a Blader, with Captain Ulfr in Steinborg', 'pick:blade'], ['The Rune: a Sorcerer, with Archmage Vigdis in Galdrheim', 'pick:rune'], ['The Bow: an Archer, with Huntmaster Sigrid in Veidheim', 'pick:bow'], ['The Dagger: an Assassin, with Master Kol in Rytingborg', 'pick:dagger']] }],
-      ['bram', (flags) => { const c = CALLINGS[pickOf(flags)]; return `${c.name.slice(4)} it is! Go to ${c.trainer}, ${c.where}. Reach Trainee Job 10 with Basic Training 9, and the trial is yours to take.`; }, { sound: 'heart' }],
+      ['bram', (flags) => { const c = CALLINGS[pickOf(flags)]; return `${c.name.slice(4)} it is! I will send you to ${c.trainer}, ${c.where}, this very moment. Reach Trainee Job 10 with Basic Training 9, and the trial is yours to take.`; }, { sound: 'heart' }],
       ['bram', 'Change your mind on the road? Any of the four will try you instead, no harm done. And mark this: once you pass one trial, the others stay open to you. Pass them as well, wear whichever first job you like at a Keeper, and that is how the mixed paths begin.']],
     reward: { xp: 40 } },
   { id: 'journey', ch: 'Chapter 2: The Three Paths', title: 'The Road to the Trainer', kind: 'visit',

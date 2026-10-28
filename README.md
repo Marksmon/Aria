@@ -236,8 +236,8 @@ playing dead.
 of spikes, yellow diamond eyes and a jagged grin) rains needles round you (**Needle Storm**) and
 charges, calling Cacti. The **Rainbow Runner** (Lv 64, Scorpion Sands: a white Sand Runner in
 rainbow plumage) charges and leaps on you, calling Sand Runners. The **Sand Wyrm** (Lv 70, 900,000
-HP, Earth), the Great Desert's MVP, is a giant ringed worm whose maw opens like a flower round rings
-of hooked teeth. It spends almost half the fight **under the sand**, where nothing can hit it: a
+HP, Earth), the Great Desert's MVP, is a giant ringed worm bristling with hooked bone spikes down its
+flanks and back, whose maw opens like a flower round rings of hooked teeth. It spends almost half the fight **under the sand**, where nothing can hit it: a
 mound of sand with spines breaking through swims after you, then bursts up beneath you (a red
 circle shows it just before). **Up**, it can't move: it stays where it rose, and that is the time to
 hit it. Up, it bites, sweeps the ground, spits sand (**Sand Spit**), drops sand from the sky
@@ -425,8 +425,8 @@ the clear reward, the cores, the rare finds and the boss's card.
 gunmetal helm worked in gold with a gold crest, two great dark horns banded in gold curling round
 beside it, and the ears left bare; DEF 6, POW +4, END +4, Max HP +10%), Elven Ears
 (Face: long pointed ears over the hero's own, dressed in silver: cuffs and spikes, sapphires,
-crystal earrings and a band round the back of the head; QKN +4, FNS +4, HIT +10, FLEE +5) and Angel Wings (Wings: folded white wings trimmed in gold, a crystal crest between them; KNL +4, FTN +4, FLEE +6, Max SP +80, Max HP +5%). The Pharaoh's Headdress (Head: a striped cloth of gold and lapis over the head, a gold cobra on
-the brow, lappets to the shoulders and a tail at the back; DEF 6, KNL +4, FTN +4, END +2, Max SP +10%).
+crystal earrings and a band round the back of the head; QKN +4, FNS +4, HIT +10, FLEE +5) and Angel Wings (Wings: folded white wings trimmed in gold, a crystal crest between them; KNL +4, FTN +4, FLEE +6, Max SP +80, Max HP +5%). The Pharaoh's Headdress (Head: a striped cloth of gold and lapis over the head, a gold cobra rearing
+in the middle of the brow, its hood set with lapis and a red jewel, lappets to the shoulders and a tail at the back; DEF 6, KNL +4, FTN +4, END +2, Max SP +10%).
 
 Each raid has a rare find for every kind of hero: blades (POW), the toughest (END, Max HP), the
 quick (QKN, FLEE), archers (FNS, HIT), casters (KNL, SP) and the lucky (FTN).
@@ -528,7 +528,8 @@ Blue Draught from 3 Bloop Gel and 2 Water Drops, three questions on elements and
 with 5 Bloop Gel, three questions on range, arrows and Leap Back); **Master Kol** in Rytingborg
 tests Assassins (5 Red Bloops in the Red Sands, oil a blade with 5 Ant Mandibles, three questions
 on daggers, venom and Vanish). Pass, and they change your job.
-Elder Halvard sends ready Trainees on to the city.
+Elder Halvard sends ready Trainees on to the city: pick a path by his fire, and he sends you straight to
+its trainer's town.
 
 | Trainee | | |
 |---|---|---|
@@ -590,19 +591,20 @@ drop rare bows.
 | Steady Aim | Job 10, passive | +10% damage with a bow to a monster 4 or more paces away |
 
 **Assassins** fight with **daggers**: lighter blows than a sword, but much quicker, and Double
-Attack makes many of them land twice. They have fewer HP than a Blader and dodge instead (Improve
-Dodge). **Poison**, their venom, makes a monster lose a fifth of the blow that poisoned it every
+Attack makes many of them land twice. They have far fewer HP than a Blader and dodge instead (Improve
+Dodge), and pay for it in damage: an Assassin kills about 1.4x as fast as a Blader, and a Phantom
+deals 1.2–1.4x a BladeMaster's damage. **Poison**, their venom, makes a monster lose a fifth of the blow that poisoned it every
 second for 6 s (it shows green); bosses resist it like any status. A new Assassin is handed a
 **Rusty Dagger**, put on at once if no dagger is in hand. Yrsa the Dagger-smith in Rytingborg sells
 daggers and makes better ones (**Make daggers**); the desert's monsters drop them too.
 
 | Assassin | | |
 |---|---|---|
-| Dagger Mastery | passive, 10 | +3 ATK per level with daggers |
+| Dagger Mastery | passive, 10 | +4 ATK per level with daggers |
 | Double Attack | passive, 10 | with a dagger, 5% of your normal attacks per level strike twice |
 | Improve Dodge | passive, 10 | +3 FLEE per level |
-| Venom Strike | 10, 6–11 SP | 175–400%, +3% hit per level; 26–80% to poison for 6 s |
-| Sonic Blow | 10, needs Venom Strike 3 | eight blows in a blur, 57–120% each. 2 s cooldown |
+| Venom Strike | 10, 6–11 SP | 198–450%, +3% hit per level; 26–80% to poison for 6 s |
+| Sonic Blow | 10, needs Venom Strike 3, 15–24 SP | eight venomed cuts in a blur, 63–135% each to the target and to every monster within 2 paces of it; then 35–80% to poison each of them for 6 s. 2 s cooldown |
 | Shadow Step | 5, needs Improve Dodge 3 | step to your target's back from up to 6 paces; your next blow +10–50% |
 | Vanish | 5, needs Improve Dodge 5 | 4–8 s in the shadows: monsters lose you (bosses and MVPs see through it); attacking ends it, and your first blow out of it deals 10–50% more |
 | Pilfer | Job 10 | lift something off a monster: a chance (more with FNS) at one of its drops (never a card), once per monster |
@@ -749,12 +751,16 @@ bite may turn on them. One that falls can be called again after 20 s, and they a
 faint. The Beastmaster keeps every Blader and Archer skill, and holds a cleaver or a bow (its look
 changes with the weapon).
 
+The Phantom dresses the part: a black coat with a high collar lined in violet, two-tiered silver
+pauldrons set with violet gems, a chain belt with a gem buckle, silver bracers and knee guards,
+violet runes glowing down the coat's long torn tails, and a glowing eye-sigil on its back.
+
 | Phantom: two daggers and illusions | |
 |---|---|
 | Twin Blades | passive, 10: a dagger in your left hand (the Shield slot) strikes with every blow of the right, at 55–100% of its own damage. Only a Phantom holds two daggers; the pair swings a little slower than one |
 | Lingering Shade | passive, 5, needs Phantom Double 1: your illusions last 2–10 s longer and strike 6–30% harder |
 | Phantom Grace | passive, 5: +1–5 QKN, and +2–10 FLEE for each illusion you have out |
-| Dual Rend | 10: six cuts, right hand and left in turn, 90–180% each. 1 s cooldown |
+| Dual Rend | 10: six cuts, right hand and left in turn, 101–200% each. 1 s cooldown |
 | Phantom Double | 5: two illusions of you step out of your shadow for 15 s and fight your target with 36–60% of your damage; monsters they strike may turn on them. 20 s cooldown |
 | Mirage Step | 5, needs Phantom Double 1: dash 4 paces away, untouchable, leaving an illusion where you stood: for 4–8 s every monster within 4 paces turns on it. 8 s cooldown |
 | Thousand Cuts | 10, needs Dual Rend 3: spin with both blades five times, 61–115% each to every monster within 2.6 paces; 2–20% each to poison. 5 s cooldown |

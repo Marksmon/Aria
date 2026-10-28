@@ -66,7 +66,7 @@ export function hero(kind, base) {
   const gear = { hit: 0, flee: 0, aspdRate: 1, ...GEAR[kind](base) };
   if (kind === 'archer') { gear.stats = { fns: p.skills.keeneye || 0 }; gear.hit += p.skills.longsight || 0; }
   const hide = p.skills.ironhide || 0;
-  gear.mastery = 9 + (kind === 'blader' ? 2 * (p.skills.discipline || 0) : kind === 'assassin' ? 3 * (p.skills.daggermastery || 0) : 0);
+  gear.mastery = 9 + (kind === 'blader' ? 2 * (p.skills.discipline || 0) : kind === 'assassin' ? 4 * (p.skills.daggermastery || 0) : 0);
   gear.flee += 3 * (p.skills.improvedodge || 0);
   gear.def += hide;
   const ps = derive(p, gear);
@@ -98,12 +98,13 @@ function fight(h, def, opts = {}) {
       // (Sonic Blow's eight small cuts each meet the monster's soft DEF: against an armoured one a
       // player keeps to Venom Strike, so the sim casts Sonic Blow only where it pays more for its SP)
       const avg = (k, l, hm) => { let x = 0; for (let i = 0; i < 40; i++) x += playerAttack(ps, d, SKILLS[k].power(l) / 100, hm, true).dmg; return x / 40; };
-      const sonicPays = lv && (!vlv || avg('sonicblow', lv, 1) * 8 / spCost('sonicblow', lv) > avg('venomstrike', vlv, 1 + 0.03 * vlv) / spCost('venomstrike', vlv));
+      const sonicPays = lv && (!vlv || avg('sonicblow', lv, 1) * 8 * 1.3 / spCost('sonicblow', lv) > avg('venomstrike', vlv, 1 + 0.03 * vlv) * 1.9 / spCost('venomstrike', vlv)); // (each with the poison it leaves)
       if (sonicPays && sp >= spCost('sonicblow', lv) && t >= sonicAt) {
         sp -= spCost('sonicblow', lv); sonicAt = t + SKILLS.sonicblow.cd;
         let dmg = 0; for (let i = 0; i < 8; i++) dmg += playerAttack(ps, d, SKILLS.sonicblow.power(lv) / 100, 1, true).dmg;
-        const wait = Math.max(ps.interval, 8 * SKILLS.sonicblow.every);
-        return [dmg + venom(wait), wait];
+        const wait = Math.max(ps.interval, 8 * SKILLS.sonicblow.every), out = dmg + venom(wait), boss = d.boss || d.mvp;
+        if (dmg > 0 && Math.random() * 100 < SKILLS.sonicblow.status.chance(lv) / (boss ? 3 : 1)) { pois = Math.max(1, Math.round(dmg / 4 * 0.2)); poisUntil = t + 6 / (boss ? 2 : 1); } // (its venom: a quarter of the cuts, a fifth of that a second)
+        return [out, wait];
       }
       if (vlv && sp >= spCost('venomstrike', vlv)) {
         sp -= spCost('venomstrike', vlv);

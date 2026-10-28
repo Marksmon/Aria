@@ -182,7 +182,7 @@ export const SKILLS = {
   // blow that set it, each second, for its time (main.js inflict; bosses resist) ----------
   daggermastery: {
     name: 'Dagger Mastery', job: 'assassin', kind: 'passive', max: 10, icon: 'skill_daggermastery',
-    desc: (lv) => `+${3 * lv} ATK with daggers.`,
+    desc: (lv) => `+${4 * lv} ATK with daggers.`,
   },
   doubleattack: {
     name: 'Double Attack', job: 'assassin', kind: 'passive', max: 10, icon: 'skill_doubleattack',
@@ -194,13 +194,13 @@ export const SKILLS = {
   },
   venomstrike: {
     name: 'Venom Strike', job: 'assassin', kind: 'active', max: 10, target: 'mob', range: 1.35, weapon: 'dagger', icon: 'skill_venomstrike',
-    sp: (lv) => 6 + Math.floor(lv / 2), power: (lv) => 150 + 25 * lv, status: { kind: 'poison', chance: (lv) => 20 + 6 * lv, dur: 6 },
+    sp: (lv) => 6 + Math.floor(lv / 2), power: (lv) => 170 + 28 * lv, status: { kind: 'poison', chance: (lv) => 20 + 6 * lv, dur: 6 },
     desc: (lv) => `A blade dipped in venom: ${SKILLS.venomstrike.power(lv)}% damage, +${3 * lv}% hit chance; ${statusText(SKILLS.venomstrike, lv)} (a fifth of the blow each second).`,
   },
   sonicblow: {
     name: 'Sonic Blow', job: 'assassin', kind: 'active', max: 10, needs: { venomstrike: 3 }, target: 'mob', range: 1.35, weapon: 'dagger', cd: 2, icon: 'skill_sonicblow',
-    sp: (lv) => 12 + lv, power: (lv) => 50 + 7 * lv, hits: () => 8, every: 0.08,
-    desc: (lv) => `Eight blows faster than the eye: ${SKILLS.sonicblow.power(lv)}% damage each.`,
+    sp: (lv) => 14 + lv, power: (lv) => 55 + 8 * lv, hits: () => 8, every: 0.08, area: 2, status: { kind: 'poison', chance: (lv) => 30 + 5 * lv, dur: 6 },
+    desc: (lv) => `Eight venomed cuts in a blur, ${SKILLS.sonicblow.power(lv)}% damage each to your target and to every monster within ${SKILLS.sonicblow.area} paces of it; then ${statusText(SKILLS.sonicblow, lv, ' each')}.`,
   },
   shadowstep: {
     name: 'Shadow Step', job: 'assassin', kind: 'active', max: 5, needs: { improvedodge: 3 }, target: 'mob', range: 6, cd: 6, icon: 'skill_shadowstep',
@@ -239,7 +239,7 @@ export const SKILLS = {
   },
   dualrend: {
     name: 'Dual Rend', job: 'phantom', kind: 'active', max: 10, target: 'mob', range: 1.35, weapon: 'dagger', cd: 1, icon: 'skill_dualrend',
-    sp: (lv) => 10 + lv, power: (lv) => 80 + 10 * lv, hits: () => 6, every: 0.1,
+    sp: (lv) => 10 + lv, power: (lv) => 90 + 11 * lv, hits: () => 6, every: 0.1,
     desc: (lv) => `Six cuts, right hand and left in turn: ${SKILLS.dualrend.power(lv)}% damage each (a left-hand cut with your left dagger, at Twin Blades' share; with none, the right hand cuts six times).`,
   },
   phantomdouble: {

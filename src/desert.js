@@ -190,12 +190,28 @@ function worm(F, P, dir, { G, W, H, walk, f, atk }) {
     F.part(ellipse(x, y, r, r * 0.8), P.hide);
     F.part(line(x - r * 0.8, y + r * 0.45, x + r * 0.8, y + r * 0.45, big ? 2 : 1), P.ridge, flat); // the ring's groove
     if (!up && !side) F.part(ellipse(x, y + r * 0.1, r * 0.45, r * 0.4), P.belly, flat);
-    if (P.spine) for (const s of [-1, 1]) F.part(line(x + s * r * 0.7, y - r * 0.55, x + s * r * 0.95, y - r * 0.95, 1), P.spine, flat);
+    if (P.spine && !big) for (const s of [-1, 1]) F.part(line(x + s * r * 0.7, y - r * 0.55, x + s * r * 0.95, y - r * 0.95, 1), P.spine, flat);
+    if (big) { // the MVP's spikes (the owner's call): great hooked bone spikes along every ring, studs on its groove
+      const spike = (bx, by, tx, ty, w) => {
+        const dx = tx - bx, dy = ty - by, l = Math.hypot(dx, dy) || 1, nx = -dy / l * w, ny = dx / l * w;
+        F.part(poly([[bx - nx, by - ny], [bx + nx, by + ny], [tx + dx * 0.08 + nx * 0.2, ty - 1], [tx, ty]]), P.spine);
+        F.part(line(bx - nx * 0.4, by - ny * 0.4, tx, ty, 1), P.ridge, flat);
+      };
+      if (side) { // a dorsal row down its back, raked back, and a smaller one under the belly
+        spike(x - r * 0.75, y - r * 0.35, x - r * 1.55, y - r * 1.05, 2.4);
+        spike(x - r * 0.2, y - r * 0.7, x - r * 0.75, y - r * 1.45, 2.0);
+      } else { // a spike out of each flank, curving up, and a crest of them down its back (seen from behind)
+        for (const sd of [-1, 1]) spike(x + sd * r * 0.8, y - r * 0.15, x + sd * r * 1.45, y - r * 0.95, 2.4);
+        if (up) spike(x, y - r * 0.6, x + r * 0.08, y - r * 1.35, 2.6);
+      }
+      for (let i = -2; i <= 2; i++) F.dot(x + i * r * 0.33, y + r * 0.45 - 1, P.spine); // studs along the ring's groove
+    }
   }
   const [hx0, hy, hr0] = segs[n - 1], hx = hx0 + (side ? 3 * k : 0), hr = hr0 * 1.15;
   if (up) { // the back of the head: ridged hide, spines down its crown
     F.part(ellipse(hx, hy, hr, hr * 0.9), P.hide);
     for (let i = -2; i <= 2; i++) F.part(line(hx + i * hr * 0.3, hy - hr * 0.8, hx + i * hr * 0.35, hy + hr * 0.6, 1), P.ridge, flat);
+    if (big) for (let i = -2; i <= 2; i++) F.part(poly([[hx + i * hr * 0.32 - 2, hy - hr * 0.75], [hx + i * hr * 0.32 + 2, hy - hr * 0.75], [hx + i * hr * 0.45, hy - hr * 1.25 - (2 - Math.abs(i)) * 2]]), P.spine); // a crown of spikes
     return;
   }
   if (side) { // seen from the side: the flaps open above and below, rows of teeth between
@@ -222,6 +238,10 @@ function worm(F, P, dir, { G, W, H, walk, f, atk }) {
     F.part(line(hx + Math.cos(ang) * hr * 0.6, hy + Math.sin(ang) * hr * 0.6, tip[0], tip[1], 1), light(P.hide), flat);
   }
   F.part(ellipse(hx, hy, hr, hr * 0.92), P.hide);
+  if (big) for (let i = 0; i < 8; i++) { // a ring of spikes round the head, between the flaps
+    const ang = (i / 8) * Math.PI * 2 + Math.PI / 8, c = Math.cos(ang), sn = Math.sin(ang);
+    F.part(poly([[hx + Math.cos(ang - 0.14) * hr * 0.9, hy + Math.sin(ang - 0.14) * hr * 0.85], [hx + Math.cos(ang + 0.14) * hr * 0.9, hy + Math.sin(ang + 0.14) * hr * 0.85], [hx + c * hr * 1.3, hy + sn * hr * 1.2]]), P.spine);
+  }
   F.part(ellipse(hx, hy, mr, mr * 0.95), P.flesh);
   const rings = big ? 3 : 1;
   for (let r = 0; r < rings; r++) { // ring after ring of hooked teeth, pointing in
