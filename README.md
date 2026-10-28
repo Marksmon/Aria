@@ -833,8 +833,8 @@ twice before a risky try.
 | Armor, shield, cape, boots, head | +4 | 60 / 40 / 40 / 20 / 20 / 9% | Armor Ore + 2,000 perz |
 
 Holger sells Iron and Steel Ore. The refining stones also drop almost anywhere: Iron Ore from most
-monsters (5%), Steel Ore from level 10 (2%), and the precious Hard Ore and Armor Ore from every
-monster from level 15, but only at 0.5% (the mini-bosses 4%); the kobolds, the goblins and their
+monsters (1%), Steel Ore from level 10 (1%), and the precious Hard Ore and Armor Ore from every
+monster from level 30, but only at 0.5% (the mini-bosses 4%); the kobolds, the goblins and their
 kings drop them more often.
 
 **Slotted gear.** Any piece of gear (weapons, armor, shields, garments, shoes, head and face gear,

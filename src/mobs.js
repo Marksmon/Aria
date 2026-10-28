@@ -143,10 +143,10 @@ MOB_DEFS.kingShadow = { ...MOB_DEFS.goblinKing, decoy: true, mvp: false, ai: 'ta
 MOB_DEFS.jellyCore = { name: 'Jelly Core', ai: 'tank', art: 'slimeYellow', tint: '#ffd86a', el: 'neutral', decoy: true, lv: 99, hp: 10000, atk: [60, 80], def: 10, vit: 30, agi: 1, dex: 60, exp: [0, 0], adelay: 2000, walk: 5000, aggro: 3, chase: 30, reach: 0.9, w: 1.0, r: 0.45, heavy: true, drops: [] };
 // walk: ms a tile, as Ragnarok's monster database has it (Poring 400, Kobold 200, Goblin 150,
 // Goblin Leader 120, Ifrit 130; the hero 150), taken WALK_SCALE times as long. speed: tiles a second.
-// the refining stones drop almost anywhere (the owner's call): Iron Ore from most monsters, Steel Ore
-// from level 10, and the precious Hard Ore and Armor Ore from level 15 at 0.5% (the mini-bosses 4%);
+// the refining stones drop almost anywhere (the owner's call): Iron Ore from most monsters and Steel Ore
+// from level 10 at 1%, and the precious Hard Ore and Armor Ore from level 30 at 0.5% (the mini-bosses 4%);
 // a monster that already drops one (the kobolds, the goblins, their kings) keeps its own chance
-export const ORE_DROPS = [['iron_ore', 1, 0.05], ['steel_ore', 10, 0.02], ['hard_ore', 15, 0.005], ['armor_ore', 15, 0.005]];
+export const ORE_DROPS = [['iron_ore', 1, 0.01], ['steel_ore', 10, 0.01], ['hard_ore', 30, 0.005], ['armor_ore', 30, 0.005]];
 for (const d of Object.values(MOB_DEFS)) {
   if (d.raid || d.decoy || d.noRespawn || d.mvp || !d.drops) continue; // (raid monsters drop nothing; the MVPs have their own)
   for (const [ore, lv, chance] of ORE_DROPS) {

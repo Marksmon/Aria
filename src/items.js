@@ -33,10 +33,10 @@ const BASE_ITEMS = {
   // the kobold and goblin lands, and the ores Holger refines gear with
   kobold_fur:   { type: 'misc', name: 'Kobold Fur', desc: 'A tuft of coarse brown fur from a Kobold. It smells of smoke and wet dog. Tanners in Steinborg buy it by the sack.', from: 'Kobolds' },
   goblin_tooth: { type: 'misc', name: 'Goblin Tooth', desc: 'A yellow Goblin tooth, filed sharp. Goblins wear strings of them; nobody likes to ask whose.', from: 'Goblins' },
-  iron_ore:     { type: 'misc', name: 'Iron Ore', desc: 'A lump of rusty iron ore. Holger uses it to refine Lv 1 weapons.', from: 'Holger sells it; most monsters drop it now and then (5%)' },
-  steel_ore:    { type: 'misc', name: 'Steel Ore', desc: 'Dark ore with a blue shine. Holger uses it to refine Lv 2 weapons.', from: 'Holger sells it; most monsters from level 10 drop it now and then (2%), kobolds and goblins more' },
-  hard_ore:     { type: 'misc', name: 'Hard Ore', desc: 'Ore so hard it rings when you tap it. Holger refines Lv 3 and Lv 4 weapons with it, and Seyla wants it for her enchanting.', from: 'Kobolds, goblins and their kings (1-2%); every monster from level 15 (0.5%) and the mini-bosses (4%)' },
-  armor_ore:    { type: 'misc', name: 'Armor Ore', desc: 'A heavy grey ore that never seems to scratch. Holger refines armor, shields, capes, boots and head gear with it.', from: 'Kobolds, goblins and their kings (1-2%); every monster from level 15 (0.5%) and the mini-bosses (4%)' },
+  iron_ore:     { type: 'misc', name: 'Iron Ore', desc: 'A lump of rusty iron ore. Holger uses it to refine Lv 1 weapons.', from: 'Holger sells it; most monsters drop it now and then (1%)' },
+  steel_ore:    { type: 'misc', name: 'Steel Ore', desc: 'Dark ore with a blue shine. Holger uses it to refine Lv 2 weapons.', from: 'Holger sells it; most monsters from level 10 drop it now and then (1%), kobolds and goblins more' },
+  hard_ore:     { type: 'misc', name: 'Hard Ore', desc: 'Ore so hard it rings when you tap it. Holger refines Lv 3 and Lv 4 weapons with it, and Seyla wants it for her enchanting.', from: 'Kobolds, goblins and their kings (1-2%); every monster from level 30 (0.5%) and the mini-bosses (4%)' },
+  armor_ore:    { type: 'misc', name: 'Armor Ore', desc: 'A heavy grey ore that never seems to scratch. Holger refines armor, shields, capes, boots and head gear with it.', from: 'Kobolds, goblins and their kings (1-2%); every monster from level 30 (0.5%) and the mini-bosses (4%)' },
   // Veidheim's lands: the farms and woods east of Black Wood
   snake_skin:   { type: 'misc', name: 'Snake Skin', desc: 'A shed Snake skin, green and gold, light as paper and tough as leather. The tanners of Veidheim make boots of it.', from: 'Snakes' },
   wolf_pelt:    { type: 'misc', name: 'Wolf Pelt', desc: 'A thick grey Wolf pelt. Veidheim\'s hunters line their cloaks with it for the long night watches.', from: 'Wolves' },

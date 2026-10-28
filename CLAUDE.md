@@ -67,7 +67,7 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   in `main.js`): tabs Main (the story step and chapters), Job (trials), Series (quest chains, a
   title with a number: "The Forge 2: ..."), Side (standalone quests and bounties).
 - **Refining stones drop almost anywhere** (the owner's call, `ORE_DROPS` in `mobs.js`): Iron Ore
-  5% from most monsters, Steel Ore 2% from Lv 10, Hard Ore and Armor Ore 0.5% from Lv 15 (mini-bosses
+  1% from most monsters, Steel Ore 1% from Lv 10, Hard Ore and Armor Ore 0.5% from Lv 30 (mini-bosses
   4%); kobolds, goblins and their kings keep their higher chances. New monsters get them too.
 - **MVP gear is spread over every MVP** (the owner's call): each drops pieces for several builds (weapons
   for more than one job, plus armor or a garment), not just the Fire Giant.
