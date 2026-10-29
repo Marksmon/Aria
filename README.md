@@ -530,7 +530,7 @@ with 5 Bloop Gel, three questions on range, arrows and Leap Back); **Master Kol*
 tests Assassins (5 Red Bloops in the Red Sands, oil a blade with 5 Ant Mandibles, three questions
 on daggers, venom and Vanish). Pass, and they change your job.
 Elder Halvard sends ready Trainees on to the city: pick a path by his fire, and he sends you straight to
-its trainer's town.
+its trainer's town, saved there (its Keeper signs you in, and you wake there after a fall).
 
 | Trainee | | |
 |---|---|---|

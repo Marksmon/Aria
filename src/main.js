@@ -1491,8 +1491,12 @@ function toTrainer() {
   const c = CALLINGS[story.flags.pick];
   if (!c || world.id === c.city) return;
   const [, n] = Object.entries(NPCS).find(([, v]) => v.map === c.city && v.job === c.job) || [];
-  menus.message(`Elder Halvard sends you on to ${ZONE_NAMES[c.city]}: ${c.trainer} is waiting.`);
-  warp(c.city, null, n ? { x: n.x, z: n.z + 1.6 } : null);
+  // and the town is saved as the hero's: its Keeper signs them in, and they wake there after a fall
+  // (and Return Feathers bring them there), as a Save here at that Keeper would
+  const [k, kn] = Object.entries(NPCS).find(([id, v]) => id.startsWith('keeper_') && v.map === c.city) || [];
+  if (k) { keepers.add(k); savePoint = { keeper: k, map: kn.map, x: kn.x, z: kn.z + 1.4 }; }
+  menus.message(`Elder Halvard sends you on to ${ZONE_NAMES[c.city]}: ${c.trainer} is waiting.${k ? ` Saved at ${ZONE_NAMES[c.city]}: you will wake here after a fall.` : ''}`);
+  warp(c.city, null, n ? { x: n.x, z: n.z + 1.6 } : null); // (warp saves the game)
 }
 function checkStory() {
   if (!storyLive() || menus.isOpen('story')) return;
@@ -3504,4 +3508,4 @@ if (go || toSelect) { title.classList.remove('wait'); bootGone(); } else {
   addEventListener('keydown', tap);
 }
 
-window.__aria = { scene, renderer, lib, warp, enterMap, useSkill, useItem, story, SPOTS, player, world, cam, camera, mobs, allies, fx, inv, prog, quests, villagers, menus, hotbar, dayNight, audio, stats: world.stats, raid: () => raid, raidAt: () => raidAt, raidGo, raidLog: () => raidLog, storyDone, gainExp };
+window.__aria = { scene, renderer, lib, warp, enterMap, useSkill, useItem, story, SPOTS, player, world, cam, camera, mobs, allies, fx, inv, prog, quests, villagers, menus, hotbar, dayNight, audio, stats: world.stats, raid: () => raid, raidAt: () => raidAt, raidGo, raidLog: () => raidLog, storyDone, savePoint: () => savePoint, keepers, gainExp };

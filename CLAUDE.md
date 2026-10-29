@@ -163,7 +163,8 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   `HAIR_BODY` in `hair.js`): Tousled and Long for male heroes, Straight and Ponytail for female; a
   save with the other body's style gets one of its own on load.
 - **Picking a path:** once the hero picks a first job by Elder Halvard's fire, he sends them straight
-  to that job's town, beside its trainer (the owner's call, `toTrainer` in `main.js`).
+  to that job's town, beside its trainer, and the town is saved as theirs: its Keeper signs them in
+  and their save point moves there, as a Save here would (the owner's call, `toTrainer` in `main.js`).
 - **Names:** plain common names in game; the cooler Old Norse names wait in `docs/names-later.md`.
 - **README:** never mention Ragnarok (or its names: Poring, zeny...) in `README.md`; describe Aria
   on its own. The design notes in `docs/` and the code may still refer to it.
