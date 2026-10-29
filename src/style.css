@@ -305,16 +305,17 @@ html, body {
 .talkwrap.story .storych .rbtn { text-align: left; white-space: normal; }
 
 /* ---------- Tap controls: hotbar ---------- */
-#hud { z-index: 25; }
+#hud { z-index: 25;
+  /* a hotbar slot's size: eight of them and the attack button (as tall as the hotbar) fit side by
+     side on any screen, never over 50px */
+  --hb: clamp(24px, calc((100vw - 44px) / 10.5), 50px); }
 #hotbar { z-index: 2; } /* above the windows, so skills and items can be dragged onto it */
 #hotbar {
   position: absolute;
-  left: calc(50% + 33px); /* the hotbar and the attack button on its left, centered together */
+  left: calc(50% + (var(--hb) + 18px) / 2); /* the hotbar and the attack button on its left, centered together */
   bottom: calc(10px + env(safe-area-inset-bottom));
   transform: translateX(-50%);
   display: flex;
-  /* eight slots: as big as fits beside the attack button, never over 50px */
-  --hb: clamp(24px, calc((100vw - 104px) / 9.6), 50px);
   gap: clamp(3px, calc(var(--hb) / 9), 6px);
   padding: 5px;
   border-radius: 12px;
@@ -863,10 +864,10 @@ button.eq:active { background: var(--w-sel); }
 #bufftip b { color: var(--w-gold); font-size: 13px; }
 
 /* the attack button, left of the hotbar: the weapon in hand on a round red-gold button */
-#atkbtn {
+#atkbtn { /* as tall as the hotbar beside it */
   position: absolute;
-  width: 58px;
-  height: 58px;
+  width: calc(var(--hb) + 10px);
+  height: calc(var(--hb) + 10px);
   border-radius: 50%;
   border: 3px solid #2e2118;
   background: radial-gradient(circle at 35% 30%, #e86a4a, #a8321e 70%);
@@ -878,8 +879,8 @@ button.eq:active { background: var(--w-sel); }
   touch-action: none;
   z-index: 2;
 }
-#atkbtn img { width: 40px; height: 40px; image-rendering: pixelated; filter: drop-shadow(0 1px 1px rgba(0, 0, 0, .6)); pointer-events: none; }
-#atkbtn span { font-size: 26px; line-height: 1; pointer-events: none; }
+#atkbtn img { width: calc(var(--hb) * .78); height: calc(var(--hb) * .78); image-rendering: pixelated; filter: drop-shadow(0 1px 1px rgba(0, 0, 0, .6)); pointer-events: none; }
+#atkbtn span { font-size: calc(var(--hb) * .52); line-height: 1; pointer-events: none; }
 #atkbtn.pressed { transform: scale(.92); filter: brightness(1.2); }
 
 /* the cards in a piece: picture, name, what it does; an empty slot as a dashed square */
