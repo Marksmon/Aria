@@ -259,7 +259,7 @@ html, body {
   position: absolute;
   top: calc(156px + env(safe-area-inset-top));
   right: calc(12px + env(safe-area-inset-right));
-  width: 178px;
+  width: 142px; /* no wider than the minimap and the gear beside it */
   display: flex;
   flex-direction: column;
   gap: 3px;
@@ -1044,5 +1044,5 @@ body.creating #hud > *:not(#windows) { visibility: hidden; }
   #castbar { bottom: calc(2 * var(--hb) + 41px + env(safe-area-inset-bottom)); }
   #moonmark { left: calc(12px + env(safe-area-inset-left)); bottom: calc(2 * var(--hb) + 31px + env(safe-area-inset-bottom)); }
   /* the quest list clears the hero's panel and the beasts' bars on its left */
-  #quests { width: min(178px, calc(100vw - 226px)); }
+  #quests { width: min(142px, calc(100vw - 226px)); }
 }
