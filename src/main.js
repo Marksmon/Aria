@@ -1920,7 +1920,9 @@ function placeAtkBtn() {
   atkBtn.style.top = `${hb.top + (hb.height - atkBtn.offsetHeight) / 2}px`;
   // the quest list ends above the hotbar (on a short screen it scrolls rather than run under it)
   const ql = document.querySelector('#quests .qlist');
-  if (ql?.offsetParent) ql.style.maxHeight = `${Math.max(56, Math.min(230, innerHeight * 0.34, hb.top - ql.getBoundingClientRect().top - 8))}px`;
+  // (held upright: never over about one quest's height, 165px, so it doesn't cover the field; it scrolls)
+  const cap = innerHeight > innerWidth ? 165 : 230;
+  if (ql?.offsetParent) ql.style.maxHeight = `${Math.max(56, Math.min(cap, innerHeight * 0.34, hb.top - ql.getBoundingClientRect().top - 8))}px`;
 }
 window.addEventListener('resize', placeAtkBtn);
 setInterval(placeAtkBtn, 500);
