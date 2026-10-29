@@ -1915,14 +1915,9 @@ atkFace();
 function placeAtkBtn() {
   const hb = document.getElementById('hotbar').getBoundingClientRect();
   if (!hb.width) return;
-  const w = atkBtn.offsetWidth, h = atkBtn.offsetHeight;
-  if (hb.left - w - 8 >= 6) { // beside it, on the left
-    atkBtn.style.left = `${hb.left - w - 8}px`;
-    atkBtn.style.top = `${hb.top + (hb.height - h) / 2}px`;
-  } else { // no room (a phone held upright): over its right end
-    atkBtn.style.left = `${hb.right - w}px`;
-    atkBtn.style.top = `${hb.top - h - 8}px`;
-  }
+  // always beside it, on the left (the hotbar's slots shrink on a narrow screen so both fit: style.css)
+  atkBtn.style.left = `${Math.max(4, hb.left - atkBtn.offsetWidth - 8)}px`;
+  atkBtn.style.top = `${hb.top + (hb.height - atkBtn.offsetHeight) / 2}px`;
   // the quest list ends above the hotbar (on a short screen it scrolls rather than run under it)
   const ql = document.querySelector('#quests .qlist');
   if (ql?.offsetParent) ql.style.maxHeight = `${Math.max(56, Math.min(230, innerHeight * 0.34, hb.top - ql.getBoundingClientRect().top - 8))}px`;

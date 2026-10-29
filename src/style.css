@@ -309,12 +309,12 @@ html, body {
 #hotbar { z-index: 2; } /* above the windows, so skills and items can be dragged onto it */
 #hotbar {
   position: absolute;
-  left: 50%;
+  left: calc(50% + 33px); /* the hotbar and the attack button on its left, centered together */
   bottom: calc(10px + env(safe-area-inset-bottom));
   transform: translateX(-50%);
   display: flex;
   /* eight slots: as big as fits beside the attack button, never over 50px */
-  --hb: clamp(30px, calc((100vw - 170px) / 9.6), 50px);
+  --hb: clamp(24px, calc((100vw - 104px) / 9.6), 50px);
   gap: clamp(3px, calc(var(--hb) / 9), 6px);
   padding: 5px;
   border-radius: 12px;
