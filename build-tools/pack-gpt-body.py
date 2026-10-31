@@ -43,7 +43,7 @@ rows = {'down': F[0], 'downleft': F[1], 'left': F[2], 'up': F[3], 'upleft': [B[0
 rows['right'] = [ImageOps.mirror(f) for f in rows['left']]
 rows['downright'] = [ImageOps.mirror(f) for f in rows['downleft']]
 
-def measure(f):
+def measure(f, depth=None):
     """the drawn head (a big round skull) and where it meets the neck; and the feet. The skull's top and
     sides come from its skin (its upper half, lit); the neck is the silhouette's narrowest row under
     the skull's widest one, inside the skull's columns: shading and the outline don't fool it"""
@@ -66,16 +66,30 @@ def measure(f):
     head = np.zeros_like(al)
     head[max(0, top - 3):neck, max(0, x0 - 3):x1 + 4] = True
     head &= al
+    # and its neck under it (a second chin under the game's head): the skin and its dark outline in the
+    # rows below, down to the collar; the game's head then sits on the collar
+    # (how deep that neck is: measured on the standing frame, the same in every frame of the
+    # direction, so a hand near the neck doesn't make the head jump)
+    dark = (r + g + b) < 200
+    nb = 0
+    for y in range(neck, min(al.shape[0], neck + (12 if depth is None else depth))):
+        xs = np.nonzero(skin[y, max(0, x0 - 3):x1 + 4])[0]
+        if not xs.size:
+            if depth is None: break
+            nb += 1; continue
+        c0, c1 = max(0, x0 - 3) + xs.min() - 2, max(0, x0 - 3) + xs.max() + 3
+        head[y, c0:c1] |= (skin[y, c0:c1] | dark[y, c0:c1]) & al[y, c0:c1]
+        nb += 1
     body = al & ~light
     feet = np.nonzero(body.any(1))[0].max()
-    return head, (x0 + x1) / 2, neck, feet
+    return head, (x0 + x1) / 2, neck + nb, feet, nb
 sheet = Image.new('RGBA', (FW * 8, FH * len(DIRS) * len(ANIMS)), (0, 0, 0, 0))
 layout = {}
 for di, d in enumerate(DIRS):
     std = STD['anims'][d]['idle']
     h0, spot0 = std[3][0], std[4][0]           # the standard head here: [x, crown, neck, w, eyes...], its spot
     fr = rows[d]
-    _, _, chin0, feet0 = measure(fr[0])
+    _, _, chin0, feet0, depth = measure(fr[0])
     s = LEGS / (feet0 - chin0)                   # the chin 63 px above the ground
     ground = h0[2] + LEGS
     layout[d] = {}
@@ -85,7 +99,7 @@ for di, d in enumerate(DIRS):
         heads, spots, feet_px = [], [], []
         for k, i in enumerate(idx):
             f = fr[i]
-            grow, cx, chin, feet = measure(f)
+            grow, cx, chin, feet, _ = measure(f, depth)
             a = np.asarray(f).copy(); a[grow, 3] = 0   # the drawn head off
             body = Image.fromarray(a)
             big = body.resize((max(1, round(f.width * s)), max(1, round(f.height * s))), Image.LANCZOS)
