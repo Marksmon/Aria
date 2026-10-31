@@ -38,14 +38,6 @@ they are needed (`designSet` in `sprites.js`); each frame carries its head spot,
 the body on the walk, so the head, hair and headgear go on like on any bald body. The look's
 `body` (`m` or `f`) picks which one. `art/designs/` holds their sheets.
 
-A body can also be drawn as a sprite sheet (the male Trainee's, drawn with ChatGPT: `art/chatgpt/trainee_m/`,
-on flat magenta). `build-tools/pack-gpt-body.py` packs it to this standard: it keys out the magenta,
-takes the drawn head off at the neck (the silhouette's narrowest row under the skull), scales the body
-so the chin stands 63 px above the ground, and sets every frame on the 106 x 108 grid with its neck
-under the standard head spot (the head follows the body's bob), into `src/art/trainee_m.png`/`.json`.
-`SHEET_BODIES` in `sprites.js` plays it in place of the painted body; the shared head, hair and
-headgear go on as on any bald body.
-
 People dressed from a bald body still use the PixelLab bodies:
 
 | | |

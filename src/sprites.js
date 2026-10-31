@@ -880,7 +880,7 @@ function pixelSet(url, { fw, fh, body, foot = 0, hair = [], anims, bald = false,
       c.width = fw; c.height = fh;
       c.getContext('2d', { willReadFrequently: read }); // a recoloured body is read back pixel by pixel
       t.image = c;
-      if (t.version > 0) t.dispose(); // (shown before its sheet loaded, a hero's body: its GPU copy was made at the empty pixel's size, and is made anew at the frame's)
+      if (t.version > 0) t.dispose(); // (shown before its sheet loaded, as townsfolk built with their map are: its GPU copy was made at the empty pixel's size, and is made anew at the frame's)
     }
     return t.image.getContext('2d');
   };
@@ -1204,11 +1204,8 @@ export function createSprites() {
   const person = (spec) => Object.assign(spec.body === 'butler' ? butlerSet() : sheet(spec.body, { recolor: outfit(spec.body, spec) }), { person: spec });
   // the hero's job bodies (designSet), each made the first time it is worn: trainee | blader | master |
   // sorc | wiz | mknight, then M or F
-  // (a body drawn as a sheet, packed to the standard by build-tools/pack-gpt-body.py, takes the place
-  // of the painted one: the male Trainee's)
-  const SHEET_BODIES = { traineeM: 'trainee_m' };
   const designs = {};
-  const design = (id) => (designs[id] ||= SHEET_BODIES[id] && SHEETS[`./art/${SHEET_BODIES[id]}.png`] ? sheet(SHEET_BODIES[id]) : designSet(id));
+  const design = (id) => (designs[id] ||= designSet(id));
 
   return {
     mobs,
