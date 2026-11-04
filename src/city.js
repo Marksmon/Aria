@@ -273,7 +273,7 @@ function gable(w, d, rh, over = 0.35) {
 // each city's look: stone, paving, roofs, plaster, timber, the banner over its gates, tower roofs
 const THEMES = {
   // Steinborg: warm red brick, red cone roofs flying pennants, red banners with a gold lily
-  city: { stone: ['#b8735a', '#5a3428'], stoneDark: '#9a5a44', cobble: ['#cdb18e', '#8a6e54'], pennants: true, wallBanners: true,
+  city: { stone: ['#b8735a', '#5a3428'], stoneDark: '#9a5a44', cobble: ['#a9cde6', '#6f93b4'], pennants: true, wallBanners: true,
     roofs: ['#b03a2e', '#c04a34', '#8a3428', '#a8483a'], towerRoof: '#b03a2e',
     plaster: ['#ecd8bc', '#f0dcc4', '#e4ccae', '#eed6c0'], timber: '#6a3a26',
     banner: (g) => {
@@ -523,7 +523,7 @@ export function buildCity(ctx, variant = 'city') {
 
   // ---------- minimap ----------
   function minimap(mg) {
-    mg.fillStyle = { magic: '#b6b0c8', hunt: '#7aa050', sand: '#e2cc9a' }[variant] || '#b3ab9c';
+    mg.fillStyle = { magic: '#b6b0c8', hunt: '#7aa050', sand: '#e2cc9a', city: '#a9cde6' }[variant] || '#b3ab9c';
     mg.fillRect(x0 * 2, z0 * 2, (x1 - x0) * 2, (z1 - z0) * 2);
     extra?.underlay?.(mg);
     mg.fillStyle = variant === 'magic' ? '#5a3a7a' : '#8a5a3a';
