@@ -273,7 +273,7 @@ function gable(w, d, rh, over = 0.35) {
 // each city's look: stone, paving, roofs, plaster, timber, the banner over its gates, tower roofs
 const THEMES = {
   // Steinborg: warm red brick, red cone roofs flying pennants, red banners with a gold lily
-  city: { stone: ['#b8735a', '#5a3428'], stoneDark: '#9a5a44', cobble: ['#a9cde6', '#6f93b4'], pennants: true, wallBanners: true,
+  city: { stone: ['#b8735a', '#5a3428'], stoneDark: '#9a5a44', cobble: ['#a39b8c', '#6a645a'], pennants: true, wallBanners: true,
     roofs: ['#b03a2e', '#c04a34', '#8a3428', '#a8483a'], towerRoof: '#b03a2e',
     plaster: ['#ecd8bc', '#f0dcc4', '#e4ccae', '#eed6c0'], timber: '#6a3a26',
     banner: (g) => {
@@ -286,7 +286,7 @@ const THEMES = {
       for (const s of [-1, 1]) { g.beginPath(); g.moveTo(16, 26); g.quadraticCurveTo(16 + s * 7, 27, 16 + s * 6, 33); g.quadraticCurveTo(16 + s * 3, 29, 16, 28); g.fill(); }
     } },
   // Galdrheim: violet stone, indigo roofs, windows lit with spell-light, crystals glowing everywhere
-  magic: { stone: ['#8a7cae', '#3e325e'], stoneDark: '#62568a', cobble: ['#7c709e', '#4a4070'], wallBanners: true,
+  magic: { stone: ['#8a7cae', '#3e325e'], stoneDark: '#62568a', cobble: ['#aaa6be', '#6a6680'], wallBanners: true,
     roofs: ['#3e2c78', '#4a3a92', '#2e2462', '#5e3c96'], towerRoof: '#3e2c78',
     plaster: ['#cfc4e8', '#c8bce4', '#d8ccf0', '#c4b8e0'], timber: '#2e2448', glass: ['#b070e8', '#f0d0ff'],
     // a violet banner with a gold eight-pointed star
@@ -555,7 +555,7 @@ export function buildCity(ctx, variant = 'city') {
 
   // ---------- minimap ----------
   function minimap(mg) {
-    mg.fillStyle = { magic: '#b6b0c8', hunt: '#7aa050', sand: '#e2cc9a', city: '#a9cde6' }[variant] || '#b3ab9c';
+    mg.fillStyle = { magic: '#b6b0c8', hunt: '#7aa050', sand: '#e2cc9a' }[variant] || '#b3ab9c';
     mg.fillRect(x0 * 2, z0 * 2, (x1 - x0) * 2, (z1 - z0) * 2);
     extra?.underlay?.(mg);
     mg.fillStyle = variant === 'magic' ? '#8a7ab8' : '#e0cca4';
