@@ -82,7 +82,9 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   bubble saying what it is, a hand for a drag). The stats guide explains every stat and which path
   wants it before a point is placed. During the Prologue (and for a story monster) a gold arrow points to
   the goal (`tickGoalArrow`). A new lesson for a new step only needs its `GUIDES` entry. Once a first job is worn, a lesson on its skills runs once (`jobSkillsGuide`: raise an
-  active skill, put it on the hotbar, use it; skipped for a hero who already has one there).
+  active skill, put it on the hotbar, use it; skipped for a hero who already has one there). The first talk with a crafter
+  (any `craft` NPC, the raid guides too), Holger (refining) or Seyla (card slots) runs that craft's lesson
+  once (`NPC_GUIDES` in `main.js`; walking off before opening their window keeps it for next time).
 - **The Keepers' storage opens with a first job** (the owner's call): a Trainee can't open it (`Menus.show`).
 - **Quests window** (the Quests button under the hero's panel, `journal` in `menus.js`, `questBook`
   in `main.js`): tabs Main (the story step and chapters), Job (trials), Series (quest chains, a

@@ -27,7 +27,7 @@ import { headgearReady, gearCut, paintGears } from './headgear.js';
 import { derive, playerAttack, mobAttack, magicAttack, elementMod, ELEMENTS } from './rules.js';
 import { SKILLS, EDGE_FX, learnBlock, skillLv, spCost, castTime, learn, skillList, weaponOk, WEAPON_NAMES, BOW_RANGE, unlearnFirstJob, unlearnSecondJob, RETRAIN_COST } from './skills.js';
 import { Menus } from './menus.js';
-import { iconTexture, iconURL, ITEMS, baseOf, canWear, maybeSlotted } from './items.js';
+import { iconTexture, iconURL, ENCHANT, ITEMS, baseOf, canWear, maybeSlotted } from './items.js';
 import { DayNight } from './daynight.js';
 import { Audio } from './audio.js';
 import { Wings, wingPicture } from './wings.js';
@@ -1587,13 +1587,70 @@ function jobSkillsGuide() {
     { at: cell, text: `Tap it on the hotbar to use it on the monster you are fighting (tap a monster first). Each use costs <b>SP</b>, the blue bar, and some skills have a cooldown${sk.weapon ? `. ${sk.name} needs <b>${WEAPON_NAMES[sk.weapon]}</b> in hand` : ''}. Learnt skills stay yours: a new Job Level brings a new point.` },
   ];
 }
-let guideFor = null; // the story step the running lesson is for ('jobskills': the first job's)
+// The craftsmen's lessons: the first time the hero talks to someone who crafts (any crafter, a raid
+// guide's trades too), refines (Holger) or opens card slots (Seyla), how it works, once each
+// (flags.guide_craft / guide_refine / guide_enchant). Walking off before opening their window leaves
+// it for the next talk.
+const NPC_GUIDES = {
+  craft: {
+    btn: '[data-act="craftwin"]', open: () => menus.isOpen('craft'),
+    steps: () => {
+      const inCraft = () => menus.isOpen('craft'), name = NPCS[menus.npc]?.name || 'They';
+      return [
+        { at: () => $('[data-act="craftwin"]', win('talk')), text: `<b>${name.split(' ')[0]}</b> makes things from what you bring. Tap <b>${$('[data-act="craftwin"]', win('talk'))?.textContent || 'Craft'}</b> to see what.`, done: inCraft },
+        { at: () => $('.rw-craft .rlist .ritem', document), need: inCraft, back: 1, text: 'Each row is a <b>recipe</b>: what it makes and what it does, then what it costs. A <b>bright</b> count means you have enough; a dim one, not yet. Some recipes need a <b>Base Level</b> first.' },
+        { at: () => $('.rw-craft .rnote', document), need: inCraft, back: 1, text: 'Materials <b>drop from monsters</b>, and come from quests and raids. What is in your <b>Keeper\'s storage</b> counts too: no need to carry it.' },
+        { at: () => $('.rw-craft [data-act="craft"]:not([disabled])', document) || $('.rw-craft [data-act="craft"]', document), need: inCraft, back: 1, text: 'Once every cost is bright, <b>Craft</b> makes it, straight into your bag. Every town has its own crafters, each with their own trade.' },
+      ];
+    },
+  },
+  refine: {
+    btn: '[data-act="smithwin"][data-id="refine"]', open: () => menus.isOpen('smith') && menus.smithMode === 'refine',
+    steps: () => {
+      const on = NPC_GUIDES.refine.open;
+      return [
+        { at: () => $('[data-act="smithwin"][data-id="refine"]', win('talk')), text: '<b>Holger</b> refines gear: every <b>+1</b> makes a weapon hit harder, or armor guard better, up to <b>+10</b>. Tap <b>Refine gear</b>.', done: on },
+        { at: () => $('.smithrow [data-act="smithpick"]', win('smith')), need: on, back: 1, text: 'Here is every piece you can refine, <b>worn or in your bag</b>. Tap <b>Pick</b> on one.', done: () => !!menus.smithSel || !$('.smithrow', win('smith')) },
+        { at: () => $('.smithdetail', win('smith')), need: on, back: 1, text: 'Each try costs <b>one ore and some perz</b>: Iron Ore for Lv 1 weapons, Steel Ore for Lv 2, Hard Ore for Lv 3 and 4, Armor Ore for armor. Ores drop from monsters almost anywhere, and Holger sells Iron and Steel Ore.' },
+        { at: () => $('.smithdetail b', win('smith')), need: on, back: 1, text: 'Up to the <b>safe level</b> (+4 to +7, by the piece) a try always works. Past it, the chance falls, and <b>a failure breaks the piece</b>: it is gone (a card in it comes back). So the button asks twice. Refine past safe only what you can lose.' },
+      ];
+    },
+  },
+  enchant: {
+    btn: '[data-act="smithwin"][data-id="enchant"]', open: () => menus.isOpen('smith') && menus.smithMode === 'enchant',
+    steps: () => {
+      const on = NPC_GUIDES.enchant.open;
+      return [
+        { at: () => $('[data-act="smithwin"][data-id="enchant"]', win('talk')), text: '<b>Seyla</b> opens <b>card slots</b>. A card pressed into a slot adds its stats, and a boss\'s card its own power. Tap <b>Add a card slot</b>.', done: on },
+        { at: () => $('.rw-smith .rnote', document), need: on, back: 1, text: `She works only on <b>Lv 4 weapons</b>, up to two slots: the first takes ${ENCHANT.chance[0]}% of the time, the second ${ENCHANT.chance[1]}%. <b>A failure breaks the weapon</b>, so try it on one you can lose.` },
+        { at: () => $('.smithdetail .costs', win('smith')) || $('.rw-smith .rlist', document), need: on, back: 1, text: 'Each try costs Hard Ore, Shade, a <b>boss material</b> (a mini-boss or MVP drop) and perz; the second slot costs twice as much. Gear can also drop, be crafted or won with a slot already in it.' },
+        { at: () => hudBtn('items'), need: on, back: 1, text: 'Cards <b>drop from monsters</b>, one card for each kind. To press one in: <b>Items</b>, tap the card, then <b>Insert</b>, and pick the piece. Seyla can also draw cards out again, whole (<b>Remove a card</b>).' },
+      ];
+    },
+  },
+};
+function npcGuide() {
+  if (!menus.isOpen('talk')) return null;
+  const k = Object.keys(NPC_GUIDES).find((g) => !story.flags[`guide_${g}`] && $(NPC_GUIDES[g].btn, win('talk')));
+  return k ? [k, NPC_GUIDES[k].steps()] : null;
+}
+let guideFor = null; // the story step the running lesson is for ('jobskills': the first job's; craft, refine, enchant)
+let guideDrop = false; // stopped without counting it as seen (walked off before opening the window)
 function tickGuide(dt) {
   const s = story.step;
-  if (guide.running && guideFor !== 'jobskills' && (guideFor !== s?.id || !storyLive())) guide.stop(true);
-  if (!guide.running && !menus.isOpen('story') && !cine && !menus.isOpen('talk')) {
-    const steps = jobSkillsGuide();
-    if (steps) { guideFor = 'jobskills'; guide.start(steps, { onEnd: () => { story.flags.guide_jobskills = true; persist(); } }); }
+  const npcG = NPC_GUIDES[guideFor];
+  if (guide.running && npcG && !menus.isOpen('talk') && !npcG.open()) { guideDrop = guide.i === 0; guide.stop(); guideDrop = false; }
+  if (guide.running && !npcG && guideFor !== 'jobskills' && (guideFor !== s?.id || !storyLive())) guide.stop(true);
+  if (!guide.running && !menus.isOpen('story') && !cine) {
+    const g = npcGuide();
+    if (g) {
+      const [k, steps] = g;
+      guideFor = k;
+      guide.start(steps, { onEnd: () => { if (!guideDrop) { story.flags[`guide_${k}`] = true; persist(); } } });
+    } else if (!menus.isOpen('talk')) {
+      const steps = jobSkillsGuide();
+      if (steps) { guideFor = 'jobskills'; guide.start(steps, { onEnd: () => { story.flags.guide_jobskills = true; persist(); } }); }
+    }
   }
   if (!guide.running && storyLive() && s && GUIDES[s.id] && !story.flags[`guide_${s.id}`] && !menus.isOpen('story') && !cine
     && (s.id !== 'thief' || world.id === s.map)) { // (the chase's, once in Moss Field)
