@@ -149,16 +149,18 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   Sphinx's Riddle) stays out of sight until the hero has walked all four sands (`needZones`); its
   last step opens a hidden portal (`need: 'sphinx6'` on the portal) to Sphinx Sands: the Giant
   Sphinx (about half the map), no monsters, and the door in its chest: a portal down into the
-  **Sphinx's Halls, the first dungeon** (`src/dungeon.js`, `halls1`-`halls4` in `world.js` MAPS). Every floor is a maze
-  (the owner's call): 14x14 cells of 3x3 tiles, walls a tile thick on the tile grid, carved from a seed (`maze`:
-  rooms, loops; the stairs in pillarless portal rooms), walls cut away between camera and hero (a shader
-  dither), always dim (`indoor`: `daynight.js` STATES.dungeon). Floors get harder for levelling (the owner's call):
-  1 Scarab, Cobra (31-45); 2 Mummy, Lamia, Pharaoh's Servant (46-60); 3 Jackal Guardian, Falcon Sentinel, Ammit the
-  mini-boss (61-75); 4 Sphinx Cub, Sand Elemental, Sarcophagus (76-90), and the floor's great hall (`maze.hall`,
-  `world.hall`) where the **Eternal Sphinx** (Lv 99 MVP, `hall: true`: it never leaves the hall and fights only a hero in it)
-  drops Gold Bars (always, and as its MVP reward) and the ultra rare **Sphinx's All-Seeing Eye** (Face, 0.5%: all
-  stats +5, MATK +10%, HIT +10; drawn by `build-tools/draw-eye.py`). The dungeon's monsters are painted in code in
-  `src/halls.js` (the Scarabs and Mummies borrow the tomb's sprites, as field monsters `hallScarab`/`hallMummy`).
+  **Sphinx's Halls, the first dungeon** (`src/dungeon.js`, `halls1`-`halls4` in `world.js` MAPS); its monsters live
+  only inside the Sphinx, none outside (the owner's call). Three maze floors, then the great hall alone (the owner's
+  call): a maze is 14x14 cells of 3x3 tiles, walls a tile thick on the tile grid, carved from a seed (`maze`: rooms,
+  loops; the stairs in pillarless portal rooms), walls cut away between camera and hero (a shader dither), always
+  dim (`indoor`: `daynight.js` STATES.dungeon). Floors get harder for levelling (the owner's call): 1 Scarab, Cobra
+  (31-45); 2 Mummy, Lamia, Pharaoh's Servant (46-60); 3 Sphinx Cub, Sand Elemental, Sarcophagus and Ammit the
+  mini-boss (61-75); 4 the great hall (`maze.hall` with `only`, `world.hall`; 76-90): the Jackal Guardians and Falcon
+  Sentinels (`hall: true`, they keep to it) and the **Eternal Sphinx** (Lv 99 MVP, `hall: true`: it never leaves the
+  hall and fights only a hero in it; it summons its cubs and Guardians, the owner's call). It drops Gold Bars (always,
+  and as its MVP reward) and the ultra rare **Sphinx's All-Seeing Eye** (Face, 0.5%: all stats +5, MATK +10%, HIT
+  +10; drawn by `build-tools/draw-eye.py`). The dungeon's monsters are painted in code in `src/halls.js` (the Scarabs
+  and Mummies borrow the tomb's sprites, as field monsters `hallScarab`/`hallMummy`).
 - **Quests:** side quests and job trials can be quit from the Quest View; the main story quest
   can never be quit.
 - **EXP rates:** battles pay x4 (`RATES`: monsters, mini-bosses, MVPs, raids); quests pay x2

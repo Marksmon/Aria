@@ -150,45 +150,45 @@ export const MOB_DEFS = {
     summon: ['duneWorm', 'duneWorm', 'duneWorm', 'soldierAnt'], summonText: 'The Sand Wyrm roars, and the sand boils with worms!', mvpDrops: [['potion3', 3], ['wyrm_tooth', 1]],
     wake: 'The dunes heave… the Sand Wyrm hunts under the Great Desert!',
     drops: [['potion3', 1, 2, 0.6], ['worm_hide', 4, 6, 1], ['wyrm_tooth', 1, 1, 0.25], ['hard_ore', 1, 2, 0.4], ['armor_ore', 1, 2, 0.4], ['wyrm_ring', 1, 1, 0.05], ['wyrm_cloak', 1, 1, 0.03], ['sandwalker_boots', 1, 1, 0.03], ['dune_staff', 1, 1, 0.02], ['wyrm_fang', 1, 1, 0.01], ['dune_bow', 1, 1, 0.01], ['wyrm_card', 1, 1, 0.01]] },
-  // The Sphinx's Halls (dungeon.js), the first dungeon: four maze floors under the Giant Sphinx, each a
-  // levelling site for its band of levels (the owner's call), and every monster in them attacks on
-  // sight (a dungeon's, not a field's). Floor 1 (Base 31-45): Scarabs, slow and hard-shelled, and
-  // Cobras that dart in and poison. Floor 2 (46-60): Mummies, tough and slow; Lamias, snake-women who
-  // spit venom from afar; the Pharaoh's Servants, priests who throw blue fire from their crystal
-  // staves. Floor 3 (61-75): the Jackal Guardians, whose cursed spears reach far and strike twice; the
-  // Falcon Sentinels, who loose blades of wind; and Ammit the Devourer, the floor's mini-boss.
-  // Floor 4 (76-90): Sphinx Cubs, quick and fierce; Sand Elementals, whose whirling sand slows you;
-  // the walking Sarcophagi, slow and nearly unbreakable; and in the great hall the Eternal Sphinx.
+  // The Sphinx's Halls (dungeon.js), the first dungeon under the Giant Sphinx (its monsters live only
+  // there, none outside): three maze floors, each a levelling site for its band of levels, then the
+  // great hall (the owner's call), and every monster in them attacks on sight (a dungeon's, not a
+  // field's). Floor 1 (Base 31-45): Scarabs, slow and hard-shelled, and Cobras that dart in and poison.
+  // Floor 2 (46-60): Mummies, tough and slow; Lamias, snake-women who spit venom from afar; the
+  // Pharaoh's Servants, priests who throw blue fire from their crystal staves. Floor 3 (61-75): Sphinx
+  // Cubs, quick and fierce; Sand Elementals, whose whirling sand slows you; the walking Sarcophagi, slow
+  // and hard to break; and Ammit the Devourer, the floor's mini-boss. Floor 4, the great hall (76-90):
+  // the Eternal Sphinx's Guardians (hall: they keep to the hall, with it), the Jackal Guardians, whose
+  // cursed spears reach far and strike twice, and the Falcon Sentinels, who loose blades of wind.
   hallScarab: { name: 'Scarab', ai: 'tank', art: 'scarab', el: 'earth', lv: 34, hp: 2000, atk: [108, 136], def: 26, vit: 34, agi: 22, dex: 50, exp: [390, 273], adelay: 1500, walk: 200, aggro: 5, chase: 8, reach: 0.8, w: 1.0, r: 0.38, heavy: true, drops: [['scarab_shell', 1, 1, 0.55], ['potion2', 1, 1, 0.08], ['scarab_buckler', 1, 1, 0.003], ['hallscarab_card', 1, 1, 0.001]] },
   cobra: { name: 'Cobra', ai: 'assassin', art: 'cobra', el: 'earth', lv: 42, hp: 2500, atk: [140, 176], def: 12, vit: 30, agi: 48, dex: 70, exp: [720, 505], adelay: 1250, walk: 180, aggro: 5.5, chase: 9, reach: 0.9, poison: 0.2, w: 0.95, r: 0.36, drops: [['cobra_fang', 1, 1, 0.5], ['potion2', 1, 1, 0.08], ['cobra_kris', 1, 1, 0.003], ['cobra_card', 1, 1, 0.001]] },
   hallMummy: { name: 'Mummy', ai: 'tank', art: 'mummy', el: 'shadow', lv: 50, hp: 4200, atk: [170, 212], def: 20, vit: 48, agi: 20, dex: 64, exp: [1220, 855], adelay: 1700, walk: 300, aggro: 5, chase: 8, reach: 0.85, w: 0.85, r: 0.34, drops: [['old_bandage', 1, 2, 0.6], ['potion3', 1, 1, 0.04], ['grave_wrap', 1, 1, 0.003], ['hallmummy_card', 1, 1, 0.001]] },
   lamia: { name: 'Lamia', ai: 'archer', art: 'lamia', el: 'water', lv: 55, hp: 3900, atk: [180, 225], def: 12, vit: 36, agi: 44, dex: 90, mdef: 8, exp: [1620, 1135], adelay: 1700, walk: 200, aggro: 6, chase: 9, range: 4.5, reach: 0.9, w: 1.0, r: 0.4, shot: '#9aff6a', drops: [['lamia_scale', 1, 1, 0.5], ['potion3', 1, 1, 0.05], ['serpent_staff', 1, 1, 0.002], ['lamia_card', 1, 1, 0.001]] },
   servant: { name: "Pharaoh's Servant", ai: 'archer', art: 'servant', el: 'shadow', lv: 58, hp: 4400, atk: [200, 250], def: 14, vit: 40, agi: 30, dex: 96, mdef: 25, exp: [1900, 1330], adelay: 1900, walk: 250, aggro: 6, chase: 9, range: 5, reach: 0.85, w: 0.9, r: 0.36, shot: '#7ac8ff', drops: [['lapis_shard', 1, 1, 0.5], ['potion3', 1, 1, 0.05], ['priest_robe', 1, 1, 0.003], ['servant_card', 1, 1, 0.001]] },
-  jackal: { name: 'Jackal Guardian', ai: 'tank', art: 'jackal', el: 'shadow', lv: 66, hp: 5800, atk: [236, 296], def: 28, vit: 56, agi: 40, dex: 92, exp: [2800, 1960], adelay: 1400, walk: 180, aggro: 6, chase: 10, reach: 1.3, double: 0.12, w: 1.05, r: 0.42, heavy: true, drops: [['jackal_pelt', 1, 1, 0.5], ['potion3', 1, 1, 0.06], ['jackal_spear', 1, 1, 0.0025], ['jackal_card', 1, 1, 0.001]] },
-  falcon: { name: 'Falcon Sentinel', ai: 'archer', art: 'falcon', el: 'wind', lv: 70, hp: 6000, atk: [252, 316], def: 20, vit: 50, agi: 60, dex: 120, exp: [3350, 2345], adelay: 1500, walk: 150, aggro: 7, chase: 10, range: 5, reach: 1.1, w: 1.15, r: 0.42, shot: '#dff7c8', drops: [['falcon_plume', 1, 1, 0.5], ['potion3', 1, 1, 0.06], ['horus_bow', 1, 1, 0.0025], ['falcon_card', 1, 1, 0.001]] },
-  sphinxCub: { name: 'Sphinx Cub', ai: 'assassin', art: 'sphinxCub', el: 'earth', lv: 80, hp: 7600, atk: [290, 364], def: 22, vit: 58, agi: 70, dex: 120, exp: [5000, 3500], adelay: 1150, walk: 130, aggro: 6.5, chase: 10, reach: 0.95, double: 0.18, w: 1.3, r: 0.45, drops: [['lion_mane', 1, 1, 0.5], ['potion3', 1, 1, 0.07], ['lion_boots', 1, 1, 0.002], ['sphinxcub_card', 1, 1, 0.001]] },
-  sandElemental: { name: 'Sand Elemental', ai: 'puffer', art: 'sandElemental', el: 'earth', lv: 84, hp: 8800, atk: [306, 384], def: 26, vit: 66, agi: 40, dex: 110, mdef: 30, exp: [5780, 4050], adelay: 1600, walk: 200, aggro: 6, chase: 9, reach: 1.0, puff: 'A whirl of sand! It stings your eyes, and your feet drag', w: 1.15, r: 0.45, drops: [['living_sand', 1, 1, 0.5], ['potion3', 1, 1, 0.07], ['storm_ring', 1, 1, 0.0025], ['sandelemental_card', 1, 1, 0.001]] },
-  sarcophagus: { name: 'Sarcophagus', ai: 'tank', art: 'sarcophagus', el: 'shadow', lv: 88, hp: 9600, atk: [322, 404], def: 34, vit: 74, agi: 20, dex: 110, mdef: 20, exp: [6650, 4655], adelay: 1800, walk: 300, aggro: 5, chase: 8, reach: 1.0, w: 1.0, r: 0.45, heavy: true, drops: [['gold_leaf', 1, 1, 0.5], ['potion3', 1, 2, 0.08], ['gold_bar', 1, 1, 0.002], ['coffin_shield', 1, 1, 0.002], ['sarcophagus_card', 1, 1, 0.001]] },
+  jackal: { name: 'Jackal Guardian', ai: 'tank', art: 'jackal', el: 'shadow', hall: true, lv: 80, hp: 7600, atk: [290, 364], def: 30, vit: 62, agi: 50, dex: 120, exp: [5000, 3500], adelay: 1400, walk: 180, aggro: 6, chase: 10, reach: 1.3, double: 0.12, w: 1.05, r: 0.42, heavy: true, drops: [['jackal_pelt', 1, 1, 0.5], ['potion3', 1, 1, 0.06], ['jackal_spear', 1, 1, 0.0025], ['jackal_card', 1, 1, 0.001]] },
+  falcon: { name: 'Falcon Sentinel', ai: 'archer', art: 'falcon', el: 'wind', hall: true, lv: 86, hp: 8400, atk: [314, 394], def: 24, vit: 60, agi: 66, dex: 140, exp: [6200, 4340], adelay: 1500, walk: 150, aggro: 7, chase: 10, range: 5, reach: 1.1, w: 1.15, r: 0.42, shot: '#dff7c8', drops: [['falcon_plume', 1, 1, 0.5], ['potion3', 1, 1, 0.06], ['horus_bow', 1, 1, 0.0025], ['falcon_card', 1, 1, 0.001]] },
+  sphinxCub: { name: 'Sphinx Cub', ai: 'assassin', art: 'sphinxCub', el: 'earth', lv: 64, hp: 5400, atk: [230, 290], def: 20, vit: 50, agi: 62, dex: 96, exp: [2560, 1790], adelay: 1150, walk: 130, aggro: 6.5, chase: 10, reach: 0.95, double: 0.18, w: 1.3, r: 0.45, drops: [['lion_mane', 1, 1, 0.5], ['potion3', 1, 1, 0.07], ['lion_boots', 1, 1, 0.002], ['sphinxcub_card', 1, 1, 0.001]] },
+  sandElemental: { name: 'Sand Elemental', ai: 'puffer', art: 'sandElemental', el: 'earth', lv: 68, hp: 6200, atk: [245, 306], def: 24, vit: 56, agi: 36, dex: 92, mdef: 25, exp: [3070, 2150], adelay: 1600, walk: 200, aggro: 6, chase: 9, reach: 1.0, puff: 'A whirl of sand! It stings your eyes, and your feet drag', w: 1.15, r: 0.45, drops: [['living_sand', 1, 1, 0.5], ['potion3', 1, 1, 0.07], ['storm_ring', 1, 1, 0.0025], ['sandelemental_card', 1, 1, 0.001]] },
+  sarcophagus: { name: 'Sarcophagus', ai: 'tank', art: 'sarcophagus', el: 'shadow', lv: 72, hp: 7400, atk: [258, 324], def: 30, vit: 64, agi: 20, dex: 96, mdef: 20, exp: [3640, 2550], adelay: 1800, walk: 300, aggro: 5, chase: 8, reach: 1.0, w: 1.0, r: 0.45, heavy: true, drops: [['gold_leaf', 1, 1, 0.5], ['potion3', 1, 2, 0.08], ['gold_bar', 1, 1, 0.002], ['coffin_shield', 1, 1, 0.002], ['sarcophagus_card', 1, 1, 0.001]] },
   // Ammit the Devourer, the mini-boss of the third floor (after the owner's picture): a crocodile's head
   // in a gold headdress, a lion's mane and claws, a crocodile's tail. It rushes you, pounces, and
-  // devours (Devour: a bite that heals it), calling the Jackal Guardians
+  // devours (Devour: a bite that heals it), calling the Sphinx Cubs of its floor
   ammit: { name: 'Ammit', ai: 'boss', art: 'ammit', aura: '#6ad890', el: 'shadow', boss: true, lv: 74, hp: 340000, atk: [240, 310], def: 26, vit: 60, agi: 40, dex: 165, mdef: 25, exp: [80000, 56000], adelay: 1700, fierce: true, walk: 160,
     moves: [{ kind: 'charge', name: 'Devouring Rush', mult: 1.7 }, { kind: 'leap', name: 'Pounce', mult: 1.8, r: 1.9 }, { kind: 'devour', name: 'Devour', mult: 2.2, heal: 0.04 }],
-    aggro: 6, chase: 12, reach: 1.6, w: 2.3, r: 0.85, heavy: true, summon: ['jackal', 'jackal'], summonText: 'Ammit roars, and the Jackal Guardians come running!', respawn: 540,
-    drops: [['ammit_heart', 1, 1, 0.3], ['jackal_pelt', 3, 5, 1], ['potion3', 1, 2, 0.5], ['devourer_mail', 1, 1, 0.03], ['ammit_claw', 1, 1, 0.02], ['ammit_card', 1, 1, 0.01]] },
-  // the MVP of the Sphinx's Halls, at the bottom of the fourth floor, in its great hall (hall: it never
-  // leaves it): the Eternal Sphinx, a winged lion in a striped headdress, the oldest thing in Aria. It
+    aggro: 6, chase: 12, reach: 1.6, w: 2.3, r: 0.85, heavy: true, summon: ['sphinxCub', 'sphinxCub'], summonText: 'Ammit roars, and Sphinx Cubs come bounding out of the dark!', respawn: 540,
+    drops: [['ammit_heart', 1, 1, 0.3], ['gold_leaf', 3, 5, 1], ['potion3', 1, 2, 0.5], ['devourer_mail', 1, 1, 0.03], ['ammit_claw', 1, 1, 0.02], ['ammit_card', 1, 1, 0.01]] },
+  // the MVP of the Sphinx's Halls, on the fourth floor, its great hall (hall: it never leaves it): the Eternal Sphinx, a winged lion in a striped headdress, the oldest thing in Aria. It
   // tests whoever comes with its Riddle (the owner's call: riddles and combat): a riddle, three answers
   // written in three circles round you; stand in the right one when the time is up and it is
   // Dumbstruck (it can't move and takes 30% more for a while), in a wrong one (or none) and its
   // Judgment falls on you, and it is Exalted (it takes half as much a while). Between riddles it
   // pounces, rains stones from the ceiling (leaving cursed sand that slows you), fixes you with its
-  // Gaze (a bolt of gold light) and calls its cubs and the sand itself
+  // Gaze (a bolt of gold light) and calls its cubs and its Guardians (the owner's call)
   eternalSphinx: { name: 'Eternal Sphinx', ai: 'boss', art: 'eternalSphinx', el: 'earth', lv: 99, hp: 1400000, atk: [560, 720], def: 30, vit: 70, agi: 45, dex: 210, mdef: 45, exp: [160000, 112000], adelay: 2100, walk: 140, aggro: 9, chase: 30, reach: 2.6, w: 4.6, r: 1.6, heavy: true, hall: true,
     mvp: true, respawn: 2400, mvpExp: 60000, stomp: 2.2, takes: { magic: 1.3, melee: 0.85, beast: 0.7 }, takesText: 'its stone hide turns claws and fangs (beasts −30%) and dulls blades (−15%), but it honours wisdom: spells strike true (+30%)',
     moves: [{ kind: 'riddle', name: 'The Riddle', mult: 3.0 }, { kind: 'leap', name: 'Pounce', mult: 2.2, r: 2.2 }, { kind: 'meteors', name: 'Falling Stones', mult: 1.8, r: 1.6, color: '#c8a46a' }, { kind: 'throw', name: 'Gaze of Ages', mult: 2.4, r: 1.8 }, { kind: 'frenzy' }],
     burns: { r: 1.6, dur: 6, mult: 0.25, slow: true, color: '#e8c050', word: 'Cursed sand!', text: 'cursed sand' },
-    summon: ['sphinxCub', 'sphinxCub', 'sandElemental'], summonText: 'The Eternal Sphinx roars, and its cubs come bounding out of the dark!', mvpDrops: [['gold_bar', 1], ['potion3', 3]],
+    summon: ['sphinxCub', 'sphinxCub', 'jackal', 'falcon'], summonText: 'The Eternal Sphinx roars, and its cubs and Guardians answer!', mvpDrops: [['gold_bar', 1], ['potion3', 3]],
     wake: 'Deep under the sands, something ancient opens its eyes... The Eternal Sphinx waits in its hall.',
     drops: [['gold_bar', 1, 3, 1], ['potion3', 2, 3, 0.6], ['lion_mane', 4, 6, 1], ['hard_ore', 1, 2, 0.4], ['armor_ore', 1, 2, 0.4], ['sphinx_ring', 1, 1, 0.05], ['sphinx_mantle', 1, 1, 0.03], ['riddle_blade', 1, 1, 0.02], ['sphinx_staff', 1, 1, 0.02], ['sphinx_bow', 1, 1, 0.01], ['enigma_fang', 1, 1, 0.01], ['sphinx_card', 1, 1, 0.01], ['allseeing_eye', 1, 1, 0.005]] },
 };

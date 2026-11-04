@@ -18,7 +18,7 @@
 //                                                            |
 //                                                     (hidden) Sphinx Sands
 //                                                            |  (the door in the Sphinx's chest)
-//                                       Sphinx Halls 1 - 2 - 3 - 4 (mazes; the Eternal Sphinx's hall)
+//                                       Sphinx Halls 1 - 2 - 3 (mazes) - 4 (the Eternal Sphinx's great hall)
 //
 // (Dark Dale's east portal is Black Wood. Veidheim, the hunters' village, is reached from Birch
 // Grove through Willow Marsh; the predators' lands lie east of Black Wood and Ash Heath.)
@@ -68,8 +68,8 @@ export const ZONE_NAMES = {
   sphinx: 'Sphinx Sands',  // the Giant Sphinx's sands, open only to who solves its riddle
   tomb: "Pharaoh's Tomb",  // the fourth raid (raid.js): the burial hall under the Pyramid
   halls1: 'Sphinx Halls 1', // the first dungeon (dungeon.js), behind the door in the Giant Sphinx's
-  halls2: 'Sphinx Halls 2', // chest: four maze floors, harder floor by floor, the Eternal Sphinx in
-  halls3: 'Sphinx Halls 3', // the great hall at the bottom
+  halls2: 'Sphinx Halls 2', // chest: three maze floors, harder floor by floor, and the Eternal Sphinx's
+  halls3: 'Sphinx Halls 3', // great hall at the bottom
   halls4: 'Sphinx Halls 4',
 };
 
@@ -135,13 +135,13 @@ export const MAPS = {
   // in front of the door, not into the Sphinx)
   sphinx:   { portals: [{ to: 'desert', ...S }, { to: 'halls1', x: 32, z: 36, out: [0, 2.6], door: true }], lift: [0, 0.2], dunes: 0.5, desert: true, sphinx: { x: 32, z: 30 }, keep: [{ x0: 21, z0: 6, x1: 43, z1: 50 }] },
   tomb:     { portals: [], arena: { r: 13, land: true, near: 'ruin_pillar' }, lift: [0, 0.2], tomb: true },
-  // the Sphinx's Halls (dungeon.js): indoor (no sky, no day and night: daynight.js), every floor a maze
+  // the Sphinx's Halls (dungeon.js): indoor (no sky, no day and night: daynight.js), three maze floors
   // (maze: its seed, its rooms [i, j, pillar?] of 2x2 cells, a share of loops; the stairs stand in
-  // portal rooms, pillarless), the last floor with the great hall (hall: its cells and gate)
+  // portal rooms, pillarless), then the great hall alone (hall: its cells; only: nothing else on the floor)
   halls1: { portals: [{ to: 'sphinx', x: 31.5, z: 55.5 }, { to: 'halls2', x: 31.5, z: 7.5 }], indoor: true, maze: { floor: 1, seed: 101, loops: 0.12, start: [6, 13], rooms: [[6, 12], [6, 0], [2, 4, true], [10, 8, true]] } },
   halls2: { portals: [{ to: 'halls1', x: 31.5, z: 7.5 }, { to: 'halls3', x: 55.5, z: 31.5 }], indoor: true, maze: { floor: 2, seed: 202, loops: 0.1, start: [6, 0], rooms: [[6, 0], [12, 6], [3, 9, true], [8, 4, true], [2, 2, true]] } },
   halls3: { portals: [{ to: 'halls2', x: 55.5, z: 31.5 }, { to: 'halls4', x: 7.5, z: 31.5 }], indoor: true, maze: { floor: 3, seed: 303, loops: 0.09, start: [12, 6], rooms: [[12, 6], [0, 6], [6, 6, true], [5, 1, true], [8, 10, true]] } },
-  halls4: { portals: [{ to: 'halls3', x: 7.5, z: 55.5 }], indoor: true, maze: { floor: 4, seed: 404, loops: 0.08, start: [0, 12], rooms: [[0, 12], [9, 10, true]], hall: { i0: 1, j0: 0, i1: 12, j1: 6, gate: [6, 7] } } },
+  halls4: { portals: [{ to: 'halls3', x: 31.5, z: 55.5 }], indoor: true, maze: { floor: 4, seed: 404, hall: { i0: 2, j0: 1, i1: 11, j1: 13, only: true } } }, // (no maze: the great hall alone)
 };
 const SEG = 128; // terrain vertices per side - 1 (0.5 unit spacing)
 

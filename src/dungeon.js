@@ -1,7 +1,7 @@
-// The Sphinx's Halls, Aria's first dungeon: four maze floors under the Giant Sphinx of Sphinx Sands,
-// each a 64x64 map walled into a maze of sandstone corridors (the owner's call: every floor a maze,
-// harder floor by floor, a levelling site), the last one opening on a great hall where the Eternal
-// Sphinx waits (MAPS.halls1..halls4 in world.js; their monsters in main.js SPAWNS).
+// The Sphinx's Halls, Aria's first dungeon: four floors under the Giant Sphinx of Sphinx Sands, each a
+// 64x64 map. The first three are mazes of sandstone corridors, harder floor by floor (a levelling
+// site); the last is a great hall alone, where the Eternal Sphinx waits with its Guardians (the owner's
+// call: three maze floors, then the hall. MAPS.halls1..halls4 in world.js; their monsters in main.js SPAWNS).
 //
 // The maze is laid on the tile grid the hero walks (tiles.js): 14 x 14 cells of 3 x 3 tiles, a wall
 // one tile thick between them (wall lines on tiles 3, 7, 11 ... 59, and the map's rim all wall), so
@@ -10,8 +10,8 @@
 // - rooms: 2x2 cells opened into one. A portal room (the stairs) loses its middle post; a chamber
 //   keeps it, a pillar to fight round;
 // - loops: a share of the walls left are knocked through, so a dead end is rarely the only way;
-// - the hall (floor 4): a block of cells opened into one great room, walled round but for its gate,
-//   with rows of pillars down it.
+// - the hall (floor 4): a block of cells opened into one great room, walled round, with rows of
+//   pillars down it; hall.only: nothing else on the floor (every cell outside it stays solid rock).
 // The walls are two meshes (their sides and their tops) built from the solid tiles merged into
 // rectangles, textured in world space with sandstone courses and a band of carvings. Whatever wall
 // stands between the camera and the hero is cut away (a dither in the shader), so the hero, and the
@@ -35,7 +35,7 @@ export const FLOOR_LOOK = {
 };
 
 // carve the floor's maze. M: { seed, rooms: [[i, j, pillar?]...] (2x2 cells from i, j), loops (a share),
-// hall: { i0, j0, i1, j1, gate: [i...] } (opened through its bottom wall at those columns) }.
+// hall: { i0, j0, i1, j1, gate: [i...] (opened through its bottom wall at those columns), only (no maze round it) } }.
 // Returns { solid (Uint8Array, 1 wall, 2 pillar), hall (in paces), deadEnds: [[x, z]], cells }
 export function carveMaze(M) {
   const rng = mulberry32(M.seed);
@@ -59,7 +59,7 @@ export function carveMaze(M) {
   const seen = new Uint8Array(C * C);
   const DIRS = [[1, 0], [-1, 0], [0, 1], [0, -1]];
   const start = M.start || [0, C - 1];
-  const stack = [start];
+  const stack = H?.only ? [] : [start]; // (a floor that is all hall has no maze to carve)
   seen[start[1] * C + start[0]] = 1;
   while (stack.length) {
     const [i, j] = stack[stack.length - 1];
@@ -74,7 +74,7 @@ export function carveMaze(M) {
   // loops: some of the walls left between two maze cells come down
   for (let j = 0; j < C; j++) for (let i = 0; i < C; i++) for (const [di, dj] of [[1, 0], [0, 1]]) {
     const a = i + di, b = j + dj;
-    if (a >= C || b >= C || inHall(i, j) || inHall(a, b)) continue;
+    if (a >= C || b >= C || inHall(i, j) || inHall(a, b) || H?.only) continue;
     if (rng() < (M.loops ?? 0.1)) open(i, j, di, dj);
   }
   // rooms: four cells opened into one
@@ -91,8 +91,8 @@ export function carveMaze(M) {
     }
     for (let j = H.j0; j <= H.j1; j++) { if (H.i0 > 0) shut(H.i0, j, -1, 0); if (H.i1 < C - 1) shut(H.i1, j, 1, 0); }
     for (let i = H.i0; i <= H.i1; i++) { if (H.j0 > 0) shut(i, H.j0, 0, -1); if (H.j1 < C - 1) shut(i, H.j1, 0, 1); }
-    for (const i of H.gate) open(i, H.j1, 0, 1);
-    if (H.gate.length > 1) for (let k = 1; k < H.gate.length; k++) solid[at(line(H.gate[k]), line(H.j1 + 1))] = 0; // (the post between the gate's cells)
+    for (const i of H.gate || []) open(i, H.j1, 0, 1);
+    if (H.gate?.length > 1) for (let k = 1; k < H.gate.length; k++) solid[at(line(H.gate[k]), line(H.j1 + 1))] = 0; // (the post between the gate's cells)
   }
   // the posts where wall lines cross stand only where a wall meets them
   for (let l = 1; l < C; l++) for (let k = 1; k < C; k++) {
@@ -105,12 +105,12 @@ export function carveMaze(M) {
   if (H) {
     hall = { x0: cellLo(H.i0), z0: cellLo(H.j0), x1: cellLo(H.i1) + 3, z1: cellLo(H.j1) + 3 };
     for (const px of [hall.x0 + 4, hall.x0 + 12, hall.x1 - 13, hall.x1 - 5]) for (let pz = hall.z0 + 3; pz < hall.z1 - 4; pz += 5) solid[at(px, pz)] = 2;
-    hall.gate = { x: (cellLo(H.gate[0]) + cellLo(H.gate[H.gate.length - 1]) + 3) / 2, z: hall.z1 };
+    hall.gate = H.gate?.length ? { x: (cellLo(H.gate[0]) + cellLo(H.gate[H.gate.length - 1]) + 3) / 2, z: hall.z1 } : { x: (hall.x0 + hall.x1) / 2, z: hall.z1 };
   }
   // dead ends (a cell with one way out): for urns, bones and coffins
   const deadEnds = [];
   for (let j = 0; j < C; j++) for (let i = 0; i < C; i++) {
-    if (inHall(i, j)) continue;
+    if (inHall(i, j) || H?.only) continue;
     const cx = cellLo(i) + 1, cz = cellLo(j) + 1;
     const ways = [solid[at(cx - 2, cz)], solid[at(cx + 2, cz)], solid[at(cx, cz - 2)], solid[at(cx, cz + 2)]].filter((v) => !v).length;
     if (ways === 1) deadEnds.push([cx + 0.5, cz + 0.5]);

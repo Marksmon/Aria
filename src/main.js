@@ -85,11 +85,11 @@ const SPAWNS = {
   // worms, the scorpions and runners round the Pyramid, and the Great Desert where all of them roam
   // over the Sand Wyrm. Sphinx Sands keeps no monsters; the tomb (raid) spawns its own
   sand: [], sphinx: [], tomb: [],
-  // the Sphinx's Halls (dungeon.js): four maze floors, harder floor by floor (no night here: underground)
+  // the Sphinx's Halls (dungeon.js): three maze floors, harder floor by floor, then the great hall (no night here: underground)
   halls1: [['hallScarab', 16], ['cobra', 13]],                               // Base 31-45
   halls2: [['hallMummy', 10], ['lamia', 9], ['servant', 9]],                 // 46-60
-  halls3: [['jackal', 12], ['falcon', 10], ['ammit', 1]],                    // 61-75, Ammit the mini-boss
-  halls4: [['sphinxCub', 9], ['sandElemental', 8], ['sarcophagus', 7], ['eternalSphinx', 1]], // 76-90, the Eternal Sphinx in its hall
+  halls3: [['sphinxCub', 10], ['sandElemental', 9], ['sarcophagus', 8], ['ammit', 1]], // 61-75, Ammit the mini-boss
+  halls4: [['jackal', 8], ['falcon', 7], ['eternalSphinx', 1]],             // 76-90: the great hall, the Guardians and the Eternal Sphinx
   redsands: [['redSlime', 12], ['giantAnt', 8], ['redSlime', 3, true], ['giantAnt', 2, true]],
   dunes: [['cactus', 9], ['duneWorm', 7], ['cactusLord', 1], ['duneWorm', 2, true], ['cactus', 2, true]],
   scorpion: [['scorpion', 9], ['runner', 6], ['rainbowRunner', 1], ['scorpion', 3, true], ['runner', 1, true]],

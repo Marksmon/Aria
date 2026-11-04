@@ -82,7 +82,7 @@ Coal Pit - Stone Field - Salt Bay - Fen Shore - Eldrun Camp   Ember Hill  -  Ash
                                                              :
                                                (hidden) Sphinx Sands
                                                              |  (the door in the Sphinx's chest)
-                                        Sphinx Halls 1 - 2 - 3 - 4 (the first dungeon)
+                         Sphinx Halls 1 - 2 - 3 (mazes) - 4 (the great hall): the first dungeon
 ```
 
 Goblin country (Burnt Wood, then Serpent Wood) lies beyond Galdrheim's north gate; the kobolds' hills
@@ -117,8 +117,8 @@ Scorpion Sands with its Pyramid, then the Great Desert, where the Sand Wyrm hunt
 | Great Desert | 62–70 | Soldier Ant (62), Cactus, Dune Worm, Sand Scorpion, Sand Runner | **Sand Wyrm (70, MVP)** |
 | Sphinx Halls 1 | 31–45 | Scarab (34, hard shell), Cobra (42, poison) | |
 | Sphinx Halls 2 | 46–60 | Mummy (50), Lamia (55, spits venom), Pharaoh's Servant (58, blue fire) | |
-| Sphinx Halls 3 | 61–75 | Jackal Guardian (66, long spear), Falcon Sentinel (70, wind blades) | Ammit (74) |
-| Sphinx Halls 4 | 76–90 | Sphinx Cub (80), Sand Elemental (84, slowing sand), Sarcophagus (88) | **Eternal Sphinx (99, MVP)** |
+| Sphinx Halls 3 | 61–75 | Sphinx Cub (64), Sand Elemental (68, slowing sand), Sarcophagus (72) | Ammit (74) |
+| Sphinx Halls 4 (the great hall) | 76–90 | Jackal Guardian (80, long spear), Falcon Sentinel (86, wind blades) | **Eternal Sphinx (99, MVP)** |
 | Any field in the valley, more at night (Moss Field and Fen Shore only at night) | | Wisp (11) | |
 
 Moss Field and Fen Shore, by the camp and the city, Willow Marsh by Veidheim and the Red Sands by Rytingborg are a Trainee's fields: a Base 10 Trainee
@@ -355,23 +355,24 @@ every sand round the city. It opens a hidden way out of the Great Desert to **Sp
 Giant Sphinx half the size of the map lies among ruins. The great door in its chest leads down into
 its halls.
 
-**The Sphinx's Halls** are Aria's first dungeon: four floors, one under the other, every one a maze
-of sandstone corridors three paces wide, carved with eyes, ankhs and birds and lit by torches. Each
-floor is harder than the last, so the halls are a place to level from Base 31 to 90 (see the table
-above). Every monster down there attacks on sight. The stairs stand in an open room at each end of
+**The Sphinx's Halls** are Aria's first dungeon, and its monsters live nowhere else: four floors, one
+under the other. The first three are mazes of sandstone corridors three paces wide, carved with
+eyes, ankhs and birds and lit by torches; the fourth is a great pillared hall. Each floor is harder
+than the last, so the halls are a place to level from Base 31 to 90 (see the table above). Every
+monster down there attacks on sight. The stairs stand in an open room at each end of
 a floor; there are dead ends with urns, bones and coffins, and pillared chambers to fight in. Walls
 between you and the camera turn see-through, so you never lose sight of your hero. It is always
 dim underground, day or night.
 
 - **Floor 1:** Scarabs and Cobras. **Floor 2:** Mummies, Lamias (snake-women who spit venom from afar)
   and the Pharaoh's Servants (skeletal priests who throw blue fire from crystal staves).
-- **Floor 3:** Jackal Guardians with long cursed spears, Falcon Sentinels throwing blades of wind, and
+- **Floor 3:** Sphinx Cubs, Sand Elementals (their whirling sand slows you), walking Sarcophagi, and
   **Ammit the Devourer** (Lv 74 mini-boss: a crocodile's head, a lion's mane and claws). It rushes,
-  pounces, and **Devours**: a bite that heals it. It calls the Jackal Guardians.
-- **Floor 4:** Sphinx Cubs, Sand Elementals (their whirling sand slows you) and walking Sarcophagi.
-  At the end of its maze a gate opens on a great pillared hall, and in it waits the **Eternal
-  Sphinx** (Lv 99 MVP, 1,400,000 HP, Earth), a winged lion in a striped headdress. It never leaves its
-  hall, and it fights you only while you are in it.
+  pounces, and **Devours**: a bite that heals it. It calls Sphinx Cubs.
+- **Floor 4, the great hall:** no maze, only a long hall of gold-capped pillars, where the Jackal
+  Guardians with their long cursed spears and the Falcon Sentinels throwing blades of wind keep watch
+  over the **Eternal Sphinx** (Lv 99 MVP, 1,400,000 HP, Earth), a winged lion in a striped headdress.
+  It never leaves its hall.
 
 **The Riddle.** The Eternal Sphinx tests you with riddles as well as claws. It sits back and asks one,
 and three gold circles appear round you, each with an answer written over it. Stand in the right
@@ -380,7 +381,7 @@ move for a moment and takes 30% more damage for 9 seconds. Stand in a wrong circ
 its **Judgment** falls on you wherever you are in the hall (3x its ATK), and it is **Exalted**: it takes
 half damage for 8 seconds. Between riddles it **Pounces**, brings **Falling Stones** down from the
 ceiling (they leave cursed sand that slows you), fixes you with its **Gaze of Ages**, and calls its
-cubs and the Sand Elementals. It always drops **Gold Bars** (1–3, and one more as its MVP reward),
+cubs and its Guardians. It always drops **Gold Bars** (1–3, and one more as its MVP reward),
 which sell for a fortune, and now and then good gear for every build: the Riddle Blade, the Sphinx
 Sceptre, the Sphinx Wing Bow, the Enigma Fang, the Sphinx Wing Mantle, the Sphinx Ring, its card, and
 very rarely (0.5%) its ultra rare: **the Sphinx's All-Seeing Eye**, a gold Face piece over one eye
@@ -1352,7 +1353,7 @@ to restore HP, save, and sleep until morning.
 - [x] Steinborg, four new lands, mini-bosses, perz and shops, the Sorcerer and job trials
 - [x] Cards, more jobs, raids, the Beastmaster's pack
 - [x] Rytingborg and the desert: the Assassin and the Phantom, the Sand Wyrm, Pharaoh's Tomb, the Sphinx's secret
-- [x] **The Sphinx's halls**, Aria's first dungeon: four maze floors, Ammit and the Eternal Sphinx
+- [x] **The Sphinx's halls**, Aria's first dungeon: three maze floors and the great hall, Ammit and the Eternal Sphinx
 - [ ] **Ten cities.** Five early-game cities (Steinborg, Galdrheim, Veidheim and Rytingborg so far,
   one more to come), then five late-game ones. The first half of Aria's making ends with the fifth city.
 
