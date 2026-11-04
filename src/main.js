@@ -25,7 +25,7 @@ import { BigMap } from './bigmap.js';
 import { headsReady, paintHead, lookPortrait, hairstyles, HAIR_BODY } from './hair.js';
 import { headgearReady, gearCut, paintGears } from './headgear.js';
 import { derive, playerAttack, mobAttack, magicAttack, elementMod, ELEMENTS } from './rules.js';
-import { SKILLS, EDGE_FX, learnBlock, skillLv, spCost, castTime, learn, skillList, weaponOk, WEAPON_NAMES, BOW_RANGE, unlearnFirstJob, unlearnSecondJob, RETRAIN_COST } from './skills.js';
+import { SKILLS, EDGE_FX, skillLv, spCost, castTime, learn, skillList, weaponOk, WEAPON_NAMES, BOW_RANGE, unlearnFirstJob, unlearnSecondJob, RETRAIN_COST } from './skills.js';
 import { Menus } from './menus.js';
 import { iconTexture, iconURL, ENCHANT, ITEMS, baseOf, canWear, maybeSlotted } from './items.js';
 import { DayNight } from './daynight.js';
@@ -1565,26 +1565,25 @@ const GUIDES = {
       text: '<b>Press and hold</b> the Red Potion, <b>drag</b> it down onto an empty hotbar slot, and let go. (Or tap it, then <b>Add to hotbar</b>.)', done: () => hotbar.has('item', 'potion') },
   ],
 };
-// The first job's skills: once the hero wears a first job and has a point for one of its active
-// skills, how to raise it, put it on the hotbar and use it (once: flags.guide_jobskills)
+// The first job's skills: once the hero wears a first job, how its tree, an active skill and the
+// hotbar work (once: flags.guide_jobskills). It never spends a point for them (the owner's call: a
+// point is the hero's build, and costly to take back): it shows, they choose.
 function jobSkillsGuide() {
-  const job = prog.job, done = () => !!story.flags.guide_jobskills;
-  if (JOBS[job]?.tier !== 1 || done()) return null;
+  const job = prog.job;
+  if (JOBS[job]?.tier !== 1 || story.flags.guide_jobskills) return null;
   const ids = Object.keys(SKILLS).filter((id) => SKILLS[id].job === job && SKILLS[id].kind === 'active');
   if (ids.some((id) => hotbar.has('skill', id))) { story.flags.guide_jobskills = true; return null; } // (they know how)
-  const id = ids.find((k) => !SKILLS[k].free && !SKILLS[k].granted && !learnBlock(prog, k));
-  if (!id) return null; // (no point for one yet: it waits)
+  const id = ids.find((k) => !SKILLS[k].free && !SKILLS[k].granted && !SKILLS[k].needs) || ids[0];
+  if (!id) return null;
   const sk = SKILLS[id], name = JOBS[job].name, node = () => $(`.sknode[data-id="${id}"]`, win('skills'));
   const onTab = () => inSkills() && menus.skTab === job;
-  const cell = () => hotbar.cells[hotbar.slots.findIndex((x) => x?.kind === 'skill' && x.id === id)] || null;
   return [
     { at: () => hudBtn('skills'), text: `You are a <b>${name}</b> now, and your job's skills are waiting. Tap <b>Skills</b>.`, done: inSkills },
     { at: () => $(`[data-act="sktab"][data-id="${job}"]`, win('skills')) || $('[data-act="skfirst"]', win('skills')), need: inSkills, text: `The <b>${name}</b> tab holds your job's tree.`, done: onTab },
-    { at: node, need: onTab, back: 1, text: `<b>${sk.name}</b> is an <b>active</b> skill: you use it in a fight. Tap it.`, done: () => menus.skSel === id || skillLv(prog, id) > 0 },
-    { at: () => $(`[data-act="learn"][data-id="${id}"]`, win('skills')), need: onTab, back: 1, text: 'Tap <b>Raise ▲</b> to learn it. (Raise it again later and it hits harder; some skills open others.)', done: () => skillLv(prog, id) > 0 },
-    { at: node, need: onTab, back: 1, drag: [node, () => hotbar.nextFree, iconURL(sk.icon)],
-      text: '<b>Press and hold</b> it, <b>drag</b> it down onto an empty hotbar slot, and let go. (Or tap <b>Add to hotbar</b>.)', done: () => hotbar.has('skill', id) },
-    { at: cell, text: `Tap it on the hotbar to use it on the monster you are fighting (tap a monster first). Each use costs <b>SP</b>, the blue bar, and some skills have a cooldown${sk.weapon ? `. ${sk.name} needs <b>${WEAPON_NAMES[sk.weapon]}</b> in hand` : ''}. Learnt skills stay yours: a new Job Level brings a new point.` },
+    { at: () => $('.sktree', win('skills')), need: onTab, back: 1, text: `Each icon is a skill: <b>active</b> ones are used in a fight, <b>passive</b> ones (the round icons) work by themselves. A line joins a skill to what it opens. Every Job Level brings a <b>skill point</b>, and they go into any tree you have earned.` },
+    { at: node, need: onTab, back: 1, text: `<b>${sk.name}</b> is an <b>active</b> skill. Tap it to read it.`, done: () => menus.skSel === id },
+    { at: () => $('.skdetail', win('skills')), need: onTab, back: 1, text: `What it does now and at the next level, its SP cost${sk.weapon ? ` and the weapon it needs (<b>${WEAPON_NAMES[sk.weapon]}</b>)` : ''}. <b>Raise ▲</b> spends a point on it. Choose with your build in mind: points come back only with a trainer's <b>costly reset</b>. Nothing has to be raised now.` },
+    { at: () => hotbar.nextFree, need: inSkills, back: 0, text: 'Once an active skill is learnt, <b>press and hold</b> it in the tree and <b>drag</b> it onto the hotbar (or tap <b>Add to hotbar</b>). Then tap it there to use it on the monster you are fighting. Each use costs <b>SP</b>, the blue bar, and some skills have a cooldown.' },
   ];
 }
 // The craftsmen's lessons: the first time the hero talks to someone who crafts (any crafter, a raid
