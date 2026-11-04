@@ -4,6 +4,7 @@
 // Pickup toasts and messages live here too. Plain DOM over the canvas.
 import { ITEMS, RECIPES, SLOTS, SHOPS, PRICES, sellPrice, equipLine, iconURL, canWear, jobLine, recipeKind, upgradeLine, refineInfo, canEnchant, canInsert, ENCHANT, MAX_REFINE, enchantStep, cardOn, cardLine, UNCARD_FEE, parseKey, makeKey } from './items.js';
 import { BAG_SLOTS, CHEST_SLOTS } from './inventory.js';
+import { hasCardArt, showCardArt } from './cardart.js';
 import { STATS, STAT_KEYS, JOBS, TREES, QUEST_RATE, JOB_TRAITS } from './progress.js';
 import { statCost } from './ro-tables.js';
 import { HAIRSTYLES, DYES, hairstyles, lookPortrait } from './hair.js';
@@ -557,7 +558,7 @@ export class Menus {
   // the cards in a piece, each with its picture and what it does (and the empty slots left)
   cardsBlock(it) {
     if (!it?.slots) return '';
-    const rows = (it.cards || []).map((c) => `<div class="cardrow">${icon(c, 'xs')}<b>${esc(ITEMS[c].name)}</b><small>${esc(cardLine(ITEMS[c].card))}</small></div>`);
+    const rows = (it.cards || []).map((c) => `<div class="cardrow">${icon(c, 'xs')}<b>${esc(ITEMS[c].name)}</b><small>${esc(cardLine(ITEMS[c].card))}</small>${hasCardArt(c) ? `<button class="rbtn soft cardartbtn" data-act="cardart" data-id="${c}" title="See the card's painting">Art</button>` : ''}</div>`);
     for (let i = rows.length; i < it.slots; i++) rows.push('<div class="cardrow empty"><i></i><small>An empty slot</small></div>');
     return `<div class="cardlist">${rows.join('')}</div>`;
   }
@@ -569,7 +570,7 @@ export class Menus {
     let act = '';
     if (sel?.usable) act = `<button class="rbtn" data-act="use">Use</button>${this.hotbar && !this.hotbar.has('item', this.selected) ? '<button class="rbtn soft" data-act="tohotbar">Add to hotbar</button>' : ''}`;
     if (sel?.type === 'equip') act = canWear(this.selected, this.prog.wearJobs) ? '<button class="rbtn" data-act="equip">Equip</button>' : `<span class="rtag">${esc(jobLine(sel))}</span>`;
-    if (sel?.card) act = '<button class="rbtn" data-act="insertcard">Insert</button>';
+    if (sel?.card) act = `<button class="rbtn" data-act="insertcard">Insert</button>${hasCardArt(this.selected) ? `<button class="rbtn soft" data-act="cardart" data-id="${this.selected}">View art</button>` : ''}`;
     const up = sel?.type === 'equip' ? upgradeLine(sel) : '';
     const line = sel?.type === 'equip' ? `<span class="rstat">${esc(SLOTS[sel.slot])}${equipLine(sel) ? ' · ' + equipLine(sel) : ''} · ${esc(jobLine(sel))}${up ? ' · ' + esc(up) : ''}</span>${this.cardsBlock(sel)}` : sel?.card ? `<span class="rstat">Card · goes in ${esc(cardOn(sel.card).map((s) => SLOTS[s]).join(' or '))} · ${esc(cardLine(sel.card))}${sel.adj ? ` · names it "${esc(sel.adj)}"` : ''}</span>` : '';
     return `<div class="rtabs">${Object.entries(tabs).map(([k, n]) => `<button class="rtab${this.tab === k ? ' on' : ''}" data-act="tab" data-id="${k}">${n}</button>`).join('')}</div>
@@ -1080,6 +1081,7 @@ export class Menus {
     if (act === 'craftwin') { this.close('talk'); this.openCraft(t.dataset.id); }
     if (act === 'smithwin') { this.close('talk'); this.openSmith(t.dataset.id); }
     if (act === 'insertcard' && this.selected) this.openSmith('insert', this.selected);
+    if (act === 'cardart' && ITEMS[t.dataset.id]?.card) showCardArt(t.dataset.id, ITEMS[t.dataset.id].name, cardLine(ITEMS[t.dataset.id].card)); // the card's painting, full screen
     if (act === 'smithpick') { this.smithSel = { where: t.dataset.where, key: t.dataset.id }; this.smithSure = false; this.render(id); }
     if (act === 'smithcancel') { this.smithSure = false; this.render(id); }
     if (act === 'smithgo' && this.smithSel) {

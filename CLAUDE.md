@@ -139,6 +139,7 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   Each MVP has a matchup (`takes` in `mobs.js`, applied in `rules.js`): easiest for one job family
   and hardest for another (Fire Giant: bows / casters; Kobold King: casters / bows; Goblin King:
   blades / bows and casters; Ancient Treant: beasts / blades; Sand Wyrm: blades and daggers / beasts).
+- **Card paintings** (the owner's call): a card can have an anime painting (2:3, the name and a BOSS badge painted in, after the Ragnarok card art), `src/art/cards/<card id>.jpg` (640 wide). A card with one gets a View art button in the Items window and an Art button where it sits in a piece; it opens full screen (`src/cardart.js`), loaded only when opened. The five MVP cards have theirs; the mini-boss and raid cards come next.
 - **The desert and the Sphinx:** Rytingborg (`sand`), the Red Sands (a Trainee's field), the Cactus
   Dunes, Scorpion Sands (the Pyramid: the raid guide) and the Great Desert (the Sand Wyrm). The
   Carters always offer Rytingborg (`ALWAYS_FARES`). A secret 6-step series (Old Gunnhild, The
