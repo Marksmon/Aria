@@ -11,7 +11,7 @@ quests. Code: `src/progress.js` (jobs, levels, points), `src/skills.js` (trees, 
 |---|---|---|
 | 0 | Trainee (`novice`) | 1–10 |
 | 1 | Blader (`swordman`), Sorcerer (`mage`), Archer (`archer`), Assassin (`assassin`) | 1–50, one level shared by all |
-| 2 | BladeMaster (`blademaster`, from Blader), Wizard (`wizard`, from Sorcerer), Magic Knight (`magicknight`, from Blader and Sorcerer), Windrunner (`windrunner`, from Archer), Moon Ranger (`moonranger`, from Sorcerer and Archer), Beastmaster (`beastmaster`, from Blader and Archer), Phantom (`phantom`, from Assassin) | 1–50, starts again at 1 |
+| 2 | BladeMaster (`blademaster`, from Blader), Wizard (`wizard`, from Sorcerer), Magic Knight (`magicknight`, from Blader and Sorcerer), Windrunner (`windrunner`, from Archer), Moon Ranger (`moonranger`, from Sorcerer and Archer), Beastmaster (`beastmaster`, from Blader and Archer), Phantom (`phantom`, from Assassin), Shadowblade (`shadowblade`, from Blader and Assassin), Hunter (`hunter`, from Archer and Assassin), Voodoo (`voodoo`, from Sorcerer and Assassin) | 1–50, starts again at 1 |
 
 ## First jobs: walking several paths
 
@@ -85,6 +85,61 @@ quests. Code: `src/progress.js` (jobs, levels, points), `src/skills.js` (trees, 
   Shade and Phantom Grace feed on them.
 - Actives: Dual Rend, Phantom Double, Mirage Step, Thousand Cuts (four, the owner's rule).
 
+## Every second job its own way (the owner's call)
+
+No two second jobs play alike: each has **one mechanic of its own** that no other job shares, and
+its **own strength and weakness** (`JOB_TRAITS` in `progress.js`, shown at the job change). A new
+second job gets a new mechanic and a line in `JOB_TRAITS` and in this table; it never copies
+another's (no second stack-and-spend like Momentum, no second set of pets like the beasts).
+
+| Second job | Its own mechanic | Strong | Weak |
+|---|---|---|---|
+| BladeMaster | Combo and Momentum (stacks spent by Final Blade) | the steadiest damage on one target, the same on every monster; most HP of the blades | no element; few area skills |
+| Wizard | elements, Resonance, Shatter | packs; a monster weak to its element | frail; long casts; far behind on a monster that resists |
+| Magic Knight | Elemental Blade and Chain, ATK + MATK | the toughest (HP, Stone Aegis); its element of choice | neither the hardest hitter nor the best on packs; SP |
+| Windrunner | attack speed, bursts of speed | the quickest shots, a dash out of any corner | little burst, thin on packs, frail up close |
+| Moon Ranger | ATK + MATK arrows, the moon | the best bow on packs, stronger at night | weaker by day; SP |
+| Beastmaster | three beasts fed by its stats | never alone: the beasts take the blows | modest own blows; a fallen beast is gone 20 s |
+| Phantom | two daggers, illusions | the highest steady melee damage | far squishier than a BladeMaster |
+| Shadowblade | **the Ambush** (a blow out of hiding), executions | the biggest single blows; every kill hides it again (Night Stalker) | bosses see through hiding (only the Ambush of Umbral Step lands on them); Shadow cuts barely scratch Shadow monsters; one area skill; fewer HP than a BladeMaster |
+| Hunter | **traps** set at its feet | holds, paralysis and blasts on whole packs; trap damage never misses and goes through DEF | traps need a monster to walk in (floating Wisps never do; one that stands off never springs them); less steady damage than a Windrunner |
+| Voodoo | **Blight**, a curse that stacks | through MDEF and never resisted: the strongest over a long fight; Curse Circle makes everything take more | slow to start, little burst; the frailest second job; Shadow is weak on Shadow monsters |
+
+## The Assassin's crosses: Shadowblade, Hunter, Voodoo
+
+Two-path second jobs like the Magic Knight (`from` of two first jobs: 20 points in each, the same
+`secondJobOpen` / `secondJobBlock` / `learnBlock` rules). Each wears the gear of both its paths.
+
+- **Shadowblade** (Rurik the Shadowblade, Steinborg; Blader + Assassin): swords (and daggers, like
+  everyone). Its look is the Phantom's grand coat in black and vivid violet, with long glowing
+  blades. The **Ambush** (`AMBUSH` 2 in `skills.js`, Night Stalker +10% a level): the first blow out
+  of any hiding (Vanish, Umbral Step, Night Stalker's kill) lands that much harder (`unhide` in
+  `main.js`). Actives: Shadow Slash (two Shadow cuts), Umbral Step (a line cut to the target's
+  back, then hidden 2 s), Eclipse (one huge Shadow blow, +1% for every 1% of HP the monster has
+  lost), Shadow Bloom (area, **blind**: a blinded monster misses `BLIND` 40% of its blows, bosses
+  resist). Passives: Umbral Edge (sword ATK and crit), Night Stalker (a kill hides you), Cruel Edge
+  (more below half HP). Trial: 20 Goblin Assassins, 20 Dark Wisps, 25 Fire Beetles.
+- **Hunter** (Greta the Trapper, Veidheim; Archer + Assassin): bows. The Moon Ranger's cut in black
+  and blood red. **Traps** (`traps`, `tickTraps`, `springTrap` in `main.js`; drawn by `fx.prop`):
+  set at the hero's feet (never on safe ground), armed after 0.6 s, waiting 30 s (+2 a level of Trap
+  Mastery), 3 out at once (+1 at Trap Mastery 5 and 10; the oldest is picked up); the first monster
+  that walks in springs it, never one that flies (`def.fly`). Trap damage is (FNS x 1.5 + KNL + Base
+  Lv x 2) x the trap's %, never misses, through DEF, the trap's element. Bear Trap holds (the monster
+  can't walk, `slowBy` 1; bosses half as long), Shock Trap paralyzes a pack, Blast Trap blows one
+  apart. Killing Shot (bow) hits a held, stunned, frozen or paralyzed monster 60% harder; Predator
+  adds to arrows on a caught or poisoned one; Barbed Traps poison. Trial: 15 Snakes, 10 Bears,
+  25 Wolves.
+- **Voodoo** (Mother Hulda, Galdrheim; Sorcerer + Assassin): staves and daggers. The Wizard's robe in
+  black over toxic green. **Blight** (`BLIGHT` in `skills.js`; `blight`, `blightDmg` in `main.js`):
+  stacks on a monster, up to 5 (8 on the Voodoo Doll's), for 6 s, refreshed by each new stack; each
+  stack eats 8% of the MATK a second (+1.6% a level of Hexcraft), in Shadow, through MDEF, and no boss
+  resists it (it is no hold). Poison Throw (a short cast) adds 1–2 stacks; Curse Circle (6 s, 3
+  paces) a stack a second, and its monsters walk 30% slower and take 2% a level more from everything
+  (`curseT` in `mobs.js`); Poison Aura a stack a second round the hero and **Weakened** (their blows
+  softer, `weakT`); the Voodoo Doll binds one monster (Blight to 8, harder, and every Poison Throw
+  pins it too). Toxic Blade: a dagger's blows add stacks; Soul Siphon: a Blighted death gives SP
+  back and its stacks leap on. Trial: 20 Goblins, 15 Fire Wisps, 25 Dune Worms.
+
 ## Skill points
 
 - Points go into **any tree the hero earned**, active job or not (`trainTrees`, the owner's call): a
@@ -110,6 +165,8 @@ quests. Code: `src/progress.js` (jobs, levels, points), `src/skills.js` (trees, 
 
 Needs a **dagger**: Venom Strike (Assassin), Dual Rend, Thousand Cuts (Phantom). Needs no weapon:
 Venom Cloud, Shadow Step, Vanish, Pilfer (Assassin), Phantom Double, Mirage Step (Phantom).
+Needs a **sword**: Shadow Slash, Umbral Step, Eclipse, Shadow Bloom (Shadowblade). Needs a **bow**:
+Killing Shot (Hunter); its traps need no weapon. The Voodoo's skills need none (a vial, a curse, a doll).
 
 Bare hands are no sword: with no weapon a hero fights hand to hand and has no blade skills, and an
 Archer or Windrunner with no bow fights hand to hand too. Starfall needs no bow and still falls from
@@ -124,7 +181,8 @@ bow range.
 
 - A second-job trial opens from **Job Level 40** of the first job (first jobs go to 50).
 - **Magic Knight:** both first jobs earned, and **at least 20 skill points spent in each**
-  first-job tree (Blader and Sorcerer).
+  first-job tree (Blader and Sorcerer). The Shadowblade (Blader + Assassin), the Hunter (Archer +
+  Assassin) and the Voodoo (Sorcerer + Assassin) follow the same rule.
 - **Moon Ranger:** the Sorcerer and the Archer earned, and **at least 20 skill points spent in
   each** of their trees. **Beastmaster:** the same with the Blader and the Archer. The two-path rule (`secondJobOpen`) takes the pair from the job's `from`,
   so the Magic Knight and the Moon Ranger follow the same rule.
@@ -165,7 +223,9 @@ bow range.
 - **Three or four active skills per second job** (the owner's rule). Windrunner: Tailwind, Gale
   Step, Hurricane Volley, Cyclone Arrow. Moon Ranger: Lunar Multishot, Starfall, Crescent Arrow,
   Moonveil. Beastmaster: Summon Bear, Summon Wolves, Summon Hawk, Pack Frenzy. Phantom: Dual Rend,
-  Phantom Double, Mirage Step, Thousand Cuts.
+  Phantom Double, Mirage Step, Thousand Cuts. Shadowblade: Shadow Slash, Umbral Step, Eclipse,
+  Shadow Bloom. Hunter: Bear Trap, Shock Trap, Blast Trap, Killing Shot. Voodoo: Poison Throw, Curse
+  Circle, Poison Aura, Voodoo Doll.
 
 ## The Beastmaster and its beasts (the owner's rules)
 
@@ -221,6 +281,12 @@ MATK part), used by both the damage and the skill text.
   also draw blows away. The Assassin likewise out-damages the Blader (about 1.4x).
 - **Magic Knight:** between the two on one target, close to the BladeMaster on packs, with the most
   HP and its Stone Aegis barrier.
+- **The Assassin's crosses** (`node build-tools/second-sim.mjs`, a rotation model: Base 80, Job 30,
+  a neutral Lv 55 boss of 300,000 HP): the **Shadowblade** about 0.95x the BladeMaster on a lone boss
+  (its hiding loop needs kills; in a field of monsters, Night Stalker's Ambushes carry it past), the
+  biggest single blows in Aria; the **Hunter** about 0.9x the Windrunner on one target, and the best
+  at holding a pack; the **Voodoo** about 1.1x the Wizard over a long fight, far behind it on packs
+  and in the first seconds.
 
 ## Trials
 
@@ -244,6 +310,9 @@ MATK part), used by both the damage and the skill text.
     25 more Wolves (all in Barley Field).
   - Sir Eirik the Runeblade (Magic Knight), Steinborg.
   - Master Kol (Assassin, Phantom), Rytingborg.
+  - Rurik the Shadowblade (Shadowblade), Steinborg, beside Sir Eirik.
+  - Greta the Trapper (Hunter), Veidheim, by the east wall.
+  - Mother Hulda (Voodoo), Galdrheim, past the Stargazer.
 - Taking a second job:
   - Job Level goes back to 1, and the first-job level is kept for its points (`firstLv`).
   - The look: second jobs wear the first job's outfit recoloured, with an aura. The Magic Knight

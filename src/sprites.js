@@ -988,7 +988,7 @@ function codeSet(frames, fw, fh, body, anchor) {
 // painted at once, the rest a few at a time in the background, and a frame shown before its turn
 // (ensure, from the Player) is painted right then.
 const DESIGNS = {
-  trainee: drawTrainee, blader: drawBlader, master: drawBlader, sorc: drawMage, wiz: drawMage, mknight: drawMKnight, archer: drawArcher, wind: drawRanger, moon: drawRanger, beast: drawBeastmaster, beastsw: drawBeastmaster, assassin: drawAssassin, phantom: drawAssassin,
+  trainee: drawTrainee, blader: drawBlader, master: drawBlader, sorc: drawMage, wiz: drawMage, mknight: drawMKnight, archer: drawArcher, wind: drawRanger, moon: drawRanger, beast: drawBeastmaster, beastsw: drawBeastmaster, assassin: drawAssassin, phantom: drawAssassin, shadowblade: drawAssassin, hunter: drawRanger, voodoo: drawMage,
 };
 function designSet(id) {
   const L = LAYOUTS['./art/trainee.json'];

@@ -202,6 +202,8 @@ export const STORY = [
         { pics: [{ job: 'mage', label: 'Sorcerer' }, '+', { job: 'archer', label: 'Archer' }, '→', { job: 'moonranger', label: 'Moon Ranger' }] }],
       [null, 'THE BEASTMASTER, of the Blade and the Bow (Bjarki, Veidheim), fights up close with a cleaver and from afar with a bow, and never alone: a Bear, a pack of Wolves and a Hawk come at a call and fight at your side.',
         { pics: [{ job: 'swordman', label: 'Blader' }, '+', { job: 'archer', label: 'Archer' }, '→', { job: 'beastmaster', label: 'Beastmaster' }] }],
+      [null, 'And the dagger crosses every path. THE SHADOWBLADE, of the Blade and the Dagger (Rurik, Steinborg), strikes out of the shadows; THE HUNTER, of the Bow and the Dagger (Greta the Trapper, Veidheim), sets traps and shoots what they catch; THE VOODOO, of the Rune and the Dagger (Mother Hulda, Galdrheim), lays curses and poisons that grow.',
+        { pics: [{ job: 'shadowblade', label: 'Shadowblade' }, { job: 'hunter', label: 'Hunter' }, { job: 'voodoo', label: 'Voodoo' }] }],
       ['bram', (flags) => { const c = CALLINGS[callingOf(flags)]; return `So, young one: which path will you walk first?${c ? ` (Saeunn's runes named ${c.name}.)` : ''}`; },
         { choices: [['The Blade: a Blader, with Captain Ulfr in Steinborg', 'pick:blade'], ['The Rune: a Sorcerer, with Archmage Vigdis in Galdrheim', 'pick:rune'], ['The Bow: an Archer, with Huntmaster Sigrid in Veidheim', 'pick:bow'], ['The Dagger: an Assassin, with Master Kol in Rytingborg', 'pick:dagger']] }],
       ['bram', (flags) => { const c = CALLINGS[pickOf(flags)]; return `${c.name.slice(4)} it is! I will send you to ${c.trainer}, ${c.where}, this very moment. Reach Trainee Job 10 with Basic Training 9, and the trial is yours to take.`; }, { sound: 'heart' }],
@@ -327,7 +329,7 @@ export const STORY = [
     reward: { xp: 8000 } },
 
   // ---------- Chapter 7: the second path ----------
-  { id: 'secondpath', ch: 'Chapter 7: The Second Path', title: 'Beyond the First Path', kind: 'job2', goal: 'Take a second job: BladeMaster (Captain Ulfr), Wizard (Archmage Vigdis), Magic Knight (Sir Eirik, Steinborg), Windrunner (Huntmaster Sigrid, Veidheim), Moon Ranger (Hrafn the Stargazer, Galdrheim) or Beastmaster (Bjarki, Veidheim)',
+  { id: 'secondpath', ch: 'Chapter 7: The Second Path', title: 'Beyond the First Path', kind: 'job2', goal: 'Take a second job: BladeMaster (Captain Ulfr), Wizard (Archmage Vigdis), Magic Knight (Sir Eirik, Steinborg), Windrunner (Huntmaster Sigrid, Veidheim), Moon Ranger (Hrafn the Stargazer, Galdrheim), Beastmaster (Bjarki, Veidheim), Phantom (Master Kol, Rytingborg), Shadowblade (Rurik, Steinborg), Hunter (Greta the Trapper, Veidheim) or Voodoo (Mother Hulda, Galdrheim)',
     hint: 'A second-job trial opens at Job Level 40. Which trials you may take depends on where your skill points went.',
     say: [[null, 'Your power has taken a new shape. The aura around you is faint, but every monster in Aria can feel it.'],
       ['vigdis', 'Now you are ready. Go to Ash Heath: the Fire Beetles there gorge on the goblins\' red coal. Break their feast.']],

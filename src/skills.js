@@ -21,8 +21,16 @@ import { MAX_JOB } from './ro-tables.js';
 // status: a spell (or sword sweep) may freeze, paralyze or stun a monster (it stands helpless) or set
 // it burning (damage each second). chance(lv) in %, dur in s; bosses resist: a third of the chance
 // for half as long (main.js inflict). hits/every: a skill that strikes again and again (power is per hit).
-const STATUS_WORD = { freeze: 'freeze', paralyze: 'paralyze', stun: 'stun', burn: 'set burning', poison: 'poison' };
+const STATUS_WORD = { freeze: 'freeze', paralyze: 'paralyze', stun: 'stun', burn: 'set burning', poison: 'poison', blind: 'blind' };
 const statusText = (sk, lv, each = '') => `${sk.status.chance(lv)}% chance${each} to ${STATUS_WORD[sk.status.kind]} for ${sk.status.dur} s (bosses resist)`;
+
+// the Shadowblade's Ambush: a blow out of hiding (main.js unhide), before Night Stalker
+export const AMBUSH = 2;
+// how much of a blinded monster's blows miss (the Shadowblade's Shadow Bloom)
+export const BLIND = 0.4;
+// the Voodoo's Blight: a stack eats base + per x Hexcraft % of MATK a second, for dur s; stacks up to
+// max (dollMax on the Voodoo Doll's monster). Shadow, through MDEF; bosses don't resist it (it is no hold)
+export const BLIGHT = { base: 8, per: 1.6, dur: 6, max: 5, dollMax: 8 };
 
 // what an Elemental Edge or Nova does by element (main.js): the status, and for how long
 export const EDGE_FX = { fire: { kind: 'burn', dur: 3 }, water: { kind: 'freeze', dur: 2 }, wind: { kind: 'paralyze', dur: 1.2 }, earth: { kind: 'stun', dur: 1.5 } };
@@ -256,6 +264,116 @@ export const SKILLS = {
     name: 'Thousand Cuts', job: 'phantom', kind: 'active', max: 10, needs: { dualrend: 3 }, weapon: 'dagger', cd: 5, icon: 'skill_thousandcuts',
     sp: (lv) => 32 + 2 * lv, power: (lv) => 55 + 6 * lv, hits: () => 5, every: 0.22, area: 2.6, status: { kind: 'poison', chance: (lv) => 2 * lv, dur: 4 },
     desc: (lv) => `Spin with both blades, five times: ${SKILLS.thousandcuts.power(lv)}% damage each spin to every monster within ${SKILLS.thousandcuts.area} paces; ${statusText(SKILLS.thousandcuts, lv, ' each')}.`,
+  },
+
+  // ---------- Shadowblade (Blader and Assassin both walked, after the owner's sheet): a sword out of the
+  // shadows. Its own mechanic is the Ambush: a blow struck out of hiding (Vanish, Umbral Step, Night
+  // Stalker's kill) lands much harder, and Eclipse executes the wounded. Its skills cut in Shadow ----------
+  umbraledge: {
+    name: 'Umbral Edge', job: 'shadowblade', kind: 'passive', max: 10, icon: 'skill_umbraledge',
+    desc: (lv) => `+${2 * lv} ATK and +${(0.5 * lv).toFixed(1)}% critical hits with swords.`,
+  },
+  nightstalker: {
+    name: 'Night Stalker', job: 'shadowblade', kind: 'passive', max: 5, icon: 'skill_nightstalker',
+    desc: (lv) => `A kill melts you into the shadows for ${(1 + 0.4 * lv).toFixed(1)} s (bosses and MVPs see through it), and every Ambush (your first blow out of hiding: ×${AMBUSH}) deals ${10 * lv}% more.`,
+  },
+  cruedge: {
+    name: 'Cruel Edge', job: 'shadowblade', kind: 'passive', max: 5, needs: { eclipse: 1 }, icon: 'skill_cruedge',
+    desc: (lv) => `Your sword deals ${4 * lv}% more to a monster below half its HP.`,
+  },
+  shadowslash: {
+    name: 'Shadow Slash', job: 'shadowblade', kind: 'active', max: 10, target: 'mob', range: 1.35, weapon: 'sword', cd: 0.8, icon: 'skill_shadowslash',
+    sp: (lv) => 7 + Math.floor(lv / 2), power: (lv) => 170 + 22 * lv,
+    desc: (lv) => `Two cuts of shadow, ${SKILLS.shadowslash.power(lv)}% damage each, in Shadow (weak on Shadow monsters). Out of hiding, the first is an Ambush.`,
+  },
+  umbralstep: {
+    name: 'Umbral Step', job: 'shadowblade', kind: 'active', max: 5, needs: { shadowslash: 3 }, target: 'mob', range: 7, weapon: 'sword', cd: 6, icon: 'skill_umbralstep',
+    sp: (lv) => 18 + 2 * lv, power: (lv) => 150 + 30 * lv,
+    desc: (lv) => `Sink into your shadow and rise behind your target (up to 7 paces): every monster on the way takes ${SKILLS.umbralstep.power(lv)}% damage in Shadow, and you land hidden for 2 s, so your next blow is an Ambush (bosses see you, but the Ambush still lands).`,
+  },
+  eclipse: {
+    name: 'Eclipse', job: 'shadowblade', kind: 'active', max: 10, needs: { shadowslash: 5 }, target: 'mob', range: 1.35, weapon: 'sword', cd: 8, icon: 'skill_eclipse',
+    sp: (lv) => 28 + 2 * lv, power: (lv) => 400 + 60 * lv,
+    desc: (lv) => `One blow that puts out the light: ${SKILLS.eclipse.power(lv)}% damage in Shadow, and 1% more for every 1% of HP the monster has lost (double on one at death's door). Best as an Ambush.`,
+  },
+  shadowbloom: {
+    name: 'Shadow Bloom', job: 'shadowblade', kind: 'active', max: 10, needs: { umbralstep: 1 }, weapon: 'sword', cd: 5, icon: 'skill_shadowbloom',
+    sp: (lv) => 26 + 2 * lv, power: (lv) => 90 + 12 * lv, hits: () => 2, every: 0.3, area: 2.6,
+    status: { kind: 'blind', chance: (lv) => 20 + 6 * lv, dur: 4 },
+    desc: (lv) => `Blades of shadow burst from the ground round you, twice: ${SKILLS.shadowbloom.power(lv)}% damage in Shadow to every monster within ${SKILLS.shadowbloom.area} paces; ${statusText(SKILLS.shadowbloom, lv, ' each')} (a blinded monster misses ${Math.round(BLIND * 100)}% of its blows).`,
+  },
+
+  // ---------- Hunter (Archer and Assassin both walked, after the owner's sheet): bow and traps. Its own
+  // mechanic is the trap: set at your feet, it waits for a monster to walk in (floating Wisps never
+  // do). Trap damage comes from FNS and KNL and the Base Level, never misses and goes through DEF ----------
+  trapmastery: {
+    name: 'Trap Mastery', job: 'hunter', kind: 'passive', max: 10, icon: 'skill_trapmastery',
+    desc: (lv) => `Your traps hit ${5 * lv}% harder and wait ${2 * lv} s longer; ${3 + Math.floor(lv / 5)} traps out at once (one more at Lv 5 and Lv 10).`,
+  },
+  barbedtraps: {
+    name: 'Barbed Traps', job: 'hunter', kind: 'passive', max: 5, needs: { beartrap: 1 }, icon: 'skill_barbed',
+    desc: (lv) => `Your traps are barbed with venom: ${12 * lv}% chance to poison for 6 s (bosses resist), and a Bear Trap holds ${(0.3 * lv).toFixed(1)} s longer.`,
+  },
+  predator: {
+    name: 'Predator', job: 'hunter', kind: 'passive', max: 5, icon: 'skill_predator',
+    desc: (lv) => `Your arrows deal ${5 * lv}% more to a monster held, slowed, stunned, frozen, paralyzed or poisoned.`,
+  },
+  beartrap: {
+    name: 'Bear Trap', job: 'hunter', kind: 'active', max: 10, cd: 1.5, icon: 'skill_beartrap', trap: 'bear',
+    sp: (lv) => 10 + lv, power: (lv) => 200 + 30 * lv, hold: (lv) => 2 + 0.2 * lv,
+    desc: (lv) => `Set steel jaws at your feet. The first monster to step on them takes ${SKILLS.beartrap.power(lv)}% trap damage and is held fast for ${SKILLS.beartrap.hold(lv).toFixed(1)} s: it can't walk, but strikes what is in reach (bosses half as long). Needs no weapon.`,
+  },
+  shocktrap: {
+    name: 'Shock Trap', job: 'hunter', kind: 'active', max: 10, needs: { beartrap: 3 }, cd: 2, icon: 'skill_shocktrap', trap: 'shock',
+    sp: (lv) => 16 + lv, power: (lv) => 120 + 20 * lv, area: 2.2, status: { kind: 'paralyze', chance: (lv) => 30 + 5 * lv, dur: 2 },
+    desc: (lv) => `Set a coil of lightning at your feet. When a monster steps on it, it bursts: ${SKILLS.shocktrap.power(lv)}% trap damage (Wind) to every monster within ${SKILLS.shocktrap.area} paces; ${statusText(SKILLS.shocktrap, lv, ' each')}.`,
+  },
+  blasttrap: {
+    name: 'Blast Trap', job: 'hunter', kind: 'active', max: 10, needs: { shocktrap: 3 }, cd: 3, icon: 'skill_blasttrap', trap: 'blast',
+    sp: (lv) => 24 + 2 * lv, power: (lv) => 300 + 40 * lv, area: 2.8, status: { kind: 'burn', chance: (lv) => 4 * lv, dur: 3 },
+    desc: (lv) => `Bury a powder charge at your feet. When a monster steps on it, it blows: ${SKILLS.blasttrap.power(lv)}% trap damage (Fire) to every monster within ${SKILLS.blasttrap.area} paces, flinging them back; ${statusText(SKILLS.blasttrap, lv, ' each')}.`,
+  },
+  killingshot: {
+    name: 'Killing Shot', job: 'hunter', kind: 'active', max: 10, needs: { beartrap: 1 }, target: 'mob', range: 'bow', weapon: 'bow', cd: 2, icon: 'skill_killingshot',
+    sp: (lv) => 14 + lv, power: (lv) => 200 + 30 * lv,
+    desc: (lv) => `A heavy arrow for a caught beast: ${SKILLS.killingshot.power(lv)}% damage, and 60% more on a monster held by a trap, stunned, frozen or paralyzed.`,
+  },
+
+  // ---------- Voodoo (Sorcerer and Assassin both walked, after the owner's sheet): poison and shadow
+  // magic, a staff or a dagger. Its own mechanic is Blight: a curse that stacks on a monster (up to
+  // 5; 8 on the Voodoo Doll's) and eats it every second, in Shadow, through MDEF. Slow to start, hard
+  // to stop ----------
+  hexcraft: {
+    name: 'Hexcraft', job: 'voodoo', kind: 'passive', max: 10, icon: 'skill_hexcraft',
+    desc: (lv) => `Each stack of Blight eats ${BLIGHT.base + BLIGHT.per * lv}% of your MATK a second (${BLIGHT.base}% without it), and Blight lasts ${(lv * 0.2).toFixed(1)} s longer.`,
+  },
+  toxicblade: {
+    name: 'Toxic Blade', job: 'voodoo', kind: 'passive', max: 5, icon: 'skill_toxicblade',
+    desc: (lv) => `With a dagger in hand, ${10 * lv}% of your blows add a stack of Blight.`,
+  },
+  soulsiphon: {
+    name: 'Soul Siphon', job: 'voodoo', kind: 'passive', max: 5, needs: { cursecircle: 1 }, icon: 'skill_siphon',
+    desc: (lv) => `A monster that dies Blighted gives you back ${lv}% of your Max SP, and its stacks leap to the nearest monster within 3 paces (half of them, rounded up).`,
+  },
+  poisonthrow: {
+    name: 'Poison Throw', job: 'voodoo', kind: 'active', max: 10, target: 'mob', range: 5, magic: 'shadow', icon: 'skill_poisonthrow',
+    sp: (lv) => 8 + lv, cast: (lv) => 0.5 + 0.03 * lv, cd: 0.8, power: (lv) => 70 + 9 * lv,
+    desc: (lv) => `Hurl a cursed vial: ${SKILLS.poisonthrow.power(lv)}% MATK in Shadow, and ${lv >= 5 ? 'two stacks' : 'a stack'} of Blight (two from Lv 5). Each one is also a pin in your Voodoo Doll.`,
+  },
+  cursecircle: {
+    name: 'Curse Circle', job: 'voodoo', kind: 'active', max: 10, needs: { poisonthrow: 3 }, target: 'mob', range: 5, magic: 'shadow', icon: 'skill_cursecircle',
+    sp: (lv) => 30 + 2 * lv, cast: () => 1.2, cd: 4, power: (lv) => 18 + 2 * lv, hits: () => 6, every: 1, area: 3,
+    desc: (lv) => `Draw a circle of curses round your target for 6 s: every second, ${SKILLS.cursecircle.power(lv)}% MATK in Shadow and a stack of Blight to every monster in it (3 paces), and while inside they walk 30% slower and take ${2 * lv}% more damage from everything.`,
+  },
+  poisonaura: {
+    name: 'Poison Aura', job: 'voodoo', kind: 'active', max: 5, needs: { poisonthrow: 1 }, cd: 20, icon: 'skill_poisonaura',
+    sp: (lv) => 25 + 3 * lv, dur: (lv) => 8 + 2 * lv,
+    desc: (lv) => `A haze of poison round you for ${SKILLS.poisonaura.dur(lv)} s: every second, each monster within 2.5 paces takes a stack of Blight and is Weakened (its blows ${6 + 2 * lv}% softer) for 3 s.`,
+  },
+  voodoodoll: {
+    name: 'Voodoo Doll', job: 'voodoo', kind: 'active', max: 5, needs: { cursecircle: 3 }, target: 'mob', range: 5, cd: 25, icon: 'skill_voodoodoll',
+    sp: () => 40, dur: (lv) => 8 + 2 * lv,
+    desc: (lv) => `Bind a monster to a doll for ${SKILLS.voodoodoll.dur(lv)} s: its Blight stacks to ${BLIGHT.dollMax} instead of ${BLIGHT.max}, each stack eats ${3 * lv}% harder, and every pin you put in the doll (each Poison Throw on any monster) adds a stack to it too.`,
   },
 
   // ---------- Windrunner (from the Archer): quick shots, and short bursts of speed to reposition.

@@ -22,7 +22,8 @@ export const STATS = {
 // Sorcerer, an Archer or an Assassin (tier 1), and any can later take a second job (tier 2). A hero may walk
 // several first paths: they share one Job Level and one pool of skill points, and switch between
 // them at a Keeper. Walking the Blader's and the Sorcerer's opens the Magic Knight; the Sorcerer's
-// and the Archer's, the Moon Ranger; the Blader's and the Archer's, the Beastmaster.
+// and the Archer's, the Moon Ranger; the Blader's and the Archer's, the Beastmaster. The Assassin's
+// with the Blader's opens the Shadowblade, with the Archer's the Hunter, with the Sorcerer's the Voodoo.
 export const OLD_EDGES = ['flameedge', 'frostedge', 'thunderedge'];
 // skills replaced by new ones: their points (and hotbar slots) go to the new skill
 export const RENAMED_SKILLS = { sonicblow: 'venomcloud' };
@@ -39,6 +40,24 @@ export const JOBS = {
   moonranger: { name: 'Moon Ranger', tier: 2, from: ['mage', 'archer'] }, // needs both, like the Magic Knight
   beastmaster: { name: 'Beastmaster', tier: 2, from: ['swordman', 'archer'] }, // needs both
   phantom: { name: 'Phantom', tier: 2, from: ['assassin'] }, // the Assassin's upgrade: a dagger in each hand, and illusions
+  // the Assassin's crosses (the owner's sheets): each needs both paths, 20 points in each
+  shadowblade: { name: 'Shadowblade', tier: 2, from: ['swordman', 'assassin'] }, // a sword out of the shadows: Ambushes and executions
+  hunter: { name: 'Hunter', tier: 2, from: ['archer', 'assassin'] }, // bow and traps
+  voodoo: { name: 'Voodoo', tier: 2, from: ['mage', 'assassin'] }, // poison and shadow magic: Blight that stacks, curses, the doll
+};
+// every second job's own strength and weakness (the owner's call: no two second jobs play alike).
+// A new second job gets a mechanic of its own and a line here; shown at its job change (menus.js)
+export const JOB_TRAITS = {
+  blademaster: { mech: 'Combo and Momentum', strong: 'the steadiest damage on one target, the same on every monster, and the most HP of the blades', weak: 'no element to exploit a weakness with, and few area skills' },
+  wizard: { mech: 'elements and Resonance', strong: 'the best at packs, and huge damage on a monster weak to its element', weak: 'frail, long casts a blow can break, and far behind on a monster that resists' },
+  magicknight: { mech: 'Elemental Blade and Chain', strong: 'the toughest: the most HP and a barrier, and the element of its choice', weak: 'neither the hardest hitter nor the best on packs, and hungry for SP' },
+  windrunner: { mech: 'attack speed and bursts of speed', strong: 'the quickest shots, and a dash out of any corner', weak: 'little burst, thin on packs, frail up close' },
+  moonranger: { mech: 'ATK and MATK arrows under the moon', strong: 'the best bow on packs, stronger still at night', weak: 'weaker by day, and hungry for SP' },
+  beastmaster: { mech: 'three beasts fed by its stats', strong: 'never alone: the beasts take the blows and draw the monsters', weak: 'its own blows are modest, and a fallen beast is gone for 20 s' },
+  phantom: { mech: 'two daggers and illusions', strong: 'the highest steady melee damage, and illusions that draw the blows', weak: 'far squishier than a BladeMaster' },
+  shadowblade: { mech: 'Ambush and execution', strong: 'the biggest single blows (an Ambush out of hiding, Eclipse on the wounded), and every kill hides it again', weak: 'hiding never fools a boss, its Shadow cuts barely scratch Shadow monsters, one area skill, fewer HP than a BladeMaster' },
+  hunter: { mech: 'traps', strong: 'traps that hold, paralyze and blow up whole packs, never miss and go through DEF: the safest fighter', weak: 'traps need monsters to walk in (floating Wisps never do), and less steady damage than a Windrunner' },
+  voodoo: { mech: 'Blight that stacks, curses and the doll', strong: 'Blight goes through MDEF and no boss resists it: the strongest over a long fight, and a Curse Circle makes everything take more', weak: 'slow to start with little burst, the frailest second job, and Shadow barely scratches Shadow monsters' },
 };
 export const SECOND_AT = 40; // the first-job Job Level a second job's trial asks for
 // the skill trees a job stands on: its own and those of the jobs before it
@@ -50,6 +69,9 @@ export const TREES = {
   moonranger: ['moonranger', 'mage', 'archer', 'novice'],
   beastmaster: ['beastmaster', 'swordman', 'archer', 'novice'],
   phantom: ['phantom', 'assassin', 'novice'],
+  shadowblade: ['shadowblade', 'swordman', 'assassin', 'novice'],
+  hunter: ['hunter', 'archer', 'assassin', 'novice'],
+  voodoo: ['voodoo', 'mage', 'assassin', 'novice'],
 };
 // hidden stats a job adds at certain job levels: [job level, stat]
 const JOB_BONUS = {
@@ -84,6 +106,15 @@ const JOB_BONUS = {
   phantom: [[1, 'qkn'], [3, 'pow'], [5, 'qkn'], [7, 'fns'], [9, 'qkn'], [11, 'pow'], [13, 'qkn'], [15, 'ftn'], [17, 'qkn'], [19, 'pow'],
     [21, 'qkn'], [23, 'fns'], [25, 'qkn'], [27, 'end'], [29, 'pow'], [31, 'qkn'], [33, 'ftn'], [35, 'qkn'], [37, 'pow'], [39, 'fns'],
     [41, 'qkn'], [43, 'end'], [45, 'qkn'], [47, 'pow'], [49, 'qkn'], [50, 'ftn']],
+  shadowblade: [[1, 'pow'], [3, 'qkn'], [5, 'pow'], [7, 'ftn'], [9, 'pow'], [11, 'qkn'], [13, 'fns'], [15, 'pow'], [17, 'ftn'], [19, 'qkn'],
+    [21, 'pow'], [23, 'end'], [25, 'pow'], [27, 'qkn'], [29, 'ftn'], [31, 'pow'], [33, 'fns'], [35, 'qkn'], [37, 'pow'], [39, 'ftn'],
+    [41, 'pow'], [43, 'qkn'], [45, 'end'], [47, 'pow'], [49, 'ftn'], [50, 'pow']],
+  hunter: [[1, 'fns'], [3, 'knl'], [5, 'fns'], [7, 'qkn'], [9, 'fns'], [11, 'knl'], [13, 'fns'], [15, 'end'], [17, 'fns'], [19, 'qkn'],
+    [21, 'fns'], [23, 'knl'], [25, 'fns'], [27, 'ftn'], [29, 'fns'], [31, 'knl'], [33, 'fns'], [35, 'end'], [37, 'qkn'], [39, 'fns'],
+    [41, 'knl'], [43, 'fns'], [45, 'ftn'], [47, 'fns'], [49, 'knl'], [50, 'fns']],
+  voodoo: [[1, 'knl'], [3, 'qkn'], [5, 'knl'], [7, 'fns'], [9, 'knl'], [11, 'qkn'], [13, 'knl'], [15, 'end'], [17, 'knl'], [19, 'fns'],
+    [21, 'knl'], [23, 'qkn'], [25, 'knl'], [27, 'fns'], [29, 'knl'], [31, 'end'], [33, 'knl'], [35, 'qkn'], [37, 'knl'], [39, 'fns'],
+    [41, 'knl'], [43, 'end'], [45, 'knl'], [47, 'qkn'], [49, 'knl'], [50, 'fns']],
 };
 
 export class Progress {

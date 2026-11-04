@@ -17,7 +17,7 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
     a Keeper changes the job worn. Job Lv 1 of a first
     or second job counts: a Job 50 Blader has 50 points (the Trainee's stay 9).
   - Learnt skills stay usable with the right weapon. Blade skills need a sword (bare hands are no
-    sword); Archer, Windrunner and Moon Ranger shots need a bow; Venom Strike, Dual Rend and Thousand Cuts need a dagger (a sword is no dagger); spells (Sorcerer, Wizard,
+    sword); Archer, Windrunner and Moon Ranger shots need a bow; Venom Strike, Dual Rend and Thousand Cuts need a dagger (a sword is no dagger); the Shadowblade's skills a sword, Killing Shot a bow (the Hunter's traps and the Voodoo's skills none); spells (Sorcerer, Wizard,
     Starfall), buffs and moves (War Cry, Stand Firm, Focus, Hunter's Mark, Leap Back, Tailwind,
     Gale Step, Venom Cloud, Shadow Step, Vanish, Pilfer, Phantom Double, Mirage Step) and the Beastmaster's skills need none. With no bow an Archer
     fights hand to hand. Gear follows the job worn (and a second job's first jobs); switching jobs
@@ -35,7 +35,11 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
     (`allies.js` `shade`/`mirage`) that fight and draw the monsters.
   - Second jobs open at Job 40. The Magic Knight needs 20+ points in both the Blader and
     Sorcerer trees; the Moon Ranger (Hrafn the Stargazer) 20+ in both the Sorcerer and Archer trees;
-    the Beastmaster (Bjarki, Veidheim) 20+ in both the Blader and Archer trees. The Beastmaster uses
+    the Beastmaster (Bjarki, Veidheim) 20+ in both the Blader and Archer trees; the Assassin's crosses
+    the same with the Assassin: the **Shadowblade** (Rurik, Steinborg; Blader + Assassin, swords: the
+    Ambush out of hiding, `AMBUSH`), the **Hunter** (Greta the Trapper, Veidheim; Archer + Assassin,
+    bows and traps at its feet, `traps`) and the **Voodoo** (Mother Hulda, Galdrheim; Sorcerer +
+    Assassin, staves and daggers: Blight that stacks, `BLIGHT`). The Beastmaster uses
     swords and bows, and its own tree holds only beast skills: the Bear (END), the Wolves (FNS) and
     the Hawk (QKN) can all be out together, and the hero's stats feed theirs (`src/allies.js`, `beastStats` in `main.js`; the owner's call: END mostly the Bear's HP and DEF, FNS mostly the Wolves' HIT and ATK, QKN mostly the Hawk's attack speed and reach, FTN every beast's crit and lucky dodge, POW every beast's ATK, KNL their instincts: harder, sooner, longer stuns and slows (`sharp`), every other stat a little, `MINOR`). The Wolves are the Black Wolf and the White Wolf. Each beast has one instinct it uses by itself on its own cooldown (the owner's call, `INSTINCTS`: the Bear's Maul stuns, the Wolves' Hamstring leaps and slows, the Hawk's Dive never misses; bosses resist as ever); they are the beasts' moves, not the hero's skills, and the Bear keeps its Roar, a war cry (the owner's call: every 10 s while it fights it taunts the monsters round it and the pack hits 10% harder for 6 s, `ROAR`). The Hawk is out of reach of melee (the owner's call): only arrows and a boss's thrown or falling blows reach it. The beasts' health bars sit beside the hero's panel (`#pets`). BladeMaster/Wizard/Windrunner/Phantom open only for the first job with the most points (a tie
     opens each tied one). Only one second job can be taken; quitting a trial midway starts it over and
@@ -52,10 +56,17 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   much squishier): the Assassin about 1.4x the Blader, the Phantom 1.2–1.4x the BladeMaster.
   The Assassin's area poison skill is Venom Cloud, a new skill in Sonic Blow's place (the owner's call:
   a cloud at the target that bites everything in it through DEF while the hero fights on).
+  The crosses (`build-tools/second-sim.mjs`): the Shadowblade about the BladeMaster on a lone boss
+  (more in a field, where kills hide it), the Hunter about 0.9x the Windrunner, the Voodoo about 1.1x
+  the Wizard over a long fight.
   Do not even out the BladeMaster and the Wizard: the BladeMaster is not elemental and keeps the
   higher steady damage, while the Wizard's elements make up the gap (see `docs/job-rules.md`).
-- **Second-job skills:** every second job keeps to 3–4 active skills (the Beastmaster's are its three summons and Pack Frenzy; the Phantom's Dual Rend, Phantom Double, Mirage Step, Thousand Cuts) (add
-  passives, not actives). Area and multi-hit skills work Ragnarok style; their freeze, paralyze, stun
+- **Second-job skills:** every second job keeps to 3–4 active skills (the Beastmaster's are its three summons and Pack Frenzy; the Phantom's Dual Rend, Phantom Double, Mirage Step, Thousand Cuts; the Shadowblade's Shadow Slash, Umbral Step, Eclipse, Shadow Bloom; the Hunter's Bear, Shock and Blast Traps and Killing Shot; the Voodoo's Poison Throw, Curse Circle, Poison Aura, Voodoo Doll) (add
+  passives, not actives).
+- **Every second job plays its own way** (the owner's call): each has one mechanic no other job
+  shares, and its own strength and weakness (`JOB_TRAITS` in `progress.js`, shown at the job change;
+  the table in `docs/job-rules.md`). A new second job gets a new mechanic and a `JOB_TRAITS` line,
+  never a copy of another's. Area and multi-hit skills work Ragnarok style; their freeze, paralyze, stun
   and burn work on bosses too, at a third of the chance for half as long.
 - **Walking speed:** Ragnarok's walk times (ms a tile: hero 150, monsters from Ragnarok's monster
   database) taken twice as long for Aria's smaller maps (`WALK_SCALE` in `rules.js`). Haste and slow

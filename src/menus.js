@@ -4,7 +4,7 @@
 // Pickup toasts and messages live here too. Plain DOM over the canvas.
 import { ITEMS, RECIPES, SLOTS, SHOPS, PRICES, sellPrice, equipLine, iconURL, canWear, jobLine, recipeKind, upgradeLine, refineInfo, canEnchant, canInsert, ENCHANT, MAX_REFINE, enchantStep, cardOn, cardLine, UNCARD_FEE, parseKey, makeKey } from './items.js';
 import { BAG_SLOTS, CHEST_SLOTS } from './inventory.js';
-import { STATS, STAT_KEYS, JOBS, TREES, QUEST_RATE } from './progress.js';
+import { STATS, STAT_KEYS, JOBS, TREES, QUEST_RATE, JOB_TRAITS } from './progress.js';
 import { statCost } from './ro-tables.js';
 import { HAIRSTYLES, DYES, hairstyles, lookPortrait } from './hair.js';
 import { NPCS, QUESTS, giverOf, rewardOf, SERIES } from './quests.js';
@@ -85,6 +85,9 @@ const JOB_PITCH = {
   beastmaster: 'Sword or bow, and three beasts at your side: Summon Bear (it grows with END), Summon Wolves (FNS) and Summon Hawk (QKN), all out together, and Pack Frenzy to drive them on. Your own tree is beasts only; your Blader and Archer skills stay.',
   assassin: 'Quick dagger fighters who strike many times with QKN: Venom Strike poisons, a Venom Cloud bites every monster round the target while you fight on, Shadow Step and Vanish move through the shadows. Double Attack and Improve Dodge make every swing count and every blow miss. Daggers are lighter than swords but much faster.',
   phantom: 'A dagger in each hand and illusions: Twin Blades lets the left hand strike with every blow, Dual Rend and Thousand Cuts use both, Phantom Double calls two shadows of you to fight, and Mirage Step leaves one behind to draw the monsters away.',
+  shadowblade: 'A sword out of the shadows: your first blow out of hiding is an Ambush. Shadow Slash cuts twice in Shadow, Umbral Step cuts through a line and hides you behind your target, Eclipse executes the wounded, Shadow Bloom blinds all round you, and Night Stalker hides you again after every kill.',
+  hunter: 'A bow and traps set at your feet: Bear Trap holds a monster fast, Shock Trap paralyzes a pack, Blast Trap blows one apart, and Killing Shot hits what is caught much harder. Trap damage comes from FNS and KNL, never misses and goes through DEF.',
+  voodoo: 'Poison and shadow magic, with a staff or a dagger: Poison Throw and Curse Circle stack Blight on a monster, a curse that eats it every second, through MDEF. Poison Aura weakens what comes close, and the Voodoo Doll binds one monster so its Blight stacks higher.',
   windrunner: 'The quickest bow in Aria: Windborne and Gale Rhythm speed every shot, Tailwind and Gale Step give short bursts of speed to reposition, Hurricane Volley and Cyclone Arrow finish the work.',
 };
 
@@ -940,7 +943,8 @@ export class Menus {
     if (st.state === 'job') { // the trial is done: the job change
       text = `You passed. Will you walk the path of the ${JOBS[st.job].name}?`;
       const second = JOBS[st.job].tier === 2, keep = p.tier === 1 && !second;
-      box = `<b>Job change: ${esc(JOBS[st.job].name)}</b><small>${esc(JOB_PITCH[st.job])} ${second
+      const tr = JOB_TRAITS[st.job], traits = tr ? ` Strong: ${tr.strong}. Weak: ${tr.weak}.` : '';
+      box = `<b>Job change: ${esc(JOBS[st.job].name)}</b><small>${esc(JOB_PITCH[st.job] + traits)} ${second
         ? 'Job Level starts again at 1; your first-job skills and points stay with you.'
         : keep ? 'You keep your Job Level and skill points: every first job shares them. You can switch back here any time.' : 'Job Level starts again at 1.'}</small>`;
       btns = `<button class="rbtn soft" data-act="close">Not yet</button><button class="rbtn" data-act="jobchange" data-id="${st.job}">Become ${/^[AEIOU]/.test(JOBS[st.job].name) ? 'an' : 'a'} ${JOBS[st.job].name}</button>`;

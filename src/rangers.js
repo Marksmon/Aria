@@ -36,11 +36,24 @@ const MOON = {
   bow: { wood: '#e4e8f2', light: '#ffffff', grip: '#24346a', string: '#ffffff', arrow: '#ffffff', tip: '#cfe0ff', fletch: '#cfe0ff' },
   flash: { core: '#ffffff', glow: '#9ac0ff', spark: '#fff6c8' },
 };
+// The Hunter (the Archer's and the Assassin's cross), after the owner's sheet: the Moon Ranger's cut
+// under a blood moon, black leathers and a red cape scattered with embers, silver chains and red gems,
+// a black and red bow with hooked tips
+const HUNTER = {
+  coat: '#26181c', coatDk: '#140c10', body: '#1a1014', shirt: '#1a1014', trim: '#e04a52', trimDk: '#8a2026',
+  silver: '#cfd2da', cape: '#a8141e', capeDk: '#6a0a12', lining: '#2a1216', gem: '#ff3a44', gemLt: '#ffc8cc',
+  pants: '#161014', boot: '#1e1216', skin: '#f2c8a2', glove: '#2a1418', quiver: '#3a1a1e', feathers: ['#ffffff', '#ff5a5a', '#ffffff'],
+  mote: '#ffb0a0', mote2: '#ff4a4a',
+  bow: { wood: '#2a1a1e', light: '#ffd8d8', grip: '#a8141e', string: '#ffe8e8', arrow: '#f2e8e8', tip: '#ff5a5a', fletch: '#ff3a44' },
+  flash: { core: '#ffffff', glow: '#ff4a4a', spark: '#ffd0c0' },
+};
 export const RANGERS = {
   windM: { name: 'Windrunner', sex: 'm', wind: true, C: WIND },
   windF: { name: 'Windrunner', sex: 'f', wind: true, C: WIND },
   moonM: { name: 'Moon Ranger', sex: 'm', moon: true, C: MOON },
   moonF: { name: 'Moon Ranger', sex: 'f', moon: true, C: MOON },
+  hunterM: { name: 'Hunter', sex: 'm', moon: true, C: HUNTER },
+  hunterF: { name: 'Hunter', sex: 'f', moon: true, C: HUNTER },
 };
 
 const flat = { outline: false, flat: true };

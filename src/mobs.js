@@ -844,6 +844,7 @@ class Mob {
       dmg = Math.max(1, Math.round(dmg * BARK.taken));
       this.mgr.emit('reflect', this, Math.max(1, Math.round(dmg * BARK.reflect)), from);
     }
+    if (this.curseT > 0 && dmg > 0) dmg = Math.round(dmg * (1 + (this.curseBy || 0))); // (in a Voodoo's Curse Circle: everything lands harder)
     this.hp -= dmg;
     this.flash = 0.09;
     if (this.lulled) { this.lulled = false; this.provoke(); } // a blow wakes a lulled boss (the vigil's song breaks)
@@ -879,7 +880,8 @@ class Mob {
   }
 
   // how much harder than its ATK it hits now (an enraged MVP), for its blows, stomps and moves
-  get fury() { return this.enraged ? MVP_RAGE.atk : 1; }
+  // how hard its blows land: an enraged MVP's harder, a Weakened one's (the Voodoo's Poison Aura) softer
+  get fury() { return (this.enraged ? MVP_RAGE.atk : 1) * (this.weakT > 0 ? 1 - (this.weakBy || 0) : 1); }
 
   update(dt, player) {
     const d = this.def, p = player;
@@ -940,6 +942,7 @@ class Mob {
     }
     // as in Ragnarok, a monster keeps its pace however hurt it is (a frenzied boss speeds up, an enraged MVP too)
     this.rushT -= dt; this.rushCd -= dt; this.slowT = (this.slowT || 0) - dt;
+    this.curseT = (this.curseT || 0) - dt; this.blindT = (this.blindT || 0) - dt; this.weakT = (this.weakT || 0) - dt; // (the Voodoo's curse and weakening, the Shadowblade's blinding)
     const speed = d.speed * (this.rageT > 0 ? 1.3 : 1) * (this.enraged ? MVP_RAGE.speed : 1) * (this.rushT > 0 ? BRAIN.rush : 1)
       * (this.slowT > 0 ? 1 - (this.slowBy || 0) : 1); // (hobbled: a Wolf's Hamstring)
     let lift = 0;
@@ -971,7 +974,7 @@ class Mob {
     const contact = () => {
       if (available && dist < d.reach + 0.3 && this.atkCd <= 0) {
         if (p.canBeHit()) {
-          const res = mobAttack(d, p.ps, this.fury);
+          const res = this.blindT > 0 && Math.random() < (this.blindBy || 0) ? { miss: true, dodge: false, dmg: 0 } : mobAttack(d, p.ps, this.fury); // (blinded: a Shadow Bloom's)
           if (res.miss) this.mgr.emit('miss', this, res);
           else { p.takeDamage(res.dmg, this.x, this.z); this.thorns(p, res.dmg); if (d.poison && Math.random() < d.poison) this.mgr.emit('venom', this); } // (a scorpion's sting may poison you)
           if (d.double && Math.random() < d.double && p.canBeHit()) { // an assassin's second, quicker cut

@@ -68,6 +68,50 @@ export class FX {
     return s;
   }
 
+  // a small thing standing on the ground until released: the Hunter's traps (bear, shock, blast) and
+  // the Voodoo's doll, each painted once in code
+  prop(x, z, kind) {
+    this.propTex ||= {};
+    if (!this.propTex[kind]) {
+      const c = document.createElement('canvas');
+      c.width = c.height = 64;
+      const g = c.getContext('2d');
+      const ring = (r, col, w) => { g.beginPath(); g.ellipse(32, 46, r, r * 0.42, 0, 0, Math.PI * 2); g.strokeStyle = col; g.lineWidth = w; g.stroke(); };
+      if (kind === 'bear') { // steel jaws, open, their teeth up
+        ring(20, '#2a2a30', 6); ring(20, '#b8bec8', 3);
+        g.fillStyle = '#e4e8f0';
+        for (let i = 0; i < 9; i++) { const a = Math.PI + (i / 8) * Math.PI, x = 32 + Math.cos(a) * 20, y = 46 + Math.sin(a) * 8.4; g.beginPath(); g.moveTo(x - 3, y); g.lineTo(x, y - 9); g.lineTo(x + 3, y); g.fill(); }
+        g.fillStyle = '#6a4a2a'; g.fillRect(29, 42, 6, 8);
+      } else if (kind === 'shock') { // a copper coil crackling
+        ring(16, '#4a2a10', 6); ring(16, '#d88a3a', 3); ring(9, '#fff27a', 2);
+        g.strokeStyle = '#fff6b0'; g.lineWidth = 2;
+        g.beginPath(); g.moveTo(26, 40); g.lineTo(30, 30); g.lineTo(34, 36); g.lineTo(38, 24); g.stroke();
+      } else if (kind === 'blast') { // a buried powder keg with a lit fuse
+        ring(14, '#3a2a1a', 5);
+        g.fillStyle = '#5a3a22'; g.beginPath(); g.ellipse(32, 40, 11, 9, 0, 0, Math.PI * 2); g.fill();
+        g.fillStyle = '#8a1a1e'; g.fillRect(21, 37, 22, 4);
+        g.strokeStyle = '#2a2a2a'; g.lineWidth = 2; g.beginPath(); g.moveTo(32, 31); g.quadraticCurveTo(36, 24, 40, 22); g.stroke();
+        g.fillStyle = '#ffd23a'; g.beginPath(); g.arc(41, 21, 3, 0, Math.PI * 2); g.fill();
+      } else { // a stitched doll with button eyes and a pin
+        g.fillStyle = '#8a6a4a'; g.beginPath(); g.arc(32, 22, 11, 0, Math.PI * 2); g.fill();
+        g.beginPath(); g.ellipse(32, 44, 10, 13, 0, 0, Math.PI * 2); g.fill();
+        g.fillRect(18, 36, 28, 6);
+        g.strokeStyle = '#3a2a1a'; g.lineWidth = 1.5; g.beginPath(); g.moveTo(32, 32); g.lineTo(32, 56); g.moveTo(27, 44); g.lineTo(37, 44); g.stroke();
+        g.fillStyle = '#7aff4a'; for (const ex of [27, 37]) { g.beginPath(); g.arc(ex, 21, 2.6, 0, Math.PI * 2); g.fill(); }
+        g.strokeStyle = '#c8ccd8'; g.lineWidth = 2; g.beginPath(); g.moveTo(44, 30); g.lineTo(30, 44); g.stroke();
+        g.fillStyle = '#ff3a44'; g.beginPath(); g.arc(45, 29, 3, 0, Math.PI * 2); g.fill();
+      }
+      const t = new THREE.CanvasTexture(c);
+      t.colorSpace = THREE.SRGBColorSpace;
+      this.propTex[kind] = t;
+    }
+    const s = this.sprite(this.propTex[kind], { bottom: true, renderOrder: 2 });
+    const k = kind === 'doll' ? 0.5 : 0.62;
+    s.scale.set(k, k, 1);
+    s.position.set(x, this.world.heightAt(x, z) + 0.02, z);
+    return s;
+  }
+
   release(s) {
     s.visible = false;
     this.pool.push(s);

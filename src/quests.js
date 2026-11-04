@@ -153,6 +153,23 @@ export const NPCS = {
       'My aegis is half steel, half spell. The harder I hit and the louder I sing, the more it holds.',
     ],
   },
+  // the Shadowblade's trainer: for heroes who have walked both the Blader's and the Assassin's path
+  rurik: {
+    name: 'Rurik the Shadowblade', map: 'city', x: 44.6, z: 48.6, dress: { body: 'blader', main: [268, 0.35, 0.4], accent: [275, 0.8, 1.1], hair: 'messy', dye: 'black' },
+    trial2: ['shadowblade_trial', 'shadowblade_trial2', 'shadowblade_trial3'], job2: 'shadowblade',
+    hello: 'You only saw me because I let you. The Watch thinks I am a rumour. Good. A blade that hides in the shadows strikes once, and once is enough.',
+    later: () => '', bye: 'Strike. Vanish. Prevail.',
+    trial2Hint: 'The Shadowblade walks the Blader\'s path and the Assassin\'s. Pass Captain Ulfr\'s trial and Master Kol\'s in Rytingborg, put at least 20 skill points into each, reach Job Level 40, and come back to me.',
+    greet: (c) => ({ shadowblade: 'Shadowblade. Did they see you coming? Of course not.',
+      swordman: 'A Blader. You fight in the open, like a lantern. Learn to put the lantern out.',
+      assassin: 'An Assassin. Quick hands, small blades. Now imagine a long one.' })[c.jobId] || null,
+    quests: [],
+    lore: [
+      'Out of the shadows, the first blow is worth three. That is the whole art. The rest is waiting.',
+      'Every kill is a door back into the dark. Step through it before the next one turns round.',
+      'Shadow cannot cut shadow. Remember that in Black Wood, and in the tombs under the Pyramid.',
+    ],
+  },
   embla: {
     name: 'Embla the Stylist', map: 'city', x: 37.4, z: 36.2, stylist: true,
     hello: 'A new cut? A new colour? Sit, sit. For 1,000 perz I make you look like a hero of the songs.',
@@ -314,6 +331,23 @@ export const NPCS = {
       'The night Wisps follow the stars, you know. They drift wherever the sky is clearest. Sigrun at Eldrun thinks they follow the wind. She is wrong, but kindly.',
     ],
   },
+  // the Voodoo: poison and shadow magic, for heroes who walked the Sorcerer's and the Assassin's paths
+  hulda: {
+    name: 'Mother Hulda', map: 'magic', x: 52.6, z: 44.8, dress: { body: 'sorc', main: [120, 0.25, 0.35], accent: [105, 0.8, 1.1], hair: 'long', dye: 'black' },
+    trial2: ['voodoo_trial', 'voodoo_trial2', 'voodoo_trial3'], job2: 'voodoo',
+    trial2Hint: 'Invoke the curse. Embrace the poison. Walk the Sorcerer\'s path and the Assassin\'s, put at least 20 skill points into each, reach Job Level 40, and come back to old Hulda.',
+    hello: 'Hee. Vigdis keeps me in this corner so the students do not see. Fire and frost, fire and frost. I deal in slower things: a curse that grows, a poison that waits.',
+    later: () => '', bye: 'Let the darkness take its time.',
+    greet: (c) => ({ voodoo: 'Voodoo. How many stacks today, dearie? Never enough.',
+      mage: 'A Sorcerer. All that noise, and the monster is dead in one go. Where is the patience?',
+      assassin: 'An Assassin. A drop of venom on a blade: a good start. Now put it in a curse.' })[c.jobId] || null,
+    quests: [],
+    lore: [
+      'One drop of Blight is nothing. Five drops eat a bear. Eight, on a monster bound to my doll, eat anything.',
+      'A curse circle is a cage with no bars. They walk slow in it, and everything hurts them more.',
+      'Shadow will not eat shadow. The Dark Wisps laugh at me. I let them.',
+    ],
+  },
   signy: {
     name: 'Signy the Apprentice', map: 'magic', x: 36.6, z: 37.2, dress: { body: 'sorc', main: [300, 0.45, 1.15], accent: [330, 0.5, 1.1], hair: 'mane', dye: 'blonde' },
     hello: 'Are you a sorcerer? I am going to be one! I can already make a spark. Mostly on purpose.',
@@ -374,6 +408,23 @@ export const NPCS = {
       archer: 'An Archer. You watch them from afar. Try walking with them.' })[c.jobId] || null,
     quests: [],
     lore: ['Grimr came to me as a cub, half dead in the snow past Black Wood. Now he eats better than I do.', 'A bear will stand in front of you, a wolf beside you, a hawk above you. Learn which you need, and when.'],
+  },
+  // the Hunter: bow and traps, for heroes who walked the Archer's and the Assassin's paths
+  greta: {
+    name: 'Greta the Trapper', map: 'hunt', x: 49.4, z: 37.6, dress: { body: 'blader', main: [355, 0.55, 0.55], accent: [0, 0.1, 0.25], hair: 'long', dye: 'black', bow: true },
+    trial2: ['hunter_trial', 'hunter_trial2', 'hunter_trial3'], job2: 'hunter',
+    trial2Hint: 'Set the trap. Take the shot. Walk the Archer\'s path and the Assassin\'s, put at least 20 skill points into each, reach Job Level 40, and I will make a Hunter of you.',
+    hello: 'Mind your feet. No, really: mind them. There are three traps between you and me, and only I know where. I am Greta. Sigrid shoots them; I catch them first.',
+    later: () => '', bye: 'Watch where you step.',
+    greet: (c) => ({ hunter: 'Hunter. Caught anything big lately? Bigger?',
+      archer: 'An Archer. You chase them with arrows. Why chase? Let them come to you.',
+      assassin: 'An Assassin. Poison on a blade is good. Poison on a spike they step on is better.' })[c.jobId] || null,
+    quests: [],
+    lore: [
+      'A trap waits at your feet. Set it, step back, shoot. Whatever comes for you walks into it.',
+      'Wisps float. They never spring anything. Keep your arrows for those.',
+      'A held beast is a dead beast. Hit it while it cannot run.',
+    ],
   },
   eydis: {
     name: 'Eydis the Trader', map: 'hunt', x: 38, z: 29, shop: 'eydis', dress: { body: 'trainee', main: [95, 0.35, 0.9], accent: [30, 0.6, 1.05], hair: 'long', dye: 'blonde' },
@@ -1244,6 +1295,62 @@ export const QUESTS = {
     title: 'Phantom Trial 3: An Army of Shadows', job: true, kind: 'kill', mob: 'soldierAnt', n: 25, lv: 1,
     intro: 'In the Great Desert the Soldier Ants march in columns. Twenty-five of them. Too many for one blade; enough for two, and a shadow or two of your own. Leave the Wyrm under the sand alone.',
     thanks: 'Which one of you came back? Ah: all of you. Rise, Phantom.',
+    reward: { xp: 30000, perz: 6000 },
+  },
+  // the Assassin's crosses (from Job 40, 20 points in each path): the Shadowblade's (Rurik), the Hunter's
+  // (Greta) and the Voodoo's (Mother Hulda)
+  shadowblade_trial: {
+    title: 'Shadowblade Trial 1: Those Who Hide', job: true, kind: 'kill', mob: 'goblinAssassin', n: 20, lv: 1,
+    intro: 'The Goblin Assassins of Serpent Wood think they are the shadows. Show them twenty times that they are not.',
+    thanks: 'They never saw the one that saw them. Next, a lesson you will not like.',
+    reward: { xp: 15000, perz: 3000 },
+  },
+  shadowblade_trial2: {
+    title: 'Shadowblade Trial 2: Shadow Against Shadow', job: true, kind: 'kill', mob: 'shadeWisp', n: 20, lv: 1,
+    intro: 'Twenty Dark Wisps in Black Wood. Your shadow cuts will barely scratch them: shadow cannot cut shadow. Learn to fight with the plain edge when you must.',
+    thanks: 'Now you know where your shadows are no use. A Shadowblade who knows that lives long. Last, a real hunt.',
+    reward: { xp: 20000, perz: 4000 },
+  },
+  shadowblade_trial3: {
+    title: 'Shadowblade Trial 3: Embers in the Dark', job: true, kind: 'kill', mob: 'cinderBeetle', n: 25, lv: 1,
+    intro: 'The Giant Beetle of Ash Heath is guarded by its Fire Beetles, in hard shells. Twenty-five of them, one by one, each from the dark. Come back to me after.',
+    thanks: 'One by one, and none of them saw the next blow. Rise, Shadowblade.',
+    reward: { xp: 30000, perz: 6000 },
+  },
+  hunter_trial: {
+    title: 'Hunter Trial 1: The Snare', job: true, kind: 'kill', mob: 'snake', n: 15, lv: 1,
+    intro: 'Fifteen Snakes in Barley Field. They come at you low and quick: set a trap at your feet, step back, and let them come to it.',
+    thanks: 'They walked right in. They always do. Next, something heavier for the jaws.',
+    reward: { xp: 15000, perz: 3000 },
+  },
+  hunter_trial2: {
+    title: 'Hunter Trial 2: Jaws for a Bear', job: true, kind: 'kill', mob: 'bear', n: 10, lv: 1,
+    intro: 'Ten Bears of Wolf Hills. A bear you can\'t stop in the open. A bear in a trap is only a big target.',
+    thanks: 'Ten bears, and your jaws still bite. Now the pack.',
+    reward: { xp: 20000, perz: 4000 },
+  },
+  hunter_trial3: {
+    title: 'Hunter Trial 3: The Alpha\'s Pack', job: true, kind: 'kill', mob: 'wolf', n: 25, lv: 1,
+    intro: 'The Alpha Wolf runs Barley Field, and its Wolves run in packs. Twenty-five of them: shock them, blast them, shoot them while they twitch. Leave the Alpha be. Come back to me after.',
+    thanks: 'The whole pack in your traps. Set the trap, take the shot, become the Hunter. Rise.',
+    reward: { xp: 30000, perz: 6000 },
+  },
+  voodoo_trial: {
+    title: 'Voodoo Trial 1: A Slow Poison', job: true, kind: 'kill', mob: 'goblinWarrior', n: 20, lv: 1,
+    intro: 'Twenty Goblins in Burnt Wood. Do not burn them, do not freeze them: Blight them, and watch them rot on their feet.',
+    thanks: 'Slow, was it not? And sure. Now something that burns too bright.',
+    reward: { xp: 15000, perz: 3000 },
+  },
+  voodoo_trial2: {
+    title: 'Voodoo Trial 2: Snuff the Embers', job: true, kind: 'kill', mob: 'emberWisp', n: 15, lv: 1,
+    intro: 'Fifteen Fire Wisps of Ash Heath. They hate the dark; the dark does not hate them, it only eats them.',
+    thanks: 'Snuffed, every one. The last step is the longest.',
+    reward: { xp: 20000, perz: 4000 },
+  },
+  voodoo_trial3: {
+    title: 'Voodoo Trial 3: The Worms Below', job: true, kind: 'kill', mob: 'duneWorm', n: 25, lv: 1,
+    intro: 'The Cactus Lord\'s Dune Worms, east of Rytingborg, come up out of the sand to bite. Curse the ground they come up in. Twenty-five, and come back to old Hulda.',
+    thanks: 'Hee. You smell of the grave and the garden both. Rise, Voodoo.',
     reward: { xp: 30000, perz: 6000 },
   },
   // Dalla's bazaar, the gate's watch, the caravans, the water-seller, the smiths

@@ -44,6 +44,10 @@ export const JOB_RULES = {
   beastmaster: { hpFactor: 120, hpIncrease: 500, spIncrease: 400, delay: { fist: 420, sword: 540, bow: 560 }, weight: 3200 }, // sword and bow, and the beasts
   windrunner:  { hpFactor: 85, hpIncrease: 500, spIncrease: 350, delay: { fist: 450, sword: 620, bow: 470 }, weight: 2800 }, // the Hunter's quick bow
   phantom:     { hpFactor: 95, hpIncrease: 500, spIncrease: 330, delay: { fist: 400, sword: 640, dagger: 400 }, weight: 2800 }, // Ragnarok's Assassin: a blade in each hand
+  // the Assassin's crosses: each as squishy as its dagger half, quick as its other half
+  shadowblade: { hpFactor: 105, hpIncrease: 500, spIncrease: 330, delay: { fist: 400, sword: 500, dagger: 420 }, weight: 3000 }, // Ragnarok's Assassin Cross with a sword: fewer HP than a BladeMaster
+  hunter:      { hpFactor: 75, hpIncrease: 500, spIncrease: 420, delay: { fist: 460, sword: 660, bow: 520, dagger: 460 }, weight: 2800 }, // Ragnarok's Hunter: traps from FNS and KNL
+  voodoo:      { hpFactor: 50, hpIncrease: 500, spIncrease: 800, delay: { fist: 460, sword: 640, dagger: 460 }, weight: 2400 }, // the frailest: a caster with a dagger
 };
 // a dagger swings quicker than a sword: at the job's own dagger delay, else 80% of its sword's. Two
 // daggers (a Phantom's, gear.left) swing together, a little slower than one (DUAL)

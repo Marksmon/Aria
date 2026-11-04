@@ -11,7 +11,7 @@ export const MAX_BASE = BASE_EXP.length + 1; // 99
 JOB_EXP.mage = JOB_EXP.archer = JOB_EXP.assassin = JOB_EXP.swordman; // every first job levels on the same table
 // second jobs: Ragnarok's 2-1 job table (job2 in rAthena's pre-re job_exp.yml)
 JOB_EXP.second = [144, 184, 284, 348, 603, 887, 1096, 1598, 2540, 3676, 4290, 4946, 6679, 9492, 12770, 14344, 16005, 20642, 27434, 35108, 38577, 42206, 52708, 66971, 82688, 89544, 96669, 117821, 144921, 174201, 186677, 199584, 238617, 286366, 337147, 358435, 380376, 447685, 526989, 610246, 644736, 793535, 921810, 1106758, 1260955, 1487304, 1557657, 1990632, 2083386];
-for (const j of ['blademaster', 'wizard', 'magicknight', 'windrunner', 'moonranger', 'beastmaster', 'phantom']) JOB_EXP[j] = JOB_EXP.second;
+for (const j of ['blademaster', 'wizard', 'magicknight', 'windrunner', 'moonranger', 'beastmaster', 'phantom', 'shadowblade', 'hunter', 'voodoo']) JOB_EXP[j] = JOB_EXP.second;
 export const MAX_JOB = Object.fromEntries(Object.entries(JOB_EXP).map(([j, t]) => [j, t.length + 1])); // Trainee 10, the rest 50
 
 // stat points: 48 at Base Lv 1, then floor(lv / 5) + 3 for each level up

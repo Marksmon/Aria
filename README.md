@@ -665,6 +665,14 @@ points stay. Second jobs wear their first job's outfit in new colours and glow w
   12 more Bears. Only for heroes who walked the Blader's and the Archer's paths with **at least 20
   skill points in each tree**.
 - **Phantom** (Master Kol, Rytingborg): 20 Sand Scorpions, 20 Dune Worms, 25 Soldier Ants.
+- The dagger crosses every other path. Each wants both first jobs walked with **at least 20 skill
+  points in each tree**:
+  - **Shadowblade**, Blader and Assassin (Rurik the Shadowblade, Steinborg, by Sir Eirik): 20 Goblin
+    Assassins, 20 Dark Wisps (where shadow cannot cut shadow), 25 Fire Beetles.
+  - **Hunter**, Archer and Assassin (Greta the Trapper, Veidheim, by the east wall): 15 Snakes,
+    10 Bears, 25 Wolves.
+  - **Voodoo**, Sorcerer and Assassin (Mother Hulda, Galdrheim, in a corner past the Stargazer):
+    20 Goblins, 15 Fire Wisps, 25 Dune Worms.
 - A hero of several paths may take the BladeMaster, Wizard, Windrunner or Phantom trial only for the first
   job with the most points (a tie opens each tied one). A Job 50 hero with 30 points as a Blader and 20 as a Sorcerer may
   become a BladeMaster or a Magic Knight; with 25 and 25, any of the three; with 35 and 15, only a
@@ -675,8 +683,8 @@ points stay. Second jobs wear their first job's outfit in new colours and glow w
   step.
 - A second job's own skills can be raised only once **every Trainee and first-job skill point is
   spent**, and while the job's own rule still holds (a Magic Knight keeps 20 points in Blader and 20
-  in Sorcerer). The Skills window says what is missing. For a Magic Knight, Moon Ranger or
-  Beastmaster, a path's tree that has 20 points takes no more until the other path's has 20 too,
+  in Sorcerer). The Skills window says what is missing. For a second job of two paths (Magic Knight,
+  Moon Ranger, Beastmaster, Shadowblade, Hunter, Voodoo), a path's tree that has 20 points takes no more until the other path's has 20 too,
   and any other first job you walked takes no points until both have their 20.
 
 | BladeMaster: one target, cut down fast | |
@@ -766,11 +774,69 @@ violet runes glowing down the coat's long torn tails, and a glowing eye-sigil on
 | Mirage Step | 5, needs Phantom Double 1: dash 4 paces away, untouchable, leaving an illusion where you stood: for 4–8 s every monster within 4 paces turns on it. 8 s cooldown |
 | Thousand Cuts | 10, needs Dual Rend 3: spin with both blades five times, 61–115% each to every monster within 2.6 paces; 2–20% each to poison. 5 s cooldown |
 
+**Every second job plays its own way.** Each has one mechanic no other job has, a strength and a
+weakness, shown when you take it:
+
+| Second job | Its own mechanic | Strong | Weak |
+|---|---|---|---|
+| BladeMaster | Combo and Momentum | the steadiest damage on one target, the same on every monster | no element to exploit, few area skills |
+| Wizard | elements and Resonance | packs, and a monster weak to its element | frail, long casts, far behind on a monster that resists |
+| Magic Knight | Elemental Blade and Chain | the toughest: most HP and a barrier | neither the hardest hitter nor the best on packs |
+| Windrunner | attack speed, bursts of speed | the quickest shots, a dash out of any corner | little burst, thin on packs |
+| Moon Ranger | ATK and MATK arrows, the moon | the best bow on packs, stronger at night | weaker by day, hungry for SP |
+| Beastmaster | three beasts fed by its stats | never alone: the beasts take the blows | its own blows are modest; a fallen beast is gone 20 s |
+| Phantom | two daggers and illusions | the highest steady melee damage | far squishier than a BladeMaster |
+| Shadowblade | the Ambush, executions | the biggest single blows, and every kill hides it again | bosses see through hiding; Shadow cuts barely scratch Shadow monsters; one area skill |
+| Hunter | traps | holds, paralysis and blasts on whole packs, never missing, through DEF | traps need monsters to walk in (floating Wisps never do); less steady damage than a Windrunner |
+| Voodoo | Blight that stacks | through MDEF, never resisted: the strongest over a long fight | slow to start, the frailest second job; weak on Shadow monsters |
+
+The Shadowblade wears the Phantom's grand coat in black and vivid violet, with long glowing swords.
+
+| Shadowblade: a sword out of the shadows | |
+|---|---|
+| Umbral Edge | passive, 10: +2 ATK and +0.5% critical hits per level with swords |
+| Night Stalker | passive, 5: a kill melts you into the shadows for 1.4–3 s (bosses see through it), and every **Ambush** deals 10% more per level. An Ambush is your first blow out of any hiding (Vanish, Umbral Step, a Night Stalker kill): ×2 |
+| Cruel Edge | passive, 5, needs Eclipse 1: your sword deals 4% more per level to a monster below half its HP |
+| Shadow Slash | 10: two cuts of 192–390% in Shadow. 0.8 s cooldown |
+| Umbral Step | 5, needs Shadow Slash 3: rise behind your target (up to 7 paces), cutting every monster on the way for 180–300% in Shadow, and land hidden for 2 s: your next blow is an Ambush. 6 s cooldown |
+| Eclipse | 10, needs Shadow Slash 5: one blow of 460–1000% in Shadow, 1% more for every 1% of HP the monster has lost (double at death's door). 8 s cooldown |
+| Shadow Bloom | 10, needs Umbral Step 1: blades of shadow burst round you twice, 102–210% each within 2.6 paces, 26–80% each to **blind** for 4 s (a blinded monster misses 40% of its blows). 5 s cooldown |
+
+The Hunter wears the Moon Ranger's cut under a blood moon: black leathers, a red cape scattered with
+embers, a black and red bow. Its traps are set at its feet, wait up to 30 s (more with Trap Mastery)
+and spring on the first monster that walks in; floating monsters never set them off. Trap damage
+comes from FNS, KNL and the Base Level, never misses and goes through DEF.
+
+| Hunter: bow and traps | |
+|---|---|
+| Trap Mastery | passive, 10: traps hit 5% harder and wait 2 s longer per level; 3 traps out at once, one more at Lv 5 and Lv 10 |
+| Barbed Traps | passive, 5, needs Bear Trap 1: traps poison (12% per level, bosses resist), and a Bear Trap holds 0.3 s longer per level |
+| Predator | passive, 5: arrows deal 5% more per level to a monster held, slowed, stunned, frozen, paralyzed or poisoned |
+| Bear Trap | 10: steel jaws, 230–500% to the first monster in, which is held fast for 2.2–4 s (it can't walk, but strikes what is in reach; bosses half as long) |
+| Shock Trap | 10, needs Bear Trap 3: a burst of lightning, 140–320% Wind to every monster within 2.2 paces, 35–80% each to paralyze for 2 s |
+| Blast Trap | 10, needs Shock Trap 3: a powder charge, 340–700% Fire to every monster within 2.8 paces, flung back, 4% per level each to set burning |
+| Killing Shot | 10, needs Bear Trap 1: a heavy arrow of 230–500%, 60% more on a monster held, stunned, frozen or paralyzed. 2 s cooldown |
+
+The Voodoo wears the Wizard's robe in black over toxic green, poison drops on its hem, and holds a
+staff or a dagger. Its **Blight** stacks on a monster (up to 5, 8 on the Voodoo Doll's) and eats it
+every second for 6 s, each stack 8% of your MATK (up to 24% with Hexcraft), in Shadow and through
+MDEF; bosses don't resist it.
+
+| Voodoo: poison and shadow magic | |
+|---|---|
+| Hexcraft | passive, 10: each Blight stack eats 1.6% more of your MATK a second per level, and lasts 0.2 s longer |
+| Toxic Blade | passive, 5: with a dagger in hand, 10% of your blows per level add a Blight stack |
+| Soul Siphon | passive, 5, needs Curse Circle 1: a monster that dies Blighted gives back 1% of your Max SP per level, and half its stacks leap to the nearest monster |
+| Poison Throw | 10: a cursed vial, 79–160% MATK in Shadow and a Blight stack (two from Lv 5). A short cast |
+| Curse Circle | 10, needs Poison Throw 3: a circle 3 paces round your target for 6 s; every second 20–38% MATK in Shadow and a Blight stack to all in it, which walk 30% slower and take 2% more damage per level from everything |
+| Poison Aura | 5, needs Poison Throw 1: a haze round you for 10–18 s; every second a Blight stack to each monster within 2.5 paces, and its blows 8–16% softer for 3 s. 20 s cooldown |
+| Voodoo Doll | 5, needs Curse Circle 3: bind a monster to a doll for 10–18 s: its Blight stacks to 8, each stack 3% harder per level, and each Poison Throw on any monster adds a stack to it too. 25 s cooldown |
+
 Walking speed is never raised for long in Aria: the Windrunner's bursts (Tailwind's rush, the
 moment after Gale Step) are the only haste, a few seconds at a time.
 
 **Status effects.** Some skills may **freeze**, **paralyze** or **stun** a monster (it stands
-helpless, tinted blue, yellow or grey) or set it **burning** (it loses a fifth of the hit that lit it
+helpless, tinted blue, yellow or grey), **blind** it (it misses 40% of its blows) or set it **burning** (it loses a fifth of the hit that lit it
 every second for 3 s, flickering orange) or **poisoned** (a fifth of the blow every second for its
 time, tinted green). Bosses and MVPs resist: a third of the chance, for half as
 long, and nothing takes hold while a boss is in the middle of a move.
