@@ -1081,7 +1081,7 @@ export class Menus {
     if (act === 'craftwin') { this.close('talk'); this.openCraft(t.dataset.id); }
     if (act === 'smithwin') { this.close('talk'); this.openSmith(t.dataset.id); }
     if (act === 'insertcard' && this.selected) this.openSmith('insert', this.selected);
-    if (act === 'cardart' && ITEMS[t.dataset.id]?.card) showCardArt(t.dataset.id, ITEMS[t.dataset.id].name, cardLine(ITEMS[t.dataset.id].card)); // the card's painting, full screen
+    if (act === 'cardart' && ITEMS[t.dataset.id]?.card) showCardArt(t.dataset.id, ITEMS[t.dataset.id].name); // the card's painting, full screen
     if (act === 'smithpick') { this.smithSel = { where: t.dataset.where, key: t.dataset.id }; this.smithSure = false; this.render(id); }
     if (act === 'smithcancel') { this.smithSure = false; this.render(id); }
     if (act === 'smithgo' && this.smithSel) {
