@@ -664,7 +664,7 @@ export class Menus {
     else if (block === 'max') how = 'Mastered.';
     else if (block === 'points') how = 'No skill points left: they come with Job Levels.';
     else if (block && block.startsWith('Needs')) how = block + '.'; // a skill it builds on, or a second job's first-job rule (skills.js secondJobBlock)
-    const hot = active && lv ? (this.hotbar?.has('skill', id) ? 'On the hotbar.' : 'Drag it onto the hotbar to use it.') : '';
+    const hot = active && lv ? (this.hotbar?.has('skill', id) ? 'On the hotbar.' : 'Drag it onto the hotbar (or tap Add to hotbar) to use it.') : '';
     const text = (l) => esc(sk.desc(l)) + (sk.kind === 'passive' ? ' <i>(passive)</i>' : '');
     return `<div class="skhead">${icon(sk.icon)}<div><b>${esc(sk.name)}</b><small>${active ? 'Active' : 'Passive'} · ${esc(JOBS[sk.job].name)}${JOBS[sk.job].tier === 2 ? ' (2nd Job)' : ''} · ${sk.max > 1 ? `Lv ${lv} / ${sk.max}` : lv ? 'Learnt' : 'Not learnt'}</small></div></div>
       ${facts.length ? `<div class="skfacts">${esc(facts.join(' · '))}</div>` : ''}
@@ -672,7 +672,7 @@ export class Menus {
       ${lv ? `<div class="sklv"><b>Now (Lv ${lv})</b><p>${text(lv)}</p></div>` : ''}
       ${lv < sk.max ? `<div class="sklv next"><b>${lv ? `Next (Lv ${next})` : 'At Lv 1'}</b><p>${text(next)}</p></div>` : ''}
       ${how || hot ? `<div class="sknote">${esc([how, hot].filter(Boolean).join(' '))}</div>` : ''}
-      ${!block ? `<button class="rbtn skraise" data-act="learn" data-id="${id}">Raise ▲</button>` : ''}`;
+      ${!block || (active && lv && this.hotbar && !this.hotbar.has('skill', id)) ? `<div class="btnrow">${!block ? `<button class="rbtn skraise" data-act="learn" data-id="${id}">Raise ▲</button>` : ''}${active && lv && this.hotbar && !this.hotbar.has('skill', id) ? `<button class="rbtn soft" data-act="sktohotbar" data-id="${id}">Add to hotbar</button>` : ''}</div>` : ''}`;
   }
 
   // The status window, top to bottom: who you are (job and levels), the six stats with their
@@ -1070,6 +1070,7 @@ export class Menus {
       this.render(id);
     }
     if (act === 'sksel') { this.skSel = t.dataset.id; this.render(id); }
+    if (act === 'sktohotbar') { this.hotbar?.place({ kind: 'skill', id: t.dataset.id }); this.render(id); }
     if (act === 'jobchange') { this.hooks.jobChange?.(t.dataset.id); this.close('talk'); }
     if (act === 'shop') { this.close('talk'); this.openShop(this.npc); }
     if (act === 'craftwin') { this.close('talk'); this.openCraft(t.dataset.id); }

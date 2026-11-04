@@ -25,7 +25,7 @@ import { BigMap } from './bigmap.js';
 import { headsReady, paintHead, lookPortrait, hairstyles, HAIR_BODY } from './hair.js';
 import { headgearReady, gearCut, paintGears } from './headgear.js';
 import { derive, playerAttack, mobAttack, magicAttack, elementMod, ELEMENTS } from './rules.js';
-import { SKILLS, EDGE_FX, skillLv, spCost, castTime, learn, skillList, weaponOk, WEAPON_NAMES, BOW_RANGE, unlearnFirstJob, unlearnSecondJob, RETRAIN_COST } from './skills.js';
+import { SKILLS, EDGE_FX, learnBlock, skillLv, spCost, castTime, learn, skillList, weaponOk, WEAPON_NAMES, BOW_RANGE, unlearnFirstJob, unlearnSecondJob, RETRAIN_COST } from './skills.js';
 import { Menus } from './menus.js';
 import { iconTexture, iconURL, ITEMS, baseOf, canWear, maybeSlotted } from './items.js';
 import { DayNight } from './daynight.js';
@@ -1529,6 +1529,7 @@ const STAT_TALK = {
   fns: '<b>FNS, Finesse</b>: hit (how often your blows land), steadier damage, a little attack speed and faster spells. With a bow it is your attack: <b>the Archer\'s main stat.</b>',
   ftn: '<b>FTN, Fortune</b>: <b>critical hits and lucky dodges</b>, its main use, and a little attack. A critical hit never misses and goes through armor (skills never crit), so some build around it: a <b>crit Assassin</b> (POW, QKN, FTN) or a <b>crit Archer</b> (FNS, FTN, QKN).',
 };
+const inSkills = () => menus.isOpen('skills');
 const inItems = (tab) => () => menus.isOpen('items') && (!tab || menus.tab === tab);
 const GUIDES = {
   stats: () => [
@@ -1548,6 +1549,14 @@ const GUIDES = {
   thief: () => [
     { at: () => null, text: 'The <b>golden bloop</b> is the Gel Thief. Follow the <b>gold arrow</b> to it, and tap it to give chase. It runs from you, but it is fat with the ember: after a few seconds of running, or once you corner it against the trees, it turns to fight.' },
   ],
+  training: () => [
+    { at: () => hudBtn('skills'), text: 'Every Job Level brings a <b>skill point</b>, and skills are learnt with them. Tap <b>Skills</b>.', done: inSkills },
+    { at: () => $('.rfoot', win('skills')), need: inSkills, text: 'These are your <b>Skill Points</b>. Spend them with care: taking them back needs a trainer\'s <b>costly reset</b>.' },
+    { at: () => $('.sktree', win('skills')), need: inSkills, text: 'Each job has its own <b>tree</b> (a tab for each). A line joins a skill to the ones it opens: raise it far enough and the next unlocks. A Trainee has one skill: <b>Basic Training</b>.' },
+    { at: () => $('.sknode[data-id="basics"]', win('skills')), need: inSkills, back: 1, text: 'Tap <b>Basic Training</b> to see what it does.', done: () => menus.skSel === 'basics' || story.step?.id !== 'training' },
+    { at: () => $('.skdetail', win('skills')), need: inSkills, back: 1, text: 'What it does now and at the next level, what it costs and what it needs. <b>Active</b> skills go on the hotbar and are used with a tap; <b>passive</b> ones, like this, work by themselves. Raised to 9, it opens your <b>first job</b>.' },
+    { at: () => $('[data-act="learn"][data-id="basics"]', win('skills')), need: inSkills, back: 1, text: 'Tap <b>Raise ▲</b> to spend a point on it.', done: () => story.step?.id !== 'training' },
+  ],
   hotbar: () => [
     { at: () => hudBtn('items'), text: 'The hotbar along the bottom holds potions and skills, one tap away. Tap <b>Items</b>.', done: inItems() },
     { at: () => $('[data-act="tab"][data-id="use"]', win('items')), need: inItems(), text: 'Potions are under <b>Usables</b>.', done: inItems('use') },
@@ -1556,10 +1565,36 @@ const GUIDES = {
       text: '<b>Press and hold</b> the Red Potion, <b>drag</b> it down onto an empty hotbar slot, and let go. (Or tap it, then <b>Add to hotbar</b>.)', done: () => hotbar.has('item', 'potion') },
   ],
 };
-let guideFor = null; // the story step the running lesson is for
+// The first job's skills: once the hero wears a first job and has a point for one of its active
+// skills, how to raise it, put it on the hotbar and use it (once: flags.guide_jobskills)
+function jobSkillsGuide() {
+  const job = prog.job, done = () => !!story.flags.guide_jobskills;
+  if (JOBS[job]?.tier !== 1 || done()) return null;
+  const ids = Object.keys(SKILLS).filter((id) => SKILLS[id].job === job && SKILLS[id].kind === 'active');
+  if (ids.some((id) => hotbar.has('skill', id))) { story.flags.guide_jobskills = true; return null; } // (they know how)
+  const id = ids.find((k) => !SKILLS[k].free && !SKILLS[k].granted && !learnBlock(prog, k));
+  if (!id) return null; // (no point for one yet: it waits)
+  const sk = SKILLS[id], name = JOBS[job].name, node = () => $(`.sknode[data-id="${id}"]`, win('skills'));
+  const onTab = () => inSkills() && menus.skTab === job;
+  const cell = () => hotbar.cells[hotbar.slots.findIndex((x) => x?.kind === 'skill' && x.id === id)] || null;
+  return [
+    { at: () => hudBtn('skills'), text: `You are a <b>${name}</b> now, and your job's skills are waiting. Tap <b>Skills</b>.`, done: inSkills },
+    { at: () => $(`[data-act="sktab"][data-id="${job}"]`, win('skills')) || $('[data-act="skfirst"]', win('skills')), need: inSkills, text: `The <b>${name}</b> tab holds your job's tree.`, done: onTab },
+    { at: node, need: onTab, back: 1, text: `<b>${sk.name}</b> is an <b>active</b> skill: you use it in a fight. Tap it.`, done: () => menus.skSel === id || skillLv(prog, id) > 0 },
+    { at: () => $(`[data-act="learn"][data-id="${id}"]`, win('skills')), need: onTab, back: 1, text: 'Tap <b>Raise ▲</b> to learn it. (Raise it again later and it hits harder; some skills open others.)', done: () => skillLv(prog, id) > 0 },
+    { at: node, need: onTab, back: 1, drag: [node, () => hotbar.nextFree, iconURL(sk.icon)],
+      text: '<b>Press and hold</b> it, <b>drag</b> it down onto an empty hotbar slot, and let go. (Or tap <b>Add to hotbar</b>.)', done: () => hotbar.has('skill', id) },
+    { at: cell, text: `Tap it on the hotbar to use it on the monster you are fighting (tap a monster first). Each use costs <b>SP</b>, the blue bar, and some skills have a cooldown${sk.weapon ? `. ${sk.name} needs <b>${WEAPON_NAMES[sk.weapon]}</b> in hand` : ''}. Learnt skills stay yours: a new Job Level brings a new point.` },
+  ];
+}
+let guideFor = null; // the story step the running lesson is for ('jobskills': the first job's)
 function tickGuide(dt) {
   const s = story.step;
-  if (guide.running && (guideFor !== s?.id || !storyLive())) guide.stop(true);
+  if (guide.running && guideFor !== 'jobskills' && (guideFor !== s?.id || !storyLive())) guide.stop(true);
+  if (!guide.running && !menus.isOpen('story') && !cine && !menus.isOpen('talk')) {
+    const steps = jobSkillsGuide();
+    if (steps) { guideFor = 'jobskills'; guide.start(steps, { onEnd: () => { story.flags.guide_jobskills = true; persist(); } }); }
+  }
   if (!guide.running && storyLive() && s && GUIDES[s.id] && !story.flags[`guide_${s.id}`] && !menus.isOpen('story') && !cine
     && (s.id !== 'thief' || world.id === s.map)) { // (the chase's, once in Moss Field)
     guideFor = s.id;
