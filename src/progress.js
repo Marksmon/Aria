@@ -26,7 +26,7 @@ export const STATS = {
 // with the Blader's opens the Shadowblade, with the Archer's the Hunter, with the Sorcerer's the Voodoo.
 export const OLD_EDGES = ['flameedge', 'frostedge', 'thunderedge'];
 // skills replaced by new ones: their points (and hotbar slots) go to the new skill
-export const RENAMED_SKILLS = { sonicblow: 'venomcloud' };
+export const RENAMED_SKILLS = { sonicblow: 'venomcloud', blasttrap: 'landmine', poisonaura: 'substitute' };
 export const JOBS = {
   novice: { name: 'Trainee', tier: 0 },
   swordman: { name: 'Blader', tier: 1 },
@@ -55,9 +55,9 @@ export const JOB_TRAITS = {
   moonranger: { mech: 'ATK and MATK arrows under the moon', strong: 'the best bow on packs, stronger still at night', weak: 'weaker by day, and hungry for SP' },
   beastmaster: { mech: 'three beasts fed by its stats', strong: 'never alone: the beasts take the blows and draw the monsters', weak: 'its own blows are modest, and a fallen beast is gone for 20 s' },
   phantom: { mech: 'two daggers and illusions', strong: 'the highest steady melee damage, and illusions that draw the blows', weak: 'far squishier than a BladeMaster' },
-  shadowblade: { mech: 'Ambush and execution', strong: 'the biggest single blows (an Ambush out of hiding, Eclipse on the wounded), and every kill hides it again', weak: 'hiding never fools a boss, its Shadow cuts barely scratch Shadow monsters, one area skill, fewer HP than a BladeMaster' },
-  hunter: { mech: 'traps', strong: 'traps that hold, paralyze and blow up whole packs, never miss and go through DEF: the safest fighter', weak: 'traps need monsters to walk in (floating Wisps never do), and less steady damage than a Windrunner' },
-  voodoo: { mech: 'Blight that stacks, curses and the doll', strong: 'Blight goes through MDEF and no boss resists it: the strongest over a long fight, and a Curse Circle makes everything take more', weak: 'slow to start with little burst, the frailest second job, and Shadow barely scratches Shadow monsters' },
+  shadowblade: { mech: 'Ambush and execution', strong: 'the biggest single blows (an Ambush out of hiding, a Backstab from behind, Eclipse on the wounded), a teleport to any monster\'s back, and every kill hides it again', weak: 'hiding never fools a boss, its Shadow cuts barely scratch Shadow monsters, one area skill, fewer HP than a BladeMaster' },
+  hunter: { mech: 'traps', strong: 'traps that hold and paralyze whole packs, and a Land Mine with the biggest blast in Aria; trap damage never misses and goes through DEF: the safest fighter', weak: 'traps need monsters to walk in (floating Wisps never do), and less steady damage than a Windrunner' },
+  voodoo: { mech: 'Blight that stacks, curses and the doll', strong: 'Blight goes through MDEF and no boss resists it: the strongest over a long fight, and a Curse Circle makes everything take more', weak: 'slow to start with little burst, frail (its Substitute doll takes the blows, for a price in HP), and Shadow barely scratches Shadow monsters' },
 };
 export const SECOND_AT = 40; // the first-job Job Level a second job's trial asks for
 // the skill trees a job stands on: its own and those of the jobs before it

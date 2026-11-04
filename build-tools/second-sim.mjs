@@ -50,14 +50,15 @@ const JOBS_SIM = {
   shadowblade() {
     const { ps } = hero('shadowblade', ['swordman', 'assassin'], MELEE, {}, { ...SWORD, mastery: 9 + 20 + 20 });
     ps.crit += 5;
-    let t = 0, hp = HP, cd = {}, ambush = false;
+    let t = 0, hp = HP, cd = {}, ambush = false, backUntil = 0;
     const amb = AMBUSH * 1.5; // (Night Stalker 5)
-    const cut = (m) => { const cruel = hp < HP / 2 ? 1.2 : 1, a = ambush ? amb : 1; ambush = false; return playerAttack({ ...ps, el: 'shadow' }, BOSS, m * cruel * a, 1, true).dmg; };
+    // (Backstab 10: +50% for the 2 s at the boss's back after Umbral Step; a lone boss faces you otherwise)
+    const cut = (m) => { const cruel = (hp < HP / 2 ? 1.2 : 1) * (t < backUntil ? 1.5 : 1), a = ambush ? amb : 1; ambush = false; return playerAttack({ ...ps, el: 'shadow' }, BOSS, m * cruel * a, 1, true).dmg; };
     while (hp > 0 && t < 900) {
       const ready = (k) => (cd[k] || 0) <= t;
       let dmg = 0;
       if (ready('eclipse') && (ambush || (cd.step || 0) - t > 3)) { dmg += cut(P('eclipse', 10) * (2 - hp / HP)); cd.eclipse = t + 8; }
-      else if (ready('step') && !ambush) { dmg += cut(P('umbralstep', 5)); ambush = true; cd.step = t + 6; }
+      else if (ready('step') && !ambush) { dmg += cut(P('umbralstep', 5)); ambush = true; backUntil = t + 2; cd.step = t + 6; }
       else if (ready('slash') && !(ambush && (cd.eclipse || 0) - t < 1.2)) { dmg += cut(P('shadowslash', 10)) + cut(P('shadowslash', 10)); cd.slash = t + 0.8; }
       else if (!ambush) dmg += playerAttack(ps, BOSS).dmg;
       hp -= dmg; t += Math.max(ps.interval, 0.5);
@@ -89,7 +90,7 @@ const JOBS_SIM = {
       let dmg = 0;
       if (ready('bear') && !held) { if (Math.random() < KITE) { dmg += trap('beartrap', 10); heldUntil = t + (4 + 1.5) / 2; } cd.bear = t + 1.5; }
       else if (ready('kill')) { dmg += playerAttack(ps, BOSS, P('killingshot', 10) * (held ? 1.6 : 1) * pred, 1, true).dmg; cd.kill = t + 2; }
-      else if (ready('blast')) { if (Math.random() < KITE) dmg += trap('blasttrap', 10); cd.blast = t + 3; }
+      else if (ready('mine')) { if (Math.random() < KITE) dmg += trap('landmine', 10); cd.mine = t + 10; }
       else if (ready('shock')) { if (Math.random() < KITE) dmg += trap('shocktrap', 10); cd.shock = t + 2; }
       else dmg += playerAttack(ps, BOSS, P('doubleshot', 10) * pred, 1, true).dmg * 2;
       hp -= dmg; t += Math.max(ps.interval, 0.5);

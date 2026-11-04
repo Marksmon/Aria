@@ -101,9 +101,9 @@ another's (no second stack-and-spend like Momentum, no second set of pets like t
 | Moon Ranger | ATK + MATK arrows, the moon | the best bow on packs, stronger at night | weaker by day; SP |
 | Beastmaster | three beasts fed by its stats | never alone: the beasts take the blows | modest own blows; a fallen beast is gone 20 s |
 | Phantom | two daggers, illusions | the highest steady melee damage | far squishier than a BladeMaster |
-| Shadowblade | **the Ambush** (a blow out of hiding), executions | the biggest single blows; every kill hides it again (Night Stalker) | bosses see through hiding (only the Ambush of Umbral Step lands on them); Shadow cuts barely scratch Shadow monsters; one area skill; fewer HP than a BladeMaster |
-| Hunter | **traps** set at its feet | holds, paralysis and blasts on whole packs; trap damage never misses and goes through DEF | traps need a monster to walk in (floating Wisps never do; one that stands off never springs them); less steady damage than a Windrunner |
-| Voodoo | **Blight**, a curse that stacks | through MDEF and never resisted: the strongest over a long fight; Curse Circle makes everything take more | slow to start, little burst; the frailest second job; Shadow is weak on Shadow monsters |
+| Shadowblade | **the Ambush** (a blow out of hiding), **Backstab**, executions | the biggest single blows; Umbral Step teleports it to any monster's back; every kill hides it again (Night Stalker) | bosses see through hiding (only the Ambush of Umbral Step lands on them); Shadow cuts barely scratch Shadow monsters; one area skill; fewer HP than a BladeMaster |
+| Hunter | **traps** set at its feet | holds and paralysis on whole packs, and the Land Mine, the biggest blast in Aria; trap damage never misses and goes through DEF | traps need a monster to walk in (floating Wisps never do; one that stands off never springs them); less steady damage than a Windrunner |
+| Voodoo | **Blight**, a curse that stacks | through MDEF and never resisted: the strongest over a long fight; Curse Circle makes everything take more | slow to start, little burst; frail (HP factor 62), its Substitute doll paid for in HP; Shadow is weak on Shadow monsters |
 
 ## The Assassin's crosses: Shadowblade, Hunter, Voodoo
 
@@ -114,10 +114,13 @@ Two-path second jobs like the Magic Knight (`from` of two first jobs: 20 points 
   everyone). Its look is the Phantom's grand coat in black and vivid violet, with long glowing
   blades. The **Ambush** (`AMBUSH` 2 in `skills.js`, Night Stalker +10% a level): the first blow out
   of any hiding (Vanish, Umbral Step, Night Stalker's kill) lands that much harder (`unhide` in
-  `main.js`). Actives: Shadow Slash (two Shadow cuts), Umbral Step (a line cut to the target's
-  back, then hidden 2 s), Eclipse (one huge Shadow blow, +1% for every 1% of HP the monster has
+  `main.js`). **Backstab** (passive, `backstab` in `main.js`): a sword or dagger blow from behind
+  lands 5% a level harder; behind = the monster faces away (`heading`), fights someone else
+  (`foe`), has just lost you (an Ambush), or the hero just teleported to its back (`backT`, 2 s).
+  Actives: Shadow Slash (two Shadow cuts), Umbral Step (a teleport to the target's back, behind
+  where it faces, and a cut at once, then hidden 2 s), Eclipse (one huge Shadow blow, +1% for every 1% of HP the monster has
   lost), Shadow Bloom (area, **blind**: a blinded monster misses `BLIND` 40% of its blows, bosses
-  resist). Passives: Umbral Edge (sword ATK and crit), Night Stalker (a kill hides you), Cruel Edge
+  resist). Passives: Umbral Edge (sword ATK and crit), Night Stalker (a kill hides you), Backstab, Cruel Edge
   (more below half HP). Trial: 20 Goblin Assassins, 20 Dark Wisps, 25 Fire Beetles.
 - **Hunter** (Greta the Trapper, Veidheim; Archer + Assassin): bows. The Moon Ranger's cut in black
   and blood red. **Traps** (`traps`, `tickTraps`, `springTrap` in `main.js`; drawn by `fx.prop`):
@@ -125,8 +128,8 @@ Two-path second jobs like the Magic Knight (`from` of two first jobs: 20 points 
   Mastery), 3 out at once (+1 at Trap Mastery 5 and 10; the oldest is picked up); the first monster
   that walks in springs it, never one that flies (`def.fly`). Trap damage is (FNS x 1.5 + KNL + Base
   Lv x 2) x the trap's %, never misses, through DEF, the trap's element. Bear Trap holds (the monster
-  can't walk, `slowBy` 1; bosses half as long), Shock Trap paralyzes a pack, Blast Trap blows one
-  apart. Killing Shot (bow) hits a held, stunned, frozen or paralyzed monster 60% harder; Predator
+  can't walk, `slowBy` 1; bosses half as long), Shock Trap paralyzes a pack, the **Land Mine** (600–1500%, 3 paces,
+  10 s to make the next) is the biggest blast in Aria. Killing Shot (bow) hits a held, stunned, frozen or paralyzed monster 60% harder; Predator
   adds to arrows on a caught or poisoned one; Barbed Traps poison. Trial: 15 Snakes, 10 Bears,
   25 Wolves.
 - **Voodoo** (Mother Hulda, Galdrheim; Sorcerer + Assassin): staves and daggers. The Wizard's robe in
@@ -135,8 +138,10 @@ Two-path second jobs like the Magic Knight (`from` of two first jobs: 20 points 
   stack eats 8% of the MATK a second (+1.6% a level of Hexcraft), in Shadow, through MDEF, and no boss
   resists it (it is no hold). Poison Throw (a short cast) adds 1–2 stacks; Curse Circle (6 s, 3
   paces) a stack a second, and its monsters walk 30% slower and take 2% a level more from everything
-  (`curseT` in `mobs.js`); Poison Aura a stack a second round the hero and **Weakened** (their blows
-  softer, `weakT`); the Voodoo Doll binds one monster (Blight to 8, harder, and every Poison Throw
+  (`curseT` in `mobs.js`); **Substitute** (the owner's call, after Pokemon's Substitute): pay 15% of
+  Max HP for a doll that takes every blow meant for the hero until it has soaked 20–40% of Max HP + 10%
+  of Max SP (up to 30 s, `player.barrier`, `buffs.sub`), its poison haze giving a stack a second round
+  the hero and **Weakened** (their blows softer, `weakT`); the Voodoo Doll binds one monster (Blight to 8, harder, and every Poison Throw
   pins it too). Toxic Blade: a dagger's blows add stacks; Soul Siphon: a Blighted death gives SP
   back and its stacks leap on. Trial: 20 Goblins, 15 Fire Wisps, 25 Dune Worms.
 
@@ -224,8 +229,8 @@ bow range.
   Step, Hurricane Volley, Cyclone Arrow. Moon Ranger: Lunar Multishot, Starfall, Crescent Arrow,
   Moonveil. Beastmaster: Summon Bear, Summon Wolves, Summon Hawk, Pack Frenzy. Phantom: Dual Rend,
   Phantom Double, Mirage Step, Thousand Cuts. Shadowblade: Shadow Slash, Umbral Step, Eclipse,
-  Shadow Bloom. Hunter: Bear Trap, Shock Trap, Blast Trap, Killing Shot. Voodoo: Poison Throw, Curse
-  Circle, Poison Aura, Voodoo Doll.
+  Shadow Bloom. Hunter: Bear Trap, Shock Trap, Land Mine, Killing Shot. Voodoo: Poison Throw, Curse
+  Circle, Substitute, Voodoo Doll.
 
 ## The Beastmaster and its beasts (the owner's rules)
 
@@ -282,9 +287,9 @@ MATK part), used by both the damage and the skill text.
 - **Magic Knight:** between the two on one target, close to the BladeMaster on packs, with the most
   HP and its Stone Aegis barrier.
 - **The Assassin's crosses** (`node build-tools/second-sim.mjs`, a rotation model: Base 80, Job 30,
-  a neutral Lv 55 boss of 300,000 HP): the **Shadowblade** about 0.95x the BladeMaster on a lone boss
-  (its hiding loop needs kills; in a field of monsters, Night Stalker's Ambushes carry it past), the
-  biggest single blows in Aria; the **Hunter** about 0.9x the Windrunner on one target, and the best
+  a neutral Lv 55 boss of 300,000 HP): the **Shadowblade** about 1.1x the BladeMaster on a lone boss
+  (an Ambush and a Backstab after each Umbral Step; in a field, Night Stalker's Ambushes carry it
+  further), the biggest single blows in Aria; the **Hunter** about 0.9x the Windrunner on one target, and the best
   at holding a pack; the **Voodoo** about 1.1x the Wizard over a long fight, far behind it on packs
   and in the first seconds.
 

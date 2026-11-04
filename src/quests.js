@@ -1330,8 +1330,8 @@ export const QUESTS = {
     reward: { xp: 20000, perz: 4000 },
   },
   hunter_trial3: {
-    title: 'Hunter Trial 3: The Alpha\'s Pack', job: true, kind: 'kill', mob: 'wolf', n: 25, lv: 1,
-    intro: 'The Alpha Wolf runs Barley Field, and its Wolves run in packs. Twenty-five of them: shock them, blast them, shoot them while they twitch. Leave the Alpha be. Come back to me after.',
+    title: 'Hunter Trial 3: Traps for the Pack', job: true, kind: 'kill', mob: 'wolf', n: 25, lv: 1,
+    intro: 'The Alpha Wolf runs Barley Field, and its Wolves run in packs. Twenty-five of them: shock them, blow them up on a land mine, shoot them while they twitch. Leave the Alpha be. Come back to me after.',
     thanks: 'The whole pack in your traps. Set the trap, take the shot, become the Hunter. Rise.',
     reward: { xp: 30000, perz: 6000 },
   },

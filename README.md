@@ -786,9 +786,9 @@ weakness, shown when you take it:
 | Moon Ranger | ATK and MATK arrows, the moon | the best bow on packs, stronger at night | weaker by day, hungry for SP |
 | Beastmaster | three beasts fed by its stats | never alone: the beasts take the blows | its own blows are modest; a fallen beast is gone 20 s |
 | Phantom | two daggers and illusions | the highest steady melee damage | far squishier than a BladeMaster |
-| Shadowblade | the Ambush, executions | the biggest single blows, and every kill hides it again | bosses see through hiding; Shadow cuts barely scratch Shadow monsters; one area skill |
-| Hunter | traps | holds, paralysis and blasts on whole packs, never missing, through DEF | traps need monsters to walk in (floating Wisps never do); less steady damage than a Windrunner |
-| Voodoo | Blight that stacks | through MDEF, never resisted: the strongest over a long fight | slow to start, the frailest second job; weak on Shadow monsters |
+| Shadowblade | the Ambush, Backstab, executions | the biggest single blows, a teleport to any monster's back, and every kill hides it again | bosses see through hiding; Shadow cuts barely scratch Shadow monsters; one area skill |
+| Hunter | traps | holds and paralysis on whole packs, and the Land Mine, the biggest blast in Aria; never missing, through DEF | traps need monsters to walk in (floating Wisps never do); less steady damage than a Windrunner |
+| Voodoo | Blight that stacks | through MDEF, never resisted: the strongest over a long fight | slow to start, frail (its Substitute doll takes blows, for a price in HP); weak on Shadow monsters |
 
 The Shadowblade wears the Phantom's grand coat in black and vivid violet, with long glowing swords.
 
@@ -796,9 +796,10 @@ The Shadowblade wears the Phantom's grand coat in black and vivid violet, with l
 |---|---|
 | Umbral Edge | passive, 10: +2 ATK and +0.5% critical hits per level with swords |
 | Night Stalker | passive, 5: a kill melts you into the shadows for 1.4–3 s (bosses see through it), and every **Ambush** deals 10% more per level. An Ambush is your first blow out of any hiding (Vanish, Umbral Step, a Night Stalker kill): ×2 |
+| Backstab | passive, 10: a sword or dagger blow from behind deals 5% more per level: on a monster facing away, fighting someone else (a beast, an illusion), that has lost you, or that you just teleported behind |
 | Cruel Edge | passive, 5, needs Eclipse 1: your sword deals 4% more per level to a monster below half its HP |
 | Shadow Slash | 10: two cuts of 192–390% in Shadow. 0.8 s cooldown |
-| Umbral Step | 5, needs Shadow Slash 3: rise behind your target (up to 7 paces), cutting every monster on the way for 180–300% in Shadow, and land hidden for 2 s: your next blow is an Ambush. 6 s cooldown |
+| Umbral Step | 5, needs Shadow Slash 3: **teleport to your target's back** (up to 9 paces, behind wherever it faces) and cut it at once, 180–300% in Shadow (half to the monsters beside it); you land hidden for 2 s (your next blow is an Ambush), and for 2 s every blow on it is a Backstab. 6 s cooldown |
 | Eclipse | 10, needs Shadow Slash 5: one blow of 460–1000% in Shadow, 1% more for every 1% of HP the monster has lost (double at death's door). 8 s cooldown |
 | Shadow Bloom | 10, needs Umbral Step 1: blades of shadow burst round you twice, 102–210% each within 2.6 paces, 26–80% each to **blind** for 4 s (a blinded monster misses 40% of its blows). 5 s cooldown |
 
@@ -814,7 +815,7 @@ comes from FNS, KNL and the Base Level, never misses and goes through DEF.
 | Predator | passive, 5: arrows deal 5% more per level to a monster held, slowed, stunned, frozen, paralyzed or poisoned |
 | Bear Trap | 10: steel jaws, 230–500% to the first monster in, which is held fast for 2.2–4 s (it can't walk, but strikes what is in reach; bosses half as long) |
 | Shock Trap | 10, needs Bear Trap 3: a burst of lightning, 140–320% Wind to every monster within 2.2 paces, 35–80% each to paralyze for 2 s |
-| Blast Trap | 10, needs Shock Trap 3: a powder charge, 340–700% Fire to every monster within 2.8 paces, flung back, 4% per level each to set burning |
+| Land Mine | 10, needs Shock Trap 3: a buried mine that goes up in a huge blast, 690–1500% Fire to every monster within 3 paces, flung back, 5% per level each to set burning. 10 s cooldown |
 | Killing Shot | 10, needs Bear Trap 1: a heavy arrow of 230–500%, 60% more on a monster held, stunned, frozen or paralyzed. 2 s cooldown |
 
 The Voodoo wears the Wizard's robe in black over toxic green, poison drops on its hem, and holds a
@@ -829,7 +830,7 @@ MDEF; bosses don't resist it.
 | Soul Siphon | passive, 5, needs Curse Circle 1: a monster that dies Blighted gives back 1% of your Max SP per level, and half its stacks leap to the nearest monster |
 | Poison Throw | 10: a cursed vial, 79–160% MATK in Shadow and a Blight stack (two from Lv 5). A short cast |
 | Curse Circle | 10, needs Poison Throw 3: a circle 3 paces round your target for 6 s; every second 20–38% MATK in Shadow and a Blight stack to all in it, which walk 30% slower and take 2% more damage per level from everything |
-| Poison Aura | 5, needs Poison Throw 1: a haze round you for 10–18 s; every second a Blight stack to each monster within 2.5 paces, and its blows 8–16% softer for 3 s. 20 s cooldown |
+| Substitute | 5, needs Poison Throw 1: pay 15% of your Max HP for a stitched doll that takes every blow meant for you, for up to 30 s, until it has soaked 20–40% of your Max HP plus 10% of your Max SP; while it stands, its poison haze gives each monster within 2.5 paces a Blight stack a second and makes its blows 8–16% softer. Not below 25% HP. 20 s cooldown |
 | Voodoo Doll | 5, needs Curse Circle 3: bind a monster to a doll for 10–18 s: its Blight stacks to 8, each stack 3% harder per level, and each Poison Throw on any monster adds a stack to it too. 25 s cooldown |
 
 Walking speed is never raised for long in Aria: the Windrunner's bursts (Tailwind's rush, the

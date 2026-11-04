@@ -880,7 +880,7 @@ class Mob {
   }
 
   // how much harder than its ATK it hits now (an enraged MVP), for its blows, stomps and moves
-  // how hard its blows land: an enraged MVP's harder, a Weakened one's (the Voodoo's Poison Aura) softer
+  // how hard its blows land: an enraged MVP's harder, a Weakened one's (the Voodoo's Substitute haze) softer
   get fury() { return (this.enraged ? MVP_RAGE.atk : 1) * (this.weakT > 0 ? 1 - (this.weakBy || 0) : 1); }
 
   update(dt, player) {

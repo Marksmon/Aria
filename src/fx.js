@@ -68,8 +68,8 @@ export class FX {
     return s;
   }
 
-  // a small thing standing on the ground until released: the Hunter's traps (bear, shock, blast) and
-  // the Voodoo's doll, each painted once in code
+  // a small thing standing on the ground until released: the Hunter's traps (bear, shock, mine) and
+  // the Voodoo's dolls, each painted once in code
   prop(x, z, kind) {
     this.propTex ||= {};
     if (!this.propTex[kind]) {
@@ -86,12 +86,14 @@ export class FX {
         ring(16, '#4a2a10', 6); ring(16, '#d88a3a', 3); ring(9, '#fff27a', 2);
         g.strokeStyle = '#fff6b0'; g.lineWidth = 2;
         g.beginPath(); g.moveTo(26, 40); g.lineTo(30, 30); g.lineTo(34, 36); g.lineTo(38, 24); g.stroke();
-      } else if (kind === 'blast') { // a buried powder keg with a lit fuse
-        ring(14, '#3a2a1a', 5);
-        g.fillStyle = '#5a3a22'; g.beginPath(); g.ellipse(32, 40, 11, 9, 0, 0, Math.PI * 2); g.fill();
-        g.fillStyle = '#8a1a1e'; g.fillRect(21, 37, 22, 4);
-        g.strokeStyle = '#2a2a2a'; g.lineWidth = 2; g.beginPath(); g.moveTo(32, 31); g.quadraticCurveTo(36, 24, 40, 22); g.stroke();
-        g.fillStyle = '#ffd23a'; g.beginPath(); g.arc(41, 21, 3, 0, Math.PI * 2); g.fill();
+      } else if (kind === 'mine') { // a land mine half buried: a dark iron dome, spikes round it, a red light
+        ring(15, '#2a2420', 5);
+        g.fillStyle = '#3a3a40'; g.beginPath(); g.ellipse(32, 42, 13, 8, 0, Math.PI, 0); g.fill();
+        g.fillStyle = '#26262c'; g.fillRect(19, 42, 26, 4);
+        g.fillStyle = '#9aa0ae';
+        for (let i = 0; i < 6; i++) { const x = 21 + i * 4.4; g.beginPath(); g.moveTo(x - 1.6, 37 + Math.abs(i - 2.5)); g.lineTo(x, 29 + Math.abs(i - 2.5) * 1.4); g.lineTo(x + 1.6, 37 + Math.abs(i - 2.5)); g.fill(); }
+        g.fillStyle = '#ff3a2a'; g.beginPath(); g.arc(32, 36, 3, 0, Math.PI * 2); g.fill();
+        g.fillStyle = 'rgba(255,90,60,.35)'; g.beginPath(); g.arc(32, 36, 6, 0, Math.PI * 2); g.fill();
       } else { // a stitched doll with button eyes and a pin
         g.fillStyle = '#8a6a4a'; g.beginPath(); g.arc(32, 22, 11, 0, Math.PI * 2); g.fill();
         g.beginPath(); g.ellipse(32, 44, 10, 13, 0, 0, Math.PI * 2); g.fill();

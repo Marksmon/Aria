@@ -37,9 +37,9 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
     Sorcerer trees; the Moon Ranger (Hrafn the Stargazer) 20+ in both the Sorcerer and Archer trees;
     the Beastmaster (Bjarki, Veidheim) 20+ in both the Blader and Archer trees; the Assassin's crosses
     the same with the Assassin: the **Shadowblade** (Rurik, Steinborg; Blader + Assassin, swords: the
-    Ambush out of hiding, `AMBUSH`), the **Hunter** (Greta the Trapper, Veidheim; Archer + Assassin,
-    bows and traps at its feet, `traps`) and the **Voodoo** (Mother Hulda, Galdrheim; Sorcerer +
-    Assassin, staves and daggers: Blight that stacks, `BLIGHT`). The Beastmaster uses
+    Ambush out of hiding, `AMBUSH`, Backstab, and Umbral Step's teleport to a monster's back), the **Hunter** (Greta the Trapper, Veidheim; Archer + Assassin,
+    bows and traps at its feet, `traps`, the Land Mine the biggest blast) and the **Voodoo** (Mother Hulda, Galdrheim; Sorcerer +
+    Assassin, staves and daggers: Blight that stacks, `BLIGHT`; Substitute, a doll paid for in HP that takes its blows). The Beastmaster uses
     swords and bows, and its own tree holds only beast skills: the Bear (END), the Wolves (FNS) and
     the Hawk (QKN) can all be out together, and the hero's stats feed theirs (`src/allies.js`, `beastStats` in `main.js`; the owner's call: END mostly the Bear's HP and DEF, FNS mostly the Wolves' HIT and ATK, QKN mostly the Hawk's attack speed and reach, FTN every beast's crit and lucky dodge, POW every beast's ATK, KNL their instincts: harder, sooner, longer stuns and slows (`sharp`), every other stat a little, `MINOR`). The Wolves are the Black Wolf and the White Wolf. Each beast has one instinct it uses by itself on its own cooldown (the owner's call, `INSTINCTS`: the Bear's Maul stuns, the Wolves' Hamstring leaps and slows, the Hawk's Dive never misses; bosses resist as ever); they are the beasts' moves, not the hero's skills, and the Bear keeps its Roar, a war cry (the owner's call: every 10 s while it fights it taunts the monsters round it and the pack hits 10% harder for 6 s, `ROAR`). The Hawk is out of reach of melee (the owner's call): only arrows and a boss's thrown or falling blows reach it. The beasts' health bars sit beside the hero's panel (`#pets`). BladeMaster/Wizard/Windrunner/Phantom open only for the first job with the most points (a tie
     opens each tied one). Only one second job can be taken; quitting a trial midway starts it over and
@@ -56,12 +56,12 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   much squishier): the Assassin about 1.4x the Blader, the Phantom 1.2–1.4x the BladeMaster.
   The Assassin's area poison skill is Venom Cloud, a new skill in Sonic Blow's place (the owner's call:
   a cloud at the target that bites everything in it through DEF while the hero fights on).
-  The crosses (`build-tools/second-sim.mjs`): the Shadowblade about the BladeMaster on a lone boss
+  The crosses (`build-tools/second-sim.mjs`): the Shadowblade about 1.1x the BladeMaster on a lone boss
   (more in a field, where kills hide it), the Hunter about 0.9x the Windrunner, the Voodoo about 1.1x
   the Wizard over a long fight.
   Do not even out the BladeMaster and the Wizard: the BladeMaster is not elemental and keeps the
   higher steady damage, while the Wizard's elements make up the gap (see `docs/job-rules.md`).
-- **Second-job skills:** every second job keeps to 3–4 active skills (the Beastmaster's are its three summons and Pack Frenzy; the Phantom's Dual Rend, Phantom Double, Mirage Step, Thousand Cuts; the Shadowblade's Shadow Slash, Umbral Step, Eclipse, Shadow Bloom; the Hunter's Bear, Shock and Blast Traps and Killing Shot; the Voodoo's Poison Throw, Curse Circle, Poison Aura, Voodoo Doll) (add
+- **Second-job skills:** every second job keeps to 3–4 active skills (the Beastmaster's are its three summons and Pack Frenzy; the Phantom's Dual Rend, Phantom Double, Mirage Step, Thousand Cuts; the Shadowblade's Shadow Slash, Umbral Step, Eclipse, Shadow Bloom; the Hunter's Bear and Shock Traps, Land Mine and Killing Shot; the Voodoo's Poison Throw, Curse Circle, Substitute, Voodoo Doll) (add
   passives, not actives).
 - **Every second job plays its own way** (the owner's call): each has one mechanic no other job
   shares, and its own strength and weakness (`JOB_TRAITS` in `progress.js`, shown at the job change;

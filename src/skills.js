@@ -277,6 +277,10 @@ export const SKILLS = {
     name: 'Night Stalker', job: 'shadowblade', kind: 'passive', max: 5, icon: 'skill_nightstalker',
     desc: (lv) => `A kill melts you into the shadows for ${(1 + 0.4 * lv).toFixed(1)} s (bosses and MVPs see through it), and every Ambush (your first blow out of hiding: ×${AMBUSH}) deals ${10 * lv}% more.`,
   },
+  backstab: {
+    name: 'Backstab', job: 'shadowblade', kind: 'passive', max: 10, icon: 'skill_backstab',
+    desc: (lv) => `A sword or dagger blow from behind deals ${5 * lv}% more: on a monster facing away, fighting someone else (a beast, an illusion), that has lost you, or that you have just teleported behind.`,
+  },
   cruedge: {
     name: 'Cruel Edge', job: 'shadowblade', kind: 'passive', max: 5, needs: { eclipse: 1 }, icon: 'skill_cruedge',
     desc: (lv) => `Your sword deals ${4 * lv}% more to a monster below half its HP.`,
@@ -287,9 +291,9 @@ export const SKILLS = {
     desc: (lv) => `Two cuts of shadow, ${SKILLS.shadowslash.power(lv)}% damage each, in Shadow (weak on Shadow monsters). Out of hiding, the first is an Ambush.`,
   },
   umbralstep: {
-    name: 'Umbral Step', job: 'shadowblade', kind: 'active', max: 5, needs: { shadowslash: 3 }, target: 'mob', range: 7, weapon: 'sword', cd: 6, icon: 'skill_umbralstep',
+    name: 'Umbral Step', job: 'shadowblade', kind: 'active', max: 5, needs: { shadowslash: 3 }, target: 'mob', range: 9, weapon: 'sword', cd: 6, icon: 'skill_umbralstep',
     sp: (lv) => 18 + 2 * lv, power: (lv) => 150 + 30 * lv,
-    desc: (lv) => `Sink into your shadow and rise behind your target (up to 7 paces): every monster on the way takes ${SKILLS.umbralstep.power(lv)}% damage in Shadow, and you land hidden for 2 s, so your next blow is an Ambush (bosses see you, but the Ambush still lands).`,
+    desc: (lv) => `Teleport through the shadows to your target's back (up to 9 paces, wherever it faces) and cut it at once: ${SKILLS.umbralstep.power(lv)}% damage in Shadow, half that to the monsters beside it. You land hidden for 2 s, so your next blow is an Ambush, and for 2 s every blow on it is a Backstab (bosses see you, but both still land).`,
   },
   eclipse: {
     name: 'Eclipse', job: 'shadowblade', kind: 'active', max: 10, needs: { shadowslash: 5 }, target: 'mob', range: 1.35, weapon: 'sword', cd: 8, icon: 'skill_eclipse',
@@ -328,10 +332,10 @@ export const SKILLS = {
     sp: (lv) => 16 + lv, power: (lv) => 120 + 20 * lv, area: 2.2, status: { kind: 'paralyze', chance: (lv) => 30 + 5 * lv, dur: 2 },
     desc: (lv) => `Set a coil of lightning at your feet. When a monster steps on it, it bursts: ${SKILLS.shocktrap.power(lv)}% trap damage (Wind) to every monster within ${SKILLS.shocktrap.area} paces; ${statusText(SKILLS.shocktrap, lv, ' each')}.`,
   },
-  blasttrap: {
-    name: 'Blast Trap', job: 'hunter', kind: 'active', max: 10, needs: { shocktrap: 3 }, cd: 3, icon: 'skill_blasttrap', trap: 'blast',
-    sp: (lv) => 24 + 2 * lv, power: (lv) => 300 + 40 * lv, area: 2.8, status: { kind: 'burn', chance: (lv) => 4 * lv, dur: 3 },
-    desc: (lv) => `Bury a powder charge at your feet. When a monster steps on it, it blows: ${SKILLS.blasttrap.power(lv)}% trap damage (Fire) to every monster within ${SKILLS.blasttrap.area} paces, flinging them back; ${statusText(SKILLS.blasttrap, lv, ' each')}.`,
+  landmine: {
+    name: 'Land Mine', job: 'hunter', kind: 'active', max: 10, needs: { shocktrap: 3 }, cd: 10, icon: 'skill_landmine', trap: 'mine',
+    sp: (lv) => 40 + 3 * lv, power: (lv) => 600 + 90 * lv, area: 3, status: { kind: 'burn', chance: (lv) => 5 * lv, dur: 3 },
+    desc: (lv) => `Bury a land mine at your feet. When a monster steps on it, it goes up in a huge blast: ${SKILLS.landmine.power(lv)}% trap damage (Fire) to every monster within ${SKILLS.landmine.area} paces, flinging them back; ${statusText(SKILLS.landmine, lv, ' each')}. 10 s to make the next.`,
   },
   killingshot: {
     name: 'Killing Shot', job: 'hunter', kind: 'active', max: 10, needs: { beartrap: 1 }, target: 'mob', range: 'bow', weapon: 'bow', cd: 2, icon: 'skill_killingshot',
@@ -365,10 +369,10 @@ export const SKILLS = {
     sp: (lv) => 30 + 2 * lv, cast: () => 1.2, cd: 4, power: (lv) => 18 + 2 * lv, hits: () => 6, every: 1, area: 3,
     desc: (lv) => `Draw a circle of curses round your target for 6 s: every second, ${SKILLS.cursecircle.power(lv)}% MATK in Shadow and a stack of Blight to every monster in it (3 paces), and while inside they walk 30% slower and take ${2 * lv}% more damage from everything.`,
   },
-  poisonaura: {
-    name: 'Poison Aura', job: 'voodoo', kind: 'active', max: 5, needs: { poisonthrow: 1 }, cd: 20, icon: 'skill_poisonaura',
-    sp: (lv) => 25 + 3 * lv, dur: (lv) => 8 + 2 * lv,
-    desc: (lv) => `A haze of poison round you for ${SKILLS.poisonaura.dur(lv)} s: every second, each monster within 2.5 paces takes a stack of Blight and is Weakened (its blows ${6 + 2 * lv}% softer) for 3 s.`,
+  substitute: {
+    name: 'Substitute', job: 'voodoo', kind: 'active', max: 5, needs: { poisonthrow: 1 }, cd: 20, icon: 'skill_substitute',
+    sp: (lv) => 20 + 3 * lv, hpCost: 0.15, soak: (lv) => 0.15 + 0.05 * lv, dur: () => 30,
+    desc: (lv) => `Stitch a doll out of your own life: pay 15% of your Max HP, and for up to 30 s the doll takes every blow meant for you until it has soaked ${Math.round(SKILLS.substitute.soak(lv) * 100)}% of your Max HP plus 10% of your Max SP. While it stands, its poison haze gives each monster within 2.5 paces a stack of Blight a second and Weakens it (its blows ${6 + 2 * lv}% softer). Not below 25% HP.`,
   },
   voodoodoll: {
     name: 'Voodoo Doll', job: 'voodoo', kind: 'active', max: 5, needs: { cursecircle: 3 }, target: 'mob', range: 5, cd: 25, icon: 'skill_voodoodoll',

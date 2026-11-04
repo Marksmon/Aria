@@ -228,7 +228,7 @@ inv.chest.load(loadStorage()); // the Keepers' storage: every hero's, saved apar
 inv.dropUnwearable(); // gear rules can change between versions
 // stats + gear -> the player's battle numbers (Ragnarok rules); HP/SP stay put, capped by the new max
 // timed buffs, in seconds left: aspd (Quickening Draught), warcry (War Cry's ATK bonus)
-const buffs = { aspd: 0, warcry: 0, ward: 0, aegis: 0, momentum: 0, focus: 0, tailwind: 0, rush: 0, gust: 0, rhythm: 0, veil: 0, frenzy: 0, aura: 0 };
+const buffs = { aspd: 0, warcry: 0, ward: 0, aegis: 0, momentum: 0, focus: 0, tailwind: 0, rush: 0, gust: 0, rhythm: 0, veil: 0, frenzy: 0, sub: 0 };
 let warcryLv = 0, wardLv = 0, endureGuard = 0, aegisLv = 0, focusLv = 0, tailLv = 0, gustHaste = 0;
 let endureFrom = null, endureLv = 0; // what set player.endureT (Guard or Stand Firm), for the buff bar
 // the Windrunner: Gale Rhythm's stacks (each arrow that lands), Skirmisher's empowered arrows left
@@ -295,6 +295,7 @@ function unhide(attack = false) {
   player.mat.transparent = false; player.mat.opacity = 1;
   if (!attack) return;
   const amb = ambushMul();
+  ambushAt = skillClock;
   player.nextBlow = Math.max(player.nextBlow || 1, vanishBonus, amb);
   if (amb > 1) fx.number(player.x, overHead(player, 1.9), player.z, 'Ambush!', 'skill');
 }
@@ -304,8 +305,8 @@ const helpless = (m) => m.stunT > 0 || heldFast(m);
 // the Hunter's traps (useSkill, tickTraps): { kind, lv, x, z, armT, life, s (its sprite) }
 const traps = [];
 function clearTraps() { for (const t of traps) fx.release(t.s); traps.length = 0; }
-// the Voodoo's Poison Aura (its level), and the Voodoo Doll: the monster bound to it, for how long
-let auraLv = 0, auraTick = 0, doll = null, dollT = 0, dollLv = 0;
+// the Voodoo's Substitute (its level, for its poison haze; the doll's soak is player.barrier), and the Voodoo Doll: the monster bound to it, for how long
+let auraLv = 0, auraTick = 0, doll = null, dollT = 0, dollLv = 0, subProp = null;
 // the Voodoo's Blight (skills.js BLIGHT): stacks on a monster, each eating a share of the MATK a second,
 // in Shadow, through MDEF (no hold, so bosses don't resist it)
 const bound = (m) => doll && dollT > 0 && doll === m;
@@ -379,7 +380,19 @@ let skillClock = 0; // seconds since the game started, for those windows
 const weaponKind = () => { const it = ITEMS[inv.gear.weapon]; return !it ? 'none' : it.kind === 'staff' || it.kind === 'bow' || it.kind === 'dagger' ? it.kind : 'sword'; };
 // an Archer's bonuses on one monster: Hunter's Mark on it, Steady Aim from 4 paces
 // the Shadowblade's Cruel Edge: a sword harder on a monster below half its HP
-const cruel = (m) => (weaponKind() === 'sword' && m.hp < m.def.hp / 2 ? 1 + 0.04 * skillLv(prog, 'cruedge') : 1);
+const cruel = (m) => (weaponKind() === 'sword' && m.hp < m.def.hp / 2 ? 1 + 0.04 * skillLv(prog, 'cruedge') : 1) * backstab(m);
+// the Shadowblade's Backstab: a sword or dagger blow from behind lands harder. Behind = the monster faces
+// away, fights someone else (a beast, an illusion), has lost you (an Ambush), or you just teleported to its back
+let ambushAt = -99, backSaid = -99;
+function backstab(m) {
+  const lv = skillLv(prog, 'backstab'), w = weaponKind();
+  if (!lv || (w !== 'sword' && w !== 'dagger')) return 1;
+  const h = m.heading, dx = player.x - m.x, dz = player.z - m.z, d = Math.hypot(dx, dz) || 1;
+  const from = m.backT > skillClock || (m.foe && m.foe !== player) || skillClock - ambushAt < 0.3 || (h && (dx * h.x + dz * h.z) / d < -0.3);
+  if (!from) return 1;
+  if (skillClock - backSaid > 1) { backSaid = skillClock; fx.number(m.x, overHead(m, m.sprite.scale.y * 0.8 + 0.55), m.z, 'Backstab', 'skill'); }
+  return 1 + 0.05 * lv;
+}
 function bowMul(m) {
   let k = cruel(m);
   if (weaponKind() === 'bow' && skillLv(prog, 'predator') && (m.slowT > 0 || m.stunT > 0 || m.poisonT > 0)) k *= 1 + 0.05 * skillLv(prog, 'predator'); // the Hunter's Predator
@@ -2444,11 +2457,16 @@ function useSkill(id) {
     fx.puff(player.x, y + 0.1, player.z, 0.6);
     return;
   }
-  // ---- Voodoo: Poison Aura, a haze that Blights and weakens whatever comes close ----
-  if (id === 'poisonaura') {
+  // ---- Voodoo: Substitute, a doll paid for in HP that takes the blows, its poison haze round it ----
+  if (id === 'substitute') {
+    if (player.hp <= player.maxHp * 0.25) { menus.message('Too weak to make a Substitute'); return; }
     if (!pay()) return;
-    buffs.aura = sk.dur(lv); auraLv = lv; auraTick = 0;
-    say('Poison Aura'); audio.play('spore');
+    player.hp -= Math.round(player.maxHp * sk.hpCost);
+    player.barrier = Math.round(player.maxHp * sk.soak(lv) + player.maxSp * 0.1);
+    buffs.sub = sk.dur(lv); auraLv = lv; auraTick = 0;
+    if (!subProp) subProp = fx.prop(player.x, player.z, 'doll');
+    say('Substitute'); audio.play('spore');
+    fx.number(player.x, overHead(player, 1.3), player.z, Math.round(player.maxHp * sk.hpCost), 'taken');
     fx.cloud(player.x, y + 0.4, player.z);
     return;
   }
@@ -2507,21 +2525,26 @@ function useSkill(id) {
       if (!res.miss) for (let j = 0; j < 12; j++) { const a = (j / 12) * Math.PI * 2; fx.sparkle(t.x + Math.cos(a) * 0.8, world.heightAt(t.x, t.z) + 0.3, t.z + Math.sin(a) * 0.8, j % 2 ? '#2a1640' : '#a24aff', 1); }
     }, { el: 'shadow' });
   }
-  if (id === 'umbralstep') { // through the line to the target's back, cutting all on the way, then hidden
+  if (id === 'umbralstep') { // a teleport to the target's back (behind where it faces), a cut at once, then hidden
     const run = (t) => {
       if (!t.alive || !pay()) return;
-      const dx = t.x - player.x, dz = t.z - player.z, d = Math.hypot(dx, dz) || 1, ux = dx / d, uz = dz / d, gap = t.def.r + 0.6;
-      const bx = t.x + ux * gap, bz = t.z + uz * gap, len = d + gap, mult = sk.power(lv) / 100;
+      const h = t.heading && Math.hypot(t.heading.x, t.heading.z) > 0.1 ? t.heading : { x: (t.x - player.x) || 1, z: t.z - player.z };
+      const hd = Math.hypot(h.x, h.z) || 1, hx = h.x / hd, hz = h.z / hd, gap = t.def.r + 0.6;
+      let bx = t.x - hx * gap, bz = t.z - hz * gap; // its back
+      if (!world.walkable(bx, bz) || world.isSafe(bx, bz)) { const dx = t.x - player.x, dz = t.z - player.z, d = Math.hypot(dx, dz) || 1; bx = t.x + dx / d * gap; bz = t.z + dz / d * gap; } // (a wall behind it: its far side)
       const f0 = { x: player.x, y: y + 0.6, z: player.z };
-      for (const m of [...mobs.list]) {
-        if (!m.alive) continue;
-        const px = m.x - player.x, pz = m.z - player.z, along = px * ux + pz * uz, off = Math.abs(px * uz - pz * ux);
-        if (along > -0.3 && along < len + m.def.r && off < 0.7 + m.def.r) bladeHit(m, mult, { el: 'shadow' });
-      }
+      fx.puff(player.x, y + 0.3, player.z, 0.9);
       if (world.walkable(bx, bz) && !world.isSafe(bx, bz)) { player.x = bx; player.z = bz; player.sync(); }
       fx.zap(f0, { x: player.x, y: world.heightAt(player.x, player.z) + 0.6, z: player.z }, '#8a3aff');
-      player.face = { x: -ux, z: -uz };
+      const fx0 = t.x - player.x, fz0 = t.z - player.z, fd = Math.hypot(fx0, fz0) || 1;
+      player.face = { x: fx0 / fd, z: fz0 / fd };
       player.iframes = Math.max(player.iframes, 0.35);
+      t.backT = skillClock + 2; // (Backstab: you stand at its back for a moment)
+      const mult = sk.power(lv) / 100;
+      player.atkAnim = player.atkDur = 0.3;
+      fx.slash(t.x, overHead(t, t.sprite.scale.y * 0.5), t.z, player.face, cam);
+      bladeHit(t, mult, { el: 'shadow' });
+      for (const m of [...mobs.list]) if (m.alive && m !== t && Math.hypot(m.x - t.x, m.z - t.z) < 1.7 + m.def.r) bladeHit(m, mult / 2, { el: 'shadow' });
       hide(2);
       fx.puff(player.x, world.heightAt(player.x, player.z) + 0.3, player.z, 0.9);
       say('Umbral Step'); audio.play('dodge');
@@ -3082,7 +3105,7 @@ player.on('interrupt', () => menus.message('Your spell was interrupted!'));
 // the Hunter's traps: armed after a moment, they wait for a monster to walk in (not a floating one);
 // trap damage comes from FNS, KNL and the Base Level, never misses and goes through DEF
 let dollProp = null;
-const TRAP_FX = { bear: { el: 'neutral', col: '#d8dce4' }, shock: { el: 'wind', col: '#fff27a' }, blast: { el: 'fire', col: '#ff6a1a' } };
+const TRAP_FX = { bear: { el: 'neutral', col: '#d8dce4' }, shock: { el: 'wind', col: '#fff27a' }, mine: { el: 'fire', col: '#ff6a1a' } };
 function trapDmg(m, power) {
   const st = (k) => prog.total(k) + (player.statBonus?.[k] || 0), md = m.effDef();
   const base = st('fns') * 1.5 + st('knl') + prog.baseLv * 2;
@@ -3094,7 +3117,7 @@ function springTrap(t, hit) {
   const barbs = skillLv(prog, 'barbedtraps'), venom = barbs && { kind: 'poison', chance: () => 12 * barbs, dur: 6 };
   const strike = (m) => {
     const dmg = Math.max(1, Math.floor(trapDmg(m, sk.power(t.lv)) * elementMod(T.el, m.effDef().el)));
-    const dx = m.x - t.x, dz = m.z - t.z, d = Math.hypot(dx, dz) || 1, push = t.kind === 'blast' ? 2 : 0;
+    const dx = m.x - t.x, dz = m.z - t.z, d = Math.hypot(dx, dz) || 1, push = t.kind === 'mine' ? 2.5 : 0;
     fx.number(m.x, overHead(m, m.sprite.scale.y * 0.8), m.z, dmg, 'dealt');
     m.hit(dmg, dx / d * push, dz / d * push);
     if (venom) inflict(m, venom, 1, dmg);
@@ -3111,8 +3134,12 @@ function springTrap(t, hit) {
   const n = 22;
   for (let j = 0; j < n; j++) { const a = (j / n) * Math.PI * 2, r = 0.5 + Math.random() * sk.area; fx.sparkle(t.x + Math.cos(a) * r, gy + 0.3, t.z + Math.sin(a) * r, T.col, 1); }
   if (t.kind === 'shock') for (let j = 0; j < 4; j++) { const a = Math.random() * Math.PI * 2, r = Math.random() * sk.area, x = t.x + Math.cos(a) * r, z = t.z + Math.sin(a) * r; fx.zap({ x, y: gy + 3, z }, { x, y: gy + 0.2, z }, T.col); }
-  fx.puff(t.x, gy + 0.3, t.z, t.kind === 'blast' ? 2.2 : 1.2);
-  cam.shake = t.kind === 'blast' ? 0.35 : 0.15;
+  if (t.kind === 'mine') { // a huge blast: fire and smoke and a column of sparks
+    for (let j = 0; j < 3; j++) later(j * 0.08, () => fx.puff(t.x, gy + 0.3 + j * 0.5, t.z, 2.6 - j * 0.5));
+    fx.sparkle(t.x, gy + 0.5, t.z, '#ffd23a', 24);
+    fx.warn(t.x, t.z, sk.area, 0.35, '#ff6a1a');
+  } else fx.puff(t.x, gy + 0.3, t.z, 1.2);
+  cam.shake = t.kind === 'mine' ? 0.6 : 0.15;
   audio.play('hit');
   for (const m of [...mobs.list]) {
     if (!m.alive || Math.hypot(m.x - t.x, m.z - t.z) > sk.area + m.def.r) continue;
@@ -3168,7 +3195,10 @@ function tickSkills(dt) {
     fx.sparkle(m.x, overHead(m, m.sprite.scale.y * 0.4), m.z, m.blight > 3 ? '#9a5aff' : '#7aff4a', 3 + m.blight);
     m.hit(n, 0, 0);
   }
-  if (buffs.aura > 0 && (auraTick -= dt) <= 0) { // Poison Aura: a stack of Blight a second, and weakened
+  if (buffs.sub > 0 && player.barrier <= 0) { buffs.sub = 0; menus.message('Your Substitute bursts'); fx.puff(player.x, world.heightAt(player.x, player.z) + 0.6, player.z, 1); }
+  if (subProp && !(buffs.sub > 0)) { fx.release(subProp); subProp = null; if (!(buffs.aegis > 0)) player.barrier = 0; }
+  if (subProp) subProp.position.set(player.x + 0.6, world.heightAt(player.x, player.z) + 0.05, player.z + 0.25); // (the doll stands at the hero's side)
+  if (buffs.sub > 0 && (auraTick -= dt) <= 0) { // the Substitute's poison haze: a stack of Blight a second, and weakened
     auraTick = 1;
     const gy = world.heightAt(player.x, player.z);
     for (let j = 0; j < 10; j++) { const a = (j / 10) * Math.PI * 2 + skillClock, r = 1.2 + (j % 3) * 0.6; fx.sparkle(player.x + Math.cos(a) * r, gy + 0.3, player.z + Math.sin(a) * r, j % 2 ? '#7aff4a' : '#b8ff8a', 1); }
@@ -3200,7 +3230,7 @@ function tickSkills(dt) {
     if (buffs[k] <= 0 && k === 'momentum') momentum = 0;
     if (buffs[k] <= 0 && k === 'imbue') { imbueEl = null; applyStats(); menus.message('Your blade loses its element'); }
     if (buffs[k] <= 0 && k === 'aegis') { player.barrier = 0; applyStats(); }
-    if (buffs[k] <= 0 && k === 'aura') menus.message('The poison haze thins away');
+    if (buffs[k] <= 0 && k === 'sub') menus.message('Your Substitute falls apart');
     if (buffs[k] <= 0 && ['focus', 'tailwind', 'rush', 'gust', 'frenzy', 'swift'].includes(k)) applyStats();
     if (buffs[k] <= 0 && k === 'rhythm') { galeStacks = 0; applyStats(); }
   }
@@ -3377,7 +3407,7 @@ function buffList() {
   if (buffs.imbue > 0 && imbueEl) sk('imbue', 'elemblade', buffs.imbue, `Element: ${imbueEl[0].toUpperCase()}${imbueEl.slice(1)}`);
   if (buffs.momentum > 0 && momentum) { sk('momentum', 'momentum', buffs.momentum, `ATK +${momentum * lvOf('momentum')}%`); out.at(-1).stacks = momentum; }
   if (player.rootT > 0) out.push({ key: 'root', icon: 'skill_earthsplit', name: 'Rooted', left: player.rootT, fx: "Can't walk, dash or leap away" });
-  if (buffs.aura > 0) sk('aura', 'poisonaura', buffs.aura, `Blight and weaken all within 2.5 paces (blows −${6 + 2 * auraLv}%)`);
+  if (buffs.sub > 0) sk('sub', 'substitute', buffs.sub, `The doll takes your blows: ${Math.ceil(player.barrier)} left · Blight and weaken all within 2.5 paces (blows −${6 + 2 * auraLv}%)`);
   if (doll && dollT > 0) sk('doll', 'voodoodoll', dollT, `${doll.def.name} bound: Blight up to ${BLIGHT.dollMax}, +${3 * dollLv}%`);
   if (player.hiddenT > 0) out.push({ key: 'hidden', icon: SKILLS.vanish.icon, name: 'Hidden', left: player.hiddenT, fx: ambushMul() > 1 ? `Monsters lose you · next blow ×${ambushMul().toFixed(1)} (Ambush)` : 'Monsters lose you' });
   if (buffs.aspd > 0) out.push({ key: 'aspd', icon: 'quick', name: ITEMS.quick.name, left: buffs.aspd, fx: 'Attack speed +10%' });

@@ -47,7 +47,7 @@ export const JOB_RULES = {
   // the Assassin's crosses: each as squishy as its dagger half, quick as its other half
   shadowblade: { hpFactor: 105, hpIncrease: 500, spIncrease: 330, delay: { fist: 400, sword: 500, dagger: 420 }, weight: 3000 }, // Ragnarok's Assassin Cross with a sword: fewer HP than a BladeMaster
   hunter:      { hpFactor: 75, hpIncrease: 500, spIncrease: 420, delay: { fist: 460, sword: 660, bow: 520, dagger: 460 }, weight: 2800 }, // Ragnarok's Hunter: traps from FNS and KNL
-  voodoo:      { hpFactor: 50, hpIncrease: 500, spIncrease: 800, delay: { fist: 460, sword: 640, dagger: 460 }, weight: 2400 }, // the frailest: a caster with a dagger
+  voodoo:      { hpFactor: 62, hpIncrease: 500, spIncrease: 800, delay: { fist: 460, sword: 640, dagger: 460 }, weight: 2400 }, // a caster with a dagger, a little sturdier than the Wizard (and its Substitute doll)
 };
 // a dagger swings quicker than a sword: at the job's own dagger delay, else 80% of its sword's. Two
 // daggers (a Phantom's, gear.left) swing together, a little slower than one (DUAL)

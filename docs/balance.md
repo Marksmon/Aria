@@ -319,17 +319,19 @@ hero standing still: every boss reached the hero, in 1-10 s (the raid arenas 1-4
 
 `node build-tools/second-sim.mjs`: a rotation model with the game's rules, Base 80, Job 30, weapons of
 one tier at +7, a neutral Lv 55 boss of 300,000 HP, SP not counted. Times to bring it down (median of
-40): BladeMaster 153 s, **Shadowblade 160 s**, Windrunner 104 s, **Hunter 116 s**, Wizard 180 s,
+40): BladeMaster 153 s, **Shadowblade 134 s**, Windrunner 104 s, **Hunter 117 s**, Wizard 179 s,
 **Voodoo 165 s**.
 
-- **Shadowblade** about 0.95x the BladeMaster on a lone boss: there its hiding comes only from Umbral
-  Step (bosses see through it), so one Ambush (x2, x3 with Night Stalker 5) every 6 s, best spent on
-  Eclipse (460–1000%, up to double on a wounded boss). In a field Night Stalker hides it after every
+- **Shadowblade** about 1.1x the BladeMaster on a lone boss (under the Phantom's 1.2–1.4x): there its
+  hiding comes only from Umbral Step (bosses see through it), so one Ambush (x2, x3 with Night Stalker
+  5) every 6 s, best spent on Eclipse (460–1000%, up to double on a wounded boss), with Backstab's +50%
+  for the 2 s it stands at the boss's back. In a field Night Stalker hides it after every
   kill, and the next monster takes an Ambush: its strength is picking packs apart one by one, not
   bosses. Its HP (`hpFactor` 105) is under the BladeMaster's 150.
 - **Hunter** about 0.9x the Windrunner on one target, counting 70% of its traps sprung (a kiting
   hero sets one, steps back, and the boss walks in). Trap damage (FNS x 1.5 + KNL + Base Lv x 2) never
-  misses and goes through DEF; a held boss takes Killing Shot at x1.6 and Predator's +25%.
+  misses and goes through DEF; a held boss takes Killing Shot at x1.6 and Predator's +25%. The Land
+  Mine (1500% at Lv 10, every 10 s) is the biggest single blast in Aria: a whole pack in one go.
 - **Voodoo** about 1.1x the Wizard over a long fight on a neutral boss: Blight at 5 stacks (8 bound
   to the doll) is about 120–200% MATK a second through MDEF, on top of Poison Throws. It takes
   several seconds to build, so short fights and packs stay the Wizard's; on Shadow monsters (Dark
