@@ -517,8 +517,40 @@ export function buildCity(ctx, variant = 'city') {
     fadeable([body, roof, door], tx, tz, r, th + r * 1.5);
     return [body, roof, door];
   }
+  // a paved road: a strip on the paving from (x0, z0) to (x1, z1) (along x or z), its slabs tiled
+  // along it and its kerbs painted down both edges; o: { tex, glow (an emissive map: lit seams) }
+  const roads = [];
+  function road(x0, z0, x1, z1, w, o) {
+    const alongX = Math.abs(x1 - x0) > Math.abs(z1 - z0), len = alongX ? Math.abs(x1 - x0) : Math.abs(z1 - z0);
+    const g = new THREE.PlaneGeometry(w, len);
+    const uv = g.attributes.uv;
+    for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i), uv.getY(i) * len / w);
+    g.rotateX(-Math.PI / 2);
+    if (alongX) g.rotateY(Math.PI / 2);
+    const m = mesh(g, o.mat, (x0 + x1) / 2, Y + 0.035, (z0 + z1) / 2);
+    m.renderOrder = 0;
+    roads.push(alongX ? [Math.min(x0, x1), z0 - w / 2, Math.max(x0, x1), z0 + w / 2] : [x0 - w / 2, Math.min(z0, z1), x0 + w / 2, Math.max(z0, z1)]);
+  }
+  const roadMat = (base, joint, kerb, seam) => {
+    const draw = (g, lit) => {
+      g.fillStyle = lit ? '#000' : base; g.fillRect(0, 0, 64, 64);
+      if (!lit) for (let row = 0; row < 4; row++) for (let i = 0; i < 3; i++) { // flags, each a little different
+        const x = 8 + i * 16 - (row % 2) * 8, y = row * 16;
+        g.fillStyle = vary(rng, base, 18); g.fillRect(x + 1, y + 1, 14, 14);
+      }
+      g.fillStyle = lit ? seam : joint; // the joints between the flags (lit, on a glowing road)
+      for (let row = 0; row <= 4; row++) g.fillRect(8, row * 16 - 1, 48, 2);
+      for (let row = 0; row < 4; row++) for (let i = 0; i <= 3; i++) g.fillRect(8 + i * 16 - (row % 2) * 8 - 1, row * 16, 2, 16);
+      g.fillStyle = lit ? seam : kerb; if (lit) { g.fillRect(5, 0, 2, 64); g.fillRect(57, 0, 2, 64); } else { g.fillRect(0, 0, 7, 64); g.fillRect(57, 0, 7, 64); } // the kerbs (a line of light along each, on a glowing road)
+      if (!lit) { g.fillStyle = 'rgba(0,0,0,.25)'; g.fillRect(7, 0, 2, 64); g.fillRect(55, 0, 2, 64); }
+    };
+    const map = canvasTex(64, 64, (g) => draw(g, false), true);
+    const opts = { map, polygonOffset: true, polygonOffsetFactor: -1.5, polygonOffsetUnits: -1.5 };
+    if (seam) Object.assign(opts, { emissive: '#a060ff', emissiveIntensity: 0.9, emissiveMap: canvasTex(64, 64, (g) => draw(g, true), true) });
+    return lam(opts);
+  };
   const P = (type, x, z) => place(type, x, z, true);
-  const api = { M, Y, rng, mesh, lam, house, stall, tower, fadeable, spin, turn, anims, P, addBox, addSolid, group, T, ctx, pennant };
+  const api = { road, roadMat, roads, M, Y, rng, mesh, lam, house, stall, tower, fadeable, spin, turn, anims, P, addBox, addSolid, group, T, ctx, pennant };
   const extra = LAYOUTS[variant](api);
 
   // ---------- minimap ----------
@@ -526,6 +558,8 @@ export function buildCity(ctx, variant = 'city') {
     mg.fillStyle = { magic: '#b6b0c8', hunt: '#7aa050', sand: '#e2cc9a', city: '#a9cde6' }[variant] || '#b3ab9c';
     mg.fillRect(x0 * 2, z0 * 2, (x1 - x0) * 2, (z1 - z0) * 2);
     extra?.underlay?.(mg);
+    mg.fillStyle = variant === 'magic' ? '#8a7ab8' : '#e0cca4';
+    for (const [rx0, rz0, rx1, rz1] of roads) mg.fillRect(rx0 * 2, rz0 * 2, (rx1 - rx0) * 2, (rz1 - rz0) * 2);
     mg.fillStyle = variant === 'magic' ? '#5a3a7a' : '#8a5a3a';
     for (const b of ctx.boxes) if (b.kind !== 'wall') mg.fillRect(b.x0 * 2, b.z0 * 2, (b.x1 - b.x0) * 2, (b.z1 - b.z0) * 2);
     mg.fillStyle = '#5a5650';
@@ -913,7 +947,11 @@ const LAYOUTS = {
   // keep, spires and turrets, and grand stairs down to the square; an arched aqueduct runs east from
   // it. In the middle a tiered fountain on a ring of mosaic paving, planters of flowers round it,
   // benches and banner poles; the market's stalls under red-and-cream awnings; cypresses.
-  city({ M, Y, rng, mesh, lam, house, stall, tower, fadeable, anims, P, addBox, addSolid, group, T, pennant }) {
+  city({ M, Y, rng, mesh, lam, house, stall, tower, fadeable, anims, P, addBox, addSolid, group, T, pennant, road, roadMat }) {
+    // the roads: from the south and east gates into the square, up to the castle stairs, and west to the storehouse
+    { const rm = roadMat('#d8c09a', '#8a6e54', '#b89a74'), f = CITY.fountain;
+      road(32, f.z + 5.5, 32, WALL.z1, 3.2, { mat: rm }); road(f.x + 5.5, 32, WALL.x1, 32, 3.2, { mat: rm });
+      road(32, CASTLE.z1 + 2.2, 32, f.z - 5.5, 3.2, { mat: rm }); road(WALL.x0 + 0.5, f.z, f.x - 7.6, f.z, 2.6, { mat: rm }); }
     const [, roofCrimson, roofBrown, roofDeep] = M.roofs;
     const brick = M.stone, ashlar = lam({ map: stoneTex(rng, '#e2c0a2', '#9a6a50') });
     const cone = (x, y, z, r, h, mat = M.towerRoof, seg = 12) => mesh(new THREE.ConeGeometry(r, h, seg), mat, x, y + h / 2, z);
@@ -1062,7 +1100,7 @@ const LAYOUTS = {
       addBox(x - 0.75, z - 0.25, x + 0.75, z + 0.25);
       fadeable(parts, x, z, 0.8, 1);
     };
-    bench(25.4, 31); bench(38.6, 31.6);
+    bench(25.4, 34.4); bench(38.6, 28.2);
     const bannerPole = (x, z) => {
       const parts = [mesh(new THREE.CylinderGeometry(0.07, 0.09, 3.8, 6), iron, x, Y + 1.9, z), mesh(new THREE.BoxGeometry(1.1, 0.06, 0.06), M.gold, x, Y + 3.6, z), mesh(new THREE.SphereGeometry(0.11, 8, 6), M.gold, x, Y + 3.9, z)];
       parts.push(banner(x, Y + 2.75, z + 0.06, 1.0, 1.6));
@@ -1115,7 +1153,14 @@ const LAYOUTS = {
   // up into the sky. Islands of rock float over the walls, waterfalls spilling off them; crystals
   // drift in the air, grow in great clusters along the streets and burn on stone pedestals for lamps.
   // The stargazer's dome wears a gold armillary sphere with a crystal in its heart.
-  magic({ M, Y, rng, mesh, lam, house, stall, tower, fadeable, spin, anims, P, addBox, addSolid, group, T }) {
+  magic({ M, Y, rng, mesh, lam, house, stall, tower, fadeable, spin, anims, P, addBox, addSolid, group, T, road, roadMat }) {
+    // the roads: dark slabs with seams of spell-light; from the south gate to the rune circle, from the
+    // north gate down past the Archmage's tower, his door's path, a lane across the north, and the
+    // library-to-workshop lane through the circle
+    { const rm = roadMat('#8a7cb4', '#4a3e6e', '#a496cc', '#ffffff'), c = MAGIC.circle;
+      road(32, c.z + c.r, 32, WALL.z1, 3.2, { mat: rm }); road(36.5, WALL.z0 + 0.5, 36.5, 22.1, 3.2, { mat: rm });
+      road(28, 18.4, 28, 22.1, 2.6, { mat: rm }); road(26.7, 23.6, 38.1, 23.6, 3, { mat: rm }); road(32, 25.1, 32, c.z - c.r, 3, { mat: rm });
+      road(18.2, c.z, c.x - c.r, c.z, 2.8, { mat: rm }); road(c.x + c.r, c.z, 45.2, c.z, 2.8, { mat: rm }); }
     const [roofPurple, roofTeal, roofIndigo, roofViolet] = M.roofs;
     const glow = (c, o = 1) => new THREE.MeshBasicMaterial({ color: c, transparent: o < 1, opacity: o, depthWrite: o >= 1 });
     const add = (c) => new THREE.MeshBasicMaterial({ color: c, transparent: true, opacity: 0.5, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide });
