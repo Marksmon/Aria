@@ -111,8 +111,8 @@ Two-path second jobs like the Magic Knight (`from` of two first jobs: 20 points 
 `secondJobOpen` / `secondJobBlock` / `learnBlock` rules). Each wears the gear of both its paths.
 
 - **Shadowblade** (Rurik the Shadowblade, Steinborg; Blader + Assassin): swords (and daggers, like
-  everyone). Its look is the Phantom's grand coat in black and vivid violet, with long glowing
-  blades. The **Ambush** (`AMBUSH` 2 in `skills.js`, Night Stalker +10% a level): the first blow out
+  everyone). Its own sprite (`src/crosses.js`, after the owner's sheet): a long black coat with
+  violet shadow-flame on its torn tails and a long glowing sword. The **Ambush** (`AMBUSH` 2 in `skills.js`, Night Stalker +10% a level): the first blow out
   of any hiding (Vanish, Umbral Step, Night Stalker's kill) lands that much harder (`unhide` in
   `main.js`). **Backstab** (passive, `backstab` in `main.js`): a sword or dagger blow from behind
   lands 5% a level harder; behind = the monster faces away (`heading`), fights someone else
@@ -122,8 +122,8 @@ Two-path second jobs like the Magic Knight (`from` of two first jobs: 20 points 
   lost), Shadow Bloom (area, **blind**: a blinded monster misses `BLIND` 40% of its blows, bosses
   resist). Passives: Umbral Edge (sword ATK and crit), Night Stalker (a kill hides you), Backstab, Cruel Edge
   (more below half HP). Trial: 20 Goblin Assassins, 20 Dark Wisps, 25 Fire Beetles.
-- **Hunter** (Greta the Trapper, Veidheim; Archer + Assassin): bows. The Moon Ranger's cut in black
-  and blood red. **Traps** (`traps`, `tickTraps`, `springTrap` in `main.js`; drawn by `fx.prop`):
+- **Hunter** (Greta the Trapper, Veidheim; Archer + Assassin): bows. Its own sprite (`src/crosses.js`): black
+  and blood red, a red-lined torn coat, crossed chains, a quiver and a hooked bow. **Traps** (`traps`, `tickTraps`, `springTrap` in `main.js`; drawn by `fx.prop`):
   set at the hero's feet (never on safe ground), armed after 0.6 s, waiting 30 s (+2 a level of Trap
   Mastery), 3 out at once (+1 at Trap Mastery 5 and 10; the oldest is picked up); the first monster
   that walks in springs it, never one that flies (`def.fly`). Trap damage is (FNS x 1.5 + KNL + Base
@@ -132,8 +132,8 @@ Two-path second jobs like the Magic Knight (`from` of two first jobs: 20 points 
   10 s to make the next) is the biggest blast in Aria. Killing Shot (bow) hits a held, stunned, frozen or paralyzed monster 60% harder; Predator
   adds to arrows on a caught or poisoned one; Barbed Traps poison. Trial: 15 Snakes, 10 Bears,
   25 Wolves.
-- **Voodoo** (Mother Hulda, Galdrheim; Sorcerer + Assassin): staves and daggers. The Wizard's robe in
-  black over toxic green. **Blight** (`BLIGHT` in `skills.js`; `blight`, `blightDmg` in `main.js`):
+- **Voodoo** (Mother Hulda, Galdrheim; Sorcerer + Assassin): staves and daggers. Its own sprite (`src/crosses.js`): a
+  ragged black coat glowing toxic green, a skull lantern and a skull staff. **Blight** (`BLIGHT` in `skills.js`; `blight`, `blightDmg` in `main.js`):
   stacks on a monster, up to 5 (8 on the Voodoo Doll's), for 6 s, refreshed by each new stack; each
   stack eats 8% of the MATK a second (+1.6% a level of Hexcraft), in Shadow, through MDEF, and no boss
   resists it (it is no hold). Poison Throw (a short cast) adds 1–2 stacks; Curse Circle (6 s, 3

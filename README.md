@@ -790,7 +790,9 @@ weakness, shown when you take it:
 | Hunter | traps | holds and paralysis on whole packs, and the Land Mine, the biggest blast in Aria; never missing, through DEF | traps need monsters to walk in (floating Wisps never do); less steady damage than a Windrunner |
 | Voodoo | Blight that stacks | through MDEF, never resisted: the strongest over a long fight | slow to start, frail (its Substitute doll takes blows, for a price in HP); weak on Shadow monsters |
 
-The Shadowblade wears the Phantom's grand coat in black and vivid violet, with long glowing swords.
+The Shadowblade has its own look, after the owner's sheet: a long black coat whose torn tails burn with
+violet shadow-flame, a high collar, layered plate pauldrons, chains at the hip, plated boots and a long
+violet-glowing sword (she goes sleeveless in long gloves, with heeled boots).
 
 | Shadowblade: a sword out of the shadows | |
 |---|---|
@@ -803,8 +805,9 @@ The Shadowblade wears the Phantom's grand coat in black and vivid violet, with l
 | Eclipse | 10, needs Shadow Slash 5: one blow of 460–1000% in Shadow, 1% more for every 1% of HP the monster has lost (double at death's door). 8 s cooldown |
 | Shadow Bloom | 10, needs Umbral Step 1: blades of shadow burst round you twice, 102–210% each within 2.6 paces, 26–80% each to **blind** for 4 s (a blinded monster misses 40% of its blows). 5 s cooldown |
 
-The Hunter wears the Moon Ranger's cut under a blood moon: black leathers, a red cape scattered with
-embers, a black and red bow. Its traps are set at its feet, wait up to 30 s (more with Trap Mastery)
+The Hunter has its own look: a long black coat lined in blood red, torn into red points, a red-gem rose
+at the throat, silver chains crossed over the chest, spiked pauldrons, a quiver of red arrows and a
+black and red bow with hooked tips. Its traps are set at its feet, wait up to 30 s (more with Trap Mastery)
 and spring on the first monster that walks in; floating monsters never set them off. Trap damage
 comes from FNS, KNL and the Base Level, never misses and goes through DEF.
 
@@ -818,8 +821,9 @@ comes from FNS, KNL and the Base Level, never misses and goes through DEF.
 | Land Mine | 10, needs Shock Trap 3: a buried mine that goes up in a huge blast, 690–1500% Fire to every monster within 3 paces, flung back, 5% per level each to set burning. 10 s cooldown |
 | Killing Shot | 10, needs Bear Trap 1: a heavy arrow of 230–500%, 60% more on a monster held, stunned, frozen or paralyzed. 2 s cooldown |
 
-The Voodoo wears the Wizard's robe in black over toxic green, poison drops on its hem, and holds a
-staff or a dagger. Its **Blight** stacks on a monster (up to 5, 8 on the Voodoo Doll's) and eats it
+The Voodoo has its own look: a ragged black coat whose torn edges glow toxic green, skull charms on its
+pauldrons, chains and a skull lantern at the belt, and a staff topped by a skull in a spiked ring, green
+fire in its eyes. It holds a staff or a dagger. Its **Blight** stacks on a monster (up to 5, 8 on the Voodoo Doll's) and eats it
 every second for 6 s, each stack 8% of your MATK (up to 24% with Hexcraft), in Shadow and through
 MDEF; bosses don't resist it.
 

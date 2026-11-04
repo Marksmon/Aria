@@ -35,21 +35,11 @@ const PHANTOM = {
   trim: '#dfe3f0', trimDk: '#8a90a8', gem: '#b07aff', gemHi: '#f2e6ff', rune: '#a77bff',
   blade: { steel: '#c8b8ff', edge: '#f0e8ff', guard: '#d8dcef', glow: '#9a6aff' },
 };
-// The Shadowblade (the Blader's and the Assassin's cross), after the owner's sheet: the Phantom's grand
-// cut (high collar, pauldrons, torn coat) in black over vivid violet, violet flames for a lining, and
-// long violet-glowing blades: swords, not daggers (blade: its length)
-const SHADOWBLADE = {
-  ...PHANTOM, coat: '#1c1626', coatDk: '#110d18', lining: '#7a3ae0', sash: '#5a2aa8', scarf: '#120e18', band: '#2a2038',
-  trim: '#d8d0f0', trimDk: '#7a70a0', gem: '#c46aff', gemHi: '#f6e8ff', rune: '#b45aff', plate: '#8a84a8',
-  blade: { steel: '#b48aff', edge: '#f4ecff', guard: '#e0daf2', glow: '#8a3aff', long: 9 },
-};
 export const ASSASSINS = {
   assassinM: { name: 'Assassin', sex: 'm', C: ASSASSIN },
   assassinF: { name: 'Assassin', sex: 'f', C: ASSASSIN },
   phantomM: { name: 'Phantom', sex: 'm', C: PHANTOM, phantom: true },
   phantomF: { name: 'Phantom', sex: 'f', C: PHANTOM, phantom: true },
-  shadowbladeM: { name: 'Shadowblade', sex: 'm', C: SHADOWBLADE, phantom: true },
-  shadowbladeF: { name: 'Shadowblade', sex: 'f', C: SHADOWBLADE, phantom: true },
 };
 
 const flat = { outline: false, flat: true };
@@ -67,7 +57,6 @@ const leftCut = () => P.atk >= 4;
 // a dagger in a hand at (x, y), the blade along angle a (degrees), short, with a little guard
 function dagger(F, x, y, a, C, len = 9) {
   if (C.trim) len += 3; // (the Phantom's are longer)
-  len += C.blade.long || 0; // (a Shadowblade's are swords)
   const ux = Math.cos(rad(a)), uy = Math.sin(rad(a)), b = C.blade;
   if (b.glow) F.part(line(x + ux * 2, y + uy * 2, x + ux * (len + 1), y + uy * (len + 1), 3), b.glow, flat);
   F.part(line(x + ux * 2, y + uy * 2, x + ux * len, y + uy * len, 2), b.steel);

@@ -29,21 +29,11 @@ const WIZ = {
   blouse: '#c8343a', leather: '#5e3c26', strap: '#40281a', pants: '#1f1c27', boot: '#221f2a', skin: '#f2c8a2',
   gem: '#4c90ff', shaft: '#d8ae4e', glove: '#252030', book: '#2a3478',
 };
-// The Voodoo (the Sorcerer's and the Assassin's cross), after the owner's sheet: the Wizard's robe in
-// black over toxic green, every crystal on its hem a green drop of poison, and a staff whose star is a
-// green skull-light
-const VOODOO = {
-  coat: '#1a1c1a', fold: '#0e100e', lining: '#3ac83a', liningDk: '#1e7a22', trim: '#9aa29a', shirt: '#121412',
-  blouse: '#2a8a2e', leather: '#2a2a24', strap: '#1a1a16', pants: '#121412', boot: '#141614', skin: '#f2c8a2',
-  gem: '#7aff4a', shaft: '#5a6a5a', glove: '#141614', book: '#1e3a1e',
-};
 export const MAGES = {
   sorcM: { name: 'Sorcerer', sex: 'm', wiz: false, C: SORC },
   sorcF: { name: 'Sorcerer', sex: 'f', wiz: false, C: SORC },
   wizM: { name: 'Wizard', sex: 'm', wiz: true, C: WIZ },
   wizF: { name: 'Wizard', sex: 'f', wiz: true, C: WIZ },
-  voodooM: { name: 'Voodoo', sex: 'm', wiz: true, C: VOODOO },
-  voodooF: { name: 'Voodoo', sex: 'f', wiz: true, C: VOODOO },
 };
 
 const flat = { outline: false, flat: true }; // a trim's line: no outline or shading
