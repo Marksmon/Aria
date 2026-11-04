@@ -8,7 +8,7 @@ import { Player } from './player.js';
 import { Input } from './input.js';
 import { UI } from './ui.js';
 import { FX } from './fx.js';
-import { MobManager, MOB_DEFS, MOVES, MVP_MOVE, fierce, guardDef, raidDef } from './mobs.js';
+import { MobManager, MOB_DEFS, MOVES, MVP_MOVE, RIDDLE, fierce, guardDef, raidDef } from './mobs.js';
 import { Allies, ROAR } from './allies.js';
 import { RAIDS, rollReward } from './raid.js';
 import { loadSave, writeSave, loadStorage, writeStorage, clearSave, saveCode, loadCode, SLOTS, activeSlot, setActiveSlot } from './save.js';
@@ -85,6 +85,11 @@ const SPAWNS = {
   // worms, the scorpions and runners round the Pyramid, and the Great Desert where all of them roam
   // over the Sand Wyrm. Sphinx Sands keeps no monsters; the tomb (raid) spawns its own
   sand: [], sphinx: [], tomb: [],
+  // the Sphinx's Halls (dungeon.js): four maze floors, harder floor by floor (no night here: underground)
+  halls1: [['hallScarab', 16], ['cobra', 13]],                               // Base 31-45
+  halls2: [['hallMummy', 10], ['lamia', 9], ['servant', 9]],                 // 46-60
+  halls3: [['jackal', 12], ['falcon', 10], ['ammit', 1]],                    // 61-75, Ammit the mini-boss
+  halls4: [['sphinxCub', 9], ['sandElemental', 8], ['sarcophagus', 7], ['eternalSphinx', 1]], // 76-90, the Eternal Sphinx in its hall
   redsands: [['redSlime', 12], ['giantAnt', 8], ['redSlime', 3, true], ['giantAnt', 2, true]],
   dunes: [['cactus', 9], ['duneWorm', 7], ['cactusLord', 1], ['duneWorm', 2, true], ['cactus', 2, true]],
   scorpion: [['scorpion', 9], ['runner', 6], ['rainbowRunner', 1], ['scorpion', 3, true], ['runner', 1, true]],
@@ -380,7 +385,11 @@ let skillClock = 0; // seconds since the game started, for those windows
 const weaponKind = () => { const it = ITEMS[inv.gear.weapon]; return !it ? 'none' : it.kind === 'staff' || it.kind === 'bow' || it.kind === 'dagger' ? it.kind : 'sword'; };
 // an Archer's bonuses on one monster: Hunter's Mark on it, Steady Aim from 4 paces
 // the Shadowblade's Cruel Edge: a sword harder on a monster below half its HP
-const cruel = (m) => (weaponKind() === 'sword' && m.hp < m.def.hp / 2 ? 1 + 0.04 * skillLv(prog, 'cruedge') : 1) * backstab(m);
+const cruel = (m) => (weaponKind() === 'sword' && m.hp < m.def.hp / 2 ? 1 + 0.04 * skillLv(prog, 'cruedge') : 1) * backstab(m) * weighed(m);
+// the Ammit Card's Weighing of the Heart: blows and spells land harder on a monster under 30% HP
+const weighed = (m) => (player.ps.execute && m.hp < m.def.hp * 0.3 ? 1 + player.ps.execute / 100 : 1);
+// what a skill costs: the Eternal Sphinx Card's Eternal Wisdom takes a share off
+const spNeed = (id, lv) => { const n = spCost(id, lv); return n && player.ps?.sage ? Math.max(1, Math.round(n * (1 - player.ps.sage / 100))) : n; };
 // the Shadowblade's Backstab: a sword or dagger blow from behind lands harder. Behind = the monster faces
 // away, fights someone else (a beast, an illusion), has lost you (an Ambush), or you just teleported to its back
 let ambushAt = -99, backSaid = -99;
@@ -745,6 +754,100 @@ mobs.on('move', (m, a) => {
   if (a.kind === 'throw') fx.warn(a.spot.x, a.spot.z, a.mv.r, MOVES.throw.wind + MOVES.throw.land);
   if (a.kind === 'leap') fx.warn(a.spot.x, a.spot.z, a.mv.r, MOVES.leap.wind + MOVES.leap.air);
   if (a.kind === 'roots') for (const p of a.spots) fx.warn(p.x, p.z, a.mv.r, MOVES.roots.wind + MOVES.roots.land);
+  if (a.kind === 'devour') fx.warn(a.spot.x, a.spot.z, 1.4, MOVES.devour.wind);
+});
+// Devour (Ammit): it rears and bites where the red circle is; caught, it heals on what it tore from you
+mobs.on('devour', (m, mv, spot) => {
+  const y = world.heightAt(spot.x, spot.z);
+  fx.puff(spot.x, y + 0.2, spot.z, 1.4);
+  fx.sparkle(spot.x, y + 0.4, spot.z, '#c83a3a', 14);
+  audio.play('hit');
+  const caught = Math.hypot(player.x - spot.x, player.z - spot.z) <= 1.7 && player.canBeHit() && player.state !== 'down';
+  bossBlow(m, mv.mult, spot.x, spot.z, 1.4);
+  if (!caught || !m.alive) return;
+  const n = Math.round(m.def.hp * (mv.heal || 0));
+  m.hp = Math.min(m.def.hp, m.hp + n);
+  fx.number(m.x, overHead(m, m.sprite.scale.y * 0.8 + 0.4), m.z, 'Devoured!', 'skill');
+  menus.message(`${TheName(m)} devours what it tore from you, and its wounds close!`);
+});
+// The Riddle (the Eternal Sphinx, mobs.js MOVES.riddle): it asks, and three circles round you hold three
+// answers. Stand in the right one when its time is up. (A riddle is never asked twice running.)
+const RIDDLES = [
+  ['What walks on four legs at dawn, on two at noon, and on three at dusk?', 'A person', 'A lion', 'A serpent'],
+  ['The more of me you take, the more you leave behind. What am I?', 'Footsteps', 'Gold', 'Sand'],
+  ['I have no mouth, yet I answer whoever calls into the dark. What am I?', 'An echo', 'A ghost', 'The wind'],
+  ['Feed me and I grow; give me water and I die. What am I?', 'Fire', 'A plant', 'A bloop'],
+  ['The more of me there is, the less you see. What am I?', 'Darkness', 'Sand', 'Fog'],
+  ['I run but never walk, I have a mouth but never eat, a bed but never sleep. What am I?', 'A river', 'A road', 'A worm'],
+  ['I am always coming, but I never arrive. What am I?', 'Tomorrow', 'The tide', 'Night'],
+  ['Taller than the trees, with roots nobody sees, I rise and rise, yet never grow. What am I?', 'A mountain', 'A pyramid', 'A tower'],
+  ['I have one eye, but I cannot see. What am I?', 'A needle', 'A storm', 'A cyclops'],
+  ['What can fill a whole room, yet takes up no space at all?', 'Light', 'Air', 'Sand'],
+  ['What is so fragile that saying its name breaks it?', 'Silence', 'Glass', 'A promise'],
+  ['I go up and come back down, yet I never move. What am I?', 'A stair', 'The sun', 'A bird'],
+  ['The poor have me, the rich need me, and eat me and you will die. What am I?', 'Nothing', 'Bread', 'Gold'],
+  ['What has a neck but no head, and wears a cap but has no hair?', 'A bottle', 'A jackal', 'A mummy'],
+];
+let lastRiddle = -1;
+function riddleLabel(text) {
+  const c = document.createElement('canvas');
+  c.width = 320; c.height = 72;
+  const g = c.getContext('2d');
+  g.font = 'bold 34px sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+  g.lineJoin = 'round'; g.lineWidth = 8; g.strokeStyle = '#1a1008'; g.strokeText(text, 160, 36);
+  g.fillStyle = '#ffe9a8'; g.fillText(text, 160, 36);
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: t, depthTest: false, transparent: true }));
+  sp.scale.set(3.2, 0.72, 1);
+  sp.renderOrder = 6;
+  return sp;
+}
+mobs.on('riddle', (m, act) => {
+  let k = Math.floor(Math.random() * RIDDLES.length);
+  if (k === lastRiddle) k = (k + 1) % RIDDLES.length;
+  lastRiddle = k;
+  const [q, right, ...wrong] = RIDDLES[k];
+  const answers = [right, ...wrong].sort(() => Math.random() - 0.5);
+  // three circles round the hero, inside the hall, on open ground (not in a pillar)
+  const H = world.hall, turn = Math.random() * Math.PI * 2;
+  act.circles = answers.map((word, i) => {
+    const a = turn + (i / 3) * Math.PI * 2;
+    let x = player.x + Math.cos(a) * RIDDLE.ring, z = player.z + Math.sin(a) * RIDDLE.ring;
+    if (H) { x = clamp(x, H.x0 + 2, H.x1 - 2); z = clamp(z, H.z0 + 2, H.z1 - 2); }
+    [x, z] = world.resolve(x, z, RIDDLE.r * 0.6);
+    fx.warn(x, z, RIDDLE.r, act.t, '#ffd23a');
+    const label = riddleLabel(word);
+    label.position.set(x, world.heightAt(x, z) + 1.4, z);
+    scene.add(label);
+    return { x, z, word, right: word === right, label };
+  });
+  fx.number(m.x, overHead(m, m.sprite.scale.y * 0.8 + 0.4), m.z, 'The Riddle', 'skill');
+  fx.sparkle(m.x, world.heightAt(m.x, m.z) + 2, m.z, '#ffd23a', 30);
+  audio.play('night');
+  menus.message(`The Eternal Sphinx asks: "${q}" Stand in the circle of the right answer, quickly!`);
+});
+mobs.on('riddleEnd', (m, act) => {
+  for (const c of act.circles || []) { scene.remove(c.label); c.label.material.map.dispose(); c.label.material.dispose(); }
+  if (!m.alive || !act.circles) return;
+  const at = act.circles.find((c) => Math.hypot(player.x - c.x, player.z - c.z) <= RIDDLE.r + 0.25);
+  const answer = act.circles.find((c) => c.right).word;
+  if (at?.right) { // right: it is struck dumb, and its stone gives
+    m.stunT = RIDDLE.stun; m.status = 'stun'; m.exposeT = RIDDLE.exposeFor;
+    fx.number(m.x, overHead(m, m.sprite.scale.y * 0.8 + 0.4), m.z, 'Dumbstruck!', 'crit');
+    fx.sparkle(player.x, world.heightAt(player.x, player.z) + 1, player.z, '#ffd23a', 24);
+    audio.play('levelup');
+    menus.message(`"${answer}"... Right! The Eternal Sphinx is dumbstruck: strike now, its stone gives way!`);
+    return;
+  }
+  // wrong, or no answer: its Judgment falls on whoever stands in its hall, and it is Exalted
+  m.exaltT = RIDDLE.exaltFor;
+  cam.shake = 0.6;
+  fx.sparkle(player.x, world.heightAt(player.x, player.z) + 1.5, player.z, '#ffd23a', 30);
+  fx.puff(player.x, world.heightAt(player.x, player.z) + 0.2, player.z, 1.6);
+  if (mobs.inHall(player.x, player.z)) bossBlow(m, act.mv.mult, player.x, player.z, 99);
+  fx.number(m.x, overHead(m, m.sprite.scale.y * 0.8 + 0.4), m.z, 'Exalted!', 'skill');
+  menus.message(`${at ? 'Wrong!' : 'No answer!'} The answer was "${answer}". Judgment falls, and the Eternal Sphinx is exalted: it takes half as much for a while.`);
 });
 // Grasping Roots (the Ancient Treant): they burst up `land` s later; caught, you are held there
 mobs.on('roots', (m, spots, mv, land) => {
@@ -886,10 +989,10 @@ mobs.on('mirror', (m, mv) => {
   audio.play('night');
 });
 // a blow that barely lands (mobs.js ward): underground, behind his tribe, shrouded by shadows
-const WARD_HINT = { under: 'Underground!', tribe: 'Guarded!', mirror: 'Shrouded!', jelly: 'Jelly Wall!', jar: 'Sealed!' };
+const WARD_HINT = { under: 'Underground!', tribe: 'Guarded!', mirror: 'Shrouded!', jelly: 'Jelly Wall!', jar: 'Sealed!', exalt: 'Exalted!' };
 let wardHintAt = 0;
 mobs.on('warded', (m) => {
-  const why = m.under ? 'under' : m.def.tribe && mobs.guardsOf(m).some((g) => !g.def.decoy) ? 'tribe' : mobs.decoysOf(m)[0]?.type === 'jellyCore' ? 'jelly' : mobs.decoysOf(m)[0]?.type === 'canopicJar' ? 'jar' : 'mirror';
+  const why = m.under ? 'under' : m.exaltT > 0 ? 'exalt' : m.def.tribe && mobs.guardsOf(m).some((g) => !g.def.decoy) ? 'tribe' : mobs.decoysOf(m)[0]?.type === 'jellyCore' ? 'jelly' : mobs.decoysOf(m)[0]?.type === 'canopicJar' ? 'jar' : 'mirror';
   fx.number(m.x, overHead(m, m.sprite.scale.y * 0.8 + 0.4), m.z, WARD_HINT[why], 'miss');
   if (why === 'tribe' && performance.now() - wardHintAt > 15000) { wardHintAt = performance.now(); menus.message(`The ${m.def.name} hides behind his tribe! Bring down his guards first.`); }
 });
@@ -1492,17 +1595,18 @@ function tickQuestWorld(dt) {
   tickDefense(dt);
   sphinxDoor();
 }
-// the Giant Sphinx's door (Sphinx Sands): sealed for now; the first dungeon lies behind it, still being dug out
+// the Giant Sphinx's door (Sphinx Sands): its seal gives way, and steps lead down into the Sphinx's
+// Halls, the first dungeon (dungeon.js; the portal in front of it: world.js MAPS.sphinx)
 let doorSaid = false;
 function sphinxDoor() {
   const door = world.id === 'sphinx' && world.monument?.door;
-  const near = door && Math.hypot(door.x - player.x, door.z - player.z) < 2.2;
+  const near = door && Math.hypot(door.x - player.x, door.z - player.z) < 3;
   if (near && !doorSaid) {
     doorSaid = true;
     audio.play('night');
     fx.sparkle(door.x, world.heightAt(door.x, door.z) + 1.4, door.z - 1.2, '#7ad8ff', 16);
-    menus.message('The great door is sealed. Deep inside, something old is waking... (The Sphinx\'s halls are still being dug out: coming soon.)');
-  } else if (!near && doorSaid && (!door || Math.hypot(door.x - player.x, door.z - player.z) > 5)) doorSaid = false;
+    menus.message('The seal on the great door glows and gives way. Steps lead down into the dark: the Sphinx\'s Halls, four floors deep, each harder than the last. At the bottom, something old is waking.');
+  } else if (!near && doorSaid && (!door || Math.hypot(door.x - player.x, door.z - player.z) > 6)) doorSaid = false;
 }
 function startWave(id) {
   const q = QUESTS[id], [type, count] = q.waves[quests.active[id]];
@@ -2056,7 +2160,7 @@ const hotbar = new Hotbar(document.getElementById('hotbar'), inv, {
     const own = SKILLS[s.id].cd ? Math.max(0, (skillCd[s.id] || 0) / SKILLS[s.id].cd) : 0;
     return Math.max(own, skillLock > 0 ? skillLock / SKILL_LOCK : 0); // (the half second after any skill)
   },
-  skill(id) { const lv = skillLv(prog, id), sp = lv ? spCost(id, lv) : 0; return { lv, sp, ok: player.sp >= sp }; },
+  skill(id) { const lv = skillLv(prog, id), sp = lv ? spNeed(id, lv) : 0; return { lv, sp, ok: player.sp >= sp }; },
   changed() { if (menus.open) menus.render(); persist(); },
 });
 hotbar.load(save?.hotbar);
@@ -2144,7 +2248,7 @@ function useSkill(id) {
   if (!lv || sk.kind !== 'active' || player.state === 'down' || (skillCd[id] || 0) > 0 || skillLock > 0) return;
   // skills of every job earned can be used, with the right weapon in hand
   if (!weaponOk(id, weaponKind())) { menus.message(`${sk.name} needs ${WEAPON_NAMES[sk.weapon]} in hand`); return; }
-  const sp = spCost(id, lv);
+  const sp = spNeed(id, lv);
   const pay = () => {
     if (player.sp < sp) { menus.message('Not enough SP'); return false; }
     player.sp -= sp;
@@ -2961,6 +3065,7 @@ function spellHit(m, mult, element) {
   if (m.shatterT > skillClock && element !== 'earth') { mult *= 1.3; m.shatterT = 0; } // Stone Spike's Shatter
   const md = m.effDef(), attune = skillLv(prog, 'attune');
   if (attune && elementMod(element, md.el) > 1) mult *= 1 + 0.03 * attune; // Attunement: harder still on a weakness
+  mult *= weighed(m); // (the Ammit Card)
   const res = magicAttack(player.ps, md, mult, element);
   const dx = m.x - player.x, dz = m.z - player.z, d = Math.hypot(dx, dz) || 1;
   // the right element hits hard (gold), the wrong one barely scratches (grey)

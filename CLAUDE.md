@@ -84,7 +84,8 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   - The map lives on while the hero is away: on return, each monster has wandered (random walk at
     its stroll, `AWAY` in `mobs.js`: `wander`) and each boss has roamed spot to spot (`roamAway`)
     for the time away (capped at 3 min), done at once on arrival.
-  - A new map only needs its `SPAWNS` entry in `main.js`; all of the above comes with it.
+  - A new map only needs its `SPAWNS` entry in `main.js`; all of the above comes with it. A dungeon floor is a map
+    with `maze` (and `indoor`) in `world.js` MAPS (`dungeon.js`); a portal's `out` says where you arrive beside it.
 - **The first-job pick comes at Trainee Job 9** (the owner's call: little grinding): a Trainee who reaches
   `CALL_JOB` anywhere after the Seeress is called home to Eldrun's 'paths' step at once (`Story.callHome`,
   the rest of Chapter 1 is skipped); there is no grind step before it. Keep Chapter 1 short.
@@ -115,20 +116,22 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
 - **MVPs are the hardest fights in Aria** (the owner's call): several minutes each, with skills of
   their own that need a plan (Fire Giant: Meteor Rain and burning ground; Kobold King: Tribe's
   Shield and Burrow; Goblin King: Mirror Image; Ancient Treant: Grasping Roots and Bark Armor; Sand Wyrm: almost half the fight under the sand,
-  unhittable, moving only while under and rooted while up, `WYRM`/`wyrmTick` in `mobs.js`), and
+  unhittable, moving only while under and rooted while up, `WYRM`/`wyrmTick` in `mobs.js`; Eternal Sphinx: The Riddle,
+  three answers in three circles round the hero: the right one Dumbstruck, a wrong one or none its Judgment and
+  Exalted, `RIDDLE`/`RIDDLES`; the owner's call: it tests through riddles and combat), and
   enraged below half HP (`MVP_RAGE`). Even a Lv 99 hero without good, upgraded gear should not beat
-  one. Mini-bosses are half as hard as an MVP and fierce like one (the owner's call). Their levels say so (55–66: Giant Sprout and Elder Willow 55, King Crab 58, Giant Mushroom 60, Giant Beetle 62, Alpha Wolf 64, Great Bear 66; the desert's Cactus Lord 60 and Rainbow Runner 64), and they come only for second-job heroes (the owner's call, `picksFight` in `mobs.js`): a Trainee or first job is left be unless it strikes or taunts one. So no main story
+  one. Mini-bosses are half as hard as an MVP and fierce like one (the owner's call). Their levels say so (55–66: Giant Sprout and Elder Willow 55, King Crab 58, Giant Mushroom 60, Giant Beetle 62, Alpha Wolf 64, Great Bear 66; the desert's Cactus Lord 60 and Rainbow Runner 64; the Sphinx's Halls' Ammit 74), and they come only for second-job heroes (the owner's call, `picksFight` in `mobs.js`): a Trainee or first job is left be unless it strikes or taunts one. So no main story
   step or job trial needs a boss (they hunt the boss's kin); the one quest that does is Sigrid's The
   Waking Wood (Lv 70: the Great Bear and the Alpha Wolf, two mini-bosses), and it can be quit. Boss and MVP cards drop at 1%
   (other cards 0.1%). **Cards are monsters** (the owner's call): one card per monster, named after it,
   never a second card or a card that is not a monster. More Head/Face cards (for fighters: today's
   lean to casters and archers) wait for new monsters in a map extension. The MVP and raid boss cards
   each have an effect of their own, after the boss's moves (`card.perk`: Fire Giant burn, Kobold
-  King guard, Goblin King lucky dodge, Ancient Treant reflect, Sand Wyrm devour; BleepBloop lifesteal, Kobold Warlord
+  King guard, Goblin King lucky dodge, Ancient Treant reflect, Sand Wyrm devour, Eternal Sphinx cheaper skills, `sage`; BleepBloop lifesteal, Kobold Warlord
   stun, Goblin Warlord melee and double blows, Pharaoh soul tax). Mini-boss cards have smaller ones of their own,
   never a weaker copy of an MVP's or raid boss's (the owner's call: Giant Sprout HP regen, King Crab
   never slowed, Giant Mushroom SP regen, Giant Beetle DEF pierce, Elder Willow faster casting,
-  Alpha Wolf crits, Great Bear harder blows at low HP, Cactus Lord venom, Rainbow Runner quick after a kill). Every card keeps its stats
+  Alpha Wolf crits, Great Bear harder blows at low HP, Cactus Lord venom, Rainbow Runner quick after a kill, Ammit harder on a monster under 30% HP, `execute`). Every card keeps its stats
   (the owner's call; MVP and boss cards too); an effect comes on top.
   **Boss AI** (`BRAIN` in `mobs.js`, every mini-boss, raid boss and MVP): it aims where a running
   hero is going (not a step aside), picks moves for the moment (gap-closers on kiters and casters,
@@ -138,15 +141,24 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   A* over the map (`src/path.js`), roaming or hunting.
   Each MVP has a matchup (`takes` in `mobs.js`, applied in `rules.js`): easiest for one job family
   and hardest for another (Fire Giant: bows / casters; Kobold King: casters / bows; Goblin King:
-  blades / bows and casters; Ancient Treant: beasts / blades; Sand Wyrm: blades and daggers / beasts).
-- **Card paintings** (the owner's call): a card can have an anime painting (2:3, the name and a BOSS badge painted in, after the Ragnarok card art), `src/art/cards/<card id>.jpg` (640 wide). A card with one gets a View art button in the Items window and an Art button where it sits in a piece; it opens full screen, the picture alone with no text under it, a tap closes it (`src/cardart.js`, loaded only when opened). The five MVP cards have theirs; the mini-boss and raid cards come next.
+  blades / bows and casters; Ancient Treant: beasts / blades; Sand Wyrm: blades and daggers / beasts; Eternal Sphinx: casters / beasts).
+- **Card paintings** (the owner's call): a card can have an anime painting (2:3, the name and a BOSS badge painted in, after the Ragnarok card art), `src/art/cards/<card id>.jpg` (640 wide). A card with one gets a View art button in the Items window and an Art button where it sits in a piece; it opens full screen, the picture alone with no text under it, a tap closes it (`src/cardart.js`, loaded only when opened). The five first MVP cards have theirs; the Eternal Sphinx's, the mini-boss and raid cards come next.
 - **The desert and the Sphinx:** Rytingborg (`sand`), the Red Sands (a Trainee's field), the Cactus
   Dunes, Scorpion Sands (the Pyramid: the raid guide) and the Great Desert (the Sand Wyrm). The
   Carters always offer Rytingborg (`ALWAYS_FARES`). A secret 6-step series (Old Gunnhild, The
   Sphinx's Riddle) stays out of sight until the hero has walked all four sands (`needZones`); its
   last step opens a hidden portal (`need: 'sphinx6'` on the portal) to Sphinx Sands: the Giant
-  Sphinx (about half the map), no monsters, and a sealed door. Its inside is the **first dungeon**,
-  four maps still to come (the owner's plan); until then the door only says it is sealed.
+  Sphinx (about half the map), no monsters, and the door in its chest: a portal down into the
+  **Sphinx's Halls, the first dungeon** (`src/dungeon.js`, `halls1`-`halls4` in `world.js` MAPS). Every floor is a maze
+  (the owner's call): 14x14 cells of 3x3 tiles, walls a tile thick on the tile grid, carved from a seed (`maze`:
+  rooms, loops; the stairs in pillarless portal rooms), walls cut away between camera and hero (a shader
+  dither), always dim (`indoor`: `daynight.js` STATES.dungeon). Floors get harder for levelling (the owner's call):
+  1 Scarab, Cobra (31-45); 2 Mummy, Lamia, Pharaoh's Servant (46-60); 3 Jackal Guardian, Falcon Sentinel, Ammit the
+  mini-boss (61-75); 4 Sphinx Cub, Sand Elemental, Sarcophagus (76-90), and the floor's great hall (`maze.hall`,
+  `world.hall`) where the **Eternal Sphinx** (Lv 99 MVP, `hall: true`: it never leaves the hall and fights only a hero in it)
+  drops Gold Bars (always, and as its MVP reward) and the ultra rare **Sphinx's All-Seeing Eye** (Face, 0.5%: all
+  stats +5, MATK +10%, HIT +10; drawn by `build-tools/draw-eye.py`). The dungeon's monsters are painted in code in
+  `src/halls.js` (the Scarabs and Mummies borrow the tomb's sprites, as field monsters `hallScarab`/`hallMummy`).
 - **Quests:** side quests and job trials can be quit from the Quest View; the main story quest
   can never be quit.
 - **EXP rates:** battles pay x4 (`RATES`: monsters, mini-bosses, MVPs, raids); quests pay x2

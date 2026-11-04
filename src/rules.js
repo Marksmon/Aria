@@ -102,6 +102,8 @@ export function derive(prog, gear) {
     swift: gear.perk?.swift || 0,          // % faster attacks for 5 s after a kill (the Rainbow Runner Card)
     devour: gear.perk?.devour || 0,        // % of HP and SP back on a kill (the Sand Wyrm Card)
     soultax: gear.perk?.soultax || 0,      // % of damage dealt back as SP (the Pharaoh Card)
+    execute: gear.perk?.execute || 0,      // % harder on a monster under 30% HP (the Ammit Card)
+    sage: gear.perk?.sage || 0,            // % less SP for skills (the Eternal Sphinx Card)
     def: clamp(gear.def || 0, 0, 100),            // hard DEF from equipment
     end,                                          // soft DEF comes from END each hit
     mdef: knl + Math.floor(end / 2),

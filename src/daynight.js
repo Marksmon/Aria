@@ -10,6 +10,8 @@ const STATES = {
   dawn:  { sky: C('#e7b9a0'), hemiSky: C('#ffd9c0'), hemiGround: C('#5a4a40'), hemi: 1.35, sun: C('#ffc29a'), sunI: 1.0, tint: C('#ffe2d2'), fog: [20, 46], night: 0.4 },
   day:   { sky: C('#a3c9d8'), hemiSky: C('#fff6e2'), hemiGround: C('#6b5a40'), hemi: 1.9, sun: C('#fff0d0'), sunI: 1.6, tint: C('#ffffff'), fog: [24, 50], night: 0 },
   dusk:  { sky: C('#d99a72'), hemiSky: C('#ffc49a'), hemiGround: C('#4a3a34'), hemi: 1.25, sun: C('#ffa060'), sunI: 1.0, tint: C('#ffd2b4'), fog: [20, 44], night: 0.5 },
+  // under the ground (a dungeon: world.indoor): no sky, no sun; torchlight, warm and dim, day and night alike
+  dungeon: { sky: C('#120b07'), hemiSky: C('#ffd2a0'), hemiGround: C('#3a2a1c'), hemi: 1.0, sun: C('#ffb878'), sunI: 0.45, tint: C('#e2c8aa'), fog: [14, 32], night: 0.8 },
   night: { sky: C('#1c2742'), hemiSky: C('#9fb2ea'), hemiGround: C('#2a2a3c'), hemi: 1.05, sun: C('#8f9aff'), sunI: 0.4, tint: C('#94a0d2'), fog: [16, 38], night: 1 }, // dark, but readable on a phone
 };
 // [time of day 0..1, state]; 0 = 6:00
@@ -40,8 +42,10 @@ export class DayNight {
 
   update(dt, time) {
     this.t = (this.t + dt / DAY_LENGTH) % 1;
-    const [A, B, k] = this.sample();
-    this.night = A.night + (B.night - A.night) * k;
+    const [A0, B0, k] = this.sample();
+    this.night = A0.night + (B0.night - A0.night) * k; // (the hour runs on underground too: the monsters' night)
+    const A = this.world.indoor ? STATES.dungeon : A0, B = this.world.indoor ? STATES.dungeon : B0;
+    const glow = this.world.indoor ? STATES.dungeon.night : this.night;
     this.sky.copy(A.sky).lerp(B.sky, k);
     this.scene.background.copy(this.sky);
     this.scene.fog.color.copy(this.sky);
@@ -57,11 +61,11 @@ export class DayNight {
     for (const m of this.world.tintMats) m.color.copy(this.tint);
     for (const m of this.mobs.tint) { m.color.copy(this.tint); if (m.userData.tint) m.color.multiply(m.userData.tint); if (m.userData.fx) m.color.multiply(m.userData.fx); }
     this.player.tint = this.tint;
-    this.world.fireBoost = 1 + this.night * 0.8;
+    this.world.fireBoost = 1 + glow * 0.8;
 
     // a glow around the player at night: every hero carries the light now (the owner's call)
     const p = this.player;
-    const want = this.night * 7;
+    const want = glow * 7;
     this.torch.intensity += (want - this.torch.intensity) * Math.min(1, dt * 3);
     this.torch.distance = 10;
     this.torch.position.set(p.x, this.world.heightAt(p.x, p.z) + 1.4 + Math.sin(time * 7) * 0.03, p.z);

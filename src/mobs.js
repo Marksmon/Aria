@@ -150,6 +150,47 @@ export const MOB_DEFS = {
     summon: ['duneWorm', 'duneWorm', 'duneWorm', 'soldierAnt'], summonText: 'The Sand Wyrm roars, and the sand boils with worms!', mvpDrops: [['potion3', 3], ['wyrm_tooth', 1]],
     wake: 'The dunes heave… the Sand Wyrm hunts under the Great Desert!',
     drops: [['potion3', 1, 2, 0.6], ['worm_hide', 4, 6, 1], ['wyrm_tooth', 1, 1, 0.25], ['hard_ore', 1, 2, 0.4], ['armor_ore', 1, 2, 0.4], ['wyrm_ring', 1, 1, 0.05], ['wyrm_cloak', 1, 1, 0.03], ['sandwalker_boots', 1, 1, 0.03], ['dune_staff', 1, 1, 0.02], ['wyrm_fang', 1, 1, 0.01], ['dune_bow', 1, 1, 0.01], ['wyrm_card', 1, 1, 0.01]] },
+  // The Sphinx's Halls (dungeon.js), the first dungeon: four maze floors under the Giant Sphinx, each a
+  // levelling site for its band of levels (the owner's call), and every monster in them attacks on
+  // sight (a dungeon's, not a field's). Floor 1 (Base 31-45): Scarabs, slow and hard-shelled, and
+  // Cobras that dart in and poison. Floor 2 (46-60): Mummies, tough and slow; Lamias, snake-women who
+  // spit venom from afar; the Pharaoh's Servants, priests who throw blue fire from their crystal
+  // staves. Floor 3 (61-75): the Jackal Guardians, whose cursed spears reach far and strike twice; the
+  // Falcon Sentinels, who loose blades of wind; and Ammit the Devourer, the floor's mini-boss.
+  // Floor 4 (76-90): Sphinx Cubs, quick and fierce; Sand Elementals, whose whirling sand slows you;
+  // the walking Sarcophagi, slow and nearly unbreakable; and in the great hall the Eternal Sphinx.
+  hallScarab: { name: 'Scarab', ai: 'tank', art: 'scarab', el: 'earth', lv: 34, hp: 2000, atk: [108, 136], def: 26, vit: 34, agi: 22, dex: 50, exp: [390, 273], adelay: 1500, walk: 200, aggro: 5, chase: 8, reach: 0.8, w: 1.0, r: 0.38, heavy: true, drops: [['scarab_shell', 1, 1, 0.55], ['potion2', 1, 1, 0.08], ['scarab_buckler', 1, 1, 0.003], ['hallscarab_card', 1, 1, 0.001]] },
+  cobra: { name: 'Cobra', ai: 'assassin', art: 'cobra', el: 'earth', lv: 42, hp: 2500, atk: [140, 176], def: 12, vit: 30, agi: 48, dex: 70, exp: [720, 505], adelay: 1250, walk: 180, aggro: 5.5, chase: 9, reach: 0.9, poison: 0.2, w: 0.95, r: 0.36, drops: [['cobra_fang', 1, 1, 0.5], ['potion2', 1, 1, 0.08], ['cobra_kris', 1, 1, 0.003], ['cobra_card', 1, 1, 0.001]] },
+  hallMummy: { name: 'Mummy', ai: 'tank', art: 'mummy', el: 'shadow', lv: 50, hp: 4200, atk: [170, 212], def: 20, vit: 48, agi: 20, dex: 64, exp: [1220, 855], adelay: 1700, walk: 300, aggro: 5, chase: 8, reach: 0.85, w: 0.85, r: 0.34, drops: [['old_bandage', 1, 2, 0.6], ['potion3', 1, 1, 0.04], ['grave_wrap', 1, 1, 0.003], ['hallmummy_card', 1, 1, 0.001]] },
+  lamia: { name: 'Lamia', ai: 'archer', art: 'lamia', el: 'water', lv: 55, hp: 3900, atk: [180, 225], def: 12, vit: 36, agi: 44, dex: 90, mdef: 8, exp: [1620, 1135], adelay: 1700, walk: 200, aggro: 6, chase: 9, range: 4.5, reach: 0.9, w: 1.0, r: 0.4, shot: '#9aff6a', drops: [['lamia_scale', 1, 1, 0.5], ['potion3', 1, 1, 0.05], ['serpent_staff', 1, 1, 0.002], ['lamia_card', 1, 1, 0.001]] },
+  servant: { name: "Pharaoh's Servant", ai: 'archer', art: 'servant', el: 'shadow', lv: 58, hp: 4400, atk: [200, 250], def: 14, vit: 40, agi: 30, dex: 96, mdef: 25, exp: [1900, 1330], adelay: 1900, walk: 250, aggro: 6, chase: 9, range: 5, reach: 0.85, w: 0.9, r: 0.36, shot: '#7ac8ff', drops: [['lapis_shard', 1, 1, 0.5], ['potion3', 1, 1, 0.05], ['priest_robe', 1, 1, 0.003], ['servant_card', 1, 1, 0.001]] },
+  jackal: { name: 'Jackal Guardian', ai: 'tank', art: 'jackal', el: 'shadow', lv: 66, hp: 5800, atk: [236, 296], def: 28, vit: 56, agi: 40, dex: 92, exp: [2800, 1960], adelay: 1400, walk: 180, aggro: 6, chase: 10, reach: 1.3, double: 0.12, w: 1.05, r: 0.42, heavy: true, drops: [['jackal_pelt', 1, 1, 0.5], ['potion3', 1, 1, 0.06], ['jackal_spear', 1, 1, 0.0025], ['jackal_card', 1, 1, 0.001]] },
+  falcon: { name: 'Falcon Sentinel', ai: 'archer', art: 'falcon', el: 'wind', lv: 70, hp: 6000, atk: [252, 316], def: 20, vit: 50, agi: 60, dex: 120, exp: [3350, 2345], adelay: 1500, walk: 150, aggro: 7, chase: 10, range: 5, reach: 1.1, w: 1.15, r: 0.42, shot: '#dff7c8', drops: [['falcon_plume', 1, 1, 0.5], ['potion3', 1, 1, 0.06], ['horus_bow', 1, 1, 0.0025], ['falcon_card', 1, 1, 0.001]] },
+  sphinxCub: { name: 'Sphinx Cub', ai: 'assassin', art: 'sphinxCub', el: 'earth', lv: 80, hp: 7600, atk: [290, 364], def: 22, vit: 58, agi: 70, dex: 120, exp: [5000, 3500], adelay: 1150, walk: 130, aggro: 6.5, chase: 10, reach: 0.95, double: 0.18, w: 1.3, r: 0.45, drops: [['lion_mane', 1, 1, 0.5], ['potion3', 1, 1, 0.07], ['lion_boots', 1, 1, 0.002], ['sphinxcub_card', 1, 1, 0.001]] },
+  sandElemental: { name: 'Sand Elemental', ai: 'puffer', art: 'sandElemental', el: 'earth', lv: 84, hp: 8800, atk: [306, 384], def: 26, vit: 66, agi: 40, dex: 110, mdef: 30, exp: [5780, 4050], adelay: 1600, walk: 200, aggro: 6, chase: 9, reach: 1.0, puff: 'A whirl of sand! It stings your eyes, and your feet drag', w: 1.15, r: 0.45, drops: [['living_sand', 1, 1, 0.5], ['potion3', 1, 1, 0.07], ['storm_ring', 1, 1, 0.0025], ['sandelemental_card', 1, 1, 0.001]] },
+  sarcophagus: { name: 'Sarcophagus', ai: 'tank', art: 'sarcophagus', el: 'shadow', lv: 88, hp: 9600, atk: [322, 404], def: 34, vit: 74, agi: 20, dex: 110, mdef: 20, exp: [6650, 4655], adelay: 1800, walk: 300, aggro: 5, chase: 8, reach: 1.0, w: 1.0, r: 0.45, heavy: true, drops: [['gold_leaf', 1, 1, 0.5], ['potion3', 1, 2, 0.08], ['gold_bar', 1, 1, 0.002], ['coffin_shield', 1, 1, 0.002], ['sarcophagus_card', 1, 1, 0.001]] },
+  // Ammit the Devourer, the mini-boss of the third floor (after the owner's picture): a crocodile's head
+  // in a gold headdress, a lion's mane and claws, a crocodile's tail. It rushes you, pounces, and
+  // devours (Devour: a bite that heals it), calling the Jackal Guardians
+  ammit: { name: 'Ammit', ai: 'boss', art: 'ammit', aura: '#6ad890', el: 'shadow', boss: true, lv: 74, hp: 340000, atk: [240, 310], def: 26, vit: 60, agi: 40, dex: 165, mdef: 25, exp: [80000, 56000], adelay: 1700, fierce: true, walk: 160,
+    moves: [{ kind: 'charge', name: 'Devouring Rush', mult: 1.7 }, { kind: 'leap', name: 'Pounce', mult: 1.8, r: 1.9 }, { kind: 'devour', name: 'Devour', mult: 2.2, heal: 0.04 }],
+    aggro: 6, chase: 12, reach: 1.6, w: 2.3, r: 0.85, heavy: true, summon: ['jackal', 'jackal'], summonText: 'Ammit roars, and the Jackal Guardians come running!', respawn: 540,
+    drops: [['ammit_heart', 1, 1, 0.3], ['jackal_pelt', 3, 5, 1], ['potion3', 1, 2, 0.5], ['devourer_mail', 1, 1, 0.03], ['ammit_claw', 1, 1, 0.02], ['ammit_card', 1, 1, 0.01]] },
+  // the MVP of the Sphinx's Halls, at the bottom of the fourth floor, in its great hall (hall: it never
+  // leaves it): the Eternal Sphinx, a winged lion in a striped headdress, the oldest thing in Aria. It
+  // tests whoever comes with its Riddle (the owner's call: riddles and combat): a riddle, three answers
+  // written in three circles round you; stand in the right one when the time is up and it is
+  // Dumbstruck (it can't move and takes 30% more for a while), in a wrong one (or none) and its
+  // Judgment falls on you, and it is Exalted (it takes half as much a while). Between riddles it
+  // pounces, rains stones from the ceiling (leaving cursed sand that slows you), fixes you with its
+  // Gaze (a bolt of gold light) and calls its cubs and the sand itself
+  eternalSphinx: { name: 'Eternal Sphinx', ai: 'boss', art: 'eternalSphinx', el: 'earth', lv: 99, hp: 1400000, atk: [560, 720], def: 30, vit: 70, agi: 45, dex: 210, mdef: 45, exp: [160000, 112000], adelay: 2100, walk: 140, aggro: 9, chase: 30, reach: 2.6, w: 4.6, r: 1.6, heavy: true, hall: true,
+    mvp: true, respawn: 2400, mvpExp: 60000, stomp: 2.2, takes: { magic: 1.3, melee: 0.85, beast: 0.7 }, takesText: 'its stone hide turns claws and fangs (beasts −30%) and dulls blades (−15%), but it honours wisdom: spells strike true (+30%)',
+    moves: [{ kind: 'riddle', name: 'The Riddle', mult: 3.0 }, { kind: 'leap', name: 'Pounce', mult: 2.2, r: 2.2 }, { kind: 'meteors', name: 'Falling Stones', mult: 1.8, r: 1.6, color: '#c8a46a' }, { kind: 'throw', name: 'Gaze of Ages', mult: 2.4, r: 1.8 }, { kind: 'frenzy' }],
+    burns: { r: 1.6, dur: 6, mult: 0.25, slow: true, color: '#e8c050', word: 'Cursed sand!', text: 'cursed sand' },
+    summon: ['sphinxCub', 'sphinxCub', 'sandElemental'], summonText: 'The Eternal Sphinx roars, and its cubs come bounding out of the dark!', mvpDrops: [['gold_bar', 1], ['potion3', 3]],
+    wake: 'Deep under the sands, something ancient opens its eyes... The Eternal Sphinx waits in its hall.',
+    drops: [['gold_bar', 1, 3, 1], ['potion3', 2, 3, 0.6], ['lion_mane', 4, 6, 1], ['hard_ore', 1, 2, 0.4], ['armor_ore', 1, 2, 0.4], ['sphinx_ring', 1, 1, 0.05], ['sphinx_mantle', 1, 1, 0.03], ['riddle_blade', 1, 1, 0.02], ['sphinx_staff', 1, 1, 0.02], ['sphinx_bow', 1, 1, 0.01], ['enigma_fang', 1, 1, 0.01], ['sphinx_card', 1, 1, 0.01], ['allseeing_eye', 1, 1, 0.005]] },
 };
 // the Sand Wyrm's rhythm (def.wyrm): seconds up (it can be hit, it doesn't move) and under (it
 // can't be hit, it swims for you), shorter enraged; swim: its pace under the sand against its walk;
@@ -225,6 +266,12 @@ for (const d of Object.values(MOB_DEFS)) d.speed = 1000 / (d.walk * WALK_SCALE);
 //            it bursts out, a red circle marks where you stand: mult x ATK within r.
 //   mirror - (the Goblin King) calls two Goblin Kings of shadow (kingShadow) and trades places with
 //            one; until both fall he takes 90% less damage.
+//   riddle - (the Eternal Sphinx) it asks a riddle and stands still while it waits: three circles round
+//            you, each with an answer (main.js). In the right one when the `ask` s are up: it is
+//            Dumbstruck (RIDDLE: stunned, and takes more for a while). In a wrong one, or none: its
+//            Judgment, mult x ATK wherever you stand in its hall, and it is Exalted (takes less).
+//   devour - (Ammit) from up close: it rears, a red circle before it, and bites; caught, you take
+//            mult x ATK and it heals `heal` of its HP.
 // cd: seconds before the same move again (a boss uses one move at a time, and waits 2.5 s between;
 // an MVP 1.6 s, and enraged 1 s with its moves back 40% sooner).
 export const MOVES = {
@@ -237,7 +284,12 @@ export const MOVES = {
   meteors: { min: 0, max: 12, cd: 14, wind: 0.7, n: 5, every: 0.3, land: 1.0 },
   burrow: { min: 2, max: 10, cd: 14, dig: 0.5, under: 1.8, mark: 0.8 },
   mirror: { cd: 30, below: 0.9 },
+  riddle: { cd: 30, below: 0.97, ask: 7, askRage: 5.5 },
+  devour: { min: 0, max: 3.2, cd: 11, wind: 0.7 },
 };
+// the Eternal Sphinx's Riddle answered (MOVES.riddle): right, it is Dumbstruck for `stun` s and takes
+// `exposed` x as much for `exposeFor` s; wrong, it is Exalted, taking `exalted` x as much for `exaltFor` s
+export const RIDDLE = { stun: 3.5, exposed: 1.3, exposeFor: 9, exalted: 0.5, exaltFor: 8, ring: 4.2, r: 1.5 };
 const MIRROR = 0.1;
 export const BARK = { taken: 0.7, reflect: 0.3 };
 // An MVP is a fight for a strong second job (or a party): below half its HP it is enraged for good
@@ -493,6 +545,8 @@ class Mob {
     this.barkT = 0;          // Bark Armor left (MOVES.bark)
     this.under = false;      // burrowed (MOVES.burrow): can't be hit
     this.wy = null;          // the Sand Wyrm's rhythm, up and under (wyrmTick)
+    this.exposeT = 0;        // Dumbstruck: takes more (the Eternal Sphinx's Riddle, answered right)
+    this.exaltT = 0;         // Exalted: takes less (its Riddle answered wrong)
     this.wardSaid = -9;      // when it last showed that a blow was shielded
     this.kiteT = 0;          // how long you have kept out of its reach (BRAIN)
     this.rushT = 0; this.rushCd = 0; // its burst of pursuit, and when it may give chase again
@@ -515,7 +569,7 @@ class Mob {
   roam(dt, spd, moved) {
     if (!this.target || this.wanderT <= 0) {
       if (this.target === null && this.restT > 0) { this.restT -= dt; return; }
-      const s = this.mgr.findSpot(Math.random);
+      const s = this.mgr.findSpot(Math.random, null, this.def);
       if (!s) return;
       this.target = s;
       this.home = { x: s.x, z: s.z };
@@ -567,12 +621,13 @@ class Mob {
       if ((this.moveCd[mv.kind] || 0) > 0) return false;
       if (mv.kind === 'frenzy' || mv.kind === 'bark') return this.hp / d.hp <= M.below;
       if (mv.kind === 'mirror') return this.hp / d.hp <= M.below && !this.mgr.decoysOf(this).length;
+      if (mv.kind === 'riddle') return this.hp / d.hp <= M.below && p === this.mgr.hero;
       if (dist < M.min || dist > M.max) return false;
       return !(mv.kind === 'leap' && nearPortal(this.mgr.world, p.x, p.z, d.r)); // not onto a portal
     });
     const score = (mv) => {
       let s = 1 + Math.random() * 0.6;
-      if (['frenzy', 'bark', 'mirror'].includes(mv.kind)) s += 2; // its own: as soon as it may
+      if (['frenzy', 'bark', 'mirror', 'riddle'].includes(mv.kind)) s += 2; // its own: as soon as it may
       if (['charge', 'leap', 'burrow'].includes(mv.kind)) s += Math.min(this.kiteT, 6) * 0.5 + (casting ? 1.5 : 0) + (dist > 5 ? 0.6 : 0);
       if (['throw', 'meteors', 'roots'].includes(mv.kind)) s += (still ? 0.8 : 0) + (dist >= 3 && dist <= 9 ? 0.5 : 0);
       if (mv.kind === this.lastMove) s -= 0.8;
@@ -592,6 +647,16 @@ class Mob {
         this.barkT = M.dur;
         this.atkAnim = ATTACK_ANIM * 1.6;
         this.mgr.emit('bark', this, mv);
+      } else if (mv.kind === 'riddle') { // it sits and asks; main.js lays out the answers
+        this.act = { kind: 'riddle', mv, t: this.enraged ? M.askRage : M.ask };
+        this.atkAnim = ATTACK_ANIM * 1.6;
+        this.mgr.emit('riddle', this, this.act);
+      } else if (mv.kind === 'devour') { // it rears over you: the bite lands just before it
+        const reach = Math.min(dist, d.reach + 0.6), ux = dist > 0.01 ? dx / dist : this.heading.x, uz = dist > 0.01 ? dz / dist : this.heading.z;
+        this.heading = { x: ux, z: uz };
+        this.act = { kind: 'devour', mv, t: M.wind, spot: { x: this.x + ux * reach, z: this.z + uz * reach } };
+        this.atkAnim = ATTACK_ANIM * 1.6;
+        this.mgr.emit('move', this, this.act);
       } else {
         // (where it aims: where you are going, more often than not)
         const spot = this.aimAt(p, mv.kind === 'throw' ? M.wind + M.land : mv.kind === 'leap' ? M.wind + M.air : mv.kind === 'roots' ? M.wind + M.land : mv.kind === 'charge' ? M.wind : 0);
@@ -667,6 +732,14 @@ class Mob {
       if (a.t <= 0) { this.act = null; this.atkAnim = ATTACK_ANIM; this.mgr.emit('roots', this, a.spots, a.mv, M.land); }
       return { moving: false, lift: 0 };
     }
+    if (a.kind === 'riddle') { // waiting on your answer
+      if (a.t <= 0) { this.act = null; this.atkAnim = ATTACK_ANIM * 1.6; this.mgr.emit('riddleEnd', this, a); }
+      return { moving: false, lift: 0 };
+    }
+    if (a.kind === 'devour') {
+      if (a.t <= 0) { this.act = null; this.atkAnim = ATTACK_ANIM; this.mgr.emit('devour', this, a.mv, a.spot); }
+      return { moving: false, lift: 0 };
+    }
     if (a.kind === 'leap') {
       const k = Math.min(1, Math.max(0, 1 - a.t / M.air)); // 0 at take-off, 1 on landing
       if (a.t <= M.air) {
@@ -738,6 +811,7 @@ class Mob {
     const w = this.mgr.world;
     const [rx, rz] = w.resolve(this.x + dx, this.z + dz, this.def.r);
     if (w.isSafe(rx, rz) || !w.walkable(rx, rz)) return null;
+    if (this.def.hall && !this.mgr.inHall(rx, rz, this.def.r)) return null; // (the Eternal Sphinx never leaves its hall)
     // never onto a portal (though one somehow inside the edge may always step away from it)
     if (nearPortal(w, rx, rz, this.def.r) && portalGap(w, rx, rz) <= portalGap(w, this.x, this.z)) return null;
     return [rx, rz];
@@ -845,6 +919,7 @@ class Mob {
       this.mgr.emit('reflect', this, Math.max(1, Math.round(dmg * BARK.reflect)), from);
     }
     if (this.curseT > 0 && dmg > 0) dmg = Math.round(dmg * (1 + (this.curseBy || 0))); // (in a Voodoo's Curse Circle: everything lands harder)
+    if (this.exposeT > 0 && dmg > 0) dmg = Math.round(dmg * RIDDLE.exposed); // (Dumbstruck: its Riddle answered)
     this.hp -= dmg;
     this.flash = 0.09;
     if (this.lulled) { this.lulled = false; this.provoke(); } // a blow wakes a lulled boss (the vigil's song breaks)
@@ -867,6 +942,7 @@ class Mob {
   // the share of a blow that lands now: 0 burrowed, less behind its tribe (def.tribe) or its shadows
   ward() {
     if (this.under) return 0;
+    if (this.exaltT > 0) return RIDDLE.exalted; // (Exalted: its Riddle answered wrong)
     if (this.def.tribe && this.mgr.guardsOf(this).some((g) => !g.def.decoy)) return 1 - this.def.tribe;
     if (this.mgr.decoysOf(this).length) return MIRROR;
     return 1;
@@ -933,6 +1009,7 @@ class Mob {
     const low = this.hp / d.hp <= 0.3 && d.hp > 1;
     this.rageT -= dt;
     this.barkT -= dt;
+    this.exposeT -= dt; this.exaltT -= dt;
     this.calmT = this.state === 'chase' ? 0 : this.calmT + dt;
     if ((d.mvp || d.boss) && this.calmT > BRAIN.calm && this.hp < d.hp) this.hp = Math.min(d.hp, this.hp + d.hp * BOSS_REGEN / 60 * dt);
     // an MVP below half its HP is enraged (MVP_RAGE); healed back over 60% it calms down
@@ -948,7 +1025,8 @@ class Mob {
     let lift = 0;
     // Play Dead and safe ground (camp) make monsters lose interest
     const available = p.state !== 'down' && p.state !== 'feign' && !this.mgr.world.isSafe(p.x, p.z)
-      && !(p.hiddenT > 0 && !d.boss && !d.mvp); // (an Assassin's Vanish: lost, but bosses see through it)
+      && !(p.hiddenT > 0 && !d.boss && !d.mvp) // (an Assassin's Vanish: lost, but bosses see through it)
+      && !(d.hall && !this.mgr.inHall(p.x, p.z)); // (the Eternal Sphinx fights only in its hall)
     const aggro = this.provokeT > 0 ? 14 : d.aggro;
     const hostile = !this.lulled && (!d.passive || this.angry > 0 || this.provokeT > 0); // a passive monster only fights back; a lulled one (the vigil's song) not at all
     // a roaming boss's home is where it was headed; once a fight starts, its home is where the fight
@@ -1267,9 +1345,12 @@ export class MobManager {
   emit(name, ...a) { for (const fn of this.handlers[name] || []) fn(...a); }
 
   // a free spot for a monster's home, away from the portals you arrive by (and from you, if given)
-  findSpot(rng, away = null) {
+  // (a dungeon's great hall, world.hall: only its own monster, def.hall, is found a spot in it, and only there)
+  findSpot(rng, away = null, def = null) {
+    const hall = this.world.hall;
     for (let i = 0; i < 400; i++) {
       const x = 4 + rng() * 56, z = 4 + rng() * 56;
+      if (hall && !!def?.hall !== this.inHall(x, z, 1)) continue;
       if (this.world.portals.some((p) => Math.hypot(p.x - x, p.z - z) < 9)) continue;
       if (away && Math.hypot(away.x - x, away.z - z) < 16) continue;
       if (!this.world.walkable(x, z)) continue;
@@ -1279,6 +1360,12 @@ export class MobManager {
       return { x, z };
     }
     return null;
+  }
+
+  // inside a dungeon's great hall (world.hall), r paces clear of its walls; true on a map without one
+  inHall(x, z, r = 0) {
+    const H = this.world.hall;
+    return !H || (x > H.x0 + r && x < H.x1 - r && z > H.z0 + r && z < H.z1 - r);
   }
 
   // a new map: clear every monster and spawn the map's own. spawns: [[type, count, nightOnly]]
@@ -1298,7 +1385,7 @@ export class MobManager {
     const rng = mulberry32(seed);
     for (const [type, count, nightOnly] of spawns) {
       for (let i = 0; i < count; i++) {
-        const s = this.findSpot(rng);
+        const s = this.findSpot(rng, null, MOB_DEFS[type]);
         if (!s) continue;
         // bosses and MVPs wait out their respawn time even across map changes and restarts (update)
         if (MOB_DEFS[type].mvp || MOB_DEFS[type].boss) { this.bosses.push(type); continue; }
@@ -1330,7 +1417,7 @@ export class MobManager {
   roamAway(at, def, secs) {
     let { x, z } = at, budget = Math.min(secs, AWAY.cap) * def.speed * AWAY.stroll * AWAY.walking;
     for (let i = 0; i < 12 && budget > 0.5; i++) {
-      const s = this.findSpot(Math.random);
+      const s = this.findSpot(Math.random, null, def);
       if (!s) break;
       const d = Math.hypot(s.x - x, s.z - z);
       if (d <= budget) { x = s.x; z = s.z; budget -= d; continue; }
@@ -1519,7 +1606,7 @@ export class MobManager {
       const at = this.bossAt[type], w0 = this.world; // where you left it, if it still stands there
       // (it roamed on while you were away: AWAY; one met before its time was kept stays put)
       const left = at && at.map === w0.id && w0.walkable(at.x, at.z) ? (at.at ? this.roamAway(at, MOB_DEFS[type], (Date.now() - at.at) / 1000) : at) : null;
-      const s = left || this.findSpot(Math.random, player);
+      const s = left || this.findSpot(Math.random, MOB_DEFS[type].hall ? null : player, MOB_DEFS[type]);
       if (!s) continue;
       const m = this.add(type, s.x, s.z);
       m.map = w0.id; // (the map it walks: setMap snapshots it after the world has moved on)

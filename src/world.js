@@ -17,6 +17,8 @@
 //                                                       Great Desert - Scorpion Sands (the Pyramid)
 //                                                            |
 //                                                     (hidden) Sphinx Sands
+//                                                            |  (the door in the Sphinx's chest)
+//                                       Sphinx Halls 1 - 2 - 3 - 4 (mazes; the Eternal Sphinx's hall)
 //
 // (Dark Dale's east portal is Black Wood. Veidheim, the hunters' village, is reached from Birch
 // Grove through Willow Marsh; the predators' lands lie east of Black Wood and Ash Heath.)
@@ -27,6 +29,7 @@ import { makeNoise, mulberry32, sstep, lerp, clamp } from './noise.js';
 import { buildCity, WALL } from './city.js';
 import { SOIL, soilAt, cropSpots, fences } from './farm.js';
 import { buildPyramid, buildSphinx } from './monuments.js';
+import { carveMaze, buildMaze, floorTex, FLOOR_LOOK } from './dungeon.js';
 
 export const SIZE = 64;
 export const CENTER = 32;
@@ -64,6 +67,10 @@ export const ZONE_NAMES = {
   desert: 'Great Desert',  // the deep desert, where the Sand Wyrm swims under the dunes
   sphinx: 'Sphinx Sands',  // the Giant Sphinx's sands, open only to who solves its riddle
   tomb: "Pharaoh's Tomb",  // the fourth raid (raid.js): the burial hall under the Pyramid
+  halls1: 'Sphinx Halls 1', // the first dungeon (dungeon.js), behind the door in the Giant Sphinx's
+  halls2: 'Sphinx Halls 2', // chest: four maze floors, harder floor by floor, the Eternal Sphinx in
+  halls3: 'Sphinx Halls 3', // the great hall at the bottom
+  halls4: 'Sphinx Halls 4',
 };
 
 const CAMP_R = 17;   // the camp clearing's walkable radius
@@ -124,8 +131,17 @@ export const MAPS = {
   scorpion: { portals: [{ to: 'dunes', ...N }, { to: 'desert', ...W }], lift: [0.2, 0.5], dunes: 0.9, desert: true,
     pyramid: { x: 42, z: 21, half: 7, h: 9.5 }, keep: [{ x0: 33, z0: 11, x1: 51, z1: 31 }], clear: { x: 24, z: 44, r: 6 } },
   desert:   { portals: [{ to: 'scorpion', ...E }, { to: 'sphinx', ...S, need: 'sphinx6' }], lift: [0.3, 0.8], dunes: 1.5, desert: true, obelisk: [32, 50], clear: { x: 30, z: 26, r: 8 } },
-  sphinx:   { portals: [{ to: 'desert', ...S }], lift: [0, 0.2], dunes: 0.5, desert: true, sphinx: { x: 32, z: 30 }, keep: [{ x0: 21, z0: 6, x1: 43, z1: 50 }] },
+  // (the door in the Sphinx's chest is a portal down to its halls; out: where you arrive beside it, here
+  // in front of the door, not into the Sphinx)
+  sphinx:   { portals: [{ to: 'desert', ...S }, { to: 'halls1', x: 32, z: 36, out: [0, 2.6], door: true }], lift: [0, 0.2], dunes: 0.5, desert: true, sphinx: { x: 32, z: 30 }, keep: [{ x0: 21, z0: 6, x1: 43, z1: 50 }] },
   tomb:     { portals: [], arena: { r: 13, land: true, near: 'ruin_pillar' }, lift: [0, 0.2], tomb: true },
+  // the Sphinx's Halls (dungeon.js): indoor (no sky, no day and night: daynight.js), every floor a maze
+  // (maze: its seed, its rooms [i, j, pillar?] of 2x2 cells, a share of loops; the stairs stand in
+  // portal rooms, pillarless), the last floor with the great hall (hall: its cells and gate)
+  halls1: { portals: [{ to: 'sphinx', x: 31.5, z: 55.5 }, { to: 'halls2', x: 31.5, z: 7.5 }], indoor: true, maze: { floor: 1, seed: 101, loops: 0.12, start: [6, 13], rooms: [[6, 12], [6, 0], [2, 4, true], [10, 8, true]] } },
+  halls2: { portals: [{ to: 'halls1', x: 31.5, z: 7.5 }, { to: 'halls3', x: 55.5, z: 31.5 }], indoor: true, maze: { floor: 2, seed: 202, loops: 0.1, start: [6, 0], rooms: [[6, 0], [12, 6], [3, 9, true], [8, 4, true], [2, 2, true]] } },
+  halls3: { portals: [{ to: 'halls2', x: 55.5, z: 31.5 }, { to: 'halls4', x: 7.5, z: 31.5 }], indoor: true, maze: { floor: 3, seed: 303, loops: 0.09, start: [12, 6], rooms: [[12, 6], [0, 6], [6, 6, true], [5, 1, true], [8, 10, true]] } },
+  halls4: { portals: [{ to: 'halls3', x: 7.5, z: 55.5 }], indoor: true, maze: { floor: 4, seed: 404, loops: 0.08, start: [0, 12], rooms: [[0, 12], [9, 10, true]], hall: { i0: 1, j0: 0, i1: 12, j1: 6, gate: [6, 7] } } },
 };
 const SEG = 128; // terrain vertices per side - 1 (0.5 unit spacing)
 
@@ -160,6 +176,7 @@ const GROUND = {
   desert: ['#d6b070', '#e8c686'],
   sphinx: ['#dab676', '#eacb8e'],
   tomb: ['#8a7252', '#9e8664'],
+  halls1: ['#ffffff', '#f2ece4'], halls2: ['#ffffff', '#f2ece4'], halls3: ['#ffffff', '#f2ece4'], halls4: ['#ffffff', '#f2ece4'], // (the floor's own flags tint it: dungeon.js)
   dirt: '#b49a6c',
   sandpath: '#c8a46c',
   beach: '#c6b483', // (a lake's or the sea's sandy edge)
@@ -223,6 +240,8 @@ function buildMap(id, scene, lib, shared) {
   const kept = (x, z) => LAKE?.keep?.some((k) => (k.r ? Math.hypot(x - k.x, z - k.z) < k.r : x > k.x0 && x < k.x1 && z > k.z0 && z < k.z1));
   const lakeD = (x, z) => (LAKE && !kept(x, z) ? Math.hypot((x - LAKE.x) / LAKE.rx, (z - LAKE.z) / LAKE.rz) : 9); // (kept: dry ground under a bridge, an island)
   const campR = (x, z) => Math.hypot(x - CENTER, z - CENTER);
+  // a dungeon floor (dungeon.js): the maze carved at once (its walls are built with the props below)
+  const MZ = def.maze ? carveMaze(def.maze) : null;
 
   // dirt trails from each portal to the middle of the map, wandering a little
   const trails = def.portals.map((p, i) => ({ ax: p.x, az: p.z, bx: CENTER, bz: CENTER, k: i * 1.7 }));
@@ -239,6 +258,7 @@ function buildMap(id, scene, lib, shared) {
   }
 
   function heightAt(x, z) {
+    if (MZ) return 0; // (a dungeon's floor is flat flagstone)
     let h = (noise.fbm(x * 0.06, z * 0.06) - 0.5) * 1.4;
     h += lift + (rough ? (noise.fbm(x * 0.15 + 9, z * 0.15) - 0.5) * rough : 0);
     if (def.dunes) h += duneAt(x, z);
@@ -278,13 +298,14 @@ function buildMap(id, scene, lib, shared) {
 
   // a lake's shallow edge (to about knee deep) can be waded: the water hides the feet (see wading)
   const SHALLOW = LAKE || SEA ? WATER_Y - 0.22 : WATER_Y + 0.08;
-  const walkable = (x, z) => edgeDist(x, z) > 2.4 && (!isCamp || campR(x, z) < CAMP_R) && (!PIT || campR(x, z) < ARENA.r) && heightAt(x, z) > SHALLOW;
+  const walkable = (x, z) => edgeDist(x, z) > 2.4 && !(MZ && MZ.solid[Math.floor(z) * SIZE + Math.floor(x)]) && (!isCamp || campR(x, z) < CAMP_R) && (!PIT || campR(x, z) < ARENA.r) && heightAt(x, z) > SHALLOW;
   // standing in the water: how deep (0 on dry land)
   const wading = (x, z) => (LAKE || SEA ? Math.max(0, WATER_Y + 0.04 - heightAt(x, z)) : 0);
   const isSafe = () => isCamp || isCity; // towns are safe ground
 
   function colorAt(x, z, h) {
     const out = new THREE.Color();
+    if (MZ) return out.set('#ffffff').multiplyScalar(0.86 + noise.fbm(x * 0.3, z * 0.3, 2) * 0.28); // (the flags are in the floor's texture)
     const [a, b] = groundCols[id];
     out.copy(a).lerp(b, sstep(0.35, 0.65, noise.fbm(x * 0.16 + 13, z * 0.16, 3)));
     if (isCamp) {
@@ -406,8 +427,10 @@ function buildMap(id, scene, lib, shared) {
   const fenceMesh = fences(PLOTS, (x, z) => heightAt(x, z), (x0, z0, x1, z1) => boxes.push({ x0, z0, x1, z1, kind: 'fence' }));
   if (fenceMesh) group.add(fenceMesh);
 
+  // a dungeon floor's walls, torches, urns and coffins (dungeon.js)
+  const maze = MZ ? buildMaze({ group, place }, def.maze, MZ) : null;
   // treeline framing the map (camp: a ring of forest around the clearing; city: outside the walls)
-  for (let i = 0; i < (isCamp || PIT ? 1400 : SEA ? 0 : 900); i++) { // (an island arena has the sea for a border; a walled one, a ring like the camp's)
+  for (let i = 0; i < (MZ ? 0 : isCamp || PIT ? 1400 : SEA ? 0 : 900); i++) { // (an island arena has the sea for a border; a walled one, a ring like the camp's)
     const x = 0.5 + rng() * 63, z = 0.5 + rng() * 63;
     const e = isCamp ? campR(x, z) - CAMP_R : PIT ? campR(x, z) - ARENA.r : 3.6 - edgeDist(x, z);
     if (isCity && (inWalls(x, z, 1.6) || pathDist(x, z) < 4.5 || edgeDist(x, z) > 3.4)) continue; // keep the walls in view
@@ -418,7 +441,7 @@ function buildMap(id, scene, lib, shared) {
 
   // interior scatter
   let interior = 0;
-  const want = isCamp ? 40 : isCity ? 0 : ARENA ? 36 : 330;
+  const want = isCamp ? 40 : isCity || MZ ? 0 : ARENA ? 36 : 330;
   for (let i = 0; i < 6000 && interior < want; i++) {
     const x = 3 + rng() * 58, z = 3 + rng() * 58;
     if (isCamp && (campR(x, z) < 7.5 || campR(x, z) > CAMP_R - 1)) continue;
@@ -461,7 +484,9 @@ function buildMap(id, scene, lib, shared) {
   }
   geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
   geo.computeVertexNormals();
-  const terrain = new THREE.Mesh(geo, new THREE.MeshLambertMaterial({ vertexColors: true, map: lib.ground }));
+  let ground = lib.ground;
+  if (MZ) { ground = floorTex(FLOOR_LOOK[def.maze.floor], mulberry32(def.maze.seed)); ground.repeat.set(32, 32); }
+  const terrain = new THREE.Mesh(geo, new THREE.MeshLambertMaterial({ vertexColors: true, map: ground }));
   group.add(terrain);
 
   // ---------- Water ----------
@@ -495,6 +520,7 @@ function buildMap(id, scene, lib, shared) {
   function updateOcclusion(px, pz, cam, also = null) {
     city?.occlude(px, pz, cam);
     monument?.occlude(px, pz, cam);
+    maze?.occlude(px, pz, cam);
     const hides = (t, x, z) => {
       const dx = t.x - x, dz = t.z - z;
       if (Math.abs(dx) >= 6 || Math.abs(dz) >= 6) return false;
@@ -584,6 +610,22 @@ function buildMap(id, scene, lib, shared) {
           if (d < min && d > 1e-4) { x = p.x + (dx / d) * min; z = p.z + (dz / d) * min; }
         }
       }
+      if (MZ) { // a dungeon's walls, tile by tile round where it stands (a pillar is round)
+        for (let j = Math.floor(z - r) - 1; j <= Math.floor(z + r) + 1; j++) for (let i = Math.floor(x - r) - 1; i <= Math.floor(x + r) + 1; i++) {
+          const v = maze.tile(i, j);
+          if (!v) continue;
+          if (v === 2) { const dx = x - i - 0.5, dz = z - j - 0.5, d = Math.hypot(dx, dz), min = r + 0.5; if (d < min && d > 1e-4) { x = i + 0.5 + (dx / d) * min; z = j + 0.5 + (dz / d) * min; } continue; }
+          const b = { x0: i, z0: j, x1: i + 1, z1: j + 1 };
+          if (x < b.x0 - r || x > b.x1 + r || z < b.z0 - r || z > b.z1 + r) continue;
+          const cx = clamp(x, b.x0, b.x1), cz = clamp(z, b.z0, b.z1), dx = x - cx, dz = z - cz, d = Math.hypot(dx, dz);
+          if (d > 1e-4) { if (d < r) { x = cx + (dx / d) * r; z = cz + (dz / d) * r; } continue; }
+          // inside the tile: out the side that leads onto open ground, nearest first
+          const out = [[b.x0 - r - x, 0, i - 1, j], [b.x1 + r - x, 0, i + 1, j], [0, b.z0 - r - z, i, j - 1], [0, b.z1 + r - z, i, j + 1]].filter((o) => !maze.tile(o[2], o[3]));
+          if (!out.length) continue;
+          const [mx, mz] = out.reduce((a, o) => (Math.abs(o[0] + o[1]) < Math.abs(a[0] + a[1]) ? o : a));
+          x += mx; z += mz;
+        }
+      }
       for (const b of boxes) { // out of walls and houses: to the nearest outside point
         if (x < b.x0 - r || x > b.x1 + r || z < b.z0 - r || z > b.z1 + r) continue;
         const cx = clamp(x, b.x0, b.x1), cz = clamp(z, b.z0, b.z1), dx = x - cx, dz = z - cz, d = Math.hypot(dx, dz);
@@ -610,7 +652,7 @@ function buildMap(id, scene, lib, shared) {
   for (let j = 0; j < 128; j++) for (let i = 0; i < 128; i++) {
     const x = i * 0.5 + 0.25, z = j * 0.5 + 0.25;
     const h = heightAt(x, z);
-    const hex = h < WATER_Y ? '4f9cc0' : colorAt(x, z, h).getHexString();
+    const hex = h < WATER_Y ? '4f9cc0' : MZ ? FLOOR_LOOK[def.maze.floor].floor.slice(1) : colorAt(x, z, h).getHexString();
     const o = (j * 128 + i) * 4;
     img.data[o] = parseInt(hex.slice(0, 2), 16);
     img.data[o + 1] = parseInt(hex.slice(2, 4), 16);
@@ -631,6 +673,7 @@ function buildMap(id, scene, lib, shared) {
     mg.beginPath(); mg.moveTo(64, 57); mg.lineTo(70, 66); mg.lineTo(58, 66); mg.closePath(); mg.fill(); mg.stroke();
   }
   monument?.minimap(mg);
+  maze?.minimap(mg);
   for (const p of def.portals.filter((q) => !q.need)) { // portals: little blue rings (a hidden one isn't marked)
     mg.strokeStyle = '#1a2a48'; mg.lineWidth = 4;
     mg.beginPath(); mg.arc(p.x * 2, p.z * 2, 3.5, 0, Math.PI * 2); mg.stroke();
@@ -640,7 +683,7 @@ function buildMap(id, scene, lib, shared) {
 
   return {
     id, group, heightAt, walkable, wading, isSafe, resolve, addSolid, update, terrain, updateOcclusion, portals,
-    minimap: mini, fireMat, fireLight, stats: { props: props.length, interior }, monument,
+    minimap: mini, fireMat, fireLight, stats: { props: props.length, interior }, monument, maze, hall: MZ?.hall || null, indoor: !!def.indoor,
     zoneAt: () => id,
   };
 }
@@ -741,6 +784,8 @@ export function buildWorld(scene, lib) {
     get minimap() { return cur.minimap; },
     get portals() { return cur.portals.filter((p) => !p.need || shared.open(p.need)); },
     get monument() { return cur.monument; },
+    get hall() { return cur.hall; },     // a dungeon's great hall (the Eternal Sphinx's): { x0, z0, x1, z1, gate }
+    get indoor() { return cur.indoor; }, // under the ground: no sky (daynight.js)
     set open(fn) { shared.open = fn; },
     get fireBoost() { return shared.fireBoost; },
     set fireBoost(v) { shared.fireBoost = v; },
@@ -761,6 +806,7 @@ export function buildWorld(scene, lib) {
       cur.group.visible = true;
       const back = cur.portals.find((p) => p.to === from);
       if (!back) return id === 'camp' ? { ...api.spawn } : { x: CENTER, z: CENTER };
+      if (back.out) return { x: back.x + back.out[0], z: back.z + back.out[1] }; // (where the portal says)
       const dx = CENTER - back.x, dz = CENTER - back.z, d = Math.hypot(dx, dz);
       return { x: back.x + (dx / d) * 2.6, z: back.z + (dz / d) * 2.6 };
     },

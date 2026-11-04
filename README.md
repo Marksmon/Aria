@@ -81,6 +81,8 @@ Coal Pit - Stone Field - Salt Bay - Fen Shore - Eldrun Camp   Ember Hill  -  Ash
                                                         Great Desert  -  Scorpion Sands
                                                              :
                                                (hidden) Sphinx Sands
+                                                             |  (the door in the Sphinx's chest)
+                                        Sphinx Halls 1 - 2 - 3 - 4 (the first dungeon)
 ```
 
 Goblin country (Burnt Wood, then Serpent Wood) lies beyond Galdrheim's north gate; the kobolds' hills
@@ -113,6 +115,10 @@ Scorpion Sands with its Pyramid, then the Great Desert, where the Sand Wyrm hunt
 | Cactus Dunes | 55–60 | Cactus (55, throws needles), Dune Worm (58) | Cactus Lord (60) |
 | Scorpion Sands | 60–66 | Sand Scorpion (61, poison), Sand Runner (64) | Rainbow Runner (64) |
 | Great Desert | 62–70 | Soldier Ant (62), Cactus, Dune Worm, Sand Scorpion, Sand Runner | **Sand Wyrm (70, MVP)** |
+| Sphinx Halls 1 | 31–45 | Scarab (34, hard shell), Cobra (42, poison) | |
+| Sphinx Halls 2 | 46–60 | Mummy (50), Lamia (55, spits venom), Pharaoh's Servant (58, blue fire) | |
+| Sphinx Halls 3 | 61–75 | Jackal Guardian (66, long spear), Falcon Sentinel (70, wind blades) | Ammit (74) |
+| Sphinx Halls 4 | 76–90 | Sphinx Cub (80), Sand Elemental (84, slowing sand), Sarcophagus (88) | **Eternal Sphinx (99, MVP)** |
 | Any field in the valley, more at night (Moss Field and Fen Shore only at night) | | Wisp (11) | |
 
 Moss Field and Fen Shore, by the camp and the city, Willow Marsh by Veidheim and the Red Sands by Rytingborg are a Trainee's fields: a Base 10 Trainee
@@ -223,6 +229,7 @@ easiest for some jobs and hardest for others (it tells you when it first comes f
 | Goblin King | blades and fists +40% | arrows and spells −30% (his crown's wind ward) | Blader, BladeMaster | the bow jobs and casters |
 | Ancient Treant | beasts +60% (fangs and claws tear bark), spells +10% | blades and fists −40% (the bark turns them) | Beastmaster | Blader, BladeMaster |
 | Sand Wyrm | blades, daggers and fists +30% (soft flesh between its plates) | beasts −40%, arrows −10% (its plated hide) | Blader, Assassin and their second jobs | Beastmaster |
+| Eternal Sphinx | spells +30% (it honours wisdom) | beasts −30%, blades, daggers and fists −15% (its stone hide) | Sorcerer, Wizard | Beastmaster |
 
 The two-path jobs sit between: a Magic Knight's sword is half steel and half spell, a Moon
 Ranger's arrows half arrow and half spell.
@@ -306,6 +313,8 @@ fills up until it hits: step out of it.
 | Elder Willow | **Seed Cloud**, thrown at you |
 | Alpha Wolf · Great Bear | **Pounce** (a leap) · **Mauling Charge** |
 | Ancient Treant | **Grasping Roots** (hold you in place) · **Bark Armor** (hits bounce back) · **Root Stone** (thrown) · **Uprooting Charge** |
+| Ammit | **Devouring Rush** (a charge) · **Pounce** · **Devour**: a bite in front of it that heals it |
+| Eternal Sphinx | **The Riddle** (stand in the right answer) · **Pounce** · **Falling Stones** (cursed sand where they land) · **Gaze of Ages** (thrown) · **Frenzy** |
 
 Each move hits for 1.4–2x the boss's ATK. Staying far away no longer keeps you safe: spells reach
 5 paces, and every boss has a move for 3–9 paces.
@@ -343,8 +352,39 @@ offer the ride to Rytingborg, so a Trainee can get there without crossing Ember 
 
 **The Sphinx.** Someone in Rytingborg knows an old secret, but only tells it to a hero who has walked
 every sand round the city. It opens a hidden way out of the Great Desert to **Sphinx Sands**, where a
-Giant Sphinx half the size of the map lies among ruins. Its great door is still sealed: the halls
-inside are Aria's first dungeon, still being dug out.
+Giant Sphinx half the size of the map lies among ruins. The great door in its chest leads down into
+its halls.
+
+**The Sphinx's Halls** are Aria's first dungeon: four floors, one under the other, every one a maze
+of sandstone corridors three paces wide, carved with eyes, ankhs and birds and lit by torches. Each
+floor is harder than the last, so the halls are a place to level from Base 31 to 90 (see the table
+above). Every monster down there attacks on sight. The stairs stand in an open room at each end of
+a floor; there are dead ends with urns, bones and coffins, and pillared chambers to fight in. Walls
+between you and the camera turn see-through, so you never lose sight of your hero. It is always
+dim underground, day or night.
+
+- **Floor 1:** Scarabs and Cobras. **Floor 2:** Mummies, Lamias (snake-women who spit venom from afar)
+  and the Pharaoh's Servants (skeletal priests who throw blue fire from crystal staves).
+- **Floor 3:** Jackal Guardians with long cursed spears, Falcon Sentinels throwing blades of wind, and
+  **Ammit the Devourer** (Lv 74 mini-boss: a crocodile's head, a lion's mane and claws). It rushes,
+  pounces, and **Devours**: a bite that heals it. It calls the Jackal Guardians.
+- **Floor 4:** Sphinx Cubs, Sand Elementals (their whirling sand slows you) and walking Sarcophagi.
+  At the end of its maze a gate opens on a great pillared hall, and in it waits the **Eternal
+  Sphinx** (Lv 99 MVP, 1,400,000 HP, Earth), a winged lion in a striped headdress. It never leaves its
+  hall, and it fights you only while you are in it.
+
+**The Riddle.** The Eternal Sphinx tests you with riddles as well as claws. It sits back and asks one,
+and three gold circles appear round you, each with an answer written over it. Stand in the right
+circle when time runs out (about 7 seconds, 5.5 when it is enraged) and it is **Dumbstruck**: it can't
+move for a moment and takes 30% more damage for 9 seconds. Stand in a wrong circle, or in none, and
+its **Judgment** falls on you wherever you are in the hall (3x its ATK), and it is **Exalted**: it takes
+half damage for 8 seconds. Between riddles it **Pounces**, brings **Falling Stones** down from the
+ceiling (they leave cursed sand that slows you), fixes you with its **Gaze of Ages**, and calls its
+cubs and the Sand Elementals. It always drops **Gold Bars** (1–3, and one more as its MVP reward),
+which sell for a fortune, and now and then good gear for every build: the Riddle Blade, the Sphinx
+Sceptre, the Sphinx Wing Bow, the Enigma Fang, the Sphinx Wing Mantle, the Sphinx Ring, its card, and
+very rarely (0.5%) its ultra rare: **the Sphinx's All-Seeing Eye**, a gold Face piece over one eye
+(all stats +5, MATK +10%, HIT +10).
 
 ## Raids
 
@@ -1077,6 +1117,16 @@ they come back whole and the slot stays open. A piece that breaks at Holger's gi
 | Goblin Assassin Card (Nimble) | Accessory | QKN +2, FLEE +2 | Goblin Assassin, 0.1% |
 | Willow Card (Whispering) | Wings | KNL +1, Max SP +40 | Willow, 0.1% |
 | Bear Card (Mighty) | Armor | Max HP +8%, POW +1 | Bear, 0.1% |
+| Scarab Card (Shelled) | Armor | DEF +3, END +1 | Scarab (Sphinx Halls), 0.1% |
+| Cobra Card (Fanged) | Weapon | ATK +5, QKN +2 | Cobra, 0.1% |
+| Mummy Card (Undying) | Armor | Max HP +8% | Mummy (Sphinx Halls), 0.1% |
+| Lamia Card (Bewitching) | Head or face | ATK +8, HIT +3 | Lamia, 0.1% |
+| Pharaoh's Servant Card (Devout) | Garment | Max SP +8%, KNL +1 | Pharaoh's Servant, 0.1% |
+| Jackal Guardian Card (Cursed) | Weapon | ATK +12, POW +2 | Jackal Guardian, 0.1% |
+| Falcon Sentinel Card (Hawk-eyed) | Accessory | HIT +6, FNS +2 | Falcon Sentinel, 0.1% |
+| Sphinx Cub Card (Pouncing) | Shoes | FLEE +4, QKN +2 | Sphinx Cub, 0.1% |
+| Sand Elemental Card (Whirling) | Garment | FLEE +5, END +1 | Sand Elemental, 0.1% |
+| Sarcophagus Card (Entombed) | Shield | DEF +4, Max HP +6% | Sarcophagus, 0.1% |
 
 | Card | Goes in | Effect | From |
 |---|---|---|---|
@@ -1091,6 +1141,8 @@ they come back whole and the slot stays open. A piece that breaks at Holger's gi
 | Great Bear Card (Savage) | Weapon | ATK +30, POW +5, Max HP +10%; **Wounded Fury:** below 40% HP your blows hit 20% harder | Great Bear, 1% |
 | Ancient Treant Card (Ancient) | Shield | DEF +10, Max HP +20%, POW +6, END +7; **Bark Armor:** a monster striking you up close takes back 20% of the blow | Ancient Treant, 1% |
 | Fire Giant Card (Infernal) | Weapon (a sorcerer's card) | MATK +30%, KNL +6, FNS +4, Max SP +15%, weapon turns Fire (+15% Fire spells with a staff); **Meteor Heart:** spells and blows set a monster burning 10% of the time | Fire Giant, 1% |
+| Ammit Card (Devouring) | Weapon | ATK +18, POW +3; **Weighing of the Heart:** your blows and spells land 15% harder on a monster under 30% HP | Ammit, 1% |
+| Eternal Sphinx Card (Enigmatic) | Accessory | KNL +5, FNS +4, FTN +3, Max SP +10%; **Eternal Wisdom:** your skills cost 15% less SP | Eternal Sphinx, 1% |
 
 **Who can wear what.** Swords up to the Iron Sword: Trainee and Blader; rare and elemental
 swords: Blader only. Staves: Sorcerer only (the Wooden Staff also Trainees). Bows and arrows:
@@ -1300,7 +1352,7 @@ to restore HP, save, and sleep until morning.
 - [x] Steinborg, four new lands, mini-bosses, perz and shops, the Sorcerer and job trials
 - [x] Cards, more jobs, raids, the Beastmaster's pack
 - [x] Rytingborg and the desert: the Assassin and the Phantom, the Sand Wyrm, Pharaoh's Tomb, the Sphinx's secret
-- [ ] **The Sphinx's halls**, Aria's first dungeon (four maps inside the Giant Sphinx)
+- [x] **The Sphinx's halls**, Aria's first dungeon: four maze floors, Ammit and the Eternal Sphinx
 - [ ] **Ten cities.** Five early-game cities (Steinborg, Galdrheim, Veidheim and Rytingborg so far,
   one more to come), then five late-game ones. The first half of Aria's making ends with the fifth city.
 

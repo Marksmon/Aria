@@ -7,6 +7,7 @@ import { mulberry32 } from './noise.js';
 import { paintSet, frameSize } from './painted.js';
 import { beastSet, BEASTS } from './beasts.js';
 import { desertSet, DESERT, moundSet, MOUND } from './desert.js';
+import { hallsSet, HALLS } from './halls.js';
 import { paintButler, BW, BH } from './butler.js';
 import { paintBleepBloop, BW as BBW, BH as BBH, BODY as BB_BODY } from './bleepbloop.js';
 import { POSES, LEGS, framePainter } from './design-anim.js';
@@ -1191,6 +1192,8 @@ export function createSprites() {
   for (const [id, B] of Object.entries(BEASTS)) MADE[id] = () => codeSet(beastSet(id), ...B.size, B.body, 2 / B.size[1]);
   // the desert's monsters and Pharaoh's Tomb's, painted in code (desert.js); the Sand Wyrm's mound
   for (const [id, D] of Object.entries(DESERT)) MADE[id] = () => codeSet(desertSet(id), ...D.size, D.body, 2 / D.size[1]);
+  // the Sphinx's Halls' monsters, painted in code (halls.js)
+  for (const [id, D] of Object.entries(HALLS)) MADE[id] = () => codeSet(hallsSet(id), ...D.size, D.body, 2 / D.size[1]);
   MADE.wyrmMound = () => { const fr = moundSet(); return codeSet({ down: { idle: [fr[0]], walk: fr } }, ...MOUND.size, MOUND.body, 2 / MOUND.size[1]); };
   for (const [id, make] of Object.entries(MADE)) lazy(id, make);
   // the camp's and Steinborg's people (one still being drawn borrows the Elder's look)

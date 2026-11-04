@@ -272,18 +272,18 @@ export class Inventory {
   gearStats() {
     const w = ITEMS[this.gear.weapon], bow = w?.kind === 'bow', arrows = bow ? ITEMS[this.gear.ammo] : null;
     const dagger = w?.kind === 'dagger', lh = ITEMS[this.gear.shield], left = dagger && lh?.kind === 'dagger' ? { atk: lh.atk, wlv: lh.wlv, el: lh.el } : null; // a Phantom's second dagger
-    let def = 0, hit = 0, flee = 0, mhp = 0, msp = 0, mhpRate = 0, mspRate = 0, cardAtk = 0;
+    let def = 0, hit = 0, flee = 0, mhp = 0, msp = 0, mhpRate = 0, mspRate = 0, cardAtk = 0, gearMatk = 0;
     const stats = {}, perk = {}; // perk: cards' own effects (items.js card.perk), added up
     for (const id of Object.values(this.gear)) {
       if (!id) continue;
       const it = ITEMS[id];
-      if (it.slot !== 'weapon' && it.slot !== 'ammo') cardAtk += it.atk || 0; // (a left-hand dagger's ATK is its own: gear.left) // (ATK from a card in other gear: a head or wings card)
+      if (it.slot !== 'weapon' && it.slot !== 'ammo') { cardAtk += it.atk || 0; gearMatk += it.matk || 0; } // (and MATK % from other gear: the All-Seeing Eye, a Pharaoh Card in a headdress) // (a left-hand dagger's ATK is its own: gear.left) // (ATK from a card in other gear: a head or wings card)
       def += it.def || 0; hit += it.hit || 0; flee += it.flee || 0; mhp += it.mhp || 0; msp += it.msp || 0; mhpRate += it.mhpRate || 0; mspRate += it.mspRate || 0;
       for (const [k, v] of Object.entries(it.stats || {})) stats[k] = (stats[k] || 0) + v;
       for (const [k, v] of Object.entries(it.perk || {})) perk[k] = (perk[k] || 0) + v;
     }
     // with a bow, the arrows' ATK adds to its own and an elemental arrow sets the shot's element
-    return { atk: (w?.atk || 0) + (arrows?.atk || 0) + cardAtk, wlv: w?.wlv || 0, matk: w?.matk || 0, el: arrows?.el || w?.el, bow, dagger, left, def, hit, flee, mhp, msp, mhpRate, mspRate, stats, perk, mastery: 0, aspdRate: (this.wearing('aspd') ? 0.9 : 1) * (1 - (w?.aspd || 0) / 100) };
+    return { atk: (w?.atk || 0) + (arrows?.atk || 0) + cardAtk, wlv: w?.wlv || 0, matk: (w?.matk || 0) + gearMatk, el: arrows?.el || w?.el, bow, dagger, left, def, hit, flee, mhp, msp, mhpRate, mspRate, stats, perk, mastery: 0, aspdRate: (this.wearing('aspd') ? 0.9 : 1) * (1 - (w?.aspd || 0) / 100) };
   }
 
   // the chest is not the hero's: it is the shared storage, saved on its own (save.js)
