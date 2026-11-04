@@ -457,9 +457,9 @@ export const NPCS = {
     hello: 'Rytingborg\'s Keeper. Water, shade and a ledger: everything a traveller needs. Sign, and the oasis remembers you.',
     later: () => '', bye: 'Rytingborg remembers.', quests: [],
   },
-  // Master Kol trains the Assassins in the dark-domed hall by the north gate, and their Phantoms
+  // Master Kol trains the Assassins at the foot of the palace stairs, under the guild's blue banner, and their Phantoms
   kol: {
-    name: 'Master Kol', map: 'sand', x: 12.0, z: 25.4, dress: { body: 'blader', main: [270, 0.25, 0.45], accent: [40, 0.55, 1.05], hair: 'messy', dye: 'black' },
+    name: 'Master Kol', map: 'sand', x: 34.7, z: 19.4, dress: { body: 'blader', main: [270, 0.25, 0.45], accent: [40, 0.55, 1.05], hair: 'messy', dye: 'black' },
     trial: ['assassin_trial', 'assassin_trial2', 'assassin_trial3'], job: 'assassin',
     trial2: ['phantom_trial', 'phantom_trial2', 'phantom_trial3'], job2: 'phantom',
     trialHint: 'Trainees who have learnt all their basics can take the Assassin\'s Trial with me: Trainee Job Level 10 and Basic Training 9.',
