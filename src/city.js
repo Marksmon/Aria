@@ -950,8 +950,11 @@ const LAYOUTS = {
   city({ M, Y, rng, mesh, lam, house, stall, tower, fadeable, anims, P, addBox, addSolid, group, T, pennant, road, roadMat }) {
     // the roads: from the south and east gates into the square, up to the castle stairs, and west to the storehouse
     { const rm = roadMat('#d8c09a', '#8a6e54', '#b89a74'), f = CITY.fountain;
-      road(32, f.z + 5.5, 32, WALL.z1, 3.2, { mat: rm }); road(f.x + 5.5, 32, WALL.x1, 32, 3.2, { mat: rm });
-      road(32, CASTLE.z1 + 2.2, 32, f.z - 5.5, 3.2, { mat: rm }); road(WALL.x0 + 0.5, f.z, f.x - 7.6, f.z, 2.6, { mat: rm }); }
+      // (all four roads line up on the fountain, the east one still well inside its gateway; each runs
+      // in under the mosaic's edge, so no paving shows between them)
+      const ew = f.z, tuck = 5.1;
+      road(32, f.z + tuck, 32, WALL.z1, 3.2, { mat: rm }); road(f.x + tuck, ew, WALL.x1, ew, 3.2, { mat: rm });
+      road(32, CASTLE.z1 + 2.2, 32, f.z - tuck, 3.2, { mat: rm }); road(WALL.x0 + 0.5, ew, f.x - tuck, ew, 3.2, { mat: rm }); }
     const [, roofCrimson, roofBrown, roofDeep] = M.roofs;
     const brick = M.stone, ashlar = lam({ map: stoneTex(rng, '#e2c0a2', '#9a6a50') });
     const cone = (x, y, z, r, h, mat = M.towerRoof, seg = 12) => mesh(new THREE.ConeGeometry(r, h, seg), mat, x, y + h / 2, z);
