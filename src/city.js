@@ -531,26 +531,35 @@ export function buildCity(ctx, variant = 'city') {
     m.renderOrder = 0;
     roads.push(alongX ? [Math.min(x0, x1), z0 - w / 2, Math.max(x0, x1), z0 + w / 2] : [x0 - w / 2, Math.min(z0, z1), x0 + w / 2, Math.max(z0, z1)]);
   }
-  const roadMat = (base, joint, kerb, seam) => {
+  const roadMat = (base, joint, kerb, seam, square = false) => {
     const draw = (g, lit) => {
       g.fillStyle = lit ? '#000' : base; g.fillRect(0, 0, 64, 64);
       if (!lit) for (let row = 0; row < 4; row++) for (let i = 0; i < 3; i++) { // flags, each a little different
         const x = 8 + i * 16 - (row % 2) * 8, y = row * 16;
         g.fillStyle = vary(rng, base, 18); g.fillRect(x + 1, y + 1, 14, 14);
       }
+      if (square && !lit) for (let row = 0; row < 4; row++) for (const x of [-8, 56]) { g.fillStyle = vary(rng, base, 18); g.fillRect(x + 1, row * 16 + 1, 14, 14); } // (flags right to the edges)
       g.fillStyle = lit ? seam : joint; // the joints between the flags (lit, on a glowing road)
-      for (let row = 0; row <= 4; row++) g.fillRect(8, row * 16 - 1, 48, 2);
-      for (let row = 0; row < 4; row++) for (let i = 0; i <= 3; i++) g.fillRect(8 + i * 16 - (row % 2) * 8 - 1, row * 16, 2, 16);
+      const x0 = square ? 0 : 8, x1 = square ? 64 : 56;
+      for (let row = 0; row <= 4; row++) g.fillRect(x0, row * 16 - 1, x1 - x0, 2);
+      for (let row = 0; row < 4; row++) for (let i = square ? -1 : 0; i <= (square ? 4 : 3); i++) g.fillRect(8 + i * 16 - (row % 2) * 8 - 1, row * 16, 2, 16);
+      if (square) return; // a junction: no kerbs, so the roads run into it
       g.fillStyle = lit ? seam : kerb; if (lit) { g.fillRect(5, 0, 2, 64); g.fillRect(57, 0, 2, 64); } else { g.fillRect(0, 0, 7, 64); g.fillRect(57, 0, 7, 64); } // the kerbs (a line of light along each, on a glowing road)
       if (!lit) { g.fillStyle = 'rgba(0,0,0,.25)'; g.fillRect(7, 0, 2, 64); g.fillRect(55, 0, 2, 64); }
     };
     const map = canvasTex(64, 64, (g) => draw(g, false), true);
-    const opts = { map, polygonOffset: true, polygonOffsetFactor: -1.5, polygonOffsetUnits: -1.5 };
+    const opts = { map, polygonOffset: true, polygonOffsetFactor: square ? -1.8 : -1.5, polygonOffsetUnits: square ? -1.8 : -1.5 }; // (a junction square lies over the roads' ends)
     if (seam) Object.assign(opts, { emissive: '#a060ff', emissiveIntensity: 0.9, emissiveMap: canvasTex(64, 64, (g) => draw(g, true), true) });
     return lam(opts);
   };
+  // a junction where roads meet: a square of flags with no kerbs, w across, over the roads' ends
+  function junction(x, z, w, mat) {
+    const g = new THREE.PlaneGeometry(w, w); g.rotateX(-Math.PI / 2);
+    mesh(g, mat, x, Y + 0.036, z).renderOrder = 0;
+    roads.push([x - w / 2, z - w / 2, x + w / 2, z + w / 2]);
+  }
   const P = (type, x, z) => place(type, x, z, true);
-  const api = { road, roadMat, roads, M, Y, rng, mesh, lam, house, stall, tower, fadeable, spin, turn, anims, P, addBox, addSolid, group, T, ctx, pennant };
+  const api = { road, roadMat, roads, junction, M, Y, rng, mesh, lam, house, stall, tower, fadeable, spin, turn, anims, P, addBox, addSolid, group, T, ctx, pennant };
   const extra = LAYOUTS[variant](api);
 
   // ---------- minimap ----------
@@ -1156,14 +1165,19 @@ const LAYOUTS = {
   // up into the sky. Islands of rock float over the walls, waterfalls spilling off them; crystals
   // drift in the air, grow in great clusters along the streets and burn on stone pedestals for lamps.
   // The stargazer's dome wears a gold armillary sphere with a crystal in its heart.
-  magic({ M, Y, rng, mesh, lam, house, stall, tower, fadeable, spin, anims, P, addBox, addSolid, group, T, road, roadMat }) {
+  magic({ M, Y, rng, mesh, lam, house, stall, tower, fadeable, spin, anims, P, addBox, addSolid, group, T, road, roadMat, junction }) {
     // the roads: dark slabs with seams of spell-light; from the south gate to the rune circle, from the
     // north gate down past the Archmage's tower, his door's path, a lane across the north, and the
     // library-to-workshop lane through the circle
-    { const rm = roadMat('#8a7cb4', '#4a3e6e', '#a496cc', '#ffffff'), c = MAGIC.circle;
-      road(32, c.z + c.r, 32, WALL.z1, 3.2, { mat: rm }); road(36.5, WALL.z0 + 0.5, 36.5, 22.1, 3.2, { mat: rm });
-      road(28, 18.4, 28, 22.1, 2.6, { mat: rm }); road(26.7, 23.6, 38.1, 23.6, 3, { mat: rm }); road(32, 25.1, 32, c.z - c.r, 3, { mat: rm });
-      road(18.2, c.z, c.x - c.r, c.z, 2.8, { mat: rm }); road(c.x + c.r, c.z, 45.2, c.z, 2.8, { mat: rm }); }
+    { const rm = roadMat('#8a7cb4', '#4a3e6e', '#a496cc', '#ffffff'), jm = roadMat('#8a7cb4', '#4a3e6e', '#a496cc', '#ffffff', true), c = MAGIC.circle;
+      const W = 3, lane = 23.6, tuck = c.r * 0.8; // one width for every road; each runs in under the rune circle's edge
+      const door = 28, north = 36.5; // the Archmage's door and the north gate
+      road(32, c.z + tuck, 32, WALL.z1, W, { mat: rm }); // the south gate to the circle
+      road(18.2, c.z, c.x - tuck, c.z, W, { mat: rm }); road(c.x + tuck, c.z, 45.2, c.z, W, { mat: rm }); // the library, the circle, the workshop
+      road(32, lane + W / 2, 32, c.z - tuck, W, { mat: rm }); // the circle up to the lane
+      road(door - W / 2, lane, north + W / 2, lane, W, { mat: rm }); // the lane across the north, from the door's road to the gate's
+      road(door, 18.4, door, lane - W / 2, W, { mat: rm }); road(north, WALL.z0 + 0.5, north, lane - W / 2, W, { mat: rm });
+      for (const x of [door, 32, north]) junction(x, lane, W, jm); }
     const [roofPurple, roofTeal, roofIndigo, roofViolet] = M.roofs;
     const glow = (c, o = 1) => new THREE.MeshBasicMaterial({ color: c, transparent: o < 1, opacity: o, depthWrite: o >= 1 });
     const add = (c) => new THREE.MeshBasicMaterial({ color: c, transparent: true, opacity: 0.5, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide });
