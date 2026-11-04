@@ -1,9 +1,11 @@
 // Aria's walled cities (and Veidheim, the hunters' village behind its log palisade, below).
-// Steinborg, the market city: grey stone walls with towers and two gates,
-// timber houses with steep roofs round a fountain square, a forge, market stalls and the
-// seeress's tower. Galdrheim, the city of sorcerers: pale lavender stone, purple and teal roofs,
-// a glowing rune circle with a floating crystal, the Archmage's tower, a library and the
-// Staffwright's workshop. Ragnarok builds its towns in 3D under 2D sprites, so a city is real
+// Steinborg, the market city: red brick walls and towers under red cones flying pennants, a castle
+// on its terrace with grand stairs, a tiered fountain on a mosaic square, red-and-gold banners,
+// striped market awnings, cypresses and flower planters (after the owner's picture). Galdrheim, the
+// city of sorcerers: violet stone and lit windows, the Archmage's gothic tower with glowing halos
+// and a beam of light, floating islands with waterfalls, crystals growing, burning on pedestals and
+// drifting in the air, the rune circle, a library and the stargazer's armillary dome (after the
+// owner's picture). Ragnarok builds its towns in 3D under 2D sprites, so a city is real
 // meshes (lit by the same sun and sky, so it darkens at night) while its people stay sprites.
 // Painted canvas textures throughout. Buildings between the camera and the player fade, like the
 // tall trees. Each city shares the walls, houses and stalls; its layout is its own (LAYOUTS).
@@ -20,10 +22,12 @@ export const WALL = { x0: 9, x1: 55, z0: 9, z1: 55, t: 1.1, h: 2.8 };
 export const GATE = 2.5; // half the width of a gateway
 // where things stand (the people are in quests.js)
 export const CITY = {
-  fountain: { x: 32, z: 31, r: 2.3 },
+  fountain: { x: 32, z: 31, r: 2.95 },
   chest: { x: 22.6, z: 30.4 },
   stall: { x: 26.6, z: 25.4 },
 };
+// Steinborg's castle terrace at the back of the city (the stairs come down its front, at x 32)
+export const CASTLE = { x0: 24.6, z0: 9.6, x1: 40, z1: 17.4, h: 2.2 };
 export const HUNT = {
   well: { x: 32, z: 31, r: 1.3 },
   chest: { x: 21.8, z: 26.2 },
@@ -127,7 +131,7 @@ function plankTex(rng, base = '#8a5a33') {
   }, true);
 }
 // a house wall: plaster in a dark timber frame, with windows; front = a door in the middle
-function houseFace(rng, w, front, plaster = '#e8dcc0', timber = '#5a3a22', door = '#6b4426') {
+function houseFace(rng, w, front, plaster = '#e8dcc0', timber = '#5a3a22', door = '#6b4426', glass = null) {
   const W = Math.max(64, Math.round(w * 32)), H = 80;
   return canvasTex(W, H, (g) => {
     g.fillStyle = plaster; g.fillRect(0, 0, W, H);
@@ -140,8 +144,8 @@ function houseFace(rng, w, front, plaster = '#e8dcc0', timber = '#5a3a22', door 
     const cx = W / 2;
     const win = (x) => {
       g.fillStyle = timber; g.fillRect(x - 10, 18, 20, 22);
-      g.fillStyle = '#3e5a78'; g.fillRect(x - 7, 21, 14, 16);
-      g.fillStyle = '#9fc4e0'; g.fillRect(x - 7, 21, 6, 7);
+      g.fillStyle = glass ? glass[0] : '#3e5a78'; g.fillRect(x - 7, 21, 14, 16);
+      g.fillStyle = glass ? glass[1] : '#9fc4e0'; g.fillRect(x - 7, 21, 6, 7);
       g.fillStyle = timber; g.fillRect(x - 1, 21, 2, 16); g.fillRect(x - 7, 28, 14, 2);
     };
     if (front) {
@@ -168,6 +172,34 @@ function archFace(rng, w, front, plaster = '#e8d4a8', door = '#6b4426') {
       g.fillStyle = '#e3b341'; g.beginPath(); g.arc(cx + 5, 58, 2, 0, 7); g.fill();
       if (W > 110) { win(cx - W * 0.3); win(cx + W * 0.3); }
     } else for (let i = 0; i < n; i++) win((W / n) * (i + 0.5));
+  });
+}
+// a castle wall: rose-pale ashlar, tall pointed windows lit gold, maybe a great pointed door and a
+// rose window over it (o: { door, rose, lit })
+function gothFace(rng, w, h, o = {}) {
+  const W = Math.max(64, Math.round(w * 32)), H = Math.max(64, Math.round(h * 32));
+  return canvasTex(W, H, (g) => {
+    g.fillStyle = o.stone || '#e6c4a8'; g.fillRect(0, 0, W, H);
+    for (let y = 0; y < H; y += 8) { g.fillStyle = 'rgba(120,60,40,.18)'; g.fillRect(0, y, W, 1); for (let x = (y / 8) % 2 ? 0 : 8; x < W; x += 16) g.fillRect(x, y, 1, 8); }
+    for (let i = 0; i < W * H / 60; i++) { g.fillStyle = `rgba(90,40,20,${rng() * 0.08})`; g.fillRect(rng() * W, rng() * H, 2, 2); }
+    const arch = (x, y0, hw, y1, col) => { g.fillStyle = col; g.beginPath(); g.moveTo(x - hw, y1); g.lineTo(x - hw, y0 + hw); g.quadraticCurveTo(x - hw, y0, x, y0 - hw * 0.9); g.quadraticCurveTo(x + hw, y0, x + hw, y0 + hw); g.lineTo(x + hw, y1); g.fill(); };
+    const lit = o.lit === false ? '#4a3a4a' : '#f2c46a';
+    const n = Math.max(1, Math.round(w / 1.3)), cx = W / 2;
+    const win = (x, y0, y1) => { arch(x, y0, 7, y1, '#8a4a34'); arch(x, y0 + 2, 5, y1 - 2, lit); g.fillStyle = '#8a4a34'; g.fillRect(x - 0.5, y0, 1, y1 - y0); };
+    for (let i = 0; i < n; i++) {
+      const x = (W / n) * (i + 0.5);
+      if (o.door && Math.abs(x - cx) < 26) continue;
+      for (let y = 16; y + 26 < H - 6; y += 40) win(x, y, y + 24);
+    }
+    if (o.door) { arch(cx, H - 58, 18, H, '#8a4a34'); arch(cx, H - 54, 14, H, '#4a2418'); g.fillStyle = '#f0c850'; g.fillRect(cx - 0.5, H - 52, 1, 52); }
+    if (o.rose) {
+      const ry = o.door ? H - 82 : H * 0.4;
+      g.fillStyle = '#8a4a34'; g.beginPath(); g.arc(cx, ry, 15, 0, 7); g.fill();
+      g.fillStyle = lit; g.beginPath(); g.arc(cx, ry, 12, 0, 7); g.fill();
+      g.strokeStyle = '#8a4a34'; g.lineWidth = 1.5; for (let i = 0; i < 8; i++) { const a = (i / 8) * Math.PI * 2; g.beginPath(); g.moveTo(cx, ry); g.lineTo(cx + Math.cos(a) * 12, ry + Math.sin(a) * 12); g.stroke(); }
+      g.beginPath(); g.arc(cx, ry, 5, 0, 7); g.stroke();
+    }
+    g.fillStyle = 'rgba(90,40,20,.35)'; g.fillRect(0, 0, W, 3);
   });
 }
 // a palisade: upright logs, rounded with light and shade, bound by a rope
@@ -240,14 +272,23 @@ function gable(w, d, rh, over = 0.35) {
 // ---------- the cities ----------
 // each city's look: stone, paving, roofs, plaster, timber, the banner over its gates, tower roofs
 const THEMES = {
-  city: { stone: ['#9c958a', '#4e4840'], stoneDark: '#7f786e', cobble: ['#a39b8c', '#6a645a'],
-    roofs: ['#a8483a', '#4a6488', '#7a5232', '#5a5a66'], towerRoof: '#a8483a',
-    plaster: ['#e8dcc0', '#efe4cc', '#dccfb0', '#e6d6c2'], timber: '#5a3a22',
-    // a blue banner with the city's white tower
-    banner: (g) => { g.fillStyle = '#2f4f8a'; g.fillRect(0, 0, 32, 40); g.beginPath(); g.moveTo(0, 40); g.lineTo(16, 48); g.lineTo(32, 40); g.fill(); g.fillStyle = '#f2ead8'; g.fillRect(11, 12, 10, 20); g.fillRect(9, 9, 4, 4); g.fillRect(14, 9, 4, 4); g.fillRect(19, 9, 4, 4); } },
-  magic: { stone: ['#b4afc6', '#5a5470'], stoneDark: '#8a84a2', cobble: ['#aaa6be', '#6a6680'],
-    roofs: ['#5a3a7a', '#2f6f78', '#3d4a8a', '#7a4a8a'], towerRoof: '#5a3a7a',
-    plaster: ['#dcd6ea', '#d2dbe6', '#e4dcf0', '#cfd8e8'], timber: '#3a2e4a',
+  // Steinborg: warm red brick, red cone roofs flying pennants, red banners with a gold lily
+  city: { stone: ['#b8735a', '#5a3428'], stoneDark: '#9a5a44', cobble: ['#cdb18e', '#8a6e54'], pennants: true, wallBanners: true,
+    roofs: ['#b03a2e', '#c04a34', '#8a3428', '#a8483a'], towerRoof: '#b03a2e',
+    plaster: ['#ecd8bc', '#f0dcc4', '#e4ccae', '#eed6c0'], timber: '#6a3a26',
+    banner: (g) => {
+      g.fillStyle = '#b02a24'; g.fillRect(0, 0, 32, 40); g.beginPath(); g.moveTo(0, 40); g.lineTo(16, 48); g.lineTo(32, 40); g.fill();
+      g.strokeStyle = '#f0c850'; g.lineWidth = 1.5; g.strokeRect(2.5, 2.5, 27, 36);
+      g.fillStyle = '#f0c850'; // a lily: three petals over a band, two curls under it
+      g.beginPath(); g.moveTo(16, 7); g.quadraticCurveTo(21, 14, 16, 24); g.quadraticCurveTo(11, 14, 16, 7); g.fill();
+      for (const s of [-1, 1]) { g.beginPath(); g.moveTo(16, 22); g.quadraticCurveTo(16 + s * 11, 11, 16 + s * 9, 22); g.quadraticCurveTo(16 + s * 7, 18, 16, 24); g.fill(); }
+      g.fillRect(9, 23, 14, 3);
+      for (const s of [-1, 1]) { g.beginPath(); g.moveTo(16, 26); g.quadraticCurveTo(16 + s * 7, 27, 16 + s * 6, 33); g.quadraticCurveTo(16 + s * 3, 29, 16, 28); g.fill(); }
+    } },
+  // Galdrheim: violet stone, indigo roofs, windows lit with spell-light, crystals glowing everywhere
+  magic: { stone: ['#8a7cae', '#3e325e'], stoneDark: '#62568a', cobble: ['#7c709e', '#4a4070'], wallBanners: true,
+    roofs: ['#3e2c78', '#4a3a92', '#2e2462', '#5e3c96'], towerRoof: '#3e2c78',
+    plaster: ['#cfc4e8', '#c8bce4', '#d8ccf0', '#c4b8e0'], timber: '#2e2448', glass: ['#b070e8', '#f0d0ff'],
     // a violet banner with a gold eight-pointed star
     banner: (g) => {
       g.fillStyle = '#4a2f7a'; g.fillRect(0, 0, 32, 40); g.beginPath(); g.moveTo(0, 40); g.lineTo(16, 48); g.lineTo(32, 40); g.fill();
@@ -361,6 +402,19 @@ export function buildCity(ctx, variant = 'city') {
     ...side(x0, z0, z1, G.w).map((r) => ['z', ...r]),
     ...side(x1, z0, z1, G.e).map((r) => ['z', ...r]),
   ];
+  const wallBan = T.wallBanners ? lam({ map: canvasTex(32, 48, T.banner), transparent: true, alphaTest: 0.5 }) : null;
+  // a pennant on a thin pole, flapping (dir: which way it flies, +x or -x)
+  const penTex = canvasTex(64, 24, (g) => { g.fillStyle = '#c8302a'; g.beginPath(); g.moveTo(0, 0); g.lineTo(64, 8); g.lineTo(40, 12); g.lineTo(64, 16); g.lineTo(0, 24); g.fill(); g.fillStyle = '#f0c850'; g.fillRect(0, 0, 4, 24); });
+  const penMat = lam({ map: penTex, transparent: true, alphaTest: 0.5, side: THREE.DoubleSide });
+  const poleMat = lam({ color: '#3a2a22' });
+  function pennant(x, y, z, dir = 1, size = 1) {
+    const pole = mesh(new THREE.CylinderGeometry(0.035 * size, 0.035 * size, 1.1 * size, 5), poleMat, x, y + 0.55 * size, z);
+    const g = new THREE.PlaneGeometry(1.1 * size, 0.42 * size); g.translate(0.55 * size, 0, 0);
+    const flag = mesh(g, penMat, x, y + 0.88 * size, z);
+    flag.scale.x = dir;
+    anims.push((now) => { flag.rotation.y = Math.sin(now * 2.6 + x * 0.7 + z) * 0.35; });
+    return [pole, flag];
+  }
   const merlon = T.wood ? new THREE.ConeGeometry(0.2, 0.7, 5) : new THREE.BoxGeometry(0.55, 0.55, 0.55);
   for (const [axis, fixed, a, b] of runs) {
     const n = Math.ceil((b - a) / 6);
@@ -376,6 +430,12 @@ export function buildCity(ctx, variant = 'city') {
         const p = s + k;
         parts.push(mesh(merlon, M.stoneDark, axis === 'x' ? p : fixed + out, Y + h + (T.wood ? 0.35 : 0.27), axis === 'x' ? fixed + out : p));
       }
+      if (T.wallBanners && len > 3 && i % 2 === 0) { // a red banner hung down the inner face
+        const inn = fixed < 32 ? 1 : -1, bm = new THREE.Mesh(new THREE.PlaneGeometry(1.0, 1.6), wallBan);
+        bm.position.set(axis === 'x' ? mid : fixed + inn * (t / 2 + 0.03), Y + h - 0.95, axis === 'x' ? fixed + inn * (t / 2 + 0.03) : mid);
+        bm.rotation.y = axis === 'x' ? (inn > 0 ? 0 : Math.PI) : (inn > 0 ? Math.PI / 2 : -Math.PI / 2);
+        group.add(bm); parts.push(bm);
+      }
       addBox(cx - w / 2, cz - d / 2, cx + w / 2, cz + d / 2, 'wall');
       fadeable(parts, cx, cz, len / 2, h + 0.6);
     }
@@ -386,16 +446,21 @@ export function buildCity(ctx, variant = 'city') {
   if (G.n !== undefined) towers.push([G.n - GATE - 0.6, z0], [G.n + GATE + 0.6, z0]);
   if (G.e !== undefined) towers.push([x1, G.e - GATE - 0.6], [x1, G.e + GATE + 0.6]);
   if (G.w !== undefined) towers.push([x0, G.w - GATE - 0.6], [x0, G.w + GATE + 0.6]);
-  const orb = variant === 'magic' ? new THREE.MeshBasicMaterial({ color: '#9fe8ff' }) : null;
+  const orb = variant === 'magic' ? new THREE.MeshBasicMaterial({ color: '#d0a8ff' }) : null;
   for (const [tx, tz] of towers) {
     const r = 1.25, th = h + 1.5;
     // a watchtower of logs: square, a pyramid roof on four posts over the platform
     const body = T.wood ? mesh(boxUV(new THREE.BoxGeometry(r * 1.7, th, r * 1.7), r * 1.7, th, r * 1.7, 2), M.stone, tx, Y + th / 2, tz)
       : mesh(cylUV(new THREE.CylinderGeometry(r, r * 1.08, th, 14), r, th, 2), M.stone, tx, Y + th / 2, tz);
-    const roofGeo = T.wood ? new THREE.ConeGeometry(r * 1.45, 1.5, 4) : T.dome ? onion(r * 1.05, 1.9) : new THREE.ConeGeometry(r * 1.3, variant === 'magic' ? 2.6 : 1.8, 14);
+    const coneH = variant === 'magic' ? 2.6 : T.pennants ? 2.6 : 1.8;
+    const roofGeo = T.wood ? new THREE.ConeGeometry(r * 1.45, 1.5, 4) : T.dome ? onion(r * 1.05, 1.9) : new THREE.ConeGeometry(r * 1.3, coneH, 14);
     if (T.wood) roofGeo.rotateY(Math.PI / 4);
-    const roof = mesh(roofGeo, T.dome ? M.dome : M.towerRoof, tx, Y + th + (T.wood ? 1.55 : T.dome ? 0 : variant === 'magic' ? 1.3 : 0.9), tz);
+    const roof = mesh(roofGeo, T.dome ? M.dome : M.towerRoof, tx, Y + th + (T.wood ? 1.55 : T.dome ? 0 : coneH / 2), tz);
     const parts = [body, roof];
+    if (T.pennants) { // a ring of battlements under the cone, and a red pennant flying from its tip
+      parts.push(mesh(new THREE.CylinderGeometry(r * 1.12, r * 1.12, 0.3, 14), M.stoneDark, tx, Y + th - 0.1, tz));
+      parts.push(...pennant(tx, Y + th + coneH - 0.1, tz, 1));
+    }
     if (T.dome) parts.push(mesh(new THREE.ConeGeometry(0.1, 0.9, 6), M.gold, tx, Y + th + 2.3, tz)); // a gold spike on each dome
     if (T.wood) for (const [sx, sz] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) parts.push(mesh(new THREE.BoxGeometry(0.14, 0.85, 0.14), M.plankDark, tx + sx * r * 0.75, Y + th + 0.42, tz + sz * r * 0.75));
     if (orb) { const o = mesh(new THREE.OctahedronGeometry(0.28), orb, tx, Y + th + 3.2, tz); spin.push(o); parts.push(o); } // a crystal over each tower
@@ -418,9 +483,9 @@ export function buildCity(ctx, variant = 'city') {
   function house(x, z, w, d, opts = {}) {
     const wh = opts.h || 2.3, rh = opts.roof || 1.6;
     const plaster = opts.plaster || T.plaster[Math.floor(rng() * T.plaster.length)];
-    const front = lam({ map: houseFace(rng, w, true, plaster, T.timber) });
-    const sideM = lam({ map: houseFace(rng, d, false, plaster, T.timber) });
-    const back = lam({ map: houseFace(rng, w, false, plaster, T.timber) });
+    const front = lam({ map: houseFace(rng, w, true, plaster, T.timber, undefined, T.glass) });
+    const sideM = lam({ map: houseFace(rng, d, false, plaster, T.timber, undefined, T.glass) });
+    const back = lam({ map: houseFace(rng, w, false, plaster, T.timber, undefined, T.glass) });
     const body = mesh(new THREE.BoxGeometry(w, wh, d), [sideM, sideM, M.plankDark, M.plankDark, front, back], x, Y + wh / 2, z);
     const roofMat = opts.roofMat || M.roofs[Math.floor(rng() * M.roofs.length)];
     const roof = mesh(gable(w, d, rh), [lam({ map: houseFace(rng, d, false, plaster, T.timber) }), roofMat], x, Y + wh, z);
@@ -453,7 +518,7 @@ export function buildCity(ctx, variant = 'city') {
     return [body, roof, door];
   }
   const P = (type, x, z) => place(type, x, z, true);
-  const api = { M, Y, rng, mesh, lam, house, stall, tower, fadeable, spin, turn, anims, P, addBox, addSolid, group, T, ctx };
+  const api = { M, Y, rng, mesh, lam, house, stall, tower, fadeable, spin, turn, anims, P, addBox, addSolid, group, T, ctx, pennant };
   const extra = LAYOUTS[variant](api);
 
   // ---------- minimap ----------
@@ -842,82 +907,271 @@ const LAYOUTS = {
   },
 
   // ---------- Steinborg ----------
-  city({ M, Y, rng, mesh, lam, house, stall, tower, P, addSolid }) {
-    const [roofRed, roofBlue, roofBrown, roofSlate] = M.roofs;
-    // the Jarl's hall: long, tall, stone below, a dragon-ish ridge
-    house(32, 15.6, 11, 6, { h: 3.2, roof: 2.6, roofMat: roofSlate, plaster: '#d8ccb0', chimney: true });
+  // ---------- Steinborg (after the owner's picture) ----------
+  // Red brick walls and round towers under red cones flying pennants, red banners with a gold lily.
+  // At the back the castle on its terrace: a great hall with a rose window over its door, a tall
+  // keep, spires and turrets, and grand stairs down to the square; an arched aqueduct runs east from
+  // it. In the middle a tiered fountain on a ring of mosaic paving, planters of flowers round it,
+  // benches and banner poles; the market's stalls under red-and-cream awnings; cypresses.
+  city({ M, Y, rng, mesh, lam, house, stall, tower, fadeable, anims, P, addBox, addSolid, group, T, pennant }) {
+    const [, roofCrimson, roofBrown, roofDeep] = M.roofs;
+    const brick = M.stone, ashlar = lam({ map: stoneTex(rng, '#e2c0a2', '#9a6a50') });
+    const cone = (x, y, z, r, h, mat = M.towerRoof, seg = 12) => mesh(new THREE.ConeGeometry(r, h, seg), mat, x, y + h / 2, z);
+    const banMat = lam({ map: canvasTex(32, 48, T.banner), transparent: true, alphaTest: 0.5, side: THREE.DoubleSide });
+    const banner = (x, y, z, w = 1.0, hgt = 1.6, ry = 0) => { const b = mesh(new THREE.PlaneGeometry(w, hgt), banMat, x, y, z); b.rotation.y = ry; return b; };
+    // a round turret: a body, a ring of battlements, a red cone and its pennant
+    const turret = (x, z, r, hgt, y0, roofH = r * 2.6, pen = true) => {
+      const parts = [
+        mesh(cylUV(new THREE.CylinderGeometry(r, r * 1.05, hgt, 12), r, hgt, 1.5), ashlar, x, y0 + hgt / 2, z),
+        mesh(new THREE.CylinderGeometry(r * 1.15, r * 1.15, 0.28, 12), M.stoneDark, x, y0 + hgt, z),
+        cone(x, y0 + hgt + 0.1, z, r * 1.2, roofH),
+      ];
+      if (pen) parts.push(...pennant(x, y0 + hgt + roofH, z, x < 32 ? -1 : 1, 0.8));
+      return parts;
+    };
+
+    // ---------- the castle on its terrace ----------
+    const C = CASTLE, top = Y + C.h, cx = (C.x0 + C.x1) / 2;
+    {
+      const w = C.x1 - C.x0, d = C.z1 - C.z0, cz = (C.z0 + C.z1) / 2;
+      mesh(boxUV(new THREE.BoxGeometry(w, C.h, d), w, C.h, d, 2), brick, cx, Y + C.h / 2, cz);
+      addBox(C.x0, C.z0, C.x1, C.z1, 'wall');
+      for (let x = C.x0 + 0.4; x < C.x1; x += 1.1) if (Math.abs(x - cx) > 2.3) mesh(new THREE.BoxGeometry(0.5, 0.45, 0.4), M.stoneDark, x, top + 0.22, C.z1 - 0.2); // the terrace's battlements
+      for (const bx of [C.x0 + 1.6, cx - 4.4, cx + 4.4, C.x1 - 1.6]) banner(bx, Y + C.h - 0.95, C.z1 + 0.03, 0.9, 1.5);
+      // the grand stairs down to the square, with a low wall each side
+      const sw = 4.2, n = 8, run = 2.2;
+      for (let i = 0; i < n; i++) { const sh = (C.h * (n - i)) / n; mesh(boxUV(new THREE.BoxGeometry(sw, sh, run / n), sw, sh, run / n, 1.5), ashlar, cx, Y + sh / 2, C.z1 + (i + 0.5) * (run / n)); }
+      for (const sx of [-1, 1]) {
+        const side = new THREE.Shape(); side.moveTo(0, 0); side.lineTo(run, 0); side.lineTo(run, 0.6); side.lineTo(0, C.h + 0.6); side.closePath();
+        const g = new THREE.ExtrudeGeometry(side, { depth: 0.35, bevelEnabled: false }); g.rotateY(-Math.PI / 2);
+        mesh(g, M.stoneDark, cx + sx * (sw / 2 + 0.17) + 0.175, Y, C.z1);
+      }
+      addBox(cx - sw / 2 - 0.4, C.z1, cx + sw / 2 + 0.4, C.z1 + run);
+      // the great hall: a rose window over its door, its long sides lit, a steep red roof with a spire at each end
+      const hw = 11, hd = 3.6, hh = 3.4, hz = C.z1 - 2.6;
+      const face = (fw, fh, o) => lam({ map: gothFace(rng, fw, fh, o) });
+      mesh(new THREE.BoxGeometry(hw, hh, hd), [face(hd, hh, {}), face(hd, hh, {}), M.stoneDark, M.stoneDark, face(hw, hh, { door: true, rose: true }), face(hw, hh, {})], cx, top + hh / 2, hz);
+      mesh(gable(hw, hd, 2.0, 0.2), [face(hd, 2, { lit: false }), roofDeep], cx, top + hh, hz);
+      for (const sx of [-1, 1]) mesh(new THREE.ConeGeometry(0.22, 1.6, 6), M.towerRoof, cx + sx * (hw / 2 - 0.4), top + hh + 2.4, hz);
+      // the gatehouse at the stairs' head: a pointed arch between two turrets
+      mesh(new THREE.BoxGeometry(4.8, 0.9, 0.6), ashlar, cx, top + hh + 0.15, hz + hd / 2 + 0.25);
+      for (const sx of [-1, 1]) turret(cx + sx * 2.7, hz + hd / 2 + 0.3, 0.55, hh + 1.4, top, 1.6);
+      // the keep behind it: tall, a big rose window, a great spire, four corner spires
+      const kw = 5.2, kd = 3.4, kh = 7.2, kz = C.z0 + 2.4;
+      mesh(new THREE.BoxGeometry(kw, kh, kd), [face(kd, kh, {}), face(kd, kh, {}), M.stoneDark, M.stoneDark, face(kw, kh, { rose: true }), face(kw, kh, {})], cx, top + kh / 2, kz);
+      mesh(new THREE.BoxGeometry(kw + 0.4, 0.35, kd + 0.4), M.stoneDark, cx, top + kh, kz);
+      cone(cx, top + kh + 0.1, kz, 2.4, 5.2, M.towerRoof, 4).rotation.y = Math.PI / 4;
+      pennant(cx, top + kh + 5.1, kz, 1, 1.2);
+      for (const [sx, sz] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) turret(cx + sx * (kw / 2), kz + sz * (kd / 2), 0.5, kh + 0.6, top, 1.9, sz < 0);
+      // the great towers at the terrace's ends, and slim spires between
+      for (const sx of [-1, 1]) {
+        turret(cx + sx * 6.6, C.z0 + 2.2, 1.05, 6.2, top, 3.0);
+        turret(cx + sx * 4.4, C.z0 + 4.6, 0.6, 4.6, top, 2.2);
+        turret(cx + sx * 6.4, C.z1 - 1.0, 0.75, 3.6, top, 2.0);
+      }
+      // the aqueduct: arches marching east from the terrace to the city wall
+      const arches = canvasTex(128, 64, (g) => {
+        g.fillStyle = '#c8866a'; g.fillRect(0, 0, 128, 64);
+        g.fillStyle = 'rgba(90,40,20,.25)'; for (let y = 0; y < 64; y += 6) g.fillRect(0, y, 128, 1);
+        g.clearRect(0, 0, 0, 0);
+        for (let x = 0; x < 128; x += 32) { g.save(); g.globalCompositeOperation = 'destination-out'; g.beginPath(); g.moveTo(x + 5, 64); g.lineTo(x + 5, 30); g.arc(x + 16, 30, 11, Math.PI, 0); g.lineTo(x + 27, 64); g.fill(); g.restore(); }
+        g.fillStyle = '#9a5a44'; g.fillRect(0, 0, 128, 6);
+      });
+      arches.wrapS = THREE.RepeatWrapping;
+      const aw = WALL.x1 - C.x1 - 0.6, ag = new THREE.PlaneGeometry(aw, 4.4); arches.repeat.set(aw / 4, 1);
+      const am = lam({ map: arches, transparent: true, alphaTest: 0.5, side: THREE.DoubleSide });
+      mesh(ag, am, C.x1 + aw / 2, Y + 2.2, WALL.z0 + 1.3);
+      mesh(new THREE.BoxGeometry(aw, 0.3, 0.7), M.stoneDark, C.x1 + aw / 2, Y + 4.45, WALL.z0 + 1.3);
+      addBox(C.x1, WALL.z0 + 1.0, WALL.x1, WALL.z0 + 1.6);
+    }
+    // homes round the square (the Jarl's hall is the castle now)
     house(15, 14.8, 5, 5, { chimney: true });
-    house(21.8, 14.4, 5, 4.4);
+    house(21.4, 14.4, 4.6, 4.4, { roofMat: roofCrimson });
     house(43, 14.4, 5.4, 4.4);
     house(14.4, 24.6, 5, 6);
     house(14.4, 40.2, 5, 6, { chimney: true });
-    house(15.2, 49.4, 6, 5);
+    house(15.2, 49.4, 6, 5, { roofMat: roofCrimson });
     house(23.2, 49.8, 5, 4.4);
-    house(41.6, 49.8, 5, 4.4, { roofMat: roofBlue }); // the Watch house by the gate
+    house(41.6, 49.8, 5, 4.4, { roofMat: roofDeep }); // the Watch house by the gate
     house(49.2, 49.2, 5, 5);
-    house(49.4, 42, 5, 6);
+    house(49.4, 42, 5, 6, { roofMat: roofCrimson });
     // the forge: open-fronted, with a big chimney
-    house(46.6, 25.6, 6, 4.6, { roofMat: roofBrown, plaster: '#cfc2a8', chimney: true });
-    // the seeress's tower: round and tall, with a purple cone roof
-    tower(48.6, 15.6, 2.1, 5.2, M.roofPurple);
-    void roofRed;
+    house(46.6, 25.6, 6, 4.6, { roofMat: roofBrown, plaster: '#e0c8a8', chimney: true });
+    // the seeress's tower: round and tall, with a purple cone roof and a pennant
+    const st = tower(48.6, 15.6, 2.1, 5.2, M.roofPurple);
+    void st; pennant(48.6, Y + 5.2 + 3.0, 15.6, 1, 1);
 
-    // the fountain: an open stone ring with water inside
+    // ---------- the square: the tiered fountain on its mosaic ----------
     {
       const { x, z } = CITY.fountain;
-      const ring = new THREE.Shape();
-      ring.absarc(0, 0, 2.3, 0, Math.PI * 2, false);
-      const hole = new THREE.Path();
-      hole.absarc(0, 0, 1.9, 0, Math.PI * 2, true);
-      ring.holes.push(hole);
-      const rim = new THREE.ExtrudeGeometry(ring, { depth: 0.6, bevelEnabled: false, curveSegments: 24 });
-      rim.rotateX(-Math.PI / 2);
-      mesh(rim, M.stone, x, Y, z);
-      M.stone.map.repeat.set(1, 1);
-      const wat = new THREE.CircleGeometry(1.95, 24);
-      wat.rotateX(-Math.PI / 2);
-      mesh(wat, M.water, x, Y + 0.42, z);
-      mesh(cylUV(new THREE.CylinderGeometry(0.28, 0.4, 1.5, 10), 0.3, 1.5, 1), M.stoneDark, x, Y + 1.1, z);
-      mesh(new THREE.CylinderGeometry(0.8, 0.3, 0.3, 14), M.stone, x, Y + 1.85, z);
-      mesh(new THREE.SphereGeometry(0.22, 10, 8), M.water, x, Y + 2.08, z);
-      addSolid(x, z, CITY.fountain.r);
+      const mosaic = canvasTex(256, 256, (g) => {
+        g.translate(128, 128);
+        const ring = (r0, r1, a, b, n) => { for (let i = 0; i < n; i++) { g.fillStyle = i % 2 ? a : b; g.beginPath(); g.arc(0, 0, r1, (i / n) * Math.PI * 2, ((i + 1) / n) * Math.PI * 2); g.arc(0, 0, r0, ((i + 1) / n) * Math.PI * 2, (i / n) * Math.PI * 2, true); g.fill(); } };
+        ring(104, 127, '#c89a74', '#b07a5a', 48); ring(84, 104, '#e2c8a4', '#d4b48e', 36); ring(60, 84, '#c08060', '#d8a880', 28);
+        g.strokeStyle = '#e8c060'; g.lineWidth = 3; for (const r of [126, 104, 84, 60]) { g.beginPath(); g.arc(0, 0, r, 0, 7); g.stroke(); }
+        g.lineWidth = 2; for (let i = 0; i < 8; i++) { const a = (i / 8) * Math.PI * 2; g.beginPath(); g.moveTo(Math.cos(a) * 60, Math.sin(a) * 60); g.lineTo(Math.cos(a + 0.2) * 84, Math.sin(a + 0.2) * 84); g.lineTo(Math.cos(a) * 104, Math.sin(a) * 104); g.lineTo(Math.cos(a - 0.2) * 84, Math.sin(a - 0.2) * 84); g.closePath(); g.stroke(); }
+      });
+      const disc = new THREE.CircleGeometry(5.6, 48); disc.rotateX(-Math.PI / 2);
+      const u = disc.attributes.uv; void u;
+      mesh(disc, lam({ map: mosaic, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 }), x, Y + 0.04, z).renderOrder = 1;
+      // the steps round the basin, the basin, two bowls above it, a gold crown
+      const st8 = new THREE.CylinderGeometry(2.85, 2.95, 0.22, 8); st8.rotateY(Math.PI / 8);
+      mesh(st8, ashlar, x, Y + 0.11, z);
+      const ringGeo = (ro, ri, hgt) => { const sh = new THREE.Shape(); sh.absarc(0, 0, ro, 0, Math.PI * 2, false); const hole = new THREE.Path(); hole.absarc(0, 0, ri, 0, Math.PI * 2, true); sh.holes.push(hole); const g = new THREE.ExtrudeGeometry(sh, { depth: hgt, bevelEnabled: false, curveSegments: 28 }); g.rotateX(-Math.PI / 2); return g; };
+      mesh(ringGeo(2.4, 2.05, 0.62), ashlar, x, Y + 0.2, z);
+      const water = lam({ map: waterTex(), color: '#cdeeff' });
+      const pool = new THREE.CircleGeometry(2.08, 28); pool.rotateX(-Math.PI / 2); mesh(pool, water, x, Y + 0.62, z);
+      const gold = M.gold;
+      mesh(cylUV(new THREE.CylinderGeometry(0.32, 0.45, 1.3, 10), 0.4, 1.3, 1), ashlar, x, Y + 1.2, z);
+      mesh(new THREE.CylinderGeometry(1.35, 0.45, 0.4, 20), ashlar, x, Y + 1.95, z);
+      const p2 = new THREE.CircleGeometry(1.22, 20); p2.rotateX(-Math.PI / 2); mesh(p2, water, x, Y + 2.14, z);
+      mesh(cylUV(new THREE.CylinderGeometry(0.2, 0.28, 0.9, 10), 0.3, 0.9, 1), ashlar, x, Y + 2.55, z);
+      mesh(new THREE.CylinderGeometry(0.72, 0.25, 0.28, 16), gold, x, Y + 3.05, z);
+      mesh(new THREE.SphereGeometry(0.2, 10, 8), gold, x, Y + 3.35, z);
+      mesh(new THREE.ConeGeometry(0.1, 0.5, 8), gold, x, Y + 3.7, z);
+      // the water falling from each bowl, and a jet at the top
+      const fallTex = canvasTex(32, 64, (g) => { g.fillStyle = 'rgba(170,220,250,.55)'; g.fillRect(0, 0, 32, 64); g.fillStyle = 'rgba(255,255,255,.75)'; for (let i = 0; i < 22; i++) g.fillRect((i * 7) % 31, (i * 11) % 60, 1.5, 9); }, true);
+      const falls = [];
+      for (const [r, y0, hgt] of [[1.3, Y + 2.12, 1.5], [0.7, Y + 3.15, 1.0]]) {
+        const fm = new THREE.MeshBasicMaterial({ map: fallTex.clone(), transparent: true, depthWrite: false, side: THREE.DoubleSide });
+        fm.map.needsUpdate = true; fm.map.repeat.set(6, 1);
+        const f = mesh(new THREE.CylinderGeometry(r + 0.06, r + 0.22, hgt, 28, 1, true), fm, x, y0 - hgt / 2, z);
+        f.renderOrder = 2; falls.push(fm);
+      }
+      const jm = new THREE.MeshBasicMaterial({ color: '#e8f6ff', transparent: true, opacity: 0.6, depthWrite: false });
+      const jet = mesh(new THREE.ConeGeometry(0.12, 0.9, 8, 1, true), jm, x, Y + 4.1, z);
+      anims.push((now) => { for (const fm of falls) fm.map.offset.y = now * 1.6; jet.scale.y = 1 + Math.sin(now * 9) * 0.1; });
+      addSolid(x, z, 2.95);
     }
+    // flower planters, benches and banner poles round the square
+    const planter = (x, z, w = 1.7, d = 0.8) => {
+      const parts = [mesh(boxUV(new THREE.BoxGeometry(w, 0.6, d), w, 0.6, d, 1), ashlar, x, Y + 0.3, z), mesh(new THREE.BoxGeometry(w + 0.12, 0.08, d + 0.12), M.stoneDark, x, Y + 0.62, z)];
+      for (let i = 0; i < 7; i++) {
+        const c = ['#d83a3a', '#f4f0e8', '#e86aa0', '#d83a3a', '#f2c84a'][i % 5];
+        parts.push(mesh(new THREE.SphereGeometry(0.17 + rng() * 0.06, 6, 5), lam({ color: i % 3 ? '#4f7a32' : c }), x - w / 2 + 0.2 + (i / 6) * (w - 0.4), Y + 0.72 + rng() * 0.1, z + (rng() - 0.5) * (d - 0.3)));
+        parts.push(mesh(new THREE.SphereGeometry(0.11, 6, 5), lam({ color: c }), x - w / 2 + 0.3 + rng() * (w - 0.6), Y + 0.86, z + (rng() - 0.5) * (d - 0.3)));
+      }
+      addBox(x - w / 2, z - d / 2, x + w / 2, z + d / 2);
+      fadeable(parts, x, z, w / 2, 1);
+    };
+    for (const [x, z] of [[28.4, 35.4], [35.6, 35.4], [28.4, 26.6], [35.6, 26.6], [29.2, 20.6], [34.8, 20.6]]) planter(x, z);
+    const iron = lam({ color: '#2e2a2a' }), wood = M.plank;
+    const bench = (x, z) => {
+      const parts = [mesh(new THREE.BoxGeometry(1.5, 0.1, 0.45), wood, x, Y + 0.45, z), mesh(new THREE.BoxGeometry(1.5, 0.45, 0.08), wood, x, Y + 0.75, z - 0.22)];
+      for (const sx of [-1, 1]) parts.push(mesh(new THREE.BoxGeometry(0.08, 0.45, 0.5), iron, x + sx * 0.62, Y + 0.22, z));
+      addBox(x - 0.75, z - 0.25, x + 0.75, z + 0.25);
+      fadeable(parts, x, z, 0.8, 1);
+    };
+    bench(25.4, 31); bench(38.6, 31.6);
+    const bannerPole = (x, z) => {
+      const parts = [mesh(new THREE.CylinderGeometry(0.07, 0.09, 3.8, 6), iron, x, Y + 1.9, z), mesh(new THREE.BoxGeometry(1.1, 0.06, 0.06), M.gold, x, Y + 3.6, z), mesh(new THREE.SphereGeometry(0.11, 8, 6), M.gold, x, Y + 3.9, z)];
+      parts.push(banner(x, Y + 2.75, z + 0.06, 1.0, 1.6));
+      addSolid(x, z, 0.2);
+      fadeable(parts, x, z, 0.6, 4);
+    };
+    for (const [x, z] of [[24.6, 36.6], [39.4, 36.6], [26.4, 20.8], [37.6, 20.8], [29.6, 41.4], [34.4, 41.4]]) bannerPole(x, z);
 
-    stall(CITY.stall.x, CITY.stall.z, stripeTex('#c8463c', '#f2ead8'));
-    stall(37.6, 25.2, stripeTex('#3a6aa8', '#f2ead8'));
+    // ---------- the market under red-and-cream awnings ----------
+    const awn = stripeTex('#c8302a', '#f2e6d0');
+    stall(CITY.stall.x, CITY.stall.z, awn);
+    stall(37.6, 25.2, awn);
+    stall(21.8, 45.2, awn);
+    stall(42.2, 45.2, awn);
+    // fruit and wares on the counters
+    for (const [sx, sz] of [[CITY.stall.x, CITY.stall.z], [37.6, 25.2], [21.8, 45.2], [42.2, 45.2]]) for (let i = 0; i < 5; i++) mesh(new THREE.SphereGeometry(0.13, 6, 5), lam({ color: ['#e8a030', '#d83a3a', '#f2d24a', '#7ab03a', '#c86a30'][(i + Math.round(sx)) % 5] }), sx - 1.1 + i * 0.55, Y + 1.0, sz + (i % 2 ? 0.2 : -0.15));
+    // cypresses: tall dark spires of green
+    const cyp = lam({ color: '#2f5a2e' }), cypHi = lam({ color: '#3f7238' }), trunk = lam({ color: '#5a3e2a' });
+    const cypress = (x, z, hgt = 3.4) => {
+      const parts = [mesh(new THREE.CylinderGeometry(0.1, 0.13, 0.5, 6), trunk, x, Y + 0.25, z)];
+      for (let i = 0; i < 4; i++) { // tiers of foliage, narrowing to the tip, a lit side on each
+        const r = 0.62 - i * 0.12, ch = hgt * (0.5 - i * 0.06), cy = Y + 0.4 + i * hgt * 0.22 + ch / 2;
+        parts.push(mesh(new THREE.SphereGeometry(r, 9, 7), i % 2 ? cypHi : cyp, x, cy, z));
+        parts[parts.length - 1].scale.y = ch / (r * 1.4);
+      }
+      parts.push(mesh(new THREE.ConeGeometry(0.2, 0.8, 7), cypHi, x, Y + 0.4 + hgt * 0.9, z));
+      addSolid(x, z, 0.45);
+      fadeable(parts, x, z, 0.6, hgt + 0.5);
+    };
+    for (const [x, z, hgt] of [[26.2, 41.6, 3.6], [38.2, 41.4, 3.6], [18.4, 44.4, 3.2], [45.8, 44.6, 3.2], [24.4, 18.2, 3.8], [40.2, 18.6, 3.8], [19.6, 31.8, 3.0], [44.4, 38.6, 3.0], [19.6, 38.6, 3.0]]) cypress(x, z, hgt);
 
-    // lamps, barrels, crates, the anvil, trees and flowerbeds
-    for (const [x, z] of [[29.4, 38], [34.6, 38], [29.4, 45.5], [34.6, 45.5], [39.5, 29.2], [39.5, 34.8], [46.5, 34.8], [24.5, 34.8], [24.6, 20.2], [39.4, 20.2]]) P('lamp', x, z);
+    // lamps, barrels, crates, the anvil, the big trees by the walls, Ragna's herb garden
+    for (const [x, z] of [[29.4, 38], [34.6, 38], [29.4, 45.5], [34.6, 45.5], [39.5, 29.2], [39.5, 34.8], [46.5, 34.8], [24.5, 34.8], [24.6, 22.4], [39.4, 22.4]]) P('lamp', x, z);
     P('anvil', 44.6, 28.9); P('barrel', 49.6, 28.6); P('barrel', 50.4, 29.5); P('crate', 43.2, 28.6);
     P('crate', 21.2, 29.8); P('crate', 21.5, 31.1); P('barrel', 28.6, 24.4); P('crate', 39.6, 24.4); P('barrel', 35.6, 24.4);
-    P('barrel', 38.4, 52.2); P('crate', 19.4, 51.6);
-    for (const [x, z] of [[12.2, 32.4], [18.6, 44.6], [44.4, 44.6], [12.4, 19.6], [52.2, 35.6], [26.2, 41.2], [38.2, 41]]) P('tree_grove', x, z);
-    // Ragna's herb garden
+    P('barrel', 38.4, 52.2); P('crate', 19.4, 51.6); P('barrel', 23.8, 46.6); P('crate', 40.2, 46.6); P('barrel', 44, 46.4);
+    for (const [x, z] of [[12.2, 32.4], [12.4, 19.6], [52.2, 35.6]]) P('tree_grove', x, z);
     for (const [x, z] of [[18.4, 19.4], [19.6, 18.6], [20.8, 19.2], [18.8, 20.6], [21.6, 20.4]]) P(rng() < 0.5 ? 'flowers' : 'bush', x, z);
-    for (const [x, z] of [[28.2, 34.6], [35.8, 34.6], [28.2, 27.4], [35.8, 27.4], [30.4, 19.8], [33.6, 19.8], [44.6, 38.6], [19.6, 38.6]]) P('flowers', x, z);
-    return { minimap: (mg) => { mg.fillStyle = '#4f9cc0'; mg.beginPath(); mg.arc(CITY.fountain.x * 2, CITY.fountain.z * 2, 4, 0, Math.PI * 2); mg.fill(); } };
+    for (const [x, z] of [[44.6, 40.4], [19.6, 40.6]]) P('flowers', x, z);
+    void group;
+    return {
+      underlay: (mg) => { mg.fillStyle = '#9a5a44'; mg.fillRect(C.x0 * 2, C.z0 * 2, (C.x1 - C.x0) * 2, (C.z1 - C.z0) * 2); },
+      minimap: (mg) => { mg.fillStyle = '#4f9cc0'; mg.beginPath(); mg.arc(CITY.fountain.x * 2, CITY.fountain.z * 2, 4, 0, Math.PI * 2); mg.fill(); },
+    };
   },
 
-  // ---------- Galdrheim, the city of sorcerers ----------
-  magic({ M, Y, rng, mesh, lam, house, stall, tower, fadeable, spin, P, addBox, addSolid, group }) {
+  // ---------- Galdrheim, the city of sorcerers (after the owner's picture) ----------
+  // Violet stone under indigo roofs, every window lit with spell-light. The Archmage's tower rises in
+  // gothic tiers ringed with spires, glowing halos turning round its spire and a beam of light going
+  // up into the sky. Islands of rock float over the walls, waterfalls spilling off them; crystals
+  // drift in the air, grow in great clusters along the streets and burn on stone pedestals for lamps.
+  // The stargazer's dome wears a gold armillary sphere with a crystal in its heart.
+  magic({ M, Y, rng, mesh, lam, house, stall, tower, fadeable, spin, anims, P, addBox, addSolid, group, T }) {
     const [roofPurple, roofTeal, roofIndigo, roofViolet] = M.roofs;
-    const glow = (c) => new THREE.MeshBasicMaterial({ color: c });
-    const crystal = (x, y, z, s, c = '#9fe8ff') => { const m = mesh(new THREE.OctahedronGeometry(s), glow(c), x, y, z); m.scale.y = 1.6; spin.push(m); return m; };
+    const glow = (c, o = 1) => new THREE.MeshBasicMaterial({ color: c, transparent: o < 1, opacity: o, depthWrite: o >= 1 });
+    const add = (c) => new THREE.MeshBasicMaterial({ color: c, transparent: true, opacity: 0.5, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide });
+    const VIOLET = '#b070ff', LILAC = '#e0c0ff', DEEP = '#7a3ae0';
+    const crystal = (x, y, z, sz, c = VIOLET) => { const m = mesh(new THREE.OctahedronGeometry(sz), glow(c), x, y, z); m.scale.y = 1.6; spin.push(m); return m; };
+    // a shard: a six-sided prism with a pointed tip, glowing
+    const shardGeo = (r, hgt) => {
+      const pts = [new THREE.Vector2(0.001, 0), new THREE.Vector2(r, 0), new THREE.Vector2(r, hgt * 0.72), new THREE.Vector2(0.001, hgt)];
+      return new THREE.LatheGeometry(pts, 6);
+    };
+    const shardMats = [glow('#9a5cf0'), glow('#b880ff'), glow('#c8a0ff')];
+    const cluster = (x, z, size = 1, solid = true) => {
+      const parts = [];
+      for (let i = 0; i < 6; i++) {
+        const big = i === 0, r = (big ? 0.32 : 0.14 + rng() * 0.12) * size, hgt = (big ? 2.2 : 0.8 + rng() * 0.9) * size;
+        const a = (i / 6) * Math.PI * 2 + rng(), off = big ? 0 : (0.25 + rng() * 0.25) * size;
+        const m = mesh(shardGeo(r, hgt), shardMats[i % 3], x + Math.cos(a) * off, Y, z + Math.sin(a) * off);
+        m.rotation.set(big ? 0 : Math.sin(a) * 0.45, rng() * 3, big ? 0 : -Math.cos(a) * 0.45);
+        parts.push(m);
+      }
+      const halo = mesh(new THREE.SphereGeometry(0.9 * size, 12, 8), add('#8a4ae0'), x, Y + 0.9 * size, z); halo.scale.y = 1.4;
+      anims.push((now) => { halo.material.opacity = 0.18 + Math.sin(now * 2 + x) * 0.06; });
+      parts.push(halo);
+      if (solid) addSolid(x, z, 0.5 * size);
+      fadeable(parts.slice(0, -1), x, z, 0.6 * size, 2.4 * size);
+      return parts;
+    };
 
-    // the Archmage's tower: three tiers, a tall violet spire, a ring of crystals turning round it
+    // ---------- the Archmage's tower ----------
     {
       const tx = 28, tz = 15.2; // a little west of the middle, so the north gate's road runs past it
-      const tiers = [[3.0, 3.2], [2.3, 3.4], [1.7, 3.0]];
+      const stone = (r, hgt) => lam({ map: gothFace(rng, Math.PI * 2 * r, hgt, { stone: '#a898c8', lit: true }) });
+      const tiers = [[3.0, 3.4], [2.3, 3.4], [1.7, 3.2], [1.1, 2.4]];
       let y = Y;
       const parts = [];
-      for (const [r, th] of tiers) {
-        parts.push(mesh(cylUV(new THREE.CylinderGeometry(r, r * 1.06, th, 18), r, th, 2), M.stone, tx, y + th / 2, tz));
+      const spire = (x, y0, z, r, hgt) => { parts.push(mesh(cylUV(new THREE.CylinderGeometry(r, r, hgt * 0.45, 8), r, hgt * 0.45, 1), M.stoneDark, x, y0 + hgt * 0.22, z), mesh(new THREE.ConeGeometry(r * 1.3, hgt * 0.6, 8), roofViolet, x, y0 + hgt * 0.45 + hgt * 0.3, z)); };
+      for (const [i, [r, th]] of tiers.entries()) {
+        parts.push(mesh(new THREE.CylinderGeometry(r, r * 1.06, th, 18), stone(r, th), tx, y + th / 2, tz));
         parts.push(mesh(new THREE.CylinderGeometry(r + 0.25, r + 0.25, 0.3, 18), M.stoneDark, tx, y + th, tz)); // a ledge at each tier
+        if (i < 3) for (let k = 0; k < 8; k++) { const a = (k / 8) * Math.PI * 2 + i * 0.4; spire(tx + Math.cos(a) * (r + 0.05), y + th, tz + Math.sin(a) * (r + 0.05), 0.16 + (2 - i) * 0.04, 1.4 - i * 0.2); }
         y += th;
       }
-      parts.push(mesh(new THREE.ConeGeometry(2.3, 4.6, 18), roofViolet, tx, y + 2.3, tz));
-      for (let i = 0; i < 6; i++) { const a = (i / 6) * Math.PI * 2; parts.push(crystal(tx + Math.cos(a) * 2.6, y - 1.2, tz + Math.sin(a) * 2.6, 0.22)); }
-      parts.push(crystal(tx, y + 5.2, tz, 0.4, '#e0c8ff'));
+      parts.push(mesh(new THREE.ConeGeometry(1.4, 5.2, 12), roofViolet, tx, y + 2.6, tz));
+      for (let i = 0; i < 6; i++) { const a = (i / 6) * Math.PI * 2; parts.push(crystal(tx + Math.cos(a) * 2.6, y - 3.4, tz + Math.sin(a) * 2.6, 0.22, LILAC)); }
+      const peak = y + 6.4;
+      parts.push(crystal(tx, peak, tz, 0.6, LILAC));
+      // the halos turning round the spire, and the beam of light
+      for (const [k, [r, hy, tilt]] of [[3.2, y - 1.2, 0.2], [2.4, y + 1.8, -0.3], [1.7, peak, 0.1], [4.2, y - 4.6, -0.12]].entries()) {
+        const ring = mesh(new THREE.TorusGeometry(r, 0.06, 6, 48), add(k % 2 ? LILAC : VIOLET), tx, hy, tz);
+        ring.rotation.x = Math.PI / 2 + tilt;
+        anims.push((now) => { ring.rotation.z = now * (0.4 + k * 0.15) * (k % 2 ? -1 : 1); });
+        parts.push(ring);
+      }
+      const beam = mesh(new THREE.CylinderGeometry(0.35, 0.6, 40, 16, 1, true), add('#c890ff'), tx, peak + 20, tz);
+      beam.material.opacity = 0.22;
+      anims.push((now) => { beam.material.opacity = 0.16 + Math.sin(now * 1.3) * 0.06; });
       const doorTex = canvasTex(40, 56, (g) => { g.fillStyle = '#2a2236'; g.beginPath(); g.roundRect(2, 4, 36, 52, [18, 18, 0, 0]); g.fill(); g.fillStyle = '#4a2f7a'; g.beginPath(); g.roundRect(6, 8, 28, 48, [14, 14, 0, 0]); g.fill(); g.fillStyle = '#f0c850'; g.beginPath(); g.arc(20, 22, 4, 0, 7); g.fill(); });
       const door = new THREE.Mesh(new THREE.PlaneGeometry(1.4, 2), lam({ map: doorTex, transparent: true, alphaTest: 0.5 }));
       door.position.set(tx, Y + 1, tz + 3.08);
@@ -927,40 +1181,41 @@ const LAYOUTS = {
       fadeable(parts, tx, tz, 3, y + 5);
     }
     // the library: a long hall in the west
-    house(15.2, 29.6, 6, 11, { h: 3.2, roof: 2.2, roofMat: roofIndigo, plaster: '#d8d2e6' });
+    house(15.2, 29.6, 6, 11, { h: 3.2, roof: 2.2, roofMat: roofIndigo, plaster: '#c8bce4' });
     // the Staffwright's workshop in the east, with its chimney
-    house(48.2, 29.8, 6, 5, { roofMat: roofTeal, plaster: '#d2dbe6', chimney: true });
-    // homes
-    house(15, 15.2, 5, 5, { roofMat: roofPurple });
-    house(22.4, 14.6, 5, 4.4);
-    house(42, 14.6, 5, 4.4);
-    house(49, 15.4, 5, 5, { roofMat: roofTeal });
-    house(14.6, 44.6, 5, 5.6, { chimney: true });
-    house(15.4, 51.2, 6, 4.2);
-    house(23.4, 50.6, 5, 4.2, { roofMat: roofPurple });
-    house(41.4, 50.6, 5, 4.2);
-    house(50, 40.6, 5, 5.4, { roofMat: roofIndigo });
-    // the stargazer's observatory: a small round tower with a dome
+    house(48.2, 29.8, 6, 5, { roofMat: roofTeal, plaster: '#c4b8e0', chimney: true });
+    // homes, a little spire of violet on some of them
+    for (const [x, z, w, d, o] of [[15, 15.2, 5, 5, { roofMat: roofPurple }], [22.4, 14.6, 5, 4.4, {}], [42, 14.6, 5, 4.4, {}], [49, 15.4, 5, 5, { roofMat: roofTeal }],
+      [14.6, 44.6, 5, 5.6, { chimney: true }], [15.4, 51.2, 6, 4.2, {}], [23.4, 50.6, 5, 4.2, { roofMat: roofPurple }], [41.4, 50.6, 5, 4.2, {}], [50, 40.6, 5, 5.4, { roofMat: roofIndigo }]]) {
+      house(x, z, w, d, o);
+      if (!o.chimney) { const sp = mesh(new THREE.ConeGeometry(0.28, 1.4, 6), roofViolet, x - w * 0.3, Y + 2.3 + 1.3, z); const c = mesh(new THREE.OctahedronGeometry(0.12), glow(LILAC), x - w * 0.3, Y + 2.3 + 2.15, z); fadeable([sp, c], x, z, Math.max(w, d) / 2, 4.6); }
+    }
+    // the stargazer's observatory: a round tower under a glass dome, a gold armillary sphere over it
     {
-      const [body, roof] = tower(48.6, 49.4, 1.8, 3.8, roofPurple, '#2f6f78', '#9fe8ff');
+      const ox = 48.6, oz = 49.4;
+      const [body, roof] = tower(ox, oz, 1.8, 3.8, roofPurple, '#2f6f78', '#9fe8ff');
+      void body;
       roof.geometry.dispose();
       roof.geometry = new THREE.SphereGeometry(1.9, 16, 10, 0, Math.PI * 2, 0, Math.PI / 2);
+      roof.material = roof.userData.solid = lam({ color: '#3a2a6a', emissive: '#2a1450' });
       roof.position.y = Y + 3.8;
-      void body;
+      const rings = [];
+      for (const [k, rr] of [2.3, 2.0, 1.7].entries()) { const ring = mesh(new THREE.TorusGeometry(rr, 0.07, 6, 40), M.gold, ox, Y + 5.6, oz); ring.rotation.set(k * 0.9, k * 0.6, 0); rings.push(ring); }
+      const heart = crystal(ox, Y + 5.6, oz, 0.5, LILAC);
+      fadeable([...rings, heart], ox, oz, 2.3, 7);
+      anims.push((now) => { rings.forEach((r, k) => { r.rotation.y = now * (0.3 + k * 0.2); r.rotation.x = k * 0.9 + now * 0.1 * (k - 1); }); });
     }
 
-    // the rune circle: a glowing ring of runes on the paving, a plinth and a floating crystal
+    // the rune circle: a glowing ring of runes on the paving, a plinth, a floating crystal and its halo
     {
       const { x, z, r } = MAGIC.circle;
       const runes = canvasTex(256, 256, (g) => {
         g.translate(128, 128);
-        g.strokeStyle = '#9fe8ff'; g.lineWidth = 6; g.beginPath(); g.arc(0, 0, 118, 0, 7); g.stroke();
+        g.strokeStyle = '#c890ff'; g.lineWidth = 6; g.beginPath(); g.arc(0, 0, 118, 0, 7); g.stroke();
         g.lineWidth = 3; g.beginPath(); g.arc(0, 0, 92, 0, 7); g.stroke();
-        g.fillStyle = '#c8b8ff';
-        for (let i = 0; i < 16; i++) { // rune marks between the rings
-          g.save(); g.rotate((i / 16) * Math.PI * 2); g.fillRect(-3, -112, 6, 16); g.fillRect(-8, -106, 16, 4); if (i % 2) g.fillRect(2, -100, 4, 8); g.restore();
-        }
-        g.strokeStyle = '#9fe8ff'; g.lineWidth = 3; g.beginPath(); // a star inside
+        g.fillStyle = '#e8d0ff';
+        for (let i = 0; i < 16; i++) { g.save(); g.rotate((i / 16) * Math.PI * 2); g.fillRect(-3, -112, 6, 16); g.fillRect(-8, -106, 16, 4); if (i % 2) g.fillRect(2, -100, 4, 8); g.restore(); }
+        g.strokeStyle = '#c890ff'; g.lineWidth = 3; g.beginPath();
         for (let i = 0; i <= 8; i++) { const a = (i * 3 / 8) * Math.PI * 2; g.lineTo(Math.sin(a) * 88, -Math.cos(a) * 88); }
         g.stroke();
       });
@@ -969,39 +1224,67 @@ const LAYOUTS = {
       const m = mesh(disc, new THREE.MeshBasicMaterial({ map: runes, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2 }), x, Y + 0.05, z);
       m.renderOrder = 1;
       mesh(cylUV(new THREE.CylinderGeometry(0.5, 0.65, 1.1, 12), 0.5, 1.1, 1), M.stoneDark, x, Y + 0.55, z);
-      crystal(x, Y + 2.1, z, 0.45);
+      crystal(x, Y + 2.1, z, 0.45, LILAC);
+      const ring = mesh(new THREE.TorusGeometry(1.0, 0.05, 6, 40), add(VIOLET), x, Y + 2.1, z);
+      anims.push((now) => { ring.rotation.x = Math.PI / 2 + Math.sin(now) * 0.3; ring.rotation.y = now * 0.8; });
       addSolid(x, z, 0.8);
     }
 
     // the curio stall by the circle, and a scroll seller's
-    stall(MAGIC.stall.x, MAGIC.stall.z, stripeTex('#5a3a7a', '#e4dcf0'));
-    stall(38.4, 26.2, stripeTex('#2f6f78', '#e4dcf0'));
+    stall(MAGIC.stall.x, MAGIC.stall.z, stripeTex('#4a2f8a', '#e4dcf0'));
+    stall(38.4, 26.2, stripeTex('#6a3ab0', '#e4dcf0'));
 
     // the runestones: standing stones carved with glowing runes
-    const stoneMat = lam({ map: canvasTex(32, 96, (g) => { g.fillStyle = '#7d7890'; g.fillRect(0, 0, 32, 96); g.fillStyle = '#9fe8ff'; for (let i = 0; i < 6; i++) { g.fillRect(12, 10 + i * 14, 8, 3); g.fillRect(14, 8 + i * 14, 3, 9); } }) });
+    const stoneMat = lam({ map: canvasTex(32, 96, (g) => { g.fillStyle = '#6e6290'; g.fillRect(0, 0, 32, 96); g.fillStyle = '#d0a0ff'; for (let i = 0; i < 6; i++) { g.fillRect(12, 10 + i * 14, 8, 3); g.fillRect(14, 8 + i * 14, 3, 9); } }), emissive: '#2a1048' });
     for (const [x, z, hgt] of [[38.6, 42.4, 2.2], [41.2, 44.2, 2.6], [43.6, 42.6, 2.0]]) {
       const st = mesh(new THREE.BoxGeometry(0.7, hgt, 0.45), stoneMat, x, Y + hgt / 2, z);
       addBox(x - 0.35, z - 0.25, x + 0.35, z + 0.25);
       fadeable([st], x, z, 0.4, hgt);
     }
-    // crystal clusters along the streets
-    for (const [x, z, c] of [[26.4, 38.4, '#9fe8ff'], [37.6, 38.4, '#c8a0ff'], [22.6, 22.2, '#c8a0ff'], [41.6, 22.2, '#9fe8ff'], [26.4, 46.4, '#9fe8ff'], [37.6, 46.4, '#c8a0ff']]) {
-      const base = mesh(new THREE.CylinderGeometry(0.35, 0.45, 0.4, 8), M.stoneDark, x, Y + 0.2, z);
-      const c1 = mesh(new THREE.OctahedronGeometry(0.3), glow(c), x, Y + 0.75, z);
-      c1.scale.y = 2;
-      const c2 = mesh(new THREE.OctahedronGeometry(0.18), glow(c), x + 0.22, Y + 0.55, z + 0.1);
-      c2.scale.y = 2; c2.rotation.z = 0.4;
-      addSolid(x, z, 0.4);
-      fadeable([base, c1, c2], x, z, 0.4, 1.2);
+    // great crystal clusters along the streets and by the walls
+    for (const [x, z, sz] of [[26.4, 38.4, 1], [37.6, 38.4, 1], [22.6, 22.2, 1.1], [41.6, 22.2, 1.1], [26.4, 46.4, 0.9], [37.6, 46.4, 0.9], [11.6, 11.6, 1.5], [52.4, 11.6, 1.5], [11.8, 37.4, 1.2], [52.4, 46.6, 1.3], [31.4, 11.4, 1.3]]) cluster(x, z, sz);
+    // crystal pedestals for lamps: a stone post, a gold cup, a crystal burning in it
+    const pedestal = (x, z) => {
+      const parts = [mesh(boxUV(new THREE.BoxGeometry(0.5, 1.3, 0.5), 0.5, 1.3, 0.5, 1), M.stone, x, Y + 0.65, z), mesh(new THREE.BoxGeometry(0.66, 0.14, 0.66), M.stoneDark, x, Y + 1.36, z), mesh(new THREE.CylinderGeometry(0.28, 0.16, 0.2, 8), M.gold, x, Y + 1.5, z)];
+      parts.push(crystal(x, Y + 1.95, z, 0.2, VIOLET));
+      const h = mesh(new THREE.SphereGeometry(0.45, 10, 8), add('#a060ff'), x, Y + 1.95, z); h.material.opacity = 0.25; parts.push(h);
+      addSolid(x, z, 0.3);
+      fadeable(parts.slice(0, 3), x, z, 0.4, 2.2);
+    };
+    for (const [x, z] of [[29.2, 40], [34.8, 40], [29.2, 47.5], [34.8, 47.5], [24.2, 30.4], [39.8, 30.4], [24.4, 20.2], [39.6, 20.2]]) pedestal(x, z);
+    // crystals drifting in the air over the city
+    for (const [x, y, z, sz] of [[5, 6.5, 20, 0.5], [59, 7, 28, 0.55], [5, 7.5, 42, 0.5], [59, 6.5, 50, 0.45], [24, 7.5, 4, 0.6], [48, 8, 3, 0.55], [33, 9, 1, 0.7], [14, 6, 3, 0.45]]) { // (over the walls and beyond: never between the camera and the hero)
+      crystal(x, y, z, sz, LILAC);
+      const h = mesh(new THREE.SphereGeometry(sz * 2.2, 12, 8), add('#9a5cf0'), x, y, z); h.material.opacity = 0.2;
+      const y0 = y; anims.push((now) => { h.position.y = y0 + Math.sin(now * 1.6 + x) * 0.12; });
     }
-    // lamps, birches, flowerbeds, the herb pots by the library
-    for (const [x, z] of [[29.2, 40], [34.8, 40], [29.2, 47.5], [34.8, 47.5], [24.2, 30.4], [39.8, 30.4], [24.4, 20.2], [39.6, 20.2]]) P('lamp', x, z);
-    for (const [x, z] of [[12.2, 37.6], [52.2, 22.6], [19.8, 37.8], [44.2, 37.6], [52.4, 34.8], [19.8, 21.4]]) P('tree_birch', x, z);
+    // islands of rock floating over the walls, a little tower on each and a waterfall spilling off
+    const fallTex = canvasTex(32, 128, (g) => {
+      const gr = g.createLinearGradient(0, 0, 0, 128); gr.addColorStop(0, 'rgba(200,170,255,.85)'); gr.addColorStop(1, 'rgba(200,170,255,0)');
+      g.fillStyle = gr; g.fillRect(0, 0, 32, 128);
+      g.fillStyle = 'rgba(255,255,255,.5)'; for (let i = 0; i < 16; i++) g.fillRect((i * 7) % 30, (i * 17) % 110, 2, 14);
+    });
+    fallTex.wrapT = THREE.RepeatWrapping;
+    const rock = lam({ map: stoneTex(rng, '#6a5a8a', '#3a2e52') }), turf = lam({ color: '#4a5a7a' });
+    for (const [x, y, z, r] of [[15, 6.8, 11.5, 2.0], [50, 7.2, 11.5, 2.2], [40.5, 8.4, 10.5, 1.7], [7, 6.5, 30, 2.0], [57, 6.5, 38, 2.1]]) { // (over the north houses and the side walls: north of the hero, so in sight and never in the way)
+      const isle = new THREE.Group(); isle.position.set(x, y, z); group.add(isle);
+      const put = (geo, mat, px, py, pz) => { const m = new THREE.Mesh(geo, mat); m.position.set(px, py, pz); isle.add(m); return m; };
+      put(new THREE.ConeGeometry(r, r * 1.3, 9), rock, 0, -r * 0.65, 0).rotation.x = Math.PI;
+      put(new THREE.CylinderGeometry(r * 1.02, r, 0.4, 12), turf, 0, 0.2, 0);
+      put(new THREE.CylinderGeometry(r * 0.32, r * 0.36, r * 0.9, 10), M.stone, -r * 0.2, 0.4 + r * 0.45, 0);
+      put(new THREE.ConeGeometry(r * 0.42, r * 0.9, 10), roofViolet, -r * 0.2, 0.4 + r * 0.9 + r * 0.45, 0);
+      const c = put(new THREE.OctahedronGeometry(r * 0.12), glow(LILAC), -r * 0.2, 0.4 + r * 1.95, 0); c.scale.y = 1.6;
+      const fm = new THREE.MeshBasicMaterial({ map: fallTex.clone(), transparent: true, depthWrite: false, side: THREE.DoubleSide }); fm.map.needsUpdate = true;
+      const fall = put(new THREE.PlaneGeometry(r * 0.35, 9), fm, r * 0.55, -4.3, r * 0.8); fall.rotation.y = -0.6;
+      anims.push((now) => { isle.position.y = y + Math.sin(now * 0.6 + x) * 0.25; fm.map.offset.y = now * 0.9; c.rotation.y = now; });
+    }
+    // trees, flowerbeds, barrels by the workshop
+    for (const [x, z] of [[19.8, 37.8], [44.2, 37.6], [52.4, 34.8], [19.8, 21.4]]) P('tree_birch', x, z);
     for (const [x, z] of [[28.6, 29.6], [35.4, 29.6], [28.6, 36.4], [35.4, 36.4], [26.4, 21.4], [29.6, 21.4]]) P('flowers', x, z); // the last two frame the Archmage's door
     P('barrel', 44.6, 33.4); P('crate', 45.6, 33.6); P('anvil', 51.6, 33.2); P('crate', 19.2, 23.2); P('barrel', 18.6, 36.2);
-    void rng; void addBox;
+    void addBox;
     return {
-      minimap: (mg) => { mg.fillStyle = '#9fe8ff'; mg.beginPath(); mg.arc(MAGIC.circle.x * 2, MAGIC.circle.z * 2, 5, 0, Math.PI * 2); mg.fill(); },
+      minimap: (mg) => { mg.fillStyle = '#c890ff'; mg.beginPath(); mg.arc(MAGIC.circle.x * 2, MAGIC.circle.z * 2, 5, 0, Math.PI * 2); mg.fill(); },
     };
   },
 };
