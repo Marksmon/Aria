@@ -5,7 +5,7 @@
 // the Great Stags that graze on the tree's leaves, antlers glowing at the tips; Dryads, spirits of the
 // wood with leaves for hair; the Root Wardens, knights of living wood with shield and greatsword; the
 // Thorn Drakes, Nidhogg's brood; and Nidhogg itself, the black dragon that gnaws the World Tree's roots
-// (k: its size); and the Root Serpents, grown from the roots. The Rot Beetles are the beetles in new colours.
+// (k: its size); the Root Serpents, grown from the roots; and the Rot Beetles, fungus growing on their backs.
 // Frames: 4 directions (down, up, right; left is right mirrored) x idle (1), walk (4) and attack (4).
 import { Frame, ellipse, rect, poly, line, both, dark, light } from './painted.js';
 
@@ -17,6 +17,8 @@ export const ROOTS = {
   // Ratatoskr's). They and Ratatoskr are a Bloop's size (the owner's call)
   // the Root Serpents: serpents grown from the World Tree's roots (their own design now, the owner's call)
   rootSerpent: { kind: 'serpent', size: [52, 50], body: [28, 38], bark: '#7a5636', ridge: '#4a321e', belly: '#c8a878', moss: '#5a8a3a', leaf: '#7ab84a', horn: '#a88058', eye: '#b8ff7a', fang: '#f2ead0', venom: '#9aff6a' },
+  // the Rot Beetles: a design of their own (the owner's call): beetles of rotting wood, fungus on their backs
+  rotBeetle: { kind: 'rotbeetle', size: [60, 50], body: [40, 32], shell: '#4a3a2e', crack: '#2a1e16', rot: '#6a4a6a', cap: '#8a4ab8', capHi: '#c890ff', gill: '#e8d8f0', leg: '#241a1a', eye: '#d89aff', jaw: '#3a2a24', venom: '#9aff6a', spore: '#e0b0ff' },
   rootSquirrel: { kind: 'ratatoskr', kin: true, size: [72, 72], body: [36, 58], fur: '#c06a32', face: '#ecb478', tail: '#c8702c', tailHi: '#f0a040', rune: '#ffc870', armor: '#6a4a2e', trim: '#a8804a', cloak: '#4f8a3c', eye: '#1a0c08', claw: '#efe2cc' },
   bramble: { kind: 'bramble', size: [52, 48], body: [30, 34], leaf: '#2f5a26', vine: '#4a6a2a', thorn: '#e8dab0', berry: '#c8283a', glow: '#ff9a7a', eye: '#ffd23a', root: '#5e4028' },
   darkElf: { kind: 'elf', size: [48, 64], body: [22, 58], skin: '#8a96b8', hair: '#e6e4f2', armor: '#1e1a28', cloak: '#3a2458', sash: '#5a2a7a', trim: '#c8ccd8', rune: '#c89aff', bow: '#1a141c', string: '#a88ad8', eye: '#f4d4ff' },
@@ -52,7 +54,7 @@ export function rootsFrame(id, dir, anim, f) {
   const P = ROOTS[id], [W, H] = P.size;
   const F = new Frame(W, H);
   const a = { G: H - 3, W, H, walk: anim === 'walk', f, step: anim === 'walk' ? [1, 0, -1, 0][f] : 0, atk: anim === 'attack' ? f : -1 };
-  ({ squirrel, bramble, elf, golem, stag, dryad, warden, dragon, ratatoskr, serpent })[P.kind](F, P, dir, a);
+  ({ squirrel, bramble, elf, golem, stag, dryad, warden, dragon, ratatoskr, serpent, rotbeetle })[P.kind](F, P, dir, a);
   return F;
 }
 const W1 = (k) => Math.max(1, Math.round(k)); // a line width that grows with the size
@@ -580,4 +582,54 @@ function serpent(F, P, dir, { G, W, walk, f, atk }) {
   F.part(ellipse(hx, hy + 2, 3.2, 1.6), P.belly, flat); // the jaw
   for (const s of [-1, 1]) { F.part(ellipse(hx + s * 2.6, hy - 0.6, 1.2, 0.9), P.eye, flat); F.dot(hx + s * 2.6, hy - 0.6, '#1a2a0a'); }
   if (atk >= 0) { for (const s of [-1, 1]) F.part(poly([[hx + s * 1.6 - 0.5, hy + 2], [hx + s * 1.6 + 0.5, hy + 2], [hx + s * 1.6, hy + 4]]), P.fang, flat); F.dot(hx - 1.6, hy + 5, P.venom); F.dot(hx + 1.6, hy + 5, P.venom); F.part(line(hx, hy + 3, hx, hy + 5.5, 1), '#c8283a', flat); }
+}
+
+// ---------- Rot Beetles: a hulking beetle whose shell is rotted, cracked bark gone violet in patches,
+// toadstools and shelf fungus growing out of its back, spores drifting off them; a horned head with
+// violet eyes, great mandibles that snap and drip venom ----------
+function rotbeetle(F, P, dir, { G, W, step, walk, f, atk }) {
+  const cx = W / 2, bob = walk && f % 2 ? -1 : 0, snap = atk >= 0 ? [2, 5, 0, 1][atk] : 2;
+  const side = dir === 'right', back = dir === 'up';
+  const by = G - 11 + bob;
+  const legs = (pts) => { for (const [x0, y0, kx, ky, x1] of pts) { F.part(line(x0, y0, kx, ky, 2), P.leg); F.part(line(kx, ky, x1, G, 1), P.leg, flat); } };
+  const shell = (x, y, rx, ry) => { // the rotted shell: bark, cracks, rot, the line down the middle
+    F.part(ellipse(x, y, rx, ry), P.shell);
+    for (let i = 0; i < 5; i++) F.part(line(x - rx * 0.7 + i * rx * 0.35, y - ry * 0.6, x - rx * 0.6 + i * rx * 0.33, y + ry * 0.6, 1), P.crack, flat);
+    for (const [dx, dy, r] of [[-0.45, 0.2, 0.28], [0.35, -0.25, 0.22], [0.15, 0.45, 0.2]]) F.part(ellipse(x + dx * rx, y + dy * ry, r * rx, r * ry * 1.1), P.rot, flat);
+  };
+  const fungus = (x, y) => { // a toadstool, a shelf fungus, little caps, spores rising
+    F.part(rect(x - 0.8, y - 5, x + 0.8, y), P.gill);
+    F.part(rows(ellipse(x, y - 5, 4.5, 3.2), y - 9, y - 4.5), P.cap);
+    F.dot(x - 1.5, y - 7, P.capHi); F.dot(x + 1.5, y - 6.5, P.capHi);
+    F.part(rows(ellipse(x + 6, y + 1, 3.5, 2.2), y - 1, y + 1.5), P.cap);
+    F.part(rows(ellipse(x - 6, y + 2, 2.4, 1.8), y, y + 2.5), P.capHi);
+    for (let i = 0; i < 3; i++) F.dot(x - 3 + i * 3 + ((f + i) % 2), y - 11 - ((f + i * 2) % 4), P.spore);
+  };
+  if (side) {
+    legs([[cx - 6, by, cx - 10 + step, by - 2, cx - 12 + step], [cx, by, cx - 1 - step, by - 2, cx - 2 - step], [cx + 6, by, cx + 9 + step, by - 2, cx + 11 + step]]);
+    shell(cx - 3, by - 4, 14, 8);
+    fungus(cx - 4, by - 10);
+    const hx = cx + 12, hy = by - 2;
+    F.part(ellipse(hx, hy, 5, 4.5), P.shell);
+    F.part(poly([[hx, hy - 3], [hx + 3, hy - 10], [hx + 4, hy - 3]]), P.jaw); // the horn
+    F.part(ellipse(hx + 2, hy - 1, 1.2, 1), P.eye, flat);
+    for (const sd of [-1, 1]) F.part(line(hx + 4, hy + 1, hx + 9, hy + 1 + sd * snap, 2), P.jaw);
+    if (atk >= 0) F.dot(hx + 9, hy + 3 + snap, P.venom);
+    legs([[cx - 4, by + 1, cx - 8 - step, by - 1, cx - 9 - step], [cx + 2, by + 1, cx + 3 + step, by - 1, cx + 4 + step], [cx + 7, by + 1, cx + 12 - step, by, cx + 13 - step]]);
+    return;
+  }
+  // facing you, or from behind: legs splayed both sides, the shell, the fungus, the head in front
+  for (const s of [-1, 1]) for (let i = 0; i < 3; i++) {
+    const kx = cx + s * (13 + i * 2), ky = by - 3 + i * 2, sw = (i % 2 ? step : -step) * s;
+    F.part(line(cx + s * 9, by - 2 + i * 2, kx, ky - 3, 2), P.leg);
+    F.part(line(kx, ky - 3, kx + s * 2 + sw, G, 1), P.leg, flat);
+  }
+  shell(cx, by - 5, 13, 9);
+  fungus(cx + (back ? 2 : -2), by - 11);
+  if (back) return;
+  const hy = by + 3;
+  F.part(ellipse(cx, hy, 6.5, 4.5), P.shell);
+  F.part(poly([[cx - 1.5, hy - 3], [cx, hy - 10], [cx + 1.5, hy - 3]]), P.jaw); // the horn
+  for (const s of [-1, 1]) { F.part(ellipse(cx + s * 3, hy - 0.5, 1.3, 1.1), P.eye, flat); F.part(both(line(cx + s * 3, hy + 3, cx + s * (5 + snap), hy + 6, 2), line(cx + s * (5 + snap), hy + 6, cx + s * (2 + snap * 0.5), hy + 8, 2)), P.jaw); }
+  if (atk >= 0) { F.dot(cx - 2, hy + 9, P.venom); F.dot(cx + 2, hy + 9, P.venom); }
 }

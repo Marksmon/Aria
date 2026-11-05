@@ -182,7 +182,7 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   `WING_GLOW`, embers, and every few seconds at rest a slow spread with the glow flaring, `SPREAD`). The tree is
   big with many roots (the owner's call: great roots with branches, small ones breaking the ground all round).
   Ratatoskr drops Ratatoskr's Tail (Wings, 2%: one piece, not a pair, `SINGLE` in `wingart.js`, its runes pulsing,
-  a swish at rest). Its monsters are painted in code in `src/roots.js` (the Rot Beetles are the beetles in new colours).
+  a swish at rest). Its monsters are painted in code in `src/roots.js`, every one with a design of its own (the owner's call).
 - **Quests:** side quests and job trials can be quit from the Quest View; the main story quest
   can never be quit.
 - **EXP rates:** battles pay x4 (`RATES`: monsters, mini-bosses, MVPs, raids); quests pay x2

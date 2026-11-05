@@ -422,7 +422,8 @@ round a rune circle of the World Tree. Every monster down there attacks on sight
   their bite poisons), Moss Golems (hunched giants of boulders under a mantle of moss,
   runes glowing in their cracks), and Dark Elves, hooded archers in violet cloaks
   and rune-traced leathers, loosing shadow arrows from tall black bows.
-- **Floor 3:** Great Stags, Dryads throwing glowing leaves, Rot Beetles, and **Ratatoskr** (Lv 74
+- **Floor 3:** Great Stags, Dryads throwing glowing leaves, Rot Beetles (hulking beetles of rotting bark, violet toadstools
+  growing on their backs, venom dripping from their mandibles), and **Ratatoskr** (Lv 74
   mini-boss), the World Tree's messenger squirrel: no bigger than a Bloop, like its kin, but quick and hard to hit, in dark
   plate traced with glowing gold runes, a torn red cloak and a great fiery tail. It dashes in (**Swift
   Dash**), bounds onto you (**Bounding Leap**), throws glowing **Rune Acorns**, strikes twice now and
