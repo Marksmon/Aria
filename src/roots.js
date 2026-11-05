@@ -17,7 +17,7 @@ export const ROOTS = {
   // Ratatoskr's). They and Ratatoskr are a Bloop's size (the owner's call)
   rootSquirrel: { kind: 'ratatoskr', kin: true, size: [72, 72], body: [36, 58], fur: '#c06a32', face: '#ecb478', tail: '#c8702c', tailHi: '#f0a040', rune: '#ffc870', armor: '#6a4a2e', trim: '#a8804a', cloak: '#4f8a3c', eye: '#1a0c08', claw: '#efe2cc' },
   bramble: { kind: 'bramble', size: [44, 44], body: [30, 32], leaf: '#3a6a2a', thorn: '#e2d4a8', berry: '#c83a4a', eye: '#ffd23a', root: '#5e4028' },
-  darkElf: { kind: 'elf', k: 1, size: [48, 64], body: [22, 58], skin: '#7a86a8', hair: '#eceaf6', armor: '#2a2438', trim: '#8a5ad8', bow: '#5a3a2a', string: '#d8d0e8', eye: '#ff6a8a' },
+  darkElf: { kind: 'elf', size: [48, 64], body: [22, 58], skin: '#8a96b8', hair: '#e6e4f2', armor: '#1e1a28', cloak: '#3a2458', sash: '#5a2a7a', trim: '#c8ccd8', rune: '#c89aff', bow: '#1a141c', string: '#a88ad8', eye: '#f4d4ff' },
   // Ratatoskr, the third floor's mini-boss, after the owner's sheet: the messenger squirrel of the World
   // Tree, small for a boss, in dark plate traced with glowing gold runes, a red scarf and a torn red cloak
   // with the World Tree on its back, a runed helm with its tufted ears through it, and a great fiery tail
@@ -118,50 +118,71 @@ function bramble(F, P, dir, { G, W, walk, f, atk }) {
   }
 }
 
-// ---------- Dark Elves: grey-blue skin, long white hair, pointed ears, dark leathers, a longbow; their
-// Lord (lord) taller, in a silver crown and a long cape ----------
+// ---------- Dark Elves: hooded archers of the World Tree's dark roots. A deep violet cloak flaring to a
+// torn hem, fitted black leathers traced with glowing violet runes, a silver belt and a rune sash, a
+// hood with long pointed ears through it and silver hair spilling out over the shoulders, violet eyes
+// burning in a grey-blue face; a tall black recurve bow with a glowing string, a quiver of violet-
+// fletched arrows. It draws, a violet arrow on the string ----------
 function elf(F, P, dir, { G, W, step, walk, f, atk }) {
-  const k = P.k, cx = W / 2, bob = walk && f % 2 ? -1 : 0, draw = atk >= 0 ? [2, 5, 6, 1][atk] : 0;
+  const cx = W / 2, bob = walk && f % 2 ? -1 : 0, draw = atk >= 0 ? [2, 5, 6, 1][atk] : 0, sway = walk ? [0, 1, 0, -1][f] : 0;
   const side = dir === 'right', back = dir === 'up';
-  const hip = G - 22 * k + bob, sh = G - 38 * k + bob;
-  const w = W1(k);
-  if (P.lord) { // the cape behind
-    F.part(poly([[cx - 7 * k, sh + 1], [cx + 7 * k, sh + 1], [cx + 10 * k + (side ? -6 : 0), G - 1], [cx - 10 * k - (side ? 4 : 0), G - 1]]), P.cape);
+  const hip = G - 21 + bob, sh = G - 36 + bob;
+  // the quiver on its back (behind, facing us; over the cloak, from behind)
+  const quiver = () => {
+    const qx = cx + (back ? 3 : side ? -5 : -4);
+    F.part(poly([[qx - 1.5, sh - 3], [qx + 2.5, sh - 4], [qx + 4, sh + 10], [qx, sh + 11]]), P.bow);
+    for (let i = 0; i < 3; i++) { F.part(line(qx + i * 1.1, sh - 3.5, qx + i * 1.1 - 1, sh - 8, 1), P.string, flat); F.dot(qx + i * 1.1 - 1, sh - 8, P.trim); }
+  };
+  if (!back) quiver();
+  // the cloak: a deep violet, flaring to a torn hem
+  const hem = [];
+  for (let i = 0; i <= 6; i++) hem.push([cx - 10 + i * 3.4 + sway + (side ? -3 : 0), G - 2 + (i % 2 ? -3 : 0)]);
+  F.part(poly([[cx - 6 + (side ? -2 : 0), sh - 1], [cx + 6 + (side ? -4 : 0), sh - 1], ...hem.reverse()]), P.cloak);
+  if (back) { // a crescent moon in silver on its back, the quiver over it
+    F.part(rows(ellipse(cx, sh + 9, 3.5, 3.5), sh + 5, sh + 13), P.trim, flat);
+    F.part(ellipse(cx + 1.5, sh + 8.5, 3, 3), P.cloak, flat);
+    quiver();
   }
-  if (!back) F.part(poly([[cx - 6 * k, sh - 10 * k], [cx + 6 * k, sh - 10 * k], [cx + 7 * k, sh + 10 * k], [cx - 7 * k, sh + 10 * k]]), P.hair); // the long hair behind
-  // legs, boots
-  if (side) { F.part(rect(cx - 2 * k + step * 2, hip, cx + 0.5 * k + step * 2, G), P.armor); F.part(rect(cx - 1 * k - step * 2, hip, cx + 1.5 * k - step * 2, G), dark(P.armor)); }
-  else for (const s of [-1, 1]) F.part(rect(cx + s * 3 * k - 1.4 * k + s * step, hip, cx + s * 3 * k + 1.4 * k + s * step, G), P.armor);
-  // the body: dark leathers, a violet trim
-  F.part(poly([[cx - 5.5 * k, sh], [cx + 5.5 * k, sh], [cx + 5 * k, hip + 2], [cx - 5 * k, hip + 2]]), P.armor);
-  F.part(line(cx - 5 * k, hip, cx + 5 * k, hip, w), P.trim, flat);
-  if (!back && !side) F.part(line(cx, sh + 2, cx, hip - 1, w), P.trim, flat);
-  if (back) { // the quiver on its back
-    F.part(rect(cx + 1 * k, sh - 3 * k, cx + 4 * k, sh + 10 * k), P.bow);
-    for (let i = 0; i < 3; i++) F.part(line(cx + (1.5 + i) * k, sh - 3 * k, cx + (1.5 + i) * k, sh - 6 * k, 1), P.string, flat);
+  // legs: slim, black leathers, tall boots trimmed with silver
+  if (side) { F.part(rect(cx - 2 + step * 2, hip, cx + 0.5 + step * 2, G), P.armor); F.part(rect(cx - 1 - step * 2, hip, cx + 1.5 - step * 2, G), dark(P.armor)); F.part(line(cx - 2 + step * 2, G - 5, cx + 0.5 + step * 2, G - 5, 1), P.trim, flat); }
+  else for (const s of [-1, 1]) { const lx = cx + s * 2.6 + s * step; F.part(rect(lx - 1.4, hip, lx + 1.4, G), P.armor); F.part(line(lx - 1.4, G - 5, lx + 1.4, G - 5, 1), P.trim, flat); }
+  // the body: fitted black leathers, violet runes glowing down them, a silver belt, a rune sash
+  F.part(poly([[cx - 5, sh], [cx + 5, sh], [cx + 4.5, hip + 2], [cx - 4.5, hip + 2]]), P.armor);
+  F.part(line(cx - 4.5, hip, cx + 4.5, hip, 1), P.trim, flat);
+  if (!back) {
+    F.part(poly([[cx - 1.5 + (side ? 2 : 0), hip], [cx + 1.5 + (side ? 2 : 0), hip], [cx + 1 + (side ? 2 : 0), hip + 7], [cx - 1 + (side ? 2 : 0), hip + 7]]), P.sash); // the sash
+    F.part(both(line(cx - 3, sh + 2, cx - 1, sh + 8, 1), line(cx + 3, sh + 2, cx + 1, sh + 8, 1), line(cx - 1, sh + 8, cx + 1, sh + 8, 1)), P.rune, flat); // runes on the chest
+    F.dot(cx + (side ? 2 : 0), hip + 3, P.rune);
   }
-  // the bow, drawn on the attack
+  F.part(ellipse(cx + (side ? 2 : 4), sh + 1.5, 3, 2.4), P.armor); // a pauldron on the bow arm
+  F.part(line(cx + (side ? 0 : 2), sh + 0.5, cx + (side ? 4.5 : 6.5), sh + 0.5, 1), P.trim, flat);
+  // the bow: a tall black recurve, its string glowing; drawn on the attack, a violet arrow on it
+  const glowStr = atk >= 0 ? P.rune : P.string;
   if (side) {
-    const bx = cx + 8 * k, by = sh + 6 * k;
-    F.part(both(line(bx, by - 10 * k, bx + 3 * k, by, w), line(bx + 3 * k, by, bx, by + 10 * k, w)), P.bow, flat);
-    F.part(both(line(bx, by - 10 * k, bx - draw * k, by, 1), line(bx - draw * k, by, bx, by + 10 * k, 1)), P.string, flat);
-    F.part(line(cx + 2 * k, sh + 3 * k, bx + 2 * k, by, W1(2 * k)), P.skin); // the arm, out to the bow
-    if (draw) F.part(line(bx - draw * k, by, bx + 8 * k, by, 1), P.string, flat); // the arrow
+    const bx = cx + 8, by = sh + 6;
+    F.part(both(line(bx - 1, by - 11, bx + 2, by - 7, 1), line(bx + 2, by - 7, bx + 3, by, 1), line(bx + 3, by, bx + 2, by + 7, 1), line(bx + 2, by + 7, bx - 1, by + 11, 1)), P.bow, flat);
+    F.part(both(line(bx - 1, by - 11, bx - draw, by, 1), line(bx - draw, by, bx - 1, by + 11, 1)), glowStr, flat);
+    F.part(line(cx + 2, sh + 3, bx + 2, by, 2), P.skin); // the arm, out to the bow
+    if (draw) { F.part(line(bx - draw, by, bx + 9, by, 1), P.rune, flat); F.dot(bx + 9, by, '#ffffff'); }
   } else if (!back) {
-    const bx = cx + 9 * k, by = sh + 8 * k;
-    F.part(line(bx, by - 11 * k, bx, by + 11 * k, w), P.bow, flat);
-    F.part(line(cx + 5 * k, sh + 2 * k, bx, by - draw * 0.3, W1(2 * k)), P.skin);
-    F.part(line(cx - 5 * k, sh + 2 * k, cx - 7 * k, hip - 1, W1(2 * k)), P.skin);
+    const bx = cx + 9, by = sh + 7;
+    F.part(both(line(bx + 2, by - 12, bx, by - 8, 1), line(bx, by - 8, bx - 0.5, by, 1), line(bx - 0.5, by, bx, by + 8, 1), line(bx, by + 8, bx + 2, by + 12, 1)), P.bow, flat);
+    F.part(line(bx + 2, by - 12, bx + 2, by + 12, 1), glowStr, flat);
+    F.part(line(cx + 5, sh + 2, bx, by - draw * 0.3, 2), P.skin);
+    F.part(line(cx - 5, sh + 2, cx - 6 + (draw ? 3 : 0), hip - 1 - draw, 2), P.skin);
+    if (draw) F.part(line(bx - 1, by - 3, bx - 1, by + 4, 1), P.rune, flat);
   }
-  // the head: grey-blue, long pointed ears, red eyes
-  const hx = cx + (side ? 1.5 * k : 0), hy = sh - 6 * k;
-  for (const s of side ? [-1] : [-1, 1]) F.part(poly([[hx + s * 3.5 * k, hy - 1 * k], [hx + s * 9 * k, hy - 4.5 * k], [hx + s * 4 * k, hy + 1.5 * k]]), P.skin);
-  F.part(ellipse(hx, hy, 4.2 * k, 4.8 * k), back ? P.hair : P.skin);
-  F.part(ellipse(hx - (side ? 1.2 * k : 0), hy - 3.5 * k, 4.8 * k, 2.2 * k), P.hair);
-  if (P.lord) { F.part(poly([[hx - 4.5 * k, hy - 4 * k], [hx - 4 * k, hy - 8 * k], [hx - 2 * k, hy - 5.5 * k], [hx, hy - 9.5 * k], [hx + 2 * k, hy - 5.5 * k], [hx + 4 * k, hy - 8 * k], [hx + 4.5 * k, hy - 4 * k]]), P.crown); F.dot(hx, hy - 6.5 * k, P.trim); }
+  // the head: a hood, long ears through it, silver hair spilling out, violet eyes in a grey-blue face
+  const hx = cx + (side ? 1.5 : 0), hy = sh - 6;
+  if (!back) for (const s of side ? [1] : [-1, 1]) F.part(poly([[hx + s * 3 - (side ? 3 : 0), hy + 2], [hx + s * 5 - (side ? 3 : 0), hy + 2], [hx + s * 6 - (side ? 3 : 0), sh + 9], [hx + s * 3.5 - (side ? 3 : 0), sh + 8]]), P.hair); // hair down over the shoulders
+  F.part(ellipse(hx, hy - 0.5, 5.6, 5.6), P.cloak); // the hood
+  F.part(poly([[hx - 2.5, hy - 5.5], [hx + 1, hy - 8.5], [hx + 2.5, hy - 5]]), P.cloak);
+  for (const s of side ? [-1] : [-1, 1]) F.part(poly([[hx + s * 4.6, hy - 1], [hx + s * 11, hy - 5.5], [hx + s * 5, hy + 1.2]]), P.skin); // the long ears, out through slits in the hood
   if (back) return;
-  if (side) F.part(rect(hx + 2 * k, hy, hx + 3 * k, hy + 0.6 * k), P.eye, flat);
-  else for (const s of [-1, 1]) F.part(rect(hx + s * 1.8 * k - 0.5 * k, hy, hx + s * 1.8 * k + 0.5 * k, hy + 0.6 * k), P.eye, flat);
+  F.part(ellipse(hx + (side ? 1.6 : 0), hy + 0.8, side ? 2.6 : 3.4, 3.8), P.skin); // the face in the hood
+  F.part(line(hx - 3 + (side ? 1.5 : 0), hy - 1.6, hx + 3 + (side ? 1 : 0), hy - 1.6, 1), P.hair, flat); // a lock of silver over the brow
+  if (side) { F.part(rect(hx + 2.4, hy, hx + 3.4, hy + 0.6), P.eye, flat); F.dot(hx + 3.6, hy + 2.6, dark(P.skin)); }
+  else { for (const s of [-1, 1]) F.part(rect(hx + s * 1.6 - 0.5, hy, hx + s * 1.6 + 0.5, hy + 0.6), P.eye, flat); F.part(line(hx - 0.8, hy + 3, hx + 0.8, hy + 3, 1), dark(P.skin), flat); }
 }
 
 // ---------- Moss Golems: boulders piled into a body, moss over its shoulders, green light in its eyes ----------

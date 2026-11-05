@@ -417,7 +417,8 @@ round a rune circle of the World Tree. Every monster down there attacks on sight
 
 - **Floor 1:** Root Squirrels, Ratatoskr's little kin up on their hind legs in bark jerkins and green
   scarves, quick and biting twice, and Brambles that throw their thorns.
-- **Floor 2:** Root Serpents (their bite poisons), Moss Golems, and Dark Elves loosing shadow arrows.
+- **Floor 2:** Root Serpents (their bite poisons), Moss Golems, and Dark Elves, hooded archers in violet cloaks
+  and rune-traced leathers, loosing shadow arrows from tall black bows.
 - **Floor 3:** Great Stags, Dryads throwing glowing leaves, Rot Beetles, and **Ratatoskr** (Lv 74
   mini-boss), the World Tree's messenger squirrel: no bigger than a Bloop, like its kin, but quick and hard to hit, in dark
   plate traced with glowing gold runes, a torn red cloak and a great fiery tail. It dashes in (**Swift
