@@ -82,7 +82,7 @@ export class Inventory {
 
   add(id, n) {
     const got = this.bag.add(id, n);
-    if (got) this.changed();
+    if (got) { this.gained?.(id, got); this.changed(); } // (gained: set by the game, the Monster Album's cards)
     return got;
   }
 

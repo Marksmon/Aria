@@ -64,6 +64,7 @@ const WINDOWS = {
   raids:  { title: 'Raids',      at: [0.50, 0.16], w: 368 },
   journal: { title: 'Quests',    at: [0.50, 0.16], w: 345 },
   settings: { title: 'Settings', at: [0.50, 0.22], w: 253 },
+  album:  { title: 'Monster Album', at: [0.50, 0.14], w: 368 },
 };
 // the smith window's three jobs: Holger's refining, Seyla's slots, pressing in a card
 const SMITHS = {
@@ -729,6 +730,25 @@ export class Menus {
       <div class="setrow"><span>Main menu<small>Your game is saved first. Pick another hero there.</small></span><button class="rbtn" data-act="totitle">Back to main menu</button></div>`;
   }
 
+  // the Monster Album (the 📖 button): every monster, how many beaten, and its card if ever found.
+  // Tabs: all of them, the ones met, the bosses; a monster not met yet is ??? with its level and lands
+  album() {
+    const rows = this.hooks.album?.() || [], tab = this.albumTab || 'all';
+    const met = rows.filter((r) => r.met).length, cards = rows.filter((r) => r.card), found = cards.filter((r) => r.found).length;
+    const shown = rows.filter((r) => (tab === 'met' ? r.met : tab === 'boss' ? !!r.kind : true));
+    const tabBtn = (k, name) => `<button class="rtab${tab === k ? ' on' : ''}" data-act="albumtab" data-id="${k}">${name}</button>`;
+    const row = (r) => {
+      const el = r.el ? r.el[0].toUpperCase() + r.el.slice(1) : '';
+      const card = r.card ? `<img class="ico al-card${r.found ? '' : ' none'}" src="${iconURL(r.card)}" alt="" title="${r.found ? 'Card found' : 'Card not found yet'}">` : '';
+      return `<div class="al-row${r.met ? '' : ' unmet'}"><div class="al-main"><b>${r.met ? esc(r.name) : '???'}</b>${r.kind ? `<i class="al-kind">${r.kind}</i>` : ''}
+        <small>Lv ${r.lv}${r.met && el ? ` · ${el}` : ''}${r.where ? ` · ${esc(r.where)}` : ''}</small></div>
+        <span class="al-kills">${r.kills ? `${r.kills.toLocaleString()} beaten` : ''}</span>${card}</div>`;
+    };
+    return `<div class="al-head"><span>Met <b>${met}</b> / ${rows.length}</span><span>Cards <b>${found}</b> / ${cards.length}</span></div>
+      <div class="rtabs">${tabBtn('all', 'All')}${tabBtn('met', 'Met')}${tabBtn('boss', 'Bosses')}</div>
+      <div class="al-list">${shown.map(row).join('') || '<p class="al-empty">No monster here yet: go and meet some!</p>'}</div>`;
+  }
+
   // Holger's refining, Seyla's slots and card inserting: pick a piece (worn or in the bag), see the
   // odds and the cost, and try. A try that can break the piece asks twice.
   smith() {
@@ -1061,6 +1081,7 @@ export class Menus {
     }
     if (act === 'totitle') this.hooks.toTitle?.(); // back to the title screen, to play another hero
     if (act === 'sound') { this.hooks.toggleSound?.(); this.render(id); }
+    if (act === 'albumtab') { this.albumTab = t.dataset.id; this.render(id); }
     if (act === 'targetbar') { this.hooks.setSetting?.('targetBar', !this.hooks.setting?.('targetBar')); this.render(id); }
     if (act === 'graphics') { this.hooks.setSetting?.('graphics', this.hooks.setting?.('graphics') === 'fast' ? 'sharp' : 'fast'); this.render(id); }
     if (act === 'statreset') { this.pend = {}; this.hooks.ui?.(); this.render(id); }

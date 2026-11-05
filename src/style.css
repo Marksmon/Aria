@@ -462,6 +462,23 @@ body.named #toasts { top: calc(175px + var(--pets-push, 0px) + env(safe-area-ins
   pointer-events: auto;
 }
 #optbtn.pressed { background: var(--w-press); }
+/* the Monster Album's book, beside the gear */
+#albumbtn { position: absolute; top: calc(12px + env(safe-area-inset-top)); right: calc(158px + env(safe-area-inset-right)); width: 26px; height: 24px;
+  padding: 0; border: 1px solid var(--w-line); border-radius: 4px; background: var(--w-bg); font-size: 14px; line-height: 1; pointer-events: auto; }
+#albumbtn.pressed { background: var(--w-press); }
+/* the Monster Album: counts, tabs and one row a monster (a ??? for one not met yet) */
+.al-head { display: flex; justify-content: space-between; padding: 6px 8px; font-size: 12px; color: var(--w-dim); }
+.al-head b { color: var(--w-gold); }
+.al-list { max-height: 52vh; overflow-y: auto; }
+.al-row { display: flex; align-items: center; gap: 6px; padding: 5px 8px; border-bottom: 1px solid var(--w-line2); font-size: 12px; color: var(--w-text); }
+.al-row.unmet { opacity: .55; }
+.al-main { flex: 1; min-width: 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 6px; }
+.al-main small { flex-basis: 100%; color: var(--w-dim); font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.al-kind { font-style: normal; font-size: 10px; font-weight: 800; padding: 0 4px; border-radius: 3px; background: var(--w-gold); color: #1a120c; }
+.al-kills { color: var(--w-dim); font-size: 11px; white-space: nowrap; }
+.al-card { width: 22px; height: 22px; }
+.al-card.none { filter: grayscale(1) brightness(.45); }
+.al-empty { padding: 12px; color: var(--w-dim); text-align: center; }
 #winbtns button.pressed { background: var(--w-press); }
 
 #windows { position: absolute; inset: 0; z-index: 1; pointer-events: none; }

@@ -27,12 +27,13 @@ import { headgearReady, gearCut, paintGears } from './headgear.js';
 import { derive, playerAttack, mobAttack, magicAttack, elementMod, ELEMENTS } from './rules.js';
 import { SKILLS, EDGE_FX, AMBUSH, BLIND, BLIGHT, skillLv, spCost, castTime, learn, skillList, weaponOk, WEAPON_NAMES, BOW_RANGE, unlearnFirstJob, unlearnSecondJob, RETRAIN_COST } from './skills.js';
 import { Menus } from './menus.js';
-import { iconTexture, iconURL, ENCHANT, ITEMS, baseOf, canWear, maybeSlotted } from './items.js';
+import { iconTexture, iconURL, ENCHANT, ITEMS, baseOf, parseKey, canWear, maybeSlotted } from './items.js';
 import { DayNight } from './daynight.js';
 import { Audio } from './audio.js';
 import { Wings, wingPicture } from './wings.js';
 import { clamp, lerp } from './noise.js';
 import { settings, pixelRatio } from './settings.js';
+import { Album, albumRows } from './album.js';
 
 const canvas = document.getElementById('game');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, powerPreference: 'high-performance' });
@@ -240,6 +241,23 @@ player.setArt(jobArt());
 inv.load(save?.inv);
 inv.chest.load(loadStorage()); // the Keepers' storage: every hero's, saved apart from them
 inv.dropUnwearable(); // gear rules can change between versions
+// the Monster Album: kills and the cards ever found. A save from before it starts with the cards the
+// hero holds now (bag, storage, and those pressed into gear)
+const album = new Album();
+const CARD_OF = Object.fromEntries(Object.entries(ITEMS).filter(([, it]) => it.card).map(([id, it]) => [it.name.replace(/ Card$/, ''), id]));
+if (!album.load(save?.album)) {
+  for (const s of [...inv.bag.slots, ...inv.chest.slots]) { const u = parseKey(s.id); if (ITEMS[u.base]?.card) album.card(u.base); for (const c of u.cards) album.card(c); }
+  for (const id of Object.values(inv.gear)) if (id) for (const c of parseKey(id).cards) album.card(c);
+}
+inv.gained = (id) => {
+  const base = baseOf(id);
+  if (ITEMS[base]?.card && album.card(base)) menus.message(`A new card for your Monster Album: ${ITEMS[base].name}!`);
+};
+// where each monster lives, for the album: its maps (SPAWNS), the raid it fights in, or the quest that calls it
+const LIVES = {};
+for (const [map, list] of Object.entries(SPAWNS)) for (const [type] of list) (LIVES[type] ||= new Set()).add(ZONE_NAMES[map] || map);
+for (const r of Object.values(RAIDS)) for (const type of [...r.waves.flat().map((w) => w[0]), r.boss[0]]) (LIVES[type] ||= new Set()).add(`Raid: ${r.name}`);
+const livesAt = (type) => (LIVES[type] ? [...LIVES[type]].join(', ') : MOB_DEFS[type]?.noRespawn ? 'a quest calls it' : '');
 // stats + gear -> the player's battle numbers (Ragnarok rules); HP/SP stay put, capped by the new max
 // timed buffs, in seconds left: aspd (Quickening Draught), warcry (War Cry's ATK bonus)
 const buffs = { aspd: 0, warcry: 0, ward: 0, aegis: 0, momentum: 0, focus: 0, tailwind: 0, rush: 0, gust: 0, rhythm: 0, veil: 0, frenzy: 0, sub: 0 };
@@ -689,6 +707,7 @@ mobs.on('death', (m, drops) => {
   }
   m.blight = 0;
   if (m === doll) doll = null;
+  if (!m.def.decoy && MOB_DEFS[m.type]) album.kill(m.type);
   if (raid && m.def.raidLv) { raid.exp[0] += m.def.exp[0] * RATES.base; raid.exp[1] += m.def.exp[1] * RATES.job; } // a raid holds its EXP until the run ends
   else gainExp(m.def.exp[0], prog.job === 'novice' && m.def.tjob ? m.def.tjob : m.def.exp[1], RATES); // (a Trainee earns a bloop field's big Job EXP: tjob)
   for (const id of quests.onKill(m.type)) questComplete(id);
@@ -2149,6 +2168,7 @@ const menus = new Menus(inv, prog, player, {
   soundOn: () => audio.enabled,
   toggleSound() { audio.setEnabled(!audio.enabled); },
   setting: (k) => settings.get(k),
+  album: () => albumRows(MOB_DEFS, album, CARD_OF, livesAt),
   setSetting(k, v) { settings.set(k, v); },
   closed() { persist(); },
   // Settings' Back to main menu: save, and back to the title to pick a hero (not in a raid)
@@ -3532,7 +3552,7 @@ let saveWarned = false;
 function persist() {
   if (!started || resetting) return;
   const isle = raidOf(world.id), back = isle && raid?.back, at = back || (isle ? boatSpot(isle) : player); // a run is never saved: back on the shore (or where they set out from)
-  const ok = writeSave({ story: story.toJSON(), look: player.look, visited: [...visited], keepers: [...keepers], savePoint, raidAt, raidsDone: [...raidsDone], raidLog, raidRun: raid ? { id: raid.id, diff: raid.diff, at: raid.start } : null, map: back ? back.map : isle ? isle.from : world.id, mvpAt: mobs.mvpAt, bossHp: mobs.bossSnapshot(), bossAt: mobs.bossAt, fieldAt: mobs.fieldSnapshot(), x: at.x, z: at.z, yaw: cam.yaw, dist: cam.dist, hp: player.hp, sp: player.sp, inv: inv.toJSON(), prog: prog.toJSON(), quests: quests.toJSON(), hotbar: hotbar.toJSON(), time: dayNight.t });
+  const ok = writeSave({ album: album.toJSON(), story: story.toJSON(), look: player.look, visited: [...visited], keepers: [...keepers], savePoint, raidAt, raidsDone: [...raidsDone], raidLog, raidRun: raid ? { id: raid.id, diff: raid.diff, at: raid.start } : null, map: back ? back.map : isle ? isle.from : world.id, mvpAt: mobs.mvpAt, bossHp: mobs.bossSnapshot(), bossAt: mobs.bossAt, fieldAt: mobs.fieldSnapshot(), x: at.x, z: at.z, yaw: cam.yaw, dist: cam.dist, hp: player.hp, sp: player.sp, inv: inv.toJSON(), prog: prog.toJSON(), quests: quests.toJSON(), hotbar: hotbar.toJSON(), time: dayNight.t });
   writeStorage(inv.chest.toJSON());
   // the phone refused the save (storage full or blocked): say so once, so the player can back up
   if (!ok && !saveWarned) { saveWarned = true; menus.message('Could not save! Back up your save from the title screen (Account) soon.'); }
@@ -3730,7 +3750,7 @@ function frame() {
 
   const b = camBasis();
   // windows never pause the game, like Ragnarok
-  for (const w of ['items', 'equip', 'skills', 'status', 'raids', 'journal', 'settings']) if (input.tapped(w) && started) { menus.toggle(w); if (menus.isOpen(w)) story.flags[`opened_${w}`] = true; } // (a story step may ask for a window)
+  for (const w of ['items', 'equip', 'skills', 'status', 'raids', 'journal', 'settings', 'album']) if (input.tapped(w) && started) { menus.toggle(w); if (menus.isOpen(w)) story.flags[`opened_${w}`] = true; } // (a story step may ask for a window)
   if (input.tapped('attack') && started) attackNow();
   if (input.tapped('close')) { if (bigmap.open) bigmap.close(); else menus.close(); }
   bigmap.update(dt);
@@ -4043,4 +4063,4 @@ if (go || toSelect) { title.classList.remove('wait'); bootGone(); } else {
   addEventListener('keydown', tap);
 }
 
-window.__aria = { scene, renderer, lib, MAPS, settings, warp, enterMap, useSkill, useItem, story, SPOTS, player, world, cam, camera, mobs, allies, fx, inv, prog, quests, villagers, menus, hotbar, dayNight, audio, stats: world.stats, raid: () => raid, raidAt: () => raidAt, raidGo, raidLog: () => raidLog, storyDone, savePoint: () => savePoint, keepers, gainExp };
+window.__aria = { scene, renderer, lib, MAPS, settings, album, warp, enterMap, useSkill, useItem, story, SPOTS, player, world, cam, camera, mobs, allies, fx, inv, prog, quests, villagers, menus, hotbar, dayNight, audio, stats: world.stats, raid: () => raid, raidAt: () => raidAt, raidGo, raidLog: () => raidLog, storyDone, savePoint: () => savePoint, keepers, gainExp };

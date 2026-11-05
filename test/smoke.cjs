@@ -66,6 +66,13 @@ async function waitFor(url, ms = 30000) {
       if (!(await page.$(`#windows .w-${w}, #windows [data-win="${w}"], #windows > *`))) fail.push(`window ${w} did not open`);
       await page.keyboard.press('Escape');
     }
+    step('the Monster Album');
+    await page.tap('#albumbtn');
+    await page.waitForTimeout(300);
+    const al = await page.evaluate(() => document.querySelectorAll('#windows .al-row').length);
+    if (al < 50) fail.push(`the Monster Album shows ${al} monsters`);
+    for (const t of ['met', 'boss', 'all']) { await page.click(`[data-act="albumtab"][data-id="${t}"]`); await page.waitForTimeout(100); }
+    await page.keyboard.press('Escape');
     step('settings');
     await page.evaluate(() => window.__aria.menus.show('settings'));
     await page.waitForTimeout(300);
