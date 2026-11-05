@@ -34,7 +34,8 @@ export const NPCS = {
       : c.tier === 2 ? `A ${c.job}! The songs will have your name in them yet.`
       : c.jobId === 'swordman' ? 'A Blader now! I always knew that practice sword wanted to be more than a stick.'
       : c.jobId === 'mage' ? 'A Sorcerer! Mind the tents when you practise, child.'
-      : c.jobId === 'archer' ? 'An Archer! Point that thing at the wolves, not at my tent.' : null),
+      : c.jobId === 'archer' ? 'An Archer! Point that thing at the wolves, not at my tent.'
+      : c.jobId === 'assassin' ? 'An Assassin! I never heard you come in. I am not sure I like that.' : null),
     quests: ['bloopcull', 'fenpatrol', 'warden', 'mushroomblight'],
     // a Trainee ready for a job is sent on to Steinborg
     ready: 'You have learnt all a Trainee can. For the blade, go north through Moss Field to Steinborg: Captain Ulfr trains Bladers. For sorcery, go west to Fen Shore and north to Galdrheim, the city of sorcerers. For the bow, go east past the Red Sprouts to Birch Grove and on through Willow Marsh to Veidheim: Huntmaster Sigrid trains Archers. For the dagger, ride a carter to Rytingborg, the oasis south of Ember Hill: Master Kol trains Assassins.',
@@ -89,7 +90,7 @@ export const NPCS = {
   ulfr: {
     name: 'Captain Ulfr', map: 'city', x: 36.4, z: 51.4, trial: ['blader_trial', 'blader_trial2', 'blader_trial3'], job: 'swordman',
     trial2: ['blademaster_trial', 'blademaster_trial2', 'blademaster_trial3'], job2: 'blademaster',
-    trial2Hint: 'At Job Level 40 a Blader may take the BladeMaster\'s trial with me. If you walk the Sorcerer\'s path too, the sword must have more of your skill points than the staff.',
+    trial2Hint: 'At Job Level 40 a Blader may take the BladeMaster\'s trial with me. If you walk other paths too, the sword must have the most of your skill points (a tie will do).',
     hello: 'The Watch keeps the roads clear. Strong arms are always welcome.',
     later: (lv) => `Nothing for you yet. Report back at Base Level ${lv}.`,
     bye: 'The roads are safer for your blade. Well fought.',
@@ -206,7 +207,7 @@ export const NPCS = {
     later: () => '', bye: 'Strike while it is hot. And not before.',
     quests: [],
     lore: [
-      'Iron Ore for the plain blades, Steel Ore for the better ones. I sell both. Hard Ore and Armor Ore you must take from the kobolds and goblins, and they do not give it up gladly.',
+      'Iron Ore for the plain blades, Steel Ore for the better ones. I sell both. Hard Ore and Armor Ore I cannot sell: they turn up on almost any beast from the middle lands on, and the kobolds, the goblins and their kings carry the most.',
       'A Lv 1 blade is safe to +7, a Lv 4 only to +4, armor to +4. After that, think twice. I have swept up more broken swords than you have swung.',
       'My grandfather refined the Watch\'s blades for forty years. He said the trick is to stop one try before you want to. He never managed it either.',
     ],
@@ -242,7 +243,7 @@ export const NPCS = {
   vigdis: {
     name: 'Archmage Vigdis', map: 'magic', x: 28, z: 20.8, dress: { body: 'sorc', main: [215, 0.15, 1.55], accent: [46, 0.75, 1.05], hair: 'mane', dye: 'silver', top: 'ember_crown' }, trial: ['sorcerer_trial', 'sorcerer_trial2', 'sorcerer_trial3'], job: 'mage',
     trial2: ['wizard_trial', 'wizard_trial2', 'wizard_trial3'], job2: 'wizard',
-    trial2Hint: 'At Job Level 40 a Sorcerer may take the Wizard\'s trial with me. If you walk the Blader\'s path too, the staff must have more of your skill points than the sword.',
+    trial2Hint: 'At Job Level 40 a Sorcerer may take the Wizard\'s trial with me. If you walk other paths too, the staff must have the most of your skill points (a tie will do).',
     hello: 'Welcome to Galdrheim, child. Here we sing the world into shape; we call it galdr, the song-craft.',
     later: (lv) => `You are not ready for what I would ask. Come back at Base Level ${lv}.`,
     bye: 'Sing true, and the runes will answer.',
@@ -273,12 +274,12 @@ export const NPCS = {
   },
   seyla: {
     name: 'Seyla the Enchanter', map: 'magic', x: 49.4, z: 36.2, dress: ROLE.smith, smith: ['enchant', 'uncard'],
-    hello: 'I open a hollow in a great weapon, a slot, where a monster card can sleep. Only Lv 4 weapons are strong enough to hold one. Half the time the weapon takes the song; the other half it cracks apart. And if a card no longer suits you, I can coax it back out, whole.',
+    hello: 'I open a hollow in a great weapon, a slot, where a monster card can sleep. Only Lv 4 weapons are strong enough to hold one, two at most. The first slot takes half the time; the second only one time in four, for twice the price. When it fails, the weapon cracks apart. And if a card no longer suits you, I can coax it back out, whole.',
     later: () => '', bye: 'Bring me something worth the risk.',
     quests: [],
     lore: [
       'The price is steep: five Hard Ore, five Dark Crystals, the heart of a great beast, and fifty thousand perz. The song takes all of it, whether it holds or not.',
-      'A card is a monster\'s strength pressed flat. The Kobold King\'s and the Goblin King\'s both sleep in a weapon. Once in, it never comes out, unless the weapon breaks; then you can pick the card out of the pieces.',
+      'A card is a monster\'s strength pressed flat. The Kobold King\'s and the Goblin King\'s both sleep in a weapon. Once in, it stays, unless I coax it out for you (that has its price too), or the weapon breaks; then you pick the card out of the pieces.',
       'Vigdis thinks enchanting is a waste of good crystal. Vigdis has never seen a slotted sword cut through a Goblin King.',
     ],
   },
@@ -377,7 +378,7 @@ export const NPCS = {
     hello: 'Mind the line: arrows fly here. I am Sigrid, Huntmaster of Veidheim. Every one of us can put an arrow through a ring at fifty paces, and lately we need to.',
     trial: ['archer_trial', 'archer_trial2', 'archer_trial3'], job: 'archer',
     trial2: ['windrunner_trial', 'windrunner_trial2', 'windrunner_trial3'], job2: 'windrunner',
-    trial2Hint: 'At Job Level 40 an Archer may take the Windrunner\'s trial with me. If you walk other paths too, the bow must have the most of your skill points.',
+    trial2Hint: 'At Job Level 40 an Archer may take the Windrunner\'s trial with me. If you walk other paths too, the bow must have the most of your skill points (a tie will do).',
     trialHint: 'Trainees who have learnt all their basics can take the Archer\'s Trial with me: Trainee Job Level 10 and Basic Training 9.',
     later: (lv) => `The wilds out there would eat you alive. Come back at Base Level ${lv}.`,
     bye: 'Keep your eyes open and your string dry.',
@@ -496,7 +497,7 @@ export const NPCS = {
   },
   bjorn: {
     name: 'Bjorn the Gate Guard', map: 'city', x: 55.2, z: 29.4, dress: { body: 'blader', main: [100, 0.35, 0.9], accent: [30, 0.7, 1], hair: 'messy', dye: 'blonde', top: 'horned_helm' },
-    hello: 'Most beasts out there leave you be until you strike first. Not in Black Wood and Ash Heath: the dark wisps and the fire beasts come for you on sight. Nor past them, where the wolves run.',
+    hello: 'Most beasts out there leave you be until you strike first. Not all: the dark wisps of Black Wood and the fire beasts of Ash Heath come for you on sight, and so do the kobolds and goblins, the wolves, snakes and bears past Black Wood, and the worms, scorpions and ants of the deep desert. Under the earth, in the old halls, everything does. And once you wear a second job\'s aura, the great beasts come for you too.',
     later: () => '', bye: 'Keep your guard up past the gate.',
     quests: [],
     lore: ['East through Birch Grove, past Willow Marsh, is Veidheim, the hunters\' village. Good folk, and every one of them can shoot the eye out of a sparrow.'],
@@ -514,7 +515,7 @@ export const NPCS = {
     trial: ['assassin_trial', 'assassin_trial2', 'assassin_trial3'], job: 'assassin',
     trial2: ['phantom_trial', 'phantom_trial2', 'phantom_trial3'], job2: 'phantom',
     trialHint: 'Trainees who have learnt all their basics can take the Assassin\'s Trial with me: Trainee Job Level 10 and Basic Training 9.',
-    trial2Hint: 'At Job Level 40 an Assassin may take the Phantom\'s trial with me. If you walk other paths too, the dagger must have the most of your skill points.',
+    trial2Hint: 'At Job Level 40 an Assassin may take the Phantom\'s trial with me. If you walk other paths too, the dagger must have the most of your skill points (a tie will do).',
     hello: 'You walked right up to me. Most people never see me until I want them to. I am Kol. I teach the dagger: small, quick, and always where they are not looking.',
     later: (lv) => `Not yet. Come back at Base Level ${lv}, and come quietly.`,
     bye: 'Walk softly.',
@@ -604,7 +605,7 @@ export const NPCS = {
   },
   arne: {
     name: 'Arne the Gate Guard', map: 'sand', x: 17.6, z: 12.4, dress: { body: 'blader', main: [40, 0.45, 0.9], accent: [210, 0.55, 1.0], hair: 'messy', dye: 'black', top: 'horned_helm' },
-    hello: 'North is Ember Hill, and the Fire Giant. West, the Red Sands: soft country, for new blades. East and south, the deep desert. Do not go there soft.',
+    hello: 'North is Ember Hill, and the Fire Giant. West, the Red Sands: soft country, for new blades. East, the Cactus Dunes, and the deep desert beyond them. Do not go there soft.',
     later: (lv) => `The Red Sands are crawling. Come back at Base Level ${lv}.`,
     bye: 'Keep your water skin full.',
     quests: ['redwatch'],

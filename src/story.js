@@ -156,7 +156,7 @@ export const STORY = [
     reward: { xp: 60 } },
   // ---------- the hunters' village: a low-level visit to Veidheim on the way (Willow Marsh is Lv 7-8) ----------
   { id: 'eastward', ch: 'Chapter 1: The Stone-Fort', title: 'The Hunters\' Village', kind: 'visit', map: 'hunt', goal: 'Travel east to Veidheim, the hunters\' village (through Birch Grove and Willow Marsh)',
-    hint: 'Birch Grove\'s Red Sprouts leave you be if you leave them be, but keep well away from the huge Giant Sprout. In Willow Marsh the Willows puff spores that slow you: keep moving.',
+    hint: 'Birch Grove\'s Red Sprouts leave you be if you leave them be, but keep well away from the huge Giant Sprout. In Willow Marsh the Willows shake seeds over you that slow you: keep moving.',
     say: [[null, 'Veidheim: log houses round a green, smoke from the tanner\'s yard, and a target on every fence. Somewhere a bowstring thrums, and somebody cheers.'],
       [null, 'By the green, a boy with a bow too big for him is arguing with the sentry. "I saw them, I tell you! The willows walked right up to the marsh road last night!"'],
       ['finn', 'You believe me? Every night since the ground started shaking, the willows come up out of the marsh, a little closer each time. There is an old way-stone on the marsh road, just west of the gate. They walk past it every night. Come and see!'],
@@ -180,14 +180,14 @@ export const STORY = [
       [null, 'Now go home to Eldrun Camp. You have grown fast: Elder Halvard will help you choose a path.']],
     reward: { xp: 80, perz: 450 } },
 
-  // ---------- Chapter 2: the three paths ----------
+  // ---------- Chapter 2: the four paths ----------
   // story EXP (x2 with QUEST_RATE) is paced so each chapter brings a hero to the next one's hinted level:
   // the Giant Sprout at about Base 28, Chapter 5's kobolds at about 32. A Trainee who reaches Job 9
   // during Chapter 1 is called home to choose (CALL_JOB, Story.callHome): no grind for the trials
   // the jobs explained, and the hero's pick (flags.pick): the story then sends them to that trainer
-  { id: 'paths', ch: 'Chapter 2: The Three Paths', title: 'By the Fire', kind: 'talk', npc: 'bram', goal: 'Go home to Eldrun Camp: Elder Halvard will help you choose a path',
+  { id: 'paths', ch: 'Chapter 2: The Four Paths', title: 'By the Fire', kind: 'talk', npc: 'bram', goal: 'Go home to Eldrun Camp: Elder Halvard will help you choose a path',
     say: [['bram', 'Sit, sit. You have grown since the morning I shook you awake. It is time you chose a path. Four masters train the young of Aria, and each path grows into something greater.'],
-      [null, 'THE BLADE: Captain Ulfr, Steinborg. Sword in hand, POW and END: you stand in front and take the blows. A Blader grows into a BladeMaster: the same damage on every monster, with Blade Dance and Sword Storm.',
+      [null, 'THE BLADE: Captain Ulfr, Steinborg. Sword in hand, POW and END: you stand in front and take the blows. A Blader grows into a BladeMaster: the same damage on every monster, with Blade Dance and Final Blade.',
         { pics: [{ job: 'swordman', label: 'Blader' }, '→', { job: 'blademaster', label: 'BladeMaster' }] }],
       [null, 'THE RUNE: Archmage Vigdis, Galdrheim. Fire, frost, wind and earth at a word, with KNL behind them. A Sorcerer grows into a Wizard: storms and meteors that break whole crowds, every element turned against the one it beats.',
         { pics: [{ job: 'mage', label: 'Sorcerer' }, '→', { job: 'wizard', label: 'Wizard' }] }],
@@ -209,19 +209,19 @@ export const STORY = [
       ['bram', (flags) => { const c = CALLINGS[pickOf(flags)]; return `${c.name.slice(4)} it is! I will send you to ${c.trainer}, ${c.where}, this very moment. Reach Trainee Job 10 with Basic Training 9, and the trial is yours to take.`; }, { sound: 'heart' }],
       ['bram', 'Change your mind on the road? Any of the four will try you instead, no harm done. And mark this: once you pass one trial, the others stay open to you. Pass them as well, wear whichever first job you like at a Keeper, and that is how the mixed paths begin.']],
     reward: { xp: 40 } },
-  { id: 'journey', ch: 'Chapter 2: The Three Paths', title: 'The Road to the Trainer', kind: 'visit',
+  { id: 'journey', ch: 'Chapter 2: The Four Paths', title: 'The Road to the Trainer', kind: 'visit',
     map: (flags) => CALLINGS[pickOf(flags)].city,
     goal: (flags) => { const c = CALLINGS[pickOf(flags)]; return `Travel to ${ZONE_NAMES[c.city]} to train as a ${c.jobName} with ${c.trainer}`; },
-    hint: 'Changed your mind? Captain Ulfr (Steinborg), Archmage Vigdis (Galdrheim) and Huntmaster Sigrid (Veidheim) all try Trainees: any of them will do.',
+    hint: 'Changed your mind? Captain Ulfr (Steinborg), Archmage Vigdis (Galdrheim), Huntmaster Sigrid (Veidheim) and Master Kol (Rytingborg) all try Trainees: any of them will do.',
     say: (flags) => { const c = CALLINGS[pickOf(flags)]; return [[null, `${ZONE_NAMES[c.city]}. Somewhere here, ${c.trainer} trains the ${c.jobName}s of Aria.`], [null, 'A trial wants Trainee Job 10 and Basic Training 9. Fight on until you are ready, then talk to your trainer and take it.']]; },
     reward: { xp: 40 } },
-  { id: 'path', ch: 'Chapter 2: The Three Paths', title: 'The Job Trial', kind: 'job',
+  { id: 'path', ch: 'Chapter 2: The Four Paths', title: 'The Job Trial', kind: 'job',
     map: (flags) => (flags.pick ? CALLINGS[flags.pick].city : null),
     goal: (flags) => { const c = CALLINGS[flags.pick]; return c ? `Pass the ${c.jobName} trial with ${c.trainer} in ${ZONE_NAMES[c.city]} (Trainee Job 10 and Basic Training 9 first). Changed your mind? Any first-job trainer will try you` : 'Reach Trainee Job 10 with Basic Training 9, then pass a job trial: Captain Ulfr in Steinborg (Blader), Archmage Vigdis in Galdrheim, north of Fen Shore (Sorcerer), Huntmaster Sigrid in Veidheim, east past Willow Marsh (Archer), or Master Kol in Rytingborg, south of Ember Hill (Assassin)'; },
     // a hint may depend on the hero: whether the trials are open yet, and the path they picked
     hint: (prog, flags) => {
       const c = CALLINGS[pickOf(flags)];
-      if (!(prog && prog.jobLv >= 10 && skillLv(prog, 'basics') >= 9)) return 'Fight in Moss Field, Fen Shore or Dark Dale to gain Job Levels, and raise Basic Training to 9 (Skills window).';
+      if (!(prog && prog.jobLv >= 10 && skillLv(prog, 'basics') >= 9)) return 'Fight in a Trainee\'s field (Moss Field, Fen Shore, Willow Marsh or the Red Sands: big Job EXP for a Trainee) to gain Job Levels, and raise Basic Training to 9 (Skills window).';
       return `You're ready! Talk to ${c.trainer}, ${c.where}, and take the trial. Or any other trainer's: the choice is still yours.`;
     },
     // the job taken, and whether it was the one the runes named

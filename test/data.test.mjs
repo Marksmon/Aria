@@ -70,3 +70,25 @@ test('the story: unique step ids, real monsters, items and maps', () => {
   assert.equal(new Set(ids).size, ids.length, 'story ids are unique');
   for (const s of STORY) check(`story ${s.id}`, s);
 });
+
+test("an item's 'from' text names real droppers at their real rates", () => {
+  const PL = { Wolf: 'Wolves', Cactus: 'Cacti', Mummy: 'Mummies', Sarcophagus: 'Sarcophagi', 'Dark Elf': 'Dark Elves' };
+  const esc = (x) => x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const names = [...new Set(Object.values(MOB_DEFS).filter((d) => !d.decoy).map((d) => d.name))].sort((a, b) => b.length - a.length);
+  const bad = [];
+  for (const [id, it] of Object.entries(ITEMS)) {
+    if (!it.from || id.includes('|')) continue;
+    let f = it.from;
+    for (const nm of names) {
+      // "Bear (3%)", "Bears (0.15%)", "the Great Bear (3%)": that monster drops it, at that rate (not a raid's name: "Bloop Island")
+      const re = new RegExp(`\\b(?:${[`${esc(nm)}(?:e?s)?`, ...(PL[nm] ? [esc(PL[nm])] : [])].join('|')})\\b(?! Island| Camp| Lair|'s Tomb| Cores| Tomb)(?:\\s*\\(([0-9.]+)%\\))?`, 'g');
+      for (const m of f.matchAll(re)) {
+        const drop = Object.values(MOB_DEFS).filter((d) => d.name === nm).flatMap((d) => [...(d.drops || []), ...(d.mvpDrops || []).map(([i]) => [i, 1, 1, 'mvp'])]).find(([i]) => i === id);
+        if (!drop) bad.push(`${id}: says ${nm}, which doesn't drop it`);
+        else if (m[1] && drop[3] !== 'mvp' && Math.abs(drop[3] * 100 - +m[1]) > 0.001) bad.push(`${id}: ${nm} ${m[1]}%, really ${+(drop[3] * 100).toFixed(2)}%`);
+      }
+      f = f.replace(re, '#');
+    }
+  }
+  assert.deepEqual(bad, []);
+});

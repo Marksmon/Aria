@@ -22,7 +22,7 @@ export class UI {
     this.faintEl = document.getElementById('faint');
     this.mobs = null;
     this.prog = null;
-    this.jobName = () => 'Novice';
+    this.jobName = () => 'Trainee';
     this.heroName = () => ''; // the name chosen with the look
   }
 

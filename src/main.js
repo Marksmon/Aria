@@ -1860,7 +1860,7 @@ const NPC_GUIDES = {
       return [
         { at: () => $('[data-act="smithwin"][data-id="enchant"]', win('talk')), text: '<b>Seyla</b> opens <b>card slots</b>. A card pressed into a slot adds its stats, and a boss\'s card its own power. Tap <b>Add a card slot</b>.', done: on },
         { at: () => $('.rw-smith .rnote', document), need: on, back: 1, text: `She works only on <b>Lv 4 weapons</b>, up to two slots: the first takes ${ENCHANT.chance[0]}% of the time, the second ${ENCHANT.chance[1]}%. <b>A failure breaks the weapon</b>, so try it on one you can lose.` },
-        { at: () => $('.smithdetail .costs', win('smith')) || $('.rw-smith .rlist', document), need: on, back: 1, text: 'Each try costs Hard Ore, Shade, a <b>boss material</b> (a mini-boss or MVP drop) and perz; the second slot costs twice as much. Gear can also drop, be crafted or won with a slot already in it.' },
+        { at: () => $('.smithdetail .costs', win('smith')) || $('.rw-smith .rlist', document), need: on, back: 1, text: 'Each try costs Hard Ore, Dark Crystals, a <b>boss material</b> (a mini-boss or MVP drop) and perz; the second slot costs twice as much. Gear can also drop, be crafted or won with a slot already in it.' },
         { at: () => hudBtn('items'), need: on, back: 1, text: 'Cards <b>drop from monsters</b>, one card for each kind. To press one in: <b>Items</b>, tap the card, then <b>Insert</b>, and pick the piece. Seyla can also draw cards out again, whole (<b>Remove a card</b>).' },
       ];
     },

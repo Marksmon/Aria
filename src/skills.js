@@ -39,7 +39,7 @@ export const SKILLS = {
   // ---------- Novice ----------
   basics: {
     name: 'Basic Training', job: 'novice', kind: 'passive', max: 9, icon: 'skill_lore',
-    desc: (lv) => `+${lv} ATK. Lv 3: you can Rest. Lv 9: you may become a Blader, a Sorcerer or an Archer.`,
+    desc: (lv) => `+${lv} ATK. Lv 3: you can Rest. Lv 9: you may become a Blader, a Sorcerer, an Archer or an Assassin.`,
   },
   rest: {
     name: 'Rest', job: 'novice', kind: 'active', max: 1, needs: { basics: 3 }, granted: true, icon: 'skill_rest',
@@ -312,7 +312,7 @@ export const SKILLS = {
   // do). Trap damage comes from FNS and KNL and the Base Level, never misses and goes through DEF ----------
   trapmastery: {
     name: 'Trap Mastery', job: 'hunter', kind: 'passive', max: 10, icon: 'skill_trapmastery',
-    desc: (lv) => `Your traps hit ${5 * lv}% harder and wait ${2 * lv} s longer; ${3 + Math.floor(lv / 5)} traps out at once (one more at Lv 5 and Lv 10).`,
+    desc: (lv) => `Your traps hit ${5 * lv}% harder and wait ${2 * lv} s longer; ${3 + Math.floor(lv / 5)} traps out at once (3 to begin with, one more at Lv 5 and Lv 10).`,
   },
   barbedtraps: {
     name: 'Barbed Traps', job: 'hunter', kind: 'passive', max: 5, needs: { beartrap: 1 }, icon: 'skill_barbed',

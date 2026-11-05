@@ -278,7 +278,7 @@ export class Menus {
     const rares = R.rares.map((id) => `<span class="loot rare" title="${esc(ITEMS[id].name)}">${icon(id, 'xs')}${esc(ITEMS[id].name)}</span>`).join('');
     const card = R.card ? `<span class="loot rare">${icon(R.card[0], 'xs')}${esc(ITEMS[R.card[0]].name)} <i>${Math.round(R.card[1] * 100)}%</i></span>` : '';
     const why = low(D) ? `Needs Base ${D.lv}: you are Base ${p.baseLv}.` : info.wait && !D.tutorial ? `${R.words.wait}: back in ${waitText(info.wait)}.` : '';
-    const note = info.story && D.tutorial ? 'First time out? The Tutorial crossing costs no tide, and I pay you whether you beat him or not.'
+    const note = info.story && D.tutorial ? 'First time out? The Tutorial crossing costs no tide: beat him and I pay you, and the story goes on. Lose, and we row out again whenever you are ready.'
       : `${R.words.pitch} ${R.words.cooldown}${this.anywhere ? ' From here, you come back to where you are.' : ''}`;
     const tw = this.wins.talk;
     tw.classList.add('raidwin');
