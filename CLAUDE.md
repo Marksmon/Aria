@@ -172,7 +172,7 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   tops, glowing runes, earth floors, living-trunk pillars, glowing mushrooms for torches): three maze floors and the
   great hall, at the Sphinx's levels (the owner's call). 1 Root Squirrel, Bramble (31-45); 2 Root Serpent, Moss
   Golem, Dark Elf (46-60); 3 Great Stag, Dryad, Rot Beetle and Ratatoskr the mini-boss (61-75; the owner's call, after the owner's sheet: the
-  messenger squirrel in runed plate with a fiery tail, small, quick, hard to hit); 4 the great
+  messenger squirrel in runed plate with a fiery tail, small: about a Root Squirrel's size, quick, hard to hit); 4 the great
   hall: Root Wardens, Thorn Drakes (`hall: true`) and **Nidhogg** (Lv 99 MVP, `hall: true`; after the owner's
   picture: black, red-cracked, torn crimson wings with holes), whose mechanic is Gnaw the Roots (`MOVES.gnaw`:
   it heals while the rot withers the hall; tear it away with `tear` of its HP in time, or it rises gorged in a
