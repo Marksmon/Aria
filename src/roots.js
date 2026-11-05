@@ -14,7 +14,7 @@ const flat = { outline: false, flat: true };
 export const ROOTS = {
   // the Root Squirrels: Ratatoskr's kin (the owner's call: like it), up on their hind legs in bark-leather
   // jerkins and leaf-green scarves, their tails fiery with a few faint runes; no helm, no cloak (those are
-  // Ratatoskr's)
+  // Ratatoskr's). They stand taller than Ratatoskr itself (the owner's call: the messenger is the smallest)
   rootSquirrel: { kind: 'ratatoskr', kin: true, size: [72, 72], body: [36, 58], fur: '#c06a32', face: '#ecb478', tail: '#c8702c', tailHi: '#f0a040', rune: '#ffc870', armor: '#6a4a2e', trim: '#a8804a', cloak: '#4f8a3c', eye: '#1a0c08', claw: '#efe2cc' },
   bramble: { kind: 'bramble', size: [44, 44], body: [30, 32], leaf: '#3a6a2a', thorn: '#e2d4a8', berry: '#c83a4a', eye: '#ffd23a', root: '#5e4028' },
   darkElf: { kind: 'elf', k: 1, size: [48, 64], body: [22, 58], skin: '#7a86a8', hair: '#eceaf6', armor: '#2a2438', trim: '#8a5ad8', bow: '#5a3a2a', string: '#d8d0e8', eye: '#ff6a8a' },
