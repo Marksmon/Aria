@@ -378,7 +378,9 @@ dim underground, day or night.
   and the Pharaoh's Servants (skeletal priests who throw blue fire from crystal staves).
 - **Floor 3:** Sphinx Cubs, Sand Elementals (their whirling sand slows you), walking Sarcophagi, and
   **Ammit the Devourer** (Lv 74 mini-boss: a crocodile's head, a lion's mane and claws). It rushes,
-  pounces, and **Devours**: a bite that heals it. It calls Sphinx Cubs.
+  pounces, and **Devours**: a bite that heals it. It calls Sphinx Cubs. Now and then (2%) it drops the
+  **Angry Snarl**, a Face piece: a slanted white mouth of gritted teeth on your hero's face (ATK +10,
+  HIT +3, POW +2, END +1).
 - **Floor 4, the great hall:** no maze, only a long hall of gold-capped pillars, where the Jackal
   Guardians with their long cursed spears and the Falcon Sentinels throwing blades of wind keep watch
   over the **Eternal Sphinx** (Lv 99 MVP, 1,400,000 HP, Earth), a winged lion in a striped headdress.
@@ -426,7 +428,9 @@ round a rune circle of the World Tree. Every monster down there attacks on sight
   mini-boss), the World Tree's messenger squirrel: no bigger than a Bloop, like its kin, but quick and hard to hit, in dark
   plate traced with glowing gold runes, a torn red cloak and a great fiery tail. It dashes in (**Swift
   Dash**), bounds onto you (**Bounding Leap**), throws glowing **Rune Acorns**, strikes twice now and
-  then, and calls its kin, the Root Squirrels.
+  then, and calls its kin, the Root Squirrels. Now and then (2%) it drops **Ratatoskr's Tail**, a Wings
+  piece: its great fiery tail on your back, runes pulsing with light, swishing as you stand (FLEE +6,
+  QKN +3, FNS +1, FTN +1).
 - **Floor 4, the great hall:** Root Wardens, knights of living wood crowned with branches in leaf, with
   shields carved with the World Tree and greatswords of living wood, and Thorn Drakes (Nidhogg's brood,
   grown over with brambles: leaf-veined wings, thorns down their backs, venom dripping green) guard **Nidhogg**

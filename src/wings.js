@@ -44,6 +44,7 @@ const WING_MOVE = {
   ember: { w: 1.36, h: 0.8, y: 0.98, move: 'flicker' },
   angel: { w: 0.94, h: 1.05, y: 0.81, move: 'flap', speed: 1.6, amp: 0.05 }, // folded, tall on the back (a 78 x 114 box)
   devil: { w: 1.09, h: 0.915, y: 0.83, move: 'flap', speed: 1.7, amp: 0.12 },
+  ratatoskr: { w: 0.97, h: 1.14, y: 1.0, move: 'swish' }, // (Ratatoskr's Tail: 0.0088 a pixel of its 110 x 130 box, its root at 0.71, the small of the back)
   nidhogg: { w: 1.48, h: 1.02, y: 0.81, move: 'flap', speed: 1.3, amp: 0.1 }, // (Nidhogg Wings: 0.0088 a pixel of its 168 x 116 box, the back at 84, 50 kept at 0.95) // (as big as the Angel Wings: 0.0088 a pixel of its 124 x 104 box, the back at 62, 38 kept at 0.95)
 };
 // a still picture of the wings an item puts on the back, facing dir, and how they sit (WING_MOVE: their
@@ -109,9 +110,10 @@ export class Wings {
       this.wing.material.map = this.wingFrames[0];
       this.wing.material.needsUpdate = true;
       this.wing.visible = true;
+      this.special = look.art === 'nidhogg'; // (the ultra rare: embers, and its spread at rest)
       if (WING_GLOW[look.art]) {
         this.glowViews = this.cache[key + ':glow'] ||= wingViews(look.art, true);
-        if (!this.embers) this.makeEmbers();
+        if (this.special && !this.embers) this.makeEmbers();
       }
     } else {
       this.frames = this.cache[key] ||= floatFrames(look);
@@ -152,10 +154,11 @@ export class Wings {
       if (M.move === 'sway') { sx = 0.97 + 0.03 * Math.sin(t * 1.5); rot = Math.sin(t * 1.1) * 0.04; bob = Math.sin(t * 1.5) * 0.015; }
       if (M.move === 'flutter') { sx = 0.72 + 0.28 * Math.abs(Math.sin(t * 13)); bob = Math.sin(t * 3) * 0.02; }
       if (M.move === 'flicker') { sy = 0.94 + 0.06 * Math.sin(t * 9) + 0.03 * Math.sin(t * 23); }
+      if (M.move === 'swish') { rot = Math.sin(t * 1.6) * 0.05 + (this.idleT > 1 ? Math.sin(t * 4.2) * 0.03 * Math.max(0, Math.sin(t * 0.7)) : 0); sy = 1 + Math.sin(t * 2.1) * 0.02; } // (a tail swishing, a quick flick now and then at rest)
       if (M.move === 'flap') { sx = 1 - M.amp + M.amp * Math.sin(t * M.speed); bob = Math.sin(t * M.speed + 1) * 0.03; }
       // Nidhogg Wings at rest: every few seconds they spread slow and wide, and their light flares
       let flare = 0;
-      if (this.glowViews && this.idleT > SPREAD.after) {
+      if (this.glowViews && this.special && this.idleT > SPREAD.after) {
         const u = ((this.idleT - SPREAD.after) % SPREAD.every) / SPREAD.dur;
         if (u < 1) { flare = Math.sin(u * Math.PI); sx *= 1 + SPREAD.grow * flare; bob += SPREAD.lift * flare; }
       }
@@ -177,11 +180,12 @@ export class Wings {
         this.glow.position.copy(this.wing.position);
         this.glow.center.copy(this.wing.center);
         this.glow.scale.copy(this.wing.scale);
+        this.glow.material.rotation = this.wing.material.rotation;
         this.glow.renderOrder = away ? 5.5 : 1.5;
         const beat = Math.pow(0.5 + 0.5 * Math.sin(t * 2.6), 2);
         this.glow.material.opacity = Math.min(1, 0.22 + 0.38 * beat + 0.5 * flare);
         this.glow.visible = true;
-        this.tickEmbers(dt, p, fwd, ground, M, flare);
+        if (this.special) this.tickEmbers(dt, p, fwd, ground, M, flare);
       }
       return;
     }

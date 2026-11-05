@@ -176,7 +176,7 @@ export const MOB_DEFS = {
   ammit: { name: 'Ammit', ai: 'boss', art: 'ammit', aura: '#6ad890', el: 'shadow', boss: true, lv: 74, hp: 340000, atk: [240, 310], def: 26, vit: 60, agi: 40, dex: 165, mdef: 25, exp: [80000, 56000], adelay: 1700, fierce: true, walk: 160,
     moves: [{ kind: 'charge', name: 'Devouring Rush', mult: 1.7 }, { kind: 'leap', name: 'Pounce', mult: 1.8, r: 1.9 }, { kind: 'devour', name: 'Devour', mult: 2.2, heal: 0.04 }],
     aggro: 6, chase: 12, reach: 1.6, w: 2.3, r: 0.85, heavy: true, summon: ['sphinxCub', 'sphinxCub'], summonText: 'Ammit roars, and Sphinx Cubs come bounding out of the dark!', respawn: 540,
-    drops: [['ammit_heart', 1, 1, 0.3], ['gold_leaf', 3, 5, 1], ['potion3', 1, 2, 0.5], ['devourer_mail', 1, 1, 0.03], ['ammit_claw', 1, 1, 0.02], ['ammit_card', 1, 1, 0.01]] },
+    drops: [['ammit_heart', 1, 1, 0.3], ['gold_leaf', 3, 5, 1], ['potion3', 1, 2, 0.5], ['devourer_mail', 1, 1, 0.03], ['ammit_claw', 1, 1, 0.02], ['ammit_snarl', 1, 1, 0.02], ['ammit_card', 1, 1, 0.01]] },
   // the MVP of the Sphinx's Halls, on the fourth floor, its great hall (hall: it never leaves it): the Eternal Sphinx, a winged lion in a striped headdress, the oldest thing in Aria. It
   // tests whoever comes with its Riddle (the owner's call: riddles and combat): a riddle, three answers
   // written in three circles round you; stand in the right one when the time is up and it is
@@ -214,7 +214,7 @@ export const MOB_DEFS = {
   ratatoskr: { name: 'Ratatoskr', ai: 'boss', art: 'ratatoskr', aura: '#ffb040', el: 'wind', boss: true, lv: 74, hp: 300000, atk: [220, 285], def: 18, vit: 48, agi: 80, dex: 175, mdef: 30, exp: [80000, 56000], adelay: 1350, fierce: true, walk: 100, double: 0.15,
     moves: [{ kind: 'charge', name: 'Swift Dash', mult: 1.5 }, { kind: 'leap', name: 'Bounding Leap', mult: 1.6, r: 1.7 }, { kind: 'throw', name: 'Rune Acorn', mult: 1.5, r: 1.4 }, { kind: 'frenzy' }],
     aggro: 6.5, chase: 12, reach: 0.8, w: 0.6, r: 0.32, summon: ['rootSquirrel', 'rootSquirrel', 'rootSquirrel'], summonText: 'Ratatoskr chatters, and its kin come running down the roots!', respawn: 540,
-    drops: [['rune_tuft', 1, 1, 0.3], ['squirrel_tail', 3, 5, 1], ['potion3', 1, 2, 0.5], ['messenger_shroud', 1, 1, 0.03], ['rune_bracelet', 1, 1, 0.02], ['ratatoskr_card', 1, 1, 0.01]] },
+    drops: [['rune_tuft', 1, 1, 0.3], ['squirrel_tail', 3, 5, 1], ['potion3', 1, 2, 0.5], ['messenger_shroud', 1, 1, 0.03], ['rune_bracelet', 1, 1, 0.02], ['ratatoskr_tail', 1, 1, 0.02], ['ratatoskr_card', 1, 1, 0.01]] },
   rootWarden: { name: 'Root Warden', ai: 'tank', art: 'rootWarden', el: 'earth', hall: true, lv: 80, hp: 8000, atk: [290, 364], def: 34, vit: 66, agi: 30, dex: 120, exp: [5000, 3500], adelay: 1600, walk: 220, aggro: 6, chase: 10, reach: 1.3, w: 1.3, r: 0.5, heavy: true, drops: [['living_heartwood', 1, 1, 0.5], ['potion3', 1, 2, 0.07], ['warden_blade', 1, 1, 0.0025], ['rootwarden_card', 1, 1, 0.001]] },
   thornDrake: { name: 'Thorn Drake', ai: 'archer', art: 'thornDrake', el: 'shadow', hall: true, lv: 86, hp: 8400, atk: [314, 394], def: 24, vit: 60, agi: 60, dex: 140, exp: [6200, 4340], adelay: 1500, walk: 150, aggro: 7, chase: 10, range: 5, reach: 1.1, w: 1.5, r: 0.5, shot: '#9aff6a', drops: [['drake_scale', 1, 1, 0.5], ['potion3', 1, 2, 0.08], ['drake_ring', 1, 1, 0.0025], ['thorndrake_card', 1, 1, 0.001]] },
   // the MVP of Yggdrasil, in the great hall at its heart (hall: it never leaves it): Nidhogg, the black

@@ -82,6 +82,7 @@ export function paintLantern(g, flame = 0.5) {
 // Angel Wings are folded instead (the owner's concept), tall on the back: their own box (WING_BOX).
 export function paintWings(g, art, frame = 0) {
   const [, , bx, by] = wingBox(art);
+  if (SINGLE[art]) { g.save(); g.translate(bx, by); SINGLE[art](g, 'front', 1, false); g.restore(); return; }
   for (const s of [-1, 1]) {
     g.save(); g.translate(bx, by); g.scale(s, 1);
     (WING_ART[art] || WING_ART.fairy)(g, frame, s);
@@ -94,15 +95,21 @@ export function paintWings(g, art, frame = 0) {
 // from the spine (SWEEP), turned with the hero (yaw: how far the face has turned toward screen right),
 // so it narrows and slides as they turn; the nearer wing over the farther, the crest down the spine
 // only when the back is toward us, and a wing's inner face (toward the hero's front) a little darker.
-export const WING_VIEWS = { angel: true, leaf: true, fairy: true, ember: true, devil: true, nidhogg: true }; // (every pair: they turn with the hero)
+export const WING_VIEWS = { angel: true, leaf: true, fairy: true, ember: true, devil: true, nidhogg: true, ratatoskr: true }; // (every pair: they turn with the hero)
 export const WING_DIRS = ['down', 'downright', 'right', 'upright', 'up', 'upleft', 'left', 'downleft'];
 const SWEEP = 0.55, BACK = 10; // the wings' sweep back from the spine plane; the back, this far behind the hero's middle (px)
 const FLARE = 8; // facing us, the wings stand this far out from the body (px), so they show past it
 // glow: paint only what glows (WING_GLOW: Nidhogg Wings' veins, holes and knuckles), for the layer that
 // pulses over the wings (wings.js)
-export const WING_GLOW = { nidhogg: true };
+export const WING_GLOW = { nidhogg: true, ratatoskr: true };
+// one piece on the back, not a pair (Ratatoskr's Tail): painted once, turned with the hero (SINGLE)
 export function paintWingsView(g, art, dir, frame = 0, glow = false) {
   const [, , bx, by] = wingBox(art), t = (WING_DIRS.indexOf(dir) * Math.PI) / 4;
+  if (SINGLE[art]) { // the tail: up over the right shoulder from the front, the left from behind, out behind from the side
+    const st = Math.sin(t), ct = Math.cos(t), view = ct > 0.35 ? 'front' : ct < -0.35 ? 'back' : 'side', c = Math.abs(st) > 0.1 ? -Math.sign(st) : 1;
+    g.save(); g.translate(bx - BACK * 0.6 * st, by); SINGLE[art](g, view, view === 'front' ? 1 : view === 'back' ? -1 : c, glow); g.restore();
+    return;
+  }
   const cs = Math.cos(SWEEP), sn = Math.sin(SWEEP), ct = Math.cos(t), st = Math.sin(t);
   const parts = [-1, 1].map((side) => {
     const a = side * cs * ct - sn * st; // how a wing's painted x (out from the spine) lands across the screen
@@ -128,7 +135,7 @@ export function paintWingsView(g, art, dir, frame = 0, glow = false) {
   for (const p of parts.sort((x, y) => x.depth - y.depth)) p.draw();
 }
 // a box other than 96 x 56 with the back at (48, 30): [w, h, back x, back y]
-const WING_BOX = { angel: [78, 114, 39, 35], devil: [124, 104, 62, 38], nidhogg: [168, 116, 84, 50] }; // (the Devil Wings: tall for the tail; Nidhogg's, great and wide)
+const WING_BOX = { angel: [78, 114, 39, 35], devil: [124, 104, 62, 38], nidhogg: [168, 116, 84, 50], ratatoskr: [110, 130, 55, 96] }; // (Ratatoskr's Tail: tall, from the small of the back) // (the Devil Wings: tall for the tail; Nidhogg's, great and wide)
 export const wingBox = (art) => WING_BOX[art] || [96, 56, 48, 30];
 // a pale crystal: a diamond, lit at its upper left
 function crystal(g, x, y, w, h) {
@@ -385,6 +392,64 @@ WING_ART.nidhogg = (g, frame, side, glow) => {
   spike(wr[0], wr[1], 8, -16, 3);
   spike(wr[0] - 2, wr[1] + 2, -4, -12, 2);
   g.beginPath(); g.arc(wr[0], wr[1], 2.4, 0, Math.PI * 2); g.fillStyle = '#ff3a2a'; g.fill(); g.lineWidth = 0.8; g.strokeStyle = '#140608'; g.stroke(); // the red knuckle
+};
+// Ratatoskr's Tail (Ratatoskr's drop, after the owner's sheet): its great fiery tail, worn on the back. From
+// the small of the back it sweeps out and up in a big S, fluffy fur in tufts, orange lit to gold down its
+// middle, dark at the edge, gold runes glowing all along it (glow: the runes alone, for the layer that
+// pulses: wings.js), wisps of fire off its tip. c: the side it sweeps to (1 the viewer's right)
+const TAIL_PATH = {
+  front: [[0, -4], [10, -2], [22, -18], [26, -44], [18, -70], [6, -88], [-6, -92]],
+  back: [[0, -4], [10, -2], [22, -18], [26, -44], [18, -70], [6, -88], [-6, -92]],
+  side: [[0, -4], [14, -6], [30, -20], [36, -46], [28, -72], [16, -88], [4, -92]],
+};
+const SINGLE = {
+  ratatoskr(g, view, c, glow) {
+    const P = TAIL_PATH[view].map(([x, y]) => [x * c, y]);
+    const N = 40, mid = [];
+    for (let i = 0; i <= N; i++) { // the centre line: through P's points, smoothed
+      const f = (i / N) * (P.length - 1), k = Math.min(P.length - 2, Math.floor(f)), u = f - k;
+      const a = P[Math.max(0, k - 1)], b = P[k], d = P[k + 1], e = P[Math.min(P.length - 1, k + 2)];
+      const cr = (p0, p1, p2, p3) => 0.5 * (2 * p1 + (-p0 + p2) * u + (2 * p0 - 5 * p1 + 4 * p2 - p3) * u * u + (-p0 + 3 * p1 - 3 * p2 + p3) * u * u * u);
+      mid.push([cr(a[0], b[0], d[0], e[0]), cr(a[1], b[1], d[1], e[1])]);
+    }
+    const rad = (i) => { const t = i / N; return 3 + Math.sin(Math.min(1, t * 1.15) * Math.PI) * 13 + (t > 0.85 ? -4 * (t - 0.85) / 0.15 : 0); };
+    const side = (k, jag) => mid.map(([x, y], i) => {
+      const [x0, y0] = mid[Math.max(0, i - 1)], [x1, y1] = mid[Math.min(N, i + 1)], dx = x1 - x0, dy = y1 - y0, d = Math.hypot(dx, dy) || 1;
+      const r = rad(i) * k * (jag && i % 3 === 1 ? 1.22 : 1);
+      return [x - (dy / d) * r, y + (dx / d) * r];
+    });
+    const runes = () => {
+      g.beginPath();
+      for (let i = 6; i < N - 2; i += 5) {
+        const [x, y] = mid[i], r = 2.6 + rad(i) * 0.12;
+        if (i % 10 === 6) { g.moveTo(x - r, y - r); g.lineTo(x + r, y + r); g.moveTo(x + r, y - r); g.lineTo(x - r, y + r); g.moveTo(x, y - r * 1.4); g.lineTo(x, y + r * 1.4); }
+        else { g.moveTo(x, y - r * 1.3); g.lineTo(x + r, y); g.lineTo(x, y + r * 1.3); g.lineTo(x - r, y); g.closePath(); }
+      }
+    };
+    if (glow) { // only what glows: the runes, and the fire at its tip
+      g.shadowColor = '#ffb040'; g.shadowBlur = 6;
+      runes(); g.lineWidth = 2.2; g.strokeStyle = '#ffe08a'; g.stroke();
+      for (let i = 0; i < 5; i++) { const [x, y] = mid[N - i * 2]; g.beginPath(); g.arc(x + c * (4 + i * 2), y - 3 + i, 1.6, 0, Math.PI * 2); g.fillStyle = '#ffd27a'; g.fill(); }
+      g.shadowBlur = 0;
+      return;
+    }
+    const outer = [...side(1, true), ...side(-1, true).reverse()];
+    g.beginPath(); outer.forEach(([x, y], i) => (i ? g.lineTo(x, y) : g.moveTo(x, y))); g.closePath();
+    const fur = g.createLinearGradient(0, 0, c * 20, -90);
+    fur.addColorStop(0, '#8a3a14'); fur.addColorStop(0.35, '#d8702a'); fur.addColorStop(0.8, '#f09a38'); fur.addColorStop(1, '#ffc860');
+    g.fillStyle = fur; g.fill(); g.lineWidth = 1.6; g.strokeStyle = '#3a1a08'; g.stroke();
+    g.save(); g.clip();
+    const inner = [...side(0.55, false), ...side(-0.15, false).reverse()];
+    g.beginPath(); inner.forEach(([x, y], i) => (i ? g.lineTo(x, y) : g.moveTo(x, y))); g.closePath();
+    g.fillStyle = 'rgba(255, 210, 120, .45)'; g.fill(); // the light down its middle
+    for (let i = 2; i < N; i += 2) { // strokes of fur
+      const [x, y] = mid[i], r = rad(i);
+      g.beginPath(); g.moveTo(x - c * r * 0.7, y + 2); g.quadraticCurveTo(x, y - 3, x + c * r * 0.8, y - 1);
+      g.lineWidth = 0.8; g.strokeStyle = 'rgba(90, 30, 8, .45)'; g.stroke();
+    }
+    g.restore();
+    runes(); g.lineWidth = 1.6; g.strokeStyle = '#f0c050'; g.stroke();
+  },
 };
 // the Devil Wings' tail: dark spiked segments with crimson edges, down to a barbed spear tip. It hangs
 // from the small of the back; turned to us it curls out past the legs, so it shows even facing front.
