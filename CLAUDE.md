@@ -237,4 +237,7 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   for free; don't paint every frame or build every map at load.
 - `npx vite build` must pass. Test in the browser with Playwright (the game exposes
   `window.__aria`).
+- `npm test` must pass (`test/`: the job rules, the data, saves, the balance bands; it also runs
+  before every APK build), and `npm run smoke` after a build (the built game in Chromium). Both run
+  on every push (`.github/workflows/test.yml`). A new owner rule that code can check gets a test.
 - Never commit the PixelLab API key, or the Ragnarok reference image used as a style reference.
