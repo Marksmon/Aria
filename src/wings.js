@@ -44,7 +44,7 @@ const WING_MOVE = {
   ember: { w: 1.36, h: 0.8, y: 0.98, move: 'flicker' },
   angel: { w: 0.94, h: 1.05, y: 0.81, move: 'flap', speed: 1.6, amp: 0.05 }, // folded, tall on the back (a 78 x 114 box)
   devil: { w: 1.09, h: 0.915, y: 0.83, move: 'flap', speed: 1.7, amp: 0.12 },
-  ratatoskr: { w: 0.97, h: 1.14, y: 1.0, move: 'swish' }, // (Ratatoskr's Tail: 0.0088 a pixel of its 110 x 130 box, its root at 0.71, the small of the back)
+  ratatoskr: { w: 1.72, h: 1.19, y: 0.84, move: 'swish' }, // (Ratatoskr's Tail, big like the owner's sheet: 0.0114 a pixel of its 150 x 104 box, its root at 0.68, the small of the back)
   nidhogg: { w: 1.48, h: 1.02, y: 0.81, move: 'flap', speed: 1.3, amp: 0.1 }, // (Nidhogg Wings: 0.0088 a pixel of its 168 x 116 box, the back at 84, 50 kept at 0.95) // (as big as the Angel Wings: 0.0088 a pixel of its 124 x 104 box, the back at 62, 38 kept at 0.95)
 };
 // a still picture of the wings an item puts on the back, facing dir, and how they sit (WING_MOVE: their

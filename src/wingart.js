@@ -135,7 +135,7 @@ export function paintWingsView(g, art, dir, frame = 0, glow = false) {
   for (const p of parts.sort((x, y) => x.depth - y.depth)) p.draw();
 }
 // a box other than 96 x 56 with the back at (48, 30): [w, h, back x, back y]
-const WING_BOX = { angel: [78, 114, 39, 35], devil: [124, 104, 62, 38], nidhogg: [168, 116, 84, 50], ratatoskr: [110, 130, 55, 96] }; // (Ratatoskr's Tail: tall, from the small of the back) // (the Devil Wings: tall for the tail; Nidhogg's, great and wide)
+const WING_BOX = { angel: [78, 114, 39, 35], devil: [124, 104, 62, 38], nidhogg: [168, 116, 84, 50], ratatoskr: [150, 104, 75, 66] }; // (Ratatoskr's Tail: wide, sweeping out beside the hero from the small of the back) // (the Devil Wings: tall for the tail; Nidhogg's, great and wide)
 export const wingBox = (art) => WING_BOX[art] || [96, 56, 48, 30];
 // a pale crystal: a diamond, lit at its upper left
 function crystal(g, x, y, w, h) {
@@ -393,62 +393,82 @@ WING_ART.nidhogg = (g, frame, side, glow) => {
   spike(wr[0] - 2, wr[1] + 2, -4, -12, 2);
   g.beginPath(); g.arc(wr[0], wr[1], 2.4, 0, Math.PI * 2); g.fillStyle = '#ff3a2a'; g.fill(); g.lineWidth = 0.8; g.strokeStyle = '#140608'; g.stroke(); // the red knuckle
 };
-// Ratatoskr's Tail (Ratatoskr's drop, after the owner's sheet): its great fiery tail, worn on the back. From
-// the small of the back it sweeps out and up in a big S, fluffy fur in tufts, orange lit to gold down its
-// middle, dark at the edge, gold runes glowing all along it (glow: the runes alone, for the layer that
-// pulses: wings.js), wisps of fire off its tip. c: the side it sweeps to (1 the viewer's right)
+// Ratatoskr's Tail (Ratatoskr's drop, after the owner's sheet): its great fiery tail, worn at the small of
+// the back. It sweeps out wide and low beside the hero and curls up into a great swirl; wispy fur, deep
+// auburn at the root lighting to orange and cream at the tips; dark armoured bands with gold trim and little
+// spikes bind it near the root (Agile Binding); gold diamond runes glow along it (Runic Fur Flow), and
+// fiery wisps circle the swirl. glow: the runes and wisps alone, for the layer that pulses (wings.js).
+// c: the side it sweeps to (1 the viewer's right)
 const TAIL_PATH = {
-  front: [[0, -4], [10, -2], [22, -18], [26, -44], [18, -70], [6, -88], [-6, -92]],
-  back: [[0, -4], [10, -2], [22, -18], [26, -44], [18, -70], [6, -88], [-6, -92]],
-  side: [[0, -4], [14, -6], [30, -20], [36, -46], [28, -72], [16, -88], [4, -92]],
+  front: [[0, -2], [14, 6], [32, 8], [48, -2], [56, -20], [50, -38], [36, -44], [26, -36], [28, -24], [38, -22]],
+  back: [[0, -2], [14, 6], [32, 8], [48, -2], [56, -20], [50, -38], [36, -44], [26, -36], [28, -24], [38, -22]],
+  side: [[0, -2], [12, 8], [30, 10], [46, 0], [54, -18], [48, -36], [34, -42], [24, -34], [26, -22], [36, -20]],
 };
 const SINGLE = {
   ratatoskr(g, view, c, glow) {
     const P = TAIL_PATH[view].map(([x, y]) => [x * c, y]);
-    const N = 40, mid = [];
+    const N = 54, mid = [];
     for (let i = 0; i <= N; i++) { // the centre line: through P's points, smoothed
       const f = (i / N) * (P.length - 1), k = Math.min(P.length - 2, Math.floor(f)), u = f - k;
       const a = P[Math.max(0, k - 1)], b = P[k], d = P[k + 1], e = P[Math.min(P.length - 1, k + 2)];
       const cr = (p0, p1, p2, p3) => 0.5 * (2 * p1 + (-p0 + p2) * u + (2 * p0 - 5 * p1 + 4 * p2 - p3) * u * u + (-p0 + 3 * p1 - 3 * p2 + p3) * u * u * u);
       mid.push([cr(a[0], b[0], d[0], e[0]), cr(a[1], b[1], d[1], e[1])]);
     }
-    const rad = (i) => { const t = i / N; return 3 + Math.sin(Math.min(1, t * 1.15) * Math.PI) * 13 + (t > 0.85 ? -4 * (t - 0.85) / 0.15 : 0); };
-    const side = (k, jag) => mid.map(([x, y], i) => {
-      const [x0, y0] = mid[Math.max(0, i - 1)], [x1, y1] = mid[Math.min(N, i + 1)], dx = x1 - x0, dy = y1 - y0, d = Math.hypot(dx, dy) || 1;
-      const r = rad(i) * k * (jag && i % 3 === 1 ? 1.22 : 1);
-      return [x - (dy / d) * r, y + (dx / d) * r];
-    });
-    const runes = () => {
+    const rad = (i) => { const t = i / N; return 2.5 + Math.sin(Math.min(1, t * 1.5) * Math.PI * 0.62) * 13 * (1 - t * 0.72); };
+    const norm = (i) => { const [x0, y0] = mid[Math.max(0, i - 1)], [x1, y1] = mid[Math.min(N, i + 1)], dx = x1 - x0, dy = y1 - y0, d = Math.hypot(dx, dy) || 1; return [-dy / d, dx / d, dx / d, dy / d]; };
+    const side = (k, jag) => mid.map(([x, y], i) => { const [nx, ny] = norm(i), r = rad(i) * k * (jag && i % 3 === 1 ? 1.2 : 1); return [x + nx * r, y + ny * r]; });
+    const at = (i) => mid[Math.min(N, Math.max(0, i))];
+    const runes = () => { // gold diamonds down the middle, a little cross in some
       g.beginPath();
-      for (let i = 6; i < N - 2; i += 5) {
-        const [x, y] = mid[i], r = 2.6 + rad(i) * 0.12;
-        if (i % 10 === 6) { g.moveTo(x - r, y - r); g.lineTo(x + r, y + r); g.moveTo(x + r, y - r); g.lineTo(x - r, y + r); g.moveTo(x, y - r * 1.4); g.lineTo(x, y + r * 1.4); }
-        else { g.moveTo(x, y - r * 1.3); g.lineTo(x + r, y); g.lineTo(x, y + r * 1.3); g.lineTo(x - r, y); g.closePath(); }
+      for (const i of [14, 21, 28, 35, 42]) {
+        const [x, y] = at(i), r = 1.6 + rad(i) * 0.22;
+        g.moveTo(x, y - r * 1.4); g.lineTo(x + r, y); g.lineTo(x, y + r * 1.4); g.lineTo(x - r, y); g.closePath();
+        if (i % 14 === 0) { g.moveTo(x, y - r * 0.7); g.lineTo(x, y + r * 0.7); }
       }
     };
-    if (glow) { // only what glows: the runes, and the fire at its tip
+    const wisps = () => { // fiery arcs circling the swirl, and sparks off it
+      const [sx, sy] = at(44);
+      g.beginPath();
+      for (const [r, a0, a1] of [[22, -0.4, 1.9], [27, 2.6, 4.6], [17, 4.2, 6.0]]) { g.moveTo(sx + Math.cos(a0) * r * c, sy + Math.sin(a0) * r * 0.8); for (let a = a0; a <= a1; a += 0.1) g.lineTo(sx + Math.cos(a) * r * c, sy + Math.sin(a) * r * 0.8); }
+    };
+    if (glow) { // only what glows: the runes, the wisps, the sparks
       g.shadowColor = '#ffb040'; g.shadowBlur = 6;
-      runes(); g.lineWidth = 2.2; g.strokeStyle = '#ffe08a'; g.stroke();
-      for (let i = 0; i < 5; i++) { const [x, y] = mid[N - i * 2]; g.beginPath(); g.arc(x + c * (4 + i * 2), y - 3 + i, 1.6, 0, Math.PI * 2); g.fillStyle = '#ffd27a'; g.fill(); }
+      runes(); g.lineWidth = 2; g.strokeStyle = '#ffe08a'; g.stroke();
+      wisps(); g.lineWidth = 1.4; g.strokeStyle = 'rgba(255, 190, 90, .9)'; g.stroke();
+      for (let i = 0; i < 7; i++) { const [x, y] = at(20 + i * 5), [nx, ny] = norm(20 + i * 5), r = rad(20 + i * 5) + 4 + (i % 3) * 2; g.beginPath(); g.arc(x + nx * r * (i % 2 ? 1 : -1), y + ny * r * (i % 2 ? 1 : -1), 1.2, 0, Math.PI * 2); g.fillStyle = '#ffd27a'; g.fill(); }
       g.shadowBlur = 0;
       return;
     }
+    // the fur: its body, auburn to cream along it, ragged at the edge
     const outer = [...side(1, true), ...side(-1, true).reverse()];
     g.beginPath(); outer.forEach(([x, y], i) => (i ? g.lineTo(x, y) : g.moveTo(x, y))); g.closePath();
-    const fur = g.createLinearGradient(0, 0, c * 20, -90);
-    fur.addColorStop(0, '#8a3a14'); fur.addColorStop(0.35, '#d8702a'); fur.addColorStop(0.8, '#f09a38'); fur.addColorStop(1, '#ffc860');
-    g.fillStyle = fur; g.fill(); g.lineWidth = 1.6; g.strokeStyle = '#3a1a08'; g.stroke();
+    const [ex, ey] = at(N);
+    const fur = g.createLinearGradient(0, 0, ex, ey);
+    fur.addColorStop(0, '#4a160a'); fur.addColorStop(0.3, '#8e3216'); fur.addColorStop(0.6, '#cc5a22'); fur.addColorStop(0.85, '#f08a34'); fur.addColorStop(1, '#ffc870');
+    g.fillStyle = fur; g.fill(); g.lineWidth = 1.5; g.strokeStyle = '#2a0e06'; g.stroke();
     g.save(); g.clip();
-    const inner = [...side(0.55, false), ...side(-0.15, false).reverse()];
+    const inner = [...side(0.5, false), ...side(-0.1, false).reverse()];
     g.beginPath(); inner.forEach(([x, y], i) => (i ? g.lineTo(x, y) : g.moveTo(x, y))); g.closePath();
-    g.fillStyle = 'rgba(255, 210, 120, .45)'; g.fill(); // the light down its middle
-    for (let i = 2; i < N; i += 2) { // strokes of fur
-      const [x, y] = mid[i], r = rad(i);
-      g.beginPath(); g.moveTo(x - c * r * 0.7, y + 2); g.quadraticCurveTo(x, y - 3, x + c * r * 0.8, y - 1);
-      g.lineWidth = 0.8; g.strokeStyle = 'rgba(90, 30, 8, .45)'; g.stroke();
+    g.fillStyle = 'rgba(255, 170, 80, .3)'; g.fill(); // the fiery light down its middle
+    for (let i = 2; i < N; i += 2) { // strands of fur, flowing along it
+      const [x, y] = at(i), [nx, ny, tx, ty] = norm(i), r = rad(i);
+      for (const k of [-0.6, 0.1, 0.7]) { g.beginPath(); g.moveTo(x + nx * r * k, y + ny * r * k); g.lineTo(x + nx * r * k + tx * 6, y + ny * r * k + ty * 6); g.lineWidth = 0.7; g.strokeStyle = k > 0.5 ? 'rgba(255, 190, 110, .55)' : 'rgba(60, 16, 4, .45)'; g.stroke(); }
     }
     g.restore();
-    runes(); g.lineWidth = 1.6; g.strokeStyle = '#f0c050'; g.stroke();
+    for (let i = 3; i < N; i += 4) { // wisps of fur breaking free of the outer edge
+      const [x, y] = at(i), [nx, ny, tx, ty] = norm(i), r = rad(i);
+      g.beginPath(); g.moveTo(x + nx * r, y + ny * r); g.quadraticCurveTo(x + nx * (r + 3) + tx * 2, y + ny * (r + 3) + ty * 2, x + nx * (r + 2) + tx * 7, y + ny * (r + 2) + ty * 7);
+      g.lineWidth = 1; g.strokeStyle = i > N * 0.6 ? '#ffb860' : '#b8501e'; g.stroke();
+    }
+    // the binding: dark armoured bands near the root, gold-trimmed, little spikes
+    for (const i of [4, 9]) {
+      const [x, y] = at(i), [nx, ny, tx, ty] = norm(i), r = rad(i) + 1.2;
+      g.beginPath(); g.moveTo(x + nx * r - tx * 1.6, y + ny * r - ty * 1.6); g.lineTo(x + nx * r + tx * 1.6, y + ny * r + ty * 1.6); g.lineTo(x - nx * r + tx * 1.6, y - ny * r + ty * 1.6); g.lineTo(x - nx * r - tx * 1.6, y - ny * r - ty * 1.6); g.closePath();
+      g.fillStyle = '#2a2228'; g.fill(); g.lineWidth = 0.9; g.strokeStyle = '#d8a048'; g.stroke();
+      for (const k of [-1, 1]) { g.beginPath(); g.moveTo(x + nx * r * k - tx, y + ny * r * k - ty); g.lineTo(x + nx * (r + 4) * k, y + ny * (r + 4) * k); g.lineTo(x + nx * r * k + tx, y + ny * r * k + ty); g.closePath(); g.fillStyle = '#d8ccc0'; g.fill(); g.lineWidth = 0.6; g.strokeStyle = '#1a1410'; g.stroke(); }
+    }
+    runes(); g.lineWidth = 1.5; g.strokeStyle = '#f0c050'; g.stroke();
+    wisps(); g.lineWidth = 1; g.strokeStyle = 'rgba(255, 170, 70, .55)'; g.stroke();
   },
 };
 // the Devil Wings' tail: dark spiked segments with crimson edges, down to a barbed spear tip. It hangs

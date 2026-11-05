@@ -429,7 +429,8 @@ round a rune circle of the World Tree. Every monster down there attacks on sight
   plate traced with glowing gold runes, a torn red cloak and a great fiery tail. It dashes in (**Swift
   Dash**), bounds onto you (**Bounding Leap**), throws glowing **Rune Acorns**, strikes twice now and
   then, and calls its kin, the Root Squirrels. Now and then (2%) it drops **Ratatoskr's Tail**, a Wings
-  piece: its great fiery tail on your back, runes pulsing with light, swishing as you stand (FLEE +6,
+  piece: its great fiery tail sweeping out from your hip into a swirl, bound near the root in dark
+  armoured bands, gold runes pulsing in its fur and fiery wisps circling it, swishing as you stand (FLEE +6,
   QKN +3, FNS +1, FTN +1).
 - **Floor 4, the great hall:** Root Wardens, knights of living wood crowned with branches in leaf, with
   shields carved with the World Tree and greatswords of living wood, and Thorn Drakes (Nidhogg's brood,
