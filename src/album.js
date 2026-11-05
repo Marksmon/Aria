@@ -26,14 +26,16 @@ export class Album {
 }
 
 // the album's pages: one row per monster that can be met (no decoys, nor the little ones a Blue Bloop
-// splits into), by level. mobs: MOB_DEFS; cardOf: monster name -> its card id; where: type -> text
-export function albumRows(mobs, album, cardOf, where) {
+// splits into), by level. mobs: MOB_DEFS; cardOf: monster name -> its card id; where: type -> text;
+// chance: (type, card id) -> an MVP's card chance now (it rises with each kill without it: mobs.js PITY)
+export function albumRows(mobs, album, cardOf, where, chance = () => null) {
   return Object.entries(mobs)
     .filter(([, d]) => !d.decoy && !(d.noRespawn && !d.drops?.some(([id]) => cardOf[d.name] === id)))
     .map(([type, d]) => ({
       type, name: d.name, lv: d.lv, el: d.el, kills: album.kills[type] || 0, met: album.met(type),
       kind: d.mvp ? 'MVP' : d.boss ? 'Boss' : '', where: where(type) || '',
       card: cardOf[d.name] || null, found: !!cardOf[d.name] && album.cards.has(cardOf[d.name]),
+      chance: d.mvp && cardOf[d.name] ? chance(type, cardOf[d.name]) : null,
     }))
     .sort((a, b) => a.lv - b.lv || a.name.localeCompare(b.name));
 }

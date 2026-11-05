@@ -124,7 +124,8 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   one. Mini-bosses are half as hard as an MVP and fierce like one (the owner's call). Their levels say so (55–66: Giant Sprout and Elder Willow 55, King Crab 58, Giant Mushroom 60, Giant Beetle 62, Alpha Wolf 64, Great Bear 66; the desert's Cactus Lord 60 and Rainbow Runner 64; the Sphinx's Halls' Ammit 74; Yggdrasil's Ratatoskr 74, small for a boss: the owner's call), and they come only for second-job heroes (the owner's call, `picksFight` in `mobs.js`): a Trainee or first job is left be unless it strikes or taunts one. So no main story
   step or job trial needs a boss (they hunt the boss's kin); the one quest that does is Sigrid's The
   Waking Wood (Lv 70: the Great Bear and the Alpha Wolf, two mini-bosses), and it can be quit. Boss and MVP cards drop at 1%
-  (other cards 0.1%). **Cards are monsters** (the owner's call): one card per monster, named after it,
+  (other cards 0.1%); an MVP's card and ultra rare rise a tenth of their chance with every kill they miss, up
+  to ten times it, back once they drop (the owner's call, `PITY` in `mobs.js`, saved as `mvpPity`). **Cards are monsters** (the owner's call): one card per monster, named after it,
   never a second card or a card that is not a monster. More Head/Face cards (for fighters: today's
   lean to casters and archers) wait for new monsters in a map extension. The MVP and raid boss cards
   each have an effect of their own, after the boss's moves (`card.perk`: Fire Giant burn, Kobold

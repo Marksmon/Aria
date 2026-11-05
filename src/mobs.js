@@ -404,6 +404,13 @@ const summonCd = (d) => d.summonCd ?? (fierce(d) ? MVP_SUMMON_CD : SUMMON_CD);
 // a boss's guards are lesser servants of their kind: half the HP, 60% of the ATK (tuned with
 // build-tools/sim.mjs, so the fight is the boss and not two full-strength monsters at once)
 export const GUARD = { hp: 0.5, atk: 0.6 };
+// the owner's call: an MVP's card (1%) and its ultra rare (0.5% or less) are chase drops, and each kill
+// without one adds a tenth of its chance (the card 1% -> 1.1% -> 1.2%...), up to ten times it; it falls
+// back to its own chance when it drops. About 32 kills for a card on average instead of 100, 48 for an
+// ultra rare instead of 200. Kept per hero (mobs.pity, saved as mvpPity)
+export const PITY = { step: 0.1, cap: 10 };
+export const isChase = (item, chance) => /_card$/.test(item) || chance <= 0.005;
+export const pityChance = (base, misses = 0) => Math.min(base * PITY.cap, base * (1 + PITY.step * misses));
 const guardDefs = {};
 const lesser = (d) => ({ ...d, hp: Math.round(d.hp * GUARD.hp), atk: d.atk.map((a) => Math.round(a * GUARD.atk)) });
 export const guardDef = (type) => (guardDefs[type] ||= lesser(MOB_DEFS[type]));
@@ -1381,6 +1388,7 @@ export class MobManager {
     this.night = false;
     this.bosses = []; // this map's bosses and MVPs (types): each appears when its time comes
     this.mvpAt = {};  // per boss and MVP: when it may next appear (ms since 1970; the game saves it)
+    this.pity = {};  // per MVP: kills since each chase drop last fell (PITY; the game saves it)
     this.bossHp = {}; // per boss and MVP met in a fight: { hp, at, calls, guards: [[type, hp]], cd } (saved)
     this.bossAt = {}; // per boss and MVP alive on a map you left: where it stood, { map, x, z } (saved)
     // per map left: its monsters as you left them, { sig, at, mobs: [[type, x, z, homeX, homeZ, hp, dead, nightOnly, spawnX, spawnZ]] }
@@ -1610,8 +1618,12 @@ export class MobManager {
     const y = this.world.heightAt(m.x, m.z) + (m.def.fly ? 0.7 : 0.3);
     this.fx.puff(m.x, y, m.z, m.def.w);
     const drops = [];
-    for (const [item, min, max, chance] of m.def.drops) {
-      if (Math.random() < chance) drops.push([item, min + Math.floor(Math.random() * (max - min + 1))]);
+    // an MVP's chase drops (its card, its ultra rare) come a little likelier with every kill they don't drop (PITY)
+    const pity = m.def.mvp && !m.def.raidLv ? (this.pity[m.type] ||= {}) : null;
+    for (const [item, min, max, base] of m.def.drops) {
+      const chase = pity && isChase(item, base), chance = chase ? pityChance(base, pity[item]) : base;
+      if (Math.random() < chance) { drops.push([item, min + Math.floor(Math.random() * (max - min + 1))]); if (chase) pity[item] = 0; }
+      else if (chase) pity[item] = (pity[item] || 0) + 1;
     }
     this.emit('death', m, drops);
     if (m.def.split) {

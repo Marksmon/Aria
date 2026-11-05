@@ -741,7 +741,7 @@ export class Menus {
       const el = r.el ? r.el[0].toUpperCase() + r.el.slice(1) : '';
       const card = r.card ? `<img class="ico al-card${r.found ? '' : ' none'}" src="${iconURL(r.card)}" alt="" title="${r.found ? 'Card found' : 'Card not found yet'}">` : '';
       return `<div class="al-row${r.met ? '' : ' unmet'}"><div class="al-main"><b>${r.met ? esc(r.name) : '???'}</b>${r.kind ? `<i class="al-kind">${r.kind}</i>` : ''}
-        <small>Lv ${r.lv}${r.met && el ? ` · ${el}` : ''}${r.where ? ` · ${esc(r.where)}` : ''}</small></div>
+        <small>Lv ${r.lv}${r.met && el ? ` · ${el}` : ''}${r.where ? ` · ${esc(r.where)}` : ''}${r.chance ? ` · card ${(r.chance * 100).toFixed(1)}% now` : ''}</small></div>
         <span class="al-kills">${r.kills ? `${r.kills.toLocaleString()} beaten` : ''}</span>${card}</div>`;
     };
     return `<div class="al-head"><span>Met <b>${met}</b> / ${rows.length}</span><span>Cards <b>${found}</b> / ${cards.length}</span></div>

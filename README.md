@@ -1235,6 +1235,9 @@ window and each bar pays 20,000 perz of a refine, a slot or a card's removal (pe
 10,000 for one.
 
 **Cards.** Each MVP drops its card (1%: they are very hard to bring down), and like classic MVP cards they are overpowered.
+An MVP's card and its ultra rare come a little likelier with every kill they don't drop (a tenth of their
+chance more each time, up to ten times it; back to their own chance once they drop): about 32 kills for a card
+on average instead of 100. The Monster Album shows each MVP's card chance now.
 Each mini-boss drops one too (1%): a good step up, but nothing like an MVP's. The Goblin King's, the
 Fire Giant's, the Great Bear's, the Giant Beetle's, the Cactus Lord's and Ammit's go in weapons; the rest in other gear.
 Every other monster drops a card too (0.1%), for every kind of gear, smaller but welcome (all but the

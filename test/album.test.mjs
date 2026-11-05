@@ -35,3 +35,14 @@ test('every monster that can be met has a row; decoys have none', () => {
   assert.ok(rows.filter((r) => r.card).length >= rows.length - 3, 'nearly every monster has its card');
   for (let i = 1; i < rows.length; i++) assert.ok(rows[i - 1].lv <= rows[i].lv, 'by level');
 });
+
+test("an MVP's card and ultra rare come likelier with every kill they don't drop, back to their own chance once they do", async () => {
+  const { PITY, pityChance, isChase } = await import('../src/mobs.js');
+  assert.equal(pityChance(0.01, 0), 0.01);
+  assert.ok(Math.abs(pityChance(0.01, 10) - 0.02) < 1e-12);
+  assert.equal(pityChance(0.01, 1e6), 0.01 * PITY.cap, 'capped');
+  assert.ok(isChase('jarl_card', 0.01) && isChase('allseeing_eye', 0.005) && !isChase('flame_sword', 0.01));
+  const rows = albumRows(MOB_DEFS, new Album(), CARD_OF, () => '', () => 0.013);
+  assert.equal(rows.find((r) => r.type === 'jarl').chance, 0.013);
+  assert.equal(rows.find((r) => r.type === 'slime').chance, null, 'only MVPs');
+});

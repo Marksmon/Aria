@@ -8,7 +8,7 @@ import { Player } from './player.js';
 import { Input } from './input.js';
 import { UI } from './ui.js';
 import { FX } from './fx.js';
-import { MobManager, MOB_DEFS, MOVES, MVP_MOVE, RIDDLE, fierce, guardDef, raidDef } from './mobs.js';
+import { MobManager, MOB_DEFS, MOVES, MVP_MOVE, RIDDLE, fierce, guardDef, raidDef, pityChance } from './mobs.js';
 import { Allies, ROAR } from './allies.js';
 import { RAIDS, rollReward } from './raid.js';
 import { loadSave, writeSave, loadStorage, writeStorage, clearSave, saveCode, loadCode, SLOTS, activeSlot, setActiveSlot } from './save.js';
@@ -113,6 +113,7 @@ if (verEl) verEl.textContent = `v1.0.${__BUILD__} · Explore, fight, craft, surv
 const save = loadSave();
 let lookBefore = null; // the look kept, while one is being tried on
 mobs.mvpAt = typeof save?.mvpAt === 'number' ? { jarl: save.mvpAt } : save?.mvpAt || {}; // older saves timed the Fire Giant alone
+mobs.pity = save?.mvpPity && typeof save.mvpPity === 'object' ? save.mvpPity : {}; // each MVP's kills since its card / ultra rare fell (PITY)
 mobs.bossHp = save?.bossHp || {};
 mobs.heroTier = () => JOBS[prog.job]?.tier || 0; // (mini-bosses come only for second jobs: mobs.js picksFight)
 mobs.bossAt = save?.bossAt || {};
@@ -2168,7 +2169,7 @@ const menus = new Menus(inv, prog, player, {
   soundOn: () => audio.enabled,
   toggleSound() { audio.setEnabled(!audio.enabled); },
   setting: (k) => settings.get(k),
-  album: () => albumRows(MOB_DEFS, album, CARD_OF, livesAt),
+  album: () => albumRows(MOB_DEFS, album, CARD_OF, livesAt, (type, id) => { const base = MOB_DEFS[type].drops.find(([i]) => i === id)?.[3]; return base ? pityChance(base, mobs.pity[type]?.[id]) : null; }),
   setSetting(k, v) { settings.set(k, v); },
   closed() { persist(); },
   // Settings' Back to main menu: save, and back to the title to pick a hero (not in a raid)
@@ -3552,7 +3553,7 @@ let saveWarned = false;
 function persist() {
   if (!started || resetting) return;
   const isle = raidOf(world.id), back = isle && raid?.back, at = back || (isle ? boatSpot(isle) : player); // a run is never saved: back on the shore (or where they set out from)
-  const ok = writeSave({ album: album.toJSON(), story: story.toJSON(), look: player.look, visited: [...visited], keepers: [...keepers], savePoint, raidAt, raidsDone: [...raidsDone], raidLog, raidRun: raid ? { id: raid.id, diff: raid.diff, at: raid.start } : null, map: back ? back.map : isle ? isle.from : world.id, mvpAt: mobs.mvpAt, bossHp: mobs.bossSnapshot(), bossAt: mobs.bossAt, fieldAt: mobs.fieldSnapshot(), x: at.x, z: at.z, yaw: cam.yaw, dist: cam.dist, hp: player.hp, sp: player.sp, inv: inv.toJSON(), prog: prog.toJSON(), quests: quests.toJSON(), hotbar: hotbar.toJSON(), time: dayNight.t });
+  const ok = writeSave({ album: album.toJSON(), mvpPity: mobs.pity, story: story.toJSON(), look: player.look, visited: [...visited], keepers: [...keepers], savePoint, raidAt, raidsDone: [...raidsDone], raidLog, raidRun: raid ? { id: raid.id, diff: raid.diff, at: raid.start } : null, map: back ? back.map : isle ? isle.from : world.id, mvpAt: mobs.mvpAt, bossHp: mobs.bossSnapshot(), bossAt: mobs.bossAt, fieldAt: mobs.fieldSnapshot(), x: at.x, z: at.z, yaw: cam.yaw, dist: cam.dist, hp: player.hp, sp: player.sp, inv: inv.toJSON(), prog: prog.toJSON(), quests: quests.toJSON(), hotbar: hotbar.toJSON(), time: dayNight.t });
   writeStorage(inv.chest.toJSON());
   // the phone refused the save (storage full or blocked): say so once, so the player can back up
   if (!ok && !saveWarned) { saveWarned = true; menus.message('Could not save! Back up your save from the title screen (Account) soon.'); }
