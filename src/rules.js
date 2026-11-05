@@ -104,7 +104,7 @@ export function derive(prog, gear) {
     soultax: gear.perk?.soultax || 0,      // % of damage dealt back as SP (the Pharaoh Card)
     execute: gear.perk?.execute || 0,      // % harder on a monster under 30% HP (the Ammit Card)
     sage: gear.perk?.sage || 0,            // % less SP for skills (the Eternal Sphinx Card)
-    farshot: gear.perk?.farshot || 0,      // % harder from 4+ paces away (the Dark Elf Lord Card)
+    farshot: gear.perk?.farshot || 0,      // % harder from 4+ paces away (the Ratatoskr Card)
     rot: gear.perk?.rot || 0,              // % more a monster you hit takes from everything, for 5 s (the Nidhogg Card)
     def: clamp(gear.def || 0, 0, 100),            // hard DEF from equipment
     end,                                          // soft DEF comes from END each hit

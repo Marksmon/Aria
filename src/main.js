@@ -91,7 +91,7 @@ const SPAWNS = {
   ygg: [],
   ygg1: [['rootSquirrel', 16], ['bramble', 13]],                             // Base 31-45
   ygg2: [['rootSerpent', 10], ['mossGolem', 9], ['darkElf', 9]],             // 46-60
-  ygg3: [['greatStag', 10], ['dryad', 9], ['rotBeetle', 8], ['elfLord', 1]], // 61-75, the Dark Elf Lord the mini-boss
+  ygg3: [['greatStag', 10], ['dryad', 9], ['rotBeetle', 8], ['ratatoskr', 1]], // 61-75, Ratatoskr the mini-boss
   ygg4: [['rootWarden', 8], ['thornDrake', 7], ['nidhogg', 1]],             // 76-90: the great hall, its guards and Nidhogg
   halls1: [['hallScarab', 16], ['cobra', 13]],                               // Base 31-45
   halls2: [['hallMummy', 10], ['lamia', 9], ['servant', 9]],                 // 46-60
@@ -395,7 +395,7 @@ const weaponKind = () => { const it = ITEMS[inv.gear.weapon]; return !it ? 'none
 // the Shadowblade's Cruel Edge: a sword harder on a monster below half its HP
 const cruel = (m) => (weaponKind() === 'sword' && m.hp < m.def.hp / 2 ? 1 + 0.04 * skillLv(prog, 'cruedge') : 1) * backstab(m) * weighed(m);
 // the Ammit Card's Weighing of the Heart: blows and spells land harder on a monster under 30% HP
-// and the Dark Elf Lord Card's Elven Sight: harder from 4 paces or more
+// and the Ratatoskr Card's Keen Perception: harder from 4 paces or more
 const weighed = (m) => (player.ps.execute && m.hp < m.def.hp * 0.3 ? 1 + player.ps.execute / 100 : 1)
   * (player.ps.farshot && Math.hypot(m.x - player.x, m.z - player.z) - m.def.r >= 4 ? 1 + player.ps.farshot / 100 : 1);
 // what a skill costs: the Eternal Sphinx Card's Eternal Wisdom takes a share off

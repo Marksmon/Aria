@@ -197,7 +197,7 @@ export const MOB_DEFS = {
   // twice, and Brambles that throw their thorns. Floor 2 (46-60): Root Serpents, whose bite poisons;
   // Moss Golems, slow and hard as the rock; Dark Elves, archers loosing shadow arrows. Floor 3 (61-75):
   // the Great Stags, quick and strong; Dryads throwing glowing leaves; Rot Beetles, hard-shelled and
-  // poisonous; and the Dark Elf Lord, the floor's mini-boss. Floor 4, the great hall (76-90): the Root
+  // poisonous; and Ratatoskr, the messenger squirrel, the floor's mini-boss. Floor 4, the great hall (76-90): the Root
   // Wardens and the Thorn Drakes (hall: they keep to it) guard Nidhogg, who gnaws the World Tree's roots
   rootSquirrel: { name: 'Root Squirrel', ai: 'assassin', art: 'rootSquirrel', el: 'earth', lv: 34, hp: 1650, atk: [94, 118], def: 14, vit: 30, agi: 42, dex: 56, exp: [390, 273], adelay: 1150, walk: 130, aggro: 5.5, chase: 9, reach: 0.8, double: 0.15, w: 0.95, r: 0.36, drops: [['squirrel_tail', 1, 1, 0.55], ['potion2', 1, 1, 0.08], ['acorn_charm', 1, 1, 0.003], ['rootsquirrel_card', 1, 1, 0.001]] },
   bramble: { name: 'Bramble', ai: 'archer', art: 'bramble', el: 'earth', lv: 42, hp: 2700, atk: [140, 176], def: 18, vit: 36, agi: 24, dex: 72, mdef: 10, exp: [720, 505], adelay: 1700, walk: 300, aggro: 5.5, chase: 8, range: 4.5, reach: 0.9, w: 1.0, r: 0.42, shot: '#e2d4a8', drops: [['bramble_thorn', 1, 1, 0.5], ['potion2', 1, 1, 0.08], ['bramble_buckler', 1, 1, 0.003], ['bramble_card', 1, 1, 0.001]] },
@@ -207,13 +207,14 @@ export const MOB_DEFS = {
   greatStag: { name: 'Great Stag', ai: 'assassin', art: 'greatStag', el: 'wind', lv: 64, hp: 5600, atk: [230, 290], def: 18, vit: 52, agi: 58, dex: 96, exp: [2560, 1790], adelay: 1300, walk: 130, aggro: 6, chase: 10, reach: 1.1, double: 0.15, w: 1.5, r: 0.55, drops: [['stag_antler', 1, 1, 0.5], ['potion3', 1, 1, 0.06], ['stag_cape', 1, 1, 0.0025], ['greatstag_card', 1, 1, 0.001]] },
   dryad: { name: 'Dryad', ai: 'archer', art: 'dryad', el: 'earth', lv: 68, hp: 5200, atk: [245, 306], def: 14, vit: 44, agi: 50, dex: 110, mdef: 30, exp: [3070, 2150], adelay: 1600, walk: 200, aggro: 6, chase: 9, range: 5, reach: 0.9, w: 0.9, r: 0.36, shot: '#c8ff9a', drops: [['dryad_leaf', 1, 1, 0.5], ['potion3', 1, 1, 0.06], ['dryad_staff', 1, 1, 0.002], ['dryad_card', 1, 1, 0.001]] },
   rotBeetle: { name: 'Rot Beetle', ai: 'tank', art: 'beetle', tint: '#b89ad8', el: 'shadow', lv: 72, hp: 6600, atk: [250, 314], def: 28, vit: 60, agi: 24, dex: 96, mdef: 8, exp: [3640, 2550], adelay: 1500, walk: 200, aggro: 5, chase: 8, reach: 0.9, poison: 0.12, w: 1.2, r: 0.46, heavy: true, drops: [['rot_shell', 1, 1, 0.5], ['potion3', 1, 2, 0.07], ['rot_fang', 1, 1, 0.0025], ['rotbeetle_card', 1, 1, 0.001]] },
-  // the Dark Elf Lord, the third floor's mini-boss: a tall dark elf in a silver crown and a long cape. He
-  // shoots a Shadow Arrow, rains arrows round you, leaps into the shadows and out beside you, and calls
-  // his archers
-  elfLord: { name: 'Dark Elf Lord', ai: 'boss', art: 'elfLord', aura: '#b88aff', el: 'shadow', boss: true, lv: 74, hp: 330000, atk: [235, 300], def: 22, vit: 55, agi: 50, dex: 175, mdef: 35, exp: [80000, 56000], adelay: 1600, fierce: true, walk: 140,
-    moves: [{ kind: 'throw', name: 'Shadow Arrow', mult: 1.7, r: 1.5 }, { kind: 'meteors', name: 'Arrow Rain', mult: 1.3, r: 1.4, color: '#b88aff', cd: 16 }, { kind: 'leap', name: 'Shadow Leap', mult: 1.6, r: 1.8 }],
-    aggro: 6.5, chase: 12, reach: 1.4, w: 1.9, r: 0.7, summon: ['darkElf', 'darkElf'], summonText: 'The Dark Elf Lord raises his bow, and his archers step out of the dark!', respawn: 540,
-    drops: [['lord_sigil', 1, 1, 0.3], ['elven_thread', 3, 5, 1], ['potion3', 1, 2, 0.5], ['shadow_cloak', 1, 1, 0.03], ['moon_bow', 1, 1, 0.02], ['elflord_card', 1, 1, 0.01]] },
+  // Ratatoskr, the third floor's mini-boss (the owner's call, after the owner's sheet): the World Tree's
+  // messenger squirrel, small for a boss but quick and keen, in runed plate with a fiery tail. It dashes
+  // in, bounds onto you, throws glowing rune-acorns, flies into a frenzy when hurt, and calls its kin,
+  // the Root Squirrels. Hard to hit (its AGI) and quick to strike twice
+  ratatoskr: { name: 'Ratatoskr', ai: 'boss', art: 'ratatoskr', aura: '#ffb040', el: 'wind', boss: true, lv: 74, hp: 300000, atk: [220, 285], def: 18, vit: 48, agi: 80, dex: 175, mdef: 30, exp: [80000, 56000], adelay: 1350, fierce: true, walk: 100, double: 0.15,
+    moves: [{ kind: 'charge', name: 'Swift Dash', mult: 1.5 }, { kind: 'leap', name: 'Bounding Leap', mult: 1.6, r: 1.7 }, { kind: 'throw', name: 'Rune Acorn', mult: 1.5, r: 1.4 }, { kind: 'frenzy' }],
+    aggro: 6.5, chase: 12, reach: 1.1, w: 1.35, r: 0.5, summon: ['rootSquirrel', 'rootSquirrel', 'rootSquirrel'], summonText: 'Ratatoskr chatters, and its kin come running down the roots!', respawn: 540,
+    drops: [['rune_tuft', 1, 1, 0.3], ['squirrel_tail', 3, 5, 1], ['potion3', 1, 2, 0.5], ['messenger_shroud', 1, 1, 0.03], ['rune_bracelet', 1, 1, 0.02], ['ratatoskr_card', 1, 1, 0.01]] },
   rootWarden: { name: 'Root Warden', ai: 'tank', art: 'rootWarden', el: 'earth', hall: true, lv: 80, hp: 8000, atk: [290, 364], def: 34, vit: 66, agi: 30, dex: 120, exp: [5000, 3500], adelay: 1600, walk: 220, aggro: 6, chase: 10, reach: 1.3, w: 1.3, r: 0.5, heavy: true, drops: [['living_heartwood', 1, 1, 0.5], ['potion3', 1, 2, 0.07], ['warden_blade', 1, 1, 0.0025], ['rootwarden_card', 1, 1, 0.001]] },
   thornDrake: { name: 'Thorn Drake', ai: 'archer', art: 'thornDrake', el: 'shadow', hall: true, lv: 86, hp: 8400, atk: [314, 394], def: 24, vit: 60, agi: 60, dex: 140, exp: [6200, 4340], adelay: 1500, walk: 150, aggro: 7, chase: 10, range: 5, reach: 1.1, w: 1.5, r: 0.5, shot: '#9aff6a', drops: [['drake_scale', 1, 1, 0.5], ['potion3', 1, 2, 0.08], ['drake_ring', 1, 1, 0.0025], ['thorndrake_card', 1, 1, 0.001]] },
   // the MVP of Yggdrasil, in the great hall at its heart (hall: it never leaves it): Nidhogg, the black

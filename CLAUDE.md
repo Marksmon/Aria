@@ -121,7 +121,7 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   Exalted, `RIDDLE`/`RIDDLES`; the owner's call: it tests through riddles and combat; Nidhogg: Gnaw the Roots, a race to
   tear it away before it heals and frenzies, `MOVES.gnaw`), and
   enraged below half HP (`MVP_RAGE`). Even a Lv 99 hero without good, upgraded gear should not beat
-  one. Mini-bosses are half as hard as an MVP and fierce like one (the owner's call). Their levels say so (55–66: Giant Sprout and Elder Willow 55, King Crab 58, Giant Mushroom 60, Giant Beetle 62, Alpha Wolf 64, Great Bear 66; the desert's Cactus Lord 60 and Rainbow Runner 64; the Sphinx's Halls' Ammit 74; Yggdrasil's Dark Elf Lord 74), and they come only for second-job heroes (the owner's call, `picksFight` in `mobs.js`): a Trainee or first job is left be unless it strikes or taunts one. So no main story
+  one. Mini-bosses are half as hard as an MVP and fierce like one (the owner's call). Their levels say so (55–66: Giant Sprout and Elder Willow 55, King Crab 58, Giant Mushroom 60, Giant Beetle 62, Alpha Wolf 64, Great Bear 66; the desert's Cactus Lord 60 and Rainbow Runner 64; the Sphinx's Halls' Ammit 74; Yggdrasil's Ratatoskr 74, small for a boss: the owner's call), and they come only for second-job heroes (the owner's call, `picksFight` in `mobs.js`): a Trainee or first job is left be unless it strikes or taunts one. So no main story
   step or job trial needs a boss (they hunt the boss's kin); the one quest that does is Sigrid's The
   Waking Wood (Lv 70: the Great Bear and the Alpha Wolf, two mini-bosses), and it can be quit. Boss and MVP cards drop at 1%
   (other cards 0.1%). **Cards are monsters** (the owner's call): one card per monster, named after it,
@@ -132,7 +132,7 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   stun, Goblin Warlord melee and double blows, Pharaoh soul tax). Mini-boss cards have smaller ones of their own,
   never a weaker copy of an MVP's or raid boss's (the owner's call: Giant Sprout HP regen, King Crab
   never slowed, Giant Mushroom SP regen, Giant Beetle DEF pierce, Elder Willow faster casting,
-  Alpha Wolf crits, Great Bear harder blows at low HP, Cactus Lord venom, Rainbow Runner quick after a kill, Ammit harder on a monster under 30% HP, `execute`; Dark Elf Lord harder from 4 paces off, `farshot`). Every card keeps its stats
+  Alpha Wolf crits, Great Bear harder blows at low HP, Cactus Lord venom, Rainbow Runner quick after a kill, Ammit harder on a monster under 30% HP, `execute`; Ratatoskr harder from 4 paces off, `farshot`). Every card keeps its stats
   (the owner's call; MVP and boss cards too); an effect comes on top.
   **Boss AI** (`BRAIN` in `mobs.js`, every mini-boss, raid boss and MVP): it aims where a running
   hero is going (not a step aside), picks moves for the moment (gap-closers on kiters and casters,
@@ -171,7 +171,8 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   **second dungeon**, Yggdrasil's Hollows (`ygg1`-`ygg4`, `dungeon.js` looks `tree1`-`tree4`: bark walls, moss
   tops, glowing runes, earth floors, living-trunk pillars, glowing mushrooms for torches): three maze floors and the
   great hall, at the Sphinx's levels (the owner's call). 1 Root Squirrel, Bramble (31-45); 2 Root Serpent, Moss
-  Golem, Dark Elf (46-60); 3 Great Stag, Dryad, Rot Beetle and the Dark Elf Lord mini-boss (61-75); 4 the great
+  Golem, Dark Elf (46-60); 3 Great Stag, Dryad, Rot Beetle and Ratatoskr the mini-boss (61-75; the owner's call, after the owner's sheet: the
+  messenger squirrel in runed plate with a fiery tail, small, quick, hard to hit); 4 the great
   hall: Root Wardens, Thorn Drakes (`hall: true`) and **Nidhogg** (Lv 99 MVP, `hall: true`; after the owner's
   picture: black, red-cracked, torn crimson wings with holes), whose mechanic is Gnaw the Roots (`MOVES.gnaw`:
   it heals while the rot withers the hall; tear it away with `tear` of its HP in time, or it rises gorged in a

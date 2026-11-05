@@ -123,7 +123,7 @@ Scorpion Sands with its Pyramid, then the Great Desert, where the Sand Wyrm hunt
 | Sphinx Halls 3 | 61–75 | Sphinx Cub (64), Sand Elemental (68, slowing sand), Sarcophagus (72) | Ammit (74) |
 | Yggdrasil Hollows 1 | 31–45 | Root Squirrel (34, quick), Bramble (42, throws thorns) | |
 | Yggdrasil Hollows 2 | 46–60 | Root Serpent (50, poison), Moss Golem (55), Dark Elf (58, shadow arrows) | |
-| Yggdrasil Hollows 3 | 61–75 | Great Stag (64), Dryad (68, glowing leaves), Rot Beetle (72, poison) | Dark Elf Lord (74) |
+| Yggdrasil Hollows 3 | 61–75 | Great Stag (64), Dryad (68, glowing leaves), Rot Beetle (72, poison) | Ratatoskr (74) |
 | Yggdrasil Hollows 4 (the great hall) | 76–90 | Root Warden (80), Thorn Drake (86, venom breath) | **Nidhogg (99, MVP)** |
 | Sphinx Halls 4 (the great hall) | 76–90 | Jackal Guardian (80, long spear), Falcon Sentinel (86, wind blades) | **Eternal Sphinx (99, MVP)** |
 | Any field in the valley, more at night (Moss Field and Fen Shore only at night) | | Wisp (11) | |
@@ -322,7 +322,7 @@ fills up until it hits: step out of it.
 | Alpha Wolf · Great Bear | **Pounce** (a leap) · **Mauling Charge** |
 | Ancient Treant | **Grasping Roots** (hold you in place) · **Bark Armor** (hits bounce back) · **Root Stone** (thrown) · **Uprooting Charge** |
 | Ammit | **Devouring Rush** (a charge) · **Pounce** · **Devour**: a bite in front of it that heals it |
-| Dark Elf Lord | **Shadow Arrow** (thrown) · **Arrow Rain** · **Shadow Leap** |
+| Ratatoskr | **Swift Dash** (a charge) · **Bounding Leap** · **Rune Acorn** (thrown) · **Frenzy** |
 | Nidhogg | **Gnaw the Roots** (tear it away in time) · **Venom Breath** (thrown) · **Coil Rush** (a charge) · **Falling Roots** (venom where they land) · **Frenzy** |
 | Eternal Sphinx | **The Riddle** (stand in the right answer) · **Pounce** · **Falling Stones** (cursed sand where they land) · **Gaze of Ages** (thrown) · **Frenzy** |
 
@@ -417,9 +417,11 @@ round a rune circle of the World Tree. Every monster down there attacks on sight
 
 - **Floor 1:** Root Squirrels, quick and biting twice, and Brambles that throw their thorns.
 - **Floor 2:** Root Serpents (their bite poisons), Moss Golems, and Dark Elves loosing shadow arrows.
-- **Floor 3:** Great Stags, Dryads throwing glowing leaves, Rot Beetles, and the **Dark Elf Lord**
-  (Lv 74 mini-boss) in his silver crown: a Shadow Arrow, a rain of arrows, a leap out of the shadows,
-  and his archers at his call.
+- **Floor 3:** Great Stags, Dryads throwing glowing leaves, Rot Beetles, and **Ratatoskr** (Lv 74
+  mini-boss), the World Tree's messenger squirrel: small for a boss but quick and hard to hit, in dark
+  plate traced with glowing gold runes, a torn red cloak and a great fiery tail. It dashes in (**Swift
+  Dash**), bounds onto you (**Bounding Leap**), throws glowing **Rune Acorns**, strikes twice now and
+  then, and calls its kin, the Root Squirrels.
 - **Floor 4, the great hall:** Root Wardens, knights of living wood, and Thorn Drakes guard **Nidhogg**
   (Lv 99 MVP, 1,400,000 HP, Shadow), the black dragon that gnaws the World Tree's roots, its scales
   cracked with glowing red and its crimson wings torn through with holes. It never leaves its hall.
@@ -1205,7 +1207,7 @@ they come back whole and the slot stays open. A piece that breaks at Holger's gi
 | Ancient Treant Card (Ancient) | Shield | DEF +10, Max HP +20%, POW +6, END +7; **Bark Armor:** a monster striking you up close takes back 20% of the blow | Ancient Treant, 1% |
 | Fire Giant Card (Infernal) | Weapon (a sorcerer's card) | MATK +30%, KNL +6, FNS +4, Max SP +15%, weapon turns Fire (+15% Fire spells with a staff); **Meteor Heart:** spells and blows set a monster burning 10% of the time | Fire Giant, 1% |
 | Ammit Card (Devouring) | Weapon | ATK +18, POW +3; **Weighing of the Heart:** your blows and spells land 15% harder on a monster under 30% HP | Ammit, 1% |
-| Dark Elf Lord Card (Moonlit) | Garment | FNS +4, FLEE +6; **Elven Sight:** your blows and spells land 10% harder on a monster 4 paces away or more | Dark Elf Lord, 1% |
+| Ratatoskr Card (Swift) | Garment | QKN +3, FNS +2, FLEE +6; **Keen Perception:** your blows and spells land 10% harder on a monster 4 paces away or more | Ratatoskr, 1% |
 | Nidhogg Card (Gnawing) | Armor | DEF +6, Max HP +20%, POW +5, END +5; **Root Rot:** a monster your blows or spells strike takes 8% more from everything for 5 s | Nidhogg, 1% |
 | Eternal Sphinx Card (Enigmatic) | Accessory | KNL +5, FNS +4, FTN +3, Max SP +10%; **Eternal Wisdom:** your skills cost 15% less SP | Eternal Sphinx, 1% |
 
@@ -1418,7 +1420,7 @@ to restore HP, save, and sleep until morning.
 - [x] Cards, more jobs, raids, the Beastmaster's pack
 - [x] Rytingborg and the desert: the Assassin and the Phantom, the Sand Wyrm, Pharaoh's Tomb, the Sphinx's secret
 - [x] **The Sphinx's halls**, Aria's first dungeon: three maze floors and the great hall, Ammit and the Eternal Sphinx
-- [x] **Yggdrasil**, the World Tree, and its hollows, the second dungeon: the Dark Elf Lord and Nidhogg
+- [x] **Yggdrasil**, the World Tree, and its hollows, the second dungeon: Ratatoskr and Nidhogg
 - [ ] **Ten cities.** Five early-game cities (Steinborg, Galdrheim, Veidheim and Rytingborg so far,
   one more to come), then five late-game ones. The first half of Aria's making ends with the fifth city.
 

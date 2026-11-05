@@ -382,15 +382,15 @@ const BASE_ITEMS = {
   ammit_card:   { type: 'misc', rare: true, name: 'Ammit Card', adj: 'Devouring', icon: 'card_ammit', card: { on: 'weapon', atk: 18, stats: { pow: 3 }, perk: { execute: 15 }, perkName: 'Weighing of the Heart' }, desc: 'Ammit on a card, jaws wide over a feather and a heart on the scales. In a weapon with a slot: ATK +18, POW +3, and Weighing of the Heart: your blows and spells land 15% harder on a monster under 30% HP.', from: 'Ammit (1%)' },
   sphinx_card:  { type: 'misc', rare: true, name: 'Eternal Sphinx Card', adj: 'Enigmatic', icon: 'card_sphinx', card: { on: 'acc', mspRate: 10, stats: { knl: 5, fns: 4, ftn: 3 }, perk: { sage: 15 }, perkName: 'Eternal Wisdom' }, desc: 'The Eternal Sphinx on a card of gold and lapis, wings raised, its calm eyes following you. In an accessory with a slot: KNL +5, FNS +4, FTN +3, Max SP +10%, and Eternal Wisdom: your skills cost 15% less SP.', from: 'the Eternal Sphinx (1%)' },
   // Yggdrasil's hollows (the second dungeon, inside the World Tree): what its monsters drop, and Nidhogg's hoard
-  squirrel_tail: { type: 'misc', name: 'Squirrel Tail', desc: 'A Root Squirrel\'s bushy tail, red as autumn. It still twitches when someone nearby is gossiping.', from: 'Root Squirrels (Yggdrasil Hollows 1)' },
+  squirrel_tail: { type: 'misc', name: 'Squirrel Tail', desc: 'A Root Squirrel\'s bushy tail, red as autumn. It still twitches when someone nearby is gossiping.', from: 'Root Squirrels (Yggdrasil Hollows 1) and Ratatoskr' },
   bramble_thorn: { type: 'misc', name: 'Bramble Thorn', desc: 'A thorn as long as a finger, hard as horn. Fletchers tip arrows with them.', from: 'Brambles (Yggdrasil Hollows 1)' },
   root_scale:   { type: 'misc', name: 'Root Scale', desc: 'A Root Serpent\'s scale, ridged like bark. You would never find it on the forest floor.', from: 'Root Serpents (Yggdrasil Hollows 2)' },
   moss_clump:   { type: 'misc', name: 'Golem Moss', desc: 'A clump of moss off a Moss Golem\'s shoulder, a pebble still in it. It grows back on anything.', from: 'Moss Golems (Yggdrasil Hollows 2)' },
-  elven_thread: { type: 'misc', name: 'Elven Thread', desc: 'A Dark Elf\'s bowstring, spun from something that is not quite silk. It never snaps.', from: 'Dark Elves and their Lord (Yggdrasil Hollows 2 and 3)' },
+  elven_thread: { type: 'misc', name: 'Elven Thread', desc: 'A Dark Elf\'s bowstring, spun from something that is not quite silk. It never snaps.', from: 'Dark Elves (Yggdrasil Hollows 2)' },
   stag_antler:  { type: 'misc', name: 'Glowing Antler', desc: 'A tine of a Great Stag\'s antler, its tip still faintly glowing green.', from: 'Great Stags (Yggdrasil Hollows 3)' },
   dryad_leaf:   { type: 'misc', name: 'Dryad Leaf', desc: 'A leaf from a Dryad\'s hair. It never wilts, and it smells of rain.', from: 'Dryads (Yggdrasil Hollows 3)' },
   rot_shell:    { type: 'misc', name: 'Rot Shell', desc: 'A Rot Beetle\'s wing-case, violet and oily. Alchemists pay for the rot, not the shell.', from: 'Rot Beetles (Yggdrasil Hollows 3)' },
-  lord_sigil:   { type: 'misc', rare: true, name: 'Dark Elf Sigil', desc: 'The silver sigil off the Dark Elf Lord\'s crown, a moon in a thorn ring. It is cold even in the hand.', from: 'the Dark Elf Lord (30%)' },
+  rune_tuft:    { type: 'misc', rare: true, name: 'Runed Tail Tuft', desc: 'A tuft of Ratatoskr\'s fiery tail, a gold rune still glowing in it. It whispers, if you hold it to your ear: gossip from the top of the World Tree.', from: 'Ratatoskr (30%)' },
   living_heartwood: { type: 'misc', name: 'Living Heartwood', desc: 'A chunk of a Root Warden\'s heart, still green inside and still warm.', from: 'Root Wardens (Yggdrasil Hollows 4)' },
   drake_scale:  { type: 'misc', name: 'Drake Scale', desc: 'A green scale from a Thorn Drake, or a black one from Nidhogg, if you are lucky. Smiths swear by them.', from: 'Thorn Drakes and Nidhogg (Yggdrasil Hollows 4)' },
   ygg_berry:    { type: 'use', usable: true, rare: true, name: 'World Tree Berry', use: { full: true }, desc: 'A berry from the World Tree itself, gold and shining, found in Nidhogg\'s hoard. Eat it and all your HP and SP come back at once, and every ill is gone.', from: 'Nidhogg (always, and its MVP reward)' },
@@ -404,8 +404,8 @@ const BASE_ITEMS = {
   rot_fang:     { type: 'equip', slot: 'weapon', kind: 'dagger', el: 'shadow', name: 'Rot Fang', atk: 76, wlv: 3, perk: { venom: 3 }, icon: 'dagger_rot', desc: 'A Rot Beetle\'s jaw ground to a blade. The rot is still in it: 3% of your blows poison a monster. Shadow element.', from: 'Rot Beetles (0.25%)' },
   warden_blade: { type: 'equip', slot: 'weapon', jobs: ['swordman'], el: 'earth', name: "Warden's Greatsword", atk: 118, wlv: 3, stats: { pow: 2, end: 1 }, icon: 'weapon_warden', desc: 'A Root Warden\'s sword of living wood, harder than iron, a rune glowing down its blade. Earth element.', from: 'Root Wardens (0.25%)' },
   drake_ring:   { type: 'equip', slot: 'acc', name: 'Drake Ring', mhp: 60, stats: { pow: 1, end: 1, knl: 1 }, icon: 'r_drakering', desc: 'A ring of Drake Scale, curled round your finger like a sleeping drake.', from: 'Thorn Drakes (0.25%)' },
-  shadow_cloak: { type: 'equip', slot: 'garment', rare: true, name: 'Shadow Cloak', def: 5, flee: 9, stats: { qkn: 2, fns: 1 }, icon: 'r_shadowcloak', desc: 'The Dark Elf Lord\'s cape, violet-black. In the dark you are hard to see, and harder to hit.', from: 'the Dark Elf Lord (3%)' },
-  moon_bow:     { type: 'equip', slot: 'weapon', el: 'shadow', jobs: ['archer'], kind: 'bow', rare: true, name: 'Moonshadow Bow', atk: 130, wlv: 4, stats: { fns: 3, qkn: 1 }, icon: 'bow_moon', desc: 'The Dark Elf Lord\'s own bow, black wood inlaid with silver moons. Shadow element.', from: 'the Dark Elf Lord (2%)' },
+  messenger_shroud: { type: 'equip', slot: 'garment', rare: true, name: "Messenger's Shroud", def: 5, flee: 9, stats: { qkn: 2, fns: 1 }, icon: 'r_messenger', desc: 'Ratatoskr\'s torn red cloak, the World Tree worked on its back in gold thread. Whoever wears it is never quite where the blow lands.', from: 'Ratatoskr (3%)' },
+  rune_bracelet: { type: 'equip', slot: 'acc', rare: true, name: 'Runic Bracelet', flee: 4, stats: { qkn: 3, ftn: 2 }, icon: 'r_runebracelet', desc: 'Ratatoskr\'s bracelet of dark metal and glowing gold runes. Swift of step, keen of mind.', from: 'Ratatoskr (2%)' },
   // Nidhogg's (MVP gear for several builds, the owner's call): a sword, a staff, a bow and a dagger, a
   // ring, a mantle and the World Tree Crown for anyone, and its ultra rare, Nidhogg Wings (animated: wings.js)
   nidhogg_ring: { type: 'equip', slot: 'acc', rare: true, name: 'Nidhogg Ring', mhp: 100, stats: { pow: 2, end: 2 }, icon: 'r_nidhogg', desc: 'A ring cut from one of Nidhogg\'s black scales. It is always a little warm, like something sleeping.', from: 'Nidhogg (5%)' },
@@ -416,7 +416,7 @@ const BASE_ITEMS = {
   nidhogg_fang: { type: 'equip', slot: 'weapon', kind: 'dagger', el: 'shadow', rare: true, name: 'Nidhogg Fang', atk: 120, wlv: 4, perk: { venom: 5 }, stats: { qkn: 3 }, icon: 'dagger_nidhogg', desc: 'A fang from Nidhogg\'s jaw, its venom still in it: 5% of your blows poison a monster. Shadow element.', from: 'Nidhogg (1%)' },
   nidhogg_wings: { type: 'equip', slot: 'wings', rare: true, ultra: true, name: 'Nidhogg Wings', look: { kind: 'wings', art: 'nidhogg' }, mhpRate: 10, flee: 5, stats: { pow: 4, end: 4, qkn: 3 }, icon: 'wings_nidhogg', desc: 'Nidhogg\'s own wings: black, thorned bone and torn crimson membrane eaten through with holes, red light beating in their veins like a slow heart. Embers drift up off them, and when you stand still they spread, great and slow, and the light flares. Yggdrasil\'s ultra rare.', from: 'Nidhogg (0.5%)' },
   worldtree_crown: { type: 'equip', slot: 'head', rare: true, name: 'World Tree Crown', def: 5, mhpRate: 8, mspRate: 8, stats: { end: 2, knl: 2, ftn: 2 }, desc: 'A crown of the World Tree\'s own twigs, still in golden leaf, with a drop of its sap shining in front like a green jewel. It was never made: it grew.', from: 'Nidhogg (1%)' },
-  // Yggdrasil's cards: one for each monster (the owner's call), stats only, but the Dark Elf Lord's and
+  // Yggdrasil's cards: one for each monster (the owner's call), stats only, but Ratatoskr's and
   // Nidhogg's have an effect of their own
   rootsquirrel_card: { type: 'misc', rare: true, name: 'Root Squirrel Card', adj: 'Nimble', icon: 'card_rootsquirrel', card: { on: 'shoes', flee: 3, stats: { qkn: 1 } }, desc: 'A Root Squirrel on a card, mid-chatter. In shoes with a slot: FLEE +3, QKN +1.', from: 'Root Squirrels (0.1%)' },
   bramble_card: { type: 'misc', rare: true, name: 'Bramble Card', adj: 'Thorny', icon: 'card_bramble', card: { on: 'shield', def: 2, mhp: 80 }, desc: 'A Bramble on a prickly card. In a shield with a slot: DEF +2, Max HP +80.', from: 'Brambles (0.1%)' },
@@ -428,7 +428,7 @@ const BASE_ITEMS = {
   rotbeetle_card: { type: 'misc', rare: true, name: 'Rot Beetle Card', adj: 'Rotting', icon: 'card_rotbeetle', card: { on: 'weapon', atk: 14, stats: { end: 1 } }, desc: 'A Rot Beetle on an oily card. In a weapon with a slot: ATK +14, END +1.', from: 'Rot Beetles (0.1%)' },
   rootwarden_card: { type: 'misc', rare: true, name: 'Root Warden Card', adj: 'Warding', icon: 'card_rootwarden', card: { on: 'shield', def: 5, mhpRate: 5 }, desc: 'A Root Warden on a card, shield raised. In a shield with a slot: DEF +5, Max HP +5%.', from: 'Root Wardens (0.1%)' },
   thorndrake_card: { type: 'misc', rare: true, name: 'Thorn Drake Card', adj: 'Draconic', icon: 'card_thorndrake', card: { on: 'armor', mhpRate: 6, stats: { pow: 1, end: 1 } }, desc: 'A Thorn Drake on a card, wings spread. In an armor with a slot: Max HP +6%, POW +1, END +1.', from: 'Thorn Drakes (0.1%)' },
-  elflord_card: { type: 'misc', rare: true, name: 'Dark Elf Lord Card', adj: 'Moonlit', icon: 'card_elflord', card: { on: 'garment', flee: 6, stats: { fns: 4 }, perk: { farshot: 10 }, perkName: 'Elven Sight' }, desc: 'The Dark Elf Lord on a silver card, his bow drawn. In a garment with a slot: FNS +4, FLEE +6, and Elven Sight: your blows and spells land 10% harder on a monster 4 paces away or more.', from: 'the Dark Elf Lord (1%)' },
+  ratatoskr_card: { type: 'misc', rare: true, name: 'Ratatoskr Card', adj: 'Swift', icon: 'card_ratatoskr', card: { on: 'garment', flee: 6, stats: { qkn: 3, fns: 2 }, perk: { farshot: 10 }, perkName: 'Keen Perception' }, desc: 'Ratatoskr on a card of dark gold, its tail a blaze of runes. In a garment with a slot: QKN +3, FNS +2, FLEE +6, and Keen Perception: your blows and spells land 10% harder on a monster 4 paces away or more.', from: 'Ratatoskr (1%)' },
   nidhogg_card: { type: 'misc', rare: true, name: 'Nidhogg Card', adj: 'Gnawing', icon: 'card_nidhogg', card: { on: 'armor', def: 6, mhpRate: 20, stats: { pow: 5, end: 5 }, perk: { rot: 8 }, perkName: 'Root Rot' }, desc: 'Nidhogg on a black card, coiled round a gnawed root. In an armor with a slot: DEF +6, Max HP +20%, POW +5, END +5, and Root Rot: a monster your blows or spells strike takes 8% more from everything for 5 s.', from: 'Nidhogg (1%)' },
   shiny_gel:    { type: 'misc', rare: true, name: 'Shiny Gel', desc: 'Bloop gel that shimmers with every colour, found once in a hundred bloops. Collectors and ring-makers prize it.', from: 'any bloop (1%)' },
 
@@ -612,10 +612,10 @@ export const maybeSlotted = (id, roll = Math.random()) => (canBeSlotted(id) && r
 // Prices in perz (Aria's coin, like Ragnarok's zeny): what a shop asks; any shop buys for half. 0 = can't be sold.
 export const PRICES = {
   // Yggdrasil's hollows
-  squirrel_tail: 300, bramble_thorn: 450, root_scale: 500, moss_clump: 700, elven_thread: 800, stag_antler: 1000, dryad_leaf: 1100, rot_shell: 1400, lord_sigil: 9000, living_heartwood: 1500, drake_scale: 1800, ygg_berry: 20000,
+  squirrel_tail: 300, bramble_thorn: 450, root_scale: 500, moss_clump: 700, elven_thread: 800, stag_antler: 1000, dryad_leaf: 1100, rot_shell: 1400, rune_tuft: 9000, living_heartwood: 1500, drake_scale: 1800, ygg_berry: 20000,
   acorn_charm: 12000, bramble_buckler: 12000, serpent_boots: 16000, moss_mail: 18000, elven_bow: 30000, stag_cape: 22000, dryad_staff: 26000, rot_fang: 24000, warden_blade: 30000, drake_ring: 24000,
-  shadow_cloak: 44000, moon_bow: 56000, nidhogg_ring: 40000, dragonleaf_mantle: 50000, dragonbone_blade: 90000, worldtree_staff: 90000, dragonwing_bow: 96000, nidhogg_fang: 96000, worldtree_crown: 80000, nidhogg_wings: 150000,
-  rootsquirrel_card: 6000, bramble_card: 8000, rootserpent_card: 9000, mossgolem_card: 10000, darkelf_card: 10000, greatstag_card: 12000, dryad_card: 12000, rotbeetle_card: 14000, rootwarden_card: 14000, thorndrake_card: 15000, elflord_card: 30000, nidhogg_card: 80000,
+  messenger_shroud: 44000, rune_bracelet: 40000, nidhogg_ring: 40000, dragonleaf_mantle: 50000, dragonbone_blade: 90000, worldtree_staff: 90000, dragonwing_bow: 96000, nidhogg_fang: 96000, worldtree_crown: 80000, nidhogg_wings: 150000,
+  rootsquirrel_card: 6000, bramble_card: 8000, rootserpent_card: 9000, mossgolem_card: 10000, darkelf_card: 10000, greatstag_card: 12000, dryad_card: 12000, rotbeetle_card: 14000, rootwarden_card: 14000, thorndrake_card: 15000, ratatoskr_card: 30000, nidhogg_card: 80000,
   // the Sphinx's Halls
   scarab_shell: 300, cobra_fang: 450, old_bandage: 500, lamia_scale: 700, lapis_shard: 800, jackal_pelt: 1000, falcon_plume: 1100, lion_mane: 1400, living_sand: 1500, gold_leaf: 1800, ammit_heart: 9000, gold_bar: 100000,
   scarab_buckler: 12000, cobra_kris: 16000, grave_wrap: 14000, serpent_staff: 26000, priest_robe: 18000, jackal_spear: 30000, horus_bow: 32000, lion_boots: 22000, storm_ring: 24000, coffin_shield: 30000,
@@ -1021,7 +1021,7 @@ const PAINT = {
   stag_antler: (g) => { g.lineCap = 'round'; for (const [col, w] of [['#2e2118', 8], ['#e8dcc0', 4.5]]) { g.strokeStyle = col; g.lineWidth = w; g.beginPath(); g.moveTo(20, 56); g.quadraticCurveTo(26, 30, 44, 10); g.moveTo(26, 36); g.lineTo(12, 22); g.moveTo(34, 24); g.lineTo(46, 26); g.stroke(); } for (const [x, y] of [[44, 10], [12, 22], [46, 26]]) shape(g, () => g.arc(x, y, 3, 0, 7), '#9affc0', 1.5); },
   dryad_leaf: (g) => { shape(g, () => { g.moveTo(32, 6); g.quadraticCurveTo(56, 30, 32, 58); g.quadraticCurveTo(8, 30, 32, 6); }, '#4f9a44'); g.beginPath(); g.moveTo(32, 10); g.lineTo(32, 56); g.strokeStyle = '#2e6a2a'; g.lineWidth = 2; g.stroke(); shape(g, () => g.arc(44, 14, 5, 0, 7), '#ff9ac8', 1.5); },
   rot_shell: (g) => { shape(g, () => g.ellipse(32, 34, 18, 20, 0, 0, 7), '#7a5a9a'); g.beginPath(); g.moveTo(32, 15); g.lineTo(32, 54); g.strokeStyle = '#3a2a4a'; g.lineWidth = 2.5; g.stroke(); gloss(g, 24, 26, 5, 6); },
-  lord_sigil: (g) => { shape(g, () => g.arc(32, 32, 20, 0, 7), '#d8dce8'); shape(g, () => { g.arc(32, 32, 11, 0.6, 5.7); g.arc(28, 32, 9, 5.2, 1.1, true); }, '#b88aff', 2.5); },
+  rune_tuft: (g) => { shape(g, () => { g.moveTo(22, 56); g.bezierCurveTo(6, 30, 26, 6, 46, 10); g.bezierCurveTo(30, 18, 30, 40, 22, 56); }, '#d8742a'); for (const [x, y] of [[30, 26], [27, 40]]) { g.beginPath(); g.moveTo(x - 3, y - 3); g.lineTo(x + 3, y + 3); g.moveTo(x + 3, y - 3); g.lineTo(x - 3, y + 3); g.strokeStyle = '#ffd27a'; g.lineWidth = 2; g.stroke(); } },
   living_heartwood: (g) => { shape(g, () => g.roundRect(12, 18, 40, 30, 10), '#6a4a2e'); shape(g, () => g.ellipse(32, 33, 11, 9, 0, 0, 7), '#86c06a', 2); for (let r = 4; r < 9; r += 3) { g.beginPath(); g.ellipse(32, 33, r, r * 0.8, 0, 0, 7); g.strokeStyle = '#4f7a3c'; g.lineWidth = 1.5; g.stroke(); } },
   drake_scale: (g) => { shape(g, () => { g.moveTo(32, 8); g.quadraticCurveTo(54, 24, 46, 48); g.lineTo(32, 58); g.lineTo(18, 48); g.quadraticCurveTo(10, 24, 32, 8); }, '#3a6a3a'); gloss(g, 26, 24, 5, 7); },
   ygg_berry: (g) => { shape(g, () => g.arc(30, 38, 16, 0, 7), '#f0c040'); shape(g, () => { g.moveTo(30, 22); g.quadraticCurveTo(38, 8, 50, 10); g.quadraticCurveTo(42, 20, 30, 22); }, '#5fae45', 2.5); gloss(g, 24, 32, 6, 5); shape(g, () => g.arc(36, 44, 2, 0, 7), '#ffe9a8', 1); },
@@ -1035,8 +1035,8 @@ const PAINT = {
   dagger_rot: (g) => daggerIcon(g, '#b89ad8', '#3a2a4a', '#6a4a2e'),
   weapon_warden: (g) => swordIcon(g, '#c8b890', '#6a4a2e', '#9affc0'),
   r_drakering: (g) => charmIcon(g, '#3a6a3a', '#c8e070'),
-  r_shadowcloak: (g) => capeIcon(g, '#2a2038', '#b88aff'),
-  bow_moon: (g) => bowIcon(g, '#1e1a2c', '#d8dce8', '#b88aff'),
+  r_messenger: (g) => capeIcon(g, '#8a1a24', '#d8a048'),
+  r_runebracelet: (g) => charmIcon(g, '#ffd27a', '#2a2428'),
   r_nidhogg: (g) => charmIcon(g, '#2a2832', '#8a3aa8'),
   r_dragonleaf: (g) => capeIcon(g, '#3a2238', '#5fae45'),
   weapon_dragonbone: (g) => swordIcon(g, '#d8d0c0', '#2a2832', '#8a3aa8'),
@@ -1053,7 +1053,7 @@ const PAINT = {
   card_rotbeetle: (g) => cardIcon(g, '#7a5a9a', '#3a2a4a'),
   card_rootwarden: (g) => cardIcon(g, '#6a4a2e', '#ffb030'),
   card_thorndrake: (g) => cardIcon(g, '#3a6a3a', '#c8e070'),
-  card_elflord: (g) => cardIcon(g, '#1e1a2c', '#d8dce8'),
+  card_ratatoskr: (g) => cardIcon(g, '#2a2428', '#ffb048'),
   card_nidhogg: (g) => cardIcon(g, '#2a2832', '#9aff6a'),
   wings_nidhogg: (g) => wingIcon(g, 'nidhogg'),
   // the Sphinx's Halls
