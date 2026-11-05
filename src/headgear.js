@@ -34,8 +34,8 @@ export const gearFrames = (id) => gearPiece(id)?.L.frames || 1;
 export const gearCut = (id, dir) => gearPiece(id)?.L.cut?.[dir] || null;
 
 // paint the face piece and the hat into a body frame, the hat on top, unless the face piece goes
-// over it (its layout's over: Elven Ears stick out past horns and hats; or a list of the directions it
-// does: the All-Seeing Eye, on the face, over a helm's brim and cheek guards when the face is turned to you)
+// over it (its layout's over: Elven Ears stick out past horns and hats, the All-Seeing Eye is always on
+// top; or a list of the directions it goes over in)
 export function paintGears(g, at, dir, top, face, frame = 0) {
   const o = gearPiece(face)?.L.over, over = Array.isArray(o) ? o.includes(dir) : !!o;
   if (!over) paintGear(g, at, dir, face, frame);
