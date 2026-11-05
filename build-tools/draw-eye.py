@@ -16,7 +16,10 @@ DIRS, CELL, SS = hg.DIRS, hg.CELL, hg.SS
 GOLD = hg.GOLD
 LAPIS = [(150, 196, 255), (60, 110, 230), (36, 62, 146), (18, 30, 80)]
 R = 12.1                  # just over the face (the cranium is 11.5)
-EX, EY = -4.6, -4.4       # the hero's right eye (the viewer's left, seen from the front)
+EX, EY = -4.6, -4.4
+# the directions it is painted over the hat (headgear.js paintGears): those where the face is turned to
+# you, so a helm's brim or cheek guards never hide it; turned away, the hat goes over it as usual
+OVER = ['down', 'downright', 'downleft', 'right']       # the hero's right eye (the viewer's left, seen from the front)
 
 def on_face(x, y, lift=0.0):
     # a point of the face at (x across, y up), on the head's surface, lifted off it a little
@@ -93,7 +96,7 @@ if __name__ == '__main__':
         sheet.paste(cell, (c * CELL, 0))
         boxes[d] = hg.box(cell)
     sheet.save(f'{hg.ART}/hg_allseeing_eye.png')
-    json.dump({'cw': CELL, 'ch': CELL, 'frames': 1, 'slot': 'face', 'dirs': {d: i for i, d in enumerate(DIRS)}, 'box': boxes, 'cut': None}, open(f'{hg.ART}/hg_allseeing_eye.json', 'w'))
+    json.dump({'cw': CELL, 'ch': CELL, 'frames': 1, 'slot': 'face', 'dirs': {d: i for i, d in enumerate(DIRS)}, 'box': boxes, 'cut': None, 'over': OVER}, open(f'{hg.ART}/hg_allseeing_eye.json', 'w'))
     if '--preview' in sys.argv:
         S = 8
         out = Image.new('RGBA', (CELL * 8 * S, CELL * S * 2), (70, 72, 84, 255))
