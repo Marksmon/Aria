@@ -228,7 +228,7 @@ export const MOB_DEFS = {
     burns: { r: 1.6, dur: 6, mult: 0.25, color: '#9aff6a', word: 'Venom!', text: 'venom pools' },
     summon: ['rootWarden', 'thornDrake', 'thornDrake'], summonText: 'Nidhogg roars, and its brood and the Root Wardens answer!', mvpDrops: [['ygg_berry', 2], ['potion3', 3]],
     wake: 'Far under the World Tree, something gnaws at its roots... Nidhogg stirs in its hall.',
-    drops: [['ygg_berry', 1, 3, 1], ['potion3', 2, 3, 0.6], ['drake_scale', 4, 6, 1], ['hard_ore', 1, 2, 0.4], ['armor_ore', 1, 2, 0.4], ['nidhogg_ring', 1, 1, 0.05], ['dragonleaf_mantle', 1, 1, 0.03], ['dragonbone_blade', 1, 1, 0.02], ['worldtree_staff', 1, 1, 0.02], ['dragonwing_bow', 1, 1, 0.01], ['nidhogg_fang', 1, 1, 0.01], ['nidhogg_wings', 1, 1, 0.01], ['nidhogg_card', 1, 1, 0.01], ['worldtree_crown', 1, 1, 0.005]] },
+    drops: [['ygg_berry', 1, 3, 1], ['potion3', 2, 3, 0.6], ['drake_scale', 4, 6, 1], ['hard_ore', 1, 2, 0.4], ['armor_ore', 1, 2, 0.4], ['nidhogg_ring', 1, 1, 0.05], ['dragonleaf_mantle', 1, 1, 0.03], ['dragonbone_blade', 1, 1, 0.02], ['worldtree_staff', 1, 1, 0.02], ['dragonwing_bow', 1, 1, 0.01], ['nidhogg_fang', 1, 1, 0.01], ['worldtree_crown', 1, 1, 0.01], ['nidhogg_card', 1, 1, 0.01], ['nidhogg_wings', 1, 1, 0.005]] },
 };
 // the Sand Wyrm's rhythm (def.wyrm): seconds up (it can be hit, it doesn't move) and under (it
 // can't be hit, it swims for you), shorter enraged; swim: its pace under the sand against its walk;

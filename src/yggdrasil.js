@@ -55,7 +55,7 @@ export function buildYggdrasil({ group, heightAt, addBox, addSolid }, at) {
   const rootBark = lam({ map: barkTex(rng, '#5e4028', 0.6) });
   rootBark.map.repeat.set(1, 3);
   // the trunk: far taller than anything the camera can see, its top lost in the dark
-  const H = 90;
+  const H = 130;
   const trunk = new THREE.Mesh(new THREE.CylinderGeometry(R - 1, R, H, 48, 1, true), bark);
   trunk.position.set(cx, H / 2 - 0.6, cz);
   group.add(trunk);
@@ -71,8 +71,8 @@ export function buildYggdrasil({ group, heightAt, addBox, addSolid }, at) {
   });
   doorTex.wrapS = doorTex.wrapT = THREE.ClampToEdgeWrapping;
   const dy = heightAt(ramp.x, ramp.z0) - 0.05;
-  const door = new THREE.Mesh(new THREE.PlaneGeometry(3.6, 5), lam({ map: doorTex, emissive: '#0c2a16', emissiveMap: doorTex }));
-  door.position.set(ramp.x, dy + 2.5, cz + R - 0.05);
+  const door = new THREE.Mesh(new THREE.PlaneGeometry(4.6, 6.4), lam({ map: doorTex, emissive: '#0c2a16', emissiveMap: doorTex }));
+  door.position.set(ramp.x, dy + 3.2, cz + R - 0.02);
   group.add(door);
   F.add([trunk, door], cx, cz, R, 14);
   // solid: the trunk (an octagon of boxes)
@@ -87,20 +87,40 @@ export function buildYggdrasil({ group, heightAt, addBox, addSolid }, at) {
     const m = new THREE.Mesh(new THREE.TubeGeometry(curve, 32, radius, 10), mat);
     group.add(m);
     rootMeshes.push(m);
+    const mid = curve.getPoint(0.5), half = curve.getLength() / 2;
+    F.add([m], mid.x, mid.z, Math.max(1.5, half * 0.8), 2 + radius * 2); // (fades on its own when it stands between the camera and the hero)
     for (let i = 0; i <= 24; i++) { // colliders along it, where it stands above the ground
       const p = curve.getPoint(i / 24);
       if (p.y + radius * 0.6 > heightAt(p.x, p.z) + 0.25) addSolid(p.x, p.z, radius * 0.8);
     }
     return curve;
   };
+  // the great roots (the owner's call: big, and many): each thick as a wall where it leaves the trunk,
+  // humping over the ground and sinking far out, most with a branch off it; and all round the clearing
+  // smaller roots breaking the surface. None crosses the way up to the door (the ramp's road, kept clear)
   const roots = [];
+  const clearOfRoad = (x, z) => !(Math.abs(x - ramp.x) < ramp.w + 4 && z > cz + R - 3) && x > 3 && z > 3 && x < 61 && z < 61;
   for (const a of at.roots) {
-    const bend = (rng() - 0.5) * 0.5, len = 15 + rng() * 6;
+    const bend = (rng() - 0.5) * 0.5, len = 18 + rng() * 10;
     const pt = (rr, da, y) => { const ang = a + da; const x = cx + Math.cos(ang) * rr, z = cz + Math.sin(ang) * rr; return [x, heightAt(x, z) + y, z]; };
-    const pts = [pt(R - 1.4, 0, 1.7), pt(R + 2.5, bend * 0.4, 0.8), pt(R + len * 0.55, bend, 0.25), pt(R + len, bend * 1.4, -0.7)];
-    tube(pts.slice(0, 3), 1.2);
-    tube(pts.slice(1), 0.85);
+    const pts = [pt(R - 1.6, 0, 2.6), pt(R + 3, bend * 0.4, 1.4), pt(R + len * 0.5, bend, 0.45), pt(R + len, bend * 1.4, -0.9)];
+    tube(pts.slice(0, 3), 1.85);
+    tube(pts.slice(1), 1.3);
     roots.push(pts);
+    if (rng() < 0.85) { // a branch off it, curling away
+      const [bx, , bz] = pts[2], ba = a + bend + (rng() < 0.5 ? -1 : 1) * (0.55 + rng() * 0.45), bl = 6 + rng() * 5;
+      const mx = bx + Math.cos(ba) * bl * 0.5, mz = bz + Math.sin(ba) * bl * 0.5, ex = bx + Math.cos(ba) * bl, ez = bz + Math.sin(ba) * bl;
+      if (clearOfRoad(ex, ez) && clearOfRoad(mx, mz)) { const b = [[bx, heightAt(bx, bz) + 0.3, bz], [mx, heightAt(mx, mz) + 0.35, mz], [ex, heightAt(ex, ez) - 0.5, ez]]; tube(b, 0.75); roots.push(b); }
+    }
+  }
+  for (let i = 0, made = 0; i < 80 && made < 16; i++) { // small roots breaking the surface round the clearing
+    const a = rng() * Math.PI * 2, rr = R + 5 + rng() * 22, x0 = cx + Math.cos(a) * rr, z0 = cz + Math.sin(a) * rr;
+    const b = a + (rng() - 0.5) * 2.4, l = 4 + rng() * 5, x1 = x0 + Math.cos(b) * l, z1 = z0 + Math.sin(b) * l, mx = (x0 + x1) / 2, mz = (z0 + z1) / 2;
+    if (![[x0, z0], [x1, z1], [mx, mz]].every(([x, z]) => clearOfRoad(x, z) && Math.hypot(x - 32, z - 58) > 5)) continue;
+    const pts = [[x0, heightAt(x0, z0) - 0.45, z0], [mx, heightAt(mx, mz) + 0.3, mz], [x1, heightAt(x1, z1) - 0.45, z1]];
+    tube(pts, 0.42 + rng() * 0.2);
+    roots.push(pts);
+    made++;
   }
   // the root that is the road up: low roots along both its sides, rising with it to the trunk
   for (const s of [-1, 1]) {
@@ -112,13 +132,13 @@ export function buildYggdrasil({ group, heightAt, addBox, addSolid }, at) {
   const add = { transparent: true, depthWrite: false, blending: THREE.AdditiveBlending };
   const dot = canvasTex(32, 32, (g) => { const gr = g.createRadialGradient(16, 16, 1, 16, 16, 15); gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = gr; g.fillRect(0, 0, 32, 32); });
   const flyMat = new THREE.SpriteMaterial({ map: dot, color: '#b8ffb0', ...add });
-  const flies = Array.from({ length: 22 }, (_, i) => { const s = new THREE.Sprite(flyMat); s.scale.set(0.28, 0.28, 1); s.renderOrder = 3; group.add(s); return { s, a: rng() * 7, r: R + 1.5 + rng() * 9, h: 0.6 + rng() * 3, k: 0.2 + rng() * 0.4, ph: i }; });
+  const flies = Array.from({ length: 30 }, (_, i) => { const s = new THREE.Sprite(flyMat); s.scale.set(0.28, 0.28, 1); s.renderOrder = 3; group.add(s); return { s, a: rng() * 7, r: R + 1.5 + rng() * 12, h: 0.6 + rng() * 3, k: 0.2 + rng() * 0.4, ph: i }; });
   const leafTex = canvasTex(16, 16, (g) => { g.fillStyle = '#6aa84a'; g.beginPath(); g.ellipse(8, 8, 6, 3, 0.6, 0, 7); g.fill(); g.strokeStyle = '#3a6a2a'; g.lineWidth = 1; g.beginPath(); g.moveTo(3, 11); g.lineTo(13, 5); g.stroke(); });
   leafTex.magFilter = THREE.NearestFilter;
   const leafMat = new THREE.SpriteMaterial({ map: leafTex, transparent: true, alphaTest: 0.3 });
-  const leaves = Array.from({ length: 16 }, () => { const s = new THREE.Sprite(leafMat); s.scale.set(0.35, 0.35, 1); group.add(s); return { s, x: cx + (rng() - 0.5) * 30, z: cz + (rng() - 0.3) * 30, y: rng() * 14, v: 0.6 + rng() * 0.6, w: rng() * 7 }; });
+  const leaves = Array.from({ length: 16 }, () => { const s = new THREE.Sprite(leafMat); s.scale.set(0.35, 0.35, 1); group.add(s); return { s, x: cx + (rng() - 0.5) * 40, z: cz + (rng() - 0.3) * 40, y: rng() * 14, v: 0.6 + rng() * 0.6, w: rng() * 7 }; });
   const shaft = canvasTex(32, 128, (g) => { const gr = g.createLinearGradient(0, 0, 0, 128); gr.addColorStop(0, 'rgba(255,250,210,0)'); gr.addColorStop(0.5, 'rgba(255,250,210,.32)'); gr.addColorStop(1, 'rgba(255,250,210,0)'); g.fillStyle = gr; g.fillRect(0, 0, 32, 128); });
-  for (const [sx, sz] of [[cx - R - 5, cz + 6], [cx + R + 6, cz + 9]]) { const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: shaft, ...add })); s.scale.set(3, 14, 1); s.position.set(sx, heightAt(sx, sz) + 6, sz); group.add(s); }
+  for (const [sx, sz] of [[cx - R - 4, cz + 9], [cx + R + 4, cz + 11]]) { const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: shaft, ...add })); s.scale.set(3, 14, 1); s.position.set(sx, heightAt(sx, sz) + 6, sz); group.add(s); }
   let t = 0;
   return {
     occlude: F.occlude,
@@ -133,7 +153,7 @@ export function buildYggdrasil({ group, heightAt, addBox, addSolid }, at) {
       }
       for (const l of leaves) {
         l.y -= l.v * dt;
-        if (l.y < 0) { l.y = 12 + rng() * 4; l.x = cx + (rng() - 0.5) * 30; l.z = cz + (rng() - 0.3) * 30; }
+        if (l.y < 0) { l.y = 12 + rng() * 4; l.x = cx + (rng() - 0.5) * 40; l.z = cz + (rng() - 0.3) * 40; }
         l.s.position.set(l.x + Math.sin(t + l.w) * 0.8, heightAt(l.x, l.z) + l.y, l.z);
       }
     },

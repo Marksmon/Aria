@@ -153,9 +153,9 @@ export const MAPS = {
   halls3: { portals: [{ to: 'halls2', x: 55.5, z: 31.5 }, { to: 'halls4', x: 7.5, z: 31.5 }], indoor: true, maze: { floor: 3, seed: 303, loops: 0.09, start: [12, 6], rooms: [[12, 6], [0, 6], [6, 6, true], [5, 1, true], [8, 10, true]] } },
   // Yggdrasil (yggdrasil.js): the World Tree in a mossy clearing, its trunk in the middle (yggdrasil: where,
   // its radius, the angles of its great roots, and the root that climbs to its door: ramp). No monsters
-  ygg: { portals: [{ to: 'oldwood', ...S }, { to: 'ygg1', x: 32, z: 35.2, out: [0, 3.2], door: true }], lift: [-0.05, 0.3],
-    yggdrasil: { x: 32, z: 24, r: 9.4, ramp: { x: 32, z0: 34.4, z1: 47, w: 2.4, top: 2.6 }, roots: [0.15, 0.95, 2.2, 3.0, 3.75, 4.5, 5.3, 6.0] },
-    keep: [{ x0: 19, z0: 11, x1: 45, z1: 49 }] },
+  ygg: { portals: [{ to: 'oldwood', ...S }, { to: 'ygg1', x: 32, z: 35.6, out: [0, 3.2], door: true }], lift: [-0.05, 0.3],
+    yggdrasil: { x: 32, z: 21, r: 13, ramp: { x: 32, z0: 35, z1: 52, w: 2.6, top: 3.4 }, roots: [0.05, 0.5, 0.92, 2.22, 2.65, 3.1, 3.55, 4.0, 4.4, 4.8, 5.2, 5.6, 6.0] },
+    keep: [{ x0: 15, z0: 4, x1: 49, z1: 54 }] },
   // the World Tree's hollows (dungeon.js, look 'tree'): three maze floors of living wood, then the great hall
   ygg1: { portals: [{ to: 'ygg', x: 31.5, z: 55.5 }, { to: 'ygg2', x: 31.5, z: 7.5 }], indoor: true, maze: { floor: 1, look: 'tree1', seed: 511, loops: 0.12, start: [6, 13], rooms: [[6, 12], [6, 0], [3, 5, true], [9, 8, true]] } },
   ygg2: { portals: [{ to: 'ygg1', x: 31.5, z: 7.5 }, { to: 'ygg3', x: 7.5, z: 31.5 }], indoor: true, maze: { floor: 2, look: 'tree2', seed: 622, loops: 0.1, start: [6, 0], rooms: [[6, 0], [0, 6], [9, 3, true], [4, 9, true], [11, 10, true]] } },

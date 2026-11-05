@@ -166,7 +166,7 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   Tree) stays out of sight until the hero has walked Veidheim's four lands (`needZones`: marsh, oldwood, farm,
   wolfhill), like the Sphinx's; its last step (the seed planted by the stump north in the Old Forest) opens a
   hidden portal (`need: 'tree6'`) to Yggdrasil (`ygg`, `src/yggdrasil.js`): no monsters, a trunk so big only it
-  can be seen (the owner's call), great roots round it with colliders, and one root you climb (its rise is in the
+  can be seen (the owner's call), great roots round it with colliders (each fades on its own when it hides the hero), and one root you climb (its rise is in the
   terrain, `rampAt` in `world.js`; low roots along its sides) to the door portal in the trunk. Inside, the
   **second dungeon**, Yggdrasil's Hollows (`ygg1`-`ygg4`, `dungeon.js` looks `tree1`-`tree4`: bark walls, moss
   tops, glowing runes, earth floors, living-trunk pillars, glowing mushrooms for torches): three maze floors and the
@@ -175,8 +175,11 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   hall: Root Wardens, Thorn Drakes (`hall: true`) and **Nidhogg** (Lv 99 MVP, `hall: true`; after the owner's
   picture: black, red-cracked, torn crimson wings with holes), whose mechanic is Gnaw the Roots (`MOVES.gnaw`:
   it heals while the rot withers the hall; tear it away with `tear` of its HP in time, or it rises gorged in a
-  frenzy). It drops World Tree Berries (always: full HP and SP, `use.full`), Nidhogg Wings (1%, `wingart.js`
-  `nidhogg`, after the owner's sheet) and the ultra rare World Tree Crown (Head, 0.5%, `build-tools/draw-crown.py`).
+  frenzy). It drops World Tree Berries (always: full HP and SP, `use.full`), the World Tree Crown (Head, 1%,
+  `build-tools/draw-crown.py`) and its ultra rare, **Nidhogg Wings** (0.5%, the owner's call; `wingart.js` `nidhogg`,
+  after the owner's sheet), animated even standing still (the owner's call, `wings.js`: a pulsing glow layer,
+  `WING_GLOW`, embers, and every few seconds at rest a slow spread with the glow flaring, `SPREAD`). The tree is
+  big with many roots (the owner's call: great roots with branches, small ones breaking the ground all round).
   Its monsters are painted in code in `src/roots.js` (the Root Serpents and Rot Beetles are the snakes and
   beetles in new colours).
 - **Quests:** side quests and job trials can be quit from the Quest View; the main story quest

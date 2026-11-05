@@ -405,8 +405,9 @@ Treants, bring a hunter's offering, read three runestones, and plant the Seed of
 the last stump in the north of the Old Forest. Then a hidden way opens north to **Yggdrasil**.
 
 **Yggdrasil** has no monsters: a mossy clearing, fireflies, and in the middle a tree so big that only
-its trunk can be seen, its top lost far above. Great roots spread over the ground round it, and one of
-them, broad as a road, climbs to a door of glowing runes in the trunk. Walk up the root and through
+its trunk can be seen, its top lost far above. Great roots, thick as walls, spread over the whole
+clearing, branching as they go, and smaller ones break the ground everywhere round it; one of them,
+broad as a road, climbs to a door of glowing runes in the trunk. Walk up the root and through
 the door.
 
 **Yggdrasil's Hollows** are Aria's second dungeon, inside the World Tree, at the same levels as the
@@ -432,9 +433,11 @@ healed and in a frenzy. Between gnawings it breathes venom (**Venom Breath**), r
 its Thorn Drakes and Root Wardens. It always drops **World Tree Berries** (1–3, and two more as its MVP
 reward): eat one and all your HP and SP come back at once. Now and then it drops gear for every build
 (the Dragonbone Blade, the World Tree Staff, the Dragonwing Bow, the Nidhogg Fang, the Dragonleaf
-Mantle, the Nidhogg Ring), its card, **Nidhogg Wings** (1%: its torn crimson wings on your back), and
-very rarely (0.5%) its ultra rare: the **World Tree Crown**, a crown of its golden-leafed twigs with a
-drop of green sap for a jewel (DEF +5, Max HP and SP +12%, END +3, KNL +3, FTN +2).
+Mantle, the Nidhogg Ring, the **World Tree Crown**: a crown of its golden-leafed twigs with a drop of
+green sap for a jewel), its card, and very rarely (0.5%) its ultra rare: **Nidhogg Wings**, its torn
+crimson wings on your back (Max HP +10%, FLEE +5, POW +4, END +4, QKN +3). They are alive: red light
+beats through their veins like a slow heart, embers drift up off them, and when you stand still they
+spread, great and slow, every few seconds, the light flaring.
 
 ## Raids
 
