@@ -56,7 +56,7 @@ Classic MMORPG style: no on-screen controller. Landscape.
 | Hold a buff icon (left of the minimap: each buff on you, with its time left) to see what it does | Hover |
 | Attack button (left of the hotbar, showing your weapon): attack your target, or the nearest monster in sight if you have none (a melee hero walks to it) | Click |
 | Drag one finger: turn the camera · pinch: zoom | Drag or Q / E · mouse wheel |
-| Window buttons under the HP / SP box: Status, Equip, Items, Skills | Alt+A, Alt+Q, Alt+E (or I / B), Alt+S · Esc closes |
+| Window buttons under the HP / SP box: Status, Equip, Items, Skills, Raids, Quests | Alt+A, Alt+Q, Alt+E (or I / B), Alt+S · Esc closes |
 
 The hotbar starts empty. Windows are small, can be dragged anywhere by their title bar, and the
 game keeps running while they are open. A monster's name shows over it when the mouse is on it,
@@ -171,13 +171,13 @@ Moss Field and Fen Shore, by the camp and the city, Willow Marsh by Veidheim and
 minutes after it falls (its timer holds when you leave the map or close the game, as an MVP's does).
 Mini-bosses are big game for heroes of a **second job**: their levels (55–66) say so, and they
 come for a second-job hero on sight. A Trainee or a first job they leave be as they roam, unless
-it strikes or taunts one first; then it fights like any mini-boss. Mini-bosses are **half as hard as an MVP** (190,000–290,000 HP) and fierce like one: enraged below
+it strikes or taunts one first; then it fights like any mini-boss. Mini-bosses are **half as hard as an MVP** (190,000–340,000 HP) and fierce like one: enraged below
 half their HP, and their stomps and moves can't be dodged by FLEE and go through most of your DEF.
 They are fights for a hero in good gear whatever their level, and no quest needs one (the quests
 and trials that once did now hunt their kin). Like the MVPs, each calls 2 guards of its own kind at
 80%, 50% and 25% HP (Red Sprouts, Blue Crabs, Dark Mushrooms, Fire Beetles), and again a minute
 after the last one falls. They drop a rare material (30%) that forges the best gear, and a rare
-equip of their own (2–3%). Each is a boss of its own, not a big copy of its kind: the Giant Sprout
+equip or two of their own (2–5%). Each is a boss of its own, not a big copy of its kind: the Giant Sprout
 rust-red with a thorny vine round its bulb, the King Crab sea-blue and crusted with barnacles with
 gold claw tips, the Giant Mushroom near-black with glowing magenta spots and drips, the Giant Beetle
 charcoal with its cracks glowing like embers; the Alpha Wolf black with a silver ruff, red eyes and a
@@ -207,7 +207,7 @@ The **Elder Willow** of Willow Marsh (Lv 55: silvery, wide antlers with fireflie
 water-lilies in its hair) is the mini-boss on the road to Veidheim, a step after the Giant Sprout,
 calling Willows out of the reeds. The **Ancient Treant** (Lv 62, 550,000 HP, Earth: pale with age,
 glowing runes carved down its body, blossoms in its crown), the oldest tree in Aria, has woken in the Old Forest
-and is its MVP: it stomps, hurls stones and charges, and calls 2 Treants and 2 Willows. It is the hardest MVP, a fight of several minutes, with two skills of its
+and is its MVP: it stomps, hurls stones and charges, and calls 2 Treants and 2 Willows. It is the hardest of the valley's MVPs, a fight of several minutes, with two skills of its
 own. **Grasping Roots** burst out where you stand (a red circle first) and hold you there for 3
 seconds (4 when it is enraged, and then in three patches): you can still fight, but not walk, dash
 or leap away, so even a quick hero who keeps their distance gets caught while it comes for them.
@@ -331,7 +331,7 @@ fills up until it hits: step out of it.
 | Nidhogg | **Gnaw the Roots** (tear it away in time) · **Venom Breath** (thrown) · **Coil Rush** (a charge) · **Falling Roots** (venom where they land) · **Frenzy** |
 | Eternal Sphinx | **The Riddle** (stand in the right answer) · **Pounce** · **Falling Stones** (cursed sand where they land) · **Gaze of Ages** (thrown) · **Frenzy** |
 
-Each move hits for 1.4–2x the boss's ATK. Staying far away no longer keeps you safe: spells reach
+Each move hits for 1.4–2.4x the boss's ATK (the Eternal Sphinx's Judgment 3x; the Ancient Treant's roots and the Cactus Lord's needles less). Staying far away no longer keeps you safe: spells reach
 5 paces, and every boss has a move for 3–9 paces.
 
 **Steinborg.** A walled market city north of Moss Field: stone walls with towers and two gates
@@ -667,7 +667,7 @@ its trainer's town, saved there (its Keeper signs you in, and you wake there aft
 **Sorcerers** cast from range. A spell walks you into range, then you stand and chant (the cast
 bar over the hotbar); getting hit breaks the chant. Magic never misses: damage comes from MATK
 (KNL, plus a staff's MATK %), softened by the monster's MDEF and VIT. FNS shortens cast times.
-A new Sorcerer is handed an Wooden Staff.
+A new Sorcerer is handed a Wooden Staff.
 
 | Sorcerer | | |
 |---|---|---|
@@ -733,7 +733,7 @@ Sigrid or the Assassin's with Master Kol (and so on, for any of the four). Every
 of skill points**: at Job 40 you have the same points whichever you are, and could put 20 into two
 trees. Points go into any path you earned, whichever job you are wearing; switch between them at
 any **Keeper** you have signed with to change the job you wear. A second job trains every first
-job you earned too, but a BladeMaster, Wizard or Windrunner never puts more points into another path
+job you earned too, but a BladeMaster, Wizard, Windrunner or Phantom never puts more points into another path
 than into its own (a Wizard's Blader tree stays at or under its Sorcerer tree).
 
 Every skill you have learnt keeps working, whatever job you wear. Passives always apply; actives
@@ -760,8 +760,8 @@ bow range.
 
 From **Job Level 40** of a first job (it goes to 50), a three-step trial opens a second job. Job
 Level starts again at 1 (up to 50, on the second-job EXP table); your first-job skills and
-points stay. Second jobs wear their first job's outfit in new colours and glow with a small aura
-(the Magic Knight, the Windrunner, the Moon Ranger and the Beastmaster have their own).
+points stay. Every second job has a look of its own (the BladeMaster's and the Wizard's build on their first
+job's, in new colours and pieces), and glows with a small aura in its colour.
 
 - **BladeMaster** (Captain Ulfr): 30 Goblins, 20 Kobold Assassins, 25 Fire Beetles.
 - **Wizard** (Archmage Vigdis): 10 Fire Dust and 10 Dark Crystals, 20 Kobolds in Stone Field (Earth: fire burns them), 25 Dark Mushrooms.
@@ -972,11 +972,15 @@ A strong hit (150%) shows in gold, a weak one (25–50%) in grey.
 | Wind | **150%** | 50% | 100% | 25% | 100% |
 | Earth | 100% | 25% | 50% | **150%** | 100% |
 
-Water: the bloops, crabs, King Crab · Earth: Sprouts, Mushrooms, beetles, Giant Sprout ·
-Fire: Fire Beetles, Fire Wisps, Giant Beetle, Fire Giant · Wind: Wisps, goblins, Goblin King ·
-Earth also: kobolds, Kobold King · Shadow:
-Dark Mushrooms, Dark Wisps, Giant Mushroom · the desert: Earth for ants, cacti, worms, scorpions and
-the Sand Wyrm, Wind for the Runners, Shadow for the Pharaoh's tomb.
+Water: Bloops, Blue and Sea Bloops, the crabs and the King Crab, Lamias · Earth: Sprouts, Mushrooms, Beetles,
+the kobolds, Willows, Treants, Snakes, Wolves, the Giant Sprout, Elder Willow, Alpha Wolf, Ancient Treant and
+Kobold King, the desert's ants, cacti, worms and scorpions and the Sand Wyrm, and most of the dungeons'
+monsters (Scarabs, Cobras, Sphinx Cubs, Sand Elementals, the Eternal Sphinx; Root Squirrels, Brambles, Root
+Serpents, Moss Golems, Dryads, Root Wardens) · Fire: Red Bloops, Fire Beetles, Fire Wisps, the Giant Beetle and
+the Fire Giant · Wind: Wisps, Yellow Bloops, the goblins and the Goblin King, the Sand and Rainbow Runners,
+Falcon Sentinels, Great Stags, Ratatoskr · Shadow: Dark Mushrooms, Dark Wisps, the Giant Mushroom, the tomb's
+Mummies and the Pharaoh, Pharaoh's Servants, Jackal Guardians, Sarcophagi, Ammit, Dark Elves, Rot Beetles, Thorn
+Drakes and Nidhogg · Neutral: Bears and the Great Bear.
 
 **Staves** raise MATK: Wooden (+15%, given on the job change), Birch (+20%, Orm), Rune (+25%),
 Ice (+28%), Root (+30%), Water (+32%), Dark (+34%, Dark Wisp 0.2%), Fire (+38%), Mushroom (+40%,
@@ -989,16 +993,24 @@ wings, headgear and charms are items: equip them from the Equips tab (the piece 
 the same bag slot). In the Equipment window, tap a worn piece to see what it is and double-tap it
 to take it off. Shops sell 1, 10 or all, and "Sell all" keeps what an active quest still needs.
 
+<!-- tables:usables -->
 | Usable | Effect | Where |
 |---|---|---|
-| Red / Orange / White Potion | 45–65 / 105–145 / 175–235 HP | Hild's shop, Ragna; drops |
-| Blue Potion | 40–60 SP | Hild's shop, Ragna; Blue and Sea Bloops |
-| Berry · Crab Leg | 16–22 · 70–100 HP | Bloops, Sprouts · Crabs |
-| Green Herb | cures spore sickness, a little HP | Sprouts, Mushrooms |
-| Speed Potion | +10% attack speed for 3 minutes | Ragna |
-| Teleport Feather | random spot on this map | Hild's shop, Ragna; Wisps |
-| Return Feather | back to your save point (the camp until you save with a Keeper) | Hild's shop, Ragna |
-| Honey | 150–210 HP | Eydis's shop (Veidheim); Bears |
+| Red Potion | 45–65 HP | Hild (Steinborg); Kari (Galdrheim); Eydis (Veidheim); Dalla (Rytingborg); Ragna brews it; Gel Thief, Yellow Bloop, Willow and 3 more |
+| Orange Potion | 105–145 HP | Hild (Steinborg); Kari (Galdrheim); Eydis (Veidheim); Dalla (Rytingborg); Ragna brews it; Treant, Kobold, Beetle and 11 more |
+| White Potion | 175–235 HP | Eydis (Veidheim); Dalla (Rytingborg); Ragna brews it; Goblin Archer, Fire Beetle, Goblin Assassin and 38 more |
+| Blue Potion | 40–60 SP | Hild (Steinborg); Kari (Galdrheim); Eydis (Veidheim); Dalla (Rytingborg); Ragna brews it; Blue Bloop, Sea Bloop |
+| Berry | 16–22 HP | Hild (Steinborg); Kari (Galdrheim); Bloop, Sprout, Yellow Bloop, Red Sprout |
+| Crab Leg | 70–100 HP | Crab, Blue Crab, King Crab |
+| Green Herb | 5–8 HP, cures poison and spores | Hild (Steinborg); Kari (Galdrheim); Eydis (Veidheim); Dalla (Rytingborg); Sprout, Willow, Mushroom, Snake |
+| Speed Potion | attack speed +10% for 3 minutes | Kari (Galdrheim); Eydis (Veidheim); Dalla (Rytingborg); Ragna brews it; Kobold Assassin, Goblin Assassin |
+| Teleport Feather | a random spot on this map | Hild (Steinborg); Kari (Galdrheim); Eydis (Veidheim); Dalla (Rytingborg); Ragna brews it; Wisp, Lantern Wisp, Kobold Archer and 2 more |
+| Honey | 150–210 HP | Eydis (Veidheim); Bear, Great Bear |
+| Dates | 120–170 HP | Dalla (Rytingborg) |
+| Water Skin | 30–45 SP | Dalla (Rytingborg) |
+| Return Feather | back to your save point | Hild (Steinborg); Kari (Galdrheim); Eydis (Veidheim); Dalla (Rytingborg); Ragna brews it |
+| World Tree Berry | all HP and SP | Nidhogg |
+<!-- /tables:usables -->
 
 **Bows and arrows** (Archers). A shield goes with a bow, strapped to the forearm. Arrows go in the Arrows slot and are
 never used up; an elemental arrow sets every shot's element.
@@ -1021,51 +1033,121 @@ never used up; an elemental arrow sets every shot's element.
 **Rare drops.** Each monster has a rare equip it drops very seldom. A rare find
 bursts gold on the ground and shows in gold in your bag.
 
-| Rare item | Slot | Effect | From |
+<!-- tables:drops -->
+| Piece | Slot | Effect | From |
 |---|---|---|---|
-| Bloop Ring | Accessory | FTN +2, Max HP +20 | Bloop, 0.5% |
-| Water Necklace | Accessory | KNL +2, Max SP +15 | Blue Bloop, 0.3% |
-| Leaf Bracelet | Accessory | END +1, QKN +1, HP recovers twice as fast | Sprout, 0.4% |
-| Flower Crown | Head | FLEE +1 | Sprout, 0.5% (also crafted) |
-| Shell Buckler | Shield | DEF 3, Max HP +40 | Crab, 0.3% |
-| Mushroom Cloak | Garment | DEF 1, FLEE +4 | Mushroom, 0.25% |
-| Stone Ring | Accessory | END +2, DEF 1 | Beetle, 0.3% |
-| Horn Sword | Weapon | ATK 68, weapon Lv 3, POW +1 | Beetle, 0.15% |
-| Lantern | Wings (floats at your shoulder, glowing) | KNL +1, FNS +1 | Wisp, 0.4% |
-| Dark Wisp | Wings (floats at your shoulder, glowing) | KNL +2, Max SP +30 | Dark Wisp, 0.25% |
-| Ember Wings | Wings (fiery wings on your back) | POW +1, KNL +1, Max HP +50 | Fire Wisp, 0.25% |
-| Shiny Gel | Misc | a collector's prize | Green and Blue Bloops, 1% |
-| Veteran's Boots | Shoes | DEF 3, FLEE +3, END +1, Max HP +60 | Bloop Island (a clear: 3%), or the Boatman makes it from Bloop Cores |
-| Bloop Buckler | Shield | DEF 4, Max HP +80 | Bloop Island (a clear: 3%), or the Boatman makes it from Bloop Cores |
-| Bleep Ring | Accessory | FTN +3, POW +1 | Bloop Island (a clear: 3%), or the Boatman makes it from Bloop Cores |
-| Horned Crown | Head | DEF 4, POW +2, END +1 | Fire Giant, 5% |
-| Flame Sword | Weapon | ATK 110, weapon Lv 4 | Fire Giant, 1% |
-| King's Ring | Accessory | POW +2, END +1, Max HP +50 | Kobold King, 5% |
-| Tooth Necklace | Accessory | QKN +2, FNS +1, HIT +5 | Goblin King, 5% |
-| Giant Cape | Garment | DEF 4, Max HP +100, END +2 | Fire Giant, 3% |
-| Snakeskin Boots | Shoes | DEF 3, FLEE +5, QKN +1 | Snake, 0.25% |
-| Wolf Cape | Garment | DEF 3, FLEE +3, POW +1, QKN +1 | Wolf, 0.2% |
-| Willow Staff | Weapon (staff) | ATK 28, MATK +26%, weapon Lv 2, Earth, KNL +2 | Willow, 0.2%; Elder Willow, 3% |
-| Bear Hide | Armor (Blader) | DEF 9, Max HP +120 | Bear, 0.15% |
-| Bark Shield | Shield | DEF 3, Max HP +60 | Treant, 0.2% |
-| Willow Charm | Accessory | FNS +1, KNL +1, Max SP +20 | Elder Willow, 4% |
-| Oak Ring | Accessory | END +3, POW +1, Max HP +80 | Ancient Treant, 5% |
-| Grove Sword | Weapon | ATK 125, weapon Lv 4, Earth, POW +2, END +2 | Ancient Treant, 1% |
-| Kobold Bow | Weapon (bow) | ATK 74, weapon Lv 3, Earth, FNS +1, QKN +1 | Kobold Archer, 0.25% |
-| Goblin Bow | Weapon (bow) | ATK 95, weapon Lv 3, HIT +5, FNS +2 | Goblin Archer, 0.2% |
-| Flame Bow | Weapon (bow) | ATK 110, weapon Lv 4, Fire, FNS +2 | Fire Giant, 1% |
-| Great Bow | Weapon (bow) | ATK 115, weapon Lv 4, Wind, QKN +2, FNS +1 | Goblin King, 2% |
-| Quarry Cleaver | Weapon (sword) | ATK 116, weapon Lv 4, Earth, POW +2, END +1 | Kobold King, 1% |
-| Runestone Staff | Weapon (staff) | ATK 52, MATK +48%, weapon Lv 4, Earth, KNL +3, FNS +1, Max SP +40 | Kobold King, 2% |
-| King's Mantle | Garment | DEF 5, END +2, FTN +1, Max HP +120 | Kobold King, 3% |
-| Goblin King's Blade | Weapon (sword) | ATK 118, weapon Lv 4, Wind, QKN +2, POW +1 | Goblin King, 1% |
-| Hexbone Staff | Weapon (staff) | ATK 50, MATK +46%, weapon Lv 4, Shadow, KNL +3, FTN +2 | Goblin King, 2% |
-| Trickster Boots | Shoes | DEF 4, FLEE +7, QKN +2, FTN +1 | Goblin King, 3% |
-| Ancient Bow | Weapon (bow) | ATK 122, weapon Lv 4, Earth, FNS +3, QKN +1 | Ancient Treant, 1% |
-| Elder Staff | Weapon (staff) | ATK 58, MATK +54%, weapon Lv 4, Earth, KNL +4, FNS +1, Max SP +60 | Ancient Treant, 2% |
-| Barkskin Mail | Armor | DEF 9, END +2, Max HP +150, Max SP +30 | Ancient Treant, 3% |
-| Thorn Ring · Coral Shield · Dark Hood · Fire Armor · Fire Charm | | | the new lands' monsters, 0.2–0.3% |
-| Thorn Cape · Sea Sword · Mushroom Staff · Fire Boots | | | the mini-bosses, 2–3% |
+| Bloop Ring | Accessory | FTN +2 · Max HP +20 | Bloops (0.5%) |
+| Flower Crown | Head | FLEE +1 | Sprout 0.5% |
+| Leaf Bracelet | Accessory | END +1 · QKN +1 · HP recovers twice as fast | Sprouts (0.4%) |
+| Water Necklace | Accessory | KNL +2 · Max SP +15 | Blue Bloops (0.3%) |
+| Shell Buckler | Shield (Blader, Archer) | DEF 3 · Max HP +40 | Crabs (0.3%) |
+| Willow Staff | Weapon (staff) (Sorcerer) | ATK 28 · Weapon Lv 2 · Earth element · MATK +26% · KNL +2 | Willows (0.2%), the Elder Willow (3%) |
+| Lantern | Wings | KNL +1 · FNS +1 | Wisps (0.4%), Dark Wisps (0.5%), and always the Lantern Wisp |
+| Ant-Jaw Knife | Weapon (dagger) | ATK 34 · Weapon Lv 1 · Earth element | Giant Ants (0.3%) |
+| Mushroom Cloak | Garment | DEF 1 · FLEE +4 | Mushrooms (0.25%) |
+| Thorn Ring | Accessory | HIT +3 · POW +1 | Red Sprouts (0.3%) and the Giant Sprout (5%) |
+| Sea Cloak | Garment | DEF 2 · Max SP +30 · FLEE +2 | Sea Bloop 0.25% |
+| Bark Shield | Shield | DEF 3 · Max HP +60 | Treants (0.2%) |
+| Coral Shield | Shield | DEF 4 · Max SP +20 | Blue Crabs (0.25%) and the King Crab (5%) |
+| Kobold Shield | Shield | DEF 4 · END +1 · Max HP +50 | Kobold 0.25% |
+| Horn Sword | Weapon (sword) (Blader) | ATK 68 · Weapon Lv 3 · Earth element · POW +1 | Beetles (0.15%) and Fire Beetles (0.2%) |
+| Kobold Bow | Weapon (bow) (Archer) | ATK 74 · Weapon Lv 3 · Earth element · FNS +1 · QKN +1 | Kobold Archer 0.25% |
+| Kobold Sandals | Shoes | DEF 2 · FNS +1 · FLEE +3 | Kobold Archer 0.25% |
+| Stone Ring | Accessory | DEF 1 · END +2 | Beetles (0.3%) |
+| Acorn Charm | Accessory | QKN +1 · FTN +1 · FLEE +3 | Root Squirrels (0.3%) |
+| Dark Hood | Garment | DEF 2 · KNL +1 · FLEE +3 | Dark Mushrooms (0.25%) and the Giant Mushroom (5%) |
+| Scarab Buckler | Shield | DEF 4 · END +1 · Max HP +40 | Scarabs (0.3%) |
+| Dark Staff | Weapon (staff) (Sorcerer) | ATK 34 · Weapon Lv 3 · Shadow element · MATK +34% · KNL +2 · FNS +1 | Dark Wisps (0.2%) |
+| Dark Wisp | Wings | KNL +2 · Max SP +30 | Dark Wisp 0.25% |
+| Goblin Shield | Shield | DEF 5 · POW +1 | Goblin 0.2% |
+| Goblin Bow | Weapon (bow) (Archer) | ATK 95 · Weapon Lv 3 · HIT +5 · FNS +2 | Goblin Archer 0.2% |
+| Bramble Buckler | Shield | DEF 4 · END +1 · Max HP +40 | Brambles (0.3%) |
+| Cobra Kris | Weapon (dagger) | ATK 70 · Weapon Lv 3 · 3% of your blows and spells poison a monster | Cobras (0.3%) |
+| Fire Armor | Armor (Blader) | DEF 8 · Max HP +80 | Fire Beetles (0.2%) and the Giant Beetle (4%) |
+| Goblin Shroud | Garment | DEF 2 · QKN +1 · FLEE +6 | Goblin Assassin 0.2% |
+| Ember Wings | Wings | POW +1 · KNL +1 · Max HP +50 | Fire Wisp 0.25% |
+| Fire Charm | Accessory | POW +1 · KNL +1 · Max HP +30 | Fire Wisps (0.3%) |
+| Snakeskin Boots | Shoes | DEF 3 · QKN +1 · FLEE +5 | Snakes (0.25%) |
+| Wolf Cape | Garment | DEF 3 · POW +1 · QKN +1 · FLEE +3 | Wolves (0.2%) and the Alpha Wolf (3%) |
+| Grave Wraps | Garment | DEF 3 · Max HP +120 | Mummies (0.3%) |
+| King's Mantle | Garment | DEF 5 · END +2 · FTN +1 · Max HP +120 | the Kobold King (3%) |
+| King's Ring | Accessory | POW +2 · END +1 · Max HP +50 | the Kobold King (5%) |
+| Quarry Cleaver | Weapon (sword) (Blader) | ATK 116 · Weapon Lv 4 · Earth element · POW +2 · END +1 | the Kobold King (1%) |
+| Root Serpent Boots | Shoes | DEF 4 · QKN +1 · FLEE +4 | Root Serpents (0.3%) |
+| Runestone Staff | Weapon (staff) (Sorcerer) | ATK 52 · Weapon Lv 4 · Earth element · MATK +48% · KNL +3 · FNS +1 · Max SP +40 | the Kobold King (2%) |
+| Bear Hide | Armor (Blader) | DEF 9 · Max HP +120 | Bears (0.15%) and the Great Bear (3%) |
+| Bear Paws | Shoes | DEF 4 · POW +1 · Max HP +80 | Bear 0.15% |
+| Goblin King's Blade | Weapon (sword) (Blader) | ATK 118 · Weapon Lv 4 · Wind element · QKN +2 · POW +1 | the Goblin King (1%) |
+| Great Bow | Weapon (bow) (Archer) | ATK 115 · Weapon Lv 4 · Wind element · QKN +2 · FNS +1 | Goblin King 2% |
+| Hexbone Staff | Weapon (staff) (Sorcerer) | ATK 50 · Weapon Lv 4 · Shadow element · MATK +46% · KNL +3 · FTN +2 | the Goblin King (2%) |
+| Moss Mail | Armor | DEF 7 · END +1 · Max HP +120 | Moss Golems (0.3%) |
+| Needle Ring | Accessory | HIT +4 · FNS +1 | Cacti (0.3%) |
+| Serpent Staff | Weapon (staff) (Sorcerer) | ATK 40 · Weapon Lv 3 · Water element · MATK +35% · KNL +3 | Lamias (0.2%) |
+| Thorn Cape | Garment | DEF 3 · POW +1 · FLEE +2 | the Giant Sprout (3%) |
+| Tooth Necklace | Accessory | HIT +5 · QKN +2 · FNS +1 | the Goblin King (5%) |
+| Trickster Boots | Shoes | DEF 4 · QKN +2 · FTN +1 · FLEE +7 | the Goblin King (3%) |
+| Willow Charm | Accessory | FNS +1 · KNL +1 · Max SP +20 | the Elder Willow (4%) |
+| Dark Elven Bow | Weapon (bow) (Archer) | ATK 100 · Weapon Lv 3 · Shadow element · FNS +2 | Dark Elves (0.25%) |
+| Priest's Robe | Armor | DEF 4 · KNL +2 · Max SP +80 | Pharaoh's Servants (0.3%) |
+| Sea Sword | Weapon (sword) (Blader) | ATK 85 · Weapon Lv 4 · Water element · QKN +2 | the King Crab (2%) |
+| Wormhide Boots | Shoes | DEF 4 · Max HP +80 | Dune Worms (0.2%), or Steinar in Rytingborg |
+| Cactus Spine | Weapon (dagger) | ATK 76 · Weapon Lv 3 · Earth element · END +1 | the Cactus Lord (2%) |
+| Devil Wings | Wings | POW +2 · END +1 · Max HP +80 | Fire Giant 3% |
+| Flame Bow | Weapon (bow) (Archer) | ATK 110 · Weapon Lv 4 · Fire element · FNS +2 | Fire Giant 1% |
+| Flame Staff | Weapon (staff) (Sorcerer) | ATK 60 · Weapon Lv 4 · Fire element · MATK +50% · KNL +4 · FNS +2 | the Fire Giant (2%) |
+| Flame Sword | Weapon (sword) (Blader) | ATK 110 · Weapon Lv 4 · Fire element | the Fire Giant |
+| Giant Cape | Garment | DEF 4 · END +2 · Max HP +100 | the Fire Giant (3%) |
+| Horned Crown | Head | DEF 4 · POW +2 · END +1 | the Fire Giant |
+| Mushroom Staff | Weapon (staff) (Sorcerer) | ATK 40 · Weapon Lv 4 · Shadow element · MATK +40% · KNL +3 | the Giant Mushroom (2%) |
+| Thorn Coat | Armor | DEF 7 · END +2 · Max HP +100 | the Cactus Lord (3%) |
+| Stinger | Weapon (dagger) | ATK 68 · Weapon Lv 3 · 4% of your blows and spells poison a monster | Sand Scorpions (0.25%) |
+| Ancient Bow | Weapon (bow) (Archer) | ATK 122 · Weapon Lv 4 · Earth element · FNS +3 · QKN +1 | the Ancient Treant (1%) |
+| Barkskin Mail | Armor | DEF 9 · END +2 · Max HP +150 · Max SP +30 | the Ancient Treant (3%) |
+| Chitin Shield | Shield | DEF 5 · Max HP +60 | Soldier Ants (0.2%) |
+| Elder Staff | Weapon (staff) (Sorcerer) | ATK 58 · Weapon Lv 4 · Earth element · MATK +54% · KNL +4 · FNS +1 · Max SP +60 | the Ancient Treant (2%) |
+| Fire Boots | Shoes | DEF 3 · Max HP +60 | the Giant Beetle (3%) |
+| Grove Sword | Weapon (sword) (Blader) | ATK 125 · Weapon Lv 4 · Earth element · POW +2 · END +2 | the Ancient Treant (1%) |
+| Oak Ring | Accessory | END +3 · POW +1 · Max HP +80 | the Ancient Treant (5%) |
+| Lionpaw Boots | Shoes | DEF 4 · QKN +2 · FLEE +5 | Sphinx Cubs (0.2%) |
+| Rainbow Sash | Garment | DEF 3 · FTN +2 · FLEE +7 | the Rainbow Runner (3%) |
+| Runner Boots | Shoes | DEF 2 · QKN +1 · FLEE +5 | Sand Runners (0.2%), or Steinar in Rytingborg |
+| Runner Talon | Weapon (dagger) | ATK 80 · Weapon Lv 3 · Wind element · attacks 5% faster | the Rainbow Runner (2%) |
+| Stag Cape | Garment | DEF 4 · QKN +1 · FLEE +5 | Great Stags (0.25%) |
+| Dryad Staff | Weapon (staff) (Sorcerer) | ATK 45 · Weapon Lv 3 · Earth element · MATK +38% · KNL +3 | Dryads (0.2%) |
+| Sandstorm Ring | Accessory | END +2 · QKN +1 · FLEE +3 | Sand Elementals (0.25%) |
+| Dune Bow | Weapon (bow) (Archer) | ATK 124 · Weapon Lv 4 · Earth element · FNS +3 | the Sand Wyrm (1%) |
+| Dune Staff | Weapon (staff) (Sorcerer) | ATK 55 · Weapon Lv 4 · Earth element · MATK +58% · KNL +5 · FNS +2 | the Sand Wyrm (2%) |
+| Sandwalker Boots | Shoes | DEF 5 · QKN +3 · FLEE +6 | the Sand Wyrm (3%) |
+| Wyrm Fang | Weapon (dagger) | ATK 102 · Weapon Lv 4 · Earth element · QKN +2 · POW +2 | the Sand Wyrm (1%) |
+| Wyrm Ring | Accessory | POW +3 · END +2 · Max HP +80 | the Sand Wyrm (5%) |
+| Wyrmhide Cloak | Garment | DEF 6 · END +2 · Max HP +8% | the Sand Wyrm (3%) |
+| Rot Fang | Weapon (dagger) | ATK 76 · Weapon Lv 3 · Shadow element · 3% of your blows and spells poison a monster | Rot Beetles (0.25%) |
+| Sarcophagus Lid | Shield | DEF 7 · Max HP +120 | Sarcophagi (0.2%) |
+| Ammit's Claw | Weapon (dagger) | ATK 96 · Weapon Lv 4 · Shadow element · POW +2 · QKN +2 | Ammit (2%) |
+| Devourer's Hide | Armor | DEF 8 · POW +2 · END +2 · Max HP +200 | Ammit (3%) |
+| Messenger's Shroud | Garment | DEF 5 · QKN +2 · FNS +1 · FLEE +9 | Ratatoskr (3%) |
+| Ratatoskr's Tail | Wings | QKN +3 · FNS +1 · FTN +1 · FLEE +6 | Ratatoskr (2%) |
+| Runic Bracelet | Accessory | QKN +3 · FTN +2 · FLEE +4 | Ratatoskr (2%) |
+| Cursed Spear | Weapon (sword) (Blader) | ATK 112 · Weapon Lv 3 · Shadow element · POW +2 | Jackal Guardians (0.25%) |
+| Warden's Greatsword | Weapon (sword) (Blader) | ATK 118 · Weapon Lv 3 · Earth element · POW +2 · END +1 | Root Wardens (0.25%) |
+| Drake Ring | Accessory | POW +1 · END +1 · KNL +1 · Max HP +60 | Thorn Drakes (0.25%) |
+| Falcon Bow | Weapon (bow) (Archer) | ATK 105 · Weapon Lv 3 · Wind element · FNS +2 | Falcon Sentinels (0.25%) |
+| Dragonbone Blade | Weapon (sword) (Blader) | ATK 152 · Weapon Lv 4 · POW +4 · END +1 | Nidhogg (2%) |
+| Dragonleaf Mantle | Garment | DEF 7 · END +2 · Max HP +8% · FLEE +6 | Nidhogg (3%) |
+| Dragonwing Bow | Weapon (bow) (Archer) | ATK 150 · Weapon Lv 4 · Shadow element · FNS +4 · POW +1 | Nidhogg (1%) |
+| Enigma Fang | Weapon (dagger) | ATK 120 · Weapon Lv 4 · QKN +3 · FTN +2 | the Eternal Sphinx (1%) |
+| Nidhogg Fang | Weapon (dagger) | ATK 120 · Weapon Lv 4 · Shadow element · QKN +3 · 5% of your blows and spells poison a monster | Nidhogg (1%) |
+| Nidhogg Ring | Accessory | POW +2 · END +2 · Max HP +100 | Nidhogg (5%) |
+| Nidhogg Wings | Wings | POW +4 · END +4 · QKN +3 · Max HP +10% · FLEE +5 | Nidhogg (0.5%) |
+| Riddle Blade | Weapon (sword) (Blader) | ATK 150 · Weapon Lv 4 · POW +3 · KNL +2 | the Eternal Sphinx (2%) |
+| Sphinx Ring | Accessory | POW +1 · QKN +1 · END +1 · KNL +1 · FNS +1 · FTN +1 · Max HP +60 | the Eternal Sphinx (5%) |
+| Sphinx Sceptre | Weapon (staff) (Sorcerer) | ATK 70 · Weapon Lv 4 · MATK +70% · KNL +6 · FNS +2 | the Eternal Sphinx (2%) |
+| Sphinx Wing Bow | Weapon (bow) (Archer) | ATK 150 · Weapon Lv 4 · Wind element · FNS +4 · QKN +1 | the Eternal Sphinx (1%) |
+| Sphinx Wing Mantle | Garment | DEF 7 · FTN +2 · Max HP +6% · FLEE +8 | the Eternal Sphinx (3%) |
+| Sphinx's All-Seeing Eye | Face | HIT +10 · MATK +10% · POW +3 · QKN +3 · END +3 · KNL +3 · FNS +3 · FTN +3 | the Eternal Sphinx (0.5%) |
+| World Tree Crown | Head | DEF 5 · END +2 · KNL +2 · FTN +2 · Max HP +8% · Max SP +8% | Nidhogg (1%) |
+| World Tree Staff | Weapon (staff) (Sorcerer) | ATK 70 · Weapon Lv 4 · Earth element · MATK +70% · KNL +6 · END +2 | Nidhogg (2%) |
+<!-- /tables:drops -->
 
 Two accessory slots, a shield, a garment and an arrows slot join head, face, armor, weapon, shoes and wings.
 
@@ -1107,9 +1189,11 @@ no torch is needed.
 | Angel Wings | folded white wings trimmed in gold, a gold crest set with crystals down the spine | KNL +4, FTN +4, FLEE +6, Max SP +80, Max HP +5% | Bloop Island's ultra rare (a clear: 1%), or the Boatman makes them from 500 Bloop Cores |
 | Devil Wings | crimson bat wings of torn membrane on dark spiked bone, with a spined tail and a barbed spear tip (the tail curls out past the legs, so it shows from the front too) | POW +2, END +1, Max HP +80 | Fire Giant, 3% |
 
-**Weapon levels.** Lv 4 weapons are the best there are: the Giant Sword, Flame Sword, Lava Sword
-and Sea Sword, the Great, Flame, Fire and Mushroom Staves, and the Heartwood, Great and Flame Bows. They refine for the most ATK
-(+7 a level) and are the only gear that can take a card slot.
+**Weapon levels.** Lv 4 weapons are the best there are: the crafted Giant, Lava and Sea Swords, the Great,
+Flame, Fire, Mushroom and Green Staves and the Heartwood Bow, Ammit's Claw, the Khopesh (Pharaoh's Tomb), and
+every MVP's weapons (the Fire Giant's Flame Sword and
+Flame Bow, the kings', the Ancient Treant's, the Sand Wyrm's, the Eternal Sphinx's and Nidhogg's). They refine
+for the most ATK (+7 a level) and only they take Seyla's card slots.
 
 ## Refining, slots and cards
 
@@ -1141,14 +1225,14 @@ slots. Shops sell the plain ones.
 
 **Seyla the Enchanter** (Galdrheim, east of the square) opens **card slots** in Lv 4 weapons, up
 to two: "+7 Giant Sword [1]", then "[2]". The first slot works half the time; each try costs 5
-Hard Ore, 5 Dark Crystals, one boss material (a Giant Root, Big Pearl, Mushroom Heart or Fire
-Core) and 50,000 perz. The second works a quarter of the time and costs twice as much (10, 10, 2
+Hard Ore, 5 Dark Crystals, one boss material (a Giant Root, Big Pearl, Mushroom Heart, Fire
+Core, Willow Heart, Alpha Pelt or Bear Heart) and 50,000 perz. The second works a quarter of the time and costs twice as much (10, 10, 2
 boss materials in any mix, 100,000 perz). A failed try breaks the weapon; any card in it comes
 back to you.
 
 **Cards.** Each MVP drops its card (1%: they are very hard to bring down), and like classic MVP cards they are overpowered.
 Each mini-boss drops one too (1%): a good step up, but nothing like an MVP's. The Goblin King's, the
-Fire Giant's, the Great Bear's and the Giant Beetle's go in weapons; the rest in other gear.
+Fire Giant's, the Great Bear's, the Giant Beetle's, the Cactus Lord's and Ammit's go in weapons; the rest in other gear.
 Every other monster drops a card too (0.1%), for every kind of gear, smaller but welcome (all but the
 Little Bloops a Blue Bloop splits into: they drop neither gear nor cards).
 Select a card in the Miscs tab and tap **Insert** to press it into a piece of its kind with a
@@ -1157,92 +1241,111 @@ a word in its name ("Bouncy Shell Armor [1]"; two of one card, "Double"). A piec
 cards and what each does. **Seyla** draws cards out again for 50,000 perz a card ("Remove a card"):
 they come back whole and the slot stays open. A piece that breaks at Holger's gives its cards back too.
 
+<!-- tables:cards -->
 | Card | Goes in | Effect | From |
 |---|---|---|---|
-| Bloop Card (Bouncy) | Armor | Max HP +100, FTN +1 | Bloop, 0.1% |
-| Blue Crab Card (Plated) | Armor | DEF +3, Max HP +5% | Blue Crab, 0.1% |
-| Crab Card (Shelled) | Shield | DEF +2, Max HP +60 | Crab, 0.1% |
-| Treant Card (Rooted) | Shield | Max HP +8% | Treant, 0.1% |
-| Wisp Card (Flickering) | Garment | FLEE +5 | Wisp, 0.1% |
-| Snake Card (Slithering) | Garment | FLEE +3, QKN +1 | Snake, 0.1% |
-| Mushroom Card (Sturdy) | Shoes | Max HP +5%, END +1 | Mushroom, 0.1% |
-| Wolf Card (Swift) | Shoes | QKN +2, FLEE +2 | Wolf, 0.1% |
-| Sprout Card (Sprouting) | Head or face | KNL +1, Max SP +30 | Sprout, 0.1% |
-| Dark Mushroom Card (Mystic) | Head or face | KNL +2 | Dark Mushroom, 0.1% |
-| Kobold Card (Strong) | Accessory | POW +2 | Kobold, 0.1% |
-| Goblin Archer Card (Keen) | Accessory | FNS +2, HIT +5 | Goblin Archer, 0.1% |
-| Yellow Bloop Card (Lucky) | Accessory | FTN +3 | Yellow Bloop, 0.1% |
-| Dark Wisp Card (Shadowed) | Wings | KNL +2, Max SP +5% | Dark Wisp, 0.1% |
-| Fire Wisp Card (Blazing) | Wings | POW +1, KNL +1, Max HP +50 | Fire Wisp, 0.1% |
-| Blue Bloop Card (Calm) | Head or face | Max SP +40 | Blue Bloop, 0.1% |
-| Beetle Card (Hardy) | Armor | DEF +2, END +1 | Beetle, 0.1% |
-| Lantern Wisp Card (Glowing) | Wings | FNS +2, KNL +1 | Lantern Wisp, 0.1% |
-| Red Bloop Card (Fiery) | Weapon | ATK +10 | Red Bloop (Bloop Island), 0.1% |
-| BleepBloop Card (Grand) | Wings | ATK +40, Max HP +20%, FTN +7, KNL +4; **Gulp:** 5% of the damage you deal heals you | BleepBloop, 1% |
-| Red Sprout Card (Thorny) | Garment | Max HP +5%, FLEE +2 | Red Sprout, 0.1% |
-| Sea Bloop Card (Briny) | Shield | DEF +1, Max SP +5% | Sea Bloop, 0.1% |
-| Fire Beetle Card (Scorched) | Armor | DEF +2, POW +1 | Fire Beetle, 0.1% |
-| Kobold Archer Card (Sharp-eyed) | Head or face | FNS +2 | Kobold Archer, 0.1% |
-| Kobold Assassin Card (Silent) | Shoes | QKN +1, FLEE +4 | Kobold Assassin, 0.1% |
-| Goblin Card (Vicious) | Weapon | ATK +12, HIT +3 | Goblin, 0.1% |
-| Goblin Assassin Card (Nimble) | Accessory | QKN +2, FLEE +2 | Goblin Assassin, 0.1% |
-| Willow Card (Whispering) | Wings | KNL +1, Max SP +40 | Willow, 0.1% |
-| Bear Card (Mighty) | Armor | Max HP +8%, POW +1 | Bear, 0.1% |
-| Scarab Card (Shelled) | Armor | DEF +3, END +1 | Scarab (Sphinx Halls), 0.1% |
-| Cobra Card (Fanged) | Weapon | ATK +5, QKN +2 | Cobra, 0.1% |
-| Mummy Card (Undying) | Armor | Max HP +8% | Mummy (Sphinx Halls), 0.1% |
-| Lamia Card (Bewitching) | Head or face | ATK +8, HIT +3 | Lamia, 0.1% |
-| Pharaoh's Servant Card (Devout) | Garment | Max SP +8%, KNL +1 | Pharaoh's Servant, 0.1% |
-| Jackal Guardian Card (Cursed) | Weapon | ATK +12, POW +2 | Jackal Guardian, 0.1% |
-| Falcon Sentinel Card (Hawk-eyed) | Accessory | HIT +6, FNS +2 | Falcon Sentinel, 0.1% |
-| Sphinx Cub Card (Pouncing) | Shoes | FLEE +4, QKN +2 | Sphinx Cub, 0.1% |
-| Sand Elemental Card (Whirling) | Garment | FLEE +5, END +1 | Sand Elemental, 0.1% |
-| Sarcophagus Card (Entombed) | Shield | DEF +4, Max HP +6% | Sarcophagus, 0.1% |
-| Root Squirrel Card (Nimble) | Shoes | FLEE +3, QKN +1 | Root Squirrel (Yggdrasil), 0.1% |
-| Bramble Card (Thorny) | Shield | DEF +2, Max HP +80 | Bramble, 0.1% |
-| Root Serpent Card (Coiling) | Weapon | ATK +8, QKN +1 | Root Serpent, 0.1% |
-| Moss Golem Card (Stony) | Armor | DEF +3, Max HP +4% | Moss Golem, 0.1% |
-| Dark Elf Card (Elven) | Accessory | HIT +4, FNS +2 | Dark Elf, 0.1% |
-| Great Stag Card (Antlered) | Head or face | ATK +10, POW +1 | Great Stag, 0.1% |
-| Dryad Card (Blossoming) | Garment | KNL +2, Max SP +60 | Dryad, 0.1% |
-| Rot Beetle Card (Rotting) | Weapon | ATK +14, END +1 | Rot Beetle, 0.1% |
-| Root Warden Card (Warding) | Shield | DEF +5, Max HP +5% | Root Warden, 0.1% |
-| Thorn Drake Card (Draconic) | Armor | Max HP +6%, POW +1, END +1 | Thorn Drake, 0.1% |
+| Bloop Card (Bouncy) | Armor | FTN +1 · Max HP +100 | Bloops (0.1%) |
+| Sprout Card (Sprouting) | Head or Face | KNL +1 · Max SP +30 | Sprouts (0.1%) |
+| Blue Bloop Card (Calm) | Head or Face | Max SP +40 | Blue Bloops (0.1%) |
+| Crab Card (Shelled) | Shield | DEF +2 · Max HP +60 | Crabs (0.1%) |
+| Yellow Bloop Card (Lucky) | Accessory | FTN +3 | Yellow Bloops (0.1%) |
+| Willow Card (Whispering) | Wings | KNL +1 · Max SP +40 | Willows (0.1%) |
+| Red Bloop Card (Fiery) | Weapon | ATK +10 | Red Bloops (0.1%) |
+| Wisp Card (Flickering) | Garment | FLEE +5 | Wisps (0.1%) |
+| Giant Ant Card (Toiling) | Armor | DEF +2 · Max HP +60 | Giant Ants (0.1%) |
+| Mushroom Card (Sturdy) | Shoes | END +1 · Max HP +5% | Mushrooms (0.1%) |
+| Lantern Wisp Card (Glowing) | Wings | FNS +2 · KNL +1 | Lantern Wisps (0.1%) |
+| Red Sprout Card (Thorny) | Garment | FLEE +2 · Max HP +5% | Red Sprouts (0.1%) |
+| Sea Bloop Card (Briny) | Shield | DEF +1 · Max SP +5% | Sea Bloops (0.1%) |
+| Treant Card (Rooted) | Shield | Max HP +8% | Treants (0.1%) |
+| Blue Crab Card (Plated) | Armor | DEF +3 · Max HP +5% | Blue Crabs (0.1%) |
+| Kobold Card (Strong) | Accessory | POW +2 | Kobolds (0.1%) |
+| Beetle Card (Hardy) | Armor | DEF +2 · END +1 | Beetles (0.1%) |
+| Kobold Archer Card (Sharp-eyed) | Head or Face | FNS +2 | Kobold Archers (0.1%) |
+| Kobold Assassin Card (Silent) | Shoes | FLEE +4 · QKN +1 | Kobold Assassins (0.1%) |
+| Dark Mushroom Card (Mystic) | Head or Face | KNL +2 | Dark Mushrooms (0.1%) |
+| Root Squirrel Card (Nimble) | Shoes | FLEE +3 · QKN +1 | Root Squirrels (0.1%) |
+| Scarab Card (Shelled) | Armor | DEF +3 · END +1 | Scarabs (0.1%) |
+| Dark Wisp Card (Shadowed) | Wings | KNL +2 · Max SP +5% | Dark Wisps (0.1%) |
+| Goblin Card (Vicious) | Weapon | ATK +12 · HIT +3 | Goblins (0.1%) |
+| Goblin Archer Card (Keen) | Accessory | HIT +5 · FNS +2 | Goblin Archers (0.1%) |
+| Bramble Card (Thorny) | Shield | DEF +2 · Max HP +80 | Brambles (0.1%) |
+| Cobra Card (Fanged) | Weapon | ATK +5 · QKN +2 | Cobras (0.1%) |
+| Fire Beetle Card (Scorched) | Armor | DEF +2 · POW +1 | Fire Beetles (0.1%) |
+| Goblin Assassin Card (Nimble) | Accessory | FLEE +2 · QKN +2 | Goblin Assassins (0.1%) |
+| Fire Wisp Card (Blazing) | Wings | POW +1 · KNL +1 · Max HP +50 | Fire Wisps (0.1%) |
+| Snake Card (Slithering) | Garment | FLEE +3 · QKN +1 | Snakes (0.1%) |
+| Wolf Card (Swift) | Shoes | FLEE +2 · QKN +2 | Wolves (0.1%) |
+| Mummy Card (Undying) | Armor | Max HP +8% | Mummies (0.1%) |
+| Root Serpent Card (Coiling) | Weapon | ATK +8 · QKN +1 | Root Serpents (0.1%) |
+| Bear Card (Mighty) | Armor | POW +1 · Max HP +8% | Bears (0.1%) |
+| Cactus Card (Prickly) | Garment | DEF +1 · FLEE +3 | Cacti (0.1%) |
+| Lamia Card (Bewitching) | Head or Face | ATK +8 · HIT +3 | Lamias (0.1%) |
+| Moss Golem Card (Stony) | Armor | DEF +3 · Max HP +4% | Moss Golems (0.1%) |
+| Dark Elf Card (Elven) | Accessory | HIT +4 · FNS +2 | Dark Elves (0.1%) |
+| Dune Worm Card (Burrowing) | Shoes | END +1 · Max HP +6% | Dune Worms (0.1%) |
+| Pharaoh's Servant Card (Devout) | Garment | KNL +1 · Max SP +8% | Pharaoh's Servants (0.1%) |
+| Sand Scorpion Card (Venomous) | Weapon | ATK +10 · QKN +1 | Sand Scorpions (0.1%) |
+| Soldier Ant Card (Armoured) | Shield | DEF +3 · Max HP +4% | Soldier Ants (0.1%) |
+| Great Stag Card (Antlered) | Head or Face | ATK +10 · POW +1 | Great Stags (0.1%) |
+| Sand Runner Card (Fleet) | Accessory | FLEE +3 · QKN +1 · FTN +1 | Sand Runners (0.1%) |
+| Sphinx Cub Card (Pouncing) | Shoes | FLEE +4 · QKN +2 | Sphinx Cubs (0.1%) |
+| Dryad Card (Blossoming) | Garment | KNL +2 · Max SP +60 | Dryads (0.1%) |
+| Sand Elemental Card (Whirling) | Garment | FLEE +5 · END +1 | Sand Elementals (0.1%) |
+| Rot Beetle Card (Rotting) | Weapon | ATK +14 · END +1 | Rot Beetles (0.1%) |
+| Sarcophagus Card (Entombed) | Shield | DEF +4 · Max HP +6% | Sarcophagi (0.1%) |
+| Jackal Guardian Card (Cursed) | Weapon | ATK +12 · POW +2 | Jackal Guardians (0.1%) |
+| Root Warden Card (Warding) | Shield | DEF +5 · Max HP +5% | Root Wardens (0.1%) |
+| Falcon Sentinel Card (Hawk-eyed) | Accessory | HIT +6 · FNS +2 | Falcon Sentinels (0.1%) |
+| Thorn Drake Card (Draconic) | Armor | POW +1 · END +1 · Max HP +6% | Thorn Drakes (0.1%) |
+<!-- /tables:cards -->
 
+<!-- tables:bosscards -->
 | Card | Goes in | Effect | From |
 |---|---|---|---|
-| Kobold King Card (Stubborn) | Armor | Max HP +30%, DEF +7, FLEE +7, END +7; **Tribe's Shield:** monsters' blows land 15% softer | Kobold King, 1% |
-| Goblin King Card (Tyrant) | Weapon | ATK +75, POW +7, QKN +7, attacks 10% faster; **Mirror Image:** +10% lucky dodge (works on an MVP's moves too) | Goblin King, 1% |
-| Giant Sprout Card (Blooming) | Accessory | Max HP +10%, END +4; **Bloom:** HP comes back 30% faster | Giant Sprout, 1% |
-| King Crab Card (Tidal) | Garment | QKN +5, FLEE +8; **Sea Legs:** nothing slows you (spores, sticky or rubbled ground; roots still hold) | King Crab, 1% |
-| Giant Mushroom Card (Dreaming) | Head or face | KNL +6, Max SP +10%; **Dream Spores:** SP comes back 30% faster | Giant Mushroom, 1% |
-| Giant Beetle Card (Burning) | Weapon | ATK +25, POW +4; **Shell Breaker:** your blows go through 25% of a monster's DEF | Giant Beetle, 1% |
-| Elder Willow Card (Elder) | Wings | FNS +3, KNL +3; **Whispering Seeds:** spells cast 15% faster | Elder Willow, 1% |
-| Alpha Wolf Card (Wild) | Shoes | QKN +6, FLEE +10; **Keen Fangs:** +8% critical hits | Alpha Wolf, 1% |
-| Great Bear Card (Savage) | Weapon | ATK +30, POW +5, Max HP +10%; **Wounded Fury:** below 40% HP your blows hit 20% harder | Great Bear, 1% |
-| Ancient Treant Card (Ancient) | Shield | DEF +10, Max HP +20%, POW +6, END +7; **Bark Armor:** a monster striking you up close takes back 20% of the blow | Ancient Treant, 1% |
-| Fire Giant Card (Infernal) | Weapon (a sorcerer's card) | MATK +30%, KNL +6, FNS +4, Max SP +15%, weapon turns Fire (+15% Fire spells with a staff); **Meteor Heart:** spells and blows set a monster burning 10% of the time | Fire Giant, 1% |
-| Ammit Card (Devouring) | Weapon | ATK +18, POW +3; **Weighing of the Heart:** your blows and spells land 15% harder on a monster under 30% HP | Ammit, 1% |
-| Ratatoskr Card (Swift) | Garment | QKN +3, FNS +2, FLEE +6; **Keen Perception:** your blows and spells land 10% harder on a monster 4 paces away or more | Ratatoskr, 1% |
-| Nidhogg Card (Gnawing) | Armor | DEF +6, Max HP +20%, POW +5, END +5; **Root Rot:** a monster your blows or spells strike takes 8% more from everything for 5 s | Nidhogg, 1% |
-| Eternal Sphinx Card (Enigmatic) | Accessory | KNL +5, FNS +4, FTN +3, Max SP +10%; **Eternal Wisdom:** your skills cost 15% less SP | Eternal Sphinx, 1% |
+| BleepBloop Card (Grand) | Wings | ATK +40 · FTN +7 · KNL +4 · Max HP +20% · Gulp: 5% of the damage you deal heals you | clearing Bloop Island (1%, any difficulty) |
+| Kobold King Card (Stubborn) | Armor | DEF +7 · FLEE +7 · END +7 · Max HP +30% · Tribe's Shield: monsters' blows land 15% softer | the Kobold King (1%) |
+| Elder Willow Card (Elder) | Wings | FNS +3 · KNL +3 · Whispering Seeds: spells cast 15% faster | the Elder Willow (1%) |
+| Giant Sprout Card (Blooming) | Accessory | END +4 · Max HP +10% · Bloom: HP comes back 30% faster | the Giant Sprout (1%) |
+| Goblin King Card (Tyrant) | Weapon | ATK +75 · POW +7 · QKN +7 · attacks 10% faster · Mirror Image: +10% lucky dodge | the Goblin King (1%) |
+| King Crab Card (Tidal) | Garment | FLEE +8 · QKN +5 · Sea Legs: nothing slows you (roots still hold) | the King Crab (1%) |
+| Cactus Lord Card (Thorned) | Weapon | ATK +25 · QKN +4 · Venom Spines: 6% of your blows and spells poison a monster | the Cactus Lord (1%) |
+| Fire Giant Card (Infernal) | Weapon | MATK +30% · KNL +6 · FNS +4 · Max SP +15% · Fire element · Meteor Heart: 10% of your blows and spells set a monster burning | the Fire Giant (1%) |
+| Giant Mushroom Card (Dreaming) | Head or Face | KNL +6 · Max SP +10% · Dream Spores: SP comes back 30% faster | the Giant Mushroom (1%) |
+| Ancient Treant Card (Ancient) | Shield | DEF +10 · POW +6 · END +7 · Max HP +20% · Bark Armor: a monster striking you up close takes back 20% of the blow | the Ancient Treant (1%) |
+| Giant Beetle Card (Burning) | Weapon | ATK +25 · POW +4 · Shell Breaker: your blows go through 25% of a monster's DEF | the Giant Beetle (1%) |
+| Alpha Wolf Card (Wild) | Shoes | FLEE +10 · QKN +6 · Keen Fangs: +8% critical hits | the Alpha Wolf (1%) |
+| Rainbow Runner Card (Prismatic) | Garment | FLEE +8 · QKN +4 · Rainbow Rush: for 5 s after each kill you attack 15% faster | the Rainbow Runner (1%) |
+| Great Bear Card (Savage) | Weapon | ATK +30 · POW +5 · Max HP +10% · Wounded Fury: below 40% HP your blows hit 20% harder | the Great Bear (1%) |
+| Sand Wyrm Card (Devouring) | Armor | DEF +6 · END +6 · POW +4 · Max HP +25% · Devour: every kill gives you back 3% of your HP and SP | the Sand Wyrm (1%) |
+| Ammit Card (Devouring) | Weapon | ATK +18 · POW +3 · Weighing of the Heart: your blows and spells land 15% harder on a monster under 30% HP | Ammit (1%) |
+| Ratatoskr Card (Swift) | Garment | FLEE +6 · QKN +3 · FNS +2 · Keen Perception: your blows and spells land 10% harder on a monster 4 paces away or more | Ratatoskr (1%) |
+| Eternal Sphinx Card (Enigmatic) | Accessory | KNL +5 · FNS +4 · FTN +3 · Max SP +10% · Eternal Wisdom: your skills cost 15% less SP | the Eternal Sphinx (1%) |
+| Nidhogg Card (Gnawing) | Armor | DEF +6 · POW +5 · END +5 · Max HP +20% · Root Rot: a monster your blows or spells strike takes 8% more from everything for 5 s | Nidhogg (1%) |
+| Goblin Warlord Card (Warlike) | Head or Face | ATK +60 · QKN +7 · POW +4 · Frenzy: blows struck up close +15%, 10% of blows up close land twice | clearing the Goblin Lair (1%, any difficulty) |
+| Kobold Warlord Card (Unyielding) | Head or Face | DEF +7 · END +7 · POW +4 · Max HP +25% · Earthshaker: 8% of your blows and spells stun a monster | clearing the Kobold Camp (1%, any difficulty) |
+| Pharaoh Card (Royal) | Head or Face | MATK +15% · KNL +6 · FTN +4 · Max SP +15% · Soul Tax: 4% of the damage you deal comes back as SP | Pharaoh's Tomb (a clear: 1%) |
+<!-- /tables:bosscards -->
 
-**Who can wear what.** Swords up to the Iron Sword: Trainee and Blader; rare and elemental
-swords: Blader only. Staves: Sorcerer only (the Wooden Staff also Trainees). Bows and arrows:
-Archer only. Heavy armor
-(Beetle Armor, Chain Mail, Fire Armor): Blader only; robes: Sorcerer only; Pearl Armor:
-Blader and Sorcerer. The Round Shield and Shell Buckler: Trainee, Blader and Archer. The Tower Shield and Iron
-Greaves: Blader only. The Rune Shield, Rune Mantle and Rune Slippers: Sorcerer only. Everything else: any job.
-A job change puts away what the new job can't use.
+**Who can wear what.** Gear follows the job you wear, and a second job wears the gear of the first jobs it
+stands on (a Magic Knight a Blader's and a Sorcerer's, a Hunter an Archer's and an Assassin's). Swords up to the
+Iron Sword: Trainee and Blader; rare and elemental swords: Blader. Staves: Sorcerer (the Wooden Staff also
+Trainees). Bows and arrows: Archer. Daggers: every job. Heavy armor (Beetle Armor, Chain Mail, Fire Armor, Bear
+Hide): Blader; robes: Sorcerer; the Assassin Garb and Shade Leathers: Assassin; Pearl Armor: Blader and Sorcerer.
+The Round Shield and Shell Buckler: Trainee, Blader and Archer. The Tower Shield and Iron Greaves: Blader. The
+Rune Shield, Rune Mantle and Rune Slippers: Sorcerer. Everything else: any job. A job change puts away what the
+new job can't use, and a second dagger in the Shield slot is for a Phantom only.
 
-**Headgear you can see.** Two slots, Head and Face. Hats hide the hair they cover: Horned Helm,
-Leaf Cap, Flower Crown, Horned Crown, and the animated **Fire Crown** (crafted from the
-MVP's Fire Heart).
+**Headgear you can see.** Two slots, Head and Face. On the head: the Leaf Cap, Flower Crown and Horned Helm
+(crafted), the animated **Fire Crown** (crafted from the Fire Giant's Fire Heart), the Horned Crown (Fire Giant),
+the World Tree Crown (Nidhogg), and two raid ultra rares, the Giant Goat Horn Helm and the Pharaoh's Headdress.
+On the face: Glasses and the Bird Mask (crafted), the Elven Ears (raid ultra rare) and the Sphinx's All-Seeing Eye
+(Eternal Sphinx, 0.5%). Hats hide the hair they cover.
 
 **Your look.** A character is layers: the job's body, then one shared head (the
 standard face: eyes only, no mouth), then your hairstyle, then headgear. You choose your hero's
 name (up to 16 letters, shown over your job and in Status), a male or female body, a hairstyle
-(Tousled, Long, Straight or Ponytail, a heroine's first pick) and a hair dye (8 colours) when you start a new game; **Embla the
+(Tousled or Long for a hero, Straight or Ponytail for a heroine: each style is for one body) and a hair dye (8 colours) when you start a new game; **Embla the
 Stylist** by Steinborg's fountain changes them for 1,000 perz. Your hair stays
 the same through job changes, and the job changes your outfit: the Trainee's browns, the Blader's
 navy capelet, the Sorcerer's purple coat, the Archer's leather vest over green with a quiver on the back (on her a blue crop top, a laced
@@ -1260,14 +1363,18 @@ glasses and masks sit on the eyes, in every direction and every frame. See
 **Perz and shops.** Perz is Aria's coin. Monsters don't drop perz: sell your loot. In Steinborg,
 **Hild the Trader** sells potions, herbs and feathers, and **Gunnar** sells swords,
 armor, shields, capes and boots. In Galdrheim, **Kari** sells the same goods as Hild (and Speed
-Potions), and **Orm the Staffwright** sells staves and robes. Any shop buys anything for half its
+Potions), and **Orm the Staffwright** sells staves and robes. In Veidheim, **Asa** sells bows and arrows and
+**Eydis** potions (White too), Honey and feathers. In Rytingborg, **Dalla** sells potions, Dates and Water
+Skins, **Steinar** daggers, swords and desert gear, and **Yrsa** daggers. Any shop buys anything for half its
 price.
 Quests pay perz too. Your perz shows in the Items window.
 
 **Crafting** is done in the cities (the campfire is just a fire now): in Steinborg, **Gunnar the
 Gear Crafter** forges weapons, armor, headgear and charms, and **Ragna the Herbalist** brews
 potions and feathers; in Galdrheim, **Orm the Staffwright** makes the sorcerers' gear (staves,
-robes), all from materials in your bag and storage. Recipes need a Base Level. The best
+robes); in Veidheim, **Leif the Tanner** makes hunters' gear and **Asa the Fletcher** bows; in Rytingborg,
+**Steinar the Smith** forges desert gear and **Yrsa the Bladewright** makes daggers; and each raid's guide makes
+its rare finds from its cores. All of it from materials in your bag and storage. Recipes need a Base Level. The best
 gear comes from boss materials:
 
 | Forged | Made from |
@@ -1309,17 +1416,17 @@ rings the portal to take, or the person to talk to. A purple **!** marks who the
 |---|---|
 | Prologue (the tutorial) | The Elder: the Heart-Ember is stolen · **guided lessons** on stats (a guide rings the Status window and says what each stat does and which path wants it, before a point is spent), equipment (it shows you where the Elder's Traveler's Cloak is and how to wear it), skills (Basic Training) and items (a hand shows a Red Potion dragged onto the hotbar; **Add to hotbar** in the Items window does it with a tap) · each guide shows once by itself, and **Guide me through it** in the story's Quest View brings it back · defeat 3 Bloops in Moss Field · **the Gel Thief**: a gold arrow at the screen's edge (and over it, once in sight) leads to the golden bloop; chase it, and after a few seconds of running it is out of breath and turns to fight (cornering it, or landing a blow, does too) · **the Ember's Light**: the ember's glow draws every bloop in the field, so hold the old stone ring for 40 seconds · bring the Heart-Ember home · the **quests** lesson: take a quest from someone with a ! and open the Quests window |
 | 1: The Stone-Fort | Travel to Steinborg (Ember Hill rumbles as you arrive) · tell Captain Ulfr the fires are failing · sign the Keeper's ledger (the Keepers: healing, storage, save point, teleport) · **Saeunn reads your runes**: answer her three questions, and the runes name your calling, the Blade, the Rune or the Bow · **the hunters' village**: take her warning east to Veidheim, where young Finn swears the willows walk at night · **the Marsh Road**: hold the old way-stone in Willow Marsh for 40 seconds against the willows and bloops coming out of the water · Huntmaster Sigrid hears the warning. A Trainee who reaches **Job 9** anywhere after the Seeress is **called home** to choose a path at once (what was left of the chapter is skipped), so the trials need next to no grinding |
-| 2: The Three Paths | **By the fire** in Eldrun: the Elder tells what each first job grows into (Blader to BladeMaster, Sorcerer to Wizard, Archer to Windrunner, Assassin to Phantom) and the mixed second jobs of two paths (Magic Knight, Moon Ranger, Beastmaster), each shown as it would look on your own hero (a mixed job with the two first jobs it comes from), and you pick your first path · the Elder sends you straight to that trainer's town (Steinborg, Galdrheim, Veidheim or Rytingborg) · pass a job trial. Any trainer will still try you if you change your mind, and once you have passed one trial the other first-job trials stay open: the story says so, and notices which path you took |
+| 2: The Four Paths | **By the fire** in Eldrun: the Elder tells what each first job grows into (Blader to BladeMaster, Sorcerer to Wizard, Archer to Windrunner, Assassin to Phantom) and the mixed second jobs of two paths (Magic Knight, Moon Ranger, Beastmaster), each shown as it would look on your own hero (a mixed job with the two first jobs it comes from), and you pick your first path · the Elder sends you straight to that trainer's town (Steinborg, Galdrheim, Veidheim or Rytingborg) · pass a job trial. Any trainer will still try you if you change your mind, and once you have passed one trial the other first-job trials stay open: the story says so, and notices which path you took |
 | 3: Embers in the Wilds | Saeunn's warning · defeat 12 Red Sprouts in Birch Grove · travel to Ember Hill |
 | 4: The Fire-Ring | Archmage Vigdis will sing the fire-ring's runes anew · **the Vigil on Ember Hill**: stand in her rune circle and hold off the Giant's heralds for 75 seconds while her song reaches him · bring the song home: the fire-ring rekindled |
 | 5: The Salt Road | Captain Ulfr: kobolds rob the salt carts · Hakon the Carter in Salt Bay · **Bloop Island**: the Boatman's Tutorial crossing (the first raid) · defeat 12 kobolds in Stone Field · Saeunn and the glowing red coal · go down into Coal Pit · Dag the Miner: the goblins drive the kobolds to dig for a "Waking Fire" |
 | 6: The Goblin War-Band | tell Ulfr · defeat 15 goblins in Burnt Wood · Archmage Vigdis reads the two coal trails |
-| 7: The Second Path | take a second job (BladeMaster, Wizard or Magic Knight) |
+| 7: The Second Path | take a second job (any of the ten the hero's points open) |
 | 8: The Waking Fire | defeat 20 Fire Beetles in Ash Heath · travel to Serpent Wood · defeat 20 goblins, the keepers of the goblins' backward fire-ring · the backward rune-stone to Vigdis · home to the Elder |
 
 The second saga (chapters 5–8) runs from about Base 32 to Base 55. A hero who finished the first saga
-picks up at Chapter 5. No MVP is part of the story: the Fire Giant, the Kobold King and the Goblin
-King wait as optional fights for the strongest.
+picks up at Chapter 5. No MVP or mini-boss is part of the story: the Fire Giant, the kings and the rest wait as optional fights for
+the strongest. The desert, the Sphinx's Halls and Yggdrasil lie outside the story for now, open to explore.
 
 The quest list folds away with a tap on its title bar and scrolls when it is long.
 
@@ -1380,6 +1487,7 @@ leads to each.
 | Halla the Healer | Veidheim | heals HP and SP for free |
 | Kalf the Gate Archer | Veidheim, at the north gate | The Gate Watch: Marsh Patrol (8): 12 Yellow Bloops, 8 Willows (no early quests send you into the Old Forest: the Ancient Treant roams it) |
 | Bodil the Sentry, Finn the Young Archer | Veidheim | tales of the village and its lands |
+| Old Ingrid the Seedkeeper | Veidheim, by the well | **The World Tree** (45–48), a secret series: it shows once you have walked Willow Marsh, the Old Forest, Barley Field and Wolf Hills, and its last step opens the way to Yggdrasil |
 | Tove the Carter | Veidheim | carts to any land you have walked |
 | Master Kol | Rytingborg | The Assassin's Trial · the Phantom's trial |
 | Dalla the Trader | Rytingborg, the bazaar | shop (potions, Dates, Water Skins) · The Bazaar: Warm Gel (6): 8 Red Gel · Jaws in the Sacks (10): 15 Giant Ants |
@@ -1389,6 +1497,7 @@ leads to each.
 | Ketil the Water-seller | Rytingborg | The Water-seller: Skins for Water (58): 8 Worm Hides · Feathers for the Shade (63): 10 Runner Feathers |
 | Arne the Gate Guard | Rytingborg, the north gate | The Gate Watch: Red Sands (8): 20 Red Bloops |
 | Saga the Healer · Orvar the Caravaneer · Little Toki | Rytingborg | healing · carts to any land you have walked · lore |
+| Old Gunnhild | Rytingborg | **The Sphinx's Riddle** (60–64), a secret series: it shows once you have walked the Red Sands, the Cactus Dunes, Scorpion Sands and the Great Desert, and its last step opens the way to Sphinx Sands |
 | Sindri the Tomb Guide | Scorpion Sands, at the Pyramid | leads you into **Pharaoh's Tomb**, the raid, and makes its rare finds from Tomb Cores |
 
 People without a PixelLab sprite of their own are dressed from a bald hero body (Trainee, Blader,

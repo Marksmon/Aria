@@ -20,6 +20,22 @@ kobolds west of Salt Bay, wading in lake shallows, a look of their own for every
 plain "Spawned / Not spawned" boss status. The balance numbers are in `docs/balance.md`. Item 2.6
 (Sorcerer and Blader kill speed within 25%) was only partly met: see there.
 
+## Status (November 2026 review)
+
+A second review looked at the whole game (progression, balance, story, UI, economy, testing). Done
+from it: saves keep a backup copy and say when the phone refuses one; a target health bar and a
+Graphics setting; a phone-sized hero creation screen; the older mini-bosses pay EXP like the newer
+ones; the Monster Album; music by place (towns, fields, sands, dungeons, wonders, boss fights); the
+Windrunner's and BladeMaster's trait text matched to the sim; the in-game text and these docs checked
+against the game (the README's item and card tables are now written by `build-tools/readme-tables.mjs`);
+Ingrid the Tutor back in Galdrheim (another NPC had taken her key); and `npm test` plus a smoke test
+in CI (`.github/workflows/test.yml`, `docs/balance.md` "Tests").
+
+Left for the owner's call: the dungeons' first floors open below the level their secret series asks
+for, and both dungeons share one level band; the climb from Base 75 to 99 is steep; the story ends
+at Chapter 8 (the desert, the dungeons and the Fire Giant's end are outside it); a pity path for MVP
+cards; the Sorcerer's early fights against Water monsters; Gold Bars' price.
+
 ## Order of work
 
 | Release | Theme | Why first |

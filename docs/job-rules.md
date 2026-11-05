@@ -151,7 +151,7 @@ Two-path second jobs like the Magic Knight (`from` of two first jobs: 20 points 
   Blader who also earned the Sorcerer raises Sorcerer skills without switching at a Keeper, and a
   Wizard who walked the Blader's path can still raise Blader skills. Switching first jobs at a Keeper
   still changes the job worn (its name, look and job bonus stats). For a one-path second job (BladeMaster, Wizard,
-  Windrunner) another first job's tree can never pass the path's own: a Wizard's Blader points stay
+  Windrunner, Phantom) another first job's tree can never pass the path's own: a Wizard's Blader points stay
   at or under its Sorcerer points (`learnBlock`).
 - Skill points earned: 9 from the Trainee, plus the first-job level (Job 1 counts: a Job 50 Blader
   has 50), plus the second-job level once in a second job (the owner's call; the Trainee's stay 9). Every point spent in any tree counts against that pool.
@@ -205,7 +205,7 @@ bow range.
 - **Two paths, 20 each first:** for the Magic Knight, Moon Ranger and Beastmaster, once one path's
   tree has 20 points it takes no more until the other path's tree has 20 too, and a third first job
   they walked (a Magic Knight's Archer tree) takes no points until both have 20 (`learnBlock`).
-- **Retraining a second job** (Liv, Ingrid, Sven: Reset my job skills) unlearns the second job's
+- **Retraining a second job** (Liv in Steinborg, Ingrid the Tutor in Galdrheim, Sven in Veidheim, Geir in Rytingborg: Reset my job skills) unlearns the second job's
   skills and every first-job tree it trains (the Trainee's stay). The rule above then makes the hero rebuild the first jobs
   before the second job's skills open again, so a reset never dodges it.
 - **Quitting a trial** (Quit quest in the Quest View) before it is finished starts that trial over
@@ -225,7 +225,7 @@ bow range.
 
 ## Second-job skills
 
-- **Three or four active skills per second job** (the owner's rule). Windrunner: Tailwind, Gale
+- **Three or four active skills per second job** (the owner's rule; the Wizard's five area spells were asked for by name, below). Windrunner: Tailwind, Gale
   Step, Hurricane Volley, Cyclone Arrow. Moon Ranger: Lunar Multishot, Starfall, Crescent Arrow,
   Moonveil. Beastmaster: Summon Bear, Summon Wolves, Summon Hawk, Pack Frenzy. Phantom: Dual Rend,
   Phantom Double, Mirage Step, Thousand Cuts. Shadowblade: Shadow Slash, Umbral Step, Eclipse,
@@ -243,7 +243,7 @@ bow range.
   Lv 1 to 80% at Lv 5, plus 2% a level of Beast Bond. Raising a stat updates the beasts at once.
 - Companions (`src/allies.js`): they follow, take the hero's target or the nearest monster coming
   for the hero, and fight. Monsters fight back: one a beast bites may turn on it (35%), and the
-  Bear's roar (every 6 s) turns the monsters round it on it. A monster's AI aims at one foe
+  Bear's Roar (every 10 s while it fights, `ROAR`) turns the monsters round it on it, and the pack hits 10% harder for 6 s. A monster's AI aims at one foe
   (`Mob.update(dt, foe)`): the hero, or the beast in `m.foe`. Beasts don't block tiles, follow
   through portals, vanish when the hero faints, and a fallen one can be called again after 20 s.
 - Damage aimed: the hero's own hits plus the pack about the other bow second jobs' (Base 60, a Lv 55
@@ -303,9 +303,9 @@ MATK part), used by both the damage and the skill text.
 - **No reward for the steps on the way:** only completing the whole series pays, and the last step
   pays the total of all its steps (`rewardOf` in `quests.js`).
 - First-job trials are for a Trainee of Base ~10 and need one trip to the easy field beside the
-  trainer: a hunt (Slimes and Sprouts, or Blue Slimes), a step made from what it dropped (proof,
+  trainer: a hunt (Bloops and Sprouts, Blue Bloops, Yellow Bloops or Red Bloops), a step made from what it dropped (proof,
   or the Sorcerer's brew), and the trainer's questions (`kind: 'quiz'`). A wrong answer only gets
-  a hint; the question can be tried again. Second-job trials are harder: Base 40–55 monsters, the
+  a hint; the question can be tried again. Second-job trials are harder: monsters of Lv 26–62 (Blue Crabs and kobolds up to the desert's Soldier Ants), the
   third step a big hunt of a mini-boss's kin (mini-bosses are half as hard as an MVP: no trial or
   quest needs one).
 - Trainers:
@@ -322,5 +322,5 @@ MATK part), used by both the damage and the skill text.
   - Mother Hulda (Voodoo), Galdrheim, past the Stargazer.
 - Taking a second job:
   - Job Level goes back to 1, and the first-job level is kept for its points (`firstLv`).
-  - The look: second jobs wear the first job's outfit recoloured, with an aura. The Magic Knight
-    has its own sprite.
+  - The look: every second job has a body of its own (`JOB_BODY` in `main.js`; the BladeMaster's and the
+    Wizard's build on their first job's, in new colours and pieces), with an aura in its colour.

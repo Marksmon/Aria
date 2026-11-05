@@ -234,7 +234,7 @@ export const NPCS = {
   },
   // ---------- Galdrheim, the city of sorcerers ----------
   // a trainer in each city, beside the Keeper: stats and skills reset, like Liv in Steinborg
-  ingrid: {
+  tutor: { // (once keyed 'ingrid', which Old Ingrid the Seedkeeper later took, hiding her: test/data.test.mjs checks the keys)
     name: 'Ingrid the Tutor', map: 'magic', x: 24.6, z: 46.0, dress: { body: 'sorc', main: [260, 0.3, 1.1], accent: [45, 0.6, 1.1], hair: 'long', dye: 'brown' },
     hello: 'I tutor the young sorcerers, and the not so young. If your training went wrong somewhere, sit down: we can start your stats or your skills over.',
     later: () => '', bye: 'Study well. And sleep sometimes.',

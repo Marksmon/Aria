@@ -240,4 +240,7 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
 - `npm test` must pass (`test/`: the job rules, the data, saves, the balance bands; it also runs
   before every APK build), and `npm run smoke` after a build (the built game in Chromium). Both run
   on every push (`.github/workflows/test.yml`). A new owner rule that code can check gets a test.
+- The README's usables, monster-drop and card tables are written from the game's data between
+  `<!-- tables:... -->` markers: after changing items, drops or cards run `node build-tools/readme-tables.mjs`
+  (`npm test` fails while they are out of date). The prose round them is kept by hand.
 - Never commit the PixelLab API key, or the Ragnarok reference image used as a style reference.

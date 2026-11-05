@@ -721,8 +721,12 @@ export function equipLine(it) {
   if (it.aspd) p.push(`attacks ${it.aspd}% faster`);
   if (it.msp) p.push(`Max SP +${it.msp}`);
   if (it.flee) p.push(`FLEE +${it.flee}`);
+  if (it.fx) p.push(GEAR_FX[it.fx] || it.fx); // (a charm's own effect: main.js applyStats / inv.wearing)
+  if (it.perk) p.push(Object.entries(it.perk).map(([k, v]) => PERK_TEXT[k]?.(v) || k).join(', ')); // (a weapon's own effect, like a card's)
   return p.join(' · ');
 }
+// what a piece's fx does (main.js: regen doubles HP recovery, aspd x0.9 the attack delay, block 1 in 5, exp x1.25)
+const GEAR_FX = { regen: 'HP recovers twice as fast', aspd: 'attacks 10% faster', block: '1 in 5 blows blocked', exp: '+25% EXP' };
 
 // Everything crafts into an item in the bag; lv = Base Level needed to craft it
 export const RECIPES = [

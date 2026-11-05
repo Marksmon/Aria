@@ -258,7 +258,7 @@ Two more raids on Bloop Island's ladder of strength (raid.js LADDER), at Base 45
 | Goblin Lair | Hard | Base 80, second job, 30 White | 30 pots: 96% (3.7 min, 30 used) | 30 pots: 100% (1.0 min, 4 used) |
 
 Kobolds are Earth, so the Sorcerer's Ember Bolt walks through the Den. Every raid's rare finds now
-drop at 1% on every difficulty; the cores (3/9/27/81 a clear) buy them from the raid's guide.
+drop at 3% on every difficulty (`RARE` in `src/raid.js`; it was 1% for a while); the cores (3/9/27/81 a clear) buy them from the raid's guide.
 
 The Hell Warlords were too quick next to BleepBloop (the Lv 99 bot in the best gear: the Kobold
 Warlord in 76 s with 8 White Potions, the Goblin Warlord in 69 s with none; BleepBloop 2.5-5 min,

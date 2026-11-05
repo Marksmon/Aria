@@ -6,7 +6,8 @@ the code never changed, so saves are not affected.
 
 ## Field maps
 
-The fields went to plain names too; the towns (Eldrun Camp, Steinborg, Galdrheim, Veidheim) kept theirs.
+The fields went to plain names too; the towns (Eldrun Camp, Steinborg, Galdrheim, Veidheim, and later Rytingborg) kept theirs. The
+desert's sands, the dungeons and Yggdrasil were given plain names from the start.
 
 | Now | Kept for later |
 |---|---|

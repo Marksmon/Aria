@@ -92,3 +92,17 @@ test("an item's 'from' text names real droppers at their real rates", () => {
   }
   assert.deepEqual(bad, []);
 });
+
+// a key written twice in a data table silently drops the first entry (Ingrid the Tutor vanished
+// that way when Old Ingrid the Seedkeeper took her key), so the tables' keys are checked in the source
+test('no data table repeats a key', async () => {
+  const fs = await import('node:fs');
+  const tables = [['items.js', 'const BASE_ITEMS = {'], ['mobs.js', 'export const MOB_DEFS = {'], ['skills.js', 'export const SKILLS = {'],
+    ['world.js', 'export const MAPS = {'], ['quests.js', 'export const NPCS = {'], ['quests.js', 'export const QUESTS = {']];
+  for (const [file, head] of tables) {
+    const s = fs.readFileSync(new URL(`../src/${file}`, import.meta.url), 'utf8'), i = s.indexOf(head);
+    assert.ok(i >= 0, `${file}: ${head}`);
+    const keys = [...s.slice(i, s.indexOf('\n};', i)).matchAll(/^ {2}([a-zA-Z0-9_]+):/gm)].map((m) => m[1]);
+    assert.deepEqual(keys.filter((k, n) => keys.indexOf(k) !== n), [], `${file} ${head}`);
+  }
+});

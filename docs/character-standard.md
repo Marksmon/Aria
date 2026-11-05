@@ -30,8 +30,10 @@ it.
 ## Bodies
 
 The hero's job bodies, male and female, are painted in code from the owner's uniform sheets:
-`src/trainees.js` (Trainee), `bladers.js` (Blader, BladeMaster), `mages.js` (Sorcerer, Wizard) and
-`mknights.js` (Magic Knight). They keep the standard below: the bald bodies' frame (106 × 108, the
+`src/trainees.js` (Trainee), `bladers.js` (Blader, BladeMaster), `mages.js` (Sorcerer, Wizard),
+`mknights.js` (Magic Knight), `archers.js` (Archer), `rangers.js` (Windrunner, Moon Ranger),
+`beastmasters.js` (Beastmaster), `assassins.js` (Assassin, Phantom) and `crosses.js` (Shadowblade, Hunter,
+Voodoo); `JOB_BODY` in `main.js` picks each job's. They keep the standard below: the bald bodies' frame (106 × 108, the
 Trainee's head spots, the chin 63 pixels above the ground), 8 directions (the left ones mirrored),
 standing, an 8-frame walk and a 7-frame attack or cast (`design-anim.js`). The game paints them as
 they are needed (`designSet` in `sprites.js`); each frame carries its head spot, which sinks with
@@ -52,10 +54,10 @@ People dressed from a bald body still use the PixelLab bodies:
 ## Outfits grow with the job
 
 - **Trainee:** patched and practical. Light leather armour over linen, one small emblem.
-- **First jobs (Blader, Sorcerer):** a modest uniform with one clear emblem, cooler than the
-  Trainee but kept plain.
-- **Second jobs (later):** armour, capes, glowing trims and larger emblems, as Ragnarok's Novice →
-  Swordman → Knight grow grander.
+- **First jobs (Blader, Sorcerer, Archer, Assassin):** a modest uniform with one clear emblem, cooler
+  than the Trainee but kept plain.
+- **Second jobs:** armour, capes, glowing trims and larger emblems, as Ragnarok's Novice → Swordman →
+  Knight grow grander; every one of the ten has its own.
 
 ## Heads and hair
 
