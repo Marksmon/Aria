@@ -48,7 +48,7 @@ export const JOBS = {
 // every second job's own strength and weakness (the owner's call: no two second jobs play alike).
 // A new second job gets a mechanic of its own and a line here; shown at its job change (menus.js)
 export const JOB_TRAITS = {
-  blademaster: { mech: 'Combo and Momentum', strong: 'the steadiest damage on one target, the same on every monster, and the most HP of the blades', weak: 'no element to exploit a weakness with, and few area skills' },
+  blademaster: { mech: 'Combo and Momentum', strong: 'the same damage on every monster, and the most HP of the blades', weak: 'no element to exploit a weakness with, and few area skills' },
   wizard: { mech: 'elements and Resonance', strong: 'the best at packs, and huge damage on a monster weak to its element', weak: 'frail, long casts a blow can break, and far behind on a monster that resists' },
   magicknight: { mech: 'Elemental Blade and Chain', strong: 'the toughest: the most HP and a barrier, and the element of its choice', weak: 'neither the hardest hitter nor the best on packs, and hungry for SP' },
   windrunner: { mech: 'attack speed and bursts of speed', strong: 'the quickest shots: the most damage on one target of the one-path second jobs, kept up from range, and a dash out of any corner', weak: 'no big single blow, thin on packs, frail up close' },

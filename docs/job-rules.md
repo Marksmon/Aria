@@ -94,7 +94,7 @@ another's (no second stack-and-spend like Momentum, no second set of pets like t
 
 | Second job | Its own mechanic | Strong | Weak |
 |---|---|---|---|
-| BladeMaster | Combo and Momentum (stacks spent by Final Blade) | the steadiest damage on one target, the same on every monster; most HP of the blades | no element; few area skills |
+| BladeMaster | Combo and Momentum (stacks spent by Final Blade) | the same damage on every monster; most HP of the blades | no element; few area skills |
 | Wizard | elements, Resonance, Shatter | packs; a monster weak to its element | frail; long casts; far behind on a monster that resists |
 | Magic Knight | Elemental Blade and Chain, ATK + MATK | the toughest (HP, Stone Aegis); its element of choice | neither the hardest hitter nor the best on packs; SP |
 | Windrunner | attack speed, bursts of speed | the quickest shots: the most single-target damage of the one-path second jobs, from range; a dash out of any corner | no big single blow, thin on packs, frail up close |

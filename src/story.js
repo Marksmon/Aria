@@ -187,7 +187,7 @@ export const STORY = [
   // the jobs explained, and the hero's pick (flags.pick): the story then sends them to that trainer
   { id: 'paths', ch: 'Chapter 2: The Three Paths', title: 'By the Fire', kind: 'talk', npc: 'bram', goal: 'Go home to Eldrun Camp: Elder Halvard will help you choose a path',
     say: [['bram', 'Sit, sit. You have grown since the morning I shook you awake. It is time you chose a path. Four masters train the young of Aria, and each path grows into something greater.'],
-      [null, 'THE BLADE: Captain Ulfr, Steinborg. Sword in hand, POW and END: you stand in front and take the blows. A Blader grows into a BladeMaster: the steadiest damage in Aria, with Blade Dance and Sword Storm.',
+      [null, 'THE BLADE: Captain Ulfr, Steinborg. Sword in hand, POW and END: you stand in front and take the blows. A Blader grows into a BladeMaster: the same damage on every monster, with Blade Dance and Sword Storm.',
         { pics: [{ job: 'swordman', label: 'Blader' }, '→', { job: 'blademaster', label: 'BladeMaster' }] }],
       [null, 'THE RUNE: Archmage Vigdis, Galdrheim. Fire, frost, wind and earth at a word, with KNL behind them. A Sorcerer grows into a Wizard: storms and meteors that break whole crowds, every element turned against the one it beats.',
         { pics: [{ job: 'mage', label: 'Sorcerer' }, '→', { job: 'wizard', label: 'Wizard' }] }],
