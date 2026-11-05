@@ -893,7 +893,7 @@ weakness, shown when you take it:
 | BladeMaster | Combo and Momentum | the steadiest damage on one target, the same on every monster | no element to exploit, few area skills |
 | Wizard | elements and Resonance | packs, and a monster weak to its element | frail, long casts, far behind on a monster that resists |
 | Magic Knight | Elemental Blade and Chain | the toughest: most HP and a barrier | neither the hardest hitter nor the best on packs |
-| Windrunner | attack speed, bursts of speed | the quickest shots, a dash out of any corner | little burst, thin on packs |
+| Windrunner | attack speed, bursts of speed | the quickest shots: the most damage on one target of the one-path second jobs, from range; a dash out of any corner | no big single blow, thin on packs, frail up close |
 | Moon Ranger | ATK and MATK arrows, the moon | the best bow on packs, stronger at night | weaker by day, hungry for SP |
 | Beastmaster | three beasts fed by its stats | never alone: the beasts take the blows | its own blows are modest; a fallen beast is gone 20 s |
 | Phantom | two daggers and illusions | the highest steady melee damage | far squishier than a BladeMaster |

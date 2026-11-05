@@ -29,7 +29,7 @@ test('a same-level first job beats every daytime field monster from Lv 12 on (85
   assert.deepEqual(weak, []);
 });
 
-test('the crosses stay in their bands (second-sim --check)', () => {
+test('the crosses stay in their bands, the Windrunner ahead on one target (second-sim --check)', () => {
   const out = execFileSync(process.execPath, [new URL('../build-tools/second-sim.mjs', import.meta.url).pathname, '--check'], { encoding: 'utf8' });
   assert.match(out, /every cross in its band/);
 });

@@ -140,11 +140,14 @@ console.log('\nShadowblade / BladeMaster', (res.blademaster / res.shadowblade).t
 
 // --check: fail (exit 1) when a cross leaves the owner's balance (docs/job-rules.md): the Shadowblade
 // about 1.1x the BladeMaster, the Hunter about 0.9x the Windrunner, the Voodoo about 1.1x the Wizard.
+// The Windrunner out-shoots the BladeMaster and the Wizard on one target, as its trait says.
 // The CI runs it (.github/workflows/test.yml), so a balance change that breaks a rule is caught
-export const BANDS = { 'Shadowblade / BladeMaster': [res.blademaster / res.shadowblade, 0.98, 1.25], 'Hunter / Windrunner': [res.windrunner / res.hunter, 0.78, 1.02], 'Voodoo / Wizard': [res.wizard / res.voodoo, 0.97, 1.22] };
+export const BANDS = { 'Shadowblade / BladeMaster': [res.blademaster / res.shadowblade, 0.98, 1.25], 'Hunter / Windrunner': [res.windrunner / res.hunter, 0.78, 1.02], 'Voodoo / Wizard': [res.wizard / res.voodoo, 0.97, 1.22],
+  // the Windrunner's trait (progress.js JOB_TRAITS): the most damage on one target of the one-path second jobs
+  'Windrunner / BladeMaster': [res.blademaster / res.windrunner, 1.1, 2.0], 'Windrunner / Wizard': [res.wizard / res.windrunner, 1.1, 2.5] };
 if (process.argv.includes('--check')) {
   const off = Object.entries(BANDS).filter(([, [r, lo, hi]]) => !(r >= lo && r <= hi));
   for (const [k, [r, lo, hi]] of off) console.log(`OUT OF BAND: ${k} ${r.toFixed(2)} (wanted ${lo}-${hi})`);
   if (off.length) process.exit(1);
-  console.log('second jobs: every cross in its band');
+  console.log('second jobs: every cross in its band, the Windrunner ahead on one target');
 }

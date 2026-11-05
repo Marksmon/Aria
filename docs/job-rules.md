@@ -97,7 +97,7 @@ another's (no second stack-and-spend like Momentum, no second set of pets like t
 | BladeMaster | Combo and Momentum (stacks spent by Final Blade) | the steadiest damage on one target, the same on every monster; most HP of the blades | no element; few area skills |
 | Wizard | elements, Resonance, Shatter | packs; a monster weak to its element | frail; long casts; far behind on a monster that resists |
 | Magic Knight | Elemental Blade and Chain, ATK + MATK | the toughest (HP, Stone Aegis); its element of choice | neither the hardest hitter nor the best on packs; SP |
-| Windrunner | attack speed, bursts of speed | the quickest shots, a dash out of any corner | little burst, thin on packs, frail up close |
+| Windrunner | attack speed, bursts of speed | the quickest shots: the most single-target damage of the one-path second jobs, from range; a dash out of any corner | no big single blow, thin on packs, frail up close |
 | Moon Ranger | ATK + MATK arrows, the moon | the best bow on packs, stronger at night | weaker by day; SP |
 | Beastmaster | three beasts fed by its stats | never alone: the beasts take the blows | modest own blows; a fallen beast is gone 20 s |
 | Phantom | two daggers, illusions | the highest steady melee damage | far squishier than a BladeMaster |
@@ -274,7 +274,9 @@ MATK part), used by both the damage and the skill text.
   It is also the best at packs.
 - **Windrunner:** about 2.9x the Archer on one target (Base 60, a Lv 55 neutral boss, SP counted):
   its strength is quick steady shots (Windborne, Gale Rhythm, Tailwind; ASPD is capped at
-  Ragnarok's 190) and moving to a better spot, not a burst. **Walking haste only in bursts** (the
+  Ragnarok's 190) and moving to a better spot, not a burst. On a lone boss that steady fire is the most
+  damage of the one-path second jobs (`second-sim.mjs`: about 1.5x the BladeMaster, 1.7x the Wizard;
+  the Moon Ranger by night is above it). **Walking haste only in bursts** (the
   owner's call): Tailwind's first 4 s (30%) and 2 s after Gale Step (24–40%); only the strongest
   counts. Nothing else hastes the walk.
 - **Moon Ranger:** arrows of ATK and MATK together (`power` + `mpower`, like the Magic Knight's

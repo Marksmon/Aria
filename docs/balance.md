@@ -370,5 +370,6 @@ drop, recipe, shop item, quest monster, portal), saves and their backup copy, an
 the Assassin about 1.4x the Blader over the field monsters (1.25-1.6), a same-level first job winning
 85% of its fights against every daytime field monster from Lv 12, and the crosses' bands
 (`node build-tools/second-sim.mjs --check`: Shadowblade / BladeMaster 0.98-1.25, Hunter / Windrunner
-0.78-1.02, Voodoo / Wizard 0.97-1.22). `npm run smoke` (after `npm run build`) plays the built game in
+0.78-1.02, Voodoo / Wizard 0.97-1.22; and the Windrunner ahead of the BladeMaster and the Wizard on one
+target, as its trait says). `npm run smoke` (after `npm run build`) plays the built game in
 Chromium at 844x390: a new hero, every window, the settings, a fight, every map, with no page error.
