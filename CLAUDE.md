@@ -158,7 +158,7 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   mini-boss (61-75); 4 the great hall (`maze.hall` with `only`, `world.hall`; 76-90): the Jackal Guardians and Falcon
   Sentinels (`hall: true`, they keep to it) and the **Eternal Sphinx** (Lv 99 MVP, `hall: true`: it never leaves the
   hall and fights only a hero in it; it summons its cubs and Guardians, the owner's call). It drops Gold Bars (always,
-  and as its MVP reward) and the ultra rare **Sphinx's All-Seeing Eye** (Face, 0.5%: all stats +5, MATK +10%, HIT
+  and as its MVP reward) and the ultra rare **Sphinx's All-Seeing Eye** (Face, 0.5%: all stats +3, MATK +10%, HIT
   +10; drawn by `build-tools/draw-eye.py`). The dungeon's monsters are painted in code in `src/halls.js` (the Scarabs
   and Mummies borrow the tomb's sprites, as field monsters `hallScarab`/`hallMummy`).
 - **Quests:** side quests and job trials can be quit from the Quest View; the main story quest

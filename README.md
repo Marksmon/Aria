@@ -385,7 +385,7 @@ cubs and its Guardians. It always drops **Gold Bars** (1–3, and one more as it
 which sell for a fortune, and now and then good gear for every build: the Riddle Blade, the Sphinx
 Sceptre, the Sphinx Wing Bow, the Enigma Fang, the Sphinx Wing Mantle, the Sphinx Ring, its card, and
 very rarely (0.5%) its ultra rare: **the Sphinx's All-Seeing Eye**, a gold Face piece over one eye
-(all stats +5, MATK +10%, HIT +10).
+(all stats +3, MATK +10%, HIT +10).
 
 ## Raids
 
