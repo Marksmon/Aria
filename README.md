@@ -378,10 +378,7 @@ dim underground, day or night.
   and the Pharaoh's Servants (skeletal priests who throw blue fire from crystal staves).
 - **Floor 3:** Sphinx Cubs, Sand Elementals (their whirling sand slows you), walking Sarcophagi, and
   **Ammit the Devourer** (Lv 74 mini-boss: a crocodile's head, a lion's mane and claws). It rushes,
-  pounces, and **Devours**: a bite that heals it. It calls Sphinx Cubs. Now and then (2%) it drops the
-  **Angry Snarl**, a Face piece: an angry face on your hero: brows drawn down in two hard lines and a snarling mouth with two
-  fangs bared (ATK +10,
-  HIT +3, POW +2, END +1).
+  pounces, and **Devours**: a bite that heals it. It calls Sphinx Cubs.
 - **Floor 4, the great hall:** no maze, only a long hall of gold-capped pillars, where the Jackal
   Guardians with their long cursed spears and the Falcon Sentinels throwing blades of wind keep watch
   over the **Eternal Sphinx** (Lv 99 MVP, 1,400,000 HP, Earth), a winged lion in a striped headdress.

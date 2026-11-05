@@ -176,7 +176,7 @@ export const MOB_DEFS = {
   ammit: { name: 'Ammit', ai: 'boss', art: 'ammit', aura: '#6ad890', el: 'shadow', boss: true, lv: 74, hp: 340000, atk: [240, 310], def: 26, vit: 60, agi: 40, dex: 165, mdef: 25, exp: [80000, 56000], adelay: 1700, fierce: true, walk: 160,
     moves: [{ kind: 'charge', name: 'Devouring Rush', mult: 1.7 }, { kind: 'leap', name: 'Pounce', mult: 1.8, r: 1.9 }, { kind: 'devour', name: 'Devour', mult: 2.2, heal: 0.04 }],
     aggro: 6, chase: 12, reach: 1.6, w: 2.3, r: 0.85, heavy: true, summon: ['sphinxCub', 'sphinxCub'], summonText: 'Ammit roars, and Sphinx Cubs come bounding out of the dark!', respawn: 540,
-    drops: [['ammit_heart', 1, 1, 0.3], ['gold_leaf', 3, 5, 1], ['potion3', 1, 2, 0.5], ['devourer_mail', 1, 1, 0.03], ['ammit_claw', 1, 1, 0.02], ['ammit_snarl', 1, 1, 0.02], ['ammit_card', 1, 1, 0.01]] },
+    drops: [['ammit_heart', 1, 1, 0.3], ['gold_leaf', 3, 5, 1], ['potion3', 1, 2, 0.5], ['devourer_mail', 1, 1, 0.03], ['ammit_claw', 1, 1, 0.02], ['ammit_card', 1, 1, 0.01]] },
   // the MVP of the Sphinx's Halls, on the fourth floor, its great hall (hall: it never leaves it): the Eternal Sphinx, a winged lion in a striped headdress, the oldest thing in Aria. It
   // tests whoever comes with its Riddle (the owner's call: riddles and combat): a riddle, three answers
   // written in three circles round you; stand in the right one when the time is up and it is

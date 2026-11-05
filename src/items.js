@@ -357,7 +357,6 @@ const BASE_ITEMS = {
   storm_ring:   { type: 'equip', slot: 'acc', name: 'Sandstorm Ring', flee: 3, stats: { end: 2, qkn: 1 }, icon: 'r_stormring', desc: 'A ring of glass made from Living Sand, a tiny storm still turning inside it.', from: 'Sand Elementals (0.25%)' },
   coffin_shield: { type: 'equip', slot: 'shield', name: 'Sarcophagus Lid', def: 7, mhp: 120, icon: 'shield_coffin', desc: 'The gilded lid of a walking coffin, cut down to a shield. The face on it still watches you.', from: 'Sarcophagi (0.2%)' },
   devourer_mail: { type: 'equip', slot: 'armor', rare: true, name: "Devourer's Hide", def: 8, mhp: 200, stats: { pow: 2, end: 2 }, icon: 'armor_devourer', desc: 'Crocodile scutes over a lion\'s pelt, from Ammit itself. It turns blades, and it is always a little hungry.', from: 'Ammit (3%)' },
-  ammit_snarl:  { type: 'equip', slot: 'face', rare: true, name: 'Angry Snarl', atk: 10, hit: 3, stats: { pow: 2, end: 1 }, desc: 'An angry face: brows drawn down in two hard lines, and a snarling mouth with two fangs bared. Put it on and you look furious at everything, all the time. Monsters believe it.', from: 'Ammit (2%)' },
   ammit_claw:   { type: 'equip', slot: 'weapon', kind: 'dagger', el: 'shadow', rare: true, name: "Ammit's Claw", atk: 96, wlv: 4, stats: { pow: 2, qkn: 2 }, icon: 'dagger_ammit', desc: 'A great curved claw from the Devourer\'s paw, bound to a gold hilt. Shadow element.', from: 'Ammit (2%)' },
   // the Eternal Sphinx's (MVP gear for several builds, the owner's call): a sword, a staff, a bow and a
   // dagger, a ring and a mantle for anyone, and its ultra rare, the All-Seeing Eye
@@ -616,7 +615,7 @@ export const PRICES = {
   // Yggdrasil's hollows
   squirrel_tail: 300, bramble_thorn: 450, root_scale: 500, moss_clump: 700, elven_thread: 800, stag_antler: 1000, dryad_leaf: 1100, rot_shell: 1400, rune_tuft: 9000, living_heartwood: 1500, drake_scale: 1800, ygg_berry: 20000,
   acorn_charm: 12000, bramble_buckler: 12000, serpent_boots: 16000, moss_mail: 18000, elven_bow: 30000, stag_cape: 22000, dryad_staff: 26000, rot_fang: 24000, warden_blade: 30000, drake_ring: 24000,
-  messenger_shroud: 44000, rune_bracelet: 40000, ratatoskr_tail: 50000, ammit_snarl: 46000, nidhogg_ring: 40000, dragonleaf_mantle: 50000, dragonbone_blade: 90000, worldtree_staff: 90000, dragonwing_bow: 96000, nidhogg_fang: 96000, worldtree_crown: 80000, nidhogg_wings: 150000,
+  messenger_shroud: 44000, rune_bracelet: 40000, ratatoskr_tail: 50000, nidhogg_ring: 40000, dragonleaf_mantle: 50000, dragonbone_blade: 90000, worldtree_staff: 90000, dragonwing_bow: 96000, nidhogg_fang: 96000, worldtree_crown: 80000, nidhogg_wings: 150000,
   rootsquirrel_card: 6000, bramble_card: 8000, rootserpent_card: 9000, mossgolem_card: 10000, darkelf_card: 10000, greatstag_card: 12000, dryad_card: 12000, rotbeetle_card: 14000, rootwarden_card: 14000, thorndrake_card: 15000, ratatoskr_card: 30000, nidhogg_card: 80000,
   // the Sphinx's Halls
   scarab_shell: 300, cobra_fang: 450, old_bandage: 500, lamia_scale: 700, lapis_shard: 800, jackal_pelt: 1000, falcon_plume: 1100, lion_mane: 1400, living_sand: 1500, gold_leaf: 1800, ammit_heart: 9000, gold_bar: 100000,
