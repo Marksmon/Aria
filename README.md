@@ -418,7 +418,8 @@ round a rune circle of the World Tree. Every monster down there attacks on sight
 - **Floor 1:** Root Squirrels, Ratatoskr's little kin up on their hind legs in bark jerkins and green
   scarves, quick and biting twice, and Brambles, walking thickets of thorned vines round a glowing rose
   heart, that lash with their vines and throw their thorns.
-- **Floor 2:** Root Serpents (their bite poisons), Moss Golems (hunched giants of boulders under a mantle of moss,
+- **Floor 2:** Root Serpents (serpents grown from the roots, bark-ridged with root-horns and a frill of leaves;
+  their bite poisons), Moss Golems (hunched giants of boulders under a mantle of moss,
   runes glowing in their cracks), and Dark Elves, hooded archers in violet cloaks
   and rune-traced leathers, loosing shadow arrows from tall black bows.
 - **Floor 3:** Great Stags, Dryads throwing glowing leaves, Rot Beetles, and **Ratatoskr** (Lv 74

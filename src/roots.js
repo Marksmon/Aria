@@ -5,7 +5,7 @@
 // the Great Stags that graze on the tree's leaves, antlers glowing at the tips; Dryads, spirits of the
 // wood with leaves for hair; the Root Wardens, knights of living wood with shield and greatsword; the
 // Thorn Drakes, Nidhogg's brood; and Nidhogg itself, the black dragon that gnaws the World Tree's roots
-// (k: its size). The Root Serpents and Rot Beetles are Veidheim's snakes and the beetles in new colours.
+// (k: its size); and the Root Serpents, grown from the roots. The Rot Beetles are the beetles in new colours.
 // Frames: 4 directions (down, up, right; left is right mirrored) x idle (1), walk (4) and attack (4).
 import { Frame, ellipse, rect, poly, line, both, dark, light } from './painted.js';
 
@@ -15,6 +15,8 @@ export const ROOTS = {
   // the Root Squirrels: Ratatoskr's kin (the owner's call: like it), up on their hind legs in bark-leather
   // jerkins and leaf-green scarves, their tails fiery with a few faint runes; no helm, no cloak (those are
   // Ratatoskr's). They and Ratatoskr are a Bloop's size (the owner's call)
+  // the Root Serpents: serpents grown from the World Tree's roots (their own design now, the owner's call)
+  rootSerpent: { kind: 'serpent', size: [52, 50], body: [28, 38], bark: '#7a5636', ridge: '#4a321e', belly: '#c8a878', moss: '#5a8a3a', leaf: '#7ab84a', horn: '#a88058', eye: '#b8ff7a', fang: '#f2ead0', venom: '#9aff6a' },
   rootSquirrel: { kind: 'ratatoskr', kin: true, size: [72, 72], body: [36, 58], fur: '#c06a32', face: '#ecb478', tail: '#c8702c', tailHi: '#f0a040', rune: '#ffc870', armor: '#6a4a2e', trim: '#a8804a', cloak: '#4f8a3c', eye: '#1a0c08', claw: '#efe2cc' },
   bramble: { kind: 'bramble', size: [52, 48], body: [30, 34], leaf: '#2f5a26', vine: '#4a6a2a', thorn: '#e8dab0', berry: '#c8283a', glow: '#ff9a7a', eye: '#ffd23a', root: '#5e4028' },
   darkElf: { kind: 'elf', size: [48, 64], body: [22, 58], skin: '#8a96b8', hair: '#e6e4f2', armor: '#1e1a28', cloak: '#3a2458', sash: '#5a2a7a', trim: '#c8ccd8', rune: '#c89aff', bow: '#1a141c', string: '#a88ad8', eye: '#f4d4ff' },
@@ -50,7 +52,7 @@ export function rootsFrame(id, dir, anim, f) {
   const P = ROOTS[id], [W, H] = P.size;
   const F = new Frame(W, H);
   const a = { G: H - 3, W, H, walk: anim === 'walk', f, step: anim === 'walk' ? [1, 0, -1, 0][f] : 0, atk: anim === 'attack' ? f : -1 };
-  ({ squirrel, bramble, elf, golem, stag, dryad, warden, dragon, ratatoskr })[P.kind](F, P, dir, a);
+  ({ squirrel, bramble, elf, golem, stag, dryad, warden, dragon, ratatoskr, serpent })[P.kind](F, P, dir, a);
   return F;
 }
 const W1 = (k) => Math.max(1, Math.round(k)); // a line width that grows with the size
@@ -533,3 +535,49 @@ function ratatoskr(F, P, dir, { G, W, step, walk, f, atk }) {
   if (!side) F.dot(hx, hy + 2, '#2a1a10'); // the nose
 }
 const rows = (shape, y0, y1) => (set) => shape((x, y) => { if (y >= y0 && y < y1) set(x, y); });
+
+// ---------- Root Serpents: a serpent grown from the World Tree's roots. Its body gnarled, ridged bark, moss
+// in the grooves and a pale belly, coiled on the ground and rearing up; little branching root-horns and a
+// frill of leaves on its head, green eyes glowing, venom on its fangs; its tail trailing off into root
+// tendrils. It sways, then strikes ----------
+function serpent(F, P, dir, { G, W, walk, f, atk }) {
+  const cx = W / 2, sway = walk ? [0, 1.5, 0, -1.5][f] : 0, strike = atk >= 0 ? [0, 4, 7, 2][atk] : 0;
+  const side = dir === 'right', back = dir === 'up';
+  // the coils on the ground, the tail running off into root tendrils
+  const tx = side ? -1 : 1;
+  for (let i = 0; i < 3; i++) F.part(line(cx + tx * (12 + i * 2), G - 2, cx + tx * (17 + i * 3), G - (i === 1 ? 0 : 1) - i, 1), P.ridge, flat);
+  F.part(ellipse(cx + (side ? -3 : 0), G - 3, 13, 4.2), P.bark);
+  F.part(ellipse(cx + (side ? -4 : -1), G - 6.5, 9, 3.2), P.bark);
+  for (let x = -10; x <= 10; x += 3) F.part(line(cx + x + (side ? -3 : 0), G - 5.5, cx + x + 1 + (side ? -3 : 0), G - 1.5, 1), P.ridge, flat); // the ridges of the bark
+  for (const [x, y] of [[-7, -3], [5, -4], [-2, -7]]) F.part(ellipse(cx + x + (side ? -3 : 0), G + y, 1.8, 1), P.moss, flat);
+  // the neck, rising in segments of bark
+  const hx = cx + (side ? 4 + strike : sway), hy = G - 27 + (side ? strike * 0.5 : strike * 0.8);
+  const seg = [];
+  for (let i = 0; i <= 6; i++) { const t = i / 6; seg.push([cx + (side ? -2 + (hx - cx + 2) * t + Math.sin(t * 3) * 2 : sway * t + Math.sin(t * 3.2) * 2.5), G - 7 - (G - 7 - hy - 5) * t]); }
+  seg.forEach(([x, y], i) => {
+    const r = 3.6 - i * 0.15;
+    F.part(ellipse(x, y, r, 2.6), P.bark);
+    F.part(line(x - r + 0.5, y + 1, x + r - 0.5, y + 1, 1), P.ridge, flat);
+    if (!back && !side) F.part(ellipse(x, y + 0.3, r * 0.45, 1.3), P.belly, flat);
+    if (i % 2) F.dot(x + (i % 4 ? -2 : 2), y - 1, P.moss);
+  });
+  // the head: broad and flat, root-horns branching off its brow, a frill of leaves behind
+  if (side) {
+    for (let i = 0; i < 4; i++) F.part(ellipse(hx - 4, hy - 2 + i * 2.2, 2.2, 1.4), P.leaf); // the frill
+    F.part(both(ellipse(hx, hy, 4.6, 3.2), ellipse(hx + 4, hy + 0.8, 3.2, 2.2)), P.bark);
+    F.part(line(hx - 3, hy + 2, hx + 6, hy + 2.4, 1), P.belly, flat);
+    F.part(both(line(hx - 1, hy - 2.5, hx - 4, hy - 7, 1), line(hx - 3, hy - 5, hx - 6, hy - 6, 1), line(hx + 1, hy - 2.5, hx, hy - 6.5, 1)), P.horn, flat); // root-horns
+    F.part(ellipse(hx + 1.5, hy - 0.8, 1, 0.8), P.eye, flat);
+    if (atk >= 0) { F.part(poly([[hx + 5, hy + 2.5], [hx + 6, hy + 2.5], [hx + 5.5, hy + 4.5]]), P.fang, flat); F.dot(hx + 5.5, hy + 5.5, P.venom); F.part(both(line(hx + 7, hy + 1.5, hx + 10, hy + 1.5, 1), line(hx + 10, hy + 1.5, hx + 11, hy + 0.5, 1)), '#c8283a', flat); }
+    return;
+  }
+  // facing you (or seen from behind): the leaf frill fanned out round the head
+  for (let i = 0; i < 7; i++) { const a = Math.PI * (1.05 + i * 0.15); F.part(ellipse(hx + Math.cos(a) * 6.5, hy + Math.sin(a) * 4.5 + 1, 2.4, 1.6), i % 2 ? P.leaf : dark(P.leaf)); }
+  for (const s of [-1, 1]) F.part(both(line(hx + s * 2, hy - 2.5, hx + s * 5, hy - 8, 1), line(hx + s * 4, hy - 6, hx + s * 7, hy - 6.5, 1), line(hx + s * 3.5, hy - 5, hx + s * 3, hy - 9, 1)), P.horn, flat); // root-horns
+  F.part(ellipse(hx, hy, 5, 3.6), P.bark);
+  F.part(line(hx - 4, hy - 1, hx + 4, hy - 1, 1), P.ridge, flat);
+  if (back) return;
+  F.part(ellipse(hx, hy + 2, 3.2, 1.6), P.belly, flat); // the jaw
+  for (const s of [-1, 1]) { F.part(ellipse(hx + s * 2.6, hy - 0.6, 1.2, 0.9), P.eye, flat); F.dot(hx + s * 2.6, hy - 0.6, '#1a2a0a'); }
+  if (atk >= 0) { for (const s of [-1, 1]) F.part(poly([[hx + s * 1.6 - 0.5, hy + 2], [hx + s * 1.6 + 0.5, hy + 2], [hx + s * 1.6, hy + 4]]), P.fang, flat); F.dot(hx - 1.6, hy + 5, P.venom); F.dot(hx + 1.6, hy + 5, P.venom); F.part(line(hx, hy + 3, hx, hy + 5.5, 1), '#c8283a', flat); }
+}

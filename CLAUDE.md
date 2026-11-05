@@ -181,8 +181,7 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   after the owner's sheet), animated even standing still (the owner's call, `wings.js`: a pulsing glow layer,
   `WING_GLOW`, embers, and every few seconds at rest a slow spread with the glow flaring, `SPREAD`). The tree is
   big with many roots (the owner's call: great roots with branches, small ones breaking the ground all round).
-  Its monsters are painted in code in `src/roots.js` (the Root Serpents and Rot Beetles are the snakes and
-  beetles in new colours).
+  Its monsters are painted in code in `src/roots.js` (the Rot Beetles are the beetles in new colours).
 - **Quests:** side quests and job trials can be quit from the Quest View; the main story quest
   can never be quit.
 - **EXP rates:** battles pay x4 (`RATES`: monsters, mini-bosses, MVPs, raids); quests pay x2
