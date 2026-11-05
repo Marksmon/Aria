@@ -120,8 +120,13 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   three answers in three circles round the hero: the right one Dumbstruck, a wrong one or none its Judgment and
   Exalted, `RIDDLE`/`RIDDLES`; the owner's call: it tests through riddles and combat; Nidhogg: Gnaw the Roots, a race to
   tear it away before it heals and frenzies, `MOVES.gnaw`), and
-  enraged below half HP (`MVP_RAGE`). Even a Lv 99 hero without good, upgraded gear should not beat
-  one. Mini-bosses are half as hard as an MVP and fierce like one (the owner's call). Their levels say so (55–66: Giant Sprout and Elder Willow 55, King Crab 58, Giant Mushroom 60, Giant Beetle 62, Alpha Wolf 64, Great Bear 66; the desert's Cactus Lord 60 and Rainbow Runner 64; the Sphinx's Halls' Ammit 74; Yggdrasil's Ratatoskr 74, small for a boss: the owner's call), and they come only for second-job heroes (the owner's call, `picksFight` in `mobs.js`): a Trainee or first job is left be unless it strikes or taunts one. So no main story
+  enraged below half HP (`MVP_RAGE`). Each MVP has a tier (the owner's call, November 2026: `TIERS` in
+  `build-tools/mvp-sim.mjs`): a second job of its tier's Base Level in the best gear short of MVP gear (a Lv 4 weapon
+  +7, armor +4, monster and mini-boss cards) beats it at a middle matchup in about 3–6 minutes on 100 White Potions:
+  Base 75 the Kobold and Goblin Kings, 85 the Fire Giant, Ancient Treant and Sand Wyrm, 95 the Eternal Sphinx and
+  Nidhogg (the hardest, for now). Mini-bosses are fierce like an MVP and made for a Lv 75 second job in shop gear;
+  each raid's Hell boss for its Hell level in the same good gear (`FIERCE` `atkScale`/`hpScale`). `npm test` runs
+  `mvp-sim --check`: retune with it (each boss's ATK and HP) when a boss or a job changes. Their levels say so (55–66: Giant Sprout and Elder Willow 55, King Crab 58, Giant Mushroom 60, Giant Beetle 62, Alpha Wolf 64, Great Bear 66; the desert's Cactus Lord 60 and Rainbow Runner 64; the Sphinx's Halls' Ammit 74; Yggdrasil's Ratatoskr 74, small for a boss: the owner's call), and they come only for second-job heroes (the owner's call, `picksFight` in `mobs.js`): a Trainee or first job is left be unless it strikes or taunts one. So no main story
   step or job trial needs a boss (they hunt the boss's kin); the one quest that does is Sigrid's The
   Waking Wood (Lv 70: the Great Bear and the Alpha Wolf, two mini-bosses), and it can be quit. Boss and MVP cards drop at 1%
   (other cards 0.1%); an MVP's card and ultra rare rise a tenth of their chance with every kill they miss, up

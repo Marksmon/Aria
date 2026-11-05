@@ -74,71 +74,71 @@ levels Venom Strike pays more for its SP, so the sim throws a cloud only where i
 |---|---|---|---|---|---|
 | Bloop | 1 | 100% win · 1 s · 100% HP left | 100% win · 1 s · 100% HP left | 100% win · 0 s · 100% HP left | 100% win · 1 s · 100% HP left |
 | Little Bloop | 2 | 100% win · 1 s · 100% HP left | 100% win · 1 s · 100% HP left | 100% win · 0 s · 100% HP left | 100% win · 1 s · 100% HP left |
-| Gel Thief | 3 | 100% win · 4 s · 95% HP left | 100% win · 9 s · 80% HP left | 100% win · 1 s · 100% HP left | 100% win · 3 s · 93% HP left |
+| Gel Thief | 3 | 100% win · 4 s · 95% HP left | 100% win · 9 s · 82% HP left | 100% win · 1 s · 100% HP left | 100% win · 3 s · 93% HP left |
 | Sprout | 3 | 100% win · 2 s · 100% HP left | 100% win · 4 s · 93% HP left | 100% win · 0 s · 100% HP left | 100% win · 2 s · 93% HP left |
 | Blue Bloop | 4 | 100% win · 3 s · 94% HP left | 100% win · 8 s · 77% HP left | 100% win · 0 s · 100% HP left | 100% win · 3 s · 94% HP left |
-| Crab | 6 | 100% win · 6 s · 81% HP left | 100% win · 14 s · 43% HP left | 100% win · 2 s · 100% HP left | 100% win · 5 s · 82% HP left |
-| Yellow Bloop | 7 | 100% win · 6 s · 89% HP left | 100% win · 14 s · 63% HP left | 100% win · 2 s · 100% HP left | 100% win · 5 s · 89% HP left |
-| Willow | 8 | 100% win · 7 s · 90% HP left | 100% win · 18 s · 57% HP left | 100% win · 3 s · 100% HP left | 100% win · 6 s · 93% HP left |
-| Red Bloop | 9 | 100% win · 9 s · 89% HP left | 99% win · 23 s · 33% HP left | 100% win · 3 s · 98% HP left | 100% win · 7 s · 85% HP left |
-| Wisp | 11 | 86% win · 13 s · 21% HP left | 0% win · 12 s · boss at 57% | 100% win · 7 s · 77% HP left | 88% win · 11 s · 27% HP left |
-| Giant Ant | 12 | 100% win · 13 s · 58% HP left | 100% win · 9 s · 56% HP left | 100% win · 5 s · 93% HP left | 100% win · 5 s · 81% HP left |
-| Mushroom | 14 | 94% win · 22 s · 24% HP left | 100% win · 11 s · 55% HP left | 100% win · 9 s · 81% HP left | 100% win · 8 s · 71% HP left |
-| Lantern Wisp | 16 | 0% win · 18 s · boss at 32% | 0% win · 15 s · boss at 30% | 82% win · 17 s · 17% HP left | 40% win · 15 s · 0% HP left |
-| Red Sprout | 18 | 97% win · 5 s · 71% HP left | 100% win · 8 s · 53% HP left | 100% win · 4 s · 88% HP left | 100% win · 2 s · 88% HP left |
-| Sea Bloop | 22 | 100% win · 3 s · 80% HP left | 95% win · 11 s · 15% HP left | 100% win · 3 s · 100% HP left | 100% win · 2 s · 88% HP left |
-| Treant | 24 | 100% win · 5 s · 77% HP left | 100% win · 10 s · 37% HP left | 100% win · 8 s · 71% HP left | 100% win · 6 s · 64% HP left |
-| Blue Crab | 26 | 100% win · 3 s · 78% HP left | 98% win · 10 s · 8% HP left | 100% win · 2 s · 100% HP left | 100% win · 2 s · 87% HP left |
-| Kobold | 28 | 100% win · 4 s · 76% HP left | 100% win · 5 s · 66% HP left | 100% win · 3 s · 86% HP left | 100% win · 4 s · 74% HP left |
+| Crab | 6 | 100% win · 6 s · 81% HP left | 99% win · 15 s · 40% HP left | 100% win · 2 s · 100% HP left | 100% win · 5 s · 82% HP left |
+| Yellow Bloop | 7 | 100% win · 6 s · 90% HP left | 100% win · 14 s · 62% HP left | 100% win · 2 s · 100% HP left | 100% win · 5 s · 89% HP left |
+| Willow | 8 | 100% win · 7 s · 90% HP left | 100% win · 18 s · 57% HP left | 100% win · 2 s · 100% HP left | 100% win · 6 s · 93% HP left |
+| Red Bloop | 9 | 100% win · 9 s · 89% HP left | 100% win · 23 s · 33% HP left | 100% win · 3 s · 98% HP left | 100% win · 7 s · 85% HP left |
+| Wisp | 11 | 83% win · 13 s · 21% HP left | 0% win · 12 s · boss at 57% | 100% win · 7 s · 79% HP left | 89% win · 11 s · 26% HP left |
+| Giant Ant | 12 | 100% win · 12 s · 59% HP left | 100% win · 9 s · 56% HP left | 100% win · 5 s · 93% HP left | 100% win · 6 s · 81% HP left |
+| Mushroom | 14 | 98% win · 22 s · 25% HP left | 100% win · 10 s · 56% HP left | 100% win · 9 s · 83% HP left | 100% win · 9 s · 69% HP left |
+| Lantern Wisp | 16 | 0% win · 18 s · boss at 33% | 0% win · 15 s · boss at 29% | 79% win · 17 s · 18% HP left | 36% win · 15 s · 0% HP left |
+| Red Sprout | 18 | 96% win · 5 s · 73% HP left | 100% win · 8 s · 53% HP left | 100% win · 4 s · 88% HP left | 100% win · 2 s · 88% HP left |
+| Sea Bloop | 22 | 100% win · 3 s · 80% HP left | 94% win · 11 s · 15% HP left | 100% win · 3 s · 100% HP left | 100% win · 2 s · 88% HP left |
+| Treant | 24 | 100% win · 5 s · 77% HP left | 100% win · 10 s · 37% HP left | 100% win · 8 s · 71% HP left | 100% win · 6 s · 65% HP left |
+| Blue Crab | 26 | 100% win · 3 s · 79% HP left | 99% win · 10 s · 9% HP left | 100% win · 2 s · 100% HP left | 100% win · 2 s · 86% HP left |
+| Kobold | 28 | 100% win · 4 s · 76% HP left | 100% win · 5 s · 66% HP left | 100% win · 3 s · 85% HP left | 99% win · 4 s · 74% HP left |
 | Beetle | 30 | 100% win · 5 s · 67% HP left | 100% win · 5 s · 66% HP left | 100% win · 4 s · 83% HP left | 100% win · 4 s · 74% HP left |
-| Kobold Archer | 30 | 100% win · 3 s · 90% HP left | 100% win · 4 s · 86% HP left | 100% win · 2 s · 100% HP left | 100% win · 2 s · 89% HP left |
-| Kobold Assassin | 33 | 98% win · 4 s · 68% HP left | 100% win · 4 s · 67% HP left | 100% win · 2 s · 100% HP left | 98% win · 3 s · 74% HP left |
-| Dark Mushroom | 34 | 100% win · 5 s · 70% HP left | 100% win · 10 s · 18% HP left | 100% win · 4 s · 86% HP left | 100% win · 4 s · 76% HP left |
-| Dark Wisp | 38 | 99% win · 6 s · 67% HP left | 100% win · 9 s · 27% HP left | 100% win · 3 s · 88% HP left | 97% win · 4 s · 69% HP left |
-| Goblin | 38 | 100% win · 5 s · 75% HP left | 100% win · 9 s · 30% HP left | 100% win · 5 s · 77% HP left | 100% win · 4 s · 70% HP left |
-| Goblin Archer | 41 | 100% win · 4 s · 87% HP left | 100% win · 6 s · 75% HP left | 100% win · 3 s · 90% HP left | 100% win · 3 s · 90% HP left |
-| Fire Beetle | 42 | 100% win · 7 s · 70% HP left | 100% win · 9 s · 42% HP left | 100% win · 6 s · 74% HP left | 100% win · 5 s · 69% HP left |
-| Goblin Assassin | 44 | 98% win · 6 s · 65% HP left | 100% win · 5 s · 59% HP left | 100% win · 3 s · 89% HP left | 98% win · 4 s · 68% HP left |
-| Fire Wisp | 45 | 99% win · 7 s · 64% HP left | 100% win · 7 s · 36% HP left | 100% win · 4 s · 87% HP left | 99% win · 5 s · 63% HP left |
+| Kobold Archer | 30 | 100% win · 3 s · 90% HP left | 100% win · 4 s · 87% HP left | 100% win · 2 s · 100% HP left | 100% win · 2 s · 89% HP left |
+| Kobold Assassin | 33 | 95% win · 4 s · 66% HP left | 100% win · 4 s · 67% HP left | 100% win · 2 s · 100% HP left | 96% win · 3 s · 72% HP left |
+| Dark Mushroom | 34 | 100% win · 5 s · 69% HP left | 100% win · 10 s · 18% HP left | 100% win · 4 s · 86% HP left | 99% win · 4 s · 75% HP left |
+| Dark Wisp | 38 | 99% win · 5 s · 67% HP left | 100% win · 9 s · 26% HP left | 100% win · 3 s · 88% HP left | 98% win · 4 s · 70% HP left |
+| Goblin | 38 | 100% win · 5 s · 75% HP left | 100% win · 9 s · 31% HP left | 100% win · 5 s · 86% HP left | 100% win · 4 s · 70% HP left |
+| Goblin Archer | 41 | 100% win · 4 s · 88% HP left | 100% win · 6 s · 75% HP left | 100% win · 3 s · 90% HP left | 100% win · 3 s · 90% HP left |
+| Fire Beetle | 42 | 100% win · 7 s · 69% HP left | 100% win · 9 s · 41% HP left | 100% win · 6 s · 75% HP left | 100% win · 5 s · 68% HP left |
+| Goblin Assassin | 44 | 98% win · 6 s · 66% HP left | 100% win · 5 s · 59% HP left | 100% win · 3 s · 89% HP left | 98% win · 4 s · 70% HP left |
+| Fire Wisp | 45 | 99% win · 7 s · 68% HP left | 100% win · 7 s · 40% HP left | 100% win · 4 s · 86% HP left | 98% win · 5 s · 63% HP left |
 | Snake | 46 | 100% win · 6 s · 71% HP left | 100% win · 5 s · 71% HP left | 100% win · 4 s · 88% HP left | 100% win · 4 s · 69% HP left |
-| Root Squirrel | 46 | 99% win · 8 s · 64% HP left | 100% win · 5 s · 65% HP left | 100% win · 5 s · 80% HP left | 99% win · 6 s · 65% HP left |
-| Wolf | 48 | 100% win · 8 s · 59% HP left | 100% win · 5 s · 59% HP left | 100% win · 4 s · 87% HP left | 98% win · 6 s · 60% HP left |
-| Bramble | 51 | 100% win · 7 s · 74% HP left | 100% win · 6 s · 73% HP left | 100% win · 7 s · 78% HP left | 100% win · 5 s · 82% HP left |
-| Bear | 53 | 100% win · 10 s · 63% HP left | 100% win · 10 s · 34% HP left | 100% win · 12 s · 54% HP left | 100% win · 6 s · 72% HP left |
-| Giant Sprout | 55 | 0% win · 84 s · boss at 89% · 20 pots | 0% win · 81 s · boss at 74% · 20 pots | 0% win · 73 s · boss at 91% · 20 pots | 0% win · 53 s · boss at 91% · 20 pots |
-| Elder Willow | 55 | 0% win · 91 s · boss at 87% · 20 pots | 0% win · 89 s · boss at 75% · 20 pots | 0% win · 79 s · boss at 90% · 20 pots | 0% win · 57 s · boss at 90% · 20 pots |
-| Cactus | 55 | 100% win · 8 s · 78% HP left | 100% win · 6 s · 76% HP left | 100% win · 8 s · 80% HP left | 100% win · 5 s · 83% HP left |
-| Root Serpent | 55 | 99% win · 10 s · 59% HP left | 100% win · 5 s · 74% HP left | 100% win · 7 s · 70% HP left | 99% win · 7 s · 66% HP left |
-| King Crab | 58 | 0% win · 84 s · boss at 90% · 20 pots | 0% win · 85 s · boss at 87% · 20 pots | 0% win · 77 s · boss at 92% · 20 pots | 0% win · 55 s · boss at 93% · 20 pots |
-| Dune Worm | 58 | 100% win · 9 s · 65% HP left | 100% win · 5 s · 74% HP left | 100% win · 7 s · 70% HP left | 100% win · 7 s · 67% HP left |
-| Moss Golem | 58 | 100% win · 11 s · 72% HP left | 100% win · 8 s · 65% HP left | 100% win · 21 s · 32% HP left | 100% win · 9 s · 78% HP left |
-| Giant Mushroom | 60 | 0% win · 76 s · boss at 91% · 20 pots | 0% win · 70 s · boss at 91% · 20 pots | 0% win · 66 s · boss at 93% · 20 pots | 0% win · 48 s · boss at 94% · 20 pots |
-| Cactus Lord | 60 | 0% win · 56 s · boss at 96% · 20 pots | 0% win · 60 s · boss at 89% · 20 pots | 0% win · 56 s · boss at 96% · 20 pots | 0% win · 40 s · boss at 97% · 20 pots |
-| Dark Elf | 60 | 100% win · 10 s · 69% HP left | 100% win · 11 s · 31% HP left | 100% win · 6 s · 83% HP left | 100% win · 7 s · 70% HP left |
-| Sand Scorpion | 61 | 100% win · 10 s · 67% HP left | 100% win · 5 s · 75% HP left | 100% win · 9 s · 65% HP left | 100% win · 7 s · 70% HP left |
-| Giant Beetle | 62 | 0% win · 72 s · boss at 93% · 20 pots | 0% win · 73 s · boss at 86% · 20 pots | 0% win · 68 s · boss at 95% · 20 pots | 0% win · 46 s · boss at 95% · 20 pots |
-| Soldier Ant | 62 | 100% win · 10 s · 68% HP left | 100% win · 5 s · 76% HP left | 100% win · 11 s · 52% HP left | 100% win · 6 s · 76% HP left |
-| Great Stag | 63 | 96% win · 12 s · 51% HP left | 100% win · 8 s · 39% HP left | 100% win · 9 s · 61% HP left | 97% win · 8 s · 59% HP left |
-| Alpha Wolf | 64 | 0% win · 69 s · boss at 94% · 20 pots | 0% win · 70 s · boss at 80% · 20 pots | 0% win · 70 s · boss at 93% · 20 pots | 0% win · 45 s · boss at 95% · 20 pots |
-| Sand Runner | 64 | 90% win · 13 s · 45% HP left | 100% win · 8 s · 42% HP left | 100% win · 7 s · 65% HP left | 96% win · 8 s · 56% HP left |
-| Rainbow Runner | 64 | 0% win · 47 s · boss at 97% · 20 pots | 0% win · 42 s · boss at 94% · 20 pots | 0% win · 40 s · boss at 97% · 20 pots | 0% win · 30 s · boss at 98% · 20 pots |
-| Great Bear | 66 | 0% win · 68 s · boss at 94% · 20 pots | 0% win · 68 s · boss at 88% · 20 pots | 0% win · 63 s · boss at 95% · 20 pots | 0% win · 45 s · boss at 95% · 20 pots |
-| Scarab | 66 | 100% win · 11 s · 65% HP left | 100% win · 6 s · 66% HP left | 85% win · 22 s · 16% HP left | 100% win · 8 s · 68% HP left |
-| Dryad | 66 | 100% win · 8 s · 79% HP left | 100% win · 7 s · 66% HP left | 100% win · 6 s · 81% HP left | 100% win · 6 s · 77% HP left |
-| Rot Beetle | 68 | 100% win · 9 s · 76% HP left | 100% win · 9 s · 48% HP left | 100% win · 10 s · 72% HP left | 100% win · 6 s · 78% HP left |
-| Cobra | 71 | 99% win · 12 s · 54% HP left | 100% win · 5 s · 77% HP left | 100% win · 8 s · 66% HP left | 100% win · 8 s · 59% HP left |
+| Root Squirrel | 46 | 99% win · 8 s · 63% HP left | 100% win · 5 s · 64% HP left | 100% win · 5 s · 80% HP left | 99% win · 6 s · 66% HP left |
+| Wolf | 48 | 100% win · 8 s · 59% HP left | 100% win · 5 s · 58% HP left | 100% win · 4 s · 87% HP left | 98% win · 6 s · 61% HP left |
+| Bramble | 51 | 100% win · 7 s · 75% HP left | 100% win · 6 s · 73% HP left | 100% win · 7 s · 77% HP left | 100% win · 5 s · 81% HP left |
+| Bear | 53 | 100% win · 10 s · 64% HP left | 100% win · 10 s · 34% HP left | 100% win · 12 s · 55% HP left | 100% win · 6 s · 72% HP left |
+| Giant Sprout | 55 | 0% win · 99 s · boss at 94% · 20 pots | 0% win · 91 s · boss at 85% · 20 pots | 0% win · 84 s · boss at 95% · 20 pots | 0% win · 61 s · boss at 95% · 20 pots |
+| Elder Willow | 55 | 0% win · 106 s · boss at 93% · 20 pots | 0% win · 98 s · boss at 87% · 20 pots | 0% win · 91 s · boss at 94% · 20 pots | 0% win · 66 s · boss at 95% · 20 pots |
+| Cactus | 55 | 100% win · 8 s · 78% HP left | 100% win · 6 s · 76% HP left | 100% win · 8 s · 80% HP left | 100% win · 5 s · 78% HP left |
+| Root Serpent | 55 | 100% win · 10 s · 60% HP left | 100% win · 5 s · 74% HP left | 100% win · 7 s · 70% HP left | 100% win · 7 s · 66% HP left |
+| King Crab | 58 | 0% win · 112 s · boss at 92% · 20 pots | 0% win · 108 s · boss at 90% · 20 pots | 0% win · 104 s · boss at 94% · 20 pots | 0% win · 70 s · boss at 94% · 20 pots |
+| Dune Worm | 58 | 100% win · 9 s · 65% HP left | 100% win · 6 s · 67% HP left | 100% win · 7 s · 70% HP left | 100% win · 7 s · 67% HP left |
+| Moss Golem | 58 | 100% win · 11 s · 72% HP left | 100% win · 8 s · 65% HP left | 99% win · 21 s · 33% HP left | 100% win · 9 s · 78% HP left |
+| Giant Mushroom | 60 | 0% win · 124 s · boss at 91% · 20 pots | 0% win · 106 s · boss at 89% · 20 pots | 0% win · 102 s · boss at 93% · 20 pots | 0% win · 72 s · boss at 93% · 20 pots |
+| Cactus Lord | 60 | 0% win · 141 s · boss at 92% · 20 pots | 0% win · 132 s · boss at 76% · 20 pots | 0% win · 126 s · boss at 93% · 20 pots | 0% win · 87 s · boss at 94% · 20 pots |
+| Dark Elf | 60 | 100% win · 10 s · 71% HP left | 100% win · 11 s · 30% HP left | 100% win · 6 s · 83% HP left | 100% win · 7 s · 70% HP left |
+| Sand Scorpion | 61 | 100% win · 10 s · 67% HP left | 100% win · 5 s · 75% HP left | 100% win · 9 s · 65% HP left | 100% win · 7 s · 69% HP left |
+| Giant Beetle | 62 | 0% win · 89 s · boss at 94% · 20 pots | 0% win · 84 s · boss at 87% · 20 pots | 0% win · 81 s · boss at 95% · 20 pots | 0% win · 56 s · boss at 95% · 20 pots |
+| Soldier Ant | 62 | 100% win · 10 s · 68% HP left | 100% win · 5 s · 75% HP left | 100% win · 11 s · 52% HP left | 100% win · 6 s · 76% HP left |
+| Great Stag | 63 | 94% win · 12 s · 50% HP left | 100% win · 8 s · 40% HP left | 100% win · 9 s · 61% HP left | 98% win · 9 s · 54% HP left |
+| Alpha Wolf | 64 | 0% win · 77 s · boss at 94% · 20 pots | 0% win · 77 s · boss at 81% · 20 pots | 0% win · 76 s · boss at 94% · 20 pots | 0% win · 51 s · boss at 95% · 20 pots |
+| Sand Runner | 64 | 92% win · 12 s · 45% HP left | 100% win · 8 s · 42% HP left | 100% win · 7 s · 69% HP left | 94% win · 9 s · 59% HP left |
+| Rainbow Runner | 64 | 0% win · 119 s · boss at 96% · 20 pots | 0% win · 96 s · boss at 86% · 20 pots | 0% win · 94 s · boss at 94% · 20 pots | 0% win · 66 s · boss at 97% · 20 pots |
+| Great Bear | 66 | 0% win · 91 s · boss at 93% · 20 pots | 0% win · 84 s · boss at 86% · 20 pots | 0% win · 83 s · boss at 95% · 20 pots | 0% win · 57 s · boss at 95% · 20 pots |
+| Scarab | 66 | 100% win · 11 s · 64% HP left | 100% win · 6 s · 65% HP left | 83% win · 22 s · 17% HP left | 100% win · 8 s · 68% HP left |
+| Dryad | 66 | 100% win · 8 s · 79% HP left | 100% win · 7 s · 65% HP left | 100% win · 6 s · 81% HP left | 100% win · 6 s · 77% HP left |
+| Rot Beetle | 68 | 100% win · 9 s · 76% HP left | 100% win · 9 s · 48% HP left | 100% win · 10 s · 67% HP left | 100% win · 6 s · 77% HP left |
+| Cobra | 71 | 98% win · 13 s · 52% HP left | 100% win · 5 s · 77% HP left | 100% win · 8 s · 66% HP left | 97% win · 8 s · 57% HP left |
 | Root Warden | 72 | 100% win · 10 s · 72% HP left | 100% win · 6 s · 79% HP left | 100% win · 18 s · 42% HP left | 100% win · 7 s · 73% HP left |
-| Ammit | 74 | 0% win · 58 s · boss at 95% · 20 pots | 0% win · 47 s · boss at 94% · 20 pots | 0% win · 47 s · boss at 96% · 20 pots | 0% win · 36 s · boss at 96% · 20 pots |
-| Ratatoskr | 74 | 0% win · 54 s · boss at 97% · 20 pots | 0% win · 40 s · boss at 94% · 20 pots | 0% win · 39 s · boss at 95% · 20 pots | 0% win · 30 s · boss at 98% · 20 pots |
-| Mummy | 75 | 100% win · 10 s · 72% HP left | 100% win · 11 s · 55% HP left | 100% win · 16 s · 52% HP left | 100% win · 7 s · 80% HP left |
-| Thorn Drake | 75 | 100% win · 11 s · 69% HP left | 100% win · 8 s · 60% HP left | 100% win · 9 s · 74% HP left | 100% win · 8 s · 69% HP left |
-| Lamia | 78 | 100% win · 9 s · 78% HP left | 100% win · 13 s · 42% HP left | 100% win · 8 s · 84% HP left | 100% win · 7 s · 81% HP left |
-| Pharaoh's Servant | 80 | 100% win · 8 s · 83% HP left | 100% win · 13 s · 42% HP left | 100% win · 9 s · 84% HP left | 100% win · 6 s · 82% HP left |
-| Sphinx Cub | 83 | 91% win · 17 s · 39% HP left | 100% win · 6 s · 61% HP left | 100% win · 10 s · 62% HP left | 79% win · 12 s · 37% HP left |
+| Ammit | 74 | 0% win · 284 s · boss at 77% · 20 pots | 0% win · 154 s · boss at 65% · 20 pots | 0% win · 170 s · boss at 83% · 20 pots | 0% win · 124 s · boss at 86% · 20 pots |
+| Ratatoskr | 74 | 0% win · 144 s · boss at 95% · 20 pots | 0% win · 89 s · boss at 84% · 20 pots | 0% win · 90 s · boss at 90% · 20 pots | 0% win · 69 s · boss at 96% · 20 pots |
+| Mummy | 75 | 100% win · 10 s · 72% HP left | 100% win · 11 s · 51% HP left | 100% win · 16 s · 51% HP left | 100% win · 7 s · 79% HP left |
+| Thorn Drake | 75 | 100% win · 12 s · 68% HP left | 100% win · 8 s · 61% HP left | 100% win · 9 s · 71% HP left | 100% win · 8 s · 72% HP left |
+| Lamia | 78 | 100% win · 9 s · 78% HP left | 100% win · 13 s · 42% HP left | 100% win · 8 s · 85% HP left | 100% win · 7 s · 81% HP left |
+| Pharaoh's Servant | 80 | 100% win · 8 s · 83% HP left | 100% win · 13 s · 42% HP left | 100% win · 9 s · 84% HP left | 100% win · 6 s · 83% HP left |
+| Sphinx Cub | 83 | 90% win · 17 s · 36% HP left | 100% win · 6 s · 61% HP left | 100% win · 10 s · 62% HP left | 80% win · 12 s · 37% HP left |
 | Sand Elemental | 86 | 100% win · 10 s · 75% HP left | 100% win · 9 s · 53% HP left | 100% win · 12 s · 70% HP left | 100% win · 7 s · 77% HP left |
-| Sarcophagus | 88 | 100% win · 13 s · 72% HP left | 100% win · 15 s · 39% HP left | 100% win · 25 s · 38% HP left | 100% win · 9 s · 77% HP left |
-| Jackal Guardian | 92 | 100% win · 15 s · 67% HP left | 100% win · 10 s · 53% HP left | 100% win · 15 s · 58% HP left | 100% win · 9 s · 68% HP left |
-| Falcon Sentinel | 97 | 100% win · 18 s · 66% HP left | 100% win · 10 s · 56% HP left | 100% win · 11 s · 72% HP left | 100% win · 9 s · 71% HP left |
+| Sarcophagus | 88 | 100% win · 13 s · 72% HP left | 100% win · 15 s · 40% HP left | 100% win · 25 s · 37% HP left | 100% win · 9 s · 77% HP left |
+| Jackal Guardian | 92 | 100% win · 15 s · 67% HP left | 100% win · 10 s · 54% HP left | 100% win · 15 s · 58% HP left | 100% win · 9 s · 68% HP left |
+| Falcon Sentinel | 97 | 100% win · 18 s · 67% HP left | 100% win · 10 s · 56% HP left | 100% win · 11 s · 73% HP left | 100% win · 9 s · 70% HP left |
 
 The Sorcerer's column is with the November 2026 Rune Ward (the owner's call: a little help for the early
 Sorcerer, spell damage unchanged): it needs nothing now, costs 8 SP and cuts 25% of the damage from its first
@@ -414,3 +414,47 @@ Nidhogg kept their levels. Each monster's stats moved along the curve the dungeo
 2x EXP (the owner's call: the climb past 75 took about 250 kills a level at Lv 86): a Falcon Sentinel (now
 Lv 97) pays 71,084 Base EXP a kill against 24,800 before, so the last levels take about a third of the kills.
 Every first job still wins nearly all its fights against them at their level (the table above).
+
+## The bosses' tiers (November 2026)
+
+The owner's call: MVPs beatable by tier, a hero of the tier's Base Level in the best gear short of MVP gear (a
+Lv 4 weapon at +7, armor at +4, monster and mini-boss cards): Base 75 the Kobold King and the Goblin King, 85 the
+Fire Giant, the Ancient Treant and the Sand Wyrm, 95 the Eternal Sphinx and Nidhogg (the hardest for now). The
+mini-bosses for a Lv 75 second job in shop gear; each raid's Hell boss for its Hell level in the same good gear.
+"Beatable" is for a middle matchup: the median of six second jobs (measure by measure) wins 80% of the time in about 3-6 minutes (a
+mini-boss 1.5-5, a Hell boss 2-5, leaving the waves their time) on 100 White Potions or fewer.
+
+`node build-tools/mvp-sim.mjs` models the fights (see its header): each job's rotation from second-sim.mjs
+against the boss itself, the boss's swings, stomp and moves (half stepped out of), its rage, guards, shields and
+own mechanic, and White Potions as fast as a thumb taps them. Each boss's ATK and HP were then set so its middle
+job lands in the bar. Before, no MVP fell to a tier hero (every one killed the median job, through potions);
+mini-bosses fell in 90-200 s, the newer four not at all. MVP ATK came down to 0.16-0.42x (their moves still hit
+for 1.4-2.4x of it through 75% of DEF), and HP moved both ways to keep each fight several minutes (the Fire
+Giant up to 765,000, Nidhogg down to 365,000: its Gnaw heals it, so a long fight never ends). Matchups still
+matter: an MVP's worst jobs can lose (a Wizard against the Goblin King, the Shadow jobs against Nidhogg).
+This is a model (with a fixed random seed, so its check is steady): the in-game feel should be playtested. `npm test` runs `mvp-sim --check`.
+
+| Fight | Base, gear | blademaster | shadowblade | windrunner | hunter | wizard | voodoo | middle |
+|---|---|---|---|---|---|---|---|---|
+| Kobold King | 75, good | 100% 273s 78p | 100% 228s 70p | 100% 335s 93p | 100% 291s 83p | 100% 280s 84p | 100% 250s 70p | **100% 277s 81p** |
+| Goblin King | 75, good | 100% 195s 64p | 100% 172s 65p | 100% 262s 78p | 100% 318s 102p | 0% 900s 380p | 100% 490s 179p | **100% 290s 90p** |
+| Fire Giant | 85, good | 100% 316s 74p | 100% 268s 69p | 100% 145s 28p | 100% 218s 49p | 0% 900s 168p | 100% 430s 120p | **100% 292s 72p** |
+| Ancient Treant | 85, good | 100% 430s 114p | 100% 364s 103p | 100% 152s 28p | 100% 204s 44p | 100% 340s 92p | 100% 272s 68p | **100% 306s 80p** |
+| Sand Wyrm | 85, good | 100% 265s 67p | 100% 226s 57p | 100% 243s 59p | 100% 293s 78p | 100% 426s 129p | 100% 330s 96p | **100% 279s 73p** |
+| Eternal Sphinx | 95, good | 100% 455s 150p | 100% 443s 178p | 100% 213s 48p | 100% 259s 60p | 100% 304s 87p | 100% 281s 79p | **100% 292s 83p** |
+| Nidhogg | 95, good | 100% 302s 116p | 0% 900s 278p | 100% 91s 24p | 100% 117s 39p | 100% 160s 62p | 0% 900s 231p | **100% 231s 89p** |
+| Giant Sprout | 75, shop | 100% 206s 101p | 100% 180s 92p | 100% 133s 43p | 100% 168s 54p | 100% 238s 85p | 100% 211s 75p | **100% 193s 80p** |
+| King Crab | 75, shop | 100% 207s 90p | 100% 178s 79p | 100% 140s 38p | 100% 153s 42p | 100% 238s 74p | 100% 195s 58p | **100% 186s 66p** |
+| Giant Mushroom | 75, shop | 100% 179s 77p | 100% 567s 287p | 100% 122s 32p | 100% 146s 44p | 100% 249s 88p | 100% 868s 308p | **100% 214s 83p** |
+| Giant Beetle | 75, shop | 100% 213s 129p | 100% 182s 112p | 100% 148s 57p | 100% 150s 59p | 100% 431s 199p | 100% 180s 77p | **100% 181s 95p** |
+| Elder Willow | 75, shop | 100% 210s 95p | 100% 183s 85p | 100% 137s 38p | 100% 175s 54p | 100% 295s 104p | 100% 240s 84p | **100% 196s 85p** |
+| Alpha Wolf | 75, shop | 100% 185s 129p | 100% 179s 128p | 100% 125s 52p | 100% 151s 69p | 100% 203s 99p | 100% 182s 83p | **100% 181s 91p** |
+| Great Bear | 75, shop | 100% 223s 145p | 100% 195s 128p | 100% 163s 69p | 100% 146s 63p | 100% 179s 79p | 100% 182s 83p | **100% 181s 81p** |
+| Cactus Lord | 75, shop | 100% 203s 93p | 100% 180s 88p | 100% 150s 52p | 100% 148s 51p | 100% 248s 92p | 100% 195s 69p | **100% 187s 79p** |
+| Rainbow Runner | 75, shop | 100% 296s 183p | 100% 305s 190p | 100% 162s 60p | 100% 164s 62p | 100% 180s 74p | 100% 206s 87p | **100% 193s 81p** |
+| Ammit | 75, shop | 100% 200s 110p | 100% 688s 436p | 100% 125s 39p | 100% 110s 36p | 100% 176s 68p | 100% 605s 221p | **100% 188s 89p** |
+| Ratatoskr | 75, shop | 100% 332s 238p | 100% 401s 291p | 100% 119s 53p | 100% 124s 56p | 100% 190s 98p | 100% 181s 93p | **100% 186s 96p** |
+| BleepBloop (Hell) | 85, good | 100% 867s 427p | 100% 796s 378p | 100% 147s 44p | 100% 244s 87p | 100% 179s 65p | 100% 230s 87p | **100% 237s 87p** |
+| Kobold Warlord (Hell) | 90, good | 100% 348s 129p | 100% 397s 157p | 100% 210s 68p | 100% 220s 74p | 100% 132s 42p | 100% 139s 45p | **100% 215s 71p** |
+| Goblin Warlord (Hell) | 95, good | 100% 404s 196p | 100% 365s 172p | 100% 155s 44p | 100% 245s 89p | 100% 146s 54p | 100% 194s 78p | **100% 220s 84p** |
+| Pharaoh (Hell) | 99, good | 100% 291s 108p | 0% 900s 408p | 100% 137s 37p | 100% 196s 64p | 100% 91s 25p | 100% 551s 236p | **100% 243s 86p** |

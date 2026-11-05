@@ -171,7 +171,7 @@ Moss Field and Fen Shore, by the camp and the city, Willow Marsh by Veidheim and
 minutes after it falls (its timer holds when you leave the map or close the game, as an MVP's does).
 Mini-bosses are big game for heroes of a **second job**: their levels (55–66) say so, and they
 come for a second-job hero on sight. A Trainee or a first job they leave be as they roam, unless
-it strikes or taunts one first; then it fights like any mini-boss. Mini-bosses are **half as hard as an MVP** (190,000–340,000 HP) and fierce like one: enraged below
+it strikes or taunts one first; then it fights like any mini-boss. Mini-bosses are **made for a Lv 75 second job in shop-bought gear** (215,000–400,000 HP), about a three-minute fight, and fierce like an MVP: enraged below
 half their HP, and their stomps and moves can't be dodged by FLEE and go through most of your DEF.
 They are fights for a hero in good gear whatever their level, and no quest needs one (the quests
 and trials that once did now hunt their kin). Like the MVPs, each calls 2 guards of its own kind at
@@ -186,10 +186,12 @@ this kind (and the Elder Willow and the Ancient Treant) has an **aura**: a glow 
 its colour. Their guards are lesser servants of their kind (half the HP, 60% of
 the ATK): cut them down first. See `docs/balance.md`.
 
-**MVP.** The Fire Giant (Lv 60, 400,000 HP, Fire), optional and not part of the story, roams Ember Hill and stomps the
-ground around it every few seconds. MVPs are the hardest fights in Aria, made for a strong second
-job in the best gear, upgraded and carded: several minutes each, a big bag of White and Blue
-Potions, and a plan. Even a Lv 99 hero in plain gear falls to one. Their stomps, red circles and
+**MVP.** The Fire Giant (Lv 60, 765,000 HP, Fire), optional and not part of the story, roams Ember Hill and stomps the
+ground around it every few seconds. MVPs are the hardest fights in Aria: several minutes each, a big bag of White and
+Blue Potions, and a plan. Each is made for a second job of its tier in the best gear short of MVP gear (a Lv 4 weapon
+at +7, armor at +4, monster and mini-boss cards): **Base 75** the Kobold King and the Goblin King, **Base 85** the
+Fire Giant, the Ancient Treant and the Sand Wyrm, **Base 95** the Eternal Sphinx and Nidhogg. Below its tier, or in
+plain gear, a hero falls to one. Their stomps, red circles and
 burning ground can't be dodged by FLEE and go through most of your DEF: step out of them.
 Each has skills of its own that punish standing and shooting, and the wrong element (Fire Arrows
 on the Fire Giant) can cost you the fight. The Fire Giant calls down a **Meteor Rain**: five
@@ -205,7 +207,7 @@ Treant, charging and calling 2 Bears. Their pelt and heart (30%) make Leif's bes
 
 The **Elder Willow** of Willow Marsh (Lv 55: silvery, wide antlers with fireflies on their tips,
 water-lilies in its hair) is the mini-boss on the road to Veidheim, a step after the Giant Sprout,
-calling Willows out of the reeds. The **Ancient Treant** (Lv 62, 550,000 HP, Earth: pale with age,
+calling Willows out of the reeds. The **Ancient Treant** (Lv 62, 375,000 HP, Earth: pale with age,
 glowing runes carved down its body, blossoms in its crown), the oldest tree in Aria, has woken in the Old Forest
 and is its MVP: it stomps, hurls stones and charges, and calls 2 Treants and 2 Willows. It is the hardest of the valley's MVPs, a fight of several minutes, with two skills of its
 own. **Grasping Roots** burst out where you stand (a red circle first) and hold you there for 3
@@ -215,8 +217,8 @@ or leap away, so even a quick hero who keeps their distance gets caught while it
 30% of every hit back at whoever struck it, you or your beasts. Hold off until it passes. It comes back 35 minutes
 after it falls.
 
-Two more MVPs rule the new lands: the **Kobold King** (Lv 50, 600,000 HP, Earth) in
-Coal Pit, and the **Goblin King** (Lv 55, 600,000 HP, Wind) in Serpent Wood. Both
+Two more MVPs rule the new lands: the **Kobold King** (Lv 50, 535,000 HP, Earth) in
+Coal Pit, and the **Goblin King** (Lv 55, 400,000 HP, Wind) in Serpent Wood. Both
 stomp like the Fire Giant, and each MVP keeps its own timer (20 and 30 minutes). The Kobold King
 hides behind his tribe (**Tribe's Shield**): while any of his guards stands he takes 80% less
 damage, and he calls them back every 30 seconds, so cut the guards down first (Arrow Rain and
@@ -256,7 +258,7 @@ playing dead.
 **The desert's bosses.** The **Cactus Lord** (Lv 60, Cactus Dunes: a tall dark cactus with a crown
 of spikes, yellow diamond eyes and a jagged grin) rains needles round you (**Needle Storm**) and
 charges, calling Cacti. The **Rainbow Runner** (Lv 64, Scorpion Sands: a white Sand Runner in
-rainbow plumage) charges and leaps on you, calling Sand Runners. The **Sand Wyrm** (Lv 70, 900,000
+rainbow plumage) charges and leaps on you, calling Sand Runners. The **Sand Wyrm** (Lv 70, 385,000
 HP, Earth), the Great Desert's MVP, is a giant ringed worm bristling with hooked bone spikes down its
 flanks and back, whose maw opens like a flower round rings of hooked teeth. It spends almost half the fight **under the sand**, where nothing can hit it: a
 mound of sand with spines breaking through swims after you, then bursts up beneath you (a red
@@ -387,7 +389,7 @@ dim underground, day or night.
   pounces, and **Devours**: a bite that heals it. It calls Sphinx Cubs.
 - **Floor 4, the great hall:** no maze, only a long hall of gold-capped pillars, where the Jackal
   Guardians with their long cursed spears and the Falcon Sentinels throwing blades of wind keep watch
-  over the **Eternal Sphinx** (Lv 99 MVP, 1,400,000 HP, Earth), a winged lion in a striped headdress.
+  over the **Eternal Sphinx** (Lv 99 MVP, 730,000 HP, Earth), a winged lion in a striped headdress.
   It never leaves its hall.
 
 **The Riddle.** The Eternal Sphinx tests you with riddles as well as claws. It sits back and asks one,
@@ -440,7 +442,7 @@ round a rune circle of the World Tree. Every monster down there attacks on sight
 - **Floor 4, the great hall:** Root Wardens, knights of living wood crowned with branches in leaf, with
   shields carved with the World Tree and greatswords of living wood, and Thorn Drakes (Nidhogg's brood,
   grown over with brambles: leaf-veined wings, thorns down their backs, venom dripping green) guard **Nidhogg**
-  (Lv 99 MVP, 1,400,000 HP, Shadow), the black dragon that gnaws the World Tree's roots, its scales
+  (Lv 99 MVP, 365,000 HP, Shadow), the black dragon that gnaws the World Tree's roots, its scales
   cracked with glowing red and its crimson wings torn through with holes. It never leaves its hall.
 
 **Gnaw the Roots.** Now and then Nidhogg sinks its teeth into the roots and stays there about 9
@@ -498,7 +500,7 @@ the clear reward, the cores, the rare finds and the boss's card.
 | Hard | a strong second job, 30 White Potions | x6 | 27 | 3% | 1% each |
 | Hell | the best gear, upgraded and carded, and a big bag of White Potions | x9 | 81 | 3% | 1% each |
 
-- **Hell's Warlords** are fierce like BleepBloop, and as long a fight (about 400,000 HP each). The
+- **Hell's Warlords** are fierce like BleepBloop, and as long a fight (about 340,000–500,000 HP). The
   Kobold Warlord **Burrows**, brings down a **Rockslide** (rocks falling round you, leaving rubble that
   hurts and slows), and hides behind his guards (70% less damage while one stands); his warriors'
   shields catch arrows (−40%) but kobolds fear sorcery (+30%). The Goblin Warlord casts **Mirror
@@ -506,7 +508,8 @@ the clear reward, the cores, the rare finds and the boss's card.
   round you, leaving burning ground); his war-paint wards off arrows and spells (−20%) but not steel
   (+30%).
 
-- **Hell's BleepBloop** is as hard and tricky as a field MVP (210,000 HP). He is enraged below half
+- **Hell's BleepBloop** is as hard and tricky as a field MVP (about 400,000 HP). Each raid's Hell boss is made for a
+  second job at the raid's Hell level in the best gear short of MVP gear, like an MVP of that tier. He is enraged below half
   his HP, and his stomp and moves can't be dodged with FLEE and go through most of your DEF: step
   out of the red circles. **Bloop Rain** drops bloops all round you, and each leaves a **sticky
   puddle** that slows and hurts whoever stands in it. **Jelly Wall** raises three Jelly Cores round

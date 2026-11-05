@@ -307,7 +307,7 @@ MATK part), used by both the damage and the skill text.
   trainer: a hunt (Bloops and Sprouts, Blue Bloops, Yellow Bloops or Red Bloops), a step made from what it dropped (proof,
   or the Sorcerer's brew), and the trainer's questions (`kind: 'quiz'`). A wrong answer only gets
   a hint; the question can be tried again. Second-job trials are harder: monsters of Lv 26–62 (Blue Crabs and kobolds up to the desert's Soldier Ants), the
-  third step a big hunt of a mini-boss's kin (mini-bosses are half as hard as an MVP: no trial or
+  third step a big hunt of a mini-boss's kin (mini-bosses are fights for a Lv 75 second job: no trial or
   quest needs one).
 - Trainers:
   - Captain Ulfr (Blader, BladeMaster), Steinborg.

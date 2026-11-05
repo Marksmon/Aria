@@ -5,21 +5,31 @@
 // It checks the owner's balance between the second jobs (docs/balance.md), not exact numbers.
 //
 //   node build-tools/second-sim.mjs
+// It is also a module: setup() points the rotations at another boss, Base Level, Job Level and gear, and
+// killTime() runs one (build-tools/mvp-sim.mjs, the MVPs and the raid bosses).
 import { derive, playerAttack, magicAttack, elementMod } from '../src/rules.js';
 import { Progress } from '../src/progress.js';
 import { SKILLS, AMBUSH, BLIGHT } from '../src/skills.js';
 
-const RUNS = 40, HP = 300000;
-const BOSS = { lv: 55, hp: HP, def: 30, vit: 50, agi: 30, dex: 60, mdef: 25, el: 'neutral', boss: true };
+const RUNS = 40;
+let HP = 300000, BASE = 80, JOBLV = 30;
+let BOSS = { lv: 55, hp: HP, def: 30, vit: 50, agi: 30, dex: 60, mdef: 25, el: 'neutral', boss: true };
 const P = (id, lv) => SKILLS[id].power(lv) / 100;
 
 function hero(job, from, stats, skills, gear) {
   const p = new Progress();
-  while (p.baseLv < 80) p.gain(p.baseNeed, 0);
+  while (p.baseLv < BASE) p.gain(p.baseNeed, 0);
   p.skills = { basics: 9, ...skills };
   p.unlocked = [...from, job];
-  p.firstLv = 50; p.job = job; p.jobLv = 30;
-  for (const [k, v] of Object.entries(stats)) p.stats[k] = v;
+  p.firstLv = 50; p.job = job; p.jobLv = JOBLV;
+  if (BASE === 80) for (const [k, v] of Object.entries(stats)) p.stats[k] = v;
+  else { // another Base Level: the same build's shares of the points there (as build-tools/sim.mjs does)
+    const sum = () => Object.keys(stats).reduce((a, k) => a + p.stats[k], 0);
+    for (let guard = 0; guard < 3000; guard++) {
+      const k = Object.keys(stats).sort((x, y) => p.stats[x] / sum() / stats[x] - p.stats[y] / sum() / stats[y])[0];
+      if (!p.raise(k) && !Object.keys(stats).some((o) => p.raise(o))) break;
+    }
+  }
   const g = { hit: 0, flee: 0, aspdRate: 1, def: 20, mastery: 9, ...gear };
   return { p, g, ps: derive(p, g) };
 }
@@ -27,9 +37,28 @@ function hero(job, from, stats, skills, gear) {
 const MELEE = { pow: 80, qkn: 60, end: 40, fns: 40, ftn: 10, knl: 10 };
 const BOW = { fns: 80, qkn: 60, end: 40, pow: 20, ftn: 10, knl: 30 };
 const CASTER = { knl: 85, fns: 60, end: 35, qkn: 25, ftn: 5, pow: 5 };
-const SWORD = { atk: 100 + 21, wlv: 3 }, BOWG = { atk: 100 + 21 + 10, wlv: 3, bow: true }, STAFF = { atk: 60, wlv: 3, matk: 30 };
+let SWORD = { atk: 100 + 21, wlv: 3 }, BOWG = { atk: 100 + 21 + 10, wlv: 3, bow: true }, STAFF = { atk: 60, wlv: 3, matk: 30 };
+// point the rotations at another fight: { boss (a monster def), hp, base, jobLv, sword, bow, staff } (all optional)
+export function setup(o = {}) {
+  if (o.boss) BOSS = o.boss;
+  if (o.hp) HP = o.hp;
+  if (o.base) BASE = o.base;
+  if (o.jobLv) JOBLV = o.jobLv;
+  if (o.sword) SWORD = o.sword;
+  if (o.bow) BOWG = o.bow;
+  if (o.staff) STAFF = o.staff;
+}
+// the hero a rotation fights with, for its HP, DEF and FLEE (build-tools/mvp-sim.mjs)
+export const HEROES = {
+  blademaster: () => hero('blademaster', ['swordman'], MELEE, { ironhide: 10 }, { ...SWORD }),
+  shadowblade: () => hero('shadowblade', ['swordman', 'assassin'], MELEE, { ironhide: 10 }, { ...SWORD }),
+  windrunner: () => hero('windrunner', ['archer'], BOW, {}, { ...BOWG }),
+  hunter: () => hero('hunter', ['archer', 'assassin'], BOW, {}, { ...BOWG }),
+  wizard: () => hero('wizard', ['mage'], CASTER, {}, STAFF),
+  voodoo: () => hero('voodoo', ['mage', 'assassin'], CASTER, {}, STAFF),
+};
 
-const JOBS_SIM = {
+export const JOBS_SIM = {
   blademaster() {
     const { ps } = hero('blademaster', ['swordman'], MELEE, {}, { ...SWORD, mastery: 9 + 20 + 30, hit: 10 });
     let t = 0, hp = HP, cd = {}, stacks = 0;
@@ -134,20 +163,25 @@ const JOBS_SIM = {
   },
 };
 const median = (a) => a.sort((x, y) => x - y)[a.length >> 1];
-const res = Object.fromEntries(Object.entries(JOBS_SIM).map(([k, f]) => [k, median(Array.from({ length: RUNS }, f))]));
-for (const [k, s] of Object.entries(res)) console.log(k.padEnd(12), `${s.toFixed(0).padStart(4)} s  ${(HP / s).toFixed(0).padStart(6)} a second`);
-console.log('\nShadowblade / BladeMaster', (res.blademaster / res.shadowblade).toFixed(2), '· Hunter / Windrunner', (res.windrunner / res.hunter).toFixed(2), '· Voodoo / Wizard', (res.wizard / res.voodoo).toFixed(2));
+// the median time a job takes to bring down HP of the boss set up (setup)
+export const killTime = (job, runs = RUNS) => median(Array.from({ length: runs }, JOBS_SIM[job]));
+if (import.meta.url === `file://${process.argv[1]}`) {
+  const res = Object.fromEntries(Object.entries(JOBS_SIM).map(([k, f]) => [k, median(Array.from({ length: RUNS }, f))]));
+  for (const [k, s] of Object.entries(res)) console.log(k.padEnd(12), `${s.toFixed(0).padStart(4)} s  ${(HP / s).toFixed(0).padStart(6)} a second`);
+  console.log('\nShadowblade / BladeMaster', (res.blademaster / res.shadowblade).toFixed(2), '· Hunter / Windrunner', (res.windrunner / res.hunter).toFixed(2), '· Voodoo / Wizard', (res.wizard / res.voodoo).toFixed(2));
 
-// --check: fail (exit 1) when a cross leaves the owner's balance (docs/job-rules.md): the Shadowblade
-// about 1.1x the BladeMaster, the Hunter about 0.9x the Windrunner, the Voodoo about 1.1x the Wizard.
-// The Windrunner out-shoots the BladeMaster and the Wizard on one target, as its trait says.
-// The CI runs it (.github/workflows/test.yml), so a balance change that breaks a rule is caught
-export const BANDS = { 'Shadowblade / BladeMaster': [res.blademaster / res.shadowblade, 0.98, 1.25], 'Hunter / Windrunner': [res.windrunner / res.hunter, 0.78, 1.02], 'Voodoo / Wizard': [res.wizard / res.voodoo, 0.97, 1.22],
-  // the Windrunner's trait (progress.js JOB_TRAITS): the most damage on one target of the one-path second jobs
-  'Windrunner / BladeMaster': [res.blademaster / res.windrunner, 1.1, 2.0], 'Windrunner / Wizard': [res.wizard / res.windrunner, 1.1, 2.5] };
-if (process.argv.includes('--check')) {
-  const off = Object.entries(BANDS).filter(([, [r, lo, hi]]) => !(r >= lo && r <= hi));
-  for (const [k, [r, lo, hi]] of off) console.log(`OUT OF BAND: ${k} ${r.toFixed(2)} (wanted ${lo}-${hi})`);
-  if (off.length) process.exit(1);
-  console.log('second jobs: every cross in its band, the Windrunner ahead on one target');
+  // --check: fail (exit 1) when a cross leaves the owner's balance (docs/job-rules.md): the Shadowblade
+  // about 1.1x the BladeMaster, the Hunter about 0.9x the Windrunner, the Voodoo about 1.1x the Wizard.
+  // The Windrunner out-shoots the BladeMaster and the Wizard on one target, as its trait says.
+  // The CI runs it (.github/workflows/test.yml), so a balance change that breaks a rule is caught
+  const BANDS = { 'Shadowblade / BladeMaster': [res.blademaster / res.shadowblade, 0.98, 1.25], 'Hunter / Windrunner': [res.windrunner / res.hunter, 0.78, 1.02], 'Voodoo / Wizard': [res.wizard / res.voodoo, 0.97, 1.22],
+    // the Windrunner's trait (progress.js JOB_TRAITS): the most damage on one target of the one-path second jobs
+    'Windrunner / BladeMaster': [res.blademaster / res.windrunner, 1.1, 2.0], 'Windrunner / Wizard': [res.wizard / res.windrunner, 1.1, 2.5] };
+  if (process.argv.includes('--check')) {
+    const off = Object.entries(BANDS).filter(([, [r, lo, hi]]) => !(r >= lo && r <= hi));
+    for (const [k, [r, lo, hi]] of off) console.log(`OUT OF BAND: ${k} ${r.toFixed(2)} (wanted ${lo}-${hi})`);
+    if (off.length) process.exit(1);
+    console.log('second jobs: every cross in its band, the Windrunner ahead on one target');
+  }
+
 }

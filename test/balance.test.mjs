@@ -43,3 +43,8 @@ test("the Sorcerer wins 85% of its fights against every daytime field monster fr
   }
   assert.deepEqual(weak, []);
 });
+
+test("the bosses keep the owner's tiers: MVPs at Base 75/85/95 in good gear, mini-bosses at 75 in shop gear, Hell at its level (mvp-sim --check)", () => {
+  const out = execFileSync(process.execPath, [new URL('../build-tools/mvp-sim.mjs', import.meta.url).pathname, '--check'], { encoding: 'utf8' });
+  assert.match(out, /every boss in its tier/);
+});
