@@ -415,7 +415,8 @@ Sphinx's Halls (31 to 90). The first three floors are mazes whose walls are livi
 and runes glowing in the bark, lit by glowing mushrooms; the fourth is a great hall of living trunks
 round a rune circle of the World Tree. Every monster down there attacks on sight.
 
-- **Floor 1:** Root Squirrels, quick and biting twice, and Brambles that throw their thorns.
+- **Floor 1:** Root Squirrels, Ratatoskr's little kin up on their hind legs in bark jerkins and green
+  scarves, quick and biting twice, and Brambles that throw their thorns.
 - **Floor 2:** Root Serpents (their bite poisons), Moss Golems, and Dark Elves loosing shadow arrows.
 - **Floor 3:** Great Stags, Dryads throwing glowing leaves, Rot Beetles, and **Ratatoskr** (Lv 74
   mini-boss), the World Tree's messenger squirrel: no bigger than its kin, but quick and hard to hit, in dark

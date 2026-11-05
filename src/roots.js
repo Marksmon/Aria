@@ -12,7 +12,10 @@ import { Frame, ellipse, rect, poly, line, both, dark, light } from './painted.j
 const flat = { outline: false, flat: true };
 // size: the frame; body: the standing figure in pixels (def.w is its width in the world)
 export const ROOTS = {
-  rootSquirrel: { kind: 'squirrel', size: [44, 40], body: [26, 26], fur: '#b8622a', belly: '#f0d8b0', tail: '#c87a3a', eye: '#1a1008', ear: '#8a4a20' },
+  // the Root Squirrels: Ratatoskr's kin (the owner's call: like it), up on their hind legs in bark-leather
+  // jerkins and leaf-green scarves, their tails fiery with a few faint runes; no helm, no cloak (those are
+  // Ratatoskr's)
+  rootSquirrel: { kind: 'ratatoskr', kin: true, size: [72, 72], body: [36, 58], fur: '#c06a32', face: '#ecb478', tail: '#c8702c', tailHi: '#f0a040', rune: '#ffc870', armor: '#6a4a2e', trim: '#a8804a', cloak: '#4f8a3c', eye: '#1a0c08', claw: '#efe2cc' },
   bramble: { kind: 'bramble', size: [44, 44], body: [30, 32], leaf: '#3a6a2a', thorn: '#e2d4a8', berry: '#c83a4a', eye: '#ffd23a', root: '#5e4028' },
   darkElf: { kind: 'elf', k: 1, size: [48, 64], body: [22, 58], skin: '#7a86a8', hair: '#eceaf6', armor: '#2a2438', trim: '#8a5ad8', bow: '#5a3a2a', string: '#d8d0e8', eye: '#ff6a8a' },
   // Ratatoskr, the third floor's mini-boss, after the owner's sheet: the messenger squirrel of the World
@@ -384,10 +387,11 @@ function ratatoskr(F, P, dir, { G, W, step, walk, f, atk }) {
     const out = [...edge(1, true), [mid[16][0], mid[16][1] - mid[16][2] - 3], ...edge(-1, true).reverse()];
     F.part(poly(out), P.tail);
     F.part(poly([...edge(0.55, false), ...edge(-0.2, false).reverse()]), P.tailHi, flat); // the light down it
-    for (let i = 3; i < 16; i += 3) { const [x, y] = mid[i]; F.part(both(line(x - 2, y - 2, x + 2, y + 2, 1), line(x - 2, y + 2, x + 2, y - 2, 1), line(x, y - 3, x, y + 3, 1)), P.rune, flat); } // runes glowing in the fur
-    for (let i = 0; i < 7; i++) { const [x, y, r] = mid[2 + i * 2]; F.dot(x + sx * (r + 2 + (i % 2) * 2), y - 1, P.rune); } // sparks off its edge
+    for (let i = P.kin ? 6 : 3; i < 16; i += P.kin ? 5 : 3) { const [x, y] = mid[i]; F.part(both(line(x - 2, y - 2, x + 2, y + 2, 1), line(x - 2, y + 2, x + 2, y - 2, 1), line(x, y - 3, x, y + 3, 1)), P.rune, flat); } // runes glowing in the fur
+    if (!P.kin) for (let i = 0; i < 7; i++) { const [x, y, r] = mid[2 + i * 2]; F.dot(x + sx * (r + 2 + (i % 2) * 2), y - 1, P.rune); } // sparks off its edge
   };
   if (!back) tail();
+  if (!P.kin) {
   // the cloak behind, torn at the hem
   const hem = [];
   for (let i = 0; i <= 6; i++) hem.push([cx - 11 + i * 3.7 + (side ? -4 : 0), G - 4 + (i % 2 ? -4 : 0) + bob]);
@@ -397,6 +401,7 @@ function ratatoskr(F, P, dir, { G, W, step, walk, f, atk }) {
     for (const s of [-1, 1]) { F.part(line(cx, sh + 9, cx + s * 4, sh + 5, 1), P.trim, flat); F.part(line(cx, hip + 5, cx + s * 4, hip + 9, 1), P.trim, flat); }
     tail();
   }
+  } else if (back) tail();
   // legs: armoured, digitigrade, clawed feet
   for (const s of side ? [-1, 1] : [-1, 1]) {
     const lx = cx + (side ? s * 2 : s * 4) + s * step * (side ? 2 : 1);
@@ -407,13 +412,14 @@ function ratatoskr(F, P, dir, { G, W, step, walk, f, atk }) {
   // the body: dark plate, gold rune trim, a glowing rune circle on the chest; a red scarf at the neck
   F.part(poly([[cx - 7, sh], [cx + 7, sh], [cx + 6, hip + 2], [cx - 6, hip + 2]]), P.armor);
   F.part(line(cx - 6, hip, cx + 6, hip, 1), P.trim, flat);
-  if (!back) {
+  if (!back && !P.kin) {
     F.part(ellipse(cx + (side ? 2 : 0), sh + 7, 3, 3), P.trim);
     F.part(ellipse(cx + (side ? 2 : 0), sh + 7, 1.6, 1.6), P.rune, flat);
     F.part(both(line(cx - 5, sh + 2, cx - 1, sh + 12, 1), line(cx + 5, sh + 2, cx + 1, sh + 12, 1)), P.trim, flat);
   }
-  for (const s of side ? [1] : [-1, 1]) F.part(ellipse(cx + s * 7 - (side ? 4 : 0), sh + 2, 3.6, 3), P.armor); // pauldrons
-  for (const s of side ? [1] : [-1, 1]) F.part(line(cx + s * 9 - (side ? 6 : 0), sh, cx + s * 9 - (side ? 6 : 0), sh + 3, 1), P.trim, flat);
+  if (!back && P.kin) { F.part(ellipse(cx + (side ? 2 : 0), sh + 9, 3.5, 3.5), P.face, flat); F.part(line(cx - 6, sh + 5, cx + 6, sh + 5, 1), P.trim, flat); } // the pale belly under the jerkin's laces
+  if (!P.kin) for (const s of side ? [1] : [-1, 1]) F.part(ellipse(cx + s * 7 - (side ? 4 : 0), sh + 2, 3.6, 3), P.armor); // pauldrons
+  if (!P.kin) for (const s of side ? [1] : [-1, 1]) F.part(line(cx + s * 9 - (side ? 6 : 0), sh, cx + s * 9 - (side ? 6 : 0), sh + 3, 1), P.trim, flat);
   // arms, the claws reaching in on the attack
   const arm = (s, x0) => {
     const ex = x0 + s * 4 + (side ? 6 + lunge : 0), ey = sh + 12 - (atk >= 0 ? lunge : 0);
@@ -433,11 +439,16 @@ function ratatoskr(F, P, dir, { G, W, step, walk, f, atk }) {
   F.part(ellipse(hx, hy, 6.4, 6), back ? P.armor : P.fur);
   if (side) F.part(ellipse(hx + 5, hy + 2, 3.4, 2.6), P.face); // the snout
   else if (!back) { F.part(ellipse(hx, hy + 2.5, 4.4, 3.4), P.face); for (const s of [-1, 1]) F.part(line(hx + s * 2, hy + 3, hx + s * 7, hy + 2, 1), '#f6eedc', flat); } // the muzzle, whiskers
+  if (P.kin) { // no helm: a tuft of fur on the crown
+    if (back) return;
+    F.part(poly([[hx - 2, hy - 5], [hx, hy - 8], [hx + 2, hy - 5]]), P.tail);
+  } else {
   // the helm: dark, gold trim, a leaf crest down the middle, over the brow only
   F.part(rows(ellipse(hx - (side ? 1 : 0), hy - 1, 6.8, 6.4), hy - 8, hy - 3), P.armor);
   F.part(line(hx - 6 + (side ? -1 : 0), hy - 3, hx + 6 - (side ? 1 : 0), hy - 3, 1), P.trim, flat);
   F.part(poly([[hx - 1.2, hy - 7], [hx, hy - 11], [hx + 1.2, hy - 7]]), P.trim);
   if (back) return;
+  }
   if (side) { F.part(ellipse(hx + 1.5, hy, 1.1, 1.3), P.eye, flat); F.dot(hx + 1.2, hy - 0.6, '#ffffff'); F.dot(hx + 8, hy + 1.5, '#2a1a10'); }
   else for (const s of [-1, 1]) { F.part(ellipse(hx + s * 2.6, hy, 1.1, 1.3), P.eye, flat); F.dot(hx + s * 2.6 - 0.4, hy - 0.6, '#ffffff'); }
   if (!side) F.dot(hx, hy + 2, '#2a1a10'); // the nose
