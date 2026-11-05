@@ -16,17 +16,17 @@ export const ROOTS = {
   // jerkins and leaf-green scarves, their tails fiery with a few faint runes; no helm, no cloak (those are
   // Ratatoskr's). They and Ratatoskr are a Bloop's size (the owner's call)
   rootSquirrel: { kind: 'ratatoskr', kin: true, size: [72, 72], body: [36, 58], fur: '#c06a32', face: '#ecb478', tail: '#c8702c', tailHi: '#f0a040', rune: '#ffc870', armor: '#6a4a2e', trim: '#a8804a', cloak: '#4f8a3c', eye: '#1a0c08', claw: '#efe2cc' },
-  bramble: { kind: 'bramble', size: [44, 44], body: [30, 32], leaf: '#3a6a2a', thorn: '#e2d4a8', berry: '#c83a4a', eye: '#ffd23a', root: '#5e4028' },
+  bramble: { kind: 'bramble', size: [52, 48], body: [30, 34], leaf: '#2f5a26', vine: '#4a6a2a', thorn: '#e8dab0', berry: '#c8283a', glow: '#ff9a7a', eye: '#ffd23a', root: '#5e4028' },
   darkElf: { kind: 'elf', size: [48, 64], body: [22, 58], skin: '#8a96b8', hair: '#e6e4f2', armor: '#1e1a28', cloak: '#3a2458', sash: '#5a2a7a', trim: '#c8ccd8', rune: '#c89aff', bow: '#1a141c', string: '#a88ad8', eye: '#f4d4ff' },
   // Ratatoskr, the third floor's mini-boss, after the owner's sheet: the messenger squirrel of the World
   // Tree, small for a boss, in dark plate traced with glowing gold runes, a red scarf and a torn red cloak
   // with the World Tree on its back, a runed helm with its tufted ears through it, and a great fiery tail
   // glowing with runes
   ratatoskr: { kind: 'ratatoskr', size: [72, 72], body: [36, 58], fur: '#c8642a', face: '#e8a868', tail: '#d8742a', tailHi: '#ffb048', rune: '#ffd27a', armor: '#2a2428', trim: '#d8a048', cloak: '#8a1a24', eye: '#1a0c08', claw: '#efe2cc' },
-  mossGolem: { kind: 'golem', size: [60, 60], body: [42, 52], stone: '#82827a', moss: '#5a8a3a', eye: '#9aff7a', crack: '#4a4a44' },
+  mossGolem: { kind: 'golem', size: [64, 64], body: [44, 56], stone: '#82827a', moss: '#5a8a3a', fern: '#7ab84a', cap: '#c87a4a', rune: '#9affa0', eye: '#c8ff9a', crack: '#4a4a44' },
   greatStag: { kind: 'stag', size: [68, 68], body: [44, 56], coat: '#a87a4a', belly: '#ecdcbc', antler: '#e8dcc0', glow: '#9affc0', eye: '#1a1008', hoof: '#3a2a1e' },
   dryad: { kind: 'dryad', size: [48, 66], body: [24, 60], skin: '#86c06a', leaf: '#3a8a3a', flower: '#ff9ac8', bark: '#6a4a2e', eye: '#ffe96a', dress: '#4f9a44' },
-  rootWarden: { kind: 'warden', size: [64, 78], body: [34, 70], bark: '#6a4a2e', plate: '#8a6440', moss: '#4f7a3c', eye: '#ffb030', blade: '#c8b890', rune: '#9affc0' },
+  rootWarden: { kind: 'warden', size: [68, 80], body: [34, 72], bark: '#5e4028', plate: '#8a6440', moss: '#4f7a3c', leafy: '#8ac85a', eye: '#ffe08a', blade: '#b89a6a', rune: '#9affc0' },
   thornDrake: { kind: 'dragon', k: 1, size: [66, 58], body: [44, 44], scale: '#3a6a3a', belly: '#b8c88a', wing: '#2a4a2a', horn: '#e8dcc0', eye: '#ffd23a', spine: '#c8e070', mouth: '#7a1a1a' },
   // Nidhogg after the owner's picture: near-black scales cracked with glowing red, torn crimson wings eaten
   // through with holes, a crest of black spikes, burning red eyes, a maw glowing red inside
@@ -97,25 +97,40 @@ function squirrel(F, P, dir, { G, W, walk, f, atk }) {
   }
 }
 
-// ---------- Brambles: a walking thorn bush with yellow eyes and red berries, roots for feet ----------
+// ---------- Brambles: a walking thicket of thorned vines wound round a glowing rose for a heart, two
+// thorn-whip vines for arms that lash out, a mouth of thorns and yellow eyes in the tangle, roots for legs ----------
 function bramble(F, P, dir, { G, W, walk, f, atk }) {
-  const cx = W / 2, hop = walk ? [0, -2, -3, -1][f] : 0, burst = atk >= 0 ? [2, 5, 3, 1][atk] : 0;
-  const by = G - 14 + hop;
-  for (const s of [-1, 0, 1]) F.part(line(cx + s * 5, by + 8, cx + s * 8 + (walk ? s * (f % 2) : 0), G, 2), P.root);
+  const cx = W / 2, hop = walk ? [0, -2, -3, -1][f] : 0, lash = atk >= 0 ? [0.2, 1, 1.3, 0.5][atk] : walk ? 0.15 * (f % 2) : 0;
+  const side = dir === 'right', back = dir === 'up';
+  const by = G - 15 + hop;
+  // root legs, splayed
+  for (const s of [-1, 0, 1]) { F.part(line(cx + s * 4, by + 7, cx + s * 8 + (walk ? s * (f % 2) : 0), G - 1, 2), P.root); F.part(line(cx + s * 8 + (walk ? s * (f % 2) : 0), G - 1, cx + s * 10, G, 1), P.root, flat); }
+  // the whips: thorned vines curling out, lashing on the attack
+  const whip = (sd) => {
+    const pts = [];
+    for (let i = 0; i <= 8; i++) { const t = i / 8, a = -0.9 - lash * 1.2 + t * (1.9 + lash); pts.push([cx + sd * (8 + Math.cos(a) * t * 12), by - 1 + Math.sin(a) * t * 9 - t * 5]); }
+    for (let i = 0; i < 8; i++) F.part(line(...pts[i], ...pts[i + 1], i < 4 ? 2 : 1), P.vine);
+    for (let i = 1; i < 8; i += 2) F.part(line(pts[i][0], pts[i][1], pts[i][0] + sd * 1.5, pts[i][1] - 2, 1), P.thorn, flat);
+  };
+  // the thicket: a tangle of dark leaves and vines, thorns all over it
   const bush = [];
-  for (let i = 0; i < 22; i++) { const a = (i / 22) * Math.PI * 2, r = i % 2 ? 1 : 1.16; bush.push([cx + Math.cos(a) * 12 * r, by + Math.sin(a) * 10 * r]); }
+  for (let i = 0; i < 26; i++) { const a = (i / 26) * Math.PI * 2, r = i % 2 ? 1 : 1.18; bush.push([cx + Math.cos(a) * 12 * r, by + Math.sin(a) * 10.5 * r]); }
   F.part(poly(bush), P.leaf);
-  for (let i = 0; i < 7; i++) F.part(ellipse(cx - 8 + ((i * 7) % 16), by - 6 + ((i * 5) % 12), 3, 2.4), dark(P.leaf), flat);
-  for (let i = 0; i < 14; i++) { // thorns, longer as it bursts
-    const a = (i / 14) * Math.PI * 2 + 0.2, x0 = cx + Math.cos(a) * 11, y0 = by + Math.sin(a) * 9;
-    F.part(line(x0, y0, x0 + Math.cos(a) * (3 + burst), y0 + Math.sin(a) * (3 + burst), 1), P.thorn, flat);
-  }
-  if (dir !== 'up') {
-    for (const [x, y] of [[-6, 4], [7, -3], [3, 6]]) F.part(ellipse(cx + x, by + y, 1.6, 1.6), P.berry);
-    const ex = dir === 'right' ? 4 : 0;
-    for (const s of dir === 'right' ? [1] : [-1, 1]) { F.part(ellipse(cx + ex + s * 3.5, by - 2, 1.8, 1.4), P.eye, flat); F.dot(cx + ex + s * 3.5, by - 2, '#1a1008'); }
-    F.part(poly([[cx + ex - 4, by + 3], [cx + ex - 2, by + 5], [cx + ex, by + 3], [cx + ex + 2, by + 5], [cx + ex + 4, by + 3], [cx + ex + 3, by + 6 + burst * 0.4], [cx + ex - 3, by + 6 + burst * 0.4]]), '#1a1008');
-  }
+  for (let i = 0; i < 6; i++) { const a = i * 1.05 + f * 0.1; F.part(line(cx + Math.cos(a) * 11, by + Math.sin(a) * 9, cx + Math.cos(a + 2.2) * 8, by + Math.sin(a + 2.2) * 7, 1), P.vine, flat); } // vines wound through it
+  for (let i = 0; i < 8; i++) F.part(ellipse(cx - 8 + ((i * 7) % 16), by - 6 + ((i * 5) % 12), 2.6, 2), dark(P.leaf), flat);
+  for (let i = 0; i < 16; i++) { const a = (i / 16) * Math.PI * 2 + 0.2, x0 = cx + Math.cos(a) * 11.5, y0 = by + Math.sin(a) * 9.5; F.part(line(x0, y0, x0 + Math.cos(a) * (3 + lash * 2), y0 + Math.sin(a) * (3 + lash * 2), 1), P.thorn, flat); }
+  if (side) whip(1); else { whip(-1); whip(1); } // (the whips out of its sides, over the tangle)
+  if (back) return;
+  // the heart: a rose, glowing in the tangle; berries; the eyes and the thorny mouth
+  const hx = cx + (side ? 3 : 0);
+  F.part(ellipse(hx, by + 2, 3.4, 3), P.berry);
+  F.part(ellipse(hx, by + 2, 1.8, 1.6), P.glow, flat);
+  F.part(line(hx - 2, by + 1, hx + 1.5, by + 3, 1), dark(P.berry), flat);
+  for (const [x, y] of [[-8, 5], [8, -4], [6, 6]]) F.part(ellipse(cx + x, by + y, 1.4, 1.4), P.berry);
+  for (const s of side ? [1] : [-1, 1]) { F.part(ellipse(hx + s * 3.6 + (side ? 1 : 0), by - 4, 1.8, 1.3), P.eye, flat); F.dot(hx + s * 3.6 + (side ? 1 : 0), by - 4, '#1a1008'); }
+  const open = atk >= 0 ? 2 : 0.8;
+  F.part(poly([[hx - 4, by - 1], [hx + 4, by - 1], [hx + 3, by - 1 + open], [hx - 3, by - 1 + open]]), '#1a1008');
+  for (let i = 0; i < 4; i++) F.part(poly([[hx - 3.5 + i * 2.2, by - 1], [hx - 2.5 + i * 2.2, by - 1], [hx - 3 + i * 2.2, by + 0.6]]), P.thorn, flat);
 }
 
 // ---------- Dark Elves: hooded archers of the World Tree's dark roots. A deep violet cloak flaring to a
@@ -185,28 +200,41 @@ function elf(F, P, dir, { G, W, step, walk, f, atk }) {
   else { for (const s of [-1, 1]) F.part(rect(hx + s * 1.6 - 0.5, hy, hx + s * 1.6 + 0.5, hy + 0.6), P.eye, flat); F.part(line(hx - 0.8, hy + 3, hx + 0.8, hy + 3, 1), dark(P.skin), flat); }
 }
 
-// ---------- Moss Golems: boulders piled into a body, moss over its shoulders, green light in its eyes ----------
+// ---------- Moss Golems: a hunched giant of stacked boulders under a thick mantle of moss, moss hanging
+// from it in strands, ferns and mushrooms growing on its shoulders, green runes glowing in the cracks of
+// its stone, eyes burning under a heavy brow, great fists of mossy stone that come down like rockfalls ----------
 function golem(F, P, dir, { G, W, step, walk, f, atk }) {
   const cx = W / 2, bob = walk && f % 2 ? -1 : 0, raise = atk >= 0 ? [6, 12, -2, 2][atk] : 0;
   const side = dir === 'right', back = dir === 'up';
   const by = G - 30 + bob;
-  for (const s of [-1, 1]) { const lx = cx + (side ? s * 4 : s * 7) + s * step; F.part(both(rect(lx - 3.5, G - 12, lx + 3.5, G - 2), ellipse(lx, G - 2, 4.5, 2)), dark(P.stone)); } // legs, stumpy pillars of stone
-  F.part(ellipse(cx, by + 6, 14, 12), P.stone); // the body
-  F.part(ellipse(cx - 3, by + 2, 7, 5), light(P.stone), flat);
-  F.part(line(cx - 6, by + 8, cx + 2, by + 14, 1), P.crack, flat); F.part(line(cx + 4, by, cx + 9, by + 6, 1), P.crack, flat);
-  const arm = (s) => { // great stone arms, raised to slam
-    const ex = cx + s * (side ? 0 : 17) + (side ? 14 : 0), ey = by + 9 - raise;
-    F.part(line(cx + s * (side ? 2 : 11), by, ex, ey, 6), P.stone);
-    F.part(ellipse(ex, ey + 2, 5.5, 5), dark(P.stone));
+  for (const s of [-1, 1]) { const lx = cx + (side ? s * 4 : s * 7) + s * step; F.part(both(rect(lx - 4, G - 12, lx + 4, G - 2), ellipse(lx, G - 2, 5, 2.2)), dark(P.stone)); F.part(line(lx - 3, G - 8, lx + 2, G - 7, 1), P.crack, flat); } // legs, pillars of stone
+  // the body: three boulders stacked, cracks glowing with runes
+  F.part(ellipse(cx, by + 10, 12, 8), dark(P.stone));
+  F.part(ellipse(cx + (side ? 2 : 0), by + 3, 14, 10), P.stone);
+  F.part(ellipse(cx - 3, by - 1, 7, 4.5), light(P.stone), flat);
+  if (!back) { F.part(both(line(cx - 7, by + 4, cx - 2, by + 9, 1), line(cx - 2, by + 9, cx + 3, by + 6, 1), line(cx + 5, by - 1, cx + 9, by + 5, 1)), P.rune, flat); F.part(ellipse(cx, by + 3, 2, 2), P.rune, flat); }
+  const arm = (s) => { // great stone arms, raised to slam; mossy fists
+    const ex = cx + s * (side ? 0 : 18) + (side ? 15 : 0), ey = by + 10 - raise;
+    F.part(ellipse(cx + s * (side ? 4 : 12) + (side ? 2 : 0), by - 1, 5, 4.5), P.stone); // the shoulder boulder
+    F.part(line(cx + s * (side ? 4 : 13) + (side ? 2 : 0), by + 1, ex, ey, 6), P.stone);
+    F.part(ellipse(ex, ey + 3, 6, 5.5), dark(P.stone));
+    F.part(rows(ellipse(ex, ey + 3, 6, 5.5), ey - 3, ey + 1), P.moss, flat);
   };
   if (side) arm(1); else { arm(-1); arm(1); }
-  for (let i = 0; i < 12; i++) F.part(ellipse(cx - 12 + ((i * 7) % 24), by - 4 + ((i * 3) % 5), 3.5, 2.5), P.moss, flat); // moss over the shoulders
-  const hx = cx + (side ? 5 : 0), hy = by - 8;
-  F.part(ellipse(hx, hy, 7, 6), P.stone);
-  for (let i = 0; i < 5; i++) F.part(ellipse(hx - 5 + i * 2.5, hy - 5, 2.5, 1.8), P.moss, flat);
+  // the moss mantle over its shoulders, hanging in strands; ferns and a mushroom growing out of it
+  F.part(poly([[cx - 15, by - 1], [cx - 9, by - 7], [cx + 9, by - 7], [cx + 15, by - 1], [cx + 11, by + 2], [cx - 11, by + 2]]), P.moss);
+  for (let i = 0; i < 7; i++) { const x = cx - 12 + i * 4, l = 3 + ((i * 5) % 4); F.part(line(x, by + 1, x + (i % 2 ? 0.5 : -0.5), by + 1 + l, 1), dark(P.moss), flat); }
+  for (const s of [-1, 1]) for (let k = 0; k < 3; k++) F.part(line(cx + s * (9 + k), by - 6, cx + s * (11 + k * 2), by - 12 + k, 1), P.fern, flat); // ferns
+  F.part(both(rect(cx + 7, by - 9, cx + 7.6, by - 6), ellipse(cx + 7.3, by - 10, 2.2, 1.3)), P.cap);
+  // the head: a small boulder sunk between the shoulders, a heavy mossy brow, eyes burning under it
+  const hx = cx + (side ? 6 : 0), hy = by - 9;
+  F.part(ellipse(hx, hy, 6.5, 5.5), P.stone);
+  F.part(rows(ellipse(hx, hy, 6.8, 5.8), hy - 6, hy - 1.5), P.moss);
   if (back) return;
-  if (side) F.part(rect(hx + 3, hy - 1, hx + 5, hy), P.eye, flat);
-  else for (const s of [-1, 1]) F.part(rect(hx + s * 3 - 1, hy - 1, hx + s * 3 + 1, hy), P.eye, flat);
+  F.part(line(hx - 5 + (side ? 1 : 0), hy - 1, hx + 5, hy - 1, 1), dark(P.stone), flat); // the brow's shadow
+  if (side) F.part(rect(hx + 3, hy, hx + 5, hy + 0.8), P.eye, flat);
+  else for (const s of [-1, 1]) F.part(rect(hx + s * 2.6 - 1, hy, hx + s * 2.6 + 1, hy + 0.8), P.eye, flat);
+  F.part(line(hx - 2 + (side ? 3 : 0), hy + 3, hx + 2 + (side ? 2 : 0), hy + 3, 1), P.crack, flat); // a crack for a mouth
 }
 
 // ---------- Great Stags: a big deer, its antlers spreading like branches, their tips glowing ----------
@@ -269,39 +297,53 @@ function dryad(F, P, dir, { G, W, walk, f, atk }) {
   if (side) F.dot(hx + 3, hy, P.eye); else { F.dot(hx - 1.5, hy, P.eye); F.dot(hx + 1.5, hy, P.eye); }
 }
 
-// ---------- Root Wardens: knights of living wood, bark plates, moss at the seams, amber light under the
-// helm, a round wooden shield with a rune and a long wooden greatsword ----------
+// ---------- Root Wardens: the World Tree's guardians, knights of living wood. A crown of branches in leaf,
+// bark plate with runes glowing in its seams, a mantle of moss, a face of light under a wooden helm, a
+// great round shield carved with the World Tree, and a greatsword of living wood with leaves at its hilt ----------
 function warden(F, P, dir, { G, W, step, walk, f, atk }) {
   const cx = W / 2, bob = walk && f % 2 ? -1 : 0, swing = atk >= 0 ? [-1.0, -0.2, 0.9, 0.4][atk] : -0.9;
   const side = dir === 'right', back = dir === 'up';
   const hip = G - 26 + bob, sh = G - 46 + bob;
-  if (side) { F.part(rect(cx - 3 + step * 2, hip, cx + 1 + step * 2, G), P.bark); F.part(rect(cx - 1 - step * 2, hip, cx + 3 - step * 2, G), dark(P.bark)); }
-  else for (const s of [-1, 1]) F.part(rect(cx + s * 5 - 2.5 + s * step, hip, cx + s * 5 + 2.5 + s * step, G), P.bark);
+  // legs: rooted trunks, bark-plated, roots spreading at the feet
+  const leg = (lx, col) => { F.part(rect(lx - 2.8, hip, lx + 2.8, G - 1), col); F.part(line(lx - 2.8, hip + 9, lx + 2.8, hip + 9, 1), P.rune, flat); for (const t of [-1, 1]) F.part(line(lx + t * 2, G - 1, lx + t * 4.5, G, 1), P.bark, flat); };
+  if (side) { leg(cx - 1 + step * 2, P.bark); leg(cx + 1 - step * 2, dark(P.bark)); }
+  else for (const s of [-1, 1]) leg(cx + s * 5 + s * step, P.bark);
+  // the body: bark plate, the grain running down it, runes glowing in the seams; a mossy mantle over it
   F.part(poly([[cx - 9, sh], [cx + 9, sh], [cx + 8, hip + 4], [cx - 8, hip + 4]]), P.plate);
-  for (let y = sh + 4; y < hip + 2; y += 4) F.part(line(cx - 7, y, cx + 7, y, 1), dark(P.plate), flat);
-  F.part(line(cx - 8, hip, cx + 8, hip, 2), P.moss, flat);
-  for (const s of side ? [1] : [-1, 1]) F.part(ellipse(cx + s * 9 - (side ? 6 : 0), sh + 2, 4.5, 3.5), P.plate); // pauldrons
-  for (let i = 0; i < 6; i++) F.dot(cx - 8 + i * 3, sh + 1, P.moss);
-  // the greatsword, swung; the shield on the other arm
+  for (let x = -6; x <= 6; x += 3) F.part(line(cx + x, sh + 3, cx + x * 0.9, hip + 2, 1), dark(P.plate), flat);
+  if (!back) { F.part(both(line(cx, sh + 4, cx, hip - 1, 1), line(cx - 4, sh + 8, cx, sh + 11, 1), line(cx + 4, sh + 8, cx, sh + 11, 1)), P.rune, flat); F.part(ellipse(cx, sh + 11, 1.6, 1.6), P.rune, flat); }
+  F.part(line(cx - 8, hip + 1, cx + 8, hip + 1, 2), P.moss, flat);
+  F.part(poly([[cx - 11, sh + 3], [cx - 8, sh - 2], [cx + 8, sh - 2], [cx + 11, sh + 3], [cx + 9, sh + 6], [cx - 9, sh + 6]]), P.moss); // the mantle
+  for (let i = 0; i < 6; i++) F.part(line(cx - 8 + i * 3.2, sh + 5, cx - 8 + i * 3.2, sh + 7 + (i % 3), 1), dark(P.moss), flat);
+  // the greatsword of living wood, leaves at its hilt; the shield carved with the World Tree
   const sword = (x0, y0) => {
-    const ex = x0 + Math.cos(swing) * 22, ey = y0 - Math.sin(swing) * 22;
+    const ex = x0 + Math.cos(swing) * 24, ey = y0 - Math.sin(swing) * 24;
     F.part(line(x0, y0, ex, ey, 3), P.blade);
-    F.part(line(x0 - Math.sin(swing) * 3, y0 - Math.cos(swing) * 3, x0 + Math.sin(swing) * 3, y0 + Math.cos(swing) * 3, 2), P.bark); // the crossguard
-    F.part(line(x0 + Math.cos(swing) * 6, y0 - Math.sin(swing) * 6, ex, ey, 1), P.rune, flat);
+    F.part(line(x0 + Math.cos(swing) * 5, y0 - Math.sin(swing) * 5, ex, ey, 1), P.rune, flat);
+    F.part(line(x0 - Math.sin(swing) * 3.5, y0 - Math.cos(swing) * 3.5, x0 + Math.sin(swing) * 3.5, y0 + Math.cos(swing) * 3.5, 2), P.bark);
+    for (const t of [-1, 1]) F.part(ellipse(x0 - Math.sin(swing) * 3.5 * t, y0 - Math.cos(swing) * 3.5 * t - 1, 1.6, 1), P.leafy, flat); // leaves at the crossguard
+  };
+  const shield = (x, y) => {
+    F.part(ellipse(x, y, 7.5, 8.5), P.plate); F.part(ellipse(x, y, 5.5, 6.5), P.bark);
+    F.part(both(line(x, y - 4, x, y + 4, 1), line(x - 3, y - 2, x, y - 4, 1), line(x + 3, y - 2, x, y - 4, 1), line(x - 3, y + 4, x, y + 2, 1), line(x + 3, y + 4, x, y + 2, 1)), P.rune, flat); // the World Tree on it
   };
   if (side) { F.part(line(cx + 2, sh + 3, cx + 8, sh + 10, 4), P.bark); sword(cx + 8, sh + 10); }
-  else if (!back) {
-    F.part(line(cx + 8, sh + 3, cx + 12, sh + 12, 4), P.bark); sword(cx + 12, sh + 12);
-    F.part(ellipse(cx - 11, sh + 12, 7, 8), P.plate); F.part(ellipse(cx - 11, sh + 12, 4, 5), P.bark); // the shield
-    F.part(both(line(cx - 11, sh + 8, cx - 11, sh + 16, 1), line(cx - 13, sh + 10, cx - 9, sh + 14, 1)), P.rune, flat);
-  } else F.part(ellipse(cx + 1, sh + 10, 7, 8), P.plate); // the shield on its back
-  // the helm: bark, a crest of leaves, amber eyes in the slit
+  else if (!back) { F.part(line(cx + 8, sh + 3, cx + 12, sh + 12, 4), P.bark); sword(cx + 12, sh + 12); shield(cx - 11, sh + 12); }
+  else shield(cx + 1, sh + 10);
+  // the head: a wooden helm with a slit of light, a crown of branches in leaf rising from it
   const hy = sh - 7, hx = cx + (side ? 2 : 0);
+  for (const s of side ? [-1, 1] : [-1, 1]) { // the branching crown
+    const bx = hx + s * 3, b1 = [bx + s * 3, hy - 10], b2 = [bx + s * 7, hy - 14];
+    F.part(both(line(bx, hy - 4, ...b1, 2), line(...b1, ...b2, 1), line(...b1, b1[0] - s * 1, hy - 15, 1)), P.bark);
+    for (const [x, y] of [b2, [b1[0] - s * 1, hy - 15], [b1[0] + s * 2, hy - 9]]) F.part(ellipse(x, y, 2, 1.5), P.leafy);
+  }
   F.part(ellipse(hx, hy, 6, 6.5), P.plate);
-  for (let i = 0; i < 5; i++) F.part(ellipse(hx - 4 + i * 2, hy - 7 - (i % 2), 2, 2.5), P.moss); // the leafy crest
+  F.part(rows(ellipse(hx, hy, 6.2, 6.7), hy - 7, hy - 3), P.moss, flat);
   if (back) return;
-  F.part(rect(hx - 4 + (side ? 2 : 0), hy - 1, hx + 4, hy), '#1a1008', flat);
-  if (side) F.dot(hx + 3, hy - 1, P.eye); else { F.dot(hx - 2, hy - 1, P.eye); F.dot(hx + 2, hy - 1, P.eye); }
+  F.part(rect(hx - 4 + (side ? 2 : 0), hy - 1, hx + 4, hy + 0.5), '#1a1008', flat);
+  if (side) F.part(rect(hx + 2, hy - 1, hx + 4, hy), P.eye, flat);
+  else for (const s of [-1, 1]) F.part(rect(hx + s * 2 - 0.8, hy - 1, hx + s * 2 + 0.8, hy), P.eye, flat);
+  F.part(line(hx + (side ? 2 : 0), hy + 2, hx + (side ? 2 : 0), hy + 5, 1), P.rune, flat); // a rune down the faceplate
 }
 
 // ---------- dragons: a horned head on a long neck, bat wings, a spined back and tail. The Thorn Drakes are

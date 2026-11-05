@@ -416,15 +416,18 @@ and runes glowing in the bark, lit by glowing mushrooms; the fourth is a great h
 round a rune circle of the World Tree. Every monster down there attacks on sight.
 
 - **Floor 1:** Root Squirrels, Ratatoskr's little kin up on their hind legs in bark jerkins and green
-  scarves, quick and biting twice, and Brambles that throw their thorns.
-- **Floor 2:** Root Serpents (their bite poisons), Moss Golems, and Dark Elves, hooded archers in violet cloaks
+  scarves, quick and biting twice, and Brambles, walking thickets of thorned vines round a glowing rose
+  heart, that lash with their vines and throw their thorns.
+- **Floor 2:** Root Serpents (their bite poisons), Moss Golems (hunched giants of boulders under a mantle of moss,
+  runes glowing in their cracks), and Dark Elves, hooded archers in violet cloaks
   and rune-traced leathers, loosing shadow arrows from tall black bows.
 - **Floor 3:** Great Stags, Dryads throwing glowing leaves, Rot Beetles, and **Ratatoskr** (Lv 74
   mini-boss), the World Tree's messenger squirrel: no bigger than a Bloop, like its kin, but quick and hard to hit, in dark
   plate traced with glowing gold runes, a torn red cloak and a great fiery tail. It dashes in (**Swift
   Dash**), bounds onto you (**Bounding Leap**), throws glowing **Rune Acorns**, strikes twice now and
   then, and calls its kin, the Root Squirrels.
-- **Floor 4, the great hall:** Root Wardens, knights of living wood, and Thorn Drakes guard **Nidhogg**
+- **Floor 4, the great hall:** Root Wardens, knights of living wood crowned with branches in leaf, with
+  shields carved with the World Tree and greatswords of living wood, and Thorn Drakes guard **Nidhogg**
   (Lv 99 MVP, 1,400,000 HP, Shadow), the black dragon that gnaws the World Tree's roots, its scales
   cracked with glowing red and its crimson wings torn through with holes. It never leaves its hall.
 
