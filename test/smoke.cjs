@@ -99,6 +99,7 @@ async function waitFor(url, ms = 30000) {
     await page.evaluate(() => { window.__aria.player.takeDamage = () => 0; });
 
     step('every map');
+    const moods = [];
     const ids = await page.evaluate(() => Object.entries(window.__aria.MAPS).filter(([, m]) => !m.arena).map(([id]) => id)); // (a raid's arena only in a run)
     for (const id of ids) {
       const before = fail.length;
@@ -107,8 +108,13 @@ async function waitFor(url, ms = 30000) {
       const here = await page.evaluate(() => window.__aria.world.id);
       if (here !== id) fail.push(`warp to ${id} landed in ${here}`);
       if (fail.length > before) fail.push(`(while entering ${id})`);
+      // the music follows the map (audio.js MOODS), once the sound has started
+      const want = { city: 'town', halls1: 'dungeon', desert: 'desert', grove: 'field', ygg: 'wonder' }[id];
+      const mood = await page.evaluate(() => (window.__aria.audio.ctx && window.__aria.audio.enabled ? window.__aria.audio.mood : null));
+      if (want && mood && mood !== want && mood !== 'boss') fail.push(`music in ${id}: ${mood}, not ${want}`);
+      if (want && mood) moods.push(`${id} ${mood}`);
     }
-    console.log(`${ids.length} maps visited`);
+    console.log(`${ids.length} maps visited; music: ${moods.join(', ') || 'no sound in this browser'}`);
   } catch (e) {
     fail.push(`smoke test stopped: ${e.message}`);
   } finally {

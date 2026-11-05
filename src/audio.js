@@ -2,6 +2,16 @@
 const PENTA_DAY = [62, 64, 66, 69, 71, 74, 76, 78, 81];   // D major pentatonic (MIDI)
 const PENTA_NIGHT = [57, 60, 62, 64, 67, 69, 72, 74];     // A minor pentatonic
 const midi = (n) => 440 * Math.pow(2, (n - 69) / 12);
+// the music's moods (main.js picks one for the map and the moment): a scale, the drone's root, the
+// beat (s), how often a beat plays a note, the pluck's loudness, and a low drum for the boss fights.
+// The fields keep the day and night scales above
+export const MOODS = {
+  town: { scale: [62, 66, 69, 71, 74, 78, 81, 83], root: 50, beat: 0.36, play: 0.7, vol: 0.9, chord: 0.3 },       // a bright D major, with chords
+  desert: { scale: [64, 65, 68, 69, 71, 72, 74, 76], root: 52, beat: 0.5, play: 0.55, vol: 0.9 },                  // E phrygian dominant: the sands
+  dungeon: { scale: [57, 58, 62, 63, 64, 65, 69], root: 45, beat: 0.9, play: 0.4, vol: 0.75, low: true },          // low A phrygian, sparse: under the earth
+  wonder: { scale: [62, 64, 66, 68, 69, 71, 73, 74, 76], root: 50, beat: 0.7, play: 0.45, vol: 0.85 },             // D lydian: the Sphinx and the World Tree
+  boss: { scale: [57, 60, 62, 63, 64, 67, 69, 72], root: 45, beat: 0.26, play: 0.8, vol: 1, drum: true },           // A minor, quick, a drum under it
+};
 
 export class Audio {
   constructor() {
@@ -141,23 +151,32 @@ export class Audio {
     this.tone({ type: 'sine', f0: f * 2, dur: 0.6, vol: vol * 0.25, attack: 0.004, out: this.music });
   }
 
-  update(dt, night) {
+  // mood: 'field' (day and night), or one of MOODS (main.js musicMood)
+  update(dt, night, mood = 'field') {
     if (!this.ctx || !this.enabled) return;
     this.night += (night - this.night) * Math.min(1, dt * 0.5);
-    const now = this.ctx.currentTime;
-    // drone shifts from D to A minor-ish at night
-    const root = this.night > 0.5 ? 45 : 50;
+    const now = this.ctx.currentTime, M = MOODS[mood];
+    if (mood !== this.mood) { this.mood = mood; this.cur = null; this.nextNote = Math.min(this.nextNote, now + 0.3); this.beatN = 0; }
+    // drone: D by day, A minor-ish at night, or the mood's own
+    const root = M ? M.root : this.night > 0.5 ? 45 : 50;
     this.padOsc[0].frequency.setTargetAtTime(midi(root), now, 1.5);
     this.padOsc[1].frequency.setTargetAtTime(midi(root + 7), now, 1.5);
     if (now >= this.nextNote) {
-      const scale = this.night > 0.5 ? PENTA_NIGHT : PENTA_DAY;
-      const beat = this.night > 0.5 ? 0.62 : 0.42;
-      if (Math.random() < 0.62) {
+      const scale = M ? M.scale : this.night > 0.5 ? PENTA_NIGHT : PENTA_DAY;
+      const beat = M ? M.beat * (mood === 'town' && this.night > 0.5 ? 1.3 : 1) : this.night > 0.5 ? 0.62 : 0.42;
+      const vol = M ? M.vol : 1, shift = M?.low ? -12 : 0;
+      if (Math.random() < (M ? M.play : 0.62)) {
         this.cur = Math.max(0, Math.min(scale.length - 1, (this.cur ?? 3) + Math.floor(Math.random() * 5) - 2));
-        this.pluck(scale[this.cur], 0.16 + Math.random() * 0.08);
-        if (Math.random() < 0.18) this.pluck(scale[Math.max(0, this.cur - 2)] - 12, 0.12);
+        this.pluck(scale[this.cur] + shift, (0.16 + Math.random() * 0.08) * vol);
+        if (Math.random() < (M?.chord ?? 0.18)) this.pluck(scale[Math.max(0, this.cur - 2)] - 12 + shift, 0.12 * vol);
       }
-      this.nextNote = now + beat * (Math.random() < 0.15 ? 2 : 1);
+      // the boss fights' drum: a low thump on every other beat, a softer one between
+      if (M?.drum) {
+        this.beatN = (this.beatN || 0) + 1;
+        const hard = this.beatN % 2 === 0;
+        this.tone({ type: 'sine', f0: hard ? 90 : 70, f1: 38, dur: 0.22, vol: hard ? 0.32 : 0.14, attack: 0.002, out: this.music });
+      }
+      this.nextNote = now + beat * (!M?.drum && Math.random() < 0.15 ? 2 : 1);
     }
   }
 }

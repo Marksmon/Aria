@@ -3764,7 +3764,7 @@ function frame() {
     stepT -= dt;
     if (stepT <= 0) { stepT = 1.4 / player.walkSpeed(); audio.play('step'); } // a footstep every 1.4 tiles
   }
-  audio.update(dt, dayNight.night);
+  audio.update(dt, dayNight.night, musicMood(dt));
   if (!started && !cine) cam.yaw += dt * 0.05; // slow orbit behind the title screen
   if (!started && cine) mobs.update(dt, CINE_HERO); // (the cutscene's world goes on)
   mobs.cam = b;
@@ -3827,6 +3827,18 @@ function frame() {
   wings.set(inv.gear.wings); // the Wings slot: wings on the back, or a light at the shoulder
   wings.update(dt, player, camera, t, world.heightAt(player.x, player.z));
   renderer.render(scene, camera);
+}
+
+// the music's mood (audio.js MOODS): a boss fight (a boss or MVP hunting the hero near by, or a raid run,
+// held 4 s after), a dungeon, a wonder (the Sphinx's sands, the World Tree), a town, the desert, or a field
+const TOWNS = new Set(['camp', 'city', 'magic', 'hunt', 'sand']), SANDS = new Set(['redsands', 'dunes', 'scorpion', 'desert']), WONDERS = new Set(['sphinx', 'ygg']);
+let bossMusicT = 0;
+function musicMood(dt) {
+  const fight = raid || mobs.list.some((m) => m.alive && (m.def.boss || m.def.mvp) && !m.def.decoy && m.state === 'chase' && Math.hypot(m.x - player.x, m.z - player.z) < 16);
+  bossMusicT = fight ? 4 : Math.max(0, bossMusicT - dt);
+  if (bossMusicT > 0) return 'boss';
+  const id = world.id;
+  return MAPS[id]?.indoor ? 'dungeon' : WONDERS.has(id) ? 'wonder' : TOWNS.has(id) ? 'town' : SANDS.has(id) ? 'desert' : 'field';
 }
 
 // monster names, like Ragnarok: over the one the mouse is on, and over the one you are fighting

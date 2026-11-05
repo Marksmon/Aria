@@ -1425,6 +1425,11 @@ monsters are cut at the waterline, and rings spread round them as they move.
 A full day lasts 10 minutes. Night brings Wisps and extra monsters. Rest in the tent
 to restore HP, save, and sleep until morning.
 
+**Music** (all synthesized, `audio.js` MOODS) follows where you are: a bright tune with chords in the
+towns, the fields' gentle day and night scales, an Eastern scale on the desert's sands, low and sparse
+notes in the dungeons, a dreamy one at the Sphinx and the World Tree, and a quick tune over a drum
+when a boss or MVP comes for you (and in a raid).
+
 ## Roadmap
 
 - [x] **M1–M6** Map, combat, drops and crafting, monsters, day/night, sound and title screen
