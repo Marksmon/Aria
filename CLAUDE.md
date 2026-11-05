@@ -182,7 +182,7 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   `WING_GLOW`, embers, and every few seconds at rest a slow spread with the glow flaring, `SPREAD`). The tree is
   big with many roots (the owner's call: great roots with branches, small ones breaking the ground all round).
   Ratatoskr drops Ratatoskr's Tail (Wings, 2%: one piece, not a pair, `SINGLE` in `wingart.js`, its runes pulsing,
-  a swish at rest) and Ammit the Angry Snarl (Face, 2%, after the owner's sketch: a cartoon angry mouth,
+  a swish at rest) and Ammit the Angry Snarl (Face, 2%, after the owner's sketch: just a normal person's mouth, looking angry,
   `build-tools/draw-snarl.py`). Its monsters are painted in code in `src/roots.js` (the Rot Beetles are the beetles in new colours).
 - **Quests:** side quests and job trials can be quit from the Quest View; the main story quest
   can never be quit.

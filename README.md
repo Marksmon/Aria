@@ -379,7 +379,7 @@ dim underground, day or night.
 - **Floor 3:** Sphinx Cubs, Sand Elementals (their whirling sand slows you), walking Sarcophagi, and
   **Ammit the Devourer** (Lv 74 mini-boss: a crocodile's head, a lion's mane and claws). It rushes,
   pounces, and **Devours**: a bite that heals it. It calls Sphinx Cubs. Now and then (2%) it drops the
-  **Angry Snarl**, a Face piece: a slanted white mouth of gritted teeth on your hero's face (ATK +10,
+  **Angry Snarl**, a Face piece: an ordinary person's mouth, clenched angry with its teeth gritted, on your hero's face (ATK +10,
   HIT +3, POW +2, END +1).
 - **Floor 4, the great hall:** no maze, only a long hall of gold-capped pillars, where the Jackal
   Guardians with their long cursed spears and the Falcon Sentinels throwing blades of wind keep watch

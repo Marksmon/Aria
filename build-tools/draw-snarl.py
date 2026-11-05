@@ -1,5 +1,5 @@
-# Draws Ammit's Angry Snarl (Face), the Devourer's drop, after the owner's sketch: a cartoon angry mouth on
-# the hero's face, a white slanted block (its right side taller) with gritted teeth as a pink zigzag across
+# Draws Ammit's Angry Snarl (Face), the Devourer's drop, after the owner's sketch: just an ordinary person's
+# mouth, looking angry, on the hero's face: a white slanted block (its right side taller) with gritted teeth as a pink zigzag across
 # it, outlined dark. Laid on the face and turned to each of the head's 8 directions on its 43x43 cell
 # (docs/character-standard.md), like draw-eye.py; always drawn over the hat (over).
 # Writes src/art/hg_ammit_snarl.png (8 cells in a row) and its .json layout.
