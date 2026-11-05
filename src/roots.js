@@ -27,7 +27,10 @@ export const ROOTS = {
   greatStag: { kind: 'stag', size: [68, 68], body: [44, 56], coat: '#a87a4a', belly: '#ecdcbc', antler: '#e8dcc0', glow: '#9affc0', eye: '#1a1008', hoof: '#3a2a1e' },
   dryad: { kind: 'dryad', size: [48, 66], body: [24, 60], skin: '#86c06a', leaf: '#3a8a3a', flower: '#ff9ac8', bark: '#6a4a2e', eye: '#ffe96a', dress: '#4f9a44' },
   rootWarden: { kind: 'warden', size: [68, 80], body: [34, 72], bark: '#5e4028', plate: '#8a6440', moss: '#4f7a3c', leafy: '#8ac85a', eye: '#ffe08a', blade: '#b89a6a', rune: '#9affc0' },
-  thornDrake: { kind: 'dragon', k: 1, size: [66, 58], body: [44, 44], scale: '#3a6a3a', belly: '#b8c88a', wing: '#2a4a2a', horn: '#e8dcc0', eye: '#ffd23a', spine: '#c8e070', mouth: '#7a1a1a' },
+  // the Thorn Drakes, Nidhogg's brood, grown over with the World Tree's brambles (thorny): dark green
+  // scales wrapped in bark-brown vines, wings like great veined leaves thorned along their bones, pale
+  // bramble thorns down the back and a crest of them on the head, venom dripping green
+  thornDrake: { kind: 'dragon', k: 1, thorny: true, size: [66, 58], body: [44, 44], scale: '#2e4a2a', belly: '#a8b878', wing: '#4a7a34', leafVein: '#9ad870', horn: '#e8dab0', eye: '#e8ff6a', spine: '#e8dab0', vine: '#6a4a2e', mouth: '#5a1a14', venom: '#9aff6a' },
   // Nidhogg after the owner's picture: near-black scales cracked with glowing red, torn crimson wings eaten
   // through with holes, a crest of black spikes, burning red eyes, a maw glowing red inside
   nidhogg: { kind: 'dragon', k: 2.4, mvp: true, size: [158, 132], body: [106, 104], scale: '#221c22', belly: '#3a1c22', wing: '#7a0e1a', horn: '#3a3036', eye: '#ff3a2a', spine: '#3a3036', mouth: '#d8201e', venom: '#ff6a3a', vein: '#e8282a' },
@@ -361,6 +364,11 @@ function dragon(F, P, dir, { G, W, step, walk, f, atk }) {
     F.part(line(ox, oy, ...tip, W1(1.4 * k)), dark(P.wing));
     for (const [x, y] of fingers) F.part(line(...tip, x, y, w), P.vein ? '#141014' : dark(P.wing), flat);
     F.part(ellipse(...tip, 0.8 * k, 0.8 * k), P.horn);
+    if (P.thorny) { // a great leaf: veins of light green out from the arm, thorns all along its bones
+      for (const [x, y] of fingers) F.part(line(ox + s * 1.5 * k, oy + 3 * k, (x + tip[0]) / 2, (y + tip[1]) / 2 + 2 * k, 1), P.leafVein, flat);
+      for (let i = 1; i <= 4; i++) { const px = ox + (tip[0] - ox) * i / 5, py = oy + (tip[1] - oy) * i / 5; F.part(poly([[px - 0.7 * k, py], [px + 0.7 * k, py], [px - s * 0.4 * k, py - 2.6 * k]]), P.spine); }
+      for (const [x, y] of fingers) F.part(poly([[x - 0.6, y], [x + 0.6, y], [x + s * 1.2, y + 2.4]]), P.spine);
+    }
     if (P.vein) { // red veins glowing in the membrane, holes eaten through it, spikes along the arm
       for (const [x, y] of fingers) F.part(line(ox + s * 2 * k, oy + 4 * k, (x + tip[0]) / 2, (y + tip[1]) / 2 + 2 * k, 1), P.vein, flat);
       fingers.forEach(([x, y], i) => { const hx = ox + (x - ox) * 0.62 + s * 1.5 * k, hy = oy + (y - oy) * 0.62 + 2.5 * k; hole(F, hx, hy, (1.2 + (i % 2) * 0.6) * k, (0.9 + ((i + 1) % 2) * 0.5) * k, P.vein); });
@@ -382,12 +390,16 @@ function dragon(F, P, dir, { G, W, step, walk, f, atk }) {
     wing(-1, bx + 2 * k, by - 5 * k);
     const nx = bx + 13 * k, ny = by - 11 * k;
     F.part(both(line(bx + 7 * k, by - 3 * k, bx + 11 * k, by - 8 * k, W1(4 * k)), line(bx + 11 * k, by - 8 * k, nx, ny + 2 * k, W1(3.5 * k))), P.scale);
+    if (P.thorny) { // vines wound round it, bramble thorns down its back and neck
+      for (const x of [bx - 6 * k, bx, bx + 5 * k]) F.part(line(x - 1.5 * k, by - 5 * k, x + 1.5 * k, by + 4 * k, 1), P.vine, flat);
+      for (let i = 0; i < 6; i++) { const x = bx - 8 * k + i * 3.2 * k, y = by - 6 * k + (i > 3 ? -(i - 3) * 1.5 * k : 0); F.part(poly([[x - 0.8 * k, y], [x + 0.8 * k, y], [x - 1.4 * k, y - 3.4 * k]]), P.spine); }
+    }
     if (P.vein) { // red cracks along it, a crest of black spikes down its neck
       F.part(both(line(bx - 7 * k, by - 2 * k, bx - 2 * k, by + 1 * k, 1), line(bx - 2 * k, by + 1 * k, bx + 4 * k, by - 2 * k, 1), line(bx + 4 * k, by - 2 * k, bx + 9 * k, by - 6 * k, 1)), P.vein, flat);
       for (let i = 0; i < 4; i++) { const x = bx + 8 * k + i * 1.4 * k, y = by - 6 * k - i * 1.6 * k; F.part(poly([[x - 0.9 * k, y], [x + 0.9 * k, y], [x - 2 * k, y - 4 * k]]), P.spine); }
     }
     F.part(ellipse(nx + 1 * k, ny, 4.5 * k, 3.6 * k), P.scale); // the head
-    if (P.vein) for (let i = 0; i < 4; i++) F.part(poly([[nx - 2 * k + i * 1.3 * k, ny - 2.5 * k], [nx - 0.6 * k + i * 1.3 * k, ny - 2.8 * k], [nx - 3 * k + i * 1.1 * k, ny - 6.5 * k + i * 0.4 * k]]), P.spine);
+    if (P.vein || P.thorny) for (let i = 0; i < 4; i++) F.part(poly([[nx - 2 * k + i * 1.3 * k, ny - 2.5 * k], [nx - 0.6 * k + i * 1.3 * k, ny - 2.8 * k], [nx - 3 * k + i * 1.1 * k, ny - 6.5 * k + i * 0.4 * k]]), P.spine);
     F.part(poly([[nx + 3 * k, ny - 2 * k], [nx + 10 * k, ny - 0.5 * k], [nx + 10 * k, ny + 1 * k], [nx + 3 * k, ny + 1 * k]]), P.scale); // the upper jaw
     F.part(poly([[nx + 3 * k, ny + 1.5 * k], [nx + 9 * k, ny + 1.5 * k + gape], [nx + 8 * k, ny + 3 * k + gape], [nx + 3 * k, ny + 3 * k]]), P.belly); // the lower
     F.part(poly([[nx + 4 * k, ny + 1 * k], [nx + 9.5 * k, ny + 1 * k], [nx + 8.5 * k, ny + 1.5 * k + gape], [nx + 4 * k, ny + 2 * k]]), P.mouth);
@@ -406,6 +418,10 @@ function dragon(F, P, dir, { G, W, step, walk, f, atk }) {
   if (!back) F.part(ellipse(cx, by - 1 * k, 5.5 * k, 5 * k), P.belly, flat);
   if (!back) for (let i = 0; i < 4; i++) F.part(line(cx - 4.5 * k + i * 0.4 * k, by - 4 * k + i * 2 * k, cx + 4.5 * k - i * 0.4 * k, by - 4 * k + i * 2 * k, w), dark(P.belly), flat); // belly plates
   if (P.mvp) for (const s of [-1, 1]) spines([[cx + s * 7 * k, by - 8 * k, s], [cx + s * 9.5 * k, by - 5 * k, s], [cx + s * 4 * k, by - 10 * k, s]]); // spines down its shoulders
+  if (P.thorny) { // vines wound round it, thorns out of its shoulders
+    for (const s of [-1, 1]) F.part(line(cx - s * 7 * k, by - 8 * k, cx + s * 6 * k, by + 1 * k, 1), P.vine, flat);
+    for (const s of [-1, 1]) spines([[cx + s * 7 * k, by - 8 * k, s], [cx + s * 9 * k, by - 5 * k, s], [cx + s * 4.5 * k, by - 10 * k, s]]);
+  }
   if (P.vein) for (const s of [-1, 1]) F.part(both(line(cx + s * 2 * k, by - 9 * k, cx + s * 5 * k, by - 5 * k, 1), line(cx + s * 5 * k, by - 5 * k, cx + s * 4 * k, by - 1 * k, 1), line(cx + s * 4 * k, by - 1 * k, cx + s * 7 * k, by + 2 * k, 1)), P.vein, flat); // red cracks in its scales
   for (const s of [-1, 1]) { const lx = cx + s * 6 * k + s * step * k * 0.5; F.part(rect(lx - 2 * k, by, lx + 2 * k, G - 1), P.scale); F.part(line(lx - 2 * k, G - 1, lx + 2 * k, G - 1, w), P.horn, flat); }
   if (back) {
@@ -418,9 +434,9 @@ function dragon(F, P, dir, { G, W, step, walk, f, atk }) {
   F.part(line(cx, by - 8 * k, cx, hy + 3 * k, W1(5 * k)), P.scale);
   for (const s of [-1, 1]) F.part(poly([[cx + s * 2.5 * k, hy - 2 * k], [cx + s * 7 * k, hy - 8 * k], [cx + s * 4 * k, hy - 1 * k]]), P.horn);
   F.part(ellipse(cx, hy, 5 * k, 4.2 * k), P.scale);
-  if (P.vein) { // the crest of black spikes over its head, red cracks down its brow
+  if (P.vein || P.thorny) { // the crest of spikes (thorns, on a drake) over its head; red cracks down Nidhogg's brow
     for (let i = -3; i <= 3; i++) F.part(poly([[cx + i * 1.4 * k - 0.9 * k, hy - 3 * k], [cx + i * 1.4 * k + 0.9 * k, hy - 3 * k], [cx + i * 1.9 * k, hy - (7.5 - Math.abs(i)) * k]]), P.spine);
-    if (!back) for (const s of [-1, 1]) F.part(line(cx + s * 1 * k, hy - 3.5 * k, cx + s * 2.5 * k, hy - 0.5 * k, 1), P.vein, flat);
+    if (!back && P.vein) for (const s of [-1, 1]) F.part(line(cx + s * 1 * k, hy - 3.5 * k, cx + s * 2.5 * k, hy - 0.5 * k, 1), P.vein, flat);
   }
   if (back) return;
   F.part(poly([[cx - 3.5 * k, hy + 1 * k], [cx + 3.5 * k, hy + 1 * k], [cx + 2.8 * k, hy + 5 * k + gape], [cx - 2.8 * k, hy + 5 * k + gape]]), P.mouth);

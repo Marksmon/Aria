@@ -427,7 +427,8 @@ round a rune circle of the World Tree. Every monster down there attacks on sight
   Dash**), bounds onto you (**Bounding Leap**), throws glowing **Rune Acorns**, strikes twice now and
   then, and calls its kin, the Root Squirrels.
 - **Floor 4, the great hall:** Root Wardens, knights of living wood crowned with branches in leaf, with
-  shields carved with the World Tree and greatswords of living wood, and Thorn Drakes guard **Nidhogg**
+  shields carved with the World Tree and greatswords of living wood, and Thorn Drakes (Nidhogg's brood,
+  grown over with brambles: leaf-veined wings, thorns down their backs, venom dripping green) guard **Nidhogg**
   (Lv 99 MVP, 1,400,000 HP, Shadow), the black dragon that gnaws the World Tree's roots, its scales
   cracked with glowing red and its crimson wings torn through with holes. It never leaves its hall.
 
