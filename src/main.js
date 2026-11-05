@@ -32,10 +32,12 @@ import { DayNight } from './daynight.js';
 import { Audio } from './audio.js';
 import { Wings, wingPicture } from './wings.js';
 import { clamp, lerp } from './noise.js';
+import { settings, pixelRatio } from './settings.js';
 
 const canvas = document.getElementById('game');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, powerPreference: 'high-performance' });
-renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
+renderer.setPixelRatio(pixelRatio(window.devicePixelRatio)); // Settings' Graphics: Sharp (up to 1.5x) or Fast (1x)
+settings.onChange((k) => { if (k === 'graphics') { renderer.setPixelRatio(pixelRatio(window.devicePixelRatio)); resize(); } });
 renderer.localClippingEnabled = true; // wading: sprites are cut at the waterline
 
 const scene = new THREE.Scene();
@@ -2146,6 +2148,8 @@ const menus = new Menus(inv, prog, player, {
   ui() { audio.play('ui'); },
   soundOn: () => audio.enabled,
   toggleSound() { audio.setEnabled(!audio.enabled); },
+  setting: (k) => settings.get(k),
+  setSetting(k, v) { settings.set(k, v); },
   closed() { persist(); },
   // Settings' Back to main menu: save, and back to the title to pick a hero (not in a raid)
   toTitle() {
@@ -3524,11 +3528,15 @@ function camBasis() {
 let saveT = 0;
 let questZone = null, questT = 0;
 let resetting = false;
+let saveWarned = false;
 function persist() {
   if (!started || resetting) return;
   const isle = raidOf(world.id), back = isle && raid?.back, at = back || (isle ? boatSpot(isle) : player); // a run is never saved: back on the shore (or where they set out from)
-  writeSave({ story: story.toJSON(), look: player.look, visited: [...visited], keepers: [...keepers], savePoint, raidAt, raidsDone: [...raidsDone], raidLog, raidRun: raid ? { id: raid.id, diff: raid.diff, at: raid.start } : null, map: back ? back.map : isle ? isle.from : world.id, mvpAt: mobs.mvpAt, bossHp: mobs.bossSnapshot(), bossAt: mobs.bossAt, fieldAt: mobs.fieldSnapshot(), x: at.x, z: at.z, yaw: cam.yaw, dist: cam.dist, hp: player.hp, sp: player.sp, inv: inv.toJSON(), prog: prog.toJSON(), quests: quests.toJSON(), hotbar: hotbar.toJSON(), time: dayNight.t });
+  const ok = writeSave({ story: story.toJSON(), look: player.look, visited: [...visited], keepers: [...keepers], savePoint, raidAt, raidsDone: [...raidsDone], raidLog, raidRun: raid ? { id: raid.id, diff: raid.diff, at: raid.start } : null, map: back ? back.map : isle ? isle.from : world.id, mvpAt: mobs.mvpAt, bossHp: mobs.bossSnapshot(), bossAt: mobs.bossAt, fieldAt: mobs.fieldSnapshot(), x: at.x, z: at.z, yaw: cam.yaw, dist: cam.dist, hp: player.hp, sp: player.sp, inv: inv.toJSON(), prog: prog.toJSON(), quests: quests.toJSON(), hotbar: hotbar.toJSON(), time: dayNight.t });
   writeStorage(inv.chest.toJSON());
+  // the phone refused the save (storage full or blocked): say so once, so the player can back up
+  if (!ok && !saveWarned) { saveWarned = true; menus.message('Could not save! Back up your save from the title screen (Account) soon.'); }
+  if (ok) saveWarned = false;
 }
 
 // second jobs glow: a soft aura behind the hero and a ring at their feet, in the job's colour
@@ -3813,7 +3821,14 @@ function mobLabels() {
     projV.set(m.x, top, m.z).project(camera);
     if (projV.z > 1) { el.style.display = 'none'; continue; }
     el.style.display = 'block';
-    el.textContent = m.def.name + (m.def.mvp ? ' ✦ MVP' : m.def.boss ? ' ✦' : '');
+    const name = m.def.name + (m.def.mvp ? ' ✦ MVP' : m.def.boss ? ' ✦' : '');
+    if (k === 'target' && settings.get('targetBar')) { // the one you fight: a thin health bar under its name (Settings)
+      if (!el.firstChild || el.firstChild.nodeType !== 1) { el.textContent = ''; el.innerHTML = '<b></b><i class="tbar"><s></s></i>'; }
+      const f = clamp(m.hp / (m.def.hp || 1), 0, 1);
+      if (el.firstChild.textContent !== name) el.firstChild.textContent = name;
+      el.lastChild.firstChild.style.width = `${(f * 100).toFixed(1)}%`;
+      el.lastChild.classList.toggle('low', f < 0.3);
+    } else if (el.textContent !== name || el.firstChild?.nodeType === 1) el.textContent = name;
     el.style.transform = `translate(${(projV.x + 1) / 2 * window.innerWidth}px, ${(1 - projV.y) / 2 * window.innerHeight}px) translate(-50%, -100%)`;
   }
 }
@@ -4028,4 +4043,4 @@ if (go || toSelect) { title.classList.remove('wait'); bootGone(); } else {
   addEventListener('keydown', tap);
 }
 
-window.__aria = { scene, renderer, lib, warp, enterMap, useSkill, useItem, story, SPOTS, player, world, cam, camera, mobs, allies, fx, inv, prog, quests, villagers, menus, hotbar, dayNight, audio, stats: world.stats, raid: () => raid, raidAt: () => raidAt, raidGo, raidLog: () => raidLog, storyDone, savePoint: () => savePoint, keepers, gainExp };
+window.__aria = { scene, renderer, lib, MAPS, settings, warp, enterMap, useSkill, useItem, story, SPOTS, player, world, cam, camera, mobs, allies, fx, inv, prog, quests, villagers, menus, hotbar, dayNight, audio, stats: world.stats, raid: () => raid, raidAt: () => raidAt, raidGo, raidLog: () => raidLog, storyDone, savePoint: () => savePoint, keepers, gainExp };

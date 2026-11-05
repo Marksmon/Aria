@@ -5,7 +5,11 @@
   "scripts": {
     "dev": "vite --host",
     "build": "vite build",
-    "preview": "vite preview --host"
+    "preview": "vite preview --host",
+    "test": "node --test \"test/*.test.mjs\"",
+    "smoke": "node test/smoke.cjs",
+    "sim": "node build-tools/sim.mjs",
+    "sim:second": "node build-tools/second-sim.mjs --check"
   },
   "keywords": [],
   "author": "",

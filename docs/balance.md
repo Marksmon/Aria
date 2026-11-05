@@ -118,7 +118,11 @@ levels Venom Strike pays more for its SP, so the sim throws a cloud only where i
 | Rainbow Runner | 64 | 0% win · 47 s · boss at 97% · 20 pots | 0% win · 31 s · boss at 95% · 20 pots | 0% win · 42 s · boss at 97% · 20 pots | 0% win · 30 s · boss at 98% · 20 pots |
 | Great Bear | 66 | 0% win · 68 s · boss at 94% · 20 pots | 0% win · 49 s · boss at 92% · 20 pots | 0% win · 63 s · boss at 95% · 20 pots | 0% win · 45 s · boss at 95% · 20 pots |
 
-## Mini-bosses at their hinted level, 20 Orange Potions
+## Mini-bosses at their old hinted levels, 20 Orange Potions (history)
+
+From before the mini-bosses became second-job game (Lv 55-66, `picksFight` in `src/mobs.js`): the bosses
+then were Lv 23-56 with a tenth of today's HP. Kept for the record; today's numbers are under
+"Mini-bosses: half as hard as an MVP" below.
 
 | Boss | Blader | Sorcerer |
 |---|---|---|
@@ -155,11 +159,11 @@ The gentle lands on the road to the village: Willow Marsh, by Veidheim, is a Tra
 Moss Field and Fen Shore (the Archer's first trial is there): its Willow (Lv 8) and Yellow Bloop
 (Lv 7, Wind; the raid rebuilds its own from the raid's level) fall to a Base 10 Trainee again and
 again, for big Trainee Job EXP (tjob). The Treant (Lv 24) sits between the Giant Sprout and the
-Blue Crab, and the Elder Willow (Lv 23) is a mini-boss like the Giant Sprout (about a minute at its
-hinted Base 26 with 20 Orange Potions).
+Blue Crab, and the Elder Willow (Lv 55 today; it was Lv 23) is a mini-boss like the Giant Sprout, game for a
+second job.
 The predators' lands (Snake 46, Wolf 48, Bear 53) sit on the same curve as the goblins and fire
 beasts; the Sorcerer is shorter against the Bear, which is Neutral and hits hard. Their mini-bosses,
-the Alpha Wolf (51) and the Great Bear (56), fit between the Giant Beetle and the MVPs; the Alpha's
+the Alpha Wolf (64) and the Great Bear (66), fit between the Giant Beetle and the MVPs; the Alpha's
 pounce and dodging make it the harder of the two at its own level. The Ancient
 Treant (Lv 62) is the strongest MVP: like the Goblin King, a first-job hero cannot finish it
 (`node build-tools/sim.mjs ancientTreant 62`), a second job hitting 2-4x as hard can. Its guards
@@ -182,7 +186,7 @@ All four are enraged below half HP (`MVP_RAGE` in `src/mobs.js`: +25% damage, at
 last falls, and give up the chase only 22 paces off. They swing slowly for their ATK but with high
 DEX (140-165); their stomp (now a red circle too), moves and burning ground can't be dodged with
 FLEE and go through 75% of DEF (`MVP_MOVE`), so armor alone never makes a hero safe: stepping out of
-the circles does. Mini-bosses are unchanged: they are made for first jobs at their level.
+the circles does. Mini-bosses are second-job game, half as hard as an MVP (see below).
 
 Playtested in the browser with a Windrunner bot that steps out of red and orange circles, holds fire
 during Bark Armor, cuts down guards and shadows first, drinks a White Potion below half HP and a
@@ -219,7 +223,8 @@ The owner's call: mini-bosses are half as hard as an MVP (190,000-290,000 HP sin
 MVP's, DEX 120-145, slower swings) and fierce like one (enraged below half HP, moves that FLEE
 can't dodge and that go through 75% of DEF, guards at 80/50/25%), and a decent Lv 70 can beat them.
 No quest or trial needs one any more: those hunt their kin. Playtested with the same Windrunner bot
-(steps out of circles, guards first, potions as needed):
+(steps out of circles, guards first, potions as needed). The levels in brackets are the ones they had then
+(today: Great Bear 66, Alpha Wolf 64, Giant Mushroom 60, Elder Willow 55):
 
 | Mini-boss | Lv 70, decent gear (Goblin Bow +7, armor +4, King Crab card, the right arrows) | Lv 99, shop gear | Lv 99, best gear |
 |---|---|---|---|
@@ -336,3 +341,34 @@ one tier at +7, a neutral Lv 55 boss of 300,000 HP, SP not counted. Times to bri
   to the doll) is about 120–200% MATK a second through MDEF, on top of Poison Throws. It takes
   several seconds to build, so short fights and packs stay the Wizard's; on Shadow monsters (Dark
   Mushrooms, Dark Wisps, the Pharaoh's tomb) it falls to a quarter.
+
+## Mini-boss EXP (November 2026 review)
+
+The older mini-bosses paid far less than the newer ones for the same fight: the Giant Sprout 4,200 Base
+EXP for 200,000 HP (about 3x a same-level field monster), the desert's and the dungeons' mini-bosses
+22-28x. They now all pay about half of an MVP's EXP (its EXP and MVP bonus together), in line with
+"half as hard as an MVP" (Base / Job EXP, before the x4 rate):
+
+| Mini-boss | Lv | Was | Now |
+|---|---|---|---|
+| Giant Sprout | 55 | 4,200 / 2,940 | 30,000 / 21,000 |
+| Elder Willow | 55 | 3,600 / 2,520 | 28,000 / 19,600 |
+| King Crab | 58 | 8,400 / 5,880 | 32,000 / 22,400 |
+| Giant Mushroom | 60 | 17,000 / 11,900 | 46,000 / 32,200 |
+| Giant Beetle | 62 | 28,000 / 19,600 | 48,000 / 33,600 |
+| Alpha Wolf | 64 | 32,000 / 22,400 | 54,000 / 37,800 |
+| Great Bear | 66 | 42,000 / 29,400 | 60,000 / 42,000 |
+
+The Cactus Lord (52,000), Rainbow Runner (64,000), Ammit and Ratatoskr (80,000) are unchanged.
+
+## Tests
+
+`npm test` (`test/*.test.mjs`, also run before every APK build) checks the owner's rules that can be
+checked in code: which second-job trials open (the examples in `docs/job-rules.md`), skill points,
+3-4 actives per second job (the Wizard's five by name), one card per monster, the game's data (every
+drop, recipe, shop item, quest monster, portal), saves and their backup copy, and the balance:
+the Assassin about 1.4x the Blader over the field monsters (1.25-1.6), a same-level first job winning
+85% of its fights against every daytime field monster from Lv 12, and the crosses' bands
+(`node build-tools/second-sim.mjs --check`: Shadowblade / BladeMaster 0.98-1.25, Hunter / Windrunner
+0.78-1.02, Voodoo / Wizard 0.97-1.22). `npm run smoke` (after `npm run build`) plays the built game in
+Chromium at 844x390: a new hero, every window, the settings, a fight, every map, with no page error.

@@ -21,8 +21,12 @@ this phone or another).
 
 The title screen has three character slots. Tap a hero and **Continue** (or **Play**), or tap an
 empty slot to make a new one; **Delete** removes the picked hero (it asks twice). In the game, the **⚙**
-button (beside the minimap) opens Settings: Sound on or off, and **Back to main menu**, which saves and
-goes back to the title screen to play another hero. Every
+button (beside the minimap) opens Settings: Sound on or off, **Target health bar** (a thin bar under the
+name of the monster you fight, on or off), **Graphics** (Sharp, or Fast for a smoother game on an older
+phone), and **Back to main menu**, which saves and goes back to the title screen to play another hero.
+The game saves every few seconds and keeps a backup copy of each hero a minute old: a save that was cut
+short loads from the backup. If the phone ever refuses a save (its storage full), the game says so: back
+up your save from the title screen. Every
 hero keeps their own level, job, bag, gear, perz and quests, but the Keepers' storage (300 slots) is
 shared: what one hero puts away, the others can take out. Its window has sections (All, Usables,
 Equips, Miscs, Cards), each showing the bag's and the storage's items of that kind; tap a stack to
@@ -137,8 +141,8 @@ them; then they fight back for a while. Only the Dark Wisps, the fire beasts of 
 kobolds and goblins, the mini-bosses and the MVPs attack on sight. A Sprout runs away, and fights only when
 cornered.
 
-The new lands' monsters are palette swaps of the valley's, like a family of bloops in many colours. No
-health bars: monsters flash white when hit and wobble when nearly beaten. They respawn 60 s
+The new lands' monsters are palette swaps of the valley's, like a family of bloops in many colours. Monsters flash white when hit and wobble when nearly beaten; the one you fight shows a thin health
+bar under its name (Settings can turn it off). They respawn 60 s
 after they fall, twice as fast at night.
 
 **Kobolds and goblins** (hand-drawn in code for now, `src/painted.js`) come in three kinds:
@@ -1441,7 +1445,12 @@ to restore HP, save, and sleep until morning.
 npm install
 npm run dev      # local server, open on your phone via LAN
 npm run build    # single-file build in dist/index.html
+npm test         # the rules, the game's data, saves and the balance (also before every APK build)
+npm run smoke    # after a build: plays the built game in Chromium (a hero, every window, every map)
+npm run sim      # the fight simulator's table (docs/balance.md)
 ```
+
+Every push runs the tests, the build and the smoke test (`.github/workflows/test.yml`).
 
 Code map: `world.js` (maps, portals, props), `city.js` (Steinborg's walls and buildings), `player.js`, `mobs.js` (all monster AI and the MVP),
 `rules.js` (battle rules), `skills.js`, `items.js` + `inventory.js` + `menus.js` (items, crafting,

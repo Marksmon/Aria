@@ -137,3 +137,14 @@ const median = (a) => a.sort((x, y) => x - y)[a.length >> 1];
 const res = Object.fromEntries(Object.entries(JOBS_SIM).map(([k, f]) => [k, median(Array.from({ length: RUNS }, f))]));
 for (const [k, s] of Object.entries(res)) console.log(k.padEnd(12), `${s.toFixed(0).padStart(4)} s  ${(HP / s).toFixed(0).padStart(6)} a second`);
 console.log('\nShadowblade / BladeMaster', (res.blademaster / res.shadowblade).toFixed(2), '· Hunter / Windrunner', (res.windrunner / res.hunter).toFixed(2), '· Voodoo / Wizard', (res.wizard / res.voodoo).toFixed(2));
+
+// --check: fail (exit 1) when a cross leaves the owner's balance (docs/job-rules.md): the Shadowblade
+// about 1.1x the BladeMaster, the Hunter about 0.9x the Windrunner, the Voodoo about 1.1x the Wizard.
+// The CI runs it (.github/workflows/test.yml), so a balance change that breaks a rule is caught
+export const BANDS = { 'Shadowblade / BladeMaster': [res.blademaster / res.shadowblade, 0.98, 1.25], 'Hunter / Windrunner': [res.windrunner / res.hunter, 0.78, 1.02], 'Voodoo / Wizard': [res.wizard / res.voodoo, 0.97, 1.22] };
+if (process.argv.includes('--check')) {
+  const off = Object.entries(BANDS).filter(([, [r, lo, hi]]) => !(r >= lo && r <= hi));
+  for (const [k, [r, lo, hi]] of off) console.log(`OUT OF BAND: ${k} ${r.toFixed(2)} (wanted ${lo}-${hi})`);
+  if (off.length) process.exit(1);
+  console.log('second jobs: every cross in its band');
+}

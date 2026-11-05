@@ -1,0 +1,37 @@
+name: Test
+
+# every push and pull request: the unit tests (the owner's job and balance rules, the game's data,
+# saves), the build, and a smoke test of the built game in Chromium at a phone's size
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: test-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Unit tests
+        run: |
+          npm ci
+          npm test
+
+      - name: Build
+        run: npm run build
+
+      - name: Smoke test in Chromium
+        run: |
+          npm install --no-save playwright@1.63.0
+          npx playwright install --with-deps chromium
+          npm run smoke

@@ -720,10 +720,12 @@ export class Menus {
     return from.length > 1 ? from.map((j) => `${MK_POINTS} points in ${JOBS[j].name}`).join(' and ') : `the most points in ${JOBS[from[0]]?.name}`;
   }
 
-  // the ⚙ window: sound, and back to the title screen (the game saves first) to play another hero
+  // the ⚙ window: sound, the target's health bar, the graphics, and back to the title screen (the game saves first) to play another hero
   settings() {
     const on = this.hooks.soundOn?.();
     return `<div class="setrow"><span>Sound</span><button class="rbtn${on ? '' : ' soft'}" data-act="sound" aria-pressed="${!!on}">${on ? 'On' : 'Off'}</button></div>
+      <div class="setrow"><span>Target health bar<small>A bar under the name of the monster you fight.</small></span><button class="rbtn${this.hooks.setting?.('targetBar') ? '' : ' soft'}" data-act="targetbar" aria-pressed="${!!this.hooks.setting?.('targetBar')}">${this.hooks.setting?.('targetBar') ? 'On' : 'Off'}</button></div>
+      <div class="setrow"><span>Graphics<small>${this.hooks.setting?.('graphics') === 'fast' ? 'Fast: fewer pixels, for a smoother game on an older phone.' : 'Sharp: the clearest picture.'}</small></span><button class="rbtn${this.hooks.setting?.('graphics') === 'fast' ? ' soft' : ''}" data-act="graphics">${this.hooks.setting?.('graphics') === 'fast' ? 'Fast' : 'Sharp'}</button></div>
       <div class="setrow"><span>Main menu<small>Your game is saved first. Pick another hero there.</small></span><button class="rbtn" data-act="totitle">Back to main menu</button></div>`;
   }
 
@@ -1059,6 +1061,8 @@ export class Menus {
     }
     if (act === 'totitle') this.hooks.toTitle?.(); // back to the title screen, to play another hero
     if (act === 'sound') { this.hooks.toggleSound?.(); this.render(id); }
+    if (act === 'targetbar') { this.hooks.setSetting?.('targetBar', !this.hooks.setting?.('targetBar')); this.render(id); }
+    if (act === 'graphics') { this.hooks.setSetting?.('graphics', this.hooks.setting?.('graphics') === 'fast' ? 'sharp' : 'fast'); this.render(id); }
     if (act === 'statreset') { this.pend = {}; this.hooks.ui?.(); this.render(id); }
     if (act === 'statconfirm') {
       for (const [k, n] of Object.entries(this.pend)) for (let i = 0; i < n; i++) this.prog.raise(k);

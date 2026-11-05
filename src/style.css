@@ -714,7 +714,13 @@ button.eq:active { background: var(--w-sel); }
 /* monster names: over the one under the mouse, and over the one you are fighting (gold) */
 #moblabels span { position: absolute; left: 0; top: 0; display: none; white-space: nowrap; pointer-events: none;
   font: 700 12px system-ui, sans-serif; color: #fff; text-shadow: -1px 0 #000, 1px 0 #000, 0 -1px #000, 0 1px #000; }
-#moblabels .target { color: #ffd23a; }
+#moblabels .target { color: #ffd23a; text-align: center; }
+#moblabels .target b { display: block; font: inherit; }
+/* the target's health bar (Settings: Target health bar) */
+#moblabels .tbar { display: block; width: 56px; height: 5px; margin: 2px auto 0; border-radius: 3px; overflow: hidden;
+  background: rgba(0, 0, 0, .65); box-shadow: 0 0 0 1px rgba(0, 0, 0, .8); }
+#moblabels .tbar s { display: block; height: 100%; width: 100%; background: linear-gradient(#7ee86a, #3aa83a); transition: width .15s; }
+#moblabels .tbar.low s { background: linear-gradient(#ff8a6a, #d83a2a); }
 /* the hotbar's page button */
 .hb-page { width: calc(var(--hb) * .6); height: var(--hb); padding: 0; border-radius: 8px; border: 2px solid rgba(255, 230, 180, .35); background: rgba(60, 42, 28, .6);
   color: #ffe6a8; display: grid; place-content: center; touch-action: none; font: 700 19px system-ui, sans-serif; line-height: 1; }
@@ -978,6 +984,23 @@ body.creating #hud > *:not(#windows) { visibility: hidden; }
 .cr-actions .cr-go { flex: 1; padding: 10px; font: 700 16px system-ui, sans-serif; background: linear-gradient(#e3a13a, #b06a1e); border-color: #ffd23a; color: #1a120c; }
 .cr-actions .cr-go:disabled { opacity: .45; }
 .cr-note { color: #b8a888; font-weight: 400; }
+/* Begin stays in sight however short the screen: it sticks to the panel's foot while the choices scroll */
+.cr-actions { position: sticky; bottom: -14px; z-index: 1; padding: 8px 0 14px; margin-bottom: -14px;
+  background: linear-gradient(180deg, rgba(14, 12, 10, 0), rgba(14, 12, 10, .96) 30%); }
+@media (max-height: 460px) { /* a phone on its side: a tighter panel, so it all fits at once */
+  .cr-panel { gap: 6px; padding-top: calc(8px + env(safe-area-inset-top)); }
+  .cr-head h2 { font-size: 22px; }
+  .cr-head small { font-size: 11px; }
+  .cr-field { gap: 3px; }
+  .cr-field input { padding: 5px 8px; font-size: 15px; }
+  .cr-opt { padding: 4px; }
+  .cr-hair { grid-template-columns: repeat(auto-fill, minmax(58px, 1fr)); }
+  .cr-hairopt { flex-direction: row; justify-content: center; gap: 4px; padding: 2px; }
+  .cr-hairopt img { width: 30px; height: 30px; }
+  .cr-panel .swatch { width: 22px; height: 22px; }
+  .cr-actions .cr-go { padding: 7px; }
+  .cr-note { font-size: 11px; }
+}
 @media (max-width: 640px) { /* a phone held upright: the hero above, the choices below */
   .creator > .rw-body { grid-template-columns: 1fr; grid-template-rows: 38vh 1fr;
     background: linear-gradient(180deg, rgba(8, 6, 4, 0) 0%, rgba(8, 6, 4, .1) 28%, rgba(14, 12, 10, .92) 40%); }

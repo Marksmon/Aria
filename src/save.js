@@ -32,11 +32,22 @@ export function writeStorage(arr) {
   try { localStorage.setItem(STORE_KEY, JSON.stringify(arr)); } catch { /* storage unavailable */ }
 }
 
-// a save from before the shared storage kept its own chest: it moves into the storage, once
+// a save from before the shared storage kept its own chest: it moves into the storage, once.
+// A save that can't be read (cut short, or broken by a bug) falls back to its backup copy (BAK)
+const BAK = '.bak';
+const readJSON = (key) => {
+  try {
+    const raw = localStorage.getItem(key);
+    const d = raw ? JSON.parse(raw) : null;
+    return d && typeof d === 'object' && d.prog ? d : null;
+  } catch {
+    return null;
+  }
+};
 export function loadSave(i = activeSlot()) {
   try {
-    const raw = localStorage.getItem(keyOf(i));
-    const data = raw ? JSON.parse(raw) : null;
+    let data = readJSON(keyOf(i));
+    if (!data && localStorage.getItem(keyOf(i)) !== null) data = readJSON(keyOf(i) + BAK); // the main copy is broken: the backup
     if (data?.inv?.chest?.length) {
       writeStorage([...loadStorage(), ...data.inv.chest]);
       data.inv.chest = [];
@@ -48,16 +59,23 @@ export function loadSave(i = activeSlot()) {
   }
 }
 
-export function writeSave(data, i = activeSlot()) {
+// every save is written to its slot; a backup copy of it at most once a minute (BAK_EVERY), so a
+// broken write never takes the hero with it. false when the phone refused the write (storage full)
+const BAK_EVERY = 60000;
+const bakAt = {};
+export function writeSave(data, i = activeSlot(), now = Date.now()) {
   try {
-    localStorage.setItem(keyOf(i), JSON.stringify(data));
+    const text = JSON.stringify(data);
+    localStorage.setItem(keyOf(i), text);
+    if (!(now - (bakAt[i] || 0) < BAK_EVERY) || localStorage.getItem(keyOf(i) + BAK) === null) { localStorage.setItem(keyOf(i) + BAK, text); bakAt[i] = now; }
+    return true;
   } catch {
-    /* storage unavailable (private mode / preview) - game still runs */
+    return false; /* storage unavailable (private mode / preview) or full - the game still runs */
   }
 }
 
 export function clearSave(i = activeSlot()) {
-  try { localStorage.removeItem(keyOf(i)); } catch { /* ignore */ }
+  try { localStorage.removeItem(keyOf(i)); localStorage.removeItem(keyOf(i) + BAK); } catch { /* ignore */ }
 }
 
 // a backup as one line of text, to keep anywhere (notes, a chat) and paste back in. ARIA2 holds
@@ -100,6 +118,7 @@ export function loadCode(code, slot = activeSlot()) {
     if (at[1] === '1') {
       const data = read((d) => d && typeof d === 'object' && d.prog);
       if (!data) return false;
+      localStorage.removeItem(keyOf(slot) + BAK);
       localStorage.setItem(keyOf(slot), JSON.stringify(data));
       return 'slot';
     }
@@ -107,6 +126,7 @@ export function loadCode(code, slot = activeSlot()) {
     if (!all) return false;
     for (let i = 0; i < SLOTS; i++) {
       const d = all.slots[i];
+      localStorage.removeItem(keyOf(i) + BAK); // (the old backup is not this hero's)
       if (d?.prog) localStorage.setItem(keyOf(i), JSON.stringify(d));
       else localStorage.removeItem(keyOf(i));
     }
