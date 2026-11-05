@@ -24,6 +24,8 @@ import { MAX_JOB } from './ro-tables.js';
 const STATUS_WORD = { freeze: 'freeze', paralyze: 'paralyze', stun: 'stun', burn: 'set burning', poison: 'poison', blind: 'blind' };
 const statusText = (sk, lv, each = '') => `${sk.status.chance(lv)}% chance${each} to ${STATUS_WORD[sk.status.kind]} for ${sk.status.dur} s (bosses resist)`;
 
+// Rune Ward's cut of the damage taken: 25% from its first point to 30% at Lv 10 (main.js, build-tools/sim.mjs)
+export const wardCut = (lv) => (lv > 0 ? (25 + Math.floor(lv / 2)) / 100 : 0);
 // the Shadowblade's Ambush: a blow out of hiding (main.js unhide), before Night Stalker
 export const AMBUSH = 2;
 // how much of a blinded monster's blows miss (the Shadowblade's Shadow Bloom)
@@ -130,10 +132,10 @@ export const SKILLS = {
     sp: (lv) => 16 + lv, cast: () => 1.5, cd: 3, power: (lv) => 70 + 8 * lv, status: { kind: 'burn', chance: (lv) => 2 * lv, dur: 3 },
     desc: (lv) => `A ring of fire bursts around you: ${SKILLS.flamering.power(lv)}% MATK (Fire) to every monster close by; ${statusText(SKILLS.flamering, lv, ' each')} (a fifth of the hit each second).`,
   },
-  ward: {
-    name: 'Rune Ward', job: 'mage', kind: 'active', max: 10, needs: { manawell: 3 }, cd: 30, icon: 'skill_ward',
-    sp: () => 15,
-    desc: (lv) => `Runes circle you for 30 s: ${2 * lv}% less damage taken, and hits no longer break your casting.`,
+  ward: { // (the owner's call: a little help for the early Sorcerer, so it opens with no need and is strong from its first point)
+    name: 'Rune Ward', job: 'mage', kind: 'active', max: 10, cd: 30, icon: 'skill_ward',
+    sp: () => 8,
+    desc: (lv) => `Runes circle you for 30 s: ${Math.round(wardCut(lv) * 100)}% less damage taken, and hits no longer break your casting.`,
   },
   blink: {
     name: 'Blink', job: 'mage', kind: 'active', max: 1, free: { jobLv: 10 }, cd: 6, icon: 'skill_blink',

@@ -14,7 +14,7 @@
 import { derive, playerAttack, mobAttack, magicAttack, elementMod } from '../src/rules.js';
 import { MOB_DEFS, guardDef, MOVES } from '../src/mobs.js';
 import { Progress } from '../src/progress.js';
-import { SKILLS, spCost, castTime } from '../src/skills.js';
+import { SKILLS, spCost, castTime, wardCut } from '../src/skills.js';
 
 const RUNS = 200, LIMIT = 600, STOMP_DODGE = 0.5, KITE = 0.5, ARCHER_KITE = 0.3; // KITE: a Sorcerer steps back between casts and dodges half of a boss's swings
 const POTIONS = { potion: 55, potion2: 125, potion3: 205 }; // average HP of Red, Orange, White
@@ -40,7 +40,7 @@ const GEAR = {
 // how stat points are split, and what the skill points buy, in order
 const BUILD = {
   blader: { job: 'swordman', stats: { pow: 0.45, end: 0.25, fns: 0.15, qkn: 0.15 }, skills: [['cleave', 3], ['heavy', 10], ['discipline', 10], ['ironhide', 10], ['warcry', 3], ['standfirm', 5]] },
-  sorcerer: { job: 'mage', stats: { knl: 0.5, fns: 0.25, end: 0.2, qkn: 0.05 }, skills: [['spark', 5], ['arc', 5], ['spark', 10], ['manawell', 5], ['frost', 5], ['flamering', 5], ['ward', 3]] },
+  sorcerer: { job: 'mage', stats: { knl: 0.5, fns: 0.25, end: 0.2, qkn: 0.05 }, skills: [['spark', 5], ['ward', 1], ['arc', 5], ['spark', 10], ['manawell', 5], ['frost', 5], ['flamering', 5], ['ward', 5]] }, // (Rune Ward's first point early: a quarter off the blows)
   archer: { job: 'archer', stats: { fns: 0.45, qkn: 0.2, end: 0.25, pow: 0.1 }, skills: [['doubleshot', 5], ['keeneye', 5], ['doubleshot', 10], ['keeneye', 10], ['focus', 5], ['longsight', 5], ['arrowrain', 5], ['huntmark', 3]] },
   assassin: { job: 'assassin', stats: { pow: 0.35, qkn: 0.3, end: 0.2, fns: 0.15 }, skills: [['venomstrike', 10], ['venomcloud', 5], ['doubleattack', 5], ['daggermastery', 5], ['venomcloud', 10], ['doubleattack', 10], ['daggermastery', 10], ['improvedodge', 10]] },
 };
@@ -90,6 +90,9 @@ function fight(h, def, opts = {}) {
   let hp = ps.maxHp, sp = ps.maxSp, mob = def.hp, t = 0, potions = 0, next = 0, mobNext = def.adelay / 1000, stompAt = def.boss || def.mvp ? 7 : Infinity;
   // a boss's moves reach 3 to 9 paces: they find a Sorcerer kiting it, not a Blader at its side
   const moves = h.kind !== 'blader' ? (def.moves || []).filter((m) => MOVES[m.kind]?.min).map((m) => ({ ...m, at: MOVES[m.kind].cd })) : [];
+  // the Sorcerer's Rune Ward: cast as the fight opens and again when it runs out (SKILLS.ward, wardCut)
+  let wardUntil = -1; const wardLv = h.kind === 'sorcerer' ? h.prog.skills.ward || 0 : 0;
+  const taken = (x) => Math.round(x * (t < wardUntil ? 1 - wardCut(wardLv) : 1));
   const guards = []; let called = false, goneT = -1e9, hits = 0, cloudAt = 0, cloud = 0, cloudUntil = 0, pois = 0, poisUntil = 0;
   const strike = (d) => {
     if (h.kind === 'assassin') { // a Venom Cloud whenever it is ready (it bites on its own while the hero fights on), Venom Strike between (its poison: a fifth of the blow each second for 6 s), Double Attack on normal attacks
@@ -126,6 +129,7 @@ function fight(h, def, opts = {}) {
       return [playerAttack(ps, d, k).dmg, ps.interval];
     }
     if (h.kind === 'sorcerer') {
+      if (wardLv && t >= wardUntil && sp >= spCost('ward', wardLv)) { sp -= spCost('ward', wardLv); wardUntil = t + 30; return [0, 1]; }
       const cast = castTime(sk, lv) * ps.castRate * 0.85; // Swift Chant
       if (lv && sp >= spCost(sk, lv)) { sp -= spCost(sk, lv); return [magicAttack(ps, d, BOLTS[sk][0](lv) / 100, BOLTS[sk][1]).dmg, Math.max(ps.interval, cast)]; }
       return [playerAttack(ps, d).dmg, ps.interval];
@@ -162,14 +166,14 @@ function fight(h, def, opts = {}) {
       if (def.summon && mob < def.hp * 0.6 && !guards.length && (!called || t - goneT >= 120)) call();
     } else if (t === mobNext) {
       const kite = h.kind === 'archer' ? (def.boss || def.mvp ? KITE : ARCHER_KITE) : h.kind === 'sorcerer' && (def.boss || def.mvp) ? KITE : 0;
-      if (!(Math.random() < kite)) hp -= mobAttack(def, ps).dmg;
+      if (!(Math.random() < kite)) hp -= taken(mobAttack(def, ps).dmg);
       mobNext = t + def.adelay / 1000;
     } else {
-      if (Math.random() > STOMP_DODGE) hp -= mobAttack(def, ps, def.stomp || 1.5).dmg;
+      if (Math.random() > STOMP_DODGE) hp -= taken(mobAttack(def, ps, def.stomp || 1.5).dmg);
       stompAt = t + 7;
     }
-    for (const g of guards) while (g.hp > 0 && g.next <= t) { if (!(h.kind === 'archer' && Math.random() < ARCHER_KITE)) hp -= mobAttack(g.def, ps).dmg; g.next += g.def.adelay / 1000; }
-    for (const m of moves) while (m.at <= t) { if (Math.random() > STOMP_DODGE) hp -= mobAttack(def, ps, m.mult || 1.5).dmg; m.at += MOVES[m.kind].cd; } // the red circle: half are stepped out of
+    for (const g of guards) while (g.hp > 0 && g.next <= t) { if (!(h.kind === 'archer' && Math.random() < ARCHER_KITE)) hp -= taken(mobAttack(g.def, ps).dmg); g.next += g.def.adelay / 1000; }
+    for (const m of moves) while (m.at <= t) { if (Math.random() > STOMP_DODGE) hp -= taken(mobAttack(def, ps, m.mult || 1.5).dmg); m.at += MOVES[m.kind].cd; } // the red circle: half are stepped out of
     if (hp <= 0) return { win: false, t, potions, hpLeft: 0, mobLeft: mob / def.hp };
   }
   return { win: false, t, potions, hpLeft: hp / ps.maxHp, mobLeft: mob / def.hp };

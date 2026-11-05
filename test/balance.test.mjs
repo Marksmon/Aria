@@ -33,3 +33,13 @@ test('the crosses stay in their bands, the Windrunner ahead on one target (secon
   const out = execFileSync(process.execPath, [new URL('../build-tools/second-sim.mjs', import.meta.url).pathname, '--check'], { encoding: 'utf8' });
   assert.match(out, /every cross in its band/);
 });
+
+test("the Sorcerer wins 85% of its fights against every daytime field monster from Lv 12 (the owner's call: Rune Ward's help)", () => {
+  const weak = [];
+  for (const [k, d] of Object.entries(MOB_DEFS)) {
+    if (d.boss || d.mvp || d.night || d.raid || d.decoy || d.noRespawn || d.rare || d.lv < 12) continue;
+    const r = sim('sorcerer', d.lv, k).wins;
+    if (r < 0.85) weak.push(`${d.name} ${Math.round(r * 100)}%`);
+  }
+  assert.deepEqual(weak, []);
+});

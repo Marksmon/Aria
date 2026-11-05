@@ -25,7 +25,7 @@ import { BigMap } from './bigmap.js';
 import { headsReady, paintHead, lookPortrait, hairstyles, HAIR_BODY } from './hair.js';
 import { headgearReady, gearCut, paintGears } from './headgear.js';
 import { derive, playerAttack, mobAttack, magicAttack, elementMod, ELEMENTS } from './rules.js';
-import { SKILLS, EDGE_FX, AMBUSH, BLIND, BLIGHT, skillLv, spCost, castTime, learn, skillList, weaponOk, WEAPON_NAMES, BOW_RANGE, unlearnFirstJob, unlearnSecondJob, RETRAIN_COST } from './skills.js';
+import { SKILLS, EDGE_FX, AMBUSH, BLIND, BLIGHT, wardCut, skillLv, spCost, castTime, learn, skillList, weaponOk, WEAPON_NAMES, BOW_RANGE, unlearnFirstJob, unlearnSecondJob, RETRAIN_COST } from './skills.js';
 import { Menus } from './menus.js';
 import { iconTexture, iconURL, ENCHANT, ITEMS, baseOf, parseKey, canWear, maybeSlotted } from './items.js';
 import { DayNight } from './daynight.js';
@@ -3415,7 +3415,7 @@ function tickSkills(dt) {
   }
   if (buffs.aegis > 0 && player.barrier <= 0) { buffs.aegis = 0; applyStats(); menus.message('Stone Aegis breaks'); }
   if (player.endureT <= 0) endureGuard = 0;
-  player.guard = Math.max(endureGuard, buffs.ward > 0 ? wardLv * 0.02 : 0, buffs.veil > 0 ? veilLv * 0.04 : 0);
+  player.guard = Math.max(endureGuard, buffs.ward > 0 ? wardCut(wardLv) : 0, buffs.veil > 0 ? veilLv * 0.04 : 0);
   // the moon rises and sets: the Moon Ranger's night passives follow it
   if (!!dayNight.isNight !== nightUp) {
     nightUp = !!dayNight.isNight;
@@ -3578,7 +3578,7 @@ function buffList() {
   const lvOf = (id) => skillLv(prog, id);
   if (buffs.warcry > 0) sk('warcry', 'warcry', buffs.warcry, `ATK +${warcryLv}%`);
   if (player.endureT > 0 && endureFrom) sk('endure', endureFrom, player.endureT, `Damage taken −${Math.round(endureGuard * 100)}% · no flinching`);
-  if (buffs.ward > 0) sk('ward', 'ward', buffs.ward, `Damage taken −${2 * wardLv}% · casting can't be broken`);
+  if (buffs.ward > 0) sk('ward', 'ward', buffs.ward, `Damage taken −${Math.round(wardCut(wardLv) * 100)}% · casting can't be broken`);
   if (buffs.aegis > 0) sk('aegis', 'aegis', buffs.aegis, `Barrier ${Math.ceil(player.barrier)} · DEF +${aegisLv}`);
   if (buffs.focus > 0) sk('focus', 'focus', buffs.focus, `FNS +${focusLv} · QKN +${focusLv}`);
   if (buffs.tailwind > 0) sk('tailwind', 'tailwind', buffs.tailwind, `Bow attack speed +${2 * tailLv}%`);

@@ -676,7 +676,7 @@ A new Sorcerer is handed a Wooden Staff.
 | Frost Shard | 10, 7–16 SP | like Cold Bolt: one shard of ice per level, falling one after another, 21–30% MATK each |
 | Arc Lightning | 10, needs Ember Bolt 4 | 67–130% MATK, leaps to 2 monsters nearby for half; 2% per level to paralyze each for 1.2 s |
 | Flame Ring | 10, needs Ember Bolt 5 | 78–150% MATK to every monster around you; 2% per level to set each burning for 3 s |
-| Rune Ward | 10, needs Mana Well 3 | 30 s: 2% less damage per level, hits don't break your chant |
+| Rune Ward | 10, 8 SP | 30 s: 25% less damage (30% at Lv 10), hits don't break your chant |
 | Blink | Job 10 | reappear 4 paces ahead |
 | Swift Chant | Job 10, passive | spells cast 15% faster |
 
