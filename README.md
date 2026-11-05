@@ -123,14 +123,14 @@ Scorpion Sands with its Pyramid, then the Great Desert, where the Sand Wyrm hunt
 | Cactus Dunes | 55–60 | Cactus (55, throws needles), Dune Worm (58) | Cactus Lord (60) |
 | Scorpion Sands | 60–66 | Sand Scorpion (61, poison), Sand Runner (64) | Rainbow Runner (64) |
 | Great Desert | 62–70 | Soldier Ant (62), Cactus, Dune Worm, Sand Scorpion, Sand Runner | **Sand Wyrm (70, MVP)** |
-| Sphinx Halls 1 | 31–45 | Scarab (34, hard shell), Cobra (42, poison) | |
-| Sphinx Halls 2 | 46–60 | Mummy (50), Lamia (55, spits venom), Pharaoh's Servant (58, blue fire) | |
-| Sphinx Halls 3 | 61–75 | Sphinx Cub (64), Sand Elemental (68, slowing sand), Sarcophagus (72) | Ammit (74) |
-| Yggdrasil Hollows 1 | 31–45 | Root Squirrel (34, quick), Bramble (42, throws thorns) | |
-| Yggdrasil Hollows 2 | 46–60 | Root Serpent (50, poison), Moss Golem (55), Dark Elf (58, shadow arrows) | |
-| Yggdrasil Hollows 3 | 61–75 | Great Stag (64), Dryad (68, glowing leaves), Rot Beetle (72, poison) | Ratatoskr (74) |
-| Yggdrasil Hollows 4 (the great hall) | 76–90 | Root Warden (80), Thorn Drake (86, venom breath) | **Nidhogg (99, MVP)** |
-| Sphinx Halls 4 (the great hall) | 76–90 | Jackal Guardian (80, long spear), Falcon Sentinel (86, wind blades) | **Eternal Sphinx (99, MVP)** |
+| Sphinx Halls 1 | 65–72 | Scarab (66, hard shell), Cobra (71, poison) | |
+| Sphinx Halls 2 | 73–80 | Mummy (75), Lamia (78, spits venom), Pharaoh's Servant (80, blue fire) | |
+| Sphinx Halls 3 | 81–88 | Sphinx Cub (83), Sand Elemental (86, slowing sand), Sarcophagus (88) | Ammit (74) |
+| Yggdrasil Hollows 1 | 45–52 | Root Squirrel (46, quick), Bramble (51, throws thorns) | |
+| Yggdrasil Hollows 2 | 53–60 | Root Serpent (55, poison), Moss Golem (58), Dark Elf (60, shadow arrows) | |
+| Yggdrasil Hollows 3 | 61–68 | Great Stag (63), Dryad (66, glowing leaves), Rot Beetle (68, poison) | Ratatoskr (74) |
+| Yggdrasil Hollows 4 (the great hall) | 69–75 | Root Warden (72), Thorn Drake (75, venom breath) | **Nidhogg (99, MVP)** |
+| Sphinx Halls 4 (the great hall) | 89–99 | Jackal Guardian (92, long spear), Falcon Sentinel (97, wind blades) | **Eternal Sphinx (99, MVP)** |
 | Any field in the valley, more at night (Moss Field and Fen Shore only at night) | | Wisp (11) | |
 
 Moss Field and Fen Shore, by the camp and the city, Willow Marsh by Veidheim and the Red Sands by Rytingborg are a Trainee's fields: a Base 10 Trainee
@@ -373,7 +373,8 @@ its halls.
 **The Sphinx's Halls** are Aria's first dungeon, and its monsters live nowhere else: four floors, one
 under the other. The first three are mazes of sandstone corridors three paces wide, carved with
 eyes, ankhs and birds and lit by torches; the fourth is a great pillared hall. Each floor is harder
-than the last, so the halls are a place to level from Base 31 to 90 (see the table above). Every
+than the last, so the halls are a place to level from Base 65 to 99 (see the table above), the last climb; from
+Lv 61 the dungeons' monsters pay twice the EXP of their level. Every
 monster down there attacks on sight. The stairs stand in an open room at each end of
 a floor; there are dead ends with urns, bones and coffins, and pillared chambers to fight in. Walls
 between you and the camera turn see-through, so you never lose sight of your hero. It is always
@@ -416,7 +417,7 @@ broad as a road, climbs to a door of glowing runes in the trunk. Walk up the roo
 the door.
 
 **Yggdrasil's Hollows** are Aria's second dungeon, inside the World Tree, at the same levels as the
-Sphinx's Halls (31 to 90). The first three floors are mazes whose walls are living wood, moss on top
+Sphinx's Halls: Base 45 to 75, the levels between the World Tree's secret and the Sphinx's. The first three floors are mazes whose walls are living wood, moss on top
 and runes glowing in the bark, lit by glowing mushrooms; the fourth is a great hall of living trunks
 round a rune circle of the World Tree. Every monster down there attacks on sight.
 
@@ -1054,44 +1055,39 @@ bursts gold on the ground and shows in gold in your bag.
 | Kobold Bow | Weapon (bow) (Archer) | ATK 74 · Weapon Lv 3 · Earth element · FNS +1 · QKN +1 | Kobold Archer 0.25% |
 | Kobold Sandals | Shoes | DEF 2 · FNS +1 · FLEE +3 | Kobold Archer 0.25% |
 | Stone Ring | Accessory | DEF 1 · END +2 | Beetles (0.3%) |
-| Acorn Charm | Accessory | QKN +1 · FTN +1 · FLEE +3 | Root Squirrels (0.3%) |
 | Dark Hood | Garment | DEF 2 · KNL +1 · FLEE +3 | Dark Mushrooms (0.25%) and the Giant Mushroom (5%) |
-| Scarab Buckler | Shield | DEF 4 · END +1 · Max HP +40 | Scarabs (0.3%) |
 | Dark Staff | Weapon (staff) (Sorcerer) | ATK 34 · Weapon Lv 3 · Shadow element · MATK +34% · KNL +2 · FNS +1 | Dark Wisps (0.2%) |
 | Dark Wisp | Wings | KNL +2 · Max SP +30 | Dark Wisp 0.25% |
 | Goblin Shield | Shield | DEF 5 · POW +1 | Goblin 0.2% |
 | Goblin Bow | Weapon (bow) (Archer) | ATK 95 · Weapon Lv 3 · HIT +5 · FNS +2 | Goblin Archer 0.2% |
-| Bramble Buckler | Shield | DEF 4 · END +1 · Max HP +40 | Brambles (0.3%) |
-| Cobra Kris | Weapon (dagger) | ATK 70 · Weapon Lv 3 · 3% of your blows and spells poison a monster | Cobras (0.3%) |
 | Fire Armor | Armor (Blader) | DEF 8 · Max HP +80 | Fire Beetles (0.2%) and the Giant Beetle (4%) |
 | Goblin Shroud | Garment | DEF 2 · QKN +1 · FLEE +6 | Goblin Assassin 0.2% |
 | Ember Wings | Wings | POW +1 · KNL +1 · Max HP +50 | Fire Wisp 0.25% |
 | Fire Charm | Accessory | POW +1 · KNL +1 · Max HP +30 | Fire Wisps (0.3%) |
+| Acorn Charm | Accessory | QKN +1 · FTN +1 · FLEE +3 | Root Squirrels (0.3%) |
 | Snakeskin Boots | Shoes | DEF 3 · QKN +1 · FLEE +5 | Snakes (0.25%) |
 | Wolf Cape | Garment | DEF 3 · POW +1 · QKN +1 · FLEE +3 | Wolves (0.2%) and the Alpha Wolf (3%) |
-| Grave Wraps | Garment | DEF 3 · Max HP +120 | Mummies (0.3%) |
 | King's Mantle | Garment | DEF 5 · END +2 · FTN +1 · Max HP +120 | the Kobold King (3%) |
 | King's Ring | Accessory | POW +2 · END +1 · Max HP +50 | the Kobold King (5%) |
 | Quarry Cleaver | Weapon (sword) (Blader) | ATK 116 · Weapon Lv 4 · Earth element · POW +2 · END +1 | the Kobold King (1%) |
-| Root Serpent Boots | Shoes | DEF 4 · QKN +1 · FLEE +4 | Root Serpents (0.3%) |
 | Runestone Staff | Weapon (staff) (Sorcerer) | ATK 52 · Weapon Lv 4 · Earth element · MATK +48% · KNL +3 · FNS +1 · Max SP +40 | the Kobold King (2%) |
+| Bramble Buckler | Shield | DEF 4 · END +1 · Max HP +40 | Brambles (0.3%) |
 | Bear Hide | Armor (Blader) | DEF 9 · Max HP +120 | Bears (0.15%) and the Great Bear (3%) |
 | Bear Paws | Shoes | DEF 4 · POW +1 · Max HP +80 | Bear 0.15% |
 | Goblin King's Blade | Weapon (sword) (Blader) | ATK 118 · Weapon Lv 4 · Wind element · QKN +2 · POW +1 | the Goblin King (1%) |
 | Great Bow | Weapon (bow) (Archer) | ATK 115 · Weapon Lv 4 · Wind element · QKN +2 · FNS +1 | Goblin King 2% |
 | Hexbone Staff | Weapon (staff) (Sorcerer) | ATK 50 · Weapon Lv 4 · Shadow element · MATK +46% · KNL +3 · FTN +2 | the Goblin King (2%) |
-| Moss Mail | Armor | DEF 7 · END +1 · Max HP +120 | Moss Golems (0.3%) |
 | Needle Ring | Accessory | HIT +4 · FNS +1 | Cacti (0.3%) |
-| Serpent Staff | Weapon (staff) (Sorcerer) | ATK 40 · Weapon Lv 3 · Water element · MATK +35% · KNL +3 | Lamias (0.2%) |
+| Root Serpent Boots | Shoes | DEF 4 · QKN +1 · FLEE +4 | Root Serpents (0.3%) |
 | Thorn Cape | Garment | DEF 3 · POW +1 · FLEE +2 | the Giant Sprout (3%) |
 | Tooth Necklace | Accessory | HIT +5 · QKN +2 · FNS +1 | the Goblin King (5%) |
 | Trickster Boots | Shoes | DEF 4 · QKN +2 · FTN +1 · FLEE +7 | the Goblin King (3%) |
 | Willow Charm | Accessory | FNS +1 · KNL +1 · Max SP +20 | the Elder Willow (4%) |
-| Dark Elven Bow | Weapon (bow) (Archer) | ATK 100 · Weapon Lv 3 · Shadow element · FNS +2 | Dark Elves (0.25%) |
-| Priest's Robe | Armor | DEF 4 · KNL +2 · Max SP +80 | Pharaoh's Servants (0.3%) |
+| Moss Mail | Armor | DEF 7 · END +1 · Max HP +120 | Moss Golems (0.3%) |
 | Sea Sword | Weapon (sword) (Blader) | ATK 85 · Weapon Lv 4 · Water element · QKN +2 | the King Crab (2%) |
 | Wormhide Boots | Shoes | DEF 4 · Max HP +80 | Dune Worms (0.2%), or Steinar in Rytingborg |
 | Cactus Spine | Weapon (dagger) | ATK 76 · Weapon Lv 3 · Earth element · END +1 | the Cactus Lord (2%) |
+| Dark Elven Bow | Weapon (bow) (Archer) | ATK 100 · Weapon Lv 3 · Shadow element · FNS +2 | Dark Elves (0.25%) |
 | Devil Wings | Wings | POW +2 · END +1 · Max HP +80 | Fire Giant 3% |
 | Flame Bow | Weapon (bow) (Archer) | ATK 110 · Weapon Lv 4 · Fire element · FNS +2 | Fire Giant 1% |
 | Flame Staff | Weapon (staff) (Sorcerer) | ATK 60 · Weapon Lv 4 · Fire element · MATK +50% · KNL +4 · FNS +2 | the Fire Giant (2%) |
@@ -1108,29 +1104,34 @@ bursts gold on the ground and shows in gold in your bag.
 | Fire Boots | Shoes | DEF 3 · Max HP +60 | the Giant Beetle (3%) |
 | Grove Sword | Weapon (sword) (Blader) | ATK 125 · Weapon Lv 4 · Earth element · POW +2 · END +2 | the Ancient Treant (1%) |
 | Oak Ring | Accessory | END +3 · POW +1 · Max HP +80 | the Ancient Treant (5%) |
-| Lionpaw Boots | Shoes | DEF 4 · QKN +2 · FLEE +5 | Sphinx Cubs (0.2%) |
+| Stag Cape | Garment | DEF 4 · QKN +1 · FLEE +5 | Great Stags (0.25%) |
 | Rainbow Sash | Garment | DEF 3 · FTN +2 · FLEE +7 | the Rainbow Runner (3%) |
 | Runner Boots | Shoes | DEF 2 · QKN +1 · FLEE +5 | Sand Runners (0.2%), or Steinar in Rytingborg |
 | Runner Talon | Weapon (dagger) | ATK 80 · Weapon Lv 3 · Wind element · attacks 5% faster | the Rainbow Runner (2%) |
-| Stag Cape | Garment | DEF 4 · QKN +1 · FLEE +5 | Great Stags (0.25%) |
 | Dryad Staff | Weapon (staff) (Sorcerer) | ATK 45 · Weapon Lv 3 · Earth element · MATK +38% · KNL +3 | Dryads (0.2%) |
-| Sandstorm Ring | Accessory | END +2 · QKN +1 · FLEE +3 | Sand Elementals (0.25%) |
+| Scarab Buckler | Shield | DEF 4 · END +1 · Max HP +40 | Scarabs (0.3%) |
+| Rot Fang | Weapon (dagger) | ATK 76 · Weapon Lv 3 · Shadow element · 3% of your blows and spells poison a monster | Rot Beetles (0.25%) |
 | Dune Bow | Weapon (bow) (Archer) | ATK 124 · Weapon Lv 4 · Earth element · FNS +3 | the Sand Wyrm (1%) |
 | Dune Staff | Weapon (staff) (Sorcerer) | ATK 55 · Weapon Lv 4 · Earth element · MATK +58% · KNL +5 · FNS +2 | the Sand Wyrm (2%) |
 | Sandwalker Boots | Shoes | DEF 5 · QKN +3 · FLEE +6 | the Sand Wyrm (3%) |
 | Wyrm Fang | Weapon (dagger) | ATK 102 · Weapon Lv 4 · Earth element · QKN +2 · POW +2 | the Sand Wyrm (1%) |
 | Wyrm Ring | Accessory | POW +3 · END +2 · Max HP +80 | the Sand Wyrm (5%) |
 | Wyrmhide Cloak | Garment | DEF 6 · END +2 · Max HP +8% | the Sand Wyrm (3%) |
-| Rot Fang | Weapon (dagger) | ATK 76 · Weapon Lv 3 · Shadow element · 3% of your blows and spells poison a monster | Rot Beetles (0.25%) |
-| Sarcophagus Lid | Shield | DEF 7 · Max HP +120 | Sarcophagi (0.2%) |
+| Cobra Kris | Weapon (dagger) | ATK 70 · Weapon Lv 3 · 3% of your blows and spells poison a monster | Cobras (0.3%) |
+| Warden's Greatsword | Weapon (sword) (Blader) | ATK 118 · Weapon Lv 3 · Earth element · POW +2 · END +1 | Root Wardens (0.25%) |
 | Ammit's Claw | Weapon (dagger) | ATK 96 · Weapon Lv 4 · Shadow element · POW +2 · QKN +2 | Ammit (2%) |
 | Devourer's Hide | Armor | DEF 8 · POW +2 · END +2 · Max HP +200 | Ammit (3%) |
 | Messenger's Shroud | Garment | DEF 5 · QKN +2 · FNS +1 · FLEE +9 | Ratatoskr (3%) |
 | Ratatoskr's Tail | Wings | QKN +3 · FNS +1 · FTN +1 · FLEE +6 | Ratatoskr (2%) |
 | Runic Bracelet | Accessory | QKN +3 · FTN +2 · FLEE +4 | Ratatoskr (2%) |
-| Cursed Spear | Weapon (sword) (Blader) | ATK 112 · Weapon Lv 3 · Shadow element · POW +2 | Jackal Guardians (0.25%) |
-| Warden's Greatsword | Weapon (sword) (Blader) | ATK 118 · Weapon Lv 3 · Earth element · POW +2 · END +1 | Root Wardens (0.25%) |
 | Drake Ring | Accessory | POW +1 · END +1 · KNL +1 · Max HP +60 | Thorn Drakes (0.25%) |
+| Grave Wraps | Garment | DEF 3 · Max HP +120 | Mummies (0.3%) |
+| Serpent Staff | Weapon (staff) (Sorcerer) | ATK 40 · Weapon Lv 3 · Water element · MATK +35% · KNL +3 | Lamias (0.2%) |
+| Priest's Robe | Armor | DEF 4 · KNL +2 · Max SP +80 | Pharaoh's Servants (0.3%) |
+| Lionpaw Boots | Shoes | DEF 4 · QKN +2 · FLEE +5 | Sphinx Cubs (0.2%) |
+| Sandstorm Ring | Accessory | END +2 · QKN +1 · FLEE +3 | Sand Elementals (0.25%) |
+| Sarcophagus Lid | Shield | DEF 7 · Max HP +120 | Sarcophagi (0.2%) |
+| Cursed Spear | Weapon (sword) (Blader) | ATK 112 · Weapon Lv 3 · Shadow element · POW +2 | Jackal Guardians (0.25%) |
 | Falcon Bow | Weapon (bow) (Archer) | ATK 105 · Weapon Lv 3 · Wind element · FNS +2 | Falcon Sentinels (0.25%) |
 | Dragonbone Blade | Weapon (sword) (Blader) | ATK 152 · Weapon Lv 4 · POW +4 · END +1 | Nidhogg (2%) |
 | Dragonleaf Mantle | Garment | DEF 7 · END +2 · Max HP +8% · FLEE +6 | Nidhogg (3%) |
@@ -1271,40 +1272,40 @@ they come back whole and the slot stays open. A piece that breaks at Holger's gi
 | Kobold Archer Card (Sharp-eyed) | Head or Face | FNS +2 | Kobold Archers (0.1%) |
 | Kobold Assassin Card (Silent) | Shoes | FLEE +4 · QKN +1 | Kobold Assassins (0.1%) |
 | Dark Mushroom Card (Mystic) | Head or Face | KNL +2 | Dark Mushrooms (0.1%) |
-| Root Squirrel Card (Nimble) | Shoes | FLEE +3 · QKN +1 | Root Squirrels (0.1%) |
-| Scarab Card (Shelled) | Armor | DEF +3 · END +1 | Scarabs (0.1%) |
 | Dark Wisp Card (Shadowed) | Wings | KNL +2 · Max SP +5% | Dark Wisps (0.1%) |
 | Goblin Card (Vicious) | Weapon | ATK +12 · HIT +3 | Goblins (0.1%) |
 | Goblin Archer Card (Keen) | Accessory | HIT +5 · FNS +2 | Goblin Archers (0.1%) |
-| Bramble Card (Thorny) | Shield | DEF +2 · Max HP +80 | Brambles (0.1%) |
-| Cobra Card (Fanged) | Weapon | ATK +5 · QKN +2 | Cobras (0.1%) |
 | Fire Beetle Card (Scorched) | Armor | DEF +2 · POW +1 | Fire Beetles (0.1%) |
 | Goblin Assassin Card (Nimble) | Accessory | FLEE +2 · QKN +2 | Goblin Assassins (0.1%) |
 | Fire Wisp Card (Blazing) | Wings | POW +1 · KNL +1 · Max HP +50 | Fire Wisps (0.1%) |
+| Root Squirrel Card (Nimble) | Shoes | FLEE +3 · QKN +1 | Root Squirrels (0.1%) |
 | Snake Card (Slithering) | Garment | FLEE +3 · QKN +1 | Snakes (0.1%) |
 | Wolf Card (Swift) | Shoes | FLEE +2 · QKN +2 | Wolves (0.1%) |
-| Mummy Card (Undying) | Armor | Max HP +8% | Mummies (0.1%) |
-| Root Serpent Card (Coiling) | Weapon | ATK +8 · QKN +1 | Root Serpents (0.1%) |
+| Bramble Card (Thorny) | Shield | DEF +2 · Max HP +80 | Brambles (0.1%) |
 | Bear Card (Mighty) | Armor | POW +1 · Max HP +8% | Bears (0.1%) |
 | Cactus Card (Prickly) | Garment | DEF +1 · FLEE +3 | Cacti (0.1%) |
-| Lamia Card (Bewitching) | Head or Face | ATK +8 · HIT +3 | Lamias (0.1%) |
+| Root Serpent Card (Coiling) | Weapon | ATK +8 · QKN +1 | Root Serpents (0.1%) |
+| Dune Worm Card (Burrowing) | Shoes | END +1 · Max HP +6% | Dune Worms (0.1%) |
 | Moss Golem Card (Stony) | Armor | DEF +3 · Max HP +4% | Moss Golems (0.1%) |
 | Dark Elf Card (Elven) | Accessory | HIT +4 · FNS +2 | Dark Elves (0.1%) |
-| Dune Worm Card (Burrowing) | Shoes | END +1 · Max HP +6% | Dune Worms (0.1%) |
-| Pharaoh's Servant Card (Devout) | Garment | KNL +1 · Max SP +8% | Pharaoh's Servants (0.1%) |
 | Sand Scorpion Card (Venomous) | Weapon | ATK +10 · QKN +1 | Sand Scorpions (0.1%) |
 | Soldier Ant Card (Armoured) | Shield | DEF +3 · Max HP +4% | Soldier Ants (0.1%) |
 | Great Stag Card (Antlered) | Head or Face | ATK +10 · POW +1 | Great Stags (0.1%) |
 | Sand Runner Card (Fleet) | Accessory | FLEE +3 · QKN +1 · FTN +1 | Sand Runners (0.1%) |
-| Sphinx Cub Card (Pouncing) | Shoes | FLEE +4 · QKN +2 | Sphinx Cubs (0.1%) |
 | Dryad Card (Blossoming) | Garment | KNL +2 · Max SP +60 | Dryads (0.1%) |
-| Sand Elemental Card (Whirling) | Garment | FLEE +5 · END +1 | Sand Elementals (0.1%) |
+| Scarab Card (Shelled) | Armor | DEF +3 · END +1 | Scarabs (0.1%) |
 | Rot Beetle Card (Rotting) | Weapon | ATK +14 · END +1 | Rot Beetles (0.1%) |
+| Cobra Card (Fanged) | Weapon | ATK +5 · QKN +2 | Cobras (0.1%) |
+| Root Warden Card (Warding) | Shield | DEF +5 · Max HP +5% | Root Wardens (0.1%) |
+| Mummy Card (Undying) | Armor | Max HP +8% | Mummies (0.1%) |
+| Thorn Drake Card (Draconic) | Armor | POW +1 · END +1 · Max HP +6% | Thorn Drakes (0.1%) |
+| Lamia Card (Bewitching) | Head or Face | ATK +8 · HIT +3 | Lamias (0.1%) |
+| Pharaoh's Servant Card (Devout) | Garment | KNL +1 · Max SP +8% | Pharaoh's Servants (0.1%) |
+| Sphinx Cub Card (Pouncing) | Shoes | FLEE +4 · QKN +2 | Sphinx Cubs (0.1%) |
+| Sand Elemental Card (Whirling) | Garment | FLEE +5 · END +1 | Sand Elementals (0.1%) |
 | Sarcophagus Card (Entombed) | Shield | DEF +4 · Max HP +6% | Sarcophagi (0.1%) |
 | Jackal Guardian Card (Cursed) | Weapon | ATK +12 · POW +2 | Jackal Guardians (0.1%) |
-| Root Warden Card (Warding) | Shield | DEF +5 · Max HP +5% | Root Wardens (0.1%) |
 | Falcon Sentinel Card (Hawk-eyed) | Accessory | HIT +6 · FNS +2 | Falcon Sentinels (0.1%) |
-| Thorn Drake Card (Draconic) | Armor | POW +1 · END +1 · Max HP +6% | Thorn Drakes (0.1%) |
 <!-- /tables:cards -->
 
 <!-- tables:bosscards -->

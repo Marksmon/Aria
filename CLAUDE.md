@@ -156,8 +156,8 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   call): a maze is 14x14 cells of 3x3 tiles, walls a tile thick on the tile grid, carved from a seed (`maze`: rooms,
   loops; the stairs in pillarless portal rooms), walls cut away between camera and hero (a shader dither), always
   dim (`indoor`: `daynight.js` STATES.dungeon). Floors get harder for levelling (the owner's call): 1 Scarab, Cobra
-  (31-45); 2 Mummy, Lamia, Pharaoh's Servant (46-60); 3 Sphinx Cub, Sand Elemental, Sarcophagus and Ammit the
-  mini-boss (61-75); 4 the great hall (`maze.hall` with `only`, `world.hall`; 76-90): the Jackal Guardians and Falcon
+  (65-72); 2 Mummy, Lamia, Pharaoh's Servant (73-80); 3 Sphinx Cub, Sand Elemental, Sarcophagus and Ammit the
+  mini-boss (81-88; Ammit stays Lv 74); 4 the great hall (`maze.hall` with `only`, `world.hall`; 89-99): the Jackal Guardians and Falcon
   Sentinels (`hall: true`, they keep to it) and the **Eternal Sphinx** (Lv 99 MVP, `hall: true`: it never leaves the
   hall and fights only a hero in it; it summons its cubs and Guardians, the owner's call). It drops Gold Bars (always,
   and as its MVP reward) and the ultra rare **Sphinx's All-Seeing Eye** (Face, 0.5%: all stats +3, MATK +10%, HIT
@@ -171,8 +171,10 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   terrain, `rampAt` in `world.js`; low roots along its sides) to the door portal in the trunk. Inside, the
   **second dungeon**, Yggdrasil's Hollows (`ygg1`-`ygg4`, `dungeon.js` looks `tree1`-`tree4`: bark walls, moss
   tops, glowing runes, earth floors, living-trunk pillars, glowing mushrooms for torches): three maze floors and the
-  great hall, at the Sphinx's levels (the owner's call). 1 Root Squirrel, Bramble (31-45); 2 Root Serpent, Moss
-  Golem, Dark Elf (46-60); 3 Great Stag, Dryad, Rot Beetle and Ratatoskr the mini-boss (61-75; the owner's call, after the owner's sheet: the
+  great hall, Base 45-75 (the owner's call, November 2026: the two dungeons staggered, the Sphinx's Halls 65-99, so
+  each opens at the level of its secret series; the bosses and mini-bosses kept their levels; from Lv 61 the
+  dungeons' monsters pay 2x EXP for the late climb). 1 Root Squirrel, Bramble (45-52); 2 Root Serpent, Moss
+  Golem, Dark Elf (53-60); 3 Great Stag, Dryad, Rot Beetle (61-68) and Ratatoskr the mini-boss (74; the owner's call, after the owner's sheet: the
   messenger squirrel in runed plate with a fiery tail, a Bloop's size, the same as its followers, the Root Squirrels (the owner's call), quick, hard to hit); 4 the great
   hall: Root Wardens, Thorn Drakes (`hall: true`) and **Nidhogg** (Lv 99 MVP, `hall: true`; after the owner's
   picture: black, red-cracked, torn crimson wings with holes), whose mechanic is Gnaw the Roots (`MOVES.gnaw`:

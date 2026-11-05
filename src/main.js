@@ -90,16 +90,16 @@ const SPAWNS = {
   sand: [], sphinx: [], tomb: [],
   // the Sphinx's Halls (dungeon.js): three maze floors, harder floor by floor, then the great hall (no night here: underground)
   // Yggdrasil keeps no monsters; its hollows (dungeon.js) are three maze floors of living wood, then the
-  // great hall, at the Sphinx's Halls' levels
+  // great hall, Base 45-75 (the owner's call: the Sphinx's Halls are 65-99, for the late climb)
   ygg: [],
-  ygg1: [['rootSquirrel', 16], ['bramble', 13]],                             // Base 31-45
-  ygg2: [['rootSerpent', 10], ['mossGolem', 9], ['darkElf', 9]],             // 46-60
-  ygg3: [['greatStag', 10], ['dryad', 9], ['rotBeetle', 8], ['ratatoskr', 1]], // 61-75, Ratatoskr the mini-boss
-  ygg4: [['rootWarden', 8], ['thornDrake', 7], ['nidhogg', 1]],             // 76-90: the great hall, its guards and Nidhogg
-  halls1: [['hallScarab', 16], ['cobra', 13]],                               // Base 31-45
-  halls2: [['hallMummy', 10], ['lamia', 9], ['servant', 9]],                 // 46-60
-  halls3: [['sphinxCub', 10], ['sandElemental', 9], ['sarcophagus', 8], ['ammit', 1]], // 61-75, Ammit the mini-boss
-  halls4: [['jackal', 8], ['falcon', 7], ['eternalSphinx', 1]],             // 76-90: the great hall, the Guardians and the Eternal Sphinx
+  ygg1: [['rootSquirrel', 16], ['bramble', 13]],                             // Base 45-52
+  ygg2: [['rootSerpent', 10], ['mossGolem', 9], ['darkElf', 9]],             // 53-60
+  ygg3: [['greatStag', 10], ['dryad', 9], ['rotBeetle', 8], ['ratatoskr', 1]], // 61-68, Ratatoskr the mini-boss (74)
+  ygg4: [['rootWarden', 8], ['thornDrake', 7], ['nidhogg', 1]],             // 69-75: the great hall, its guards and Nidhogg (99)
+  halls1: [['hallScarab', 16], ['cobra', 13]],                               // Base 65-72
+  halls2: [['hallMummy', 10], ['lamia', 9], ['servant', 9]],                 // 73-80
+  halls3: [['sphinxCub', 10], ['sandElemental', 9], ['sarcophagus', 8], ['ammit', 1]], // 81-88, Ammit the mini-boss (74)
+  halls4: [['jackal', 8], ['falcon', 7], ['eternalSphinx', 1]],             // 89-99: the great hall, the Guardians and the Eternal Sphinx
   redsands: [['redSlime', 12], ['giantAnt', 8], ['redSlime', 3, true], ['giantAnt', 2, true]],
   dunes: [['cactus', 9], ['duneWorm', 7], ['cactusLord', 1], ['duneWorm', 2, true], ['cactus', 2, true]],
   scorpion: [['scorpion', 9], ['runner', 6], ['rainbowRunner', 1], ['scorpion', 3, true], ['runner', 1, true]],
