@@ -57,7 +57,7 @@ function bandTex(cols, vertical = false, trim = null) {
 const lam = (o) => new THREE.MeshLambertMaterial(o);
 
 // a group of meshes that fade when they stand between the camera and the hero
-function fader() {
+export function fader() {
   const fades = [], mats = new Map();
   const faded = (m) => {
     if (!mats.has(m)) { const f = m.clone(); f.transparent = true; f.opacity = 0.22; f.depthWrite = false; mats.set(m, f); }

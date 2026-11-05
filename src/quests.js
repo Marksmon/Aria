@@ -575,6 +575,17 @@ export const NPCS = {
     quests: ['sphinx1', 'sphinx2', 'sphinx3', 'sphinx4', 'sphinx5', 'sphinx6'],
     lore: ['My grandmother\'s grandmother saw a great stone face in the deep desert. Then the sand took it, and the wind made a riddle of the road.', 'There are doors that open for gold, and doors that open for steel. Some open only for the patient.'],
   },
+  // Old Ingrid the Seedkeeper, by Veidheim's well, keeps the World Tree's secret. She says nothing of it
+  // until a hero has walked every land round the village (needZones); then the series begins (The World
+  // Tree 1-6), and its last step opens the hidden way north of the Old Forest to Yggdrasil
+  ingrid: {
+    name: 'Old Ingrid the Seedkeeper', map: 'hunt', x: 31.2, z: 33.6, dress: { body: 'sorc', main: [100, 0.35, 0.75], accent: [40, 0.55, 1.0], hair: 'mane', dye: 'silver' },
+    hello: 'Mind the seeds, dear, they are older than the village. Older than the forest, some of them. Sit, if your legs are tired.',
+    later: () => 'The old wood only talks to those who have walked it all. Come back when you have seen every land round Veidheim: the willow marsh, the old forest, the barley fields and the wolf hills.',
+    bye: 'Roots go deep. Deeper than you think.',
+    quests: ['tree1', 'tree2', 'tree3', 'tree4', 'tree5', 'tree6'],
+    lore: ['My mother said there is a tree north of the Old Forest so big that nobody has ever seen its top. The clouds catch in its branches.', 'Every tree in the world grew from a seed of one tree. Every one. Think on that.'],
+  },
   thora: {
     name: 'Thora the Caravan Master', map: 'sand', x: 49.4, z: 42.6, dress: { body: 'blader', main: [30, 0.45, 0.8], accent: [45, 0.7, 1.05], hair: 'long', dye: 'blonde', top: 'woven_cap' },
     hello: 'My caravans cross the desert every week, and every week something eats a wagon. Help me keep the roads clear and I pay well.',
@@ -1472,6 +1483,59 @@ export const QUESTS = {
     intro: 'In the Great Desert there is an obelisk with an empty socket. Set the Sphinx Eye in it. What happens then, I do not know. Nobody in my family ever dared. Watch out for the Wyrm.',
     thanks: 'You felt it too, did you not? The whole desert sighed. The way is open: south of the Great Desert. Go and see what has been sleeping there.',
     reward: { xp: 450000, perz: 40000, items: { potion3: 10 } },
+  },
+  // The World Tree (Old Ingrid, Veidheim): a secret series, offered only to a hero who has walked all
+  // four of Veidheim's lands (needZones). Its last step opens the hidden portal north of the Old Forest
+  // (world.js: MAPS.oldwood, need: 'tree6') to Yggdrasil, the World Tree
+  tree1: {
+    title: 'The World Tree 1: Bark and Twig', kind: 'fetch', items: { old_bark: 10, willow_twig: 10 }, lv: 45, needZones: ['marsh', 'oldwood', 'farm', 'wolfhill'],
+    intro: 'You have walked all the lands round the village? Then the wood knows your step, and I can tell you. My seed box is cracking, and it holds a seed I must not lose. Ten slabs of Old Bark from the Treants to mend it, ten Willow Twigs to bind it.',
+    thanks: 'There. Mended, and the seed is safe. Now listen: "A tree whose roots drink from three wells, whose crown holds up the sky." My mother sang that to me. Do you know it?',
+    reward: { xp: 120000, perz: 9000 },
+  },
+  tree2: {
+    title: 'The World Tree 2: The Old Song', kind: 'quiz', lv: 45, task: "answer Old Ingrid's questions",
+    intro: 'Songs are doors, dear. Answer me, and the next verse opens.',
+    questions: [
+      { q: 'What tree has roots in three wells and a crown that holds up the sky?',
+        options: ['The oldest oak in the Old Forest', 'The World Tree', 'The Ancient Treant'], a: 1,
+        why: 'The World Tree. Every other tree is its child.',
+        hint: 'Not a tree you could ever climb to the top of.' },
+      { q: 'What gnaws at the World Tree\'s roots, day and night?',
+        options: ['A dragon', 'The Wolves', 'The winter'], a: 0,
+        why: 'A dragon, black as soot, under the deepest root. The song says it has gnawed since the world was young.',
+        hint: 'Something with teeth, and very, very old.' },
+      { q: 'And what carries words up and down its trunk, from root to crown?',
+        options: ['The wind', 'A squirrel', 'The sap'], a: 1,
+        why: 'A squirrel! A quarrelsome one, the song says, telling tales between the eagle on top and the dragon below.',
+        hint: 'Something small and quick that never stops chattering.' },
+    ],
+    thanks: 'You have the song. Now the hard part: the Treants of the Old Forest remember where the old road began. Wake them at the great stump in the forest\'s heart and they will come, angry. Hold the stump.',
+    reward: { xp: 120000, perz: 9000 },
+  },
+  tree3: {
+    title: 'The World Tree 3: The Waking Stump', kind: 'defend', map: 'oldwood', at: { x: 34, z: 26 }, place: 'the great stump', waves: [['treant', 3], ['treant', 4], ['treant', 5]], lv: 47,
+    intro: 'In the heart of the Old Forest there is a stump wider than a house. Knock on it, three times. The Treants will come to see who woke it. Hold your ground against three waves of them.',
+    thanks: 'You held it! And the stump spoke? It does that. "North, past the last oak, where the wolf and the bear do not go." Bring me what the wolf and the bear do not give lightly.',
+    reward: { xp: 150000, perz: 12000 },
+  },
+  tree4: {
+    title: 'The World Tree 4: Wolf and Bear', kind: 'fetch', items: { wolf_pelt: 8, bear_claw: 6, honey: 3 }, lv: 47,
+    intro: 'Eight Wolf Pelts and six Bear Claws, from Barley Field and Wolf Hills, and three pots of the Bears\' Honey. The old road is marked in runes, and the runes only wake for one who has hunted the wild.',
+    thanks: 'Pelt, claw and honey: the hunter\'s offering. Lay it in the Old Forest and the runestones there will show themselves to you.',
+    reward: { xp: 160000, perz: 12000 },
+  },
+  tree5: {
+    title: 'The World Tree 5: The Runestones', kind: 'search', map: 'oldwood', thing: 'Runestone', spots: [[18, 18], [48, 16], [22, 46]], verb: 'Runestone read', lv: 48,
+    intro: 'Three runestones stand in the Old Forest, hidden under moss until the offering wakes them. Find all three and read them, and come back to me.',
+    thanks: 'The runes say: "The seed of the first tree sleeps in the keeper\'s box." Ha! My box! It is the seed I have kept all these years. Here: take it. It is yours to plant.',
+    reward: { xp: 170000, perz: 13000, items: { world_seed: 1 } },
+  },
+  tree6: {
+    title: 'The World Tree 6: The First Seed', kind: 'search', map: 'oldwood', thing: 'Old Stump', spots: [[32, 9.6]], verb: 'The seed is planted', items: { world_seed: 1 }, lv: 48,
+    intro: 'North in the Old Forest, by the last old stump before the hills, the ground is soft and dark. Plant the Seed of the World Tree there. My mother never did. I never dared. You will.',
+    thanks: 'You felt the ground shake? The whole forest felt it. The way north is open, dear, to the tree whose top nobody has seen. Go carefully. Something gnaws at its roots.',
+    reward: { xp: 250000, perz: 25000, items: { potion3: 10 } },
   },
 };
 

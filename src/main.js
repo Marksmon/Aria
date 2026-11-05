@@ -86,6 +86,13 @@ const SPAWNS = {
   // over the Sand Wyrm. Sphinx Sands keeps no monsters; the tomb (raid) spawns its own
   sand: [], sphinx: [], tomb: [],
   // the Sphinx's Halls (dungeon.js): three maze floors, harder floor by floor, then the great hall (no night here: underground)
+  // Yggdrasil keeps no monsters; its hollows (dungeon.js) are three maze floors of living wood, then the
+  // great hall, at the Sphinx's Halls' levels
+  ygg: [],
+  ygg1: [['rootSquirrel', 16], ['bramble', 13]],                             // Base 31-45
+  ygg2: [['rootSerpent', 10], ['mossGolem', 9], ['darkElf', 9]],             // 46-60
+  ygg3: [['greatStag', 10], ['dryad', 9], ['rotBeetle', 8], ['elfLord', 1]], // 61-75, the Dark Elf Lord the mini-boss
+  ygg4: [['rootWarden', 8], ['thornDrake', 7], ['nidhogg', 1]],             // 76-90: the great hall, its guards and Nidhogg
   halls1: [['hallScarab', 16], ['cobra', 13]],                               // Base 31-45
   halls2: [['hallMummy', 10], ['lamia', 9], ['servant', 9]],                 // 46-60
   halls3: [['sphinxCub', 10], ['sandElemental', 9], ['sarcophagus', 8], ['ammit', 1]], // 61-75, Ammit the mini-boss
@@ -374,6 +381,7 @@ function cardOnHit(m, dmg) {
   if (ps.burn && m.alive) inflict(m, { kind: 'burn', chance: () => ps.burn, dur: 3 }, 1, dmg);
   if (ps.stun && m.alive) inflict(m, { kind: 'stun', chance: () => ps.stun, dur: 1.5 }, 1, dmg);
   if (ps.venom && m.alive) inflict(m, { kind: 'poison', chance: () => ps.venom, dur: 4 }, 1, dmg); // (the Cactus Lord Card, a Stinger)
+  if (ps.rot && m.alive && dmg > 0) { m.curseT = Math.max(m.curseT || 0, 5); m.curseBy = Math.max(m.curseBy || 0, ps.rot / 100); } // (the Nidhogg Card's Root Rot)
   if (ps.soultax && dmg > 0) player.healSp(Math.max(1, Math.round(dmg * ps.soultax / 100))); // (the Pharaoh Card)
   if (ps.lifesteal && dmg > 0) {
     const n = player.heal(Math.max(1, Math.round(dmg * ps.lifesteal / 100)));
@@ -387,7 +395,9 @@ const weaponKind = () => { const it = ITEMS[inv.gear.weapon]; return !it ? 'none
 // the Shadowblade's Cruel Edge: a sword harder on a monster below half its HP
 const cruel = (m) => (weaponKind() === 'sword' && m.hp < m.def.hp / 2 ? 1 + 0.04 * skillLv(prog, 'cruedge') : 1) * backstab(m) * weighed(m);
 // the Ammit Card's Weighing of the Heart: blows and spells land harder on a monster under 30% HP
-const weighed = (m) => (player.ps.execute && m.hp < m.def.hp * 0.3 ? 1 + player.ps.execute / 100 : 1);
+// and the Dark Elf Lord Card's Elven Sight: harder from 4 paces or more
+const weighed = (m) => (player.ps.execute && m.hp < m.def.hp * 0.3 ? 1 + player.ps.execute / 100 : 1)
+  * (player.ps.farshot && Math.hypot(m.x - player.x, m.z - player.z) - m.def.r >= 4 ? 1 + player.ps.farshot / 100 : 1);
 // what a skill costs: the Eternal Sphinx Card's Eternal Wisdom takes a share off
 const spNeed = (id, lv) => { const n = spCost(id, lv); return n && player.ps?.sage ? Math.max(1, Math.round(n * (1 - player.ps.sage / 100))) : n; };
 // the Shadowblade's Backstab: a sword or dagger blow from behind lands harder. Behind = the monster faces
@@ -488,7 +498,8 @@ const cam = { yaw: save?.yaw ?? 0, dist: save?.dist ?? 12, target: new THREE.Vec
 const visited = new Set(save?.visited || ['camp']); // lands walked, for the Ferryman
 quests.seen = visited; // (a secret series waits for every land it names: quests.js needZones)
 // a hidden portal (world.js portal.need) opens once its quest is done, or its last task is: the Sphinx
-// Eye set in the Great Desert's obelisk (The Sphinx's Riddle 6) opens the way to Sphinx Sands
+// Eye set in the Great Desert's obelisk (The Sphinx's Riddle 6) opens the way to Sphinx Sands, the World
+// Tree's seed planted in the Old Forest (The World Tree 6) the way to Yggdrasil
 world.open = (need) => quests.done.includes(need) || (need in quests.active && quests.ready(need, inv));
 // Keepers whose ledger you have signed (the camp's is signed from the start), and where you saved
 const keepers = new Set(save?.keepers || ['keeper_camp']);
@@ -769,6 +780,34 @@ mobs.on('devour', (m, mv, spot) => {
   m.hp = Math.min(m.def.hp, m.hp + n);
   fx.number(m.x, overHead(m, m.sprite.scale.y * 0.8 + 0.4), m.z, 'Devoured!', 'skill');
   menus.message(`${TheName(m)} devours what it tore from you, and its wounds close!`);
+});
+// Gnaw the Roots (Nidhogg, mobs.js MOVES.gnaw): it sinks its teeth into the World Tree's roots, healing
+// as it gnaws while the rot withers whoever is in its hall; tear it away (enough damage in time) or it rises gorged
+mobs.on('gnaw', (m, act) => {
+  fx.number(m.x, overHead(m, m.sprite.scale.y * 0.8 + 0.4), m.z, 'Gnaw the Roots', 'skill');
+  fx.sparkle(m.x, world.heightAt(m.x, m.z) + 0.6, m.z, '#9aff6a', 30);
+  cam.shake = 0.4; audio.play('night');
+  menus.message(`Nidhogg sinks its teeth into the World Tree's roots! It heals as it gnaws, and the rot withers everything in the hall. Hit it hard, fast: ${act.need.toLocaleString()} damage tears it away!`);
+});
+mobs.on('gnawTick', (m, act) => {
+  fx.puff(m.x, world.heightAt(m.x, m.z) + 0.3, m.z, 2.2);
+  fx.number(m.x, overHead(m, m.sprite.scale.y * 0.8 + 0.4), m.z, `Torn ${Math.min(99, Math.floor(act.taken / act.need * 100))}%`, 'miss');
+  if (mobs.inHall(player.x, player.z)) { // the rot: wherever you stand in the hall
+    fx.sparkle(player.x, world.heightAt(player.x, player.z) + 0.4, player.z, '#9aff6a', 6);
+    bossBlow(m, act.mv.mult, player.x, player.z, 99);
+  }
+});
+mobs.on('gnawTorn', (m) => {
+  fx.number(m.x, overHead(m, m.sprite.scale.y * 0.8 + 0.4), m.z, 'Torn Away!', 'crit');
+  fx.sparkle(m.x, world.heightAt(m.x, m.z) + 1.5, m.z, '#ffd23a', 30);
+  audio.play('levelup');
+  menus.message('You tear Nidhogg away from the roots! It reels: strike now, its scales are open!');
+});
+mobs.on('gnawDone', (m) => {
+  fx.number(m.x, overHead(m, m.sprite.scale.y * 0.8 + 0.4), m.z, 'Gorged!', 'skill');
+  fx.sparkle(m.x, world.heightAt(m.x, m.z) + 1.2, m.z, '#ff4a3a', 24);
+  audio.play('night');
+  menus.message('Nidhogg rises from the roots, gorged and furious!');
 });
 // The Riddle (the Eternal Sphinx, mobs.js MOVES.riddle): it asks, and three circles round you hold three
 // answers. Stand in the right one when its time is up. (A riddle is never asked twice running.)
@@ -1590,6 +1629,11 @@ function tickQuestWorld(dt) {
       fx.sparkle(player.x, y(player.x, player.z) + 1.2, player.z, '#7ad8ff', 30);
       menus.message('The Sphinx Eye clicks into the obelisk, and the whole desert sighs. To the south, a way opens through the sand...');
     }
+    if (id === 'tree6') { // the World Tree's seed planted: the hidden way north of the Old Forest opens
+      cam.shake = 0.6; audio.play('night');
+      fx.sparkle(player.x, y(player.x, player.z) + 1.2, player.z, '#9affc0', 30);
+      menus.message('The seed sinks into the dark earth, and the ground shakes. Roots heave up through the moss, and to the north the trees part: a way opens toward something enormous...');
+    }
     if (quests.ready(id, inv)) questComplete(id); else refreshQuests();
   }
   tickDefense(dt);
@@ -2222,6 +2266,7 @@ const roll = ([a, b]) => a + Math.floor(Math.random() * (b - a + 1));
 function useItem(id) {
   const u = ITEMS[id]?.use;
   if (!u || !inv.bag.count(id) || player.state === 'down') return;
+  if (u.full && player.hp >= player.maxHp && player.sp >= player.maxSp) { menus.message('Your HP and SP are already full'); return; }
   if (u.hp && !u.cure && player.hp >= player.maxHp) { menus.message('Your HP is already full'); return; }
   if (u.sp && player.sp >= player.maxSp) { menus.message('Your SP is already full'); return; }
   inv.bag.remove(id, 1);
@@ -2232,6 +2277,11 @@ function useItem(id) {
   }
   if (u.sp) fx.number(player.x, y, player.z, player.healSp(roll(u.sp)), 'sp');
   if (u.cure) { player.slowT = 0; player.poisonT = 0; } // (spores' slow, and a scorpion's venom)
+  if (u.full) { // (a World Tree Berry: everything back, and every ill gone)
+    const n = player.heal(player.maxHp); if (n > 0) fx.number(player.x, y, player.z, n, 'heal');
+    fx.number(player.x, y + 0.3, player.z, player.healSp(player.maxSp), 'sp');
+    player.slowT = 0; player.poisonT = 0;
+  }
   if (u.buff) { buffs[u.buff] = u.t; applyStats(); menus.message(`${ITEMS[id].name}: ${ITEMS[id].desc}`); }
   if (u.warp === 'random') warpRandom();
   if (u.warp === 'camp') { if (savePoint) warp(savePoint.map, null, { x: savePoint.x, z: savePoint.z }); else warpTo('camp'); } // to your save point

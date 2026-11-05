@@ -32,7 +32,14 @@ export const FLOOR_LOOK = {
   2: { wall: '#b49064', course: '#7a5a3a', band: '#c49c68', glyph: '#4a3220', paint: '#2e7a6a', floor: '#8a7252', flag: '#6a5438', top: '#a07e54' },
   3: { wall: '#a88e6a', course: '#6e5638', band: '#2e4f9a', glyph: '#e8c050', paint: '#e8c050', floor: '#7a6a52', flag: '#5a4c38', top: '#988060' },
   4: { wall: '#8c7a66', course: '#584a3a', band: '#e2b440', glyph: '#2e2418', paint: '#2e4f9a', floor: '#5e5246', flag: '#463c32', top: '#7a6a58' },
+  // Yggdrasil's hollows (look: 'tree'): walls of living wood, moss on top, runes glowing in the bark,
+  // floors of dark earth crossed by roots; deeper, the wood darkens and the runes burn brighter
+  tree1: { tree: true, wall: '#7a5636', course: '#3e2a18', band: '#4f7a3c', glyph: '#9affc0', paint: '#e8d070', floor: '#5a4630', flag: '#3e2e1e', top: '#4f7a3c' },
+  tree2: { tree: true, wall: '#6a4a2e', course: '#34220f', band: '#3f6a34', glyph: '#8af0ff', paint: '#9affc0', floor: '#4e3c28', flag: '#36281a', top: '#3f6a34' },
+  tree3: { tree: true, wall: '#5a3e26', course: '#2a1a0c', band: '#365a2e', glyph: '#c8a0ff', paint: '#9affc0', floor: '#443424', flag: '#2e2216', top: '#365a2e' },
+  tree4: { tree: true, wall: '#4a3220', course: '#22140a', band: '#2e4a28', glyph: '#ff9a6a', paint: '#c8a0ff', floor: '#3a2c1e', flag: '#281c12', top: '#2e4a28' },
 };
+export const lookOf = (M) => FLOOR_LOOK[M.look || M.floor] || FLOOR_LOOK[1];
 
 // carve the floor's maze. M: { seed, rooms: [[i, j, pillar?]...] (2x2 cells from i, j), loops (a share),
 // hall: { i0, j0, i1, j1, gate: [i...] (opened through its bottom wall at those columns), only (no maze round it) } }.
@@ -131,6 +138,7 @@ function canvasTex(w, h, draw) {
 // the wall's face, 2 paces wide and the wall's height tall: sandstone courses, a frieze of carvings
 // (eyes, ankhs, birds, wavy water) at eye height, painted here and there
 function wallTex(L, rng) {
+  if (L.tree) return barkWall(L, rng);
   return canvasTex(128, 128, (g) => {
     g.fillStyle = L.wall; g.fillRect(0, 0, 128, 128);
     for (let i = 0; i < 220; i++) { g.fillStyle = rng() < 0.5 ? 'rgba(80,50,25,.14)' : 'rgba(255,240,210,.12)'; g.fillRect(rng() * 128, rng() * 128, 2 + rng() * 5, 2 + rng() * 3); }
@@ -163,7 +171,38 @@ function wallTex(L, rng) {
     }
   });
 }
+// living wood: furrowed bark up the wall, a mossy band at the top, a line of runes glowing in it
+function barkWall(L, rng) {
+  return canvasTex(128, 128, (g) => {
+    g.fillStyle = L.wall; g.fillRect(0, 0, 128, 128);
+    for (let k = 0; k < 16; k++) { // furrows
+      let x = k * 8 + rng() * 3;
+      g.beginPath(); g.moveTo(x, 0);
+      for (let y = 0; y <= 128; y += 12) { x += (rng() - 0.5) * 4; g.lineTo(x, y); }
+      g.strokeStyle = L.course; g.lineWidth = 1.5 + rng() * 1.5; g.stroke();
+    }
+    for (let i = 0; i < 3; i++) { const x = rng() * 128, y = 70 + rng() * 50; g.fillStyle = L.course; g.beginPath(); g.ellipse(x, y, 4, 6, 0, 0, 7); g.fill(); } // knots
+    for (let i = 0; i < 26; i++) { g.fillStyle = L.band; g.globalAlpha = 0.65; g.beginPath(); g.ellipse(rng() * 128, rng() * 18, 6 + rng() * 9, 3 + rng() * 5, 0, 0, 7); g.fill(); } // the moss creeping over the top
+    g.globalAlpha = 1;
+    g.fillStyle = L.band; g.fillRect(0, 0, 128, 6);
+    g.strokeStyle = L.glyph; g.fillStyle = L.glyph; g.lineWidth = 2; // runes: straight strokes, like carved staves
+    for (let k = 0; k < 6; k++) {
+      const x = 8 + k * 20, y = 46;
+      g.beginPath(); g.moveTo(x, y); g.lineTo(x, y + 16);
+      const r = Math.floor(rng() * 4);
+      if (r === 0) { g.moveTo(x, y + 3); g.lineTo(x + 6, y); g.moveTo(x, y + 8); g.lineTo(x + 6, y + 5); }
+      if (r === 1) { g.moveTo(x, y + 4); g.lineTo(x + 6, y + 8); g.lineTo(x, y + 12); }
+      if (r === 2) { g.moveTo(x - 5, y + 2); g.lineTo(x + 5, y + 12); g.moveTo(x + 5, y + 2); g.lineTo(x - 5, y + 12); }
+      if (r === 3) { g.moveTo(x, y); g.lineTo(x + 6, y + 6); g.lineTo(x, y + 12); }
+      g.stroke();
+    }
+  });
+}
 function topTex(L, rng) {
+  if (L.tree) return canvasTex(64, 64, (g) => { // moss
+    g.fillStyle = L.top; g.fillRect(0, 0, 64, 64);
+    for (let i = 0; i < 120; i++) { g.fillStyle = rng() < 0.5 ? 'rgba(20,40,10,.25)' : 'rgba(180,230,120,.15)'; g.fillRect(rng() * 64, rng() * 64, 2 + rng() * 3, 2); }
+  });
   return canvasTex(64, 64, (g) => {
     g.fillStyle = L.top; g.fillRect(0, 0, 64, 64);
     for (let i = 0; i < 90; i++) { g.fillStyle = rng() < 0.5 ? 'rgba(60,40,20,.18)' : 'rgba(255,240,210,.12)'; g.fillRect(rng() * 64, rng() * 64, 3, 2); }
@@ -172,6 +211,19 @@ function topTex(L, rng) {
 }
 // the floor: big worn flagstones, two to a tile
 export function floorTex(L, rng) {
+  if (L.tree) return canvasTex(128, 128, (g) => { // dark earth, leaf litter, roots running through it
+    g.fillStyle = L.floor; g.fillRect(0, 0, 128, 128);
+    for (let i = 0; i < 260; i++) { g.fillStyle = rng() < 0.5 ? 'rgba(20,12,4,.2)' : 'rgba(200,170,110,.08)'; g.fillRect(rng() * 128, rng() * 128, 2 + rng() * 3, 2); }
+    for (let k = 0; k < 4; k++) { // roots
+      let x = rng() * 128, y = rng() * 128;
+      const a = rng() * Math.PI;
+      g.beginPath(); g.moveTo(x, y);
+      for (let s = 0; s < 8; s++) { x += Math.cos(a) * 10 + (rng() - 0.5) * 6; y += Math.sin(a) * 10 + (rng() - 0.5) * 6; g.lineTo(x, y); }
+      g.strokeStyle = L.flag; g.lineWidth = 5; g.stroke();
+      g.strokeStyle = 'rgba(160,120,80,.25)'; g.lineWidth = 1.5; g.stroke();
+    }
+    for (let i = 0; i < 14; i++) { g.fillStyle = rng() < 0.5 ? 'rgba(120,150,60,.35)' : 'rgba(170,110,50,.3)'; g.beginPath(); g.ellipse(rng() * 128, rng() * 128, 3, 1.6, rng() * 3, 0, 7); g.fill(); } // fallen leaves
+  });
   return canvasTex(128, 128, (g) => {
     g.fillStyle = L.floor; g.fillRect(0, 0, 128, 128);
     for (let y = 0; y < 128; y += 32) for (let x = (y / 32) % 2 ? 16 : 0; x < 160; x += 32) {
@@ -190,7 +242,7 @@ export function floorTex(L, rng) {
 // the walls as meshes, the colliders for them, the minimap's lines: the maze's whole look and feel.
 // ctx: { group, place (world.js props) }. Returns { solidAt(x, z), occlude, update, minimap }
 export function buildMaze(ctx, M, maze) {
-  const { group } = ctx, L = FLOOR_LOOK[M.floor] || FLOOR_LOOK[1];
+  const { group } = ctx, L = lookOf(M);
   const rng = mulberry32(M.seed * 7 + 3);
   const { solid } = maze;
   // the solid tiles merged into rectangles: a run along each row, runs alike stacked down the rows
@@ -266,7 +318,7 @@ export function buildMaze(ctx, M, maze) {
   // the hall's pillars: round, banded in gold, a lotus capital
   const pillars = [];
   const pmat = cutaway(new THREE.MeshLambertMaterial({ map: wt }));
-  const gold = cutaway(new THREE.MeshLambertMaterial({ color: '#e2b440', emissive: '#2a1a04' }));
+  const gold = cutaway(new THREE.MeshLambertMaterial(L.tree ? { color: L.band } : { color: '#e2b440', emissive: '#2a1a04' })); // (in the World Tree: moss, not gold)
   const pgeo = new THREE.CylinderGeometry(0.46, 0.52, PILLAR_H, 12), cap = new THREE.CylinderGeometry(0.72, 0.44, 0.45, 12), ring = new THREE.CylinderGeometry(0.54, 0.54, 0.22, 12);
   for (let z = 0; z < N; z++) for (let x = 0; x < N; x++) {
     if (solid[at(x, z)] !== 2) continue;
@@ -286,9 +338,9 @@ export function buildMaze(ctx, M, maze) {
     const back = solid[at(x, z - 1)] === 1 && !solid[at(x, z + 1)];
     if (back && (x * 7 + z * 13) % 23 === 0) nearWall.push([x + 0.5, z + 0.12]);
   }
-  for (const [x, z] of nearWall) if (ctx.place('torch', x, z, true)) torches.push({ x, z });
+  for (const [x, z] of nearWall) if (ctx.place(L.tree ? 'mushroom_big' : 'torch', x, z, true)) torches.push({ x, z }); // (no fire inside the World Tree: glowing mushrooms)
   maze.deadEnds.forEach(([x, z], k) => {
-    const kind = k % 5 === 0 ? 'sarcophagus' : k % 3 === 0 ? 'bones' : 'urn';
+    const kind = L.tree ? (k % 4 === 0 ? 'mushroom_big' : k % 3 === 0 ? 'bones' : k % 2 ? 'mushrooms' : 'stump') : k % 5 === 0 ? 'sarcophagus' : k % 3 === 0 ? 'bones' : 'urn';
     ctx.place(kind, x + (rng() - 0.5) * 0.8, z + (rng() - 0.5) * 0.8, true);
   });
   if (maze.hall) { // the hall: braziers down both sides, obelisks at the back, a runner from the gate, the winged sun
@@ -297,7 +349,11 @@ export function buildMaze(ctx, M, maze) {
       const m = new THREE.Mesh(new THREE.PlaneGeometry(w, d).rotateX(-Math.PI / 2), new THREE.MeshLambertMaterial({ map: tex, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2 }));
       m.position.set(x, 0.01, z); m.renderOrder = 0.5; group.add(m);
     };
-    const runner = canvasTex(32, 128, (g) => {
+    const runner = L.tree ? canvasTex(32, 128, (g) => { // a path of moss, glowing runes down it
+      g.fillStyle = '#2e4a28'; g.fillRect(0, 0, 32, 128);
+      g.fillStyle = '#3f6a34'; for (let i = 0; i < 60; i++) g.fillRect(rng() * 32, rng() * 128, 3, 2);
+      g.fillStyle = L.glyph; for (let y = 8; y < 128; y += 32) { g.fillRect(15, y, 2, 12); g.fillRect(11, y + 3, 10, 2); }
+    }) : canvasTex(32, 128, (g) => {
       g.fillStyle = '#26407e'; g.fillRect(0, 0, 32, 128);
       g.fillStyle = '#c89a34'; g.fillRect(0, 0, 4, 128); g.fillRect(28, 0, 4, 128);
       for (let y = 4; y < 128; y += 16) { g.beginPath(); g.moveTo(16, y); g.lineTo(24, y + 8); g.lineTo(16, y + 16); g.lineTo(8, y + 8); g.closePath(); g.fill(); }
@@ -306,7 +362,18 @@ export function buildMaze(ctx, M, maze) {
     const sunZ = (H.z0 + H.z1) / 2 - 2, from = sunZ + 5.5; // (the runner from the gate to the winged sun's foot)
     runner.repeat.set(1, Math.round((H.z1 - from) / 2.5));
     decal(runner, H.gate.x, (from + H.z1) / 2, 3, H.z1 - from);
-    const sunTex = canvasTex(256, 256, (g) => { // the winged sun with the eye in it, gold and lapis
+    const sunTex = L.tree ? canvasTex(256, 256, (g) => { // the World Tree in a ring of runes: its crown above, its roots below
+      g.translate(128, 128);
+      g.strokeStyle = L.glyph; g.lineWidth = 5; g.beginPath(); g.arc(0, 0, 118, 0, 7); g.stroke();
+      g.lineWidth = 2; g.beginPath(); g.arc(0, 0, 104, 0, 7); g.stroke();
+      g.fillStyle = L.glyph; for (let k = 0; k < 24; k++) { const a = (k / 24) * Math.PI * 2; g.save(); g.rotate(a); g.fillRect(-1.5, -116, 3, 10); g.fillRect(-4, -112, 8, 2); g.restore(); }
+      g.fillStyle = '#6a4a2e'; g.fillRect(-9, -40, 18, 70); // the trunk
+      g.strokeStyle = '#6a4a2e'; g.lineWidth = 8; g.lineCap = 'round';
+      for (const s of [-1, 1]) for (const [dx, dy] of [[40, 70], [70, 40], [20, 85]]) { g.beginPath(); g.moveTo(0, 26); g.quadraticCurveTo(s * dx * 0.4, 40, s * dx, dy); g.stroke(); } // roots
+      for (const s of [-1, 1]) for (const [dx, dy] of [[45, -70], [75, -45], [20, -88]]) { g.beginPath(); g.moveTo(0, -36); g.quadraticCurveTo(s * dx * 0.4, -50, s * dx, dy); g.stroke(); } // branches
+      g.fillStyle = '#4f8a3c'; for (let k = 0; k < 30; k++) { const a = -Math.PI * (0.1 + 0.8 * (k / 29)), r = 70 + (k % 3) * 10; g.beginPath(); g.arc(Math.cos(a) * r, Math.sin(a) * r * 0.9 - 6, 12, 0, 7); g.fill(); } // the crown
+      g.globalAlpha = 0.25; g.fillStyle = '#000'; for (let i = 0; i < 300; i++) g.fillRect(-128 + Math.random() * 256, -128 + Math.random() * 256, 2, 2);
+    }) : canvasTex(256, 256, (g) => { // the winged sun with the eye in it, gold and lapis
       g.translate(128, 128);
       for (const s of [-1, 1]) for (let k = 0; k < 5; k++) {
         g.fillStyle = k % 2 ? '#e2b440' : '#2e4f9a';
@@ -322,8 +389,8 @@ export function buildMaze(ctx, M, maze) {
     });
     sunTex.wrapS = sunTex.wrapT = THREE.ClampToEdgeWrapping;
     decal(sunTex, H.gate.x, sunZ, 14, 14);
-    for (let z = H.z0 + 5.5; z < H.z1 - 2; z += 5) for (const x of [H.x0 + 1.5, H.x1 - 1.5]) ctx.place('torch', x, z, true);
-    for (const x of [H.x0 + 8, H.x1 - 8]) ctx.place('obelisk', x, H.z0 + 1.6, true);
+    for (let z = H.z0 + 5.5; z < H.z1 - 2; z += 5) for (const x of [H.x0 + 1.5, H.x1 - 1.5]) ctx.place(L.tree ? 'mushroom_big' : 'torch', x, z, true);
+    for (const x of [H.x0 + 8, H.x1 - 8]) ctx.place(L.tree ? 'mushroom_big' : 'obelisk', x, H.z0 + 1.6, true);
   }
   return {
     pillars,
@@ -336,10 +403,10 @@ export function buildMaze(ctx, M, maze) {
       for (let z = 0; z < N; z++) for (let x = 0; x < N; x++) {
         const v = solid[at(x, z)];
         if (!v) continue;
-        mg.fillStyle = v === 2 ? '#e2b440' : L.course;
+        mg.fillStyle = v === 2 ? (L.tree ? L.band : '#e2b440') : L.course;
         mg.fillRect(x * 2, z * 2, 2, 2);
       }
-      if (maze.hall) { const H = maze.hall; mg.strokeStyle = '#e2b440'; mg.lineWidth = 1; mg.strokeRect(H.x0 * 2 + 1, H.z0 * 2 + 1, (H.x1 - H.x0) * 2 - 2, (H.z1 - H.z0) * 2 - 2); }
+      if (maze.hall) { const H = maze.hall; mg.strokeStyle = L.tree ? L.glyph : '#e2b440'; mg.lineWidth = 1; mg.strokeRect(H.x0 * 2 + 1, H.z0 * 2 + 1, (H.x1 - H.x0) * 2 - 2, (H.z1 - H.z0) * 2 - 2); }
     },
   };
 }

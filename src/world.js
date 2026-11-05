@@ -2,7 +2,10 @@
 // field a 64x64 map of its own. Warp portals at the map edges join them. Only Moss Field (north)
 // and Fen Shore (west) open from the camp; everything else is reached by travelling on:
 //
-//                                Serpent Wood
+//                                                    Yggdrasil Hollows 1 - 2 - 3 (mazes) - 4 (Nidhogg's great hall)
+//                                                                                      |  (the door in the trunk)
+//                                                                            (hidden) Yggdrasil
+//                                Serpent Wood                                          :
 //                                   |
 //                               Burnt Wood                                           Old Forest
 //                                   |                                                     |
@@ -29,7 +32,8 @@ import { makeNoise, mulberry32, sstep, lerp, clamp } from './noise.js';
 import { buildCity, WALL } from './city.js';
 import { SOIL, soilAt, cropSpots, fences } from './farm.js';
 import { buildPyramid, buildSphinx } from './monuments.js';
-import { carveMaze, buildMaze, floorTex, FLOOR_LOOK } from './dungeon.js';
+import { carveMaze, buildMaze, floorTex, lookOf } from './dungeon.js';
+import { buildYggdrasil } from './yggdrasil.js';
 
 export const SIZE = 64;
 export const CENTER = 32;
@@ -66,11 +70,16 @@ export const ZONE_NAMES = {
   scorpion: 'Scorpion Sands', // the scorpions and the runners, and the Pyramid
   desert: 'Great Desert',  // the deep desert, where the Sand Wyrm swims under the dunes
   sphinx: 'Sphinx Sands',  // the Giant Sphinx's sands, open only to who solves its riddle
+  ygg: 'Yggdrasil',        // the World Tree, north of the Old Forest, open only to who planted its seed
   tomb: "Pharaoh's Tomb",  // the fourth raid (raid.js): the burial hall under the Pyramid
   halls1: 'Sphinx Halls 1', // the first dungeon (dungeon.js), behind the door in the Giant Sphinx's
   halls2: 'Sphinx Halls 2', // chest: three maze floors, harder floor by floor, and the Eternal Sphinx's
   halls3: 'Sphinx Halls 3', // great hall at the bottom
   halls4: 'Sphinx Halls 4',
+  ygg1: 'Yggdrasil Hollows 1', // the second dungeon, inside the World Tree (dungeon.js): three maze
+  ygg2: 'Yggdrasil Hollows 2', // floors of living wood, then the great hall at its heart, where
+  ygg3: 'Yggdrasil Hollows 3', // Nidhogg gnaws the roots
+  ygg4: 'Yggdrasil Hollows 4',
 };
 
 const CAMP_R = 17;   // the camp clearing's walkable radius
@@ -116,7 +125,8 @@ export const MAPS = {
     farms: [[16, 25], [44, 30], [24, 38]] },
   wolfhill: { portals: [{ to: 'farm', ...N }, { to: 'heath', ...W }], lift: [0.8, 1.6], camps: [[20, 20], [46, 44], [44, 18]], hunt: true, clear: { x: 32, z: 44, r: 6 } },
   marsh:    { portals: [{ to: 'birch', ...W }, { to: 'hunt', ...E }], lake: { x: 28, z: 30, rx: 10, rz: 7 }, clear: { x: 44, z: 44, r: 5 } },
-  oldwood:  { portals: [{ to: 'hunt', ...S }], lift: [-0.1, 0.6], clear: { x: 34, z: 26, r: 7 } },
+  // (north, a hidden portal opens once the World Tree's seed is planted by the old stump: The World Tree 6)
+  oldwood:  { portals: [{ to: 'hunt', ...S }, { to: 'ygg', ...N, need: 'tree6' }], lift: [-0.1, 0.6], clear: { x: 34, z: 26, r: 7 }, stumps: [[34, 26], [32, 8.6]] },
   // Rytingborg, the oasis city south of Ember Hill (city.js): its lake fills the middle of the city,
   // two bridges cross it over an island (keep: dry ground left under them), the palace stands on its
   // rock at the back (north), so the north gate is off to one side.
@@ -141,6 +151,16 @@ export const MAPS = {
   halls1: { portals: [{ to: 'sphinx', x: 31.5, z: 55.5 }, { to: 'halls2', x: 31.5, z: 7.5 }], indoor: true, maze: { floor: 1, seed: 101, loops: 0.12, start: [6, 13], rooms: [[6, 12], [6, 0], [2, 4, true], [10, 8, true]] } },
   halls2: { portals: [{ to: 'halls1', x: 31.5, z: 7.5 }, { to: 'halls3', x: 55.5, z: 31.5 }], indoor: true, maze: { floor: 2, seed: 202, loops: 0.1, start: [6, 0], rooms: [[6, 0], [12, 6], [3, 9, true], [8, 4, true], [2, 2, true]] } },
   halls3: { portals: [{ to: 'halls2', x: 55.5, z: 31.5 }, { to: 'halls4', x: 7.5, z: 31.5 }], indoor: true, maze: { floor: 3, seed: 303, loops: 0.09, start: [12, 6], rooms: [[12, 6], [0, 6], [6, 6, true], [5, 1, true], [8, 10, true]] } },
+  // Yggdrasil (yggdrasil.js): the World Tree in a mossy clearing, its trunk in the middle (yggdrasil: where,
+  // its radius, the angles of its great roots, and the root that climbs to its door: ramp). No monsters
+  ygg: { portals: [{ to: 'oldwood', ...S }, { to: 'ygg1', x: 32, z: 35.2, out: [0, 3.2], door: true }], lift: [-0.05, 0.3],
+    yggdrasil: { x: 32, z: 24, r: 9.4, ramp: { x: 32, z0: 34.4, z1: 47, w: 2.4, top: 2.6 }, roots: [0.15, 0.95, 2.2, 3.0, 3.75, 4.5, 5.3, 6.0] },
+    keep: [{ x0: 19, z0: 11, x1: 45, z1: 49 }] },
+  // the World Tree's hollows (dungeon.js, look 'tree'): three maze floors of living wood, then the great hall
+  ygg1: { portals: [{ to: 'ygg', x: 31.5, z: 55.5 }, { to: 'ygg2', x: 31.5, z: 7.5 }], indoor: true, maze: { floor: 1, look: 'tree1', seed: 511, loops: 0.12, start: [6, 13], rooms: [[6, 12], [6, 0], [3, 5, true], [9, 8, true]] } },
+  ygg2: { portals: [{ to: 'ygg1', x: 31.5, z: 7.5 }, { to: 'ygg3', x: 7.5, z: 31.5 }], indoor: true, maze: { floor: 2, look: 'tree2', seed: 622, loops: 0.1, start: [6, 0], rooms: [[6, 0], [0, 6], [9, 3, true], [4, 9, true], [11, 10, true]] } },
+  ygg3: { portals: [{ to: 'ygg2', x: 7.5, z: 31.5 }, { to: 'ygg4', x: 55.5, z: 31.5 }], indoor: true, maze: { floor: 3, look: 'tree3', seed: 733, loops: 0.09, start: [0, 6], rooms: [[0, 6], [12, 6], [6, 2, true], [5, 10, true], [9, 6, true]] } },
+  ygg4: { portals: [{ to: 'ygg3', x: 31.5, z: 55.5 }], indoor: true, maze: { floor: 4, look: 'tree4', seed: 844, hall: { i0: 2, j0: 1, i1: 11, j1: 13, only: true } } }, // (the great hall alone)
   halls4: { portals: [{ to: 'halls3', x: 31.5, z: 55.5 }], indoor: true, maze: { floor: 4, seed: 404, hall: { i0: 2, j0: 1, i1: 11, j1: 13, only: true } } }, // (no maze: the great hall alone)
 };
 const SEG = 128; // terrain vertices per side - 1 (0.5 unit spacing)
@@ -176,6 +196,8 @@ const GROUND = {
   desert: ['#d6b070', '#e8c686'],
   sphinx: ['#dab676', '#eacb8e'],
   tomb: ['#8a7252', '#9e8664'],
+  ygg: ['#3f7034', '#56883e'],
+  ygg1: ['#ffffff', '#f2ece4'], ygg2: ['#ffffff', '#f2ece4'], ygg3: ['#ffffff', '#f2ece4'], ygg4: ['#ffffff', '#f2ece4'],
   halls1: ['#ffffff', '#f2ece4'], halls2: ['#ffffff', '#f2ece4'], halls3: ['#ffffff', '#f2ece4'], halls4: ['#ffffff', '#f2ece4'], // (the floor's own flags tint it: dungeon.js)
   dirt: '#b49a6c',
   sandpath: '#c8a46c',
@@ -212,9 +234,10 @@ const TABLE = {
   desert: [['rock_sand', 14], ['cactus', 14], ['cactus_round', 8], ['grass_dry', 18], ['bones', 9], ['ruin_block', 4], ['shrub_dry', 8], ['rock_small', 12]],
   sphinx: [['ruin_pillar', 18], ['ruin_block', 18], ['rock_sand', 10], ['grass_dry', 16], ['bones', 4], ['rock_small', 10]],
   tomb: [['urn', 10], ['ruin_block', 4], ['rock_small', 12], ['bones', 6]],
+  ygg: [['grass', 30], ['flowers', 24], ['bush', 10], ['mushrooms', 14], ['mushroom_big', 3], ['stump', 3], ['tree_oak', 5], ['rock_grey', 3]],
 };
 const BORDER = { grove: 'tree_grove', hollow: 'tree_dark', ridge: 'rock', fen: 'tree_willow', camp: 'tree_grove', city: 'tree_grove', magic: 'tree_birch', birch: 'tree_birch', coast: 'rock_grey', deep: 'tree_dark', heath: 'tree_dead', stones: 'rock', coalpit: 'rock_grey', burnt: 'tree_dead', serpent: 'tree_dark', hunt: 'tree_pine', farm: 'tree_grove', wolfhill: 'tree_pine', marsh: 'tree_willow', oldwood: 'tree_oak', koboldcamp: 'rock_grey', goblinlair: 'tree_dark',
-  sand: 'tree_palm', redsands: 'crag', dunes: 'crag', scorpion: 'crag', desert: 'crag', sphinx: 'crag', tomb: 'ruin_pillar' };
+  sand: 'tree_palm', redsands: 'crag', dunes: 'crag', scorpion: 'crag', desert: 'crag', sphinx: 'crag', tomb: 'ruin_pillar', ygg: 'tree_oak' };
 // a desert's edge: mostly red crags, now and then a rock arch, a palm or a sandstone boulder
 const DESERT_EDGE = [['crag', 70], ['rock_sand', 18], ['rock_arch', 3], ['tree_palm', 6], ['cactus', 6]];
 // inside the city walls (and a step beyond them)
@@ -281,7 +304,17 @@ function buildMap(id, scene, lib, shared) {
     }
     const e = edgeDist(x, z);
     if (e < 6) h += Math.pow((6 - e) / 6, 2) * 3.5;
-    return h;
+    return h + rampAt(x, z);
+  }
+  // Yggdrasil's root that climbs to its door (def.yggdrasil.ramp): its rise, from the ground at z1 to its
+  // top by the trunk at z0, falling off steeply at its sides
+  function rampAt(x, z) {
+    const RP = def.yggdrasil?.ramp;
+    if (!RP) return 0;
+    const ax = Math.abs(x - RP.x);
+    if (ax > RP.w + 1.2 || z > RP.z1 + 0.5 || z < def.yggdrasil.z) return 0;
+    const t = clamp((RP.z1 - z) / (RP.z1 - RP.z0), 0, 1);
+    return RP.top * t * t * (3 - 2 * t) * sstep(RP.w + 1.2, RP.w, ax);
   }
   // rolling ridges of sand, a little crooked, steeper on one side like wind-blown dunes
   function duneAt(x, z) {
@@ -305,6 +338,7 @@ function buildMap(id, scene, lib, shared) {
 
   function colorAt(x, z, h) {
     const out = new THREE.Color();
+    if (def.yggdrasil?.ramp && rampAt(x, z) > 0.12) return out.set('#6a4a2e').multiplyScalar(0.8 + (Math.sin(x * 5.3 + Math.sin(z * 1.7) * 2) * 0.5 + 0.5) * 0.35); // (the root's bark)
     if (MZ) return out.set('#ffffff').multiplyScalar(0.86 + noise.fbm(x * 0.3, z * 0.3, 2) * 0.28); // (the flags are in the floor's texture)
     const [a, b] = groundCols[id];
     out.copy(a).lerp(b, sstep(0.35, 0.65, noise.fbm(x * 0.16 + 13, z * 0.16, 3)));
@@ -391,8 +425,10 @@ function buildMap(id, scene, lib, shared) {
   }
 
   // the desert's monuments (monuments.js): the Pyramid, the Giant Sphinx
-  const mctx = { group, heightAt: (x, z) => heightAt(x, z), addBox: (x0, z0, x1, z1) => boxes.push({ x0, z0, x1, z1, kind: 'monument' }) };
-  const monument = def.pyramid ? buildPyramid(mctx, def.pyramid) : def.sphinx ? buildSphinx(mctx, def.sphinx) : null;
+  const mctx = { group, heightAt: (x, z) => heightAt(x, z), addBox: (x0, z0, x1, z1) => boxes.push({ x0, z0, x1, z1, kind: 'monument' }), addSolid: (x, z, coll) => solids.push({ x, z, coll }) };
+  const monument = def.pyramid ? buildPyramid(mctx, def.pyramid) : def.sphinx ? buildSphinx(mctx, def.sphinx) : def.yggdrasil ? buildYggdrasil(mctx, def.yggdrasil) : null;
+  // old stumps (the World Tree: the great stump the Treants guard, the one the seed is planted by)
+  for (const [x, z] of def.stumps || []) { place('stump', x, z, true); place('mushrooms', x + 1.2, z + 0.8, true); }
   // an old obelisk with a few fallen stones round it (the Sphinx's Riddle)
   if (def.obelisk) {
     const [ox, oz] = def.obelisk;
@@ -485,7 +521,7 @@ function buildMap(id, scene, lib, shared) {
   geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
   geo.computeVertexNormals();
   let ground = lib.ground;
-  if (MZ) { ground = floorTex(FLOOR_LOOK[def.maze.floor], mulberry32(def.maze.seed)); ground.repeat.set(32, 32); }
+  if (MZ) { ground = floorTex(lookOf(def.maze), mulberry32(def.maze.seed)); ground.repeat.set(32, 32); }
   const terrain = new THREE.Mesh(geo, new THREE.MeshLambertMaterial({ vertexColors: true, map: ground }));
   group.add(terrain);
 
@@ -652,7 +688,7 @@ function buildMap(id, scene, lib, shared) {
   for (let j = 0; j < 128; j++) for (let i = 0; i < 128; i++) {
     const x = i * 0.5 + 0.25, z = j * 0.5 + 0.25;
     const h = heightAt(x, z);
-    const hex = h < WATER_Y ? '4f9cc0' : MZ ? FLOOR_LOOK[def.maze.floor].floor.slice(1) : colorAt(x, z, h).getHexString();
+    const hex = h < WATER_Y ? '4f9cc0' : MZ ? lookOf(def.maze).floor.slice(1) : colorAt(x, z, h).getHexString();
     const o = (j * 128 + i) * 4;
     img.data[o] = parseInt(hex.slice(0, 2), 16);
     img.data[o + 1] = parseInt(hex.slice(2, 4), 16);

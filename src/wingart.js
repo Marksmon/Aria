@@ -94,7 +94,7 @@ export function paintWings(g, art, frame = 0) {
 // from the spine (SWEEP), turned with the hero (yaw: how far the face has turned toward screen right),
 // so it narrows and slides as they turn; the nearer wing over the farther, the crest down the spine
 // only when the back is toward us, and a wing's inner face (toward the hero's front) a little darker.
-export const WING_VIEWS = { angel: true, leaf: true, fairy: true, ember: true, devil: true }; // (every pair: they turn with the hero)
+export const WING_VIEWS = { angel: true, leaf: true, fairy: true, ember: true, devil: true, nidhogg: true }; // (every pair: they turn with the hero)
 export const WING_DIRS = ['down', 'downright', 'right', 'upright', 'up', 'upleft', 'left', 'downleft'];
 const SWEEP = 0.55, BACK = 10; // the wings' sweep back from the spine plane; the back, this far behind the hero's middle (px)
 const FLARE = 8; // facing us, the wings stand this far out from the body (px), so they show past it
@@ -125,7 +125,7 @@ export function paintWingsView(g, art, dir, frame = 0) {
   for (const p of parts.sort((x, y) => x.depth - y.depth)) p.draw();
 }
 // a box other than 96 x 56 with the back at (48, 30): [w, h, back x, back y]
-const WING_BOX = { angel: [78, 114, 39, 35], devil: [124, 104, 62, 38] }; // (the Devil Wings: tall for the tail)
+const WING_BOX = { angel: [78, 114, 39, 35], devil: [124, 104, 62, 38], nidhogg: [168, 116, 84, 50] }; // (the Devil Wings: tall for the tail; Nidhogg's, great and wide)
 export const wingBox = (art) => WING_BOX[art] || [96, 56, 48, 30];
 // a pale crystal: a diamond, lit at its upper left
 function crystal(g, x, y, w, h) {
@@ -137,6 +137,16 @@ function crystal(g, x, y, w, h) {
 // what is drawn once, between the two wings: the Angel Wings' gold crest down the spine, a big
 // crystal at its heart and two small ones below
 const WING_MIDDLE = {
+  // Nidhogg Wings: a ridge of black spikes down the spine, a red ember glowing at its heart
+  nidhogg(g) {
+    for (let i = 0; i < 7; i++) {
+      const y = -12 + i * 4.6, w = 3.6 - i * 0.3;
+      g.beginPath(); g.moveTo(-w, y); g.lineTo(0, y - 6 - (i < 2 ? 4 : 0)); g.lineTo(w, y); g.lineTo(0, y + 3.4); g.closePath();
+      g.fillStyle = '#1c161a'; g.fill(); g.lineWidth = 0.8; g.strokeStyle = '#080406'; g.stroke();
+      g.beginPath(); g.moveTo(-w * 0.5, y + 0.5); g.lineTo(0, y - 3); g.lineTo(w * 0.5, y + 0.5); g.lineWidth = 0.7; g.strokeStyle = '#c81e24'; g.stroke(); // the red glow in the cracks
+    }
+    g.beginPath(); g.moveTo(0, -8); g.lineTo(2.8, -4); g.lineTo(0, 0); g.lineTo(-2.8, -4); g.closePath(); g.fillStyle = '#ff3a2a'; g.fill(); g.lineWidth = 0.8; g.strokeStyle = '#140608'; g.stroke();
+  },
   // the Devil Wings: a spine of dark spiked plates down the back, a red stone and a spike on top
   devil(g) {
     for (let i = 0; i < 6; i++) {
@@ -290,6 +300,66 @@ const WING_ART = {
     thorn(wr[0], wr[1], 6, -13, 2.6);
     g.beginPath(); g.arc(wr[0], wr[1], 2.2, 0, Math.PI * 2); g.fillStyle = '#c0202c'; g.fill(); g.lineWidth = 0.8; g.strokeStyle = '#140608'; g.stroke(); // the red knuckle
   },
+};
+// Nidhogg Wings (the owner's sheet): a dragon's wings of black, thorned bone and torn crimson membrane,
+// ragged at every edge and eaten through with holes, red light glowing in its veins; a great hooked claw
+// over each wrist, spikes all along the arm and down every finger
+WING_ART.nidhogg = (g) => {
+  const sh = [2, -6], el = [24, -36], wr = [54, -50], tips = [[82, -30], [80, 2], [68, 30], [46, 48], [22, 46]], root = [4, 24];
+  const torn = (from, to, sag, notches) => { // a ragged scallop from one tip to the next
+    const [x0, y0] = from, [x1, y1] = to, nx = -(y1 - y0), ny = x1 - x0, len = Math.hypot(nx, ny) || 1;
+    for (let i = 1; i <= notches; i++) {
+      const k = i / notches, bow = Math.sin(k * Math.PI) * sag, jag = i % 2 ? 2.8 : -2.2;
+      g.lineTo(x0 + (x1 - x0) * k + (nx / len) * (bow + jag), y0 + (y1 - y0) * k + (ny / len) * (bow + jag));
+    }
+  };
+  g.beginPath(); g.moveTo(...sh); g.lineTo(...el); g.lineTo(...wr);
+  let prev = wr;
+  for (const t of tips) { torn(prev, t, 9, 7); prev = t; }
+  torn(prev, root, 6, 5); g.closePath();
+  const skin = g.createLinearGradient(54, -40, 10, 40);
+  skin.addColorStop(0, '#d0222c'); skin.addColorStop(0.45, '#8a0e1a'); skin.addColorStop(1, '#30060c');
+  g.fillStyle = skin; g.fill(); g.lineWidth = 1.4; g.strokeStyle = '#0c0406'; g.stroke();
+  g.save(); g.clip();
+  // glowing veins out from the wrist, and the dark near the body
+  const shade = g.createRadialGradient(4, 4, 2, 4, 4, 40); shade.addColorStop(0, 'rgba(20, 2, 6, .7)'); shade.addColorStop(1, 'rgba(20, 2, 6, 0)');
+  g.fillStyle = shade; g.fillRect(-10, -60, 100, 120);
+  g.beginPath();
+  for (const t of tips) { g.moveTo(...wr); g.quadraticCurveTo((wr[0] + t[0]) / 2 - 4, (wr[1] + t[1]) / 2 + 6, t[0], t[1]); }
+  for (let i = 0; i < 9; i++) { const x = 12 + i * 7, y = -10 + (i % 3) * 14; g.moveTo(x, y); g.lineTo(x + 6, y + 9); g.lineTo(x + 3, y + 16); }
+  g.lineWidth = 0.9; g.strokeStyle = 'rgba(255, 70, 50, .55)'; g.stroke();
+  // the holes eaten through it, ragged, a red rim round each
+  const HOLES = [[40, -14, 4.5, 3], [58, -6, 3.5, 5], [30, 10, 5, 3.5], [52, 18, 4, 3], [62, 28, 2.6, 3.4], [22, 30, 3.4, 2.4], [70, -14, 2.4, 3.2], [40, 32, 3, 2.2], [16, 12, 2.4, 1.8]];
+  const blob = (x, y, rx, ry) => { g.beginPath(); for (let k = 0; k < 10; k++) { const a = (k / 10) * Math.PI * 2, r = k % 2 ? 0.75 : 1.1; g.lineTo(x + Math.cos(a) * rx * r, y + Math.sin(a) * ry * r); } g.closePath(); };
+  for (const [x, y, rx, ry] of HOLES) { blob(x, y, rx + 1.2, ry + 1.2); g.fillStyle = '#ff4a30'; g.fill(); }
+  g.globalCompositeOperation = 'destination-out';
+  for (const [x, y, rx, ry] of HOLES) { blob(x, y, rx, ry); g.fill(); }
+  g.globalCompositeOperation = 'source-over';
+  g.restore();
+  // the bones: black, a dark grey edge; the arm, then each finger
+  const bone = (pts, w) => {
+    g.beginPath(); g.moveTo(...pts[0]); for (const q of pts.slice(1)) g.lineTo(...q);
+    g.lineCap = 'round'; g.lineJoin = 'round';
+    g.lineWidth = w + 1.6; g.strokeStyle = '#060304'; g.stroke();
+    g.lineWidth = w; g.strokeStyle = '#1c161a'; g.stroke();
+    g.lineWidth = w * 0.3; g.strokeStyle = '#5a4a52'; g.stroke();
+  };
+  for (const t of tips) bone([wr, [(wr[0] + t[0]) / 2 + 2, (wr[1] + t[1]) / 2 + 1], t], 2);
+  bone([sh, el, wr], 3.6);
+  // spikes: along the arm, down every finger, a hooked claw at each tip and the great claw over the wrist
+  const spike = (x, y, dx, dy, w = 1.7) => {
+    g.beginPath(); g.moveTo(x - w, y); g.quadraticCurveTo(x + dx * 0.3, y + dy * 0.7, x + dx, y + dy); g.lineTo(x + w, y); g.closePath();
+    g.fillStyle = '#241c20'; g.fill(); g.lineWidth = 0.7; g.strokeStyle = '#060304'; g.stroke();
+    g.beginPath(); g.moveTo(x + dx * 0.55, y + dy * 0.55); g.lineTo(x + dx, y + dy); g.lineWidth = 0.8; g.strokeStyle = '#d8ccc4'; g.stroke(); // a pale tip
+  };
+  for (const [x, y, dx, dy] of [[6, -14, -4, -7], [12, -22, -3, -8], [18, -30, -3, -8], [30, -40, -2, -8], [40, -45, 0, -8], [47, -48, 1, -7]]) spike(x, y, dx, dy);
+  for (const t of tips) {
+    for (const k of [0.45, 0.75]) { const x = wr[0] + (t[0] - wr[0]) * k, y = wr[1] + (t[1] - wr[1]) * k; spike(x, y, (t[1] - wr[1]) * 0.1, -(t[0] - wr[0]) * 0.1, 1.1); }
+    spike(t[0], t[1], (t[0] - wr[0]) * 0.2, (t[1] - wr[1]) * 0.2, 1.4);
+  }
+  spike(wr[0], wr[1], 8, -16, 3);
+  spike(wr[0] - 2, wr[1] + 2, -4, -12, 2);
+  g.beginPath(); g.arc(wr[0], wr[1], 2.4, 0, Math.PI * 2); g.fillStyle = '#ff3a2a'; g.fill(); g.lineWidth = 0.8; g.strokeStyle = '#140608'; g.stroke(); // the red knuckle
 };
 // the Devil Wings' tail: dark spiked segments with crimson edges, down to a barbed spear tip. It hangs
 // from the small of the back; turned to us it curls out past the legs, so it shows even facing front.

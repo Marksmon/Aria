@@ -191,6 +191,44 @@ export const MOB_DEFS = {
     summon: ['sphinxCub', 'sphinxCub', 'jackal', 'falcon'], summonText: 'The Eternal Sphinx roars, and its cubs and Guardians answer!', mvpDrops: [['gold_bar', 1], ['potion3', 3]],
     wake: 'Deep under the sands, something ancient opens its eyes... The Eternal Sphinx waits in its hall.',
     drops: [['gold_bar', 1, 3, 1], ['potion3', 2, 3, 0.6], ['lion_mane', 4, 6, 1], ['hard_ore', 1, 2, 0.4], ['armor_ore', 1, 2, 0.4], ['sphinx_ring', 1, 1, 0.05], ['sphinx_mantle', 1, 1, 0.03], ['riddle_blade', 1, 1, 0.02], ['sphinx_staff', 1, 1, 0.02], ['sphinx_bow', 1, 1, 0.01], ['enigma_fang', 1, 1, 0.01], ['sphinx_card', 1, 1, 0.01], ['allseeing_eye', 1, 1, 0.005]] },
+  // Yggdrasil's hollows (dungeon.js), the second dungeon, inside the World Tree (its monsters live only
+  // there): three maze floors of living wood, then the great hall, at the Sphinx's Halls' levels (the
+  // owner's call), every monster attacking on sight. Floor 1 (31-45): Root Squirrels, quick and biting
+  // twice, and Brambles that throw their thorns. Floor 2 (46-60): Root Serpents, whose bite poisons;
+  // Moss Golems, slow and hard as the rock; Dark Elves, archers loosing shadow arrows. Floor 3 (61-75):
+  // the Great Stags, quick and strong; Dryads throwing glowing leaves; Rot Beetles, hard-shelled and
+  // poisonous; and the Dark Elf Lord, the floor's mini-boss. Floor 4, the great hall (76-90): the Root
+  // Wardens and the Thorn Drakes (hall: they keep to it) guard Nidhogg, who gnaws the World Tree's roots
+  rootSquirrel: { name: 'Root Squirrel', ai: 'assassin', art: 'rootSquirrel', el: 'earth', lv: 34, hp: 1650, atk: [94, 118], def: 14, vit: 30, agi: 42, dex: 56, exp: [390, 273], adelay: 1150, walk: 130, aggro: 5.5, chase: 9, reach: 0.8, double: 0.15, w: 0.95, r: 0.36, drops: [['squirrel_tail', 1, 1, 0.55], ['potion2', 1, 1, 0.08], ['acorn_charm', 1, 1, 0.003], ['rootsquirrel_card', 1, 1, 0.001]] },
+  bramble: { name: 'Bramble', ai: 'archer', art: 'bramble', el: 'earth', lv: 42, hp: 2700, atk: [140, 176], def: 18, vit: 36, agi: 24, dex: 72, mdef: 10, exp: [720, 505], adelay: 1700, walk: 300, aggro: 5.5, chase: 8, range: 4.5, reach: 0.9, w: 1.0, r: 0.42, shot: '#e2d4a8', drops: [['bramble_thorn', 1, 1, 0.5], ['potion2', 1, 1, 0.08], ['bramble_buckler', 1, 1, 0.003], ['bramble_card', 1, 1, 0.001]] },
+  rootSerpent: { name: 'Root Serpent', ai: 'assassin', art: 'snake', tint: '#d0a878', el: 'earth', lv: 50, hp: 3600, atk: [168, 210], def: 14, vit: 40, agi: 48, dex: 76, exp: [1220, 855], adelay: 1300, walk: 180, aggro: 5.5, chase: 9, reach: 0.9, poison: 0.2, w: 1.1, r: 0.4, drops: [['root_scale', 1, 1, 0.5], ['potion3', 1, 1, 0.04], ['serpent_boots', 1, 1, 0.003], ['rootserpent_card', 1, 1, 0.001]] },
+  mossGolem: { name: 'Moss Golem', ai: 'tank', art: 'mossGolem', el: 'earth', lv: 55, hp: 5200, atk: [185, 232], def: 30, vit: 56, agi: 14, dex: 64, mdef: 10, exp: [1620, 1135], adelay: 1900, walk: 300, aggro: 5, chase: 8, reach: 1.0, w: 1.3, r: 0.5, heavy: true, drops: [['moss_clump', 1, 2, 0.6], ['potion3', 1, 1, 0.05], ['moss_mail', 1, 1, 0.003], ['mossgolem_card', 1, 1, 0.001]] },
+  darkElf: { name: 'Dark Elf', ai: 'archer', art: 'darkElf', el: 'shadow', lv: 58, hp: 4000, atk: [200, 250], def: 12, vit: 34, agi: 56, dex: 110, mdef: 25, exp: [1900, 1330], adelay: 1500, walk: 150, aggro: 6.5, chase: 10, range: 5, reach: 0.9, w: 0.85, r: 0.34, shot: '#b88aff', drops: [['elven_thread', 1, 1, 0.5], ['potion3', 1, 1, 0.05], ['elven_bow', 1, 1, 0.0025], ['darkelf_card', 1, 1, 0.001]] },
+  greatStag: { name: 'Great Stag', ai: 'assassin', art: 'greatStag', el: 'wind', lv: 64, hp: 5600, atk: [230, 290], def: 18, vit: 52, agi: 58, dex: 96, exp: [2560, 1790], adelay: 1300, walk: 130, aggro: 6, chase: 10, reach: 1.1, double: 0.15, w: 1.5, r: 0.55, drops: [['stag_antler', 1, 1, 0.5], ['potion3', 1, 1, 0.06], ['stag_cape', 1, 1, 0.0025], ['greatstag_card', 1, 1, 0.001]] },
+  dryad: { name: 'Dryad', ai: 'archer', art: 'dryad', el: 'earth', lv: 68, hp: 5200, atk: [245, 306], def: 14, vit: 44, agi: 50, dex: 110, mdef: 30, exp: [3070, 2150], adelay: 1600, walk: 200, aggro: 6, chase: 9, range: 5, reach: 0.9, w: 0.9, r: 0.36, shot: '#c8ff9a', drops: [['dryad_leaf', 1, 1, 0.5], ['potion3', 1, 1, 0.06], ['dryad_staff', 1, 1, 0.002], ['dryad_card', 1, 1, 0.001]] },
+  rotBeetle: { name: 'Rot Beetle', ai: 'tank', art: 'beetle', tint: '#b89ad8', el: 'shadow', lv: 72, hp: 6600, atk: [250, 314], def: 28, vit: 60, agi: 24, dex: 96, mdef: 8, exp: [3640, 2550], adelay: 1500, walk: 200, aggro: 5, chase: 8, reach: 0.9, poison: 0.12, w: 1.2, r: 0.46, heavy: true, drops: [['rot_shell', 1, 1, 0.5], ['potion3', 1, 2, 0.07], ['rot_fang', 1, 1, 0.0025], ['rotbeetle_card', 1, 1, 0.001]] },
+  // the Dark Elf Lord, the third floor's mini-boss: a tall dark elf in a silver crown and a long cape. He
+  // shoots a Shadow Arrow, rains arrows round you, leaps into the shadows and out beside you, and calls
+  // his archers
+  elfLord: { name: 'Dark Elf Lord', ai: 'boss', art: 'elfLord', aura: '#b88aff', el: 'shadow', boss: true, lv: 74, hp: 330000, atk: [235, 300], def: 22, vit: 55, agi: 50, dex: 175, mdef: 35, exp: [80000, 56000], adelay: 1600, fierce: true, walk: 140,
+    moves: [{ kind: 'throw', name: 'Shadow Arrow', mult: 1.7, r: 1.5 }, { kind: 'meteors', name: 'Arrow Rain', mult: 1.3, r: 1.4, color: '#b88aff', cd: 16 }, { kind: 'leap', name: 'Shadow Leap', mult: 1.6, r: 1.8 }],
+    aggro: 6.5, chase: 12, reach: 1.4, w: 1.9, r: 0.7, summon: ['darkElf', 'darkElf'], summonText: 'The Dark Elf Lord raises his bow, and his archers step out of the dark!', respawn: 540,
+    drops: [['lord_sigil', 1, 1, 0.3], ['elven_thread', 3, 5, 1], ['potion3', 1, 2, 0.5], ['shadow_cloak', 1, 1, 0.03], ['moon_bow', 1, 1, 0.02], ['elflord_card', 1, 1, 0.01]] },
+  rootWarden: { name: 'Root Warden', ai: 'tank', art: 'rootWarden', el: 'earth', hall: true, lv: 80, hp: 8000, atk: [290, 364], def: 34, vit: 66, agi: 30, dex: 120, exp: [5000, 3500], adelay: 1600, walk: 220, aggro: 6, chase: 10, reach: 1.3, w: 1.3, r: 0.5, heavy: true, drops: [['living_heartwood', 1, 1, 0.5], ['potion3', 1, 2, 0.07], ['warden_blade', 1, 1, 0.0025], ['rootwarden_card', 1, 1, 0.001]] },
+  thornDrake: { name: 'Thorn Drake', ai: 'archer', art: 'thornDrake', el: 'shadow', hall: true, lv: 86, hp: 8400, atk: [314, 394], def: 24, vit: 60, agi: 60, dex: 140, exp: [6200, 4340], adelay: 1500, walk: 150, aggro: 7, chase: 10, range: 5, reach: 1.1, w: 1.5, r: 0.5, shot: '#9aff6a', drops: [['drake_scale', 1, 1, 0.5], ['potion3', 1, 2, 0.08], ['drake_ring', 1, 1, 0.0025], ['thorndrake_card', 1, 1, 0.001]] },
+  // the MVP of Yggdrasil, in the great hall at its heart (hall: it never leaves it): Nidhogg, the black
+  // dragon that gnaws the World Tree's roots. Its own: Gnaw the Roots (MOVES.gnaw): it sinks its teeth
+  // into the roots and heals while the rot it spreads withers whoever is in the hall; tear it away with
+  // enough damage in time (GNAW.tear of its HP) and it reels, stunned and open; fail, and it rises
+  // gorged and in a frenzy. Between, it breathes venom, rushes you in its coils, brings roots crashing
+  // down (leaving venom on the ground) and calls its brood and the Root Wardens
+  nidhogg: { name: 'Nidhogg', ai: 'boss', art: 'nidhogg', el: 'shadow', lv: 99, hp: 1400000, atk: [560, 720], def: 34, vit: 70, agi: 45, dex: 210, mdef: 40, exp: [160000, 112000], adelay: 2100, walk: 140, aggro: 9, chase: 30, reach: 2.6, w: 4.8, r: 1.6, heavy: true, hall: true,
+    mvp: true, respawn: 2400, mvpExp: 60000, stomp: 2.2, takes: { ranged: 1.3, melee: 0.75 }, takesText: 'its black scales turn blades and fists (−25%), but arrows find the soft skin under its wings (+30%)',
+    moves: [{ kind: 'gnaw', name: 'Gnaw the Roots', mult: 0.45 }, { kind: 'throw', name: 'Venom Breath', mult: 2.4, r: 1.8 }, { kind: 'charge', name: 'Coil Rush', mult: 2.2 }, { kind: 'meteors', name: 'Falling Roots', mult: 1.8, r: 1.6, color: '#7a5636' }, { kind: 'frenzy' }],
+    burns: { r: 1.6, dur: 6, mult: 0.25, color: '#9aff6a', word: 'Venom!', text: 'venom pools' },
+    summon: ['rootWarden', 'thornDrake', 'thornDrake'], summonText: 'Nidhogg roars, and its brood and the Root Wardens answer!', mvpDrops: [['ygg_berry', 2], ['potion3', 3]],
+    wake: 'Far under the World Tree, something gnaws at its roots... Nidhogg stirs in its hall.',
+    drops: [['ygg_berry', 1, 3, 1], ['potion3', 2, 3, 0.6], ['drake_scale', 4, 6, 1], ['hard_ore', 1, 2, 0.4], ['armor_ore', 1, 2, 0.4], ['nidhogg_ring', 1, 1, 0.05], ['dragonleaf_mantle', 1, 1, 0.03], ['dragonbone_blade', 1, 1, 0.02], ['worldtree_staff', 1, 1, 0.02], ['dragonwing_bow', 1, 1, 0.01], ['nidhogg_fang', 1, 1, 0.01], ['nidhogg_wings', 1, 1, 0.01], ['nidhogg_card', 1, 1, 0.01], ['worldtree_crown', 1, 1, 0.005]] },
 };
 // the Sand Wyrm's rhythm (def.wyrm): seconds up (it can be hit, it doesn't move) and under (it
 // can't be hit, it swims for you), shorter enraged; swim: its pace under the sand against its walk;
@@ -270,6 +308,10 @@ for (const d of Object.values(MOB_DEFS)) d.speed = 1000 / (d.walk * WALK_SCALE);
 //            you, each with an answer (main.js). In the right one when the `ask` s are up: it is
 //            Dumbstruck (RIDDLE: stunned, and takes more for a while). In a wrong one, or none: its
 //            Judgment, mult x ATK wherever you stand in its hall, and it is Exalted (takes less).
+//   gnaw   - (Nidhogg) it sinks its teeth into the World Tree's roots for `dur` s, rooted, healing `heal`
+//            of its HP each second while the rot withers whoever is in its hall (mult x ATK each second,
+//            main.js); deal it `tear` of its HP in that time and it is torn away, reeling (stunned, and
+//            taking more for a while); else it rises gorged, in a frenzy.
 //   devour - (Ammit) from up close: it rears, a red circle before it, and bites; caught, you take
 //            mult x ATK and it heals `heal` of its HP.
 // cd: seconds before the same move again (a boss uses one move at a time, and waits 2.5 s between;
@@ -285,6 +327,7 @@ export const MOVES = {
   burrow: { min: 2, max: 10, cd: 14, dig: 0.5, under: 1.8, mark: 0.8 },
   mirror: { cd: 30, below: 0.9 },
   riddle: { cd: 30, below: 0.97, ask: 7, askRage: 5.5 },
+  gnaw: { cd: 32, below: 0.92, dur: 9, heal: 0.008, tear: 0.012, stun: 3.5, exposeFor: 8, gorge: 0.03 },
   devour: { min: 0, max: 3.2, cd: 11, wind: 0.7 },
 };
 // the Eternal Sphinx's Riddle answered (MOVES.riddle): right, it is Dumbstruck for `stun` s and takes
@@ -621,13 +664,13 @@ class Mob {
       if ((this.moveCd[mv.kind] || 0) > 0) return false;
       if (mv.kind === 'frenzy' || mv.kind === 'bark') return this.hp / d.hp <= M.below;
       if (mv.kind === 'mirror') return this.hp / d.hp <= M.below && !this.mgr.decoysOf(this).length;
-      if (mv.kind === 'riddle') return this.hp / d.hp <= M.below && p === this.mgr.hero;
+      if (mv.kind === 'riddle' || mv.kind === 'gnaw') return this.hp / d.hp <= M.below && p === this.mgr.hero;
       if (dist < M.min || dist > M.max) return false;
       return !(mv.kind === 'leap' && nearPortal(this.mgr.world, p.x, p.z, d.r)); // not onto a portal
     });
     const score = (mv) => {
       let s = 1 + Math.random() * 0.6;
-      if (['frenzy', 'bark', 'mirror', 'riddle'].includes(mv.kind)) s += 2; // its own: as soon as it may
+      if (['frenzy', 'bark', 'mirror', 'riddle', 'gnaw'].includes(mv.kind)) s += 2; // its own: as soon as it may
       if (['charge', 'leap', 'burrow'].includes(mv.kind)) s += Math.min(this.kiteT, 6) * 0.5 + (casting ? 1.5 : 0) + (dist > 5 ? 0.6 : 0);
       if (['throw', 'meteors', 'roots'].includes(mv.kind)) s += (still ? 0.8 : 0) + (dist >= 3 && dist <= 9 ? 0.5 : 0);
       if (mv.kind === this.lastMove) s -= 0.8;
@@ -651,6 +694,10 @@ class Mob {
         this.act = { kind: 'riddle', mv, t: this.enraged ? M.askRage : M.ask };
         this.atkAnim = ATTACK_ANIM * 1.6;
         this.mgr.emit('riddle', this, this.act);
+      } else if (mv.kind === 'gnaw') { // it sinks its teeth into the roots: main.js shows the rot spreading
+        this.act = { kind: 'gnaw', mv, t: M.dur, taken: 0, need: d.hp * M.tear, tick: 1 };
+        this.atkAnim = ATTACK_ANIM * 1.6;
+        this.mgr.emit('gnaw', this, this.act);
       } else if (mv.kind === 'devour') { // it rears over you: the bite lands just before it
         const reach = Math.min(dist, d.reach + 0.6), ux = dist > 0.01 ? dx / dist : this.heading.x, uz = dist > 0.01 ? dz / dist : this.heading.z;
         this.heading = { x: ux, z: uz };
@@ -734,6 +781,13 @@ class Mob {
     }
     if (a.kind === 'riddle') { // waiting on your answer
       if (a.t <= 0) { this.act = null; this.atkAnim = ATTACK_ANIM * 1.6; this.mgr.emit('riddleEnd', this, a); }
+      return { moving: false, lift: 0 };
+    }
+    if (a.kind === 'gnaw') { // gnawing: it heals each second, until it is torn away or it has had its fill
+      this.atkAnim = Math.max(this.atkAnim, 0.1);
+      if ((a.tick -= dt) <= 0) { a.tick = 1; this.hp = Math.min(this.def.hp, this.hp + this.def.hp * M.heal); this.mgr.emit('gnawTick', this, a); }
+      if (a.taken >= a.need) { this.act = null; this.stunT = M.stun; this.status = 'stun'; this.exposeT = M.exposeFor; this.mgr.emit('gnawTorn', this, a); }
+      else if (a.t <= 0) { this.act = null; this.hp = Math.min(this.def.hp, this.hp + this.def.hp * M.gorge); this.rageT = MOVES.frenzy.dur; this.mgr.emit('gnawDone', this, a); }
       return { moving: false, lift: 0 };
     }
     if (a.kind === 'devour') {
@@ -919,7 +973,8 @@ class Mob {
       this.mgr.emit('reflect', this, Math.max(1, Math.round(dmg * BARK.reflect)), from);
     }
     if (this.curseT > 0 && dmg > 0) dmg = Math.round(dmg * (1 + (this.curseBy || 0))); // (in a Voodoo's Curse Circle: everything lands harder)
-    if (this.exposeT > 0 && dmg > 0) dmg = Math.round(dmg * RIDDLE.exposed); // (Dumbstruck: its Riddle answered)
+    if (this.exposeT > 0 && dmg > 0) dmg = Math.round(dmg * RIDDLE.exposed); // (Dumbstruck: its Riddle answered; or Nidhogg torn from the roots)
+    if (this.act?.kind === 'gnaw' && dmg > 0) this.act.taken += dmg; // (tearing Nidhogg away from the roots)
     this.hp -= dmg;
     this.flash = 0.09;
     if (this.lulled) { this.lulled = false; this.provoke(); } // a blow wakes a lulled boss (the vigil's song breaks)

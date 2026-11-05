@@ -37,7 +37,8 @@ const WING_MOVE = {
   fairy: { w: 1.36, h: 0.8, y: 0.98, move: 'flutter' },
   ember: { w: 1.36, h: 0.8, y: 0.98, move: 'flicker' },
   angel: { w: 0.94, h: 1.05, y: 0.81, move: 'flap', speed: 1.6, amp: 0.05 }, // folded, tall on the back (a 78 x 114 box)
-  devil: { w: 1.09, h: 0.915, y: 0.83, move: 'flap', speed: 1.7, amp: 0.12 }, // (as big as the Angel Wings: 0.0088 a pixel of its 124 x 104 box, the back at 62, 38 kept at 0.95)
+  devil: { w: 1.09, h: 0.915, y: 0.83, move: 'flap', speed: 1.7, amp: 0.12 },
+  nidhogg: { w: 1.48, h: 1.02, y: 0.81, move: 'flap', speed: 1.3, amp: 0.1 }, // (Nidhogg Wings: 0.0088 a pixel of its 168 x 116 box, the back at 84, 50 kept at 0.95) // (as big as the Angel Wings: 0.0088 a pixel of its 124 x 104 box, the back at 62, 38 kept at 0.95)
 };
 // a still picture of the wings an item puts on the back, facing dir, and how they sit (WING_MOVE: their
 // size and height in world units), for pictures of the hero (the title's preview); null for none

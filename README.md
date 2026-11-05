@@ -66,8 +66,11 @@ portals leave the camp (Moss Field to the north, Fen Shore to the west); every o
 reached by travelling on. The fields have plain names; the towns' are Old Norse in style.
 
 ```
-                               Serpent Wood
-                                  |
+                                                         Yggdrasil Hollows 1 - 2 - 3 (mazes) - 4 (the great hall)
+                                                                                    |  (the door in the World Tree)
+                                                                          (hidden) Yggdrasil
+                               Serpent Wood                                         :
+                                  |                                                      |
                               Burnt Wood                                            Old Forest
                                   |                                                      |
                               Galdrheim    Steinborg - Birch Grove - Willow Marsh - Veidheim
@@ -118,6 +121,10 @@ Scorpion Sands with its Pyramid, then the Great Desert, where the Sand Wyrm hunt
 | Sphinx Halls 1 | 31–45 | Scarab (34, hard shell), Cobra (42, poison) | |
 | Sphinx Halls 2 | 46–60 | Mummy (50), Lamia (55, spits venom), Pharaoh's Servant (58, blue fire) | |
 | Sphinx Halls 3 | 61–75 | Sphinx Cub (64), Sand Elemental (68, slowing sand), Sarcophagus (72) | Ammit (74) |
+| Yggdrasil Hollows 1 | 31–45 | Root Squirrel (34, quick), Bramble (42, throws thorns) | |
+| Yggdrasil Hollows 2 | 46–60 | Root Serpent (50, poison), Moss Golem (55), Dark Elf (58, shadow arrows) | |
+| Yggdrasil Hollows 3 | 61–75 | Great Stag (64), Dryad (68, glowing leaves), Rot Beetle (72, poison) | Dark Elf Lord (74) |
+| Yggdrasil Hollows 4 (the great hall) | 76–90 | Root Warden (80), Thorn Drake (86, venom breath) | **Nidhogg (99, MVP)** |
 | Sphinx Halls 4 (the great hall) | 76–90 | Jackal Guardian (80, long spear), Falcon Sentinel (86, wind blades) | **Eternal Sphinx (99, MVP)** |
 | Any field in the valley, more at night (Moss Field and Fen Shore only at night) | | Wisp (11) | |
 
@@ -229,6 +236,7 @@ easiest for some jobs and hardest for others (it tells you when it first comes f
 | Goblin King | blades and fists +40% | arrows and spells −30% (his crown's wind ward) | Blader, BladeMaster | the bow jobs and casters |
 | Ancient Treant | beasts +60% (fangs and claws tear bark), spells +10% | blades and fists −40% (the bark turns them) | Beastmaster | Blader, BladeMaster |
 | Sand Wyrm | blades, daggers and fists +30% (soft flesh between its plates) | beasts −40%, arrows −10% (its plated hide) | Blader, Assassin and their second jobs | Beastmaster |
+| Nidhogg | arrows +30% (the soft skin under its wings) | blades, daggers and fists −25% (its black scales) | Archer, Windrunner | Blader, Assassin and their second jobs |
 | Eternal Sphinx | spells +30% (it honours wisdom) | beasts −30%, blades, daggers and fists −15% (its stone hide) | Sorcerer, Wizard | Beastmaster |
 
 The two-path jobs sit between: a Magic Knight's sword is half steel and half spell, a Moon
@@ -314,6 +322,8 @@ fills up until it hits: step out of it.
 | Alpha Wolf · Great Bear | **Pounce** (a leap) · **Mauling Charge** |
 | Ancient Treant | **Grasping Roots** (hold you in place) · **Bark Armor** (hits bounce back) · **Root Stone** (thrown) · **Uprooting Charge** |
 | Ammit | **Devouring Rush** (a charge) · **Pounce** · **Devour**: a bite in front of it that heals it |
+| Dark Elf Lord | **Shadow Arrow** (thrown) · **Arrow Rain** · **Shadow Leap** |
+| Nidhogg | **Gnaw the Roots** (tear it away in time) · **Venom Breath** (thrown) · **Coil Rush** (a charge) · **Falling Roots** (venom where they land) · **Frenzy** |
 | Eternal Sphinx | **The Riddle** (stand in the right answer) · **Pounce** · **Falling Stones** (cursed sand where they land) · **Gaze of Ages** (thrown) · **Frenzy** |
 
 Each move hits for 1.4–2x the boss's ATK. Staying far away no longer keeps you safe: spells reach
@@ -386,6 +396,45 @@ which sell for a fortune, and now and then good gear for every build: the Riddle
 Sceptre, the Sphinx Wing Bow, the Enigma Fang, the Sphinx Wing Mantle, the Sphinx Ring, its card, and
 very rarely (0.5%) its ultra rare: **the Sphinx's All-Seeing Eye**, a gold Face piece over one eye
 (all stats +3, MATK +10%, HIT +10).
+
+**The World Tree.** In Veidheim, Old Ingrid the Seedkeeper sits by the well with a box of very old
+seeds, and a secret she only tells a hero who has walked every land round the village: Willow Marsh,
+the Old Forest, Barley Field and Wolf Hills. Her series, **The World Tree** (6 steps from Base 45),
+has you mend her seed box, learn the old song, hold the great stump in the Old Forest against the
+Treants, bring a hunter's offering, read three runestones, and plant the Seed of the World Tree by
+the last stump in the north of the Old Forest. Then a hidden way opens north to **Yggdrasil**.
+
+**Yggdrasil** has no monsters: a mossy clearing, fireflies, and in the middle a tree so big that only
+its trunk can be seen, its top lost far above. Great roots spread over the ground round it, and one of
+them, broad as a road, climbs to a door of glowing runes in the trunk. Walk up the root and through
+the door.
+
+**Yggdrasil's Hollows** are Aria's second dungeon, inside the World Tree, at the same levels as the
+Sphinx's Halls (31 to 90). The first three floors are mazes whose walls are living wood, moss on top
+and runes glowing in the bark, lit by glowing mushrooms; the fourth is a great hall of living trunks
+round a rune circle of the World Tree. Every monster down there attacks on sight.
+
+- **Floor 1:** Root Squirrels, quick and biting twice, and Brambles that throw their thorns.
+- **Floor 2:** Root Serpents (their bite poisons), Moss Golems, and Dark Elves loosing shadow arrows.
+- **Floor 3:** Great Stags, Dryads throwing glowing leaves, Rot Beetles, and the **Dark Elf Lord**
+  (Lv 74 mini-boss) in his silver crown: a Shadow Arrow, a rain of arrows, a leap out of the shadows,
+  and his archers at his call.
+- **Floor 4, the great hall:** Root Wardens, knights of living wood, and Thorn Drakes guard **Nidhogg**
+  (Lv 99 MVP, 1,400,000 HP, Shadow), the black dragon that gnaws the World Tree's roots, its scales
+  cracked with glowing red and its crimson wings torn through with holes. It never leaves its hall.
+
+**Gnaw the Roots.** Now and then Nidhogg sinks its teeth into the roots and stays there about 9
+seconds. It heals as it gnaws, and the rot it spreads withers you every second wherever you are in the
+hall. Hit it hard enough in that time (the number it needs is shown, and how far you have got) and you
+**tear it away**: it reels, stunned, and takes 30% more for 8 seconds. Fail, and it rises **gorged**,
+healed and in a frenzy. Between gnawings it breathes venom (**Venom Breath**), rushes you in its coils
+(**Coil Rush**), brings roots crashing down (**Falling Roots**, leaving venom on the ground) and calls
+its Thorn Drakes and Root Wardens. It always drops **World Tree Berries** (1–3, and two more as its MVP
+reward): eat one and all your HP and SP come back at once. Now and then it drops gear for every build
+(the Dragonbone Blade, the World Tree Staff, the Dragonwing Bow, the Nidhogg Fang, the Dragonleaf
+Mantle, the Nidhogg Ring), its card, **Nidhogg Wings** (1%: its torn crimson wings on your back), and
+very rarely (0.5%) its ultra rare: the **World Tree Crown**, a crown of its golden-leafed twigs with a
+drop of green sap for a jewel (DEF +5, Max HP and SP +12%, END +3, KNL +3, FTN +2).
 
 ## Raids
 
@@ -1128,6 +1177,16 @@ they come back whole and the slot stays open. A piece that breaks at Holger's gi
 | Sphinx Cub Card (Pouncing) | Shoes | FLEE +4, QKN +2 | Sphinx Cub, 0.1% |
 | Sand Elemental Card (Whirling) | Garment | FLEE +5, END +1 | Sand Elemental, 0.1% |
 | Sarcophagus Card (Entombed) | Shield | DEF +4, Max HP +6% | Sarcophagus, 0.1% |
+| Root Squirrel Card (Nimble) | Shoes | FLEE +3, QKN +1 | Root Squirrel (Yggdrasil), 0.1% |
+| Bramble Card (Thorny) | Shield | DEF +2, Max HP +80 | Bramble, 0.1% |
+| Root Serpent Card (Coiling) | Weapon | ATK +8, QKN +1 | Root Serpent, 0.1% |
+| Moss Golem Card (Stony) | Armor | DEF +3, Max HP +4% | Moss Golem, 0.1% |
+| Dark Elf Card (Elven) | Accessory | HIT +4, FNS +2 | Dark Elf, 0.1% |
+| Great Stag Card (Antlered) | Head or face | ATK +10, POW +1 | Great Stag, 0.1% |
+| Dryad Card (Blossoming) | Garment | KNL +2, Max SP +60 | Dryad, 0.1% |
+| Rot Beetle Card (Rotting) | Weapon | ATK +14, END +1 | Rot Beetle, 0.1% |
+| Root Warden Card (Warding) | Shield | DEF +5, Max HP +5% | Root Warden, 0.1% |
+| Thorn Drake Card (Draconic) | Armor | Max HP +6%, POW +1, END +1 | Thorn Drake, 0.1% |
 
 | Card | Goes in | Effect | From |
 |---|---|---|---|
@@ -1143,6 +1202,8 @@ they come back whole and the slot stays open. A piece that breaks at Holger's gi
 | Ancient Treant Card (Ancient) | Shield | DEF +10, Max HP +20%, POW +6, END +7; **Bark Armor:** a monster striking you up close takes back 20% of the blow | Ancient Treant, 1% |
 | Fire Giant Card (Infernal) | Weapon (a sorcerer's card) | MATK +30%, KNL +6, FNS +4, Max SP +15%, weapon turns Fire (+15% Fire spells with a staff); **Meteor Heart:** spells and blows set a monster burning 10% of the time | Fire Giant, 1% |
 | Ammit Card (Devouring) | Weapon | ATK +18, POW +3; **Weighing of the Heart:** your blows and spells land 15% harder on a monster under 30% HP | Ammit, 1% |
+| Dark Elf Lord Card (Moonlit) | Garment | FNS +4, FLEE +6; **Elven Sight:** your blows and spells land 10% harder on a monster 4 paces away or more | Dark Elf Lord, 1% |
+| Nidhogg Card (Gnawing) | Armor | DEF +6, Max HP +20%, POW +5, END +5; **Root Rot:** a monster your blows or spells strike takes 8% more from everything for 5 s | Nidhogg, 1% |
 | Eternal Sphinx Card (Enigmatic) | Accessory | KNL +5, FNS +4, FTN +3, Max SP +10%; **Eternal Wisdom:** your skills cost 15% less SP | Eternal Sphinx, 1% |
 
 **Who can wear what.** Swords up to the Iron Sword: Trainee and Blader; rare and elemental
@@ -1354,6 +1415,7 @@ to restore HP, save, and sleep until morning.
 - [x] Cards, more jobs, raids, the Beastmaster's pack
 - [x] Rytingborg and the desert: the Assassin and the Phantom, the Sand Wyrm, Pharaoh's Tomb, the Sphinx's secret
 - [x] **The Sphinx's halls**, Aria's first dungeon: three maze floors and the great hall, Ammit and the Eternal Sphinx
+- [x] **Yggdrasil**, the World Tree, and its hollows, the second dungeon: the Dark Elf Lord and Nidhogg
 - [ ] **Ten cities.** Five early-game cities (Steinborg, Galdrheim, Veidheim and Rytingborg so far,
   one more to come), then five late-game ones. The first half of Aria's making ends with the fifth city.
 
