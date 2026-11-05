@@ -28,7 +28,7 @@ Graphics setting; a phone-sized hero creation screen; the older mini-bosses pay 
 ones; the Monster Album; music by place (towns, fields, sands, dungeons, wonders, boss fights); the
 Windrunner's and BladeMaster's trait text matched to the sim; the in-game text and these docs checked
 against the game (the README's item and card tables are now written by `build-tools/readme-tables.mjs`);
-Ingrid the Tutor back in Galdrheim (another NPC had taken her key); and `npm test` plus a smoke test
+Galdrheim's Tutor back (another NPC had taken her key; renamed Helga, so there is one Ingrid); and `npm test` plus a smoke test
 in CI (`.github/workflows/test.yml`, `docs/balance.md` "Tests").
 
 Left for the owner's call: the dungeons' first floors open below the level their secret series asks

@@ -2,7 +2,7 @@
 // Ragna's herbs), the chest (camp and Steinborg storage), shops and dialogue. Each is a small window you drag by its title bar; several can be open
 // at once and the game keeps running behind them. Positions are remembered per device.
 // Pickup toasts and messages live here too. Plain DOM over the canvas.
-import { ITEMS, RECIPES, SLOTS, SHOPS, PRICES, sellPrice, equipLine, iconURL, canWear, jobLine, recipeKind, upgradeLine, refineInfo, canEnchant, canInsert, ENCHANT, MAX_REFINE, enchantStep, cardOn, cardLine, UNCARD_FEE, parseKey, makeKey } from './items.js';
+import { ITEMS, RECIPES, SLOTS, SHOPS, PRICES, sellPrice, equipLine, iconURL, canWear, jobLine, recipeKind, upgradeLine, refineInfo, canEnchant, canInsert, ENCHANT, MAX_REFINE, enchantStep, cardOn, cardLine, UNCARD_FEE, GOLD_FEE, parseKey, makeKey } from './items.js';
 import { BAG_SLOTS, CHEST_SLOTS } from './inventory.js';
 import { hasCardArt, showCardArt } from './cardart.js';
 import { STATS, STAT_KEYS, JOBS, TREES, QUEST_RATE, JOB_TRAITS } from './progress.js';
@@ -763,7 +763,9 @@ export class Menus {
         : mode === 'uncard'
           ? `Seyla coaxes every card out of a piece, whole, and the slots stay open for others. ${UNCARD_FEE.toLocaleString()} perz a card.`
           : `Press the ${ITEMS[card].name} into a free slot of ${cardOn(ITEMS[card].card).map((s) => SLOTS[s].toLowerCase()).join(' or ')} gear. It stays until Seyla in Galdrheim draws it out.`;
-    let h = `<div class="rnote">${esc(note)}</div><div class="rlist">`;
+    const bars = mode !== 'insert' ? inv.have('gold_bar') : 0; // (Holger's and Seyla's fees take Gold Bars, if asked)
+    const gold = bars ? `<div class="setrow goldpay"><span>Pay with Gold Bars<small>You have ${bars}: each pays ${GOLD_FEE.toLocaleString()} perz of a fee.</small></span><button class="rbtn${inv.goldPay ? '' : ' soft'}" data-act="goldpay" aria-pressed="${!!inv.goldPay}">${inv.goldPay ? 'On' : 'Off'}</button></div>` : '';
+    let h = `<div class="rnote">${esc(note)}</div>${gold}<div class="rlist">`;
     for (const p of list) {
       const it = ITEMS[p.key], on = this.smithSel?.where === p.where && this.smithSel?.key === p.key;
       h += `<div class="ritem smithrow${on ? ' sel' : ''}">${icon(p.key, 'sm')}<div><b>${esc(it.name)}</b><small>${esc(SLOTS[it.slot])} · ${p.where === 'bag' ? 'in your bag' : 'worn'}${upgradeLine(it) ? ' · ' + esc(upgradeLine(it)) : ''}</small></div>
@@ -774,26 +776,27 @@ export class Menus {
     const sel = this.smithSel, it = sel && ITEMS[sel.key];
     if (it) {
       const costRow = (id, n) => `<span class="cost ${inv.have(id) >= n ? 'ok' : ''}" title="${esc(ITEMS[id].name)}">${icon(id, 'xs')}${esc(ITEMS[id].name)} ${Math.min(inv.have(id), 99)}/${n}</span>`;
-      const perzRow = (n) => `<span class="cost ${inv.perz >= n ? 'ok' : ''}">${n.toLocaleString()} perz</span>`;
+      // a fee, or the part of it Gold Bars don't pay (Pay with Gold Bars, inv.goldPay)
+      const perzRow = (n) => { const f = inv.feeSplit(n); return `${f.bars ? `<span class="cost ok" title="${ITEMS.gold_bar.name}: ${GOLD_FEE.toLocaleString()} perz each">${icon('gold_bar', 'xs')}${ITEMS.gold_bar.name} ×${f.bars}</span>` : ''}<span class="cost ${inv.perz >= f.perz ? 'ok' : ''}">${f.perz.toLocaleString()} perz</span>`; };
       let what = '', costs = '', risky = false, can = false, label = '';
       if (mode === 'refine') {
         const r = refineInfo(sel.key);
         what = `${esc(it.name)} → +${r.next} · <b class="${r.safe ? 'ok' : 'risk'}">${r.chance}% chance</b>${r.safe ? ' (safe)' : ''}`;
         costs = costRow(r.ore, 1) + perzRow(r.fee);
-        risky = !r.safe; can = inv.have(r.ore) >= 1 && inv.perz >= r.fee; label = `Refine to +${r.next}`;
+        risky = !r.safe; can = inv.have(r.ore) >= 1 && inv.canPay(r.fee); label = `Refine to +${r.next}`;
         if (!r.safe) what += `<small>Safe up to +${r.safeTo}. If this fails, the ${esc(it.name)} breaks and is gone${it.cards?.length ? ' (its card comes back to you)' : ''}.</small>`;
       } else if (mode === 'enchant') {
         const c = inv.enchantCost(sel.key), step = enchantStep(sel.key);
         what = `${esc(it.name)} → [${step.slots}] · <b class="risk">${step.chance}% chance</b><small>If it fails, the ${esc(it.name)} breaks and is gone${it.cards?.length ? ' (its card comes back to you)' : ''}.</small>`;
-        const bossTip = 'Giant Root, Big Pearl, Mushroom Heart or Fire Core, in any mix';
-        const bossName = [...new Set(c.boss)].map((b) => ITEMS[b].name).join(' + ') || 'Boss material (Giant Root, Big Pearl, Mushroom Heart or Fire Core)';
+        const bossTip = `${ENCHANT.boss.map((b) => ITEMS[b].name).join(', ')}, in any mix`;
+        const bossName = [...new Set(c.boss)].map((b) => ITEMS[b].name).join(' + ') || `Boss material (${bossTip})`;
         const bossRow = `<span class="cost ${c.boss.length >= c.bossNeed ? 'ok' : ''}" title="${bossTip}">${c.boss.length ? icon(c.boss[0], 'xs') : ''}${esc(bossName)} ${c.boss.length}/${c.bossNeed}</span>`;
         costs = Object.entries(c.items).map(([id, n]) => costRow(id, n)).join('') + bossRow + perzRow(c.perz);
         risky = true; can = c.ok; label = 'Enchant';
       } else if (mode === 'uncard') {
         const n = it.cards.length, fee = UNCARD_FEE * n, after = ITEMS[makeKey(parseKey(sel.key).base, { ...parseKey(sel.key), cards: [] })];
         what = `${esc(it.name)} → ${esc(after.name)}${this.cardsBlock(it)}<small class="calm">The card${n > 1 ? 's come' : ' comes'} back to your bag, whole.</small>`;
-        costs = perzRow(fee); can = inv.perz >= fee; label = n > 1 ? 'Remove the cards' : 'Remove the card';
+        costs = perzRow(fee); can = inv.canPay(fee); label = n > 1 ? 'Remove the cards' : 'Remove the card';
       } else {
         // the preview: what the piece becomes with the card in it
         const u = parseKey(sel.key), after = ITEMS[makeKey(u.base, { ...u, cards: [...u.cards, card] })];
@@ -1081,6 +1084,7 @@ export class Menus {
     }
     if (act === 'totitle') this.hooks.toTitle?.(); // back to the title screen, to play another hero
     if (act === 'sound') { this.hooks.toggleSound?.(); this.render(id); }
+    if (act === 'goldpay') { this.inv.goldPay = !this.inv.goldPay; this.render(id); }
     if (act === 'albumtab') { this.albumTab = t.dataset.id; this.render(id); }
     if (act === 'targetbar') { this.hooks.setSetting?.('targetBar', !this.hooks.setting?.('targetBar')); this.render(id); }
     if (act === 'graphics') { this.hooks.setSetting?.('graphics', this.hooks.setting?.('graphics') === 'fast' ? 'sharp' : 'fast'); this.render(id); }

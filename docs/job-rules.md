@@ -205,7 +205,7 @@ bow range.
 - **Two paths, 20 each first:** for the Magic Knight, Moon Ranger and Beastmaster, once one path's
   tree has 20 points it takes no more until the other path's tree has 20 too, and a third first job
   they walked (a Magic Knight's Archer tree) takes no points until both have 20 (`learnBlock`).
-- **Retraining a second job** (Liv in Steinborg, Ingrid the Tutor in Galdrheim, Sven in Veidheim, Geir in Rytingborg: Reset my job skills) unlearns the second job's
+- **Retraining a second job** (Liv in Steinborg, Helga the Tutor in Galdrheim, Sven in Veidheim, Geir in Rytingborg: Reset my job skills) unlearns the second job's
   skills and every first-job tree it trains (the Trainee's stay). The rule above then makes the hero rebuild the first jobs
   before the second job's skills open again, so a reset never dodges it.
 - **Quitting a trial** (Quit quest in the Quest View) before it is finished starts that trial over

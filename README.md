@@ -397,7 +397,7 @@ its **Judgment** falls on you wherever you are in the hall (3x its ATK), and it 
 half damage for 8 seconds. Between riddles it **Pounces**, brings **Falling Stones** down from the
 ceiling (they leave cursed sand that slows you), fixes you with its **Gaze of Ages**, and calls its
 cubs and its Guardians. It always drops **Gold Bars** (1–3, and one more as its MVP reward),
-which sell for a fortune, and now and then good gear for every build: the Riddle Blade, the Sphinx
+which pay Holger's and Seyla's fees (see Refining), and now and then good gear for every build: the Riddle Blade, the Sphinx
 Sceptre, the Sphinx Wing Bow, the Enigma Fang, the Sphinx Wing Mantle, the Sphinx Ring, its card, and
 very rarely (0.5%) its ultra rare: **the Sphinx's All-Seeing Eye**, a gold Face piece over one eye
 (all stats +3, MATK +10%, HIT +10).
@@ -1230,6 +1230,10 @@ Core, Willow Heart, Alpha Pelt or Bear Heart) and 50,000 perz. The second works 
 boss materials in any mix, 100,000 perz). A failed try breaks the weapon; any card in it comes
 back to you.
 
+**Gold Bars** (the Eternal Sphinx's) pay the smiths: turn on **Pay with Gold Bars** in Holger's or Seyla's
+window and each bar pays 20,000 perz of a refine, a slot or a card's removal (perz the rest). A shop pays only
+10,000 for one.
+
 **Cards.** Each MVP drops its card (1%: they are very hard to bring down), and like classic MVP cards they are overpowered.
 Each mini-boss drops one too (1%): a good step up, but nothing like an MVP's. The Goblin King's, the
 Fire Giant's, the Great Bear's, the Giant Beetle's, the Cactus Lord's and Ammit's go in weapons; the rest in other gear.
@@ -1465,7 +1469,7 @@ leads to each.
 | Embla the Stylist | Steinborg | hairstyle and dye, 1,000 perz |
 | Ivar the Ferryman | Steinborg | carts to any land you have walked, 300–3,000 perz |
 | Liv the Guide | Steinborg | who does what in the city · **Reset stats / skills**: one free stat reset and one free skill reset, then 20,000 perz each. A second job's reset unlearns its first-job skills too: rebuild those first (a Magic Knight: 20 points in Blader and 20 in Sorcerer, and every first-job point spent) before its own skills open again |
-| Ingrid the Tutor · Sven the Trainer · Geir the Trainer | Galdrheim · Veidheim · Rytingborg (beside the Keeper) | **Reset stats / skills**, as Liv does |
+| Helga the Tutor · Sven the Trainer · Geir the Trainer | Galdrheim · Veidheim · Rytingborg (beside the Keeper) | **Reset stats / skills**, as Liv does |
 | Bjorn the Gate Guard | Steinborg | which monsters attack on sight |
 | Hakon the Carter | Salt Bay, by the west road | the story (Chapter 5) |
 | Boatman | Salt Bay, by the water | rows you out to **Bloop Island**, the raid (see Raids) |

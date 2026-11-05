@@ -1,6 +1,6 @@
 // Bag, camp chest and equipment. Materials and usables stack to 999 in one slot; each piece of
 // equipment is its own item and takes a slot of its own. Worn equipment leaves the bag.
-import { ITEMS, RECIPES, SLOTS, PRICES, sellPrice, canWear, parseKey, makeKey, refineInfo, canEnchant, canInsert, ENCHANT, MAX_SLOTS, enchantStep, maybeSlotted, UNCARD_FEE } from './items.js';
+import { ITEMS, RECIPES, SLOTS, PRICES, sellPrice, canWear, parseKey, makeKey, refineInfo, canEnchant, canInsert, ENCHANT, MAX_SLOTS, enchantStep, maybeSlotted, UNCARD_FEE, GOLD_FEE } from './items.js';
 
 export const BAG_SLOTS = 48;
 export const CHEST_SLOTS = 300; // the Keepers' storage, shared by every hero (save.js): room for three heroes' worth
@@ -78,6 +78,18 @@ export class Inventory {
   }
 
   onChange(fn) { this.listeners.push(fn); }
+  // a smith's fee: with Pay with Gold Bars on (goldPay), each Gold Bar pays GOLD_FEE of it (never
+  // more bars than the fee needs whole), and perz the rest
+  feeSplit(fee) {
+    const bars = this.goldPay ? Math.min(this.have('gold_bar'), Math.floor(fee / GOLD_FEE)) : 0;
+    return { bars, perz: fee - bars * GOLD_FEE };
+  }
+  canPay(fee) { return this.perz >= this.feeSplit(fee).perz; }
+  payFee(fee) {
+    const { bars, perz } = this.feeSplit(fee);
+    if (bars) this.spend('gold_bar', bars);
+    this.perz -= perz;
+  }
   changed() { for (const fn of this.listeners) fn(); }
 
   add(id, n) {
@@ -204,9 +216,9 @@ export class Inventory {
     const r = refineInfo(key);
     if (!r || r.max) return { error: 'This cannot be refined any further.' };
     if (this.have(r.ore) < 1) return { error: `You need ${ITEMS[r.ore].name}.` };
-    if (this.perz < r.fee) return { error: 'Not enough perz.' };
+    if (!this.canPay(r.fee)) return { error: 'Not enough perz.' };
     this.spend(r.ore, 1);
-    this.perz -= r.fee;
+    this.payFee(r.fee);
     const u = parseKey(key), ok = roll < r.chance;
     this.replace(where, key, ok ? makeKey(u.base, { ...u, refine: r.next }) : null);
     // a broken piece gives back the cards that were in it (to the bag, or storage if it is full)
@@ -221,7 +233,7 @@ export class Inventory {
     const { mult } = enchantStep(key), boss = [];
     for (const id of ENCHANT.boss) for (let i = 0; i < this.have(id) && boss.length < mult; i++) boss.push(id);
     const items = Object.fromEntries(Object.entries(ENCHANT.items).map(([id, n]) => [id, n * mult]));
-    const ok = this.perz >= ENCHANT.perz * mult && boss.length >= mult && Object.entries(items).every(([id, n]) => this.have(id) >= n);
+    const ok = this.canPay(ENCHANT.perz * mult) && boss.length >= mult && Object.entries(items).every(([id, n]) => this.have(id) >= n);
     return { items, boss, bossNeed: mult, perz: ENCHANT.perz * mult, ok };
   }
   enchant(where, key, roll = Math.random() * 100) {
@@ -230,7 +242,7 @@ export class Inventory {
     if (!c.ok) return { error: 'You are missing some of the materials.' };
     for (const [id, n] of Object.entries(c.items)) this.spend(id, n);
     for (const id of c.boss) this.spend(id, 1);
-    this.perz -= c.perz;
+    this.payFee(c.perz);
     const u = parseKey(key), ok = roll < step.chance, nk = ok ? makeKey(u.base, { ...u, slots: step.slots }) : null;
     this.replace(where, key, nk);
     // a broken piece gives back its cards, as at Holger's
@@ -253,13 +265,13 @@ export class Inventory {
     const u = parseKey(key);
     if (!u.cards.length) return { error: 'There is no card in that.' };
     const fee = UNCARD_FEE * u.cards.length;
-    if (this.perz < fee) return { error: 'Not enough perz.' };
+    if (!this.canPay(fee)) return { error: 'Not enough perz.' };
     const need = {};
     for (const c of u.cards) need[c] = (need[c] || 0) + 1;
     if (Object.entries(need).some(([c, n]) => this.bag.room(c) < n)) return { error: 'Your bag is too full to take the cards back.' };
     const nk = makeKey(u.base, { ...u, cards: [] });
     if (!this.replace(where, key, nk)) return { error: 'That piece is not there any more.' };
-    this.perz -= fee;
+    this.payFee(fee);
     for (const c of u.cards) this.bag.add(c, 1);
     this.changed();
     return { ok: true, key: nk, cards: u.cards };
