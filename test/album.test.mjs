@@ -41,7 +41,7 @@ test("an MVP's card and ultra rare come likelier with every kill they don't drop
   assert.equal(pityChance(0.01, 0), 0.01);
   assert.ok(Math.abs(pityChance(0.01, 10) - 0.02) < 1e-12);
   assert.equal(pityChance(0.01, 1e6), 0.01 * PITY.cap, 'capped');
-  assert.ok(isChase('jarl_card', 0.01) && isChase('allseeing_eye', 0.005) && !isChase('flame_sword', 0.01));
+  assert.ok(isChase('jarl_card') && isChase('allseeing_eye') && isChase('nidhogg_wings') && !isChase('flame_sword'));
   const rows = albumRows(MOB_DEFS, new Album(), CARD_OF, () => '', () => 0.013);
   assert.equal(rows.find((r) => r.type === 'jarl').chance, 0.013);
   assert.equal(rows.find((r) => r.type === 'slime').chance, null, 'only MVPs');

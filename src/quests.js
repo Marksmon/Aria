@@ -1245,14 +1245,14 @@ export const QUESTS = {
   // ---------- Rytingborg ----------
   // the Assassin's trial (Master Kol): a hunt in Red Sands, a blade oiled with him, his questions
   assassin_trial: {
-    title: "Assassin's Trial 1: Red Marks", job: true, kind: 'kill', mob: 'redSlime', n: 5, lv: 1,
-    intro: 'Out the west gate lie the Red Sands, and the Red Bloops warm themselves on them. Five of them. Quick in, quick out: never stand where they can hit you back.',
-    thanks: 'Five, and quietly. Good. Now the blade.',
+    title: "Assassin's Trial 1: Red Marks", job: true, kind: 'kill', mob: 'redSlime', n: 4, lv: 1,
+    intro: 'Out the west gate lie the Red Sands, and the Red Bloops warm themselves on them. Four of them. Quick in, quick out: never stand where they can hit you back. And keep the Red Gel they leave: you will want it.',
+    thanks: 'Four, and quietly. Good. Now the blade.',
     reward: { xp: 120, perz: 100 },
   },
   assassin_trial2: {
-    title: "Assassin's Trial 2: Oil for the Blade", job: true, kind: 'quiz', items: { ant_jaw: 5 }, lv: 1, task: 'oil a blade with Master Kol',
-    intro: 'A dry blade drags. We oil ours with what the Giant Ants carry in their jaws, ground fine. Bring me five Ant Mandibles from the Red Sands and oil a blade with me: grind the jaws, warm the paste, and draw it along the edge from the hilt to the point, never back.',
+    title: "Assassin's Trial 2: Oil for the Blade", job: true, kind: 'quiz', items: { red_gel: 3 }, lv: 1, task: 'oil a blade with Master Kol',
+    intro: 'A dry blade drags. We oil ours with Red Gel, still warm from the sands. Bring me three from the Red Bloops (one in two leaves some) and oil a blade with me: warm the gel to a paste, and draw it along the edge from the hilt to the point, never back.',
     questions: [
       { q: 'The paste is warm. Which way do you draw it along the blade?',
         options: ['From the point to the hilt', 'From the hilt to the point, never back', 'Round and round'], a: 1,

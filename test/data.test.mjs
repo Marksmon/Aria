@@ -106,3 +106,10 @@ test('no data table repeats a key', async () => {
     assert.deepEqual(keys.filter((k, n) => keys.indexOf(k) !== n), [], `${file} ${head}`);
   }
 });
+
+test("the MVPs' ultra rares are the items marked ultra that an MVP drops, at 1% (the owner's call)", async () => {
+  const { MVP_ULTRAS } = await import('../src/mobs.js');
+  const dropped = Object.values(MOB_DEFS).filter((d) => d.mvp).flatMap((d) => d.drops.filter(([id]) => ITEMS[id]?.ultra));
+  assert.deepEqual(dropped.map(([id]) => id).sort(), [...MVP_ULTRAS].sort());
+  for (const [id, , , c] of dropped) assert.equal(c, 0.01, id);
+});

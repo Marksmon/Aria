@@ -45,8 +45,9 @@ quests. Code: `src/progress.js` (jobs, levels, points), `src/skills.js` (trees, 
 
 ## The Assassin and daggers
 
-- Trained by **Master Kol** in Rytingborg, the desert's oasis city. Trial: 5 Red Bloops in the Red
-  Sands, oil a blade with 5 Ant Mandibles (a quiz with items), his three questions. A new Assassin
+- Trained by **Master Kol** in Rytingborg, the desert's oasis city. Trial: 4 Red Bloops in the Red
+  Sands, oil a blade with 3 Red Gel they drop (a quiz with items; it was 5 Ant Mandibles from the Giant
+  Ants, the hardest first-job trial: the owner's call), his three questions. A new Assassin
   is handed a **Rusty Dagger**, put on at once unless a dagger is already in hand.
 - **Daggers** (`kind: 'dagger'`) have **no `jobs` list: every job can hold one**, the Trainee too
   (the owner's call). Lower ATK than a sword of the same tier (about 75%) but quicker: a job with no

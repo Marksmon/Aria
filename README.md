@@ -400,7 +400,7 @@ ceiling (they leave cursed sand that slows you), fixes you with its **Gaze of Ag
 cubs and its Guardians. It always drops **Gold Bars** (1–3, and one more as its MVP reward),
 which pay Holger's and Seyla's fees (see Refining), and now and then good gear for every build: the Riddle Blade, the Sphinx
 Sceptre, the Sphinx Wing Bow, the Enigma Fang, the Sphinx Wing Mantle, the Sphinx Ring, its card, and
-very rarely (0.5%) its ultra rare: **the Sphinx's All-Seeing Eye**, a gold Face piece over one eye
+very rarely (1%) its ultra rare: **the Sphinx's All-Seeing Eye**, a gold Face piece over one eye
 (all stats +3, MATK +10%, HIT +10).
 
 **The World Tree.** In Veidheim, Old Ingrid the Seedkeeper sits by the well with a box of very old
@@ -453,7 +453,7 @@ its Thorn Drakes and Root Wardens. It always drops **World Tree Berries** (1–3
 reward): eat one and all your HP and SP come back at once. Now and then it drops gear for every build
 (the Dragonbone Blade, the World Tree Staff, the Dragonwing Bow, the Nidhogg Fang, the Dragonleaf
 Mantle, the Nidhogg Ring, the **World Tree Crown**: a crown of its golden-leafed twigs with a drop of
-green sap for a jewel), its card, and very rarely (0.5%) its ultra rare: **Nidhogg Wings**, its torn
+green sap for a jewel), its card, and very rarely (1%) its ultra rare: **Nidhogg Wings**, its torn
 crimson wings on your back (Max HP +10%, FLEE +5, POW +4, END +4, QKN +3). They are alive: red light
 beats through their veins like a slow heart, embers drift up off them, and when you stand still they
 spread, great and slow, every few seconds, the light flaring.
@@ -639,7 +639,7 @@ on fighting); **Archmage Vigdis** in Galdrheim tests Sorcerers (4 Blue Bloops in
 Blue Draught from 3 Bloop Gel and 2 Water Drops, three questions on elements and chanting);
 **Huntmaster Sigrid** in Veidheim tests Archers (5 Yellow Bloops in Willow Marsh, wax a bowstring
 with 5 Bloop Gel, three questions on range, arrows and Leap Back); **Master Kol** in Rytingborg
-tests Assassins (5 Red Bloops in the Red Sands, oil a blade with 5 Ant Mandibles, three questions
+tests Assassins (4 Red Bloops in the Red Sands, oil a blade with 3 Red Gel, three questions
 on daggers, venom and Vanish). Pass, and they change your job.
 Elder Halvard sends ready Trainees on to the city: pick a path by his fire, and he sends you straight to
 its trainer's town, saved there (its Keeper signs you in, and you wake there after a fall).
@@ -1139,13 +1139,13 @@ bursts gold on the ground and shows in gold in your bag.
 | Enigma Fang | Weapon (dagger) | ATK 120 · Weapon Lv 4 · QKN +3 · FTN +2 | the Eternal Sphinx (1%) |
 | Nidhogg Fang | Weapon (dagger) | ATK 120 · Weapon Lv 4 · Shadow element · QKN +3 · 5% of your blows and spells poison a monster | Nidhogg (1%) |
 | Nidhogg Ring | Accessory | POW +2 · END +2 · Max HP +100 | Nidhogg (5%) |
-| Nidhogg Wings | Wings | POW +4 · END +4 · QKN +3 · Max HP +10% · FLEE +5 | Nidhogg (0.5%) |
+| Nidhogg Wings | Wings | POW +4 · END +4 · QKN +3 · Max HP +10% · FLEE +5 | Nidhogg (1%) |
 | Riddle Blade | Weapon (sword) (Blader) | ATK 150 · Weapon Lv 4 · POW +3 · KNL +2 | the Eternal Sphinx (2%) |
 | Sphinx Ring | Accessory | POW +1 · QKN +1 · END +1 · KNL +1 · FNS +1 · FTN +1 · Max HP +60 | the Eternal Sphinx (5%) |
 | Sphinx Sceptre | Weapon (staff) (Sorcerer) | ATK 70 · Weapon Lv 4 · MATK +70% · KNL +6 · FNS +2 | the Eternal Sphinx (2%) |
 | Sphinx Wing Bow | Weapon (bow) (Archer) | ATK 150 · Weapon Lv 4 · Wind element · FNS +4 · QKN +1 | the Eternal Sphinx (1%) |
 | Sphinx Wing Mantle | Garment | DEF 7 · FTN +2 · Max HP +6% · FLEE +8 | the Eternal Sphinx (3%) |
-| Sphinx's All-Seeing Eye | Face | HIT +10 · MATK +10% · POW +3 · QKN +3 · END +3 · KNL +3 · FNS +3 · FTN +3 | the Eternal Sphinx (0.5%) |
+| Sphinx's All-Seeing Eye | Face | HIT +10 · MATK +10% · POW +3 · QKN +3 · END +3 · KNL +3 · FNS +3 · FTN +3 | the Eternal Sphinx (1%) |
 | World Tree Crown | Head | DEF 5 · END +2 · KNL +2 · FTN +2 · Max HP +8% · Max SP +8% | Nidhogg (1%) |
 | World Tree Staff | Weapon (staff) (Sorcerer) | ATK 70 · Weapon Lv 4 · Earth element · MATK +70% · KNL +6 · END +2 | Nidhogg (2%) |
 <!-- /tables:drops -->
@@ -1238,7 +1238,7 @@ window and each bar pays 20,000 perz of a refine, a slot or a card's removal (pe
 **Cards.** Each MVP drops its card (1%: they are very hard to bring down), and like classic MVP cards they are overpowered.
 An MVP's card and its ultra rare come a little likelier with every kill they don't drop (a tenth of their
 chance more each time, up to ten times it; back to their own chance once they drop): about 32 kills for a card
-on average instead of 100. The Monster Album shows each MVP's card chance now.
+or an ultra rare (1% each) on average instead of 100. The Monster Album shows each MVP's card chance now.
 Each mini-boss drops one too (1%): a good step up, but nothing like an MVP's. The Goblin King's, the
 Fire Giant's, the Great Bear's, the Giant Beetle's, the Cactus Lord's and Ammit's go in weapons; the rest in other gear.
 Every other monster drops a card too (0.1%), for every kind of gear, smaller but welcome (all but the

@@ -160,7 +160,7 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   mini-boss (81-88; Ammit stays Lv 74); 4 the great hall (`maze.hall` with `only`, `world.hall`; 89-99): the Jackal Guardians and Falcon
   Sentinels (`hall: true`, they keep to it) and the **Eternal Sphinx** (Lv 99 MVP, `hall: true`: it never leaves the
   hall and fights only a hero in it; it summons its cubs and Guardians, the owner's call). It drops Gold Bars (always,
-  and as its MVP reward) and the ultra rare **Sphinx's All-Seeing Eye** (Face, 0.5%: all stats +3, MATK +10%, HIT
+  and as its MVP reward) and the ultra rare **Sphinx's All-Seeing Eye** (Face, 1%, the owner's call: all stats +3, MATK +10%, HIT
   +10; drawn by `build-tools/draw-eye.py`). The dungeon's monsters are painted in code in `src/halls.js` (the Scarabs
   and Mummies borrow the tomb's sprites, as field monsters `hallScarab`/`hallMummy`).
 - **Yggdrasil, the World Tree:** a secret 6-step series (Old Ingrid the Seedkeeper, Veidheim's well, The World
@@ -180,7 +180,7 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   picture: black, red-cracked, torn crimson wings with holes), whose mechanic is Gnaw the Roots (`MOVES.gnaw`:
   it heals while the rot withers the hall; tear it away with `tear` of its HP in time, or it rises gorged in a
   frenzy). It drops World Tree Berries (always: full HP and SP, `use.full`), the World Tree Crown (Head, 1%,
-  `build-tools/draw-crown.py`) and its ultra rare, **Nidhogg Wings** (0.5%, the owner's call; `wingart.js` `nidhogg`,
+  `build-tools/draw-crown.py`) and its ultra rare, **Nidhogg Wings** (1%, the owner's call; `wingart.js` `nidhogg`,
   after the owner's sheet), animated even standing still (the owner's call, `wings.js`: a pulsing glow layer,
   `WING_GLOW`, embers, and every few seconds at rest a slow spread with the glow flaring, `SPREAD`). The tree is
   big with many roots (the owner's call: great roots with branches, small ones breaking the ground all round).

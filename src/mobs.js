@@ -190,7 +190,7 @@ export const MOB_DEFS = {
     burns: { r: 1.6, dur: 6, mult: 0.25, slow: true, color: '#e8c050', word: 'Cursed sand!', text: 'cursed sand' },
     summon: ['sphinxCub', 'sphinxCub', 'jackal', 'falcon'], summonText: 'The Eternal Sphinx roars, and its cubs and Guardians answer!', mvpDrops: [['gold_bar', 1], ['potion3', 3]],
     wake: 'Deep under the sands, something ancient opens its eyes... The Eternal Sphinx waits in its hall.',
-    drops: [['gold_bar', 1, 3, 1], ['potion3', 2, 3, 0.6], ['lion_mane', 4, 6, 1], ['hard_ore', 1, 2, 0.4], ['armor_ore', 1, 2, 0.4], ['sphinx_ring', 1, 1, 0.05], ['sphinx_mantle', 1, 1, 0.03], ['riddle_blade', 1, 1, 0.02], ['sphinx_staff', 1, 1, 0.02], ['sphinx_bow', 1, 1, 0.01], ['enigma_fang', 1, 1, 0.01], ['sphinx_card', 1, 1, 0.01], ['allseeing_eye', 1, 1, 0.005]] },
+    drops: [['gold_bar', 1, 3, 1], ['potion3', 2, 3, 0.6], ['lion_mane', 4, 6, 1], ['hard_ore', 1, 2, 0.4], ['armor_ore', 1, 2, 0.4], ['sphinx_ring', 1, 1, 0.05], ['sphinx_mantle', 1, 1, 0.03], ['riddle_blade', 1, 1, 0.02], ['sphinx_staff', 1, 1, 0.02], ['sphinx_bow', 1, 1, 0.01], ['enigma_fang', 1, 1, 0.01], ['sphinx_card', 1, 1, 0.01], ['allseeing_eye', 1, 1, 0.01]] },
   // Yggdrasil's hollows (dungeon.js), the second dungeon, inside the World Tree (its monsters live only
   // there): three maze floors of living wood, then the great hall, Base 45-75 (the
   // owner's call: the Sphinx's Halls 65-99), every monster attacking on sight. Floor 1 (45-52): Root Squirrels, quick and biting
@@ -229,7 +229,7 @@ export const MOB_DEFS = {
     burns: { r: 1.6, dur: 6, mult: 0.25, color: '#9aff6a', word: 'Venom!', text: 'venom pools' },
     summon: ['rootWarden', 'thornDrake', 'thornDrake'], summonText: 'Nidhogg roars, and its brood and the Root Wardens answer!', mvpDrops: [['ygg_berry', 2], ['potion3', 3]],
     wake: 'Far under the World Tree, something gnaws at its roots... Nidhogg stirs in its hall.',
-    drops: [['ygg_berry', 1, 3, 1], ['potion3', 2, 3, 0.6], ['drake_scale', 4, 6, 1], ['hard_ore', 1, 2, 0.4], ['armor_ore', 1, 2, 0.4], ['nidhogg_ring', 1, 1, 0.05], ['dragonleaf_mantle', 1, 1, 0.03], ['dragonbone_blade', 1, 1, 0.02], ['worldtree_staff', 1, 1, 0.02], ['dragonwing_bow', 1, 1, 0.01], ['nidhogg_fang', 1, 1, 0.01], ['worldtree_crown', 1, 1, 0.01], ['nidhogg_card', 1, 1, 0.01], ['nidhogg_wings', 1, 1, 0.005]] },
+    drops: [['ygg_berry', 1, 3, 1], ['potion3', 2, 3, 0.6], ['drake_scale', 4, 6, 1], ['hard_ore', 1, 2, 0.4], ['armor_ore', 1, 2, 0.4], ['nidhogg_ring', 1, 1, 0.05], ['dragonleaf_mantle', 1, 1, 0.03], ['dragonbone_blade', 1, 1, 0.02], ['worldtree_staff', 1, 1, 0.02], ['dragonwing_bow', 1, 1, 0.01], ['nidhogg_fang', 1, 1, 0.01], ['worldtree_crown', 1, 1, 0.01], ['nidhogg_card', 1, 1, 0.01], ['nidhogg_wings', 1, 1, 0.01]] },
 };
 // the Sand Wyrm's rhythm (def.wyrm): seconds up (it can be hit, it doesn't move) and under (it
 // can't be hit, it swims for you), shorter enraged; swim: its pace under the sand against its walk;
@@ -404,12 +404,12 @@ const summonCd = (d) => d.summonCd ?? (fierce(d) ? MVP_SUMMON_CD : SUMMON_CD);
 // a boss's guards are lesser servants of their kind: half the HP, 60% of the ATK (tuned with
 // build-tools/sim.mjs, so the fight is the boss and not two full-strength monsters at once)
 export const GUARD = { hp: 0.5, atk: 0.6 };
-// the owner's call: an MVP's card (1%) and its ultra rare (0.5% or less) are chase drops, and each kill
-// without one adds a tenth of its chance (the card 1% -> 1.1% -> 1.2%...), up to ten times it; it falls
-// back to its own chance when it drops. About 32 kills for a card on average instead of 100, 48 for an
-// ultra rare instead of 200. Kept per hero (mobs.pity, saved as mvpPity)
+// the owner's call: an MVP's card and its ultra rare (1% each) are chase drops, and each kill without one
+// adds a tenth of its chance (1% -> 1.1% -> 1.2%...), up to ten times it; it falls back to its own chance
+// when it drops. About 32 kills on average instead of 100. Kept per hero (mobs.pity, saved as mvpPity)
 export const PITY = { step: 0.1, cap: 10 };
-export const isChase = (item, chance) => /_card$/.test(item) || chance <= 0.005;
+export const MVP_ULTRAS = ['allseeing_eye', 'nidhogg_wings']; // (items.js marks them ultra: test/data.test.mjs checks the two agree)
+export const isChase = (item) => /_card$/.test(item) || MVP_ULTRAS.includes(item);
 export const pityChance = (base, misses = 0) => Math.min(base * PITY.cap, base * (1 + PITY.step * misses));
 const guardDefs = {};
 const lesser = (d) => ({ ...d, hp: Math.round(d.hp * GUARD.hp), atk: d.atk.map((a) => Math.round(a * GUARD.atk)) });
@@ -1621,7 +1621,7 @@ export class MobManager {
     // an MVP's chase drops (its card, its ultra rare) come a little likelier with every kill they don't drop (PITY)
     const pity = m.def.mvp && !m.def.raidLv ? (this.pity[m.type] ||= {}) : null;
     for (const [item, min, max, base] of m.def.drops) {
-      const chase = pity && isChase(item, base), chance = chase ? pityChance(base, pity[item]) : base;
+      const chase = pity && isChase(item), chance = chase ? pityChance(base, pity[item]) : base;
       if (Math.random() < chance) { drops.push([item, min + Math.floor(Math.random() * (max - min + 1))]); if (chase) pity[item] = 0; }
       else if (chase) pity[item] = (pity[item] || 0) + 1;
     }
