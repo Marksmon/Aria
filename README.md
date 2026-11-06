@@ -1606,11 +1606,21 @@ rings the portal to take, or the person to talk to. A purple **!** marks who the
 | 10: The Gnawed Roots | Old Ingrid: the Old Forest's roots rot backwards, like writing · **the Forest's Heart**: hold it for 60 seconds against the maddened Treants · find three rotted runestones in the Old Forest, their roots gnawed · Bjarki: something under the north is awake · Vigdis: the world's roots drink from three wells, and one is Galdrheim's · before dawn, Brynja: the rune-well's crystal has sunk |
 | 11: The Hand That Cuts Backwards | **the Rune-Spring**: hold it in Fen Shore for 60 seconds while Vigdis raises the crystal · look at the three Watchers in Black Wood: one recarved backwards, a chisel at its foot · **Torvald the Runecarver, unmasked**: he wants the jotnar free, and vanishes in fire (he is gone from Galdrheim after this) · Saeunn will sing with Vigdis · carry her rune-lantern, the ring's first flame, to the Elder |
 | 12: The Last Fire-Ring | Ember Hill burns inside Torvald's backward ring · defeat 25 of the Giant's heralds to put out its four fires · **The Last Fire-Ring**: hold the rune circle for 120 seconds while the song is sung, the half-woken Giant's **Meteor Rain** falling round you as red circles (step out: each costs 12% of your HP) · Torvald's chisel in the ash · the ring burns gold. The keepsake: **Torvald's Chisel** (an accessory: HIT +3, KNL +2, FNS +2) |
+| 13: The Smoking Sea | a letter from Hafnvik: the sea is smoking · go east to the Tide Cliffs · clear the coast road of 15 Cliff Bandits · Ylfa the Priestess: the settlers came by sea, and lit a ring round it |
+| 14: The Dimming Lights | **find three backward runes** in the coast's rocks, melted, not cut · silence 15 Moor Witches on Beacon Moor · **the Moor Beacon**: hold it 75 seconds while Ylfa relights it |
+| 15: The Storm Isles | Captain Asgeir sails you out · defeat 20 Living Armors, the settlers' drowned watch · **find the sea-ring's three stones** · **hold the sea-ring** 90 seconds while Ylfa sings, fire bursting up round you · a red vein runs west, towards Ember Hill |
+| 16: The Settlers' Log | grow to Base 85 · sail to the Sunken Galleon · **find the three pages of the settlers' log** in its holds · Brynja reads it: the settlers always meant the Giant to be ended, in the Crater of Binding |
+| 17: The Four Bindings | Vigdis, Saeunn, Ylfa and Old Gunnhild each keep a binding rune: stone, sea, sand and rune |
+| 18: The Starved Fire | defeat 30 of the Giant's heralds on Ember Hill · defeat 20 Fire Salamanders carrying the sea-fire back to him · the Elder's word |
+| 19: The Crater of Binding | **the Ring of Binding**: hold its middle 120 seconds under the Giant's fire while the four bindings are set, and the Crater opens · the Elder's last counsel, and every potion Eldrun has |
+| 20: The Fire Giant | **the last fight**: go down into the Crater of Binding, walled in, and **defeat the Fire Giant** · the fire-ring rests, and the story ends |
 
-The second saga (chapters 5–8) runs from about Base 32 to Base 55, the third (chapters 9–12) from about 55 to 75.
-A hero who finished a saga picks up at the next chapter. No MVP or mini-boss is part of the story: the Fire Giant, the
-kings and the rest wait as optional fights for the strongest (in the last stand the Giant only rains fire: he can't be
-fought there). The Sphinx's Halls and Yggdrasil stay secrets the story walks round, open to whoever finds the way.
+The second saga (chapters 5–8) runs from about Base 32 to Base 55, the third (chapters 9–12) from about 55 to 75, the
+fourth (13–16, the Drowned Fire, in Hafnvik and on the sea) from 75 to 85, and the fifth (17–20, the Fire Giant) from 85
+to 90: a hero who plays the story through ends it at about Base 90. A hero who finished a saga picks up at the next
+chapter. Only the story's last fight is a boss: the Fire Giant himself, in the Crater of Binding, a walled crater under
+Ember Hill whose way down opens in Chapter 20 (made for a second job of about Base 90 in shop gear). The MVPs and
+mini-bosses, the Fire Giant on Ember Hill among them, stay optional fights for the strongest. The Sphinx's Halls and Yggdrasil stay secrets the story walks round, open to whoever finds the way.
 
 **The Keepers' road.** From a town with a Keeper, the Quest View of a quest or the story whose place is in another
 town (one whose Keeper's ledger you have signed) offers the Keepers' road there for that Keeper's fare, and you arrive

@@ -169,7 +169,7 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   Nidhogg and Poseidon, 99 Davy Jones (Lv 110, the hardest, the owner's call). Mini-bosses are fierce like an MVP and made for a Lv 75 second job in shop gear;
   each raid's Hell boss for its Hell level in the same good gear (`FIERCE` `atkScale`/`hpScale`). `npm test` runs
   `mvp-sim --check`: retune with it (each boss's ATK and HP) when a boss or a job changes. Their levels say so (55–66: Giant Sprout and Elder Willow 55, King Crab 58, Giant Mushroom 60, Giant Beetle 62, Alpha Wolf 64, Great Bear 66; the desert's Cactus Lord 60 and Rainbow Runner 64; the Sphinx's Halls' Ammit 74; Yggdrasil's Ratatoskr 74, small for a boss: the owner's call; the Storm Isles' Headless Knight 80, lord of the Living Armors: the owner's call; the Sunken Galleon's Kraken 94), and they come only for second-job heroes (the owner's call, `picksFight` in `mobs.js`): a Trainee or first job is left be unless it strikes or taunts one. So no main story
-  step or job trial needs a boss (they hunt the boss's kin); the one quest that does is Sigrid's The
+  step or job trial needs a boss but the story's last fight, the Fire Giant in the Crater of Binding (they hunt the boss's kin); the one quest that does is Sigrid's The
   Waking Wood (Lv 70: the Great Bear and the Alpha Wolf, two mini-bosses), and it can be quit. Boss and MVP cards drop at 1%
   (other cards 0.1%); an MVP's card and ultra rare rise a tenth of their chance with every kill they miss, up
   to ten times it, back once they drop (the owner's call, `PITY` in `mobs.js`, saved as `mvpPity`). **Cards are monsters** (the owner's call): one card per monster, named after it,
@@ -242,10 +242,16 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   the Sphinx's and the World Tree's series stay secret (the story searches rotted runestones instead); the climax,
   The Last Fire-Ring, is a 120 s stand under the Giant's Meteor Rain (`meteors` on a survive step); the keepsake is
   Torvald's Chisel. A story `search` step finds spots on any map by walking over them (`tickStorySearch`).
-- **The story's shape** (the owner's call, November 2026): the main story is told in the 5 early-game cities and
-  ends there, closed (Halvard's last lines leave no loose thread; the game never calls it "Part One"). The fifth
-  city's chapter goes before the ending (`goldring` stays last). The late-game cities get a new main story of
-  their own later.
+- **The story's shape** (the owner's calls, November 2026): the main story is told in the 5 early-game cities and
+  ends there, closed (Halvard's last lines leave no loose thread; the game never calls it "Part One"). It runs to
+  **Chapter 20**: the fourth saga (13–16, the Drowned Fire: Hafnvik, the coast's melted runes, the Storm Isles' sea-ring,
+  the settlers' log in the Sunken Galleon; Base 75–85, a `level` step at 85 before the Galleon) and the fifth (17–20, the
+  four bindings, the starved fire, the Crater of Binding). **The final quest is the Fire Giant defeated in a contained
+  area** (the owner's call): `firegiant`, a kill step in `giantpit` (a walled arena under Ember Hill whose portal opens
+  with the story, `need: 'story:firegiant'`) against `jarlBound` (the Giant made for the story: `storyBoss`, fights any
+  hero, no drops, tuned in `mvp-sim` `STORY` for Base 90 in shop gear), then `ending` with Halvard's last lines and the
+  ending cutscene. It is the one story step that needs a boss (a test checks it). Played through, a hero ends at about
+  Base 90. The late-game cities get a new main story of their own later.
 - **Story cutscenes** (the owner's call, `scenes.js`, played by `main.js` `playScene`): every chapter opens with
   one (`CHAPTER_SHOTS`, keyed by the chapter's number), the big moments follow their step (`STEP_SHOTS`: the
   Giant stirring, each saga's end, Torvald unmasked, the Giant sinking, the ending), and the secret series'

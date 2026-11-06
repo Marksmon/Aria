@@ -167,6 +167,9 @@ export const TIERS = {
   davyJones: 99, // (Lv 110: the hardest of them, the owner's call)
 };
 export const MINI_LV = 75;
+// the main story's own boss (the Fire Giant in the Crater of Binding, Chapter 20): for a second job at the story's end,
+// in the gear a story hero has (shop gear), not the best
+export const STORY = { jarlBound: 90 };
 export const BAR = { minT: 150, maxT: 400, potions: 100 }; // the median job: a fight of minutes, on a bag of White Potions
 const hellBoss = (id) => {
   const R = RAIDS[id], D = R.difficulties.hell;
@@ -175,7 +178,8 @@ const hellBoss = (id) => {
 export function fights() {
   const list = [];
   for (const [type, base] of Object.entries(TIERS)) list.push({ name: MOB_DEFS[type].name, def: MOB_DEFS[type], base, gear: 'good' });
-  for (const [type, d] of Object.entries(MOB_DEFS)) if (d.boss && !d.mvp && !d.raid && !d.raidLv) list.push({ name: d.name, def: d, base: MINI_LV, gear: 'shop' });
+  for (const [type, d] of Object.entries(MOB_DEFS)) if (d.boss && !d.mvp && !d.raid && !d.raidLv && !d.storyBoss) list.push({ name: d.name, def: d, base: MINI_LV, gear: 'shop' });
+  for (const [type, base] of Object.entries(STORY)) list.push({ name: `${MOB_DEFS[type].name} (the story's)`, def: MOB_DEFS[type], base, gear: 'shop' });
   for (const id of Object.keys(RAIDS)) list.push(hellBoss(id));
   return list;
 }

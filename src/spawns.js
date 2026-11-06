@@ -18,6 +18,7 @@ export const SPAWNS = {
   coalpit: [['koboldAssassin', 12], ['koboldWarrior', 10], ['koboldArcher', 5], ['koboldKing', 1], ['koboldAssassin', 2, true]],
   burnt: [['goblinWarrior', 15], ['goblinArcher', 11], ['goblinAssassin', 2], ['goblinWarrior', 2, true]],
   bloop: [], koboldcamp: [], goblinlair: [], // the raids spawn their own (tickRaid)
+  giantpit: [], // (the Crater of Binding: the story brings the Fire Giant, stands.js tickStorySpawn)
   serpent: [['goblinAssassin', 12], ['goblinWarrior', 10], ['goblinArcher', 5], ['goblinKing', 1], ['goblinAssassin', 2, true]],
   // Veidheim's lands: the gentle willows and treants round the village (and Yellow Bloops in the marsh),
   // the predators far off past Black Wood and Ash Heath, more of them at night

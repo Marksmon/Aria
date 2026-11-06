@@ -346,6 +346,14 @@ MOB_DEFS.warlordShadow = { ...MOB_DEFS.goblinWarlord, raid: false, decoy: true, 
 MOB_DEFS.kingShadow = { ...MOB_DEFS.goblinKing, decoy: true, mvp: false, ai: 'tank', hp: 9000, atk: [140, 180], exp: [0, 0], drops: [], summon: null, moves: null, mvpDrops: null, wake: null, aggro: 12, chase: 30 };
 // BleepBloop's Jelly Wall (Hell): a quivering core of royal jelly that barely moves and only
 // slaps whoever stands on it. He takes 90% less damage while one stands (MIRROR)
+// the Fire Giant as the main story's last fight (the owner's call: Chapter 20, the Fire Giant defeated in a contained
+// area, the Crater of Binding): the Giant himself, his moves and his heralds, made for a hero at the end of the story
+// (about Base 90 in the gear a story hero has: build-tools/mvp-sim.mjs STORY). Not the MVP: no respawn timer, no
+// drops (the story pays), no album page; it fights any hero (storyBoss), and is there whenever the story is
+MOB_DEFS.jarlBound = { ...MOB_DEFS.jarl, mvp: false, boss: true, fierce: true, storyBoss: true, noRespawn: true, lv: 90, hp: 520000, atk: [56, 74], def: 26, dex: 190, mdef: 15,
+  exp: [0, 0], drops: [], mvpDrops: null, respawn: undefined, aggro: 30, chase: 99, wake: null, takes: { ranged: 1.2, magic: 0.85, beast: 0.9 }, takesText: 'the bindings dull his fire: spells reach him (−15%), and he is a huge target for arrows (+20%)', takes: { ranged: 1.2, magic: 0.85, beast: 0.9 }, takesText: 'the bindings dull his fire: spells reach him (−15%), and he is a huge target for arrows (+20%)',
+  moves: [{ kind: 'meteors', name: 'Meteor Rain', mult: 1.8, r: 1.5 }, { kind: 'throw', name: 'Fireball', mult: 2.0, r: 2.0 }, { kind: 'leap', name: 'Leap', mult: 1.8, r: 2.2 }, { kind: 'surge', name: 'Fire Wave', mult: 2.0 }, { kind: 'frenzy' }],
+  summonText: 'The Fire Giant roars, and his last heralds crawl up out of the Crater\'s walls!' };
 // Poseidon's Oceanic Prison: a cage of water round the hero it caught (MOVES.prison, bossmoves.js), there until broken
 MOB_DEFS.tidePrison = { name: 'Oceanic Prison', ai: 'prison', art: 'tidePrison', el: 'neutral', decoy: true, lv: 99, hp: 12000, atk: [0, 0], def: 10, vit: 30, agi: 1, dex: 60, exp: [0, 0], adelay: 9999, walk: 9999, aggro: 0, chase: 0, reach: 0, w: 1.5, r: 0.5, heavy: true, drops: [] };
 MOB_DEFS.jellyCore = { name: 'Jelly Core', ai: 'tank', art: 'slimeYellow', tint: '#ffd86a', el: 'neutral', decoy: true, lv: 99, hp: 10000, atk: [60, 80], def: 10, vit: 30, agi: 1, dex: 60, exp: [0, 0], adelay: 2000, walk: 5000, aggro: 3, chase: 30, reach: 0.9, w: 1.0, r: 0.45, heavy: true, drops: [] };
@@ -1091,7 +1099,7 @@ class Mob {
   // bosses come for anyone
   picksFight(p) {
     const d = this.def;
-    if (!d.boss || d.mvp || d.relentless || this.provokeT > 0 || this.angry > 0) return true;
+    if (!d.boss || d.mvp || d.relentless || d.storyBoss || this.provokeT > 0 || this.angry > 0) return true; // (the story's own boss fights anyone)
     return p !== this.mgr.hero || (this.mgr.heroTier?.() || 0) >= 2; // (a companion beast: only a Beastmaster has them)
   }
 

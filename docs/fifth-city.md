@@ -49,7 +49,8 @@ Boatman and Bloop Island; the port is a real harbour: ships, a lighthouse, a fis
 
 ## The story
 
-The fifth city's chapter goes just before the ending (`goldring` stays last); the ending cutscene gets a shot of it.
+The fifth city's saga (Chapters 13–16, the Drowned Fire) and the last saga (17–20, the Fire Giant, ended in the Crater of
+Binding) are built (the owner's call: the story runs to Chapter 20); the ending cutscene has a shot of Hafnvik.
 
 ## Set aside
 

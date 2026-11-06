@@ -1,4 +1,4 @@
-# Story outline: Chapters 9–12, the third saga (in the game, November 2026)
+# Story outline: Chapters 9–12, the third saga (in the game, November 2026; Chapters 13–20 followed, see src/story.js)
 
 The owner's answers: the rune-cutter is **Torvald**; the World Tree stays **secret** (Chapter 10 searches rotted
 runestones instead); the climax is **120 s with the Giant's Meteor Rain**; the keepsake is **Torvald's Chisel**.

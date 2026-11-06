@@ -73,7 +73,7 @@ test('the story: unique step ids, real monsters, items and maps', () => {
   for (const s of STORY) check(`story ${s.id}`, s);
 });
 
-test('the story: its people exist, its searches and stands are on real maps, and no step needs a boss', () => {
+test('the story: its people exist, its searches and stands are on real maps, and no step needs a boss but the last (the Fire Giant)', () => {
   for (const s of STORY) {
     if (s.npc) assert.ok(NPCS[s.npc], `story ${s.id}: npc ${s.npc}`);
     for (const p of s.spots || []) assert.ok(MAPS[p.map] && p.x > 3 && p.x < 61 && p.z > 3 && p.z < 61, `story ${s.id}: spot ${JSON.stringify(p)}`);
@@ -81,7 +81,7 @@ test('the story: its people exist, its searches and stands are on real maps, and
     if (s.kind === 'survive') assert.ok(s.at && s.secs > 0 && MAPS[s.map], `story ${s.id}: a stand needs a spot, a time and a map`);
     if (s.meteors) assert.ok(s.meteors.hp > 0 && s.meteors.hp < 0.25 && s.meteors.every >= 5, `story ${s.id}: Meteor Rain stays survivable`);
     const kin = [s.mob, s.mobs, s.spawn?.mob, s.heralds?.early, s.heralds?.late].flat().filter(Boolean);
-    for (const m of kin) assert.ok(!MOB_DEFS[m].boss && !MOB_DEFS[m].mvp, `story ${s.id}: ${m} is a boss (the owner's rule: no story step needs one)`);
+    for (const m of kin) assert.ok((!MOB_DEFS[m].boss && !MOB_DEFS[m].mvp) || (MOB_DEFS[m].storyBoss && s.id === STORY.at(-2).id), `story ${s.id}: ${m} is a boss (the owner's rule: no story step needs one, but the last fight, the Fire Giant in the Crater of Binding)`);
   }
 });
 
@@ -223,4 +223,14 @@ test("the Sunken Galleon (the owner's call): Asgeir sails there from Base 85, Da
   assert.deepEqual([...new Set(K.summon)].sort(), ['octopus', 'pufferFish']);
   assert.ok(SPAWNS.galleon3.some(([t]) => t === 'kraken') && SPAWNS.galleon4.some(([t]) => t === 'davyJones'));
   for (const t of ['conch', 'pufferFish', 'zombie', 'pirateSkeleton', 'blowgunPirate', 'octopus', 'ghost', 'skeletonAssassin', 'hydra']) assert.ok(Object.values(SPAWNS).some((l) => l.some(([x]) => x === t)), t);
+});
+
+test("the main story runs to Chapter 20 and ends with the Fire Giant, fought in a contained area (the owner's call)", () => {
+  const chapters = [...new Set(STORY.map((s) => s.ch.split(':')[0]))];
+  assert.equal(chapters.at(-1), 'Chapter 20');
+  const fight = STORY.at(-2);
+  assert.equal(fight.mob, 'jarlBound');
+  assert.ok(MOB_DEFS.jarlBound.storyBoss && MOB_DEFS.jarlBound.name === 'Fire Giant');
+  assert.ok(MAPS[fight.map].arena?.land, 'the Crater of Binding is a walled arena');
+  assert.ok(MAPS.ridge.portals.some((p) => p.to === fight.map && p.need === `story:${fight.id}`), 'its way down opens with the story');
 });

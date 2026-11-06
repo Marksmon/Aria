@@ -582,7 +582,7 @@ quests.seen = visited; // (a secret series waits for every land it names: quests
 // a hidden portal (world.js portal.need) opens once its quest is done, or its last task is: the Sphinx
 // Eye set in the Great Desert's obelisk (The Sphinx's Riddle 6) opens the way to Sphinx Sands, the World
 // Tree's seed planted in the Old Forest (The World Tree 6) the way to Yggdrasil
-world.open = (need) => quests.done.includes(need) || (need in quests.active && quests.ready(need, inv));
+world.open = (need) => (need.startsWith('story:') ? story.i >= STORY.findIndex((s) => s.id === need.slice(6)) : quests.done.includes(need) || (need in quests.active && quests.ready(need, inv))); // (story:<step>: open once the main story reaches that step: the Crater of Binding)
 // Keepers whose ledger you have signed (the camp's is signed from the start), and where you saved
 const keepers = new Set(save?.keepers || ['keeper_camp']);
 let savePoint = save?.savePoint || null; // { keeper, map, x, z }; none = the camp fire

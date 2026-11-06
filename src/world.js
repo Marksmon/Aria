@@ -44,7 +44,7 @@ export const ZONE_NAMES = {
   camp: 'Eldrun Camp',   // "fire-ring"
   grove: 'Moss Field',
   hollow: 'Dark Dale',
-  ridge: 'Ember Hill',
+  ridge: 'Ember Hill', giantpit: 'The Crater of Binding',
   fen: 'Fen Shore',
   city: 'Steinborg',     // "stone-fort"
   birch: 'Birch Grove',
@@ -101,7 +101,7 @@ export const MAPS = {
   birch:  { portals: [{ to: 'city', ...W }, { to: 'hollow', ...S }, { to: 'marsh', ...E }], clear: { x: 40, z: 22, r: 5 } },
   hollow: { portals: [{ to: 'grove', ...W }, { to: 'birch', ...N }, { to: 'deep', ...E }, { to: 'ridge', ...S }], lift: [-0.15, 0] },
   // an open bowl in the south of Ember Hill (the Fire Giant roams the whole map; see mobs.js roam)
-  ridge:  { portals: [{ to: 'hollow', ...N }, { to: 'heath', ...E }, { to: 'sand', ...S }], clear: { x: 32, z: 48, r: 6 }, lift: [1.3, 1.8] },
+  ridge:  { portals: [{ to: 'hollow', ...N }, { to: 'heath', ...E }, { to: 'sand', ...S }, { to: 'giantpit', x: 32, z: 31, need: 'story:firegiant', out: [0, 2.4] }], clear: { x: 32, z: 48, r: 6 }, lift: [1.3, 1.8] },
   coast:  { portals: [{ to: 'fen', ...E }, { to: 'stones', ...W }], lake: { x: 20, z: 31, rx: 11, rz: 17 }, clear: { x: 44, z: 46, r: 5 } },
   deep:   { portals: [{ to: 'hollow', ...W }, { to: 'heath', ...S }, { to: 'farm', ...E }], lift: [-0.1, 0.5], clear: { x: 40, z: 40, r: 5 } },
   heath:  { portals: [{ to: 'ridge', ...W }, { to: 'deep', ...N }, { to: 'wolfhill', ...E }], lift: [0.8, 1.2], clear: { x: 40, z: 44, r: 5 } },
@@ -163,6 +163,9 @@ export const MAPS = {
   // look 'ship'), three maze floors of its decks and holds and the captain's hold, where Davy Jones waits
   wreck:     { voyage: true, portals: [{ to: 'port', x: 22, z: 38.4 }, { to: 'galleon1', x: 41.5, z: 32, out: [-2.2, 0], door: true }], dock: { x: 24, z: 36.2 }, galleon: { x: 32, z: 32, len: 46, beam: 15 } },
   lokigate:  { voyage: true, portals: [{ to: 'port', x: 22, z: 32 }], dock: { x: 25, z: 32 }, isle: { r: 12.5, wob: 3 }, lift: [0.1, 0.3], gate: { x: 38, z: 32 } },
+  // the Crater of Binding (the main story's last fight, the owner's call): a walled crater under Ember Hill, the Fire Giant
+  // held in it by the four bindings; its way down opens on Ember Hill once the story reaches it (need: 'story:...')
+  giantpit: { portals: [{ to: 'ridge', x: 32, z: 44.5 }], arena: { r: 15, land: true }, lift: [0.1, 0.4] },
   tomb:     { portals: [], arena: { r: 13, land: true, near: 'ruin_pillar' }, lift: [0, 0.2], tomb: true },
   // the Sphinx's Halls (dungeon.js): indoor (no sky, no day and night: daynight.js), three maze floors
   // (maze: its seed, its rooms [i, j, pillar?] of 2x2 cells, a share of loops; the stairs stand in
@@ -199,7 +202,7 @@ const GROUND = {
   camp: ['#a88a5c', '#8f9a58'],
   grove: ['#5f9a3e', '#82b64e'],
   hollow: ['#3a5a3c', '#4f5c4c'],
-  ridge: ['#b07a4c', '#caa064'],
+  ridge: ['#b07a4c', '#caa064'], giantpit: ['#5a3a2a', '#7a4a32'],
   fen: ['#6f8048', '#8e9858'],
   city: ['#8a8478', '#9a9488'],
   magic: ['#6f8a5e', '#86a070'],
@@ -239,6 +242,7 @@ const TABLE = {
   grove: [['tree_grove', 30], ['bush', 16], ['flowers', 22], ['grass', 26], ['stump', 3], ['rock_grey', 3]],
   hollow: [['tree_dark', 34], ['mushroom_big', 10], ['mushrooms', 22], ['grass_dark', 24], ['tree_dead', 5], ['rock_grey', 5]],
   ridge: [['rock', 22], ['rock_small', 20], ['shrub_dry', 18], ['tree_dead', 12], ['grass_dry', 28]],
+  giantpit: [['rock_small', 10], ['bones', 4]],
   fen: [['tree_willow', 14], ['reeds', 30], ['grass', 30], ['stump', 6], ['bush', 10]],
   camp: [['grass', 6], ['flowers', 3], ['bush', 1]],
   city: [['grass', 6], ['flowers', 3]],
@@ -275,7 +279,7 @@ const TABLE = {
   wreck: [['barrel', 6], ['crate', 5], ['bones', 3]],
   ygg: [['grass', 30], ['flowers', 24], ['bush', 10], ['mushrooms', 14], ['mushroom_big', 3], ['stump', 3], ['tree_oak', 5], ['rock_grey', 3]],
 };
-const BORDER = { grove: 'tree_grove', hollow: 'tree_dark', ridge: 'rock', fen: 'tree_willow', camp: 'tree_grove', city: 'tree_grove', magic: 'tree_birch', birch: 'tree_birch', coast: 'rock_grey', deep: 'tree_dark', heath: 'tree_dead', stones: 'rock', coalpit: 'rock_grey', burnt: 'tree_dead', serpent: 'tree_dark', hunt: 'tree_pine', farm: 'tree_grove', wolfhill: 'tree_pine', marsh: 'tree_willow', oldwood: 'tree_oak', koboldcamp: 'rock_grey', goblinlair: 'tree_dark',
+const BORDER = { grove: 'tree_grove', hollow: 'tree_dark', ridge: 'rock', giantpit: 'rock', fen: 'tree_willow', camp: 'tree_grove', city: 'tree_grove', magic: 'tree_birch', birch: 'tree_birch', coast: 'rock_grey', deep: 'tree_dark', heath: 'tree_dead', stones: 'rock', coalpit: 'rock_grey', burnt: 'tree_dead', serpent: 'tree_dark', hunt: 'tree_pine', farm: 'tree_grove', wolfhill: 'tree_pine', marsh: 'tree_willow', oldwood: 'tree_oak', koboldcamp: 'rock_grey', goblinlair: 'tree_dark',
   tidecliff: 'rock_grey', port: 'tree_jacaranda', coral: 'tree_palm', beacon: 'rock_grey', storm: 'rock_grey', lokigate: 'crag', wreck: 'rock_grey',
   sand: 'tree_palm', redsands: 'crag', dunes: 'crag', scorpion: 'crag', desert: 'crag', sphinx: 'crag', tomb: 'ruin_pillar', ygg: 'tree_oak' };
 // a desert's edge: mostly red crags, now and then a rock arch, a palm or a sandstone boulder
