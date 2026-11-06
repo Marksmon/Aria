@@ -42,7 +42,7 @@ export const SPAWNS = {
   port: [], lokigate: [],
   tidecliff: [['quillPorcupine', 12], ['tuskBoar', 13], ['cliffBandit', 4], ['quillPorcupine', 2, true], ['cliffBandit', 2, true]],     // Base 65-70
   coral: [['bladeMantis', 10], ['chestMimic', 8], ['merrow', 7], ['glassJelly', 6], ['glassJelly', 3, true], ['merrow', 2, true]],      // Base 70-76
-  storm: [['livingArmor', 11], ['mossTroll', 10], ['galeMoth', 6], ['poseidon', 1], ['galeMoth', 3, true], ['livingArmor', 2, true]],                 // Base 76-82 (by ship)
+  storm: [['livingArmor', 11], ['mossTroll', 10], ['galeMoth', 6], ['poseidon', 1], ['headlessKnight', 1], ['galeMoth', 3, true], ['livingArmor', 2, true]],                 // Base 76-82 (by ship)
   beacon: [['owlbear', 13], ['moorWitch', 6], ['fireSalamander', 6], ['moorWitch', 3, true], ['fireSalamander', 2, true]],             // Base 82-88
   delveA: [], delveB: [], // the Deep Halls: each floor's monsters are picked as it is carved (delve.js floorSpawns)
   halls1: [['hallScarab', 16], ['cobra', 13]],                               // Base 65-72

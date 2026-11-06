@@ -758,6 +758,10 @@ allies.on('fall', (b) => {
   menus.message(`Your ${b.name} falls back to the wild to lick its wounds. Call it again in 20 s.`);
   applyStats();
 });
+player.on('laststand', () => { // the Headless Knight Card
+  fx.number(player.x, overHead(player, 1.9), player.z, 'Last Stand!', 'crit');
+  fx.sparkle(player.x, world.heightAt(player.x, player.z) + 1, player.z, '#b07aff', 20);
+});
 player.on('block', () => {
   audio.play('block');
   fx.sparkle(player.x, world.heightAt(player.x, player.z) + 0.8, player.z, '#e8eef5', 5);

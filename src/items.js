@@ -83,6 +83,11 @@ const BASE_ITEMS = {
   owlbear_card: { type: 'misc', rare: true, name: 'Owlbear Card', adj: 'Burly', icon: 'card_owlbear', card: { on: 'armor', mhpRate: 6, stats: { end: 1 } }, desc: 'An Owlbear on a card. In armor with a slot: Max HP +6%, END +1.', from: 'Owlbears (0.1%)' },
   moorwitch_card: { type: 'misc', rare: true, name: 'Moor Witch Card', adj: 'Hexing', icon: 'card_moorwitch', card: { on: 'garment', matk: 8, mspRate: 5 }, desc: 'A Moor Witch on a card. In a garment with a slot: MATK +8, Max SP +5%.', from: 'Moor Witches (0.1%)' },
   firesalamander_card: { type: 'misc', rare: true, name: 'Fire Salamander Card', adj: 'Burning', icon: 'card_firesalamander', card: { on: 'shield', def: 3, mhp: 300 }, desc: 'A Fire Salamander on a card. In a shield with a slot: DEF +3, Max HP +300.', from: 'Fire Salamanders (0.1%)' },
+  // the Headless Knight (the Storm Isles' mini-boss): his crest, his plate and his sword, his card
+  knight_crest: { type: 'misc', rare: true, name: "Headless Knight's Crest", desc: 'The violet plume off the Headless Knight\'s helm, cold to the touch. It still stirs, as if a wind blew where there is none.', from: 'the Headless Knight (30%)' },
+  oathless_plate: { type: 'equip', slot: 'armor', rare: true, name: 'Oathless Plate', def: 9, mhp: 220, stats: { end: 3, pow: 1 }, icon: 'armor_oathless', desc: 'Black-violet plate from the Headless Knight, its sigil burnt out. Whoever wears it feels nothing at all, not even fear.', from: 'the Headless Knight (3%)' },
+  headsman_blade: { type: 'equip', slot: 'weapon', el: 'shadow', jobs: ['swordman'], rare: true, name: "Headsman's Blade", atk: 136, wlv: 4, stats: { pow: 3, end: 1 }, icon: 'weapon_headsman', desc: 'The Headless Knight\'s greatsword, its edge glowing a cold violet. It is heavier than it looks, and it never dulls. Shadow element.', from: 'the Headless Knight (2%)' },
+  headlessknight_card: { type: 'misc', rare: true, name: 'Headless Knight Card', adj: 'Deathless', icon: 'card_headless', card: { on: 'armor', def: 4, mhpRate: 8, stats: { end: 3 }, perk: { laststand: 120 }, perkName: 'Last Stand' }, desc: 'The Headless Knight on a card, his head under his arm and its eyes on you. In an armor with a slot: DEF +4, Max HP +8%, END +3, and Last Stand: once every 2 minutes, a blow that would make you faint leaves you standing at 1 HP.', from: 'the Headless Knight (1%)' },
   // Poseidon, Lord of the Tides (the Storm Isles' MVP): his gear for several builds (a sword, a staff, a bow, a dagger,
   // a ring and a mantle, the owner's call), his card and his ultra rare, the Crown of the Tides (drawn by
   // build-tools/draw-tidecrown.py)
@@ -617,6 +622,7 @@ const PERK_TEXT = {
   farshot: (v) => `your blows and spells land ${v}% harder on a monster 4 paces away or more`,
   rot: (v) => `a monster your blows or spells strike takes ${v}% more from everything for 5 s`,
   tide: (v) => `${v}% of your blows and spells send out a wave: every other monster within 2.5 paces takes half the blow`,
+  laststand: (v) => `once every ${v / 60} minutes, a blow that would make you faint leaves you standing at 1 HP`,
 };
 // Seyla draws the cards out of a piece again (they come back whole), for this much a card
 export const UNCARD_FEE = 50000;
@@ -689,7 +695,7 @@ export const PRICES = {
   devourer_mail: 44000, ammit_claw: 56000, sphinx_ring: 40000, sphinx_mantle: 50000, riddle_blade: 90000, sphinx_staff: 90000, sphinx_bow: 96000, enigma_fang: 96000, allseeing_eye: 150000,
   hallscarab_card: 6000, cobra_card: 8000, hallmummy_card: 9000, lamia_card: 10000, servant_card: 10000, jackal_card: 12000, falcon_card: 12000, sphinxcub_card: 14000, sandelemental_card: 14000, sarcophagus_card: 15000, ammit_card: 30000, sphinx_card: 80000,
   khopesh: 50000, tomb_mail: 30000, scarab_kris: 30000, falcon_charm: 22000, ankh_charm: 22000, gold_scarab: 24000, canopic_shield: 28000, linen_wrap: 28000, pharaoh_nemes: 60000, pharaoh_card: 40000,
-  tide_pearl: 20000, tide_ring: 40000, seafoam_mantle: 50000, leviathan_blade: 90000, tide_trident: 90000, tidebreaker_bow: 96000, riptide_fang: 96000, poseidon_card: 80000, poseidon_crown: 150000,
+  knight_crest: 9000, oathless_plate: 44000, headsman_blade: 56000, headlessknight_card: 30000, tide_pearl: 20000, tide_ring: 40000, seafoam_mantle: 50000, leviathan_blade: 90000, tide_trident: 90000, tidebreaker_bow: 96000, riptide_fang: 96000, poseidon_card: 80000, poseidon_crown: 150000,
   porcupine_quill: 600, boar_tusk: 650, bandit_scarf: 800, mantis_blade: 820, mimic_tooth: 880, jelly_glass: 900, merrow_scale: 950, moth_dust: 1000, rusted_plate: 1100, troll_hide: 1250, owl_feather: 1350, witch_charm: 1450, salamander_scale: 1600,
   quillporcupine_card: 12000, tuskboar_card: 12000, cliffbandit_card: 13000, blademantis_card: 13000, chestmimic_card: 14000, glassjelly_card: 14000, merrow_card: 15000, galemoth_card: 15000, livingarmor_card: 16000, mosstroll_card: 16000, owlbear_card: 17000, moorwitch_card: 17000, firesalamander_card: 18000,
   red_gel: 40, ant_jaw: 90, cactus_needle: 600, worm_hide: 700, scorpion_tail: 760, runner_feather: 800, cactus_heart: 7000, rainbow_plume: 8000, wyrm_tooth: 12000, tomb_core: 1500, sphinx_eye: 0, world_seed: 0,
@@ -1169,6 +1175,7 @@ const PAINT = {
   r_stormring: (g) => charmIcon(g, '#ffe6a8', '#a8804a'),
   shield_coffin: (g) => shieldIcon(g, 'kite', '#2e4f9a', '#e8b840', '#e8b840'),
   armor_devourer: (g) => armorIcon(g, '#4a8a3a', '#d8a050'),
+  armor_oathless: (g) => armorIcon(g, '#3a3448', '#b07aff'),
   dagger_ammit: (g) => daggerIcon(g, '#efe6d4', '#e8c050', '#2e5a26', false),
   r_sphinxring: (g) => charmIcon(g, '#e2b474', '#f0c040'),
   r_sphinxmantle: (g) => capeIcon(g, '#8a5a2a', '#f0c040'),
@@ -1194,6 +1201,9 @@ const PAINT = {
   card_moorwitch: (g) => cardIcon(g, '#3a3448', '#b890ff'),
   card_firesalamander: (g) => cardIcon(g, '#c8401a', '#ffd060'),
   card_poseidon: (g) => cardIcon(g, '#2a4a7a', '#e8b84a'),
+  card_headless: (g) => cardIcon(g, '#3a3448', '#b07aff'),
+  weapon_headsman: (g) => swordIcon(g, '#8a8ea0', '#a8aac0', '#b07aff'),
+  knight_crest: (g) => { shape(g, () => { g.moveTo(14, 50); g.quadraticCurveTo(18, 16, 50, 10); g.quadraticCurveTo(40, 30, 26, 52); g.closePath(); }, '#7a3ab8'); shape(g, () => g.arc(18, 50, 5, 0, 7), '#a8aac0', 1.5); },
   r_tidering: (g) => charmIcon(g, '#3a96d8', '#e8b84a'),
   r_seafoam: (g) => capeIcon(g, '#2a5a9a', '#f2fbff'),
   weapon_leviathan: (g) => swordIcon(g, '#9ad0f0', '#e8b84a', '#3a96d8'),

@@ -55,7 +55,7 @@ export class Player {
     this.slowT = 0;
     this.rootT = 0; // held by roots (the Ancient Treant's Grasping Roots): no walking or dashing
     this.knock = { x: 0, z: 0 };
-    this.events = { swing: [], hurt: [], faint: [], strike: [], block: [], soak: [], interrupt: [], noammo: [] };
+    this.events = { swing: [], hurt: [], faint: [], strike: [], block: [], soak: [], interrupt: [], noammo: [], laststand: [] };
 
     // Ragnarok-style orders: walk tile to tile along a path towards a goal
     // goal: { x, z, reach, arrive() } for a spot, or { mob } to fight it until it falls
@@ -148,7 +148,7 @@ export class Player {
     this.sprite.center.y = this.mat.map.userData.anchor;
   }
 
-  on(name, fn) { this.events[name].push(fn); }
+  on(name, fn) { (this.events[name] ||= []).push(fn); }
   emit(name, ...a) { for (const fn of this.events[name] || []) fn(...a); } // an event nobody listens for must never stop the game
 
   // tiles a second: Ragnarok's walk time per tile, with the slow (spores) and the haste
@@ -203,6 +203,11 @@ export class Player {
     if (this.state === 'sit') this.state = 'normal'; // a hit gets you up
     if (this.cast && !this.steady && this.endureT <= 0) { this.cast = null; this.emit('interrupt'); } // a hit breaks the spell
     this.emit('hurt', amount);
+    if (this.hp <= 0 && this.ps?.laststand > 0 && !(this.standCd > 0)) { // the Headless Knight Card's Last Stand
+      this.hp = 1;
+      this.standCd = this.ps.laststand;
+      this.emit('laststand');
+    }
     if (this.hp <= 0) {
       this.state = 'down';
       this.sprite.material.rotation = Math.PI / 2;
@@ -293,6 +298,7 @@ export class Player {
     this.iframes -= dt;
     this.slowT = this.ps?.sureFoot ? 0 : this.slowT - dt; // (the King Crab Card's Sea Legs: never slowed)
     this.rootT -= dt;
+    this.standCd = (this.standCd || 0) - dt;
     this.endureT -= dt;
 
     if (this.state === 'down') {

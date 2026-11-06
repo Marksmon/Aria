@@ -33,7 +33,8 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   His moves: Tidal Barrage (riptide pools), Leviathan Surge (`MOVES.surge`, a marked line), Oceanic Prison
   (`MOVES.prison`: a `tidePrison` decoy cage round the hero, rooted and drowning, Poseidon shielded till it breaks,
   crashing down after 8 s) and Raging Maelstrom (`MOVES.maelstrom`: a pull to a striking heart). His ultra rare is the
-  Crown of the Tides (Head, `build-tools/draw-tidecrown.py`). Next: the story chapter, quests and a mini-boss.
+  Crown of the Tides (Head, `build-tools/draw-tidecrown.py`). Its mini-boss is the **Headless Knight** (the owner's call,
+  Lv 80, Shadow, on the Storm Isles, lord of the Living Armors: `coast.js` `headless`). Next: the story chapter and quests.
 
 - **Jobs, skill points and second jobs:** read `docs/job-rules.md` before touching jobs, skills
   or job quests. In short:
@@ -156,7 +157,7 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   Base 75 the Kobold and Goblin Kings, 85 the Fire Giant, Ancient Treant and Sand Wyrm, 95 the Eternal Sphinx,
   Nidhogg and Poseidon (the hardest, for now). Mini-bosses are fierce like an MVP and made for a Lv 75 second job in shop gear;
   each raid's Hell boss for its Hell level in the same good gear (`FIERCE` `atkScale`/`hpScale`). `npm test` runs
-  `mvp-sim --check`: retune with it (each boss's ATK and HP) when a boss or a job changes. Their levels say so (55–66: Giant Sprout and Elder Willow 55, King Crab 58, Giant Mushroom 60, Giant Beetle 62, Alpha Wolf 64, Great Bear 66; the desert's Cactus Lord 60 and Rainbow Runner 64; the Sphinx's Halls' Ammit 74; Yggdrasil's Ratatoskr 74, small for a boss: the owner's call), and they come only for second-job heroes (the owner's call, `picksFight` in `mobs.js`): a Trainee or first job is left be unless it strikes or taunts one. So no main story
+  `mvp-sim --check`: retune with it (each boss's ATK and HP) when a boss or a job changes. Their levels say so (55–66: Giant Sprout and Elder Willow 55, King Crab 58, Giant Mushroom 60, Giant Beetle 62, Alpha Wolf 64, Great Bear 66; the desert's Cactus Lord 60 and Rainbow Runner 64; the Sphinx's Halls' Ammit 74; Yggdrasil's Ratatoskr 74, small for a boss: the owner's call; the Storm Isles' Headless Knight 80, lord of the Living Armors: the owner's call), and they come only for second-job heroes (the owner's call, `picksFight` in `mobs.js`): a Trainee or first job is left be unless it strikes or taunts one. So no main story
   step or job trial needs a boss (they hunt the boss's kin); the one quest that does is Sigrid's The
   Waking Wood (Lv 70: the Great Bear and the Alpha Wolf, two mini-bosses), and it can be quit. Boss and MVP cards drop at 1%
   (other cards 0.1%); an MVP's card and ultra rare rise a tenth of their chance with every kill they miss, up
@@ -169,7 +170,7 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   stun, Goblin Warlord melee and double blows, Pharaoh soul tax). Mini-boss cards have smaller ones of their own,
   never a weaker copy of an MVP's or raid boss's (the owner's call: Giant Sprout HP regen, King Crab
   never slowed, Giant Mushroom SP regen, Giant Beetle DEF pierce, Elder Willow faster casting,
-  Alpha Wolf crits, Great Bear harder blows at low HP, Cactus Lord venom, Rainbow Runner quick after a kill, Ammit harder on a monster under 30% HP, `execute`; Ratatoskr harder from 4 paces off, `farshot`). Every card keeps its stats
+  Alpha Wolf crits, Great Bear harder blows at low HP, Cactus Lord venom, Rainbow Runner quick after a kill, Ammit harder on a monster under 30% HP, `execute`; Ratatoskr harder from 4 paces off, `farshot`; Headless Knight Last Stand, a fainting blow leaves 1 HP once every 2 minutes, `laststand`). Every card keeps its stats
   (the owner's call; MVP and boss cards too); an effect comes on top.
   **Boss AI** (`BRAIN` in `mobs.js`, every mini-boss, raid boss and MVP): it aims where a running
   hero is going (not a step aside), picks moves for the moment (gap-closers on kiters and casters,

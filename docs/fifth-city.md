@@ -12,8 +12,9 @@ Barrage (`meteors`, riptide pools), Leviathan Surge (`MOVES.surge`, a marked lin
 `tidePrison` decoy round the hero: rooted, drowning, he is shielded until it breaks) and Raging Maelstrom
 (`MOVES.maelstrom`, a pull to a striking heart), shown by `bossmoves.js`; matchup beasts +30% / spells −25%; gear for
 every build, the Poseidon Card (Tidal Wave, `perk.tide`) and the ultra rare Crown of the Tides (Head,
-`build-tools/draw-tidecrown.py`). **Next:** the story chapter before the ending, the city's quests and series, a
-mini-boss or two. What the owner has decided:
+`build-tools/draw-tidecrown.py`). The region's mini-boss is the **Headless Knight** (the owner's call: Lv 80, Shadow, on the Storm Isles, lord of the
+Living Armors, his head under his arm; Spectral Charge, Hurled Head, Cleaving Leap; card: Last Stand). **Next:** the
+story chapter before the ending, the city's quests and series. What the owner has decided:
 
 ## The city
 

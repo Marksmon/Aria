@@ -133,7 +133,7 @@ Scorpion Sands with its Pyramid, then the Great Desert, where the Sand Wyrm hunt
 | Great Desert | 62–70 | Soldier Ant (62), Cactus, Dune Worm, Sand Scorpion, Sand Runner | **Sand Wyrm (70, MVP)** |
 | Tide Cliffs | 65–70 | Quill Porcupine (65, shoots quills), Tusk Boar (66, charges), Cliff Bandit (69, a crossbow) | |
 | Coral Shallows | 70–76 | Blade Mantis (71, quick), Chest Mimic (73, a chest with teeth), Glass Jelly (74, numbing sting), Merrow (75, Water, throws harpoons) | |
-| Storm Isles (by ship) | 76–82 | Gale Moth (77, Wind, flies), Living Armor (79, an empty suit of armour), Moss Troll (81, a club) | **Poseidon (99, MVP)** |
+| Storm Isles (by ship) | 76–82 | Gale Moth (77, Wind, flies), Living Armor (79, an empty suit of armour), Moss Troll (81, a club) | Headless Knight (80), **Poseidon (99, MVP)** |
 | Beacon Moor | 82–88 | Owlbear (83), Moor Witch (84, Shadow, dark bolts), Fire Salamander (86, Fire, quick) | |
 | Sphinx Halls 1 | 65–72 | Scarab (66, hard shell), Cobra (71, poison) | |
 | Sphinx Halls 2 | 73–80 | Mummy (75), Lamia (78, spits venom), Pharaoh's Servant (80, blue fire, shields the others) | |
@@ -192,6 +192,14 @@ with their lids snapping, Glass Jellies and the Merrows, fish-folk with harpoons
 suits of Living Armor, Moss Trolls and the Gale Moths (Wind); on Beacon Moor Owlbears, the Moor Witches (Shadow) and
 Fire Salamanders (Fire). Only the elemental ones glow. Their cards make the **Hafnvik's Coast** album set (Max HP and
 SP +1%); the Tusk Boar's and the Moss Troll's are Head and Face cards for fighters.
+
+**The Headless Knight** (Lv 80 mini-boss, Shadow), lord of the Living Armors, marches the Storm Isles: a tall knight
+in black-violet plate and a torn cape, cold violet fire burning where his head was, the helmed head itself under his
+arm, its eyes still glowing, a greatsword in his other hand. He charges (**Spectral Charge**), hurls his own head at
+you (**Hurled Head**), leaps on you with a cleave (**Cleaving Leap**), flies into frenzies and calls the Living
+Armors to his side. He drops his violet plume (the Headless Knight's Crest), now and then the **Oathless Plate** and
+the **Headsman's Blade** (Shadow), and his card: **Last Stand**, once every 2 minutes a blow that would make you faint
+leaves you standing at 1 HP.
 
 **Poseidon, Lord of the Tides** (Lv 99 MVP, 400,000 HP, Water) roams the Storm Isles: pale blue, his long white
 hair falling to the waist, a gold horned crown, glowing blue eyes and gold-trimmed armour, and below the waist no
@@ -381,6 +389,7 @@ fills up until it hits: step out of it.
 | Alpha Wolf · Great Bear | **Pounce** (a leap) · **Mauling Charge** |
 | Ancient Treant | **Grasping Roots** (hold you in place) · **Bark Armor** (hits bounce back) · **Root Stone** (thrown) · **Uprooting Charge** |
 | Ammit | **Devouring Rush** (a charge) · **Pounce** · **Devour**: a bite in front of it that heals it |
+| Headless Knight | **Spectral Charge** · **Hurled Head** (his own, thrown) · **Cleaving Leap** · **Frenzy** |
 | Ratatoskr | **Swift Dash** (a charge) · **Bounding Leap** · **Rune Acorn** (thrown) · **Frenzy** |
 | Nidhogg | **Gnaw the Roots** (tear it away in time) · **Venom Breath** (thrown) · **Coil Rush** (a charge) · **Falling Roots** (venom where they land) · **Frenzy** |
 | Eternal Sphinx | **The Riddle** (stand in the right answer) · **Pounce** · **Falling Stones** (cursed sand where they land) · **Gaze of Ages** (thrown) · **Frenzy** |
@@ -1068,7 +1077,7 @@ from Kari (Dalla has the cake and the pie). Their timers show in the buff bar.
 |---|---|---|
 | Red Potion | 45–65 HP | Hild (Steinborg); Kari (Galdrheim); Eydis (Veidheim); Dalla (Rytingborg); Ragna brews it; Gel Thief, Yellow Bloop, Willow and 3 more |
 | Orange Potion | 105–145 HP | Hild (Steinborg); sela; Kari (Galdrheim); Eydis (Veidheim); Dalla (Rytingborg); Ragna brews it; Treant, Kobold, Beetle and 11 more |
-| White Potion | 175–235 HP | sela; Eydis (Veidheim); Dalla (Rytingborg); Ragna brews it; Goblin Archer, Fire Beetle, Goblin Assassin and 52 more |
+| White Potion | 175–235 HP | sela; Eydis (Veidheim); Dalla (Rytingborg); Ragna brews it; Goblin Archer, Fire Beetle, Goblin Assassin and 53 more |
 | Blue Potion | 40–60 SP | Hild (Steinborg); sela; Kari (Galdrheim); Eydis (Veidheim); Dalla (Rytingborg); Ragna brews it; Blue Bloop, Mudskipper |
 | Berry | 16–22 HP | Hild (Steinborg); Kari (Galdrheim); Bloop, Sprout, Yellow Bloop, Red Sprout |
 | Crab Leg | 70–100 HP | Crab, Blue Crab, King Crab |
@@ -1206,6 +1215,8 @@ bursts gold on the ground and shows in gold in your bag.
 | Drake Ring | Accessory | POW +1 · END +1 · KNL +1 · Max HP +60 | Thorn Drakes (0.25%) |
 | Grave Wraps | Garment | DEF 3 · Max HP +120 | Mummies (0.3%) |
 | Serpent Staff | Weapon (staff) (Sorcerer) | ATK 40 · Weapon Lv 3 · Water element · MATK +35% · KNL +3 | Lamias (0.2%) |
+| Headsman's Blade | Weapon (sword) (Blader) | ATK 136 · Weapon Lv 4 · Shadow element · POW +3 · END +1 | the Headless Knight (2%) |
+| Oathless Plate | Armor | DEF 9 · END +3 · POW +1 · Max HP +220 | the Headless Knight (3%) |
 | Priest's Robe | Armor | DEF 4 · KNL +2 · Max SP +80 | Pharaoh's Servants (0.3%) |
 | Lionpaw Boots | Shoes | DEF 4 · QKN +2 · FLEE +5 | Sphinx Cubs (0.2%) |
 | Sandstorm Ring | Accessory | END +2 · QKN +1 · FLEE +3 | Sand Elementals (0.25%) |
@@ -1427,6 +1438,7 @@ they come back whole and the slot stays open. A piece that breaks at Holger's gi
 | Sand Wyrm Card (Devouring) | Armor | DEF +6 · END +6 · POW +4 · Max HP +25% · Devour: every kill gives you back 3% of your HP and SP | the Sand Wyrm (1%) |
 | Ammit Card (Devouring) | Weapon | ATK +18 · POW +3 · Weighing of the Heart: your blows and spells land 15% harder on a monster under 30% HP | Ammit (1%) |
 | Ratatoskr Card (Swift) | Garment | FLEE +6 · QKN +3 · FNS +2 · Keen Perception: your blows and spells land 10% harder on a monster 4 paces away or more | Ratatoskr (1%) |
+| Headless Knight Card (Deathless) | Armor | DEF +4 · END +3 · Max HP +8% · Last Stand: once every 2 minutes, a blow that would make you faint leaves you standing at 1 HP | the Headless Knight (1%) |
 | Eternal Sphinx Card (Enigmatic) | Accessory | KNL +5 · FNS +4 · FTN +3 · Max SP +10% · Eternal Wisdom: your skills cost 15% less SP | the Eternal Sphinx (1%) |
 | Nidhogg Card (Gnawing) | Armor | DEF +6 · POW +5 · END +5 · Max HP +20% · Root Rot: a monster your blows or spells strike takes 8% more from everything for 5 s | Nidhogg (1%) |
 | Poseidon Card (Tidal) | Weapon | ATK +40 · MATK +15% · POW +4 · KNL +4 · Tidal Wave: 12% of your blows and spells send out a wave: every other monster within 2.5 paces takes half the blow | Poseidon (1%) |

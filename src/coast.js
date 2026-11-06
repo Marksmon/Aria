@@ -32,6 +32,8 @@ export const COAST = {
   fireSalamander: { kind: 'salamander', size: [64, 42], body: [46, 22], body1: '#c8401a', belly: '#f0a040', spot: '#8a2410', flame: '#ffd060', flame2: '#ff7a20', eye: '#ffe890' },
   // the coast's MVP, roaming the Storm Isles (the owner's sheet), and the cage of his Oceanic Prison
   poseidon: { kind: 'poseidon', size: [112, 146], body: [76, 136], skin: '#a8d0e4', hair: '#eef2f6', gold: '#e8b84a', plate: '#2a4a7a', eye: '#7af0ff', water: '#3a96d8', deep: '#1e5e9e', light: '#a8e8ff', foam: '#f2fbff' },
+  // the Storm Isles' mini-boss, lord of the Living Armors (the owner's call)
+  headlessKnight: { kind: 'headless', size: [80, 98], body: [46, 88], plate: '#3a3448', trim: '#a8aac0', dark: '#16121e', cape: '#4a1e3a', helm: '#6a647c', blade: '#8a8ea0', fire: '#b07aff', hot: '#efdcff', plume: '#7a3ab8' },
   tidePrison: { kind: 'prison', size: [48, 66], body: [42, 62], water: '#5ab8ec', deep: '#2a78b8', light: '#c8f0ff', foam: '#f2fbff' },
 };
 
@@ -49,7 +51,7 @@ function coastFrame(id, dir, anim, f) {
   const P = COAST[id], [W, H] = P.size;
   const F = new Frame(W, H);
   const a = { G: H - 3, W, H, walk: anim === 'walk', f, step: anim === 'walk' ? [1, 0, -1, 0][f] : 0, atk: anim === 'attack' ? f : -1 };
-  ({ porcupine, boar, wrecker, mantis, mimic, jelly, merrow, armor, troll, moth, owlbear, hag, salamander, poseidon, prison })[P.kind](F, P, dir, a);
+  ({ porcupine, boar, wrecker, mantis, mimic, jelly, merrow, armor, troll, moth, owlbear, hag, salamander, poseidon, prison, headless })[P.kind](F, P, dir, a);
   return F;
 }
 
@@ -504,4 +506,75 @@ function prison(F, P, dir, { G, W, f }) {
   for (let i = 0; i <= 12; i++) { const a = Math.PI + i / 12 * Math.PI; F.part(line(cx + Math.cos(a) * 19, top + 8 + Math.sin(a) * 9, cx + Math.cos(a + 0.27) * 19, top + 8 + Math.sin(a + 0.27) * 9, 2), P.water, { outline: false }); } // the dome
   F.part(ellipse(cx, top - 2, 3, 2), P.light);
   for (let i = 0; i < 6; i++) F.dot(cx - 14 + i * 6, top + 16 + ((i * 7 + f * 5) % 30), P.foam); // bubbles rising
+}
+
+// ---------- the Headless Knight (the Storm Isles' mini-boss, lord of the Living Armors): a tall knight in black-violet
+// plate and a tattered cape, no head on him, cold violet fire burning where it was; his helmed head under one arm,
+// its eyes still glowing, a greatsword in the other hand (Shadow: the fire glows) ----------
+function headless(F, P, dir, { G, W, step, walk, f, atk }) {
+  const cx = W / 2, side = dir === 'right', back = dir === 'up';
+  const clank = walk ? [0, -1, 0, -1][f] : 0, fl = [0, 2, 1, 3][f % 4];
+  const hip = G - 30 + clank, sh = G - 56 + clank, neck = sh - 3;
+  // the cape behind him, its hem torn
+  const hem = (x0, x1, y) => { const pts = []; for (let i = 0; i <= 8; i++) pts.push([x0 + (x1 - x0) * i / 8, y + (i % 2 ? 0 : 3) + ((i * 3 + f) % 2)]); return pts; };
+  if (side) F.part(poly([[cx - 4, sh + 1], [cx - 10, sh + 4], ...hem(cx - 18, cx - 6, G - 4).reverse().slice(0, 9), [cx - 4, hip]]), P.cape);
+  else F.part(poly([[cx - 13, sh], [cx + 13, sh], ...hem(cx + 17, cx - 17, G - 3)]), back ? P.cape : dark(P.cape));
+  // greaves and sabatons
+  for (const s of [-1, 1]) {
+    const lx = cx + s * 6 + (side ? s * step * 3 : 0);
+    F.part(rect(lx - 3.5, hip + 2, lx + 3.5, G - 4), s < 0 && side ? dark(P.plate) : P.plate);
+    F.part(rect(lx - 4, hip + 12, lx + 4, hip + 14), P.trim, { outline: false });
+    F.part(poly([[lx - 4.5, G - 5], [lx + (side ? 7 : 4.5), G - 5], [lx + (side ? 7 : 4.5), G], [lx - 4.5, G]]), P.dark);
+  }
+  // the sword: held at his right, raised and brought down in a cleave
+  const ang = atk >= 0 ? [1.9, 2.6, -0.2, 0.5][atk] : 1.15;
+  const sx = side ? cx + 8 : back ? cx - 17 : cx + 17, sy = sh + 15 + (atk === 2 ? 4 : 0);
+  const sword = () => {
+    const c = Math.cos(ang), s = Math.sin(ang), d = side ? 1 : back ? -1 : 1, tip = [sx + d * c * 30, sy - s * 30];
+    F.part(poly([[sx + d * c * 4 - s * 2.5, sy - s * 4 - c * 2.5 * d], [tip[0] - s * 0.8, tip[1] - c * 0.8 * d], [tip[0] + s * 0.8, tip[1] + c * 0.8 * d], [sx + d * c * 4 + s * 2.5, sy - s * 4 + c * 2.5 * d]]), P.blade);
+    F.part(line(sx + d * c * 6, sy - s * 6, tip[0] - d * c * 2, tip[1] + s * 2, 1), P.fire, flat); // the cursed edge
+    F.part(line(sx + d * c * 3 - s * 5, sy - s * 3 - c * 5 * d, sx + d * c * 3 + s * 5, sy - s * 3 + c * 5 * d, 2), P.trim); // the crossguard
+    F.part(line(sx, sy, sx - d * c * 4, sy + s * 4, 2), P.dark);
+  };
+  if (back) sword();
+  // the breastplate, the faulds over his hips, a sash
+  const sw = side ? 9 : 13;
+  F.part(poly([[cx - sw - 1, sh], [cx + sw + 1, sh], [cx + sw - 3, hip + 2], [cx - sw + 3, hip + 2]]), P.plate);
+  for (let i = 0; i < 3; i++) F.part(rect(cx - sw + 2 - i, hip + 1 + i * 3, cx + sw - 2 + i, hip + 3 + i * 3), i % 2 ? P.plate : dark(P.plate));
+  if (!back) {
+    F.part(line(cx + (side ? 2 : 0), sh + 3, cx + (side ? 2 : 0), hip - 2, 1), P.trim, flat);
+    F.part(both(line(cx - sw + 2, sh + 9, cx + sw - 2, sh + 9, 1), line(cx - sw + 3, sh + 17, cx + sw - 3, sh + 17, 1)), P.trim, flat);
+    F.part(poly([[cx + (side ? 2 : 0) - 2.5, sh + 11], [cx + (side ? 2 : 0) + 2.5, sh + 11], [cx + (side ? 2 : 0), sh + 15]]), P.fire); // a violet sigil
+  }
+  // the pauldrons, spiked, and the gorget round the empty neck
+  for (const s of side ? [1] : [-1, 1]) {
+    const px = cx + s * (side ? 1 : 14);
+    F.part(ellipse(px, sh + 1, 7, 5), P.plate);
+    F.part(line(px - 6, sh + 4, px + 6, sh + 4, 1), P.trim, flat);
+    for (const n of [-3, 1]) F.part(poly([[px + n - 1.5, sh - 3], [px + n + 1.5, sh - 3], [px + n + s * 1, sh - 9]]), P.trim);
+  }
+  F.part(ellipse(cx + (side ? 1 : 0), neck + 1, side ? 5 : 7, 3), P.dark);
+  // the cold fire where his head was
+  const fx = cx + (side ? 1 : 0);
+  F.part(poly([[fx - 5, neck], [fx - 6, neck - 6 - fl], [fx - 3, neck - 4], [fx - 1, neck - 11 + fl], [fx + 1, neck - 5], [fx + 3, neck - 9 - fl * 0.5], [fx + 6, neck - 5], [fx + 5, neck]]), P.fire);
+  F.part(poly([[fx - 3, neck], [fx - 1, neck - 6 + fl * 0.5], [fx + 1, neck - 3], [fx + 3, neck]]), P.hot, flat);
+  // the arms: the sword arm, and the other holding his helmed head at his hip
+  const headAt = side ? [cx + 4, hip - 2] : back ? [cx + 15, hip - 2] : [cx - 15, hip - 2];
+  const holdArm = side ? cx + 1 : back ? cx + 14 : cx - 14;
+  F.part(both(line(holdArm, sh + 3, headAt[0] + (side ? -2 : back ? 2 : -2), sh + 14, 4), line(headAt[0] + (side ? -2 : back ? 2 : -2), sh + 14, headAt[0], headAt[1] - 3, 4)), P.plate);
+  const head = () => { // the helm, a crest of violet plume, the visor's slit glowing
+    const [hx, hy] = headAt;
+    F.part(poly([[hx - 6, hy + 5], [hx + 6, hy + 5], [hx + 7, hy - 3], [hx + 5, hy - 9], [hx - 5, hy - 9], [hx - 7, hy - 3]]), P.helm);
+    F.part(both(line(hx - 5, hy - 10, hx + 3, hy - 12, 2), line(hx + 3, hy - 12, hx + 8, hy - 9, 2), line(hx + 8, hy - 9, hx + 9, hy - 5, 1)), P.plume);
+    F.part(line(hx, hy - 9, hx, hy + 4, 1), P.trim, flat);
+    if (!back) { F.part(rect(hx - 5, hy - 4, hx + 5, hy - 2), P.dark, flat); for (const e of [-3, 2]) F.part(rect(hx + e, hy - 4, hx + e + 1, hy - 3), P.hot, flat); }
+    F.part(line(hx - 6, hy + 5, hx + 6, hy + 5, 1), P.trim, flat);
+  };
+  head();
+  if (!back) {
+    const armX = side ? cx + 3 : cx + 14;
+    F.part(line(armX, sh + 3, sx, sy, 4), P.plate);
+    F.part(ellipse(sx, sy, 2.6, 2.6), P.dark); // the gauntlet on the hilt
+    sword();
+  }
 }
