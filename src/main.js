@@ -19,6 +19,8 @@ import { Story, INTRO, STORY, CALLINGS, CALL_HOME, route } from './story.js';
 import { SPAWNS } from './spawns.js';
 import { INTRO_SHOTS } from './scenes.js';
 import { installLessons } from './lessons.js';
+import { installStands } from './stands.js';
+import { installQuestWorld } from './questworld.js';
 import { installBossMoves } from './bossmoves.js';
 import { playCutscene } from './cutscene.js';
 import { Villagers } from './villagers.js';
@@ -1030,122 +1032,9 @@ function tickWading(dt) {
   }
 }
 
-// ---------- survive steps: hold a spot against waves (the Ember's Light in Moss Field, the vigil on Ember
-// Hill while Vigdis sings). A step may set its own heralds ({ early, late, after }), wave gap (every),
-// how many may stand before the next wave comes (most), colour, and words (startText, breakText) ----------
-let vigil = null, giantWarnT = -99; // vigil: { t, next, list }
-const VIGIL_WAVE = 15; // seconds between waves of heralds (lesser ones, like a boss's guards)
-const giantOf = () => mobs.list.find((m) => m.alive && m.def.mvp && m.type === 'jarl');
-function endVigil(why) {
-  const g = giantOf();
-  if (g) g.lulled = false;
-  for (const m of vigil.list) if (mobs.list.includes(m)) { fx.puff(m.x, world.heightAt(m.x, m.z) + 0.3, m.z, m.def.w); mobs.remove(m); }
-  vigil = null;
-  story.count = 0;
-  if (why) menus.message(why);
-  refreshQuests();
-}
-function tickVigil(dt) {
-  const s = story.step;
-  if (!storyLive() || s?.kind !== 'survive') { if (vigil) endVigil(); return; }
-  const y = world.heightAt(s.at.x, s.at.z);
-  if (!vigil) {
-    if (world.id !== s.map) return;
-    if (Math.random() < dt * 3) fx.sparkle(s.at.x, y + 0.4, s.at.z, s.color || '#b48aff', 4); // where to stand
-    if (Math.hypot(s.at.x - player.x, s.at.z - player.z) > 3 || player.state !== 'normal') return;
-    // the Fire Giant roams the hill: the song would only wake him if he stood close, and once it
-    // begins it lulls him while it lasts
-    const g = giantOf();
-    if (g && Math.hypot(g.x - s.at.x, g.z - s.at.z) < 14) {
-      if (skillClock - giantWarnT > 8) { giantWarnT = skillClock; menus.message('The Fire Giant prowls too close to the circle: the song would wake him. Wait for him to wander off.'); }
-      return;
-    }
-    if (g) { g.lulled = true; g.state = 'wander'; }
-    vigil = { t: 0, next: 2, list: [], giant: g };
-    menus.message(s.startText || 'The runes in the circle light up, and Vigdis\'s song rises out of them. The hill trembles: the heralds are coming!');
-    cam.shake = 0.35;
-    audio.play('night');
-    return;
-  }
-  if (world.id !== s.map || player.state === 'down') { endVigil(s.breakText || 'The song breaks off. Go back to the hill road and begin again.'); return; }
-  if (Math.hypot(s.at.x - player.x, s.at.z - player.z) > 12) { endVigil(s.breakText || 'You strayed too far, and the song breaks off. Stand by the rune circle and begin again.'); return; }
-  if (vigil.giant?.alive && !vigil.giant.lulled) { endVigil('You struck the Fire Giant: he wakes, and the song breaks off. Let him wander off, then begin again.'); return; }
-  vigil.t += dt;
-  story.count = Math.floor(vigil.t);
-  if (Math.random() < dt * 6) fx.sparkle(s.at.x + (Math.random() - 0.5) * 3, y + 0.3, s.at.z + (Math.random() - 0.5) * 3, s.color || '#b48aff', 3); // the song in the air
-  const up = vigil.list.filter((m) => m.alive).length;
-  if (vigil.t >= vigil.next && vigil.t < s.secs - 4 && up < (s.most || 4)) { // a wave of heralds from all round the hill (held back while four still stand)
-    vigil.next += s.every || VIGIL_WAVE;
-    const H = s.heralds || { early: ['beetle', 'wisp'], late: ['beetle', 'beetle', 'wisp'], after: 30 };
-    const kinds = vigil.t > H.after ? H.late : H.early, a0 = Math.random() * Math.PI * 2; // the hill grows angrier
-    kinds.forEach((type, i) => {
-      const a = a0 + (i / kinds.length) * Math.PI * 2;
-      let x = s.at.x + Math.cos(a) * 8, z = s.at.z + Math.sin(a) * 8;
-      if (!world.walkable(x, z)) { x = s.at.x + Math.cos(a) * 4; z = s.at.z + Math.sin(a) * 4; }
-      const m = mobs.add(type, x, z);
-      m.def = guardDef(type);
-      m.hp = m.def.hp;
-      m.temp = true;
-      m.provoke();
-      vigil.list.push(m);
-    });
-    fx.puff(s.at.x, y + 0.2, s.at.z, 2);
-    cam.shake = 0.3;
-  }
-  // the Giant's Meteor Rain (meteors): red circles round the hero, the first where they stand
-  const M = s.meteors;
-  if (M && vigil.t >= (vigil.metAt ??= M.first || 5) && vigil.t < s.secs - 2) {
-    vigil.metAt += M.every;
-    const map = world.id, run = vigil;
-    for (let i = 0; i < M.n; i++) {
-      const a = Math.random() * Math.PI * 2, r = i ? 1.6 + Math.random() * 2.6 : 0;
-      const x = player.x + Math.cos(a) * r, z = player.z + Math.sin(a) * r, wait = M.wind + i * 0.35;
-      if (!world.walkable(x, z)) continue;
-      fx.warn(x, z, M.r, wait);
-      setTimeout(() => {
-        if (world.id !== map || vigil !== run) return;
-        const gy = world.heightAt(x, z);
-        fx.puff(x, gy + 0.2, z, M.r * 1.2);
-        fx.sparkle(x, gy + 0.3, z, '#ff7a2a', 14);
-        audio.play('hit');
-        if (Math.hypot(player.x - x, player.z - z) <= M.r + 0.3 && player.canBeHit() && player.state !== 'down') { cam.shake = 0.3; player.takeDamage(Math.max(1, Math.round(player.maxHp * M.hp)), x, z); }
-      }, wait * 1000);
-    }
-    if (vigil.t < M.every + 6) fx.number(player.x, overHead(player, 1.9), player.z, 'Meteor Rain!', 'skill');
-  }
-  if (vigil.t >= s.secs) { story.flag(s.id); endVigil(); }
-}
-
-// ---------- a story search (story.js kind 'search'): what is still to be found glints gold, and is found by
-// walking over it; the spots may be on different maps ----------
-let storySearchT = 0;
-function tickStorySearch(dt) {
-  const s = story.step;
-  if (!storyLive() || s?.kind !== 'search' || warping) return;
-  if ((storySearchT -= dt) <= 0) {
-    storySearchT = 0.6;
-    for (const p of story.toFind()) if (p.map === world.id && Math.hypot(p.x - player.x, p.z - player.z) < 26) fx.sparkle(p.x, world.heightAt(p.x, p.z) + 0.4, p.z, '#ffe37a', 4);
-  }
-  const got = story.onSearch(world.id, player.x, player.z);
-  if (!got) return;
-  fx.sparkle(got.spot.x, world.heightAt(got.spot.x, got.spot.z) + 0.6, got.spot.z, '#ffe37a', 16);
-  audio.play('pickup');
-  menus.message(`${s.verb || 'Found'}: ${s.thing} ${got.n}/${got.of}`);
-  refreshQuests();
-  persist();
-}
-
-// ---------- a story step's own monster (spawn: { mob, at }): there whenever the hero is on its map ----------
-function tickStorySpawn() {
-  const s = story.step, sp = s?.spawn;
-  if (!storyLive() || !sp || world.id !== s.map || story.count >= s.n || warping) return;
-  if (mobs.list.some((m) => m.type === sp.mob && m.alive)) return;
-  const at = world.walkable(sp.at.x, sp.at.z) ? sp.at : mobs.findSpot(Math.random, player);
-  if (!at) return;
-  const m = mobs.add(sp.mob, at.x, at.z);
-  m.temp = true; // (gone when the hero leaves; back when they return, until it is beaten)
-  m.story = true; // (not a quest's rare hunt: refreshQuests leaves it be)
-}
+// ---------- the story's stands: src/stands.js (survive steps, story searches, a step's own monster) ----------
+const stands = installStands({ audio, cam, fx, mobs, overHead, persist, player, refreshQuests, story, world, get menus() { return menus; }, get skillClock() { return skillClock; }, get storyLive() { return storyLive; }, get warping() { return warping; } });
+const { tickVigil, tickStorySearch, tickStorySpawn } = stands;
 
 // ---------- raids (raid.js): three waves and a boss against the clock ----------
 // The Boatman rows you out; the waves come in from the shore all round and never give up; after each
@@ -1201,7 +1090,7 @@ function raidGo(id, diff, anywhere = false) {
   const R = RAIDS[id], D = R.difficulties[diff], info = raidInfo(id);
   if (raid || warping || !D || (D.tutorial ? !info.story : info.wait)) return;
   if (anywhere && !raidsDone.has(id)) { menus.message(`Raid once with ${NPCS[R.npc].name} in ${ZONE_NAMES[R.from]} first.`); return; }
-  if (anywhere && (raidOf(world.id) || defense)) { menus.message('Not from here.'); return; }
+  if (anywhere && (raidOf(world.id) || questWorld.defense)) { menus.message('Not from here.'); return; }
   if (!D.tutorial && prog.baseLv < D.lv) { menus.message(`${D.name} needs Base Level ${D.lv}.`); return; } // (each difficulty needs its level)
   raid = { id, diff, start: Date.now(), left: R.secs, wave: -1, phase: 'land', restT: 2.5, list: [], boss: null, exp: [0, 0], arrived: false, shown: 1,
     back: anywhere ? { map: world.id, x: player.x, z: player.z } : null }; // (set out from anywhere: back there after)
@@ -1331,103 +1220,9 @@ function endRaid(win, why, stay = false, short = why) {
   persist();
 }
 
-// ---------- quests out in the world: searches, defences and rare hunts ----------
-let searchT = 0, defense = null, waveRest = 0; // waveRest: a breather between a defence's waves
-function tickQuestWorld(dt) {
-  searchT -= dt;
-  waveRest -= dt;
-  const y = (x, z) => world.heightAt(x, z);
-  for (const [id, a] of Object.entries(quests.active)) {
-    const q = QUESTS[id];
-    // a search: what is still to be found glints, and is picked up by walking over it
-    if (q.kind === 'search' && q.map === world.id) {
-      if (searchT <= 0) q.spots.forEach(([x, z], i) => { if (!a.includes(i) && Math.hypot(x - player.x, z - player.z) < 26) fx.sparkle(x, y(x, z) + 0.4, z, '#ffe37a', 4); });
-    }
-    // a rare hunt: it shows itself on its map (at night, if it keeps to the night) until it falls
-    if (q.rare && q.rare.map === world.id) {
-      const out = mobs.list.find((m) => m.type === q.mob && m.alive);
-      const time = !q.rare.night || dayNight.night > 0.6;
-      if (!out && time && !quests.ready(id, inv)) {
-        const m = mobs.add(q.mob, q.rare.x, q.rare.z);
-        m.temp = true;
-        menus.message(`Something golden rises over ${ZONE_NAMES[world.id]}... the ${MOB_DEFS[q.mob].name}!`);
-        audio.play('night');
-      } else if (out && !time) { mobs.remove(out); menus.message(`Dawn: the ${MOB_DEFS[q.mob].name} fades away. It will be back tonight.`); }
-    }
-    // a defence: stand by the place and the waves come
-    if (q.kind === 'defend' && q.map === world.id && !quests.ready(id, inv) && !defense) {
-      if (searchT <= 0) fx.sparkle(q.at.x, y(q.at.x, q.at.z) + 0.6, q.at.z, '#8fd4ff', 6);
-      if (waveRest <= 0 && Math.hypot(q.at.x - player.x, q.at.z - player.z) < 3.5 && player.state === 'normal') startWave(id);
-    }
-  }
-  if (searchT <= 0) searchT = 0.6;
-  for (const { id, n } of quests.onSearch(world.id, player.x, player.z)) {
-    const q = QUESTS[id];
-    audio.play('pickup');
-    fx.sparkle(player.x, y(player.x, player.z) + 0.8, player.z, '#ffe37a', 18);
-    menus.message(`${q.verb || 'Found'}: ${q.thing} ${n}/${q.spots.length}`);
-    if (id === 'sphinx6') { // the Sphinx Eye set in the obelisk: the hidden way south opens
-      cam.shake = 0.6; audio.play('night');
-      fx.sparkle(player.x, y(player.x, player.z) + 1.2, player.z, '#7ad8ff', 30);
-      menus.message('The Sphinx Eye clicks into the obelisk, and the whole desert sighs. To the south, a way opens through the sand...');
-    }
-    if (id === 'tree6') { // the World Tree's seed planted: the hidden way north of the Old Forest opens
-      cam.shake = 0.6; audio.play('night');
-      fx.sparkle(player.x, y(player.x, player.z) + 1.2, player.z, '#9affc0', 30);
-      menus.message('The seed sinks into the dark earth, and the ground shakes. Roots heave up through the moss, and to the north the trees part: a way opens toward something enormous...');
-    }
-    if (quests.ready(id, inv)) questComplete(id); else refreshQuests();
-  }
-  tickDefense(dt);
-  sphinxDoor();
-}
-// the Giant Sphinx's door (Sphinx Sands): its seal gives way, and steps lead down into the Sphinx's
-// Halls, the first dungeon (dungeon.js; the portal in front of it: world.js MAPS.sphinx)
-let doorSaid = false;
-function sphinxDoor() {
-  const door = world.id === 'sphinx' && world.monument?.door;
-  const near = door && Math.hypot(door.x - player.x, door.z - player.z) < 3;
-  if (near && !doorSaid) {
-    doorSaid = true;
-    audio.play('night');
-    fx.sparkle(door.x, world.heightAt(door.x, door.z) + 1.4, door.z - 1.2, '#7ad8ff', 16);
-    menus.message('The seal on the great door glows and gives way. Steps lead down into the dark: the Sphinx\'s Halls, four floors deep, each harder than the last. At the bottom, something old is waking.');
-  } else if (!near && doorSaid && (!door || Math.hypot(door.x - player.x, door.z - player.z) > 6)) doorSaid = false;
-}
-function startWave(id) {
-  const q = QUESTS[id], [type, count] = q.waves[quests.active[id]];
-  const list = [];
-  for (let i = 0; i < count; i++) {
-    const a = (i / count) * Math.PI * 2 + Math.random(), r = 6 + Math.random() * 2;
-    let x = q.at.x + Math.cos(a) * r, z = q.at.z + Math.sin(a) * r;
-    if (!world.walkable(x, z)) { x = q.at.x + Math.cos(a) * 3; z = q.at.z + Math.sin(a) * 3; }
-    const m = mobs.add(type, x, z);
-    m.temp = true;
-    m.provoke();
-    list.push(m);
-  }
-  defense = { id, list, next: 0 };
-  audio.play('night');
-  menus.message(`Wave ${quests.active[id] + 1} of ${q.waves.length}: ${count} ${MOB_DEFS[type].name}s come for ${q.place}!`);
-}
-function tickDefense(dt) {
-  if (!defense) return;
-  const q = QUESTS[defense.id];
-  // walked away, fainted, or left the map: the wave scatters (waves already held still count)
-  if (!(defense.id in quests.active) || world.id !== q.map || player.state === 'down' || Math.hypot(q.at.x - player.x, q.at.z - player.z) > 16) {
-    for (const m of defense.list) if (mobs.list.includes(m)) mobs.remove(m);
-    defense = null;
-    if (q.map === world.id) menus.message(`You left ${q.place}, and the wave scatters. Come back to try again.`);
-    return;
-  }
-  if (defense.list.some((m) => m.alive)) return;
-  quests.waveHeld(defense.id);
-  const id = defense.id;
-  defense = null;
-  audio.play('levelup');
-  if (quests.ready(id, inv)) questComplete(id);
-  else { waveRest = 6; menus.message(`Wave held! Catch your breath: the next one comes in a few seconds.`); refreshQuests(); }
-}
+// ---------- quests out in the world: src/questworld.js (searches, defences, rare hunts, the Sphinx's door) ----------
+const questWorld = installQuestWorld({ audio, cam, fx, inv, mobs, player, questComplete, quests, refreshQuests, world, get menus() { return menus; }, get dayNight() { return dayNight; } });
+const { tickQuestWorld } = questWorld;
 
 // ---------- the story ----------
 const storyLive = () => !!story.flags.intro && !story.done; // after the opening pages
@@ -1461,7 +1256,7 @@ function checkStory() {
   if (!storyLive() || menus.isOpen('story')) return;
   // a Trainee grown to Job 9 on the way through Chapter 1 is called home to choose a path (not in the
   // middle of a stand)
-  if (!vigil && story.callHome(prog)) {
+  if (!stands.vigil && story.callHome(prog)) {
     const next = story.step;
     menus.story(CALL_HOME, `${next.ch} · Called Home`, () => {
       audio.play('heart');
@@ -1473,6 +1268,7 @@ function checkStory() {
   }
   if (story.met({ prog, hotbar, skillLv, keepers, inv, quests })) storyDone();
 }
+// ---------- the guided lessons: src/lessons.js (the Prologue's, a job's skills, the crafters', the goal arrow) ----------
 const { guide, win, GUIDES, tickGuide, tickGoalArrow, startStory, collect } = installLessons({ audio, camera, inv, persist, prog, refreshQuests, story, storyLive, ui, world, get menus() { return menus; }, get hotbar() { return hotbar; }, get cine() { return cine; } });
 
 // ---------- menus + camp interactions ----------
