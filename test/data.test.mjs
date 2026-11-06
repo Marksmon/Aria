@@ -83,6 +83,28 @@ test('the story: its people exist, its searches and stands are on real maps, and
   }
 });
 
+// the story's cutscenes (scenes.js): every chapter opens with one, every shot is on a real map and looks at
+// something that is there, and each big moment belongs to a real step (or a secret series' last quest)
+test('the story\'s cutscenes: every chapter has an opening, every shot is on a real map, at a real place', async () => {
+  const { CHAPTER_SHOTS, STEP_SHOTS, SECRET_SHOTS, INTRO_SHOTS } = await import('../src/scenes.js');
+  const chapters = [...new Set(STORY.map((s) => s.ch.split(':')[0]))].filter((c) => c !== 'Prologue');
+  for (const c of chapters) assert.ok(CHAPTER_SHOTS[c]?.length, `${c} has no opening cutscene`);
+  for (const c of Object.keys(CHAPTER_SHOTS)) assert.ok(chapters.includes(c), `CHAPTER_SHOTS ${c}: no such chapter`);
+  for (const id of Object.keys(STEP_SHOTS)) assert.ok(STORY.some((s) => s.id === id), `STEP_SHOTS ${id}: no such step`);
+  for (const id of Object.keys(SECRET_SHOTS)) assert.ok(QUESTS[id], `SECRET_SHOTS ${id}: no such quest`);
+  const all = [['intro', INTRO_SHOTS], ...Object.entries({ ...CHAPTER_SHOTS, ...STEP_SHOTS, ...SECRET_SHOTS })];
+  for (const [k, shots] of all) for (const s of shots) {
+    assert.ok(MAPS[s.map] && !MAPS[s.map].arena, `${k}: shot on ${s.map}`);
+    assert.ok(s.time >= 0 && s.time < 1 && s.dist > 0 && (s.text || s.card), `${k}: a shot needs a time, a distance and words`);
+    const f = s.focus;
+    if (typeof f === 'object') assert.ok(f.x > 0 && f.x < 64 && f.z > 0 && f.z < 64, `${k}: focus ${JSON.stringify(f)}`);
+    else if (f.startsWith('npc:')) assert.ok(NPCS[f.slice(4)] && (NPCS[f.slice(4)].map || 'camp') === s.map, `${k}: ${f} is not on ${s.map}`);
+    else assert.ok(['fire', 'field', 'hero', 'jarl'].includes(f), `${k}: focus ${f}`);
+    if (f === 'fire') assert.equal(s.map, 'camp', `${k}: Eldrun's fire is at camp`);
+    if (f === 'jarl') assert.equal(s.map, 'ridge', `${k}: the Fire Giant sleeps on Ember Hill`);
+  }
+});
+
 test("an item's 'from' text names real droppers at their real rates", () => {
   const PL = { Wolf: 'Wolves', Cactus: 'Cacti', Mummy: 'Mummies', Sarcophagus: 'Sarcophagi', 'Dark Elf': 'Dark Elves' };
   const esc = (x) => x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');

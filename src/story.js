@@ -507,8 +507,9 @@ export const STORY = [
   { id: 'goldring', ch: 'Chapter 12: The Last Fire-Ring', title: 'The Ring Burns Gold', kind: 'talk', npc: 'bram', goal: 'Return to Elder Halvard at Eldrun Camp',
     say: [['bram', 'Look at it. The ring burns gold, as it did in the songs. He sleeps, and sleeps deep. You did that.'],
       ['bram', 'Torvald\'s chisel... Keep it. He cut his last runes with it, and they failed. Cut better ones.'],
-      ['bram', 'But mark this, hero of Eldrun. The others are still in their stone, and someone taught Torvald his backward runes. The road goes on.'],
-      [null, 'The Last Fire-Ring: the end of the third saga, and of the story so far. The MVPs still wait across Aria, the Fire Giant among them, for anyone strong enough to end it for good.']],
+      ['bram', 'The other jotnar still lie in their stone. With every ring whole again, and burning gold, they will sleep a long, long time.'],
+      ['bram', 'Rest now, hero of Eldrun. Steinborg, Galdrheim, Veidheim, Rytingborg: every hearth in Aria is warm tonight because of you.'],
+      [null, 'The Last Fire-Ring: the end of the third saga. The MVPs still wait across Aria, the Fire Giant among them, for anyone strong enough to end it for good.']],
     reward: { xp: 400000, perz: 100000, items: { torvald_chisel: 1, hard_ore: 5, armor_ore: 5 } } },
 ];
 

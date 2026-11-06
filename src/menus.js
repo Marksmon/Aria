@@ -222,7 +222,7 @@ export class Menus {
       const m = book.main;
       const now = m ? `<div class="ritem qrow ready" data-act="qopen" data-id="story"><div><small>${esc(m.ch)}</small><b>★ ${esc(m.title)}</b><span>${esc(m.goal)}</span>${m.where ? `<em>➜ ${esc(m.where)}</em>` : ''}</div></div>`
         : `<div class="rnote">${book.storyDone ? 'The story is told, for now.' : 'The story begins soon.'}</div>`;
-      const chs = book.chapters.map((c) => `<div class="ritem qrow ${c.done === c.n ? 'done' : ''}"><div><b>${esc(c.ch)}</b><span>${c.done === c.n ? 'Done' : c.done ? `${c.done}/${c.n} steps` : 'Ahead'}</span></div></div>`).join('');
+      const chs = book.chapters.map((c) => `<div class="ritem qrow ${c.done === c.n ? 'done' : ''}"><div><b>${esc(c.ch)}</b><span>${c.done === c.n ? 'Done' : c.done ? `${c.done}/${c.n} steps` : 'Ahead'}</span></div>${c.watch ? `<button class="rbtn qgo" data-act="watchch" data-id="${esc(c.ch)}">▶ Watch</button>` : ''}</div>`).join('');
       return `${tabs}<div class="rsub">Now</div><div class="rlist">${now}</div><div class="rsub">Chapters</div><div class="rlist">${chs}</div>`;
     }
     const ORDER = { ready: 0, active: 1, job: 2, offer: 3, locked: 4, done: 5 };
@@ -1179,6 +1179,7 @@ export class Menus {
     if (act === 'ferry') this.hooks.ferry?.(t.dataset.id);
     if (act === 'raidgo') this.hooks.raidGo?.(NPCS[this.npc].raid, t.dataset.id, this.anywhere);
     if (act === 'raidopen') { const R = RAIDS[t.dataset.id]; this.close('raids'); this.talkTo(R.npc); this.ferrying = true; this.anywhere = true; this.render('talk'); }
+    if (act === 'watchch') { this.hooks.watchChapter?.(t.dataset.id); return; }
     if (act === 'questtab') { this.questTab = t.dataset.id; this.render('journal'); }
     if (act === 'qopen') { this.openQuest(t.dataset.id); }
     if (act === 'qgoto') { this.close('journal'); this.hooks.questGo?.(t.dataset.id); } // an offered quest: walk to whoever offers it

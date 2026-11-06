@@ -44,11 +44,13 @@ export function installQuestWorld(ctx) {
       fx.sparkle(player.x, y(player.x, player.z) + 0.8, player.z, '#ffe37a', 18);
       ctx.menus.message(`${q.verb || 'Found'}: ${q.thing} ${n}/${q.spots.length}`);
       if (id === 'sphinx6') { // the Sphinx Eye set in the obelisk: the hidden way south opens
+        ctx.secretScene?.('sphinx6'); // (its cutscene: the way, and what waits beyond)
         cam.shake = 0.6; audio.play('night');
         fx.sparkle(player.x, y(player.x, player.z) + 1.2, player.z, '#7ad8ff', 30);
         ctx.menus.message('The Sphinx Eye clicks into the obelisk, and the whole desert sighs. To the south, a way opens through the sand...');
       }
       if (id === 'tree6') { // the World Tree's seed planted: the hidden way north of the Old Forest opens
+        ctx.secretScene?.('tree6'); // (its cutscene: the way, and what waits beyond)
         cam.shake = 0.6; audio.play('night');
         fx.sparkle(player.x, y(player.x, player.z) + 1.2, player.z, '#9affc0', 30);
         ctx.menus.message('The seed sinks into the dark earth, and the ground shakes. Roots heave up through the moss, and to the north the trees part: a way opens toward something enormous...');

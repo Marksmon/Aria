@@ -1127,3 +1127,6 @@ body.creating #hud > *:not(#windows) { visibility: hidden; }
 .farerow b { color: var(--w-gold); font-weight: 700; white-space: nowrap; }
 .farerow:active:not(:disabled) { background: var(--w-press); }
 .farerow:disabled { opacity: .45; }
+
+/* a story cutscene in the middle of the game (main.js playScene): the HUD steps aside for the shots */
+body.cinema #hud { visibility: hidden; }

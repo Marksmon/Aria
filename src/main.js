@@ -17,7 +17,7 @@ import { Progress, JOBS, RATES, QUEST_RATE, STAT_KEYS } from './progress.js';
 import { Quests, QUESTS, NPCS, FARES, ALWAYS_FARES, NEXT, SERIES, giverOf } from './quests.js';
 import { Story, INTRO, STORY, CALLINGS, CALL_HOME, route } from './story.js';
 import { SPAWNS } from './spawns.js';
-import { INTRO_SHOTS } from './scenes.js';
+import { INTRO_SHOTS, CHAPTER_SHOTS, STEP_SHOTS, SECRET_SHOTS } from './scenes.js';
 import { installLessons } from './lessons.js';
 import { installStands } from './stands.js';
 import { installQuestWorld } from './questworld.js';
@@ -1040,7 +1040,7 @@ const { tickVigil, tickStorySearch, tickStorySpawn } = stands;
 const raids = installRaids({ audio, cam, fx, gainExp, goalEvent, inv, lib, mobs, persist, player, prog, refreshQuests, save, story, warp, world, get menus() { return menus; }, get warping() { return warping; }, get storyLive() { return storyLive; }, get questWorld() { return questWorld; } });
 const { raidsDone, raidLog, raidOf, boatSpot, mobPortrait, raidInfo, raidGo, tickRaid } = raids;
 // ---------- quests out in the world: src/questworld.js (searches, defences, rare hunts, the Sphinx's door) ----------
-const questWorld = installQuestWorld({ audio, cam, fx, inv, mobs, player, questComplete, quests, refreshQuests, world, get menus() { return menus; }, get dayNight() { return dayNight; } });
+const questWorld = installQuestWorld({ audio, cam, fx, inv, mobs, player, questComplete, quests, refreshQuests, world, secretScene: (id) => queueScene(SECRET_SHOTS[id]), get menus() { return menus; }, get dayNight() { return dayNight; } });
 const { tickQuestWorld } = questWorld;
 
 // ---------- the story ----------
@@ -1054,6 +1054,7 @@ function storyDone() {
     audio.play('heart');
     const next = story.step;
     if (next) menus.message(`Story: ${next.title}. ${next.goal}`);
+    storyScenes(s, next); // (its big moment, and the next chapter's opening: played once the hero is out of a fight)
     refreshQuests();
     persist();
     if (s.id === 'paths') toTrainer(); // (the Elder sends the hero on to the path they picked)
@@ -1075,8 +1076,10 @@ function checkStory() {
   if (!storyLive() || menus.isOpen('story')) return;
   // a Trainee grown to Job 9 on the way through Chapter 1 is called home to choose a path (not in the
   // middle of a stand)
+  const was = story.step;
   if (!stands.vigil && story.callHome(prog)) {
     const next = story.step;
+    storyScenes(was, next);
     menus.story(CALL_HOME, `${next.ch} · Called Home`, () => {
       audio.play('heart');
       menus.message(`Story: ${next.title}. ${next.goal}`);
@@ -1161,9 +1164,11 @@ const menus = new Menus(inv, prog, player, {
   raidLog: () => raidLog,
   // the Quests window: the story's step and chapters, and every quest by kind (job trials, series,
   // side quests): under way, ready to hand in, on offer (or waiting on a level), and done
+  watchChapter(ch) { const shots = chapterShots(ch); if (!shots.length) return; menus.close(); queueScene(shots); if (!sceneSafe()) menus.message('The cutscene plays once you are out of the fight.'); },
   questBook: () => {
     const s = story.step, chapters = [];
     STORY.forEach((st, i) => { let c = chapters.at(-1); if (!c || c.ch !== st.ch) chapters.push(c = { ch: st.ch, n: 0, done: 0 }); c.n++; if (i < story.i) c.done++; });
+    for (const c of chapters) c.watch = storyLive() || story.done ? chapterShots(c.ch).length > 0 && (c.done > 0 || c.ch === s?.ch) : false; // (a chapter reached: its cutscenes again)
     const main = storyLive() && s ? { ch: s.ch, title: s.title, goal: s.goal + story.progress(), where: story.directions(world.id, prog) } : null;
     const kind = (id) => (SERIES[id] || QUESTS[id].job ? 'job' : /\d+:/.test(QUESTS[id].title) ? 'series' : 'side');
     const rows = [], seen = new Set();
@@ -2708,7 +2713,7 @@ let questZone = null, questT = 0;
 let resetting = false;
 let saveWarned = false;
 function persist() {
-  if (!started || resetting) return;
+  if (!started || resetting || cine) return; // (never mid-cutscene: the hero is not where the camera is)
   const isle = raidOf(world.id), back = isle && raids.raid?.back, at = back || (isle ? boatSpot(isle) : player); // a run is never saved: back on the shore (or where they set out from)
   const ok = writeSave({ goals: goals.toJSON(), album: album.toJSON(), mvpPity: mobs.pity, story: story.toJSON(), look: player.look, visited: [...visited], keepers: [...keepers], savePoint, raidAt: raids.raidAt, raidsDone: [...raidsDone], raidLog, raidRun: raids.raid ? { id: raids.raid.id, diff: raids.raid.diff, at: raids.raid.start } : null, map: back ? back.map : isle ? isle.from : world.id, mvpAt: mobs.mvpAt, bossHp: mobs.bossSnapshot(), bossAt: mobs.bossAt, fieldAt: mobs.fieldSnapshot(), x: at.x, z: at.z, yaw: cam.yaw, dist: cam.dist, hp: player.hp, sp: player.sp, inv: inv.toJSON(), prog: prog.toJSON(), quests: quests.toJSON(), hotbar: hotbar.toJSON(), time: dayNight.t });
   writeStorage(inv.chest.toJSON());
@@ -2847,7 +2852,8 @@ function cineShot(s) {
   mobs.update(0.01, CINE_HERO); // (a boss's time come: the Fire Giant appears)
   const jarl = () => mobs.list.find((m) => m.type === 'jarl' && m.alive);
   const near = mobs.list.find((m) => m.alive && m.type === 'wisp') || mobs.list.find((m) => m.alive), field = near ? { x: near.x, z: near.z } : { x: 32, z: 32 }; // (where something moves)
-  const focus = { fire: () => ({ x: 32, z: 32 }), field: () => field, hero: () => player, jarl: () => jarl() || { x: 32, z: 40 } }[s.focus];
+  const npc = typeof s.focus === 'string' && s.focus.startsWith('npc:') && NPCS[s.focus.slice(4)], at = typeof s.focus === 'object' && s.focus;
+  const focus = npc ? () => npc : at ? () => at : { fire: () => ({ x: 32, z: 32 }), field: () => field, hero: () => player, jarl: () => jarl() || { x: 32, z: 40 } }[s.focus];
   cine = { focus, dist: s.dist, pitch: s.pitch, spin: s.spin, side: 0 };
   cam.yaw = s.yaw;
   const f = focus();
@@ -2865,6 +2871,42 @@ function playIntro(done) {
     dayNight.t = 0.04;
     cam.yaw = 0; cam.dist = 12;
     done();
+  });
+}
+
+// ---------- the story's cutscenes in the middle of the game (scenes.js CHAPTER_SHOTS, STEP_SHOTS, SECRET_SHOTS) ----------
+// queued as the story reaches them, and played once the hero is out of a fight (not in a stand, a raid or a
+// warp, no monster on their heels). The shots may be on other maps: afterwards the hero is back where they
+// stood, the clock and the camera as they were, and no land seen only in a cutscene counts as walked
+const sceneQueue = [];
+function queueScene(shots, then) { if (shots?.length) sceneQueue.push({ shots, then }); else then?.(); }
+// the story moved from step s to the next: its big moment, then the next chapter's opening
+function storyScenes(s, next) {
+  if (STEP_SHOTS[s?.id]) queueScene(STEP_SHOTS[s.id]);
+  const ch = (st) => st?.ch.split(':')[0];
+  if (next && ch(next) !== ch(s) && CHAPTER_SHOTS[ch(next)]) queueScene(CHAPTER_SHOTS[ch(next)], () => menus.message(`Story: ${next.title}. ${next.goal}`));
+}
+const sceneSafe = () => !cine && !warping && player.state === 'normal' && !menus.isOpen('story') && !stands.vigil && !raids.raid && !raidOf(world.id)
+  && !mobs.list.some((m) => m.alive && (m.state === 'chase' || m.angry > 0) && Math.hypot(m.x - player.x, m.z - player.z) < 14);
+// a chapter's cutscenes, to watch again from the Quests window: its opening, and the big moments the hero has passed
+function chapterShots(ch) {
+  const steps = STORY.map((st, i) => [st, i]).filter(([st]) => st.ch === ch);
+  return [...(ch === 'Prologue' ? INTRO_SHOTS : CHAPTER_SHOTS[ch.split(':')[0]] || []), ...steps.filter(([st, i]) => i < story.i && STEP_SHOTS[st.id]).flatMap(([st]) => STEP_SHOTS[st.id])];
+}
+function tickScenes() { if (sceneQueue.length && sceneSafe()) { const q = sceneQueue.shift(); playScene(q.shots, q.then); } }
+function playScene(shots, then) {
+  const back = { map: world.id, x: player.x, z: player.z, t: dayNight.t, yaw: cam.yaw, dist: cam.dist, walked: new Set(visited) };
+  menus.close(); bigmap.close?.(); player.stop(); stopNav();
+  persist(); // (saved where the hero stands, before the shots move anything)
+  document.body.classList.add('cinema');
+  playCutscene(shots, cineShot, () => {
+    cine = null;
+    document.body.classList.remove('cinema');
+    for (const v of [...visited]) if (!back.walked.has(v)) visited.delete(v);
+    if (world.id !== back.map || Math.hypot(player.x - back.x, player.z - back.z) > 0.01) enterMap(back.map, null, back);
+    dayNight.t = back.t; dayNight.update(0, 0);
+    cam.yaw = back.yaw; cam.dist = back.dist;
+    then?.();
   });
 }
 
@@ -2901,12 +2943,12 @@ function frame() {
 
   const b = camBasis();
   // windows never pause the game, like Ragnarok
-  for (const w of ['items', 'equip', 'skills', 'status', 'raids', 'journal', 'settings', 'album', 'goals']) if (input.tapped(w) && started) { menus.toggle(w); if (menus.isOpen(w)) story.flags[`opened_${w}`] = true; } // (a story step may ask for a window)
-  if (input.tapped('attack') && started) attackNow();
+  for (const w of ['items', 'equip', 'skills', 'status', 'raids', 'journal', 'settings', 'album', 'goals']) if (input.tapped(w) && started && !cine) { menus.toggle(w); if (menus.isOpen(w)) story.flags[`opened_${w}`] = true; } // (a story step may ask for a window)
+  if (input.tapped('attack') && started && !cine) attackNow();
   if (input.tapped('hudfold') || input.tapped('hudmenu')) { setFold(!folded); audio.play('ui'); }
   if (input.tapped('close')) { if (bigmap.open) bigmap.close(); else menus.close(); }
   bigmap.update(dt);
-  const live = started;
+  const live = started && !cine; // (a story cutscene: the world goes on, the hero waits)
   const clicks = input.takeClicks();
   if (live) for (const c of clicks) tap(c.x, c.y);
   if (live) holdWalk(dt);
@@ -2920,14 +2962,14 @@ function frame() {
   hudTick(dt);
   goalTick(dt);
   if (!started && !cine) cam.yaw += dt * 0.05; // slow orbit behind the title screen
-  if (!started && cine) mobs.update(dt, CINE_HERO); // (the cutscene's world goes on)
+  if (cine) mobs.update(dt, CINE_HERO); // (the cutscene's world goes on)
   mobs.cam = b;
   allies.cam = b;
   if (live) mobs.update(dt, player);
   if (live) burnTick(dt);
   if (live) matchupHint();
   if (live) allies.update(dt, player, mobs, player.goal?.mob || player.cast?.target);
-  if (live) dayNight.update(dt, t); else if (!started) dayNight.update(0, t);
+  if (live) dayNight.update(dt, t); else dayNight.update(0, t);
   world.update(dt, t);
   villagers.update(dt, player, b);
   if (live) fx.update(dt);
@@ -2936,11 +2978,13 @@ function frame() {
   if (live) { tickVigil(dt); tickStorySpawn(); tickStorySearch(dt); }
   if (live) tickRaid(dt);
   if (live) tickPets(dt);
+  if (live) tickScenes();
   dressPeople();
   tickAura(dt, t, b);
   updateCastBar();
   hotbar.update();
-  world.updateOcclusion(player.x, player.z, b, player.goal?.mob?.alive ? player.goal.mob : null);
+  const seen = cine?.focus() || player; // (a cutscene: what hides its focus fades, not what hides the hero)
+  world.updateOcclusion(seen.x, seen.z, b, !cine && player.goal?.mob?.alive ? player.goal.mob : null);
 
   if (cine) { // a cutscene's shot, or the hero's making: the camera frames its own point
     const f = cine.focus(), up = cine.up || 0; // (side: to the screen's right, so the focus sits left; up: toward the camera, so it sits high)
@@ -3247,4 +3291,4 @@ if (go || toSelect) { title.classList.remove('wait'); bootGone(); } else {
   addEventListener('keydown', tap);
 }
 
-window.__aria = { scene, renderer, lib, MAPS, settings, album, goals, warp, enterMap, useSkill, useItem, story, SPOTS, player, world, cam, camera, mobs, allies, fx, inv, prog, quests, villagers, menus, hotbar, dayNight, audio, stats: world.stats, raid: () => raids.raid, raidAt: () => raids.raidAt, raidGo, raidLog: () => raidLog, storyDone, savePoint: () => savePoint, keepers, gainExp };
+window.__aria = { scene, renderer, lib, MAPS, settings, album, goals, warp, enterMap, useSkill, useItem, story, SPOTS, player, world, cam, camera, mobs, allies, fx, inv, prog, quests, villagers, menus, hotbar, dayNight, audio, stats: world.stats, raid: () => raids.raid, raidAt: () => raids.raidAt, raidGo, raidLog: () => raidLog, storyDone, queueScene, chapterShots, cineShot, cine: () => cine, visited, savePoint: () => savePoint, keepers, gainExp };

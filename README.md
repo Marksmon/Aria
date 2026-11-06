@@ -1477,6 +1477,13 @@ A hero who finished a saga picks up at the next chapter. No MVP or mini-boss is 
 kings and the rest wait as optional fights for the strongest (in the last stand the Giant only rains fire: he can't be
 fought there). The Sphinx's Halls and Yggdrasil stay secrets the story walks round, open to whoever finds the way.
 
+**Cutscenes.** Every chapter opens with a short cutscene of its own lands, and the story's big moments get
+one too: the Giant turning in his sleep, the end of each saga, Torvald's flight, the Giant sinking back into
+Ember Hill and, at the very end, every city of the story at peace. Opening the Sphinx's and the World Tree's
+hidden ways shows what waits beyond. A cutscene waits until no monster is on your heels, and afterwards you
+are back where you stood. Skip ends one; **▶ Watch** beside a chapter in the Quests window plays its
+cutscenes again.
+
 The quest list folds away with a tap on its title bar and scrolls when it is long.
 
 ## People and quests

@@ -13,6 +13,18 @@ The draft, as approved: talk, visit, kill (a monster's kin, never a boss: the ow
 search, defend, survive, deliver. Levels follow the map: the second saga ends at about Base 55, the World
 Tree's Hollows are Base 45–75 and the Sphinx's Halls 65–99.
 
+## Cutscenes and the ending (November 2026)
+
+The owner asked for cutscenes and for the story to be finished in the first five cities (a new main story comes
+with the late-game cities). Every chapter now opens with a cutscene (`scenes.js` `CHAPTER_SHOTS`), and the big
+beats have their own (`STEP_SHOTS`: `emberhill`, `rekindled`, `twofires`, `unmasked`, `lastring`, `goldring`; and
+`SECRET_SHOTS` for The Sphinx's Riddle 6 and The World Tree 6). The twist stays Torvald's unmasking, now shown:
+his empty workshop, the recarved Watcher, and his four fires flaring on Ember Hill. Halvard's last lines no longer
+leave the "someone taught Torvald" thread open: the jotnar sleep long with every ring whole, and the ending
+cutscene walks through Eldrun, Steinborg, Galdrheim, Veidheim and Rytingborg at peace, ending on the title card
+(the game never says "Part One"). When the fifth early city comes, its chapter goes before `goldring` and a
+shot of it joins the ending.
+
 ## Where the story stands
 
 Chapter 8 ends with the goblins' backward fire-ring broken and one rune-stone of it in Vigdis's hands: "cut

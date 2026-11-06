@@ -203,6 +203,16 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   the Sphinx's and the World Tree's series stay secret (the story searches rotted runestones instead); the climax,
   The Last Fire-Ring, is a 120 s stand under the Giant's Meteor Rain (`meteors` on a survive step); the keepsake is
   Torvald's Chisel. A story `search` step finds spots on any map by walking over them (`tickStorySearch`).
+- **The story's shape** (the owner's call, November 2026): the main story is told in the 5 early-game cities and
+  ends there, closed (Halvard's last lines leave no loose thread; the game never calls it "Part One"). The fifth
+  city's chapter goes before the ending (`goldring` stays last). The late-game cities get a new main story of
+  their own later.
+- **Story cutscenes** (the owner's call, `scenes.js`, played by `main.js` `playScene`): every chapter opens with
+  one (`CHAPTER_SHOTS`, keyed by the chapter's number), the big moments follow their step (`STEP_SHOTS`: the
+  Giant stirring, each saga's end, Torvald unmasked, the Giant sinking, the ending), and the secret series'
+  hidden ways open with one (`SECRET_SHOTS`). Shots may be on any map; the hero is put back where they stood
+  (no land counts as walked), and a scene waits until no monster is on their heels. The Quests window's Main
+  tab plays a chapter's again (▶ Watch). A new chapter gets an opening (a test checks it).
 - **Quests:** side quests and job trials can be quit from the Quest View; the main story quest
   can never be quit.
 - **EXP rates:** battles pay x4 (`RATES`: monsters, mini-bosses, MVPs, raids); quests pay x2
