@@ -7,7 +7,7 @@ import { MOB_DEFS, ORE_DROPS } from '../src/mobs.js';
 import { MAPS } from '../src/world.js';
 
 const { ITEMS, RECIPES, PRICES, SHOPS } = await load('items');
-const { QUESTS, NEXT } = await load('quests');
+const { QUESTS, NEXT, NPCS } = await load('quests');
 const { STORY } = await load('story');
 after(close);
 
@@ -69,6 +69,18 @@ test('the story: unique step ids, real monsters, items and maps', () => {
   const ids = STORY.map((s) => s.id);
   assert.equal(new Set(ids).size, ids.length, 'story ids are unique');
   for (const s of STORY) check(`story ${s.id}`, s);
+});
+
+test('the story: its people exist, its searches and stands are on real maps, and no step needs a boss', () => {
+  for (const s of STORY) {
+    if (s.npc) assert.ok(NPCS[s.npc], `story ${s.id}: npc ${s.npc}`);
+    for (const p of s.spots || []) assert.ok(MAPS[p.map] && p.x > 3 && p.x < 61 && p.z > 3 && p.z < 61, `story ${s.id}: spot ${JSON.stringify(p)}`);
+    if (s.kind === 'search') assert.ok(s.spots?.length && s.thing, `story ${s.id}: a search needs spots and a thing`);
+    if (s.kind === 'survive') assert.ok(s.at && s.secs > 0 && MAPS[s.map], `story ${s.id}: a stand needs a spot, a time and a map`);
+    if (s.meteors) assert.ok(s.meteors.hp > 0 && s.meteors.hp < 0.25 && s.meteors.every >= 5, `story ${s.id}: Meteor Rain stays survivable`);
+    const kin = [s.mob, s.mobs, s.spawn?.mob, s.heralds?.early, s.heralds?.late].flat().filter(Boolean);
+    for (const m of kin) assert.ok(!MOB_DEFS[m].boss && !MOB_DEFS[m].mvp, `story ${s.id}: ${m} is a boss (the owner's rule: no story step needs one)`);
+  }
 });
 
 test("an item's 'from' text names real droppers at their real rates", () => {

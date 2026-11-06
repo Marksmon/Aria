@@ -79,7 +79,7 @@ export class Villagers {
         this.groups[map].add(ps, pshadow);
         where.addSolid(px, pz, 0.3);
       }
-      Object.assign(v, { y, h, art, mat, s, mark, tag });
+      Object.assign(v, { y, h, art, mat, s, mark, tag, shadow });
     }
     if (this.kindOf) this.setMarks(this.kindOf);
   }
@@ -96,7 +96,7 @@ export class Villagers {
     this.kindOf = kindOf;
     for (const v of this.list) {
       if (!v.mark) continue; // not stood on their map yet
-      const k = kindOf(v.id);
+      const k = this.away?.(v.id) ? null : kindOf(v.id);
       v.mark.visible = !!k;
       if (k) v.mark.material.map = this.lib.marks[k];
     }
@@ -105,6 +105,10 @@ export class Villagers {
   update(dt, player, cam) {
     for (const v of this.list) {
       if (v.map !== this.map || !v.s) continue;
+      const gone = !!this.away?.(v.id); // (the story has taken them away: main.js AWAY)
+      v.s.visible = !gone;
+      if (v.shadow) v.shadow.visible = !gone;
+      if (gone) { v.mark.visible = false; continue; }
       v.t += dt;
       const dx = player.x - v.x, dz = player.z - v.z, d = Math.hypot(dx, dz);
       v.face = d < NOTICE && d > 0.01 ? { x: dx / d, z: dz / d } : { x: 0, z: 1 };

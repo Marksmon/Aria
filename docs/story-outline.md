@@ -1,7 +1,15 @@
-# Story outline: Chapters 9–12, the third saga (draft for the owner's OK)
+# Story outline: Chapters 9–12, the third saga (in the game, November 2026)
 
-Nothing here is in the game yet. Once the owner approves (or changes) it, each chapter becomes steps in
-`src/story.js` like the ones before: talk, visit, kill (a monster's kin, never a boss: the owner's rule),
+The owner's answers: the rune-cutter is **Torvald**; the World Tree stays **secret** (Chapter 10 searches rotted
+runestones instead); the climax is **120 s with the Giant's Meteor Rain**; the keepsake is **Torvald's Chisel**.
+All of it is in `src/story.js` (steps `sunmark` to `goldring`), with a new step kind, `search` (spots on any map,
+found by walking over them: `main.js tickStorySearch`), and `meteors` on a survive step (`tickVigil`). Torvald is
+gone from Galdrheim after `unmasked` (`main.js AWAY`). Where the game differs from the draft below: Chapter 11
+opens with Brynja (a talk, not a visit: the hero is already in Galdrheim), the rune-spring stand is in Fen Shore
+(towns are safe ground, where monsters don't fight), Chapter 12's heralds are Ember Hill's own Beetles and Wisps,
+and the chisel is found in the ash (a search) before the last talk. Meteor Rain costs 12% of Max HP a circle.
+
+The draft, as approved: talk, visit, kill (a monster's kin, never a boss: the owner's rule),
 search, defend, survive, deliver. Levels follow the map: the second saga ends at about Base 55, the World
 Tree's Hollows are Base 45–75 and the Sphinx's Halls 65–99.
 
@@ -100,11 +108,3 @@ title of the story's end in the Quests window.
   as a monster: a scene piece, like the cutscene's) and his Meteor Rain falling round the circle.
 - Torvald leaves Galdrheim after Chapter 11 (his quests are done or hidden once unmasked).
 - No change to the Fire Giant MVP, the dungeons, or any boss.
-
-## Questions for the owner
-
-1. The rune-cutter: **A. Torvald** (recommended), B. Mother Hulda, or C. a new figure?
-2. Chapter 10, step 4: put the World Tree's Hollows in the story (the series becomes a step), or keep the
-   series secret and give the story its own way (the rotted runestones)?
-3. The climax: 120 s, the Giant's Meteor Rain on the hero, as outlined? Or shorter, or with no meteors?
-4. The keepsake at the end: Torvald's Chisel (a modest accessory), something else, or none?

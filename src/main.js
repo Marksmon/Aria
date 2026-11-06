@@ -1325,6 +1325,9 @@ function refreshQuests() {
   else if (map === world.id && s.spawn) { // a story monster (the Gel Thief): the ring and the arrow follow it
     const m = mobs.list.find((o) => o.story && o.type === s.spawn.mob && o.alive);
     ui.goal = m ? { get x() { return m.x; }, get z() { return m.z; }, label: m.def.name, mob: true } : null;
+  } else if (map === world.id && s.kind === 'search') { // the nearest thing still to be found here
+    const sp = story.toFind().filter((p) => p.map === world.id).sort((a, b) => Math.hypot(a.x - player.x, a.z - player.z) - Math.hypot(b.x - player.x, b.z - player.z))[0];
+    if (sp) ui.goal = { x: sp.x, z: sp.z, label: s.thing };
   } else if (map === world.id && s.at) ui.goal = { x: s.at.x, z: s.at.z, label: s.kind === 'survive' ? 'Here' : '' };
   else if (map && map !== world.id) { const p = route(world.id, map); if (p) ui.goal = { x: p.x, z: p.z, label: ZONE_NAMES[p.to] }; }
 }
@@ -1507,7 +1510,47 @@ function tickVigil(dt) {
     fx.puff(s.at.x, y + 0.2, s.at.z, 2);
     cam.shake = 0.3;
   }
+  // the Giant's Meteor Rain (meteors): red circles round the hero, the first where they stand
+  const M = s.meteors;
+  if (M && vigil.t >= (vigil.metAt ??= M.first || 5) && vigil.t < s.secs - 2) {
+    vigil.metAt += M.every;
+    const map = world.id, run = vigil;
+    for (let i = 0; i < M.n; i++) {
+      const a = Math.random() * Math.PI * 2, r = i ? 1.6 + Math.random() * 2.6 : 0;
+      const x = player.x + Math.cos(a) * r, z = player.z + Math.sin(a) * r, wait = M.wind + i * 0.35;
+      if (!world.walkable(x, z)) continue;
+      fx.warn(x, z, M.r, wait);
+      setTimeout(() => {
+        if (world.id !== map || vigil !== run) return;
+        const gy = world.heightAt(x, z);
+        fx.puff(x, gy + 0.2, z, M.r * 1.2);
+        fx.sparkle(x, gy + 0.3, z, '#ff7a2a', 14);
+        audio.play('hit');
+        if (Math.hypot(player.x - x, player.z - z) <= M.r + 0.3 && player.canBeHit() && player.state !== 'down') { cam.shake = 0.3; player.takeDamage(Math.max(1, Math.round(player.maxHp * M.hp)), x, z); }
+      }, wait * 1000);
+    }
+    if (vigil.t < M.every + 6) fx.number(player.x, overHead(player, 1.9), player.z, 'Meteor Rain!', 'skill');
+  }
   if (vigil.t >= s.secs) { story.flag(s.id); endVigil(); }
+}
+
+// ---------- a story search (story.js kind 'search'): what is still to be found glints gold, and is found by
+// walking over it; the spots may be on different maps ----------
+let storySearchT = 0;
+function tickStorySearch(dt) {
+  const s = story.step;
+  if (!storyLive() || s?.kind !== 'search' || warping) return;
+  if ((storySearchT -= dt) <= 0) {
+    storySearchT = 0.6;
+    for (const p of story.toFind()) if (p.map === world.id && Math.hypot(p.x - player.x, p.z - player.z) < 26) fx.sparkle(p.x, world.heightAt(p.x, p.z) + 0.4, p.z, '#ffe37a', 4);
+  }
+  const got = story.onSearch(world.id, player.x, player.z);
+  if (!got) return;
+  fx.sparkle(got.spot.x, world.heightAt(got.spot.x, got.spot.z) + 0.6, got.spot.z, '#ffe37a', 16);
+  audio.play('pickup');
+  menus.message(`${s.verb || 'Found'}: ${s.thing} ${got.n}/${got.of}`);
+  refreshQuests();
+  persist();
 }
 
 // ---------- a story step's own monster (spawn: { mob, at }): there whenever the hero is on its map ----------
@@ -1809,7 +1852,7 @@ const storyLive = () => !!story.flags.intro && !story.done; // after the opening
 // a step is done: its lines play, then the reward, then the next step is announced
 function storyDone() {
   const s = story.advance();
-  const say = typeof s.say === 'function' ? s.say(story.flags, prog) : s.say; // (a step's lines may depend on how it went)
+  const say = typeof s.say === 'function' ? s.say(story.flags, prog, quests) : s.say; // (a step's lines may depend on how it went)
   menus.story(say || [], `${s.ch} · ${s.title}`, () => {
     if (s.reward) giveReward(s.reward);
     audio.play('heart');
@@ -2304,6 +2347,10 @@ const portraits = {};
 menus.portrait = (id) => (id === 'player' ? (portraits[`${prog.job}|${player.look.body}|${jobArt().dressed}`] ||= jobArt().anims.down.idle[0].image.toDataURL())
   : (portraits[id] ||= lib.villagers[id].loaded ? lib.villagers[id].anims.down.idle[0].image.toDataURL() : ''));
 // things in camp and town you tap to use: the player walks over, then it opens. h = height on screen
+// someone the story has taken off the map (Torvald, once unmasked: story.js 'unmasked')
+const AWAY = { torvald: 'unmasked' };
+const awayNow = (npc) => AWAY[npc] && STORY.findIndex((st) => st.id === AWAY[npc]) < story.i;
+villagers.away = awayNow;
 const SPOTS = [
   { map: 'camp', ...world.camp.fire, label: 'Campfire', h: 0.9, run: () => menus.message('A warm fire. Crafting is done in Steinborg now: Gunnar forges gear, Ragna brews usables.') },
   { map: 'camp', ...world.camp.chest, label: 'Storage', h: 0.8, run: () => menus.show('chest') },
@@ -3562,7 +3609,7 @@ function pick(cx, cy) {
   for (const m of mobs.list) if (m.alive) consider({ mob: m }, m.x, m.sprite.position.y, m.sprite.scale.y * 0.8, m.z, 0.8);
   for (const p of fx.pickups) consider({ item: p }, p.x, p.s.position.y, 0.5, p.z);
   // people are picked at their feet, middle and the ! or ? bubble over their head
-  for (const sp of SPOTS) if (sp.map === world.id) consider({ spot: sp }, sp.x, world.heightAt(sp.x, sp.z), sp.h, sp.z, 1, sp.npc ? [0.15, 0.55, 1.12] : undefined);
+  for (const sp of SPOTS) if (sp.map === world.id && !(sp.npc && awayNow(sp.npc))) consider({ spot: sp }, sp.x, world.heightAt(sp.x, sp.z), sp.h, sp.z, 1, sp.npc ? [0.15, 0.55, 1.12] : undefined);
   return best;
 }
 function tap(cx, cy) {
@@ -3897,7 +3944,7 @@ function frame() {
   if (live) fx.update(dt);
   if (live) { naturalRegen(dt); tickSkills(dt); checkPortals(); tickNav(); tickQuestWorld(dt); }
   if (live) tickWading(dt);
-  if (live) { tickVigil(dt); tickStorySpawn(); }
+  if (live) { tickVigil(dt); tickStorySpawn(); tickStorySearch(dt); }
   if (live) tickRaid(dt);
   if (live) tickPets(dt);
   dressPeople();

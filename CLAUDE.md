@@ -194,6 +194,11 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   big with many roots (the owner's call: great roots with branches, small ones breaking the ground all round).
   Ratatoskr drops Ratatoskr's Tail (Wings, 2%: one piece, not a pair, `SINGLE` in `wingart.js`, its runes pulsing,
   a swish at rest). Its monsters are painted in code in `src/roots.js`, every one with a design of its own (the owner's call).
+- **The story's third saga** (Chapters 9–12, Base 55–75, `story.js` `sunmark`–`goldring`; the owner's calls): the
+  rune-cutter is Torvald the Runecarver, unmasked in Chapter 11 and gone from Galdrheim after (`AWAY` in `main.js`);
+  the Sphinx's and the World Tree's series stay secret (the story searches rotted runestones instead); the climax,
+  The Last Fire-Ring, is a 120 s stand under the Giant's Meteor Rain (`meteors` on a survive step); the keepsake is
+  Torvald's Chisel. A story `search` step finds spots on any map by walking over them (`tickStorySearch`).
 - **Quests:** side quests and job trials can be quit from the Quest View; the main story quest
   can never be quit.
 - **EXP rates:** battles pay x4 (`RATES`: monsters, mini-bosses, MVPs, raids); quests pay x2

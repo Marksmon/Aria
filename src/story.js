@@ -17,11 +17,15 @@
 //   job2  - take a second job              keeper - sign a second Keeper's ledger
 //   equip - wear an item (item)            accept - take any quest from someone
 //   window - open a window (window: its id)
+//   search - find things (spots: [{ map, x, z }], thing, verb): each is found by walking over it (main.js
+//            tickStorySearch), and may be on a map of its own; the tracker leads to the next one
 // kill steps may name one monster (mob) or several (mobs: any of them counts), and may bring their own
 // (spawn: { mob, at }: a story monster there whenever the hero is on the map: main.js tickStorySpawn).
 // A line may be a function of the story's flags, and carry options: { shake, sound } as it shows, or
 // { choices: [[label, key], ...] } to ask the hero (the Seeress's reading: CALLINGS, callingOf).
-// A step's say may be a function (flags, prog) of how it went.
+// A step's say may be a function (flags, prog, quests) of how it went.
+// A survive step may rain fire on the hero (meteors: { every, n, r, wind, hp }: n red circles round them
+// every `every` s, each bursting `wind` s later for `hp` of their Max HP: main.js tickVigil).
 // say: [[speaker npc id, or null for the narrator, line], ...] shown when the step completes.
 // map: where it happens, for the directions (talk steps use the speaker's map).
 import { NPCS } from './quests.js';
@@ -361,6 +365,151 @@ export const STORY = [
       ['bram', 'But a hand that cuts runes backwards is still out there. Rest while you can, hero of Eldrun.'],
       [null, 'The Waking Fire: the end of the second saga. The Kobold King in Coal Pit and the Goblin King in Serpent Wood still hold their courts, for anyone strong enough to face them.']],
     reward: { xp: 60000, perz: 50000, items: { hard_ore: 5, armor_ore: 5 } } },
+
+  // ---------- Chapter 9: the eye in the sand (about Base 55-60) ----------
+  // the third saga (docs/story-outline.md): the backward rune-stone's second mark leads south. The rune-cutter is
+  // Torvald (the owner's pick), unmasked in Chapter 11. No step needs a boss, and the Sphinx's and the World
+  // Tree's secret series stay secret: the story walks round them
+  { id: 'sunmark', ch: 'Chapter 9: The Eye in the Sand', title: 'A Sun Over Sand', kind: 'talk', npc: 'vigdis', goal: 'Archmage Vigdis has read the backward rune-stone (Galdrheim)',
+    hint: 'The third saga: about Base Level 55 and up.',
+    say: [['vigdis', 'The stone has spoken, a little. Under the backward runes is a second mark, cut small: a sun over sand.'],
+      ['vigdis', 'Whoever taught the goblins did not stop at Serpent Wood. There is another ring, far to the south, in the desert past Rytingborg.'],
+      ['vigdis', 'Thora the Caravan Master knows every road in those sands. Ask her what her drivers have seen.']],
+    reward: { xp: 40000 } },
+  { id: 'caravans', ch: 'Chapter 9: The Eye in the Sand', title: 'The Missing Caravans', kind: 'talk', npc: 'thora', goal: 'Ask Thora the Caravan Master in Rytingborg what her drivers have seen',
+    say: [['thora', 'Seen? Three caravans gone in a month, on the Pyramid road. Wagons, mules, drivers. The scorpions came up out of the sand like they were called.'],
+      ['thora', 'And the one driver who walked home swears there was a man on the dunes before the scorpions came. Robed, with a staff, drawing in the sand with it.'],
+      ['thora', 'Clear the scorpions off the road round the Pyramid, and I will believe the road can be ridden again.']],
+    reward: { xp: 40000, perz: 5000 } },
+  { id: 'roadscorpions', ch: 'Chapter 9: The Eye in the Sand', title: 'The Pyramid Road', kind: 'kill', mob: 'scorpion', n: 20, map: 'scorpion', goal: 'Defeat 20 Sand Scorpions on the Pyramid road (Scorpion Sands)',
+    hint: 'Sand Scorpions of level 61 poison what they sting: a Green Herb cures it. The Rainbow Runner roams the sands too: you need not fight it.',
+    say: [[null, 'The last scorpion curls up in the sand. Where it fell, the dune is scored with lines: a rune, cut backwards, glinting like a Watcher stone.'],
+      [null, 'There will be more. Follow the glint across the sands.']],
+    reward: { xp: 120000, perz: 12000, items: { potion3: 10 } } },
+  { id: 'sandrunes', ch: 'Chapter 9: The Eye in the Sand', title: 'Runes in the Dunes', kind: 'search', thing: 'Backward rune', verb: 'Rubbing taken',
+    spots: [{ map: 'dunes', x: 20, z: 20 }, { map: 'scorpion', x: 44, z: 44 }, { map: 'desert', x: 40, z: 20 }],
+    goal: 'Find the three backward runes cut into the sands: one in the Cactus Dunes, one in Scorpion Sands, one in the Great Desert',
+    hint: 'They glint gold in the sand. Walk over each to take a rubbing.',
+    say: [[null, 'Three rubbings, and the same hand in every one: deep, sure cuts, each rune turned on its head. Whoever did this knows the old runes better than any goblin.'],
+      [null, 'Laid side by side, the three make a ring, and the ring\'s middle is a place in the deep desert where nothing stands at all. Old Gunnhild in Rytingborg knows the desert\'s stories.']],
+    reward: { xp: 120000 } },
+  { id: 'gunnhildtale', ch: 'Chapter 9: The Eye in the Sand', title: 'What Sleeps in the Desert', kind: 'talk', npc: 'gunnhild', goal: 'Show the rubbings to Old Gunnhild in Rytingborg',
+    say: (flags, prog, q) => [['gunnhild', 'A ring with nothing in the middle? Oh, there is something in the middle, dear. There is a face under that sand, older than my grandmother\'s grandmother.'],
+      ['gunnhild', q?.done?.includes('sphinx6') ? 'But you know that. You have seen it yourself, with the eye set in it. Then you know what it keeps.' : 'A stone face as big as a hill, with eyes that never open. The stories say it keeps something. They never say what.'],
+      ['gunnhild', 'Someone is cutting a ring round it. Not to wake the face, I think. To wake what it keeps. Go and tell your Archmage.']],
+    reward: { xp: 60000 } },
+  { id: 'prisons', ch: 'Chapter 9: The Eye in the Sand', title: 'The Eight Prisons', kind: 'talk', npc: 'vigdis', goal: 'Bring Gunnhild\'s tale to Archmage Vigdis (Galdrheim)',
+    say: [['vigdis', 'Eight jotnar were sung into the stone, Brynja\'s books say, and they never say where. Now we know where one of them is: under a stone face in the desert, and the face is its keeper.'],
+      ['vigdis', 'The rune-cutter is not waking the Fire Giant alone. They are loosening every prison, one ring at a time.'],
+      ['vigdis', 'And Hrafn came to me last night, white as chalk. The Wolf\'s Eye flared when those runes were cut. Go to him.']],
+    reward: { xp: 120000, perz: 20000 } },
+
+  // ---------- Chapter 10: the gnawed roots (about Base 60-66) ----------
+  { id: 'wolfseye', ch: 'Chapter 10: The Gnawed Roots', title: 'The Wolf\'s Eye', kind: 'talk', npc: 'hrafn', goal: 'Find Hrafn the Stargazer in Galdrheim',
+    say: [['hrafn', 'You look up now, I hope. The Wolf\'s Eye flared the night your runes were cut, and it has not gone back. Its light falls north and east, on the old woods past Veidheim.'],
+      ['hrafn', 'Something there is wrong in a way the stars notice. Ask in Veidheim: Old Ingrid by the well has kept their seeds for sixty years.']],
+    reward: { xp: 60000 } },
+  { id: 'rotroots', ch: 'Chapter 10: The Gnawed Roots', title: 'Rot That Writes', kind: 'talk', npc: 'ingrid', goal: 'Ask Old Ingrid the Seedkeeper (by Veidheim\'s well) about the old woods',
+    say: [['ingrid', 'The Old Forest is sick, dear. The roots are rotting, and the rot does not spread like rot. It runs up the trunks backwards, in lines. Like writing.'],
+      ['ingrid', 'And the Treants have gone mad with it. They tear at anything that comes near the forest\'s heart. Stand there, and they will come for you. Someone must, if we are to see what the rot has written.']],
+    reward: { xp: 60000 } },
+  { id: 'rotheart', ch: 'Chapter 10: The Gnawed Roots', title: 'The Forest\'s Heart', kind: 'survive', map: 'oldwood', at: { x: 36, z: 22 }, secs: 60, color: '#9ad050',
+    heralds: { early: ['treant', 'treant'], late: ['treant', 'treant', 'willow'], after: 30 }, every: 12, most: 5,
+    startText: 'The rot in the roots glows a sick green as you step in among them, and every Treant in the Old Forest turns towards you, creaking. Hold the forest\'s heart!',
+    breakText: 'You left the forest\'s heart, and the maddened Treants scatter. Go back and stand among the rotten roots again.',
+    goal: 'Stand at the Old Forest\'s heart, where the rot is thickest, and hold off the maddened Treants (north of Veidheim)',
+    hint: 'Waves of Treants for 60 seconds. The Ancient Treant roams this forest too: keep clear of it.',
+    say: [[null, 'The last Treant falls still, and the green glow sinks back into the roots. Now you can read the rot: backward runes, the same hand as in the desert.'],
+      [null, 'They lead out to three old standing stones in the forest, rotted black. Find them.']],
+    reward: { xp: 150000, perz: 15000, items: { potion3: 10 } } },
+  { id: 'rotstones', ch: 'Chapter 10: The Gnawed Roots', title: 'The Rotted Stones', kind: 'search', thing: 'Rotted runestone', verb: 'Runestone read',
+    spots: [{ map: 'oldwood', x: 40, z: 34 }, { map: 'oldwood', x: 14, z: 32 }, { map: 'oldwood', x: 46, z: 48 }],
+    goal: 'Find the three rotted runestones in the Old Forest',
+    hint: 'They glint gold among the trees. Walk over each to read it.',
+    say: [[null, 'Each stone is rotted black, its runes cut backwards and filled with something that smells of old blood. Around each, the roots are gnawed, as if by teeth far bigger than any wolf\'s.'],
+      [null, 'Bjarki keeps the wolves of Veidheim. If anything in these woods has teeth like that, his beasts will know it.']],
+    reward: { xp: 150000 } },
+  { id: 'grimr', ch: 'Chapter 10: The Gnawed Roots', title: 'What the Wolf Knows', kind: 'talk', npc: 'bjarki', goal: 'Ask Bjarki the Beastmaster in Veidheim about the gnawed roots',
+    say: [['bjarki', 'Gnawed? Aye. Grimr will not go north of the forest any more. He sits at the edge and shakes, and he has stood up to a bear.'],
+      ['bjarki', 'A beast knows when something bigger is awake. There is something under the north, hero. Awake, and fed, and growing. I do not want to know its name.']],
+    reward: { xp: 80000 } },
+  { id: 'threewells', ch: 'Chapter 10: The Gnawed Roots', title: 'Three Wells', kind: 'talk', npc: 'vigdis', goal: 'Bring word of the gnawed roots to Archmage Vigdis (Galdrheim)',
+    say: [['vigdis', 'The oldest songs say the roots of the world drink from three wells. I always took it for a skald\'s way of talking. I was wrong.'],
+      ['vigdis', 'One of the three is our own rune-well, here in Galdrheim. Every rune we cut drinks from it. If the roots are rotting backwards, someone is poisoning the song at its spring.'],
+      ['vigdis', 'Rest tonight. Tomorrow we look at the well.']],
+    reward: { xp: 200000, perz: 25000 } },
+
+  // ---------- Chapter 11: the hand that cuts backwards (about Base 66-72) ----------
+  { id: 'sunkwell', ch: 'Chapter 11: The Hand That Cuts Backwards', title: 'The Sunken Crystal', kind: 'talk', npc: 'brynja', goal: 'Brynja the Lorekeeper has sent for you (Galdrheim\'s library)',
+    say: [['brynja', 'Quietly, please, even now. The rune-well\'s crystal has sunk in the night. Every rune in the city is dimming, and my books are going blank at the edges.'],
+      ['brynja', 'The well\'s spring rises outside our south gate, in Fen Shore, under the old stones by the road. Vigdis is going down to raise the crystal from there, and things are pouring out of the water. She needs someone to hold the spring while she sings.']],
+    reward: { xp: 80000 } },
+  { id: 'runespring', ch: 'Chapter 11: The Hand That Cuts Backwards', title: 'The Rune-Spring', kind: 'survive', map: 'fen', at: { x: 32, z: 14 }, secs: 60, color: '#b48aff',
+    heralds: { early: ['shadeWisp', 'shadeWisp'], late: ['shadeWisp', 'shadeWisp', 'wisp'], after: 25 }, every: 10, most: 5,
+    startText: 'Vigdis\'s song rises from the spring, and the water goes black. Dark Wisps pour out of it! Hold the spring until the crystal is raised!',
+    breakText: 'You left the spring, and Vigdis\'s song falters. Go back to the stones by the road and hold it again.',
+    goal: 'Hold the rune-spring by the road in Fen Shore (just south of Galdrheim\'s gate) while Vigdis raises the crystal',
+    hint: 'Waves of Dark Wisps for 60 seconds. Stay by the spring.',
+    say: [[null, 'The crystal rises shining out of the spring, and Galdrheim\'s runes flare back to life all at once.'],
+      ['vigdis', 'Someone cut backward runes into the well itself, from inside the city. Only a runecarver could reach it. Go to Black Wood and look at the Watchers. If I am right, I do not want to be.']],
+    reward: { xp: 250000, perz: 25000, items: { potion3: 10 } } },
+  { id: 'watchers', ch: 'Chapter 11: The Hand That Cuts Backwards', title: 'The Watchers', kind: 'search', thing: 'Watcher stone', verb: 'Watcher looked at',
+    spots: [{ map: 'deep', x: 18, z: 18 }, { map: 'deep', x: 46, z: 24 }, { map: 'deep', x: 26, z: 46 }],
+    goal: 'Look at the three Watcher stones in Black Wood (west of Galdrheim\'s woods)',
+    hint: 'They glint among the black trees. Walk over each.',
+    say: [[null, 'Two of the Watchers glow, cold and singing. The third has been recarved: every rune turned backwards, fresh chips of stone in the moss round its foot.'],
+      [null, 'And in the moss, a chisel. A runecarver\'s chisel, its handle worn smooth by one hand over many years. You have seen it before, in Galdrheim, by the Watchers\' rubbings.']],
+    reward: { xp: 250000 } },
+  { id: 'unmasked', ch: 'Chapter 11: The Hand That Cuts Backwards', title: 'The Hand That Cuts Backwards', kind: 'talk', npc: 'torvald', goal: 'Take the chisel to Torvald the Runecarver (Galdrheim)',
+    say: [['torvald', 'My chisel. I wondered where I had dropped it.', { shake: 0.2 }],
+      ['torvald', 'Yes. I taught the goblins. I cut the desert ring, and rotted the roots, and sank the crystal. I sent you after the goblins\' runes myself, to watch you look the wrong way.'],
+      ['torvald', 'Brynja\'s books say it best. The jotnar did not hate us. They simply burnt. And we caged them for it, under the stone, for being what they are.'],
+      ['torvald', 'I will not hold that cage shut any longer. My last ring is already cut, on Ember Hill, round the one who sleeps lightest. Come, if you like. You will be too late.'],
+      [null, 'He smashes a rune-stone at his feet. Fire bursts up between you, and when it falls, Torvald is gone.', { shake: 0.45, sound: 'night' }]],
+    reward: { xp: 250000, perz: 30000 } },
+  { id: 'seeress2', ch: 'Chapter 11: The Hand That Cuts Backwards', title: 'The Seeress\'s Song', kind: 'talk', npc: 'saeunn', goal: 'Tell Saeunn the Seeress in Steinborg',
+    say: [['saeunn', 'Torvald. I saw it in the runes a month ago: a carver\'s hand turned against itself. I did not want to believe it. I have known him thirty years.'],
+      ['saeunn', 'The fire-ring at Eldrun is the heart of every ring in Aria. If it burns at full while we sing, his last ring cannot hold. I will sing with Vigdis.'],
+      ['saeunn', 'Take this to Halvard: my rune-lantern. Its flame is the first fire of the ring, kept here since the settlers came. Set it in the fire-ring, and it will burn as it did then.']],
+    reward: { xp: 150000 } },
+  { id: 'lantern', ch: 'Chapter 11: The Hand That Cuts Backwards', title: 'The First Flame', kind: 'talk', npc: 'bram', goal: 'Carry Saeunn\'s rune-lantern to Elder Halvard at Eldrun Camp',
+    say: [['bram', 'The first flame... I never thought to see it. Here, into the ring with it.', { sound: 'heart' }],
+      [null, 'The fire-ring blazes up white and gold, higher than it has burnt in a hundred years. The ground of Ember Hill answers with a groan you feel in your teeth.', { shake: 0.5 }],
+      ['bram', 'He is up there, then: Torvald, and his ring. Go to Ember Hill. Vigdis and Saeunn will sing from here, through the fire. Their song will find you there.']],
+    reward: { xp: 200000, perz: 30000 } },
+
+  // ---------- Chapter 12: the last fire-ring (about Base 72-75) ----------
+  { id: 'backring', ch: 'Chapter 12: The Last Fire-Ring', title: 'The Backward Ring', kind: 'visit', map: 'ridge', goal: 'Go to Ember Hill, through Dark Dale',
+    say: [[null, 'Ember Hill is burning. A ring of four great fires blazes round the Giant\'s sleeping place, their runes cut backwards, and the ground between them splits and glows.', { shake: 0.4 }],
+      [null, 'The Giant\'s heralds dance round the fires, feeding them. Break the ring: beat its keepers until the four fires gutter out.']],
+    reward: { xp: 150000 } },
+  { id: 'ringfires', ch: 'Chapter 12: The Last Fire-Ring', title: 'Four Fires', kind: 'kill', mobs: ['beetle', 'wisp'], n: 25, map: 'ridge', goal: 'Defeat 25 of the Giant\'s heralds on Ember Hill (Beetles and Wisps) to break the four fires',
+    hint: 'Beetles and Wisps all over Ember Hill. Keep away from the Fire Giant if he roams near: this is not his fight.',
+    say: [[null, 'One by one the four fires gutter and die. But the ground does not close. In the middle of the ring, the hill heaves upward, and something vast and red begins to rise.', { shake: 0.6, sound: 'night' }],
+      [null, 'Vigdis\'s voice, from very far away: "Get into the rune circle on the hill road! We are singing. Hold it, whatever falls!"']],
+    reward: { xp: 300000, perz: 30000, items: { potion3: 20 } } },
+  { id: 'lastring', ch: 'Chapter 12: The Last Fire-Ring', title: 'The Last Fire-Ring', kind: 'survive', map: 'ridge', at: { x: 32, z: 24 }, secs: 120, color: '#ff9a4a',
+    heralds: { early: ['beetle', 'beetle', 'wisp'], late: ['beetle', 'beetle', 'wisp', 'wisp'], after: 60 }, every: 12, most: 6,
+    meteors: { every: 8, n: 3, r: 1.5, wind: 1.3, hp: 0.12 },
+    startText: 'The song rises out of the circle, and the Fire Giant half-wakes, vast as the hill itself. He cannot reach you through the song, but his fire can: Meteor Rain! Step out of the red circles, and hold the ring!',
+    breakText: 'You left the rune circle, and the song breaks. The Giant sinks back to a half-sleep... for now. Go back to the circle and begin again.',
+    goal: 'Hold the rune circle on Ember Hill\'s road for 120 seconds while the song is sung: the Giant\'s heralds come, and his Meteor Rain falls',
+    hint: 'Waves of heralds, and every few seconds red circles fall round you: step out of them. The Giant himself cannot be fought here. Bring potions.',
+    say: [[null, 'The song swells into one great note, and the Giant\'s fire bends to it. Slowly, slowly, the vast red shape sinks back into the hill, deeper than ever before.', { shake: 0.7, sound: 'heart' }],
+      [null, 'Where Torvald\'s ring stood, the fire is ash. Caught in the fire he lit, the runecarver is gone. Something glints in the ash by the circle.']],
+    reward: { xp: 600000, perz: 50000 } },
+  { id: 'ashes', ch: 'Chapter 12: The Last Fire-Ring', title: 'In the Ash', kind: 'search', thing: 'Glint in the ash', verb: 'Found',
+    spots: [{ map: 'ridge', x: 34, z: 26 }],
+    goal: 'Look at what glints in the ash beside the rune circle (Ember Hill)',
+    say: [[null, 'Torvald\'s chisel, cooled in the ash. The only thing of his the fire left.'],
+      [null, 'Elder Halvard will want to know it is over.']],
+    reward: { xp: 100000 } },
+  { id: 'goldring', ch: 'Chapter 12: The Last Fire-Ring', title: 'The Ring Burns Gold', kind: 'talk', npc: 'bram', goal: 'Return to Elder Halvard at Eldrun Camp',
+    say: [['bram', 'Look at it. The ring burns gold, as it did in the songs. He sleeps, and sleeps deep. You did that.'],
+      ['bram', 'Torvald\'s chisel... Keep it. He cut his last runes with it, and they failed. Cut better ones.'],
+      ['bram', 'But mark this, hero of Eldrun. The others are still in their stone, and someone taught Torvald his backward runes. The road goes on.'],
+      [null, 'The Last Fire-Ring: the end of the third saga, and of the story so far. The MVPs still wait across Aria, the Fire Giant among them, for anyone strong enough to end it for good.']],
+    reward: { xp: 400000, perz: 100000, items: { torvald_chisel: 1, hard_ore: 5, armor_ore: 5 } } },
 ];
 
 // the steps as they were before the Fire Giant left the story, and where those steps went
@@ -416,11 +565,24 @@ export class Story {
   }
   get done() { return this.i >= STORY.length; }
 
-  // where the current step happens
+  // where the current step happens (a search: where the next thing still to be found is)
   map(s = this.step) {
     if (!s) return null;
     if (s.kind === 'talk') return NPCS[s.npc].map || 'camp';
+    if (s.kind === 'search') return this.toFind(s)[0]?.map || null;
     return s.map || null;
+  }
+  // a search step's spots still to be found, and what was found (flags.found_<step>: their indices)
+  found(s = this.step) { return this.flags[`found_${s?.id}`] || []; }
+  toFind(s = this.step) { const f = this.found(s); return (s?.spots || []).filter((_, i) => !f.includes(i)); }
+  // the hero stands at (x, z) on a map: the spot just found, if any
+  onSearch(map, x, z) {
+    const s = this.step;
+    if (s?.kind !== 'search') return null;
+    const f = this.found(s), i = s.spots.findIndex((p, k) => !f.includes(k) && p.map === map && Math.hypot(p.x - x, p.z - z) < 1.6);
+    if (i < 0) return null;
+    this.flags[`found_${s.id}`] = [...f, i];
+    return { spot: s.spots[i], n: f.length + 1, of: s.spots.length };
   }
 
   // the tracker's line on where to go: "Head north to Moss Field"
@@ -435,6 +597,7 @@ export class Story {
   progress() {
     const s = this.step;
     if (s?.kind === 'survive') return this.count ? ` (${Math.min(this.count, s.secs)}/${s.secs} s)` : '';
+    if (s?.kind === 'search') return ` (${this.found(s).length}/${s.spots.length})`;
     return s?.kind === 'kill' ? ` (${Math.min(this.count, s.n)}/${s.n})` : '';
   }
 
@@ -454,6 +617,7 @@ export class Story {
       case 'visit': return this.flags.visit === s.map;
       case 'survive': return !!this.flags[s.id];
       case 'raid': return !!this.flags[s.id];
+      case 'search': return this.found(s).length >= s.spots.length;
       case 'stat': return Object.values(state.prog.stats).reduce((a, b) => a + b, 0) > 6;
       case 'equip': return Object.values(state.inv?.gear || {}).some((k) => k && String(k).startsWith(s.item));
       case 'accept': return Object.keys(state.quests?.active || {}).length > 0 || (state.quests?.done.length || 0) > 0;

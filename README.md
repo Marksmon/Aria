@@ -1464,10 +1464,15 @@ rings the portal to take, or the person to talk to. A purple **!** marks who the
 | 6: The Goblin War-Band | tell Ulfr · defeat 15 goblins in Burnt Wood · Archmage Vigdis reads the two coal trails |
 | 7: The Second Path | take a second job (any of the ten the hero's points open) |
 | 8: The Waking Fire | defeat 20 Fire Beetles in Ash Heath · travel to Serpent Wood · defeat 20 goblins, the keepers of the goblins' backward fire-ring · the backward rune-stone to Vigdis · home to the Elder |
+| 9: The Eye in the Sand | the rune-stone's second mark, a sun over sand · Thora the Caravan Master: caravans lost on the Pyramid road, and a robed figure drawing in the sand · defeat 20 Sand Scorpions in Scorpion Sands · **find three backward runes** cut into the Cactus Dunes, Scorpion Sands and the Great Desert (they glint gold: walk over each) · Old Gunnhild: a stone face sleeps under the sand, and it keeps something · Vigdis: eight jotnar were sung into the stone, and someone is loosening every prison |
+| 10: The Gnawed Roots | Hrafn: the Wolf's Eye flared · Old Ingrid: the Old Forest's roots rot backwards, like writing · **the Forest's Heart**: hold it for 60 seconds against the maddened Treants · find three rotted runestones in the Old Forest, their roots gnawed · Bjarki: something under the north is awake · Vigdis: the world's roots drink from three wells, and one is Galdrheim's |
+| 11: The Hand That Cuts Backwards | Brynja: the rune-well's crystal has sunk · **the Rune-Spring**: hold it in Fen Shore for 60 seconds while Vigdis raises the crystal · look at the three Watchers in Black Wood: one recarved backwards, a chisel at its foot · **Torvald the Runecarver, unmasked**: he wants the jotnar free, and vanishes in fire (he is gone from Galdrheim after this) · Saeunn will sing with Vigdis · carry her rune-lantern, the ring's first flame, to the Elder |
+| 12: The Last Fire-Ring | Ember Hill burns inside Torvald's backward ring · defeat 25 of the Giant's heralds to put out its four fires · **The Last Fire-Ring**: hold the rune circle for 120 seconds while the song is sung, the half-woken Giant's **Meteor Rain** falling round you as red circles (step out: each costs 12% of your HP) · Torvald's chisel in the ash · the ring burns gold. The keepsake: **Torvald's Chisel** (an accessory: HIT +3, KNL +2, FNS +2) |
 
-The second saga (chapters 5–8) runs from about Base 32 to Base 55. A hero who finished the first saga
-picks up at Chapter 5. No MVP or mini-boss is part of the story: the Fire Giant, the kings and the rest wait as optional fights for
-the strongest. The desert, the Sphinx's Halls and Yggdrasil lie outside the story for now, open to explore.
+The second saga (chapters 5–8) runs from about Base 32 to Base 55, the third (chapters 9–12) from about 55 to 75.
+A hero who finished a saga picks up at the next chapter. No MVP or mini-boss is part of the story: the Fire Giant, the
+kings and the rest wait as optional fights for the strongest (in the last stand the Giant only rains fire: he can't be
+fought there). The Sphinx's Halls and Yggdrasil stay secrets the story walks round, open to whoever finds the way.
 
 The quest list folds away with a tap on its title bar and scrolls when it is long.
 

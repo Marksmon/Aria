@@ -479,6 +479,8 @@ const BASE_ITEMS = {
   spore_charm:  { type: 'equip', slot: 'acc', name: 'Spore Charm',  fx: 'aspd',  icon: 'charm_spore', desc: 'A spore cap in a pouch. Its scent keeps your hands quick. +10% attack speed.' },
   shell_charm:  { type: 'equip', slot: 'acc', name: 'Shell Charm',  fx: 'block', icon: 'charm_shell', desc: 'A polished shell on a cord. It turns aside blows you never saw. 1 in 5 hits is blocked.' },
   glow_charm:   { type: 'equip', slot: 'acc', name: 'Glow Charm',   fx: 'exp',   icon: 'charm_glow', desc: 'A pinch of glow dust in a glass vial. Every lesson seems brighter. +25% experience.' },
+  // the story's keepsake (story.js 'goldring', the end of the third saga): modest, for any build that casts or shoots
+  torvald_chisel: { type: 'equip', slot: 'acc', rare: true, name: "Torvald's Chisel", hit: 3, stats: { knl: 2, fns: 2 }, desc: 'A runecarver\'s chisel, its handle worn smooth by one hand over many years, cooled in the ash of the last fire-ring. Elder Halvard said: cut better runes with it.', from: 'the story: The Last Fire-Ring' },
 };
 
 // ---------- upgraded gear: refine level, card slots and cards ----------
@@ -677,7 +679,7 @@ export const PRICES = {
   leaf_cape: 1200, travel_cloak: 2600, rune_mantle: 4500, sea_cloak: 8000, goblin_shroud: 14000,
   shell_boots: 1800, rune_slippers: 3000, iron_greaves: 5000, kobold_sandals: 9000, bear_paws: 16000,
   wisp_orb: 6000, dark_wisp: 16000, leaf_wings: 2400, fairy_wings: 12000, ember_wings: 24000, angel_wings: 40000, devil_wings: 40000,
-  sprout_charm: 700, spore_charm: 1000, shell_charm: 1000, glow_charm: 1200,
+  sprout_charm: 700, spore_charm: 1000, shell_charm: 1000, glow_charm: 1200, torvald_chisel: 20000,
   heartwood: 3000, king_pearl: 4000, gloom_heart: 5000, cinder_core: 6000, jarl_horn: 8000,
   thorn_mantle: 12000, tidebreaker: 20000, gloom_staff: 22000, cinder_greaves: 16000, jarl_mantle: 30000,
   snake_skin: 420, wolf_pelt: 460, wolf_fang: 900, willow_twig: 80, bear_claw: 560, old_bark: 120, honey: 300,
@@ -1818,6 +1820,16 @@ const PAINT = {
   charm_spore: (g) => charmIcon(g, '#a383d6', '#e3b341'),
   charm_shell: (g) => charmIcon(g, '#f2a8a0', '#cfd6de'),
   charm_glow: (g) => charmIcon(g, '#ffe37a', '#cfd6de'),
+  torvald_chisel: (g) => {
+    g.save(); g.translate(32, 32); g.rotate(-Math.PI / 4);
+    shape(g, () => g.roundRect(-5, 2, 10, 24, 4), '#8a5a32', 3);
+    for (const y of [8, 14, 20]) { g.beginPath(); g.moveTo(-5, y); g.lineTo(5, y); g.strokeStyle = '#6a4224'; g.lineWidth = 1.5; g.stroke(); }
+    shape(g, () => g.roundRect(-6, -2, 12, 6, 2), '#b08a4a', 2.5);
+    shape(g, () => { g.moveTo(-4, -2); g.lineTo(4, -2); g.lineTo(3, -22); g.lineTo(-3, -22); g.closePath(); }, '#b8bcc8', 2.5);
+    shape(g, () => { g.moveTo(-3, -22); g.lineTo(3, -22); g.lineTo(0, -28); g.closePath(); }, '#e8ecf4', 2);
+    g.restore();
+    g.fillStyle = '#ff9a4a'; for (const [x, y] of [[46, 14], [50, 22], [42, 8]]) { g.beginPath(); g.arc(x, y, 2, 0, 7); g.fill(); }
+  },
   boots: (g) => {
     shape(g, () => { g.moveTo(18, 10); g.lineTo(34, 10); g.lineTo(34, 40); g.lineTo(52, 44); g.quadraticCurveTo(56, 54, 48, 56); g.lineTo(14, 56); g.lineTo(18, 34); g.closePath(); }, '#8a5a33');
     g.beginPath(); g.moveTo(18, 20); g.lineTo(34, 20); g.strokeStyle = '#6cc4ef'; g.lineWidth = 4; g.stroke();
