@@ -116,10 +116,10 @@ export const STEP_SHOTS = {
 export const SECRET_SHOTS = {
   sphinx6: [
     { map: 'desert', time: 0.58, focus: { x: 32, z: 50 }, dist: 12, pitch: 0.5, yaw: 0.3, spin: 0.07, secs: 5.5, shake: 0.6, sound: 'night', text: 'The Sphinx Eye clicks into the obelisk, and the whole Great Desert sighs. To the south, the sand pours away like water.' },
-    { map: 'sphinx', time: 0.6, focus: { x: 32, z: 30 }, dist: 20, pitch: 0.32, yaw: 0.05, spin: 0.02, secs: 7, shake: 0.4, text: 'Beyond it rises a stone face as big as a hill, with a door in its chest that no hand has pushed in a thousand years.', card: { title: 'Sphinx Sands', sub: 'The Giant Sphinx' } },
+    { map: 'sphinx', time: 0.6, focus: { x: 32, z: 40 }, dist: 22, pitch: 0.36, yaw: 0.05, spin: 0.02, secs: 7, shake: 0.4, text: 'Beyond it rises a stone face as big as a hill, with a door in its chest that no hand has pushed in a thousand years.', card: { title: 'Sphinx Sands', sub: 'The Giant Sphinx' } },
   ],
   tree6: [
-    { map: 'oldwood', time: 0.3, focus: { x: 32, z: 10 }, dist: 11, pitch: 0.55, yaw: 3.1, spin: 0.07, secs: 5.5, shake: 0.6, sound: 'night', text: 'The seed sinks into the dark earth. Roots heave up through the moss, and to the north the old trees part.' },
+    { map: 'oldwood', time: 0.3, focus: { x: 32, z: 10 }, dist: 12, pitch: 0.62, yaw: 0.1, spin: 0.05, secs: 5.5, shake: 0.6, sound: 'night', text: 'The seed sinks into the dark earth. Roots heave up through the moss, and to the north the old trees part.' },
     { map: 'ygg', time: 0.32, focus: { x: 32, z: 36 }, dist: 20, pitch: 0.3, yaw: 0.05, spin: 0.02, secs: 7, shake: 0.4, text: 'Beyond them stands a trunk so great it fills the sky: the World Tree, Yggdrasil, its roots drinking from three wells.', card: { title: 'Yggdrasil', sub: 'The World Tree' } },
   ],
 };
