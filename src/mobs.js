@@ -60,7 +60,7 @@ export const MOB_DEFS = {
   matron: { name: 'Giant Sprout', ai: 'boss', art: 'sproutBoss', aura: '#ff9a4a', el: 'earth', boss: true, lv: 55, hp: 380000, atk: [126, 162], def: 10, vit: 25, agi: 18, dex: 120, exp: [30000, 21000], adelay: 1900, fierce: true, walk: 300, moves: [{ kind: 'throw', name: 'Seed Pod', mult: 1.5, r: 1.5 }], aggro: 5.5, chase: 12, reach: 1.3, w: 2.0, r: 0.75, heavy: true, summon: ['russet', 'russet'], summonText: 'The Giant Sprout shakes its leaves, and Red Sprouts come running!', respawn: 300, drops: [['heartwood', 1, 1, 0.3], ['thorn', 3, 5, 1], ['potion2', 1, 2, 0.5], ['thorn_mantle', 1, 1, 0.03], ['bramble_ring', 1, 1, 0.05], ['sprout_card', 1, 1, 0.01]] },
   tideKing: { name: 'King Crab', ai: 'boss', art: 'crabBoss', aura: '#5ac8ff', el: 'water', boss: true, lv: 58, hp: 350000, atk: [120, 156], def: 18, vit: 32, agi: 22, dex: 125, exp: [32000, 22400], adelay: 1900, fierce: true, walk: 200, moves: [{ kind: 'charge', mult: 1.5 }], aggro: 5.5, chase: 12, reach: 1.4, w: 2.3, r: 0.85, heavy: true, summon: ['tidecrab', 'tidecrab'], summonText: 'The King Crab clacks its claws, and Blue Crabs scuttle in!', respawn: 300, drops: [['king_pearl', 1, 1, 0.3], ['pearl', 1, 2, 0.6], ['crableg', 2, 3, 1], ['tidebreaker', 1, 1, 0.02], ['coral_shield', 1, 1, 0.05], ['crab_card', 1, 1, 0.01]] },
   gloomMother: { name: 'Giant Mushroom', ai: 'boss', art: 'mushBoss', aura: '#c87aff', el: 'shadow', boss: true, lv: 60, hp: 305000, atk: [115, 150], def: 14, vit: 40, agi: 28, dex: 130, exp: [46000, 32200], adelay: 1900, fierce: true, walk: 250, moves: [{ kind: 'throw', mult: 1.5, r: 1.8 }], aggro: 5.5, chase: 12, reach: 1.4, w: 2.2, r: 0.8, heavy: true, mdef: 30, summon: ['gloomcap', 'gloomcap'], summonText: 'The Giant Mushroom puffs, and Dark Mushrooms sprout around it!', respawn: 420, drops: [['gloom_heart', 1, 1, 0.3], ['gloom', 2, 4, 1], ['potion3', 1, 2, 0.4], ['gloom_staff', 1, 1, 0.02], ['gloom_hood', 1, 1, 0.05], ['mushroom_card', 1, 1, 0.01]] },
-  cinderLord: { name: 'Giant Beetle', ai: 'boss', art: 'beetleBoss', aura: '#ff7a2a', el: 'fire', boss: true, lv: 62, hp: 315000, atk: [153, 200], def: 22, vit: 48, agi: 32, dex: 135, exp: [48000, 33600], adelay: 1900, fierce: true, walk: 200, moves: [{ kind: 'charge', mult: 1.6 }], aggro: 5.5, chase: 12, reach: 1.5, w: 2.4, r: 0.9, heavy: true, summon: ['cinderBeetle', 'cinderBeetle'], summonText: 'The Giant Beetle roars, and Fire Beetles answer!', respawn: 480, drops: [['cinder_core', 1, 1, 0.3], ['cinder', 2, 4, 1], ['potion3', 1, 2, 0.5], ['cinder_greaves', 1, 1, 0.03], ['cinder_mail', 1, 1, 0.04], ['beetle_card', 1, 1, 0.01]] },
+  cinderLord: { name: 'Giant Beetle', ai: 'boss', art: 'beetleBoss', aura: '#ff7a2a', el: 'fire', boss: true, lv: 62, hp: 315000, atk: [148, 194], def: 22, vit: 48, agi: 32, dex: 135, exp: [48000, 33600], adelay: 1900, fierce: true, walk: 200, moves: [{ kind: 'charge', mult: 1.6 }], aggro: 5.5, chase: 12, reach: 1.5, w: 2.4, r: 0.9, heavy: true, summon: ['cinderBeetle', 'cinderBeetle'], summonText: 'The Giant Beetle roars, and Fire Beetles answer!', respawn: 480, drops: [['cinder_core', 1, 1, 0.3], ['cinder', 2, 4, 1], ['potion3', 1, 2, 0.5], ['cinder_greaves', 1, 1, 0.03], ['cinder_mail', 1, 1, 0.04], ['beetle_card', 1, 1, 0.01]] },
   // MVP boss of Ember Hill: one at a time, back 15 minutes after it falls. Its slayer gets the MVP
   // reward on top of the drops. Stomps the ground around it every few seconds (stomp: x its ATK),
   // and calls 2 Fire Wisps and 3 Fire Beetles (summon: see SUMMON_CD).
@@ -164,7 +164,7 @@ export const MOB_DEFS = {
   cobra: { name: 'Cobra', ai: 'assassin', art: 'cobra', el: 'earth', lv: 71, hp: 6000, atk: [263, 331], def: 16, vit: 46, agi: 62, dex: 115, exp: [6919, 4850], adelay: 1250, walk: 180, aggro: 5.5, chase: 9, reach: 0.9, poison: 0.2, w: 0.95, r: 0.36, drops: [['cobra_fang', 1, 1, 0.5], ['potion2', 1, 1, 0.08], ['cobra_kris', 1, 1, 0.003], ['cobra_card', 1, 1, 0.001]] },
   hallMummy: { name: 'Mummy', ai: 'tank', art: 'mummy', el: 'shadow', lv: 75, hp: 8250, atk: [277, 345], def: 25, vit: 67, agi: 24, dex: 94, exp: [8201, 5745], adelay: 1700, walk: 300, aggro: 5, chase: 8, reach: 0.85, w: 0.85, r: 0.34, drops: [['old_bandage', 1, 2, 0.6], ['potion3', 1, 1, 0.04], ['grave_wrap', 1, 1, 0.003], ['hallmummy_card', 1, 1, 0.001]] },
   lamia: { name: 'Lamia', ai: 'archer', art: 'lamia', el: 'water', lv: 78, hp: 7000, atk: [274, 342], def: 15, vit: 48, agi: 52, dex: 125, mdef: 12, exp: [9208, 6449], adelay: 1700, walk: 200, aggro: 6, chase: 9, range: 4.5, reach: 0.9, w: 1.0, r: 0.4, shot: '#9aff6a', drops: [['lamia_scale', 1, 1, 0.5], ['potion3', 1, 1, 0.05], ['serpent_staff', 1, 1, 0.002], ['lamia_card', 1, 1, 0.001]] },
-  servant: { name: "Pharaoh's Servant", ai: 'archer', art: 'servant', el: 'shadow', lv: 80, hp: 7500, atk: [294, 368], def: 17, vit: 52, agi: 35, dex: 130, mdef: 37, exp: [9939, 6955], adelay: 1900, walk: 250, aggro: 6, chase: 9, range: 5, reach: 0.85, w: 0.9, r: 0.36, shot: '#7ac8ff', drops: [['lapis_shard', 1, 1, 0.5], ['potion3', 1, 1, 0.05], ['priest_robe', 1, 1, 0.003], ['servant_card', 1, 1, 0.001]] },
+  servant: { name: "Pharaoh's Servant", ai: 'archer', support: { kind: 'shield', cd: 8, r: 6, amt: 0.25, dur: 8 }, art: 'servant', el: 'shadow', lv: 80, hp: 7500, atk: [294, 368], def: 17, vit: 52, agi: 35, dex: 130, mdef: 37, exp: [9939, 6955], adelay: 1900, walk: 250, aggro: 6, chase: 9, range: 5, reach: 0.85, w: 0.9, r: 0.36, shot: '#7ac8ff', drops: [['lapis_shard', 1, 1, 0.5], ['potion3', 1, 1, 0.05], ['priest_robe', 1, 1, 0.003], ['servant_card', 1, 1, 0.001]] },
   jackal: { name: 'Jackal Guardian', ai: 'tank', art: 'jackal', el: 'shadow', hall: true, lv: 92, hp: 9600, atk: [343, 431], def: 33, vit: 69, agi: 53, dex: 137, exp: [15187, 10629], adelay: 1400, walk: 180, aggro: 6, chase: 10, reach: 1.3, double: 0.12, w: 1.05, r: 0.42, heavy: true, drops: [['jackal_pelt', 1, 1, 0.5], ['potion3', 1, 1, 0.06], ['jackal_spear', 1, 1, 0.0025], ['jackal_card', 1, 1, 0.001]] },
   falcon: { name: 'Falcon Sentinel', ai: 'archer', art: 'falcon', el: 'wind', hall: true, lv: 97, hp: 10250, atk: [363, 455], def: 26, vit: 66, agi: 70, dex: 157, exp: [17771, 12438], adelay: 1500, walk: 150, aggro: 7, chase: 10, range: 5, reach: 1.1, w: 1.15, r: 0.42, shot: '#dff7c8', drops: [['falcon_plume', 1, 1, 0.5], ['potion3', 1, 1, 0.06], ['horus_bow', 1, 1, 0.0025], ['falcon_card', 1, 1, 0.001]] },
   sphinxCub: { name: 'Sphinx Cub', ai: 'assassin', art: 'sphinxCub', el: 'earth', lv: 83, hp: 8300, atk: [314, 396], def: 23, vit: 62, agi: 70, dex: 123, exp: [11138, 7786], adelay: 1150, walk: 130, aggro: 6.5, chase: 10, reach: 0.95, double: 0.18, w: 1.3, r: 0.45, drops: [['lion_mane', 1, 1, 0.5], ['potion3', 1, 1, 0.07], ['lion_boots', 1, 1, 0.002], ['sphinxcub_card', 1, 1, 0.001]] },
@@ -205,7 +205,7 @@ export const MOB_DEFS = {
   mossGolem: { name: 'Moss Golem', ai: 'tank', art: 'mossGolem', el: 'earth', lv: 58, hp: 5700, atk: [197, 247], def: 31, vit: 58, agi: 14, dex: 67, mdef: 11, exp: [1899, 1330], adelay: 1900, walk: 300, aggro: 5, chase: 8, reach: 1.0, w: 1.3, r: 0.5, heavy: true, drops: [['moss_clump', 1, 2, 0.6], ['potion3', 1, 1, 0.05], ['moss_mail', 1, 1, 0.003], ['mossgolem_card', 1, 1, 0.001]] },
   darkElf: { name: 'Dark Elf', ai: 'archer', art: 'darkElf', el: 'shadow', lv: 60, hp: 4250, atk: [208, 260], def: 12, vit: 35, agi: 57, dex: 114, mdef: 26, exp: [2103, 1472], adelay: 1500, walk: 150, aggro: 6.5, chase: 10, range: 5, reach: 0.9, w: 0.85, r: 0.34, shot: '#b88aff', drops: [['elven_thread', 1, 1, 0.5], ['potion3', 1, 1, 0.05], ['elven_bow', 1, 1, 0.0025], ['darkelf_card', 1, 1, 0.001]] },
   greatStag: { name: 'Great Stag', ai: 'assassin', art: 'greatStag', el: 'wind', lv: 63, hp: 5450, atk: [226, 285], def: 18, vit: 51, agi: 58, dex: 95, exp: [4885, 3415], adelay: 1300, walk: 130, aggro: 6, chase: 10, reach: 1.1, double: 0.15, w: 1.5, r: 0.55, drops: [['stag_antler', 1, 1, 0.5], ['potion3', 1, 1, 0.06], ['stag_cape', 1, 1, 0.0025], ['greatstag_card', 1, 1, 0.001]] },
-  dryad: { name: 'Dryad', ai: 'archer', art: 'dryad', el: 'earth', lv: 66, hp: 4950, atk: [236, 295], def: 14, vit: 43, agi: 49, dex: 107, mdef: 29, exp: [5616, 3933], adelay: 1600, walk: 200, aggro: 6, chase: 9, range: 5, reach: 0.9, w: 0.9, r: 0.36, shot: '#c8ff9a', drops: [['dryad_leaf', 1, 1, 0.5], ['potion3', 1, 1, 0.06], ['dryad_staff', 1, 1, 0.002], ['dryad_card', 1, 1, 0.001]] },
+  dryad: { name: 'Dryad', ai: 'archer', support: { kind: 'heal', cd: 6, r: 6, amt: 0.15 }, art: 'dryad', el: 'earth', lv: 66, hp: 4950, atk: [236, 295], def: 14, vit: 43, agi: 49, dex: 107, mdef: 29, exp: [5616, 3933], adelay: 1600, walk: 200, aggro: 6, chase: 9, range: 5, reach: 0.9, w: 0.9, r: 0.36, shot: '#c8ff9a', drops: [['dryad_leaf', 1, 1, 0.5], ['potion3', 1, 1, 0.06], ['dryad_staff', 1, 1, 0.002], ['dryad_card', 1, 1, 0.001]] },
   rotBeetle: { name: 'Rot Beetle', ai: 'tank', art: 'rotBeetle', el: 'shadow', lv: 68, hp: 6000, atk: [233, 293], def: 27, vit: 57, agi: 23, dex: 91, mdef: 7, exp: [6136, 4299], adelay: 1500, walk: 200, aggro: 5, chase: 8, reach: 0.9, poison: 0.12, w: 1.2, r: 0.46, heavy: true, drops: [['rot_shell', 1, 1, 0.5], ['potion3', 1, 2, 0.07], ['rot_fang', 1, 1, 0.0025], ['rotbeetle_card', 1, 1, 0.001]] },
   // Ratatoskr, the third floor's mini-boss (the owner's call, after the owner's sheet): the World Tree's
   // messenger squirrel, small for a boss but quick and keen, in runed plate with a fiery tail. It dashes
@@ -371,6 +371,11 @@ export const BRAIN = {
   kite: 4, rush: 1.35, rushFor: 2.5, rushCd: 10, combo: 0.35, giveUp: 18, calm: 10, stuck: 2,
 };
 const BOUND = { kind: 'leap', name: 'Bound', mult: 1.0, r: 1.4 };
+// Tremor (every MVP and Hell raid boss): a hero who stands still `after` s within `r` paces of it while it
+// fights gets the ground cracked open under their feet: a red circle (`hit` paces) that bursts `wind` s later
+// for `mult` (a boss move: no FLEE, little DEF), at most every `cd` s. One step aside and it misses: a fight
+// with an MVP is never stand-and-trade (build-tools/mvp-sim.mjs: the hero's lost time and a missed step)
+export const TREMOR = { after: 4, r: 9, hit: 1.3, wind: 1.2, cd: 9, mult: 1.5 };
 // FOLLOW (every map's monsters, the default for new maps too): a monster that comes for you follows
 // you round the map for as long as you are near (no time limit), and gives up only once you are
 // `lose` times its aggro range away (or out of reach: safe ground, Play Dead). It is never tied to
@@ -983,6 +988,11 @@ class Mob {
     if (this.curseT > 0 && dmg > 0) dmg = Math.round(dmg * (1 + (this.curseBy || 0))); // (in a Voodoo's Curse Circle: everything lands harder)
     if (this.exposeT > 0 && dmg > 0) dmg = Math.round(dmg * RIDDLE.exposed); // (Dumbstruck: its Riddle answered; or Nidhogg torn from the roots)
     if (this.act?.kind === 'gnaw' && dmg > 0) this.act.taken += dmg; // (tearing Nidhogg away from the roots)
+    if (this.shieldHp > 0 && dmg > 0) { // a support's shield takes the blow first
+      const a = Math.min(this.shieldHp, dmg);
+      this.shieldHp -= a; dmg -= a;
+      if (this.shieldHp <= 0) { this.shieldT = 0; this.mgr.emit('shieldbreak', this); }
+    }
     this.hp -= dmg;
     this.flash = 0.09;
     if (this.lulled) { this.lulled = false; this.provoke(); } // a blow wakes a lulled boss (the vigil's song breaks)
@@ -1022,6 +1032,41 @@ class Mob {
   // how hard its blows land: an enraged MVP's harder, a Weakened one's (the Voodoo's Substitute haze) softer
   get fury() { return (this.enraged ? MVP_RAGE.atk : 1) * (this.weakT > 0 ? 1 - (this.weakBy || 0) : 1); }
 
+  // a support monster (def.support, SUPPORT): while it fights, every cd s it mends the most hurt monster near
+  // it (heal: amt of its HP; itself too) or wraps one that has none in a shield that takes amt of its HP in
+  // blows for dur s. Never a boss: beat the healer first, or it undoes your work.
+  supportTick(dt) {
+    const S = this.def.support;
+    this.supportT = (this.supportT ?? S.cd * 0.5) - dt;
+    if (this.supportT > 0 || !(this.state === 'chase' || this.angry > 0) || this.stunT > 0) return;
+    const near = this.mgr.list.filter((m) => m.alive && !m.def.boss && !m.def.decoy && Math.hypot(m.x - this.x, m.z - this.z) <= S.r);
+    const pick = S.kind === 'heal'
+      ? near.filter((m) => m.hp < m.def.hp * 0.85).sort((a, b) => a.hp / a.def.hp - b.hp / b.def.hp)[0]
+      : near.filter((m) => !(m.shieldHp > 0) && (m.state === 'chase' || m.angry > 0)).sort((a, b) => (a === this) - (b === this))[0];
+    if (!pick) { this.supportT = 1; return; }
+    this.supportT = S.cd;
+    this.atkAnim = ATTACK_ANIM;
+    if (S.kind === 'heal') {
+      const n = Math.min(pick.def.hp - pick.hp, Math.round(pick.def.hp * S.amt));
+      pick.hp += n;
+      this.mgr.emit('mend', this, pick, n);
+    } else {
+      pick.shieldHp = Math.round(pick.def.hp * S.amt);
+      pick.shieldT = S.dur;
+      this.mgr.emit('shield', this, pick);
+    }
+  }
+
+  // Tremor (TREMOR): the ground under a hero who stands still
+  tremorTick(dt, p) {
+    this.tremorCd = (this.tremorCd ?? TREMOR.cd * 0.5) - dt;
+    if (this.tremorCd > 0 || this.state !== 'chase' || p !== this.mgr.hero || this.mgr.stillT < TREMOR.after) return;
+    if (this.under || this.stunT > 0 || this.lulled || ['riddle', 'gnaw'].includes(this.act?.kind) || p.state === 'down') return;
+    if (Math.hypot(p.x - this.x, p.z - this.z) > TREMOR.r || this.mgr.world.isSafe(p.x, p.z)) return;
+    this.tremorCd = TREMOR.cd * (this.enraged ? 0.75 : 1);
+    this.mgr.emit('tremor', this, { x: p.x, z: p.z }, TREMOR);
+  }
+
   update(dt, player) {
     const d = this.def, p = player;
     this.t += dt;
@@ -1042,6 +1087,9 @@ class Mob {
       this.knock.z *= k;
     }
 
+    if (d.support) this.supportTick(dt);
+    if (fierce(d) && !d.decoy) this.tremorTick(dt, p);
+    if (this.shieldT > 0 && (this.shieldT -= dt) <= 0) this.shieldHp = 0;
     // a boss calls again once all its guards are gone and the cooldown has passed, while it fights
     if (d.summon && this.calls && this.state === 'chase' && this.t - this.guardsGoneT >= summonCd(d) && !this.mgr.guardsOf(this).length) {
       this.calls++;

@@ -690,6 +690,10 @@ player.on('hurt', (n) => {
   fx.number(player.x, overHead(player, 1.3), player.z, n, 'taken');
 });
 mobs.on('cornered', (m) => { if (m.story) fx.number(m.x, overHead(m, m.sprite.scale.y * 0.9), m.z, 'Cornered!', 'skill'); }); // (the Gel Thief turns to fight)
+// support monsters (mobs.js supportTick): a Dryad mends a monster near it, a Pharaoh's Servant shields one
+mobs.on('mend', (m, o, n) => { fx.number(o.x, overHead(o, o.sprite.scale.y * 0.9), o.z, `+${n}`, 'heal'); fx.sparkle(o.x, overHead(o, o.sprite.scale.y * 0.5), o.z, '#9aff7a', 10); });
+mobs.on('shield', (m, o) => { fx.number(o.x, overHead(o, o.sprite.scale.y * 0.9), o.z, 'Shield', 'skill'); fx.sparkle(o.x, overHead(o, o.sprite.scale.y * 0.5), o.z, '#7ac8ff', 12); });
+mobs.on('shieldbreak', (o) => fx.sparkle(o.x, overHead(o, o.sprite.scale.y * 0.5), o.z, '#bfe6ff', 8));
 mobs.on('thorns', (m, n) => fx.number(m.x, overHead(m, m.sprite.scale.y * 0.8), m.z, n, 'dealt')); // Bark Armor's
 mobs.on('miss', (m, res) => {
   const t = m.foe || player; fx.number(t.x, overHead(t, 1.3), t.z, res.dodge ? 'Lucky!' : 'Miss', 'miss');
@@ -852,6 +856,20 @@ mobs.on('move', (m, a) => {
   if (a.kind === 'leap') fx.warn(a.spot.x, a.spot.z, a.mv.r, MOVES.leap.wind + MOVES.leap.air);
   if (a.kind === 'roots') for (const p of a.spots) fx.warn(p.x, p.z, a.mv.r, MOVES.roots.wind + MOVES.roots.land);
   if (a.kind === 'devour') fx.warn(a.spot.x, a.spot.z, 1.4, MOVES.devour.wind);
+});
+// Tremor (mobs.js TREMOR): the ground cracks under a hero who stands still by an MVP; step aside
+mobs.on('tremor', (m, spot, T) => {
+  const map = world.id;
+  fx.warn(spot.x, spot.z, T.hit, T.wind);
+  fx.number(player.x, overHead(player, 1.6), player.z, 'Tremor!', 'skill');
+  setTimeout(() => {
+    if (world.id !== map || !m.alive) return;
+    const gy = world.heightAt(spot.x, spot.z);
+    fx.puff(spot.x, gy + 0.2, spot.z, T.hit * 1.2);
+    fx.sparkle(spot.x, gy + 0.3, spot.z, MOVE_COL[m.def.el] || '#ffffff', 14);
+    audio.play('hit');
+    bossBlow(m, T.mult, spot.x, spot.z, T.hit);
+  }, T.wind * 1000);
 });
 // Devour (Ammit): it rears and bites where the red circle is; caught, it heals on what it tore from you
 mobs.on('devour', (m, mv, spot) => {
@@ -3468,7 +3486,8 @@ function tickSkills(dt) {
   }
   tickTraps(dt);
   if (player.hiddenT > 0 && (player.hiddenT -= dt) <= 0) unhide(); // Vanish wears off
-  for (const m of mobs.list) { // burning monsters
+  for (const m of mobs.list) { // burning monsters (and a support's shield glinting round one)
+    if (m.alive && m.shieldT > 0 && (m.shieldGlint = (m.shieldGlint || 0) - dt) <= 0) { m.shieldGlint = 0.5; fx.sparkle(m.x, overHead(m, m.sprite.scale.y * 0.5), m.z, '#7ac8ff', 3); }
     if (!m.alive || !(m.burnT > 0)) continue;
     m.burnT -= dt;
     m.burnTick -= dt;

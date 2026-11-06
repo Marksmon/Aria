@@ -432,29 +432,33 @@ mini-bosses fell in 90-200 s, the newer four not at all. MVP ATK came down to 0.
 for 1.4-2.4x of it through 75% of DEF), and HP moved both ways to keep each fight several minutes (the Fire
 Giant up to 765,000, Nidhogg down to 365,000: its Gnaw heals it, so a long fight never ends). Matchups still
 matter: an MVP's worst jobs can lose (a Wizard against the Goblin King, the Shadow jobs against Nidhogg).
-This is a model (with a fixed random seed, so its check is steady): the in-game feel should be playtested. `npm test` runs `mvp-sim --check`.
+Every MVP, Hell boss and mini-boss also has **Tremor** (`TREMOR` in `mobs.js`): a hero who stands still 4 s
+within 9 paces gets a red circle at their feet that bursts 1.2 s later (1.5x, a boss move), at most every 9 s. The
+sim has the hero step out of it every time it comes (0.4 s of blows lost, 0.25 s for a bow or a caster), one
+step in twelve too late; with it the Giant Beetle's ATK came down 3% to stay in its bar.
+This is a model (with a fixed random seed per fight, so its check is steady and one fight's change never moves another's): the in-game feel should be playtested. `npm test` runs `mvp-sim --check`.
 
 | Fight | Base, gear | blademaster | shadowblade | windrunner | hunter | wizard | voodoo | middle |
 |---|---|---|---|---|---|---|---|---|
-| Kobold King | 75, good | 100% 273s 78p | 100% 228s 70p | 100% 335s 93p | 100% 291s 83p | 100% 280s 84p | 100% 250s 70p | **100% 277s 81p** |
-| Goblin King | 75, good | 100% 195s 64p | 100% 172s 65p | 100% 262s 78p | 100% 318s 102p | 0% 900s 380p | 100% 490s 179p | **100% 290s 90p** |
-| Fire Giant | 85, good | 100% 316s 74p | 100% 268s 69p | 100% 145s 28p | 100% 218s 49p | 0% 900s 168p | 100% 430s 120p | **100% 292s 72p** |
-| Ancient Treant | 85, good | 100% 430s 114p | 100% 364s 103p | 100% 152s 28p | 100% 204s 44p | 100% 340s 92p | 100% 272s 68p | **100% 306s 80p** |
-| Sand Wyrm | 85, good | 100% 265s 67p | 100% 226s 57p | 100% 243s 59p | 100% 293s 78p | 100% 426s 129p | 100% 330s 96p | **100% 279s 73p** |
-| Eternal Sphinx | 95, good | 100% 455s 150p | 100% 443s 178p | 100% 213s 48p | 100% 259s 60p | 100% 304s 87p | 100% 281s 79p | **100% 292s 83p** |
-| Nidhogg | 95, good | 100% 302s 116p | 0% 900s 278p | 100% 91s 24p | 100% 117s 39p | 100% 160s 62p | 0% 900s 231p | **100% 231s 89p** |
-| Giant Sprout | 75, shop | 100% 206s 101p | 100% 180s 92p | 100% 133s 43p | 100% 168s 54p | 100% 238s 85p | 100% 211s 75p | **100% 193s 80p** |
-| King Crab | 75, shop | 100% 207s 90p | 100% 178s 79p | 100% 140s 38p | 100% 153s 42p | 100% 238s 74p | 100% 195s 58p | **100% 186s 66p** |
-| Giant Mushroom | 75, shop | 100% 179s 77p | 100% 567s 287p | 100% 122s 32p | 100% 146s 44p | 100% 249s 88p | 100% 868s 308p | **100% 214s 83p** |
-| Giant Beetle | 75, shop | 100% 213s 129p | 100% 182s 112p | 100% 148s 57p | 100% 150s 59p | 100% 431s 199p | 100% 180s 77p | **100% 181s 95p** |
-| Elder Willow | 75, shop | 100% 210s 95p | 100% 183s 85p | 100% 137s 38p | 100% 175s 54p | 100% 295s 104p | 100% 240s 84p | **100% 196s 85p** |
-| Alpha Wolf | 75, shop | 100% 185s 129p | 100% 179s 128p | 100% 125s 52p | 100% 151s 69p | 100% 203s 99p | 100% 182s 83p | **100% 181s 91p** |
-| Great Bear | 75, shop | 100% 223s 145p | 100% 195s 128p | 100% 163s 69p | 100% 146s 63p | 100% 179s 79p | 100% 182s 83p | **100% 181s 81p** |
-| Cactus Lord | 75, shop | 100% 203s 93p | 100% 180s 88p | 100% 150s 52p | 100% 148s 51p | 100% 248s 92p | 100% 195s 69p | **100% 187s 79p** |
-| Rainbow Runner | 75, shop | 100% 296s 183p | 100% 305s 190p | 100% 162s 60p | 100% 164s 62p | 100% 180s 74p | 100% 206s 87p | **100% 193s 81p** |
-| Ammit | 75, shop | 100% 200s 110p | 100% 688s 436p | 100% 125s 39p | 100% 110s 36p | 100% 176s 68p | 100% 605s 221p | **100% 188s 89p** |
-| Ratatoskr | 75, shop | 100% 332s 238p | 100% 401s 291p | 100% 119s 53p | 100% 124s 56p | 100% 190s 98p | 100% 181s 93p | **100% 186s 96p** |
-| BleepBloop (Hell) | 85, good | 100% 867s 427p | 100% 796s 378p | 100% 147s 44p | 100% 244s 87p | 100% 179s 65p | 100% 230s 87p | **100% 237s 87p** |
-| Kobold Warlord (Hell) | 90, good | 100% 348s 129p | 100% 397s 157p | 100% 210s 68p | 100% 220s 74p | 100% 132s 42p | 100% 139s 45p | **100% 215s 71p** |
-| Goblin Warlord (Hell) | 95, good | 100% 404s 196p | 100% 365s 172p | 100% 155s 44p | 100% 245s 89p | 100% 146s 54p | 100% 194s 78p | **100% 220s 84p** |
-| Pharaoh (Hell) | 99, good | 100% 291s 108p | 0% 900s 408p | 100% 137s 37p | 100% 196s 64p | 100% 91s 25p | 100% 551s 236p | **100% 243s 86p** |
+| Kobold King | 75, good | 100% 292s 87p | 100% 243s 74p | 100% 348s 101p | 100% 294s 83p | 100% 291s 90p | 100% 262s 75p | **100% 291s 85p** |
+| Goblin King | 75, good | 100% 210s 73p | 100% 174s 63p | 100% 278s 88p | 100% 330s 111p | 0% 900s 383p | 100% 527s 199p | **100% 304s 100p** |
+| Fire Giant | 85, good | 100% 337s 86p | 100% 283s 76p | 100% 149s 30p | 100% 231s 54p | 0% 900s 166p | 100% 447s 125p | **100% 310s 81p** |
+| Ancient Treant | 85, good | 100% 460s 129p | 100% 396s 117p | 100% 162s 31p | 100% 217s 51p | 100% 350s 96p | 100% 277s 72p | **100% 313s 84p** |
+| Sand Wyrm | 85, good | 100% 291s 77p | 100% 241s 64p | 100% 256s 66p | 100% 293s 80p | 100% 429s 131p | 100% 342s 95p | **100% 292s 79p** |
+| Eternal Sphinx | 95, good | 100% 445s 150p | 100% 435s 170p | 100% 217s 42p | 100% 267s 73p | 100% 316s 87p | 100% 283s 78p | **100% 299s 83p** |
+| Nidhogg | 95, good | 100% 322s 123p | 0% 900s 289p | 100% 92s 26p | 100% 126s 38p | 100% 165s 63p | 0% 900s 234p | **100% 243s 93p** |
+| Giant Sprout | 75, shop | 100% 222s 114p | 100% 191s 101p | 100% 138s 45p | 100% 180s 62p | 100% 247s 97p | 100% 219s 83p | **100% 205s 90p** |
+| King Crab | 75, shop | 100% 218s 97p | 100% 189s 89p | 100% 146s 40p | 100% 168s 50p | 100% 246s 82p | 100% 204s 63p | **100% 197s 73p** |
+| Giant Mushroom | 75, shop | 100% 189s 85p | 100% 597s 308p | 100% 127s 36p | 100% 144s 47p | 100% 259s 89p | 0% 900s 327p | **100% 224s 87p** |
+| Giant Beetle | 75, shop | 100% 227s 136p | 100% 191s 115p | 100% 153s 60p | 100% 161s 63p | 100% 442s 197p | 100% 188s 79p | **100% 190s 97p** |
+| Elder Willow | 75, shop | 100% 220s 104p | 100% 193s 95p | 100% 142s 44p | 100% 178s 56p | 100% 303s 108p | 100% 246s 85p | **100% 207s 90p** |
+| Alpha Wolf | 75, shop | 100% 198s 142p | 100% 200s 146p | 100% 130s 59p | 100% 151s 71p | 100% 213s 103p | 100% 189s 90p | **100% 194s 97p** |
+| Great Bear | 75, shop | 100% 238s 160p | 100% 207s 143p | 100% 169s 73p | 100% 152s 65p | 100% 188s 89p | 100% 189s 87p | **100% 188s 88p** |
+| Cactus Lord | 75, shop | 100% 220s 105p | 100% 191s 96p | 100% 156s 52p | 100% 152s 52p | 100% 264s 104p | 100% 204s 79p | **100% 197s 88p** |
+| Rainbow Runner | 75, shop | 100% 325s 207p | 100% 314s 207p | 100% 169s 65p | 100% 167s 66p | 100% 185s 78p | 100% 215s 90p | **100% 200s 84p** |
+| Ammit | 75, shop | 100% 211s 118p | 100% 730s 443p | 100% 129s 41p | 100% 114s 38p | 100% 184s 68p | 100% 627s 237p | **100% 198s 93p** |
+| Ratatoskr | 75, shop | 100% 356s 256p | 100% 391s 288p | 100% 124s 55p | 100% 127s 59p | 100% 197s 102p | 100% 188s 96p | **100% 193s 99p** |
+| BleepBloop (Hell) | 85, good | 100% 900s 447p | 100% 762s 369p | 100% 158s 51p | 100% 248s 93p | 100% 183s 72p | 100% 249s 97p | **100% 248s 95p** |
+| Kobold Warlord (Hell) | 90, good | 100% 382s 147p | 100% 398s 166p | 100% 218s 71p | 100% 216s 72p | 100% 134s 44p | 100% 144s 49p | **100% 217s 72p** |
+| Goblin Warlord (Hell) | 95, good | 100% 418s 204p | 100% 337s 161p | 100% 160s 48p | 100% 263s 102p | 100% 147s 55p | 100% 209s 84p | **100% 236s 93p** |
+| Pharaoh (Hell) | 99, good | 100% 315s 122p | 0% 900s 426p | 100% 141s 35p | 100% 207s 67p | 100% 95s 32p | 100% 562s 241p | **100% 261s 95p** |

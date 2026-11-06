@@ -126,11 +126,11 @@ Scorpion Sands with its Pyramid, then the Great Desert, where the Sand Wyrm hunt
 | Scorpion Sands | 60–66 | Sand Scorpion (61, poison), Sand Runner (64) | Rainbow Runner (64) |
 | Great Desert | 62–70 | Soldier Ant (62), Cactus, Dune Worm, Sand Scorpion, Sand Runner | **Sand Wyrm (70, MVP)** |
 | Sphinx Halls 1 | 65–72 | Scarab (66, hard shell), Cobra (71, poison) | |
-| Sphinx Halls 2 | 73–80 | Mummy (75), Lamia (78, spits venom), Pharaoh's Servant (80, blue fire) | |
+| Sphinx Halls 2 | 73–80 | Mummy (75), Lamia (78, spits venom), Pharaoh's Servant (80, blue fire, shields the others) | |
 | Sphinx Halls 3 | 81–88 | Sphinx Cub (83), Sand Elemental (86, slowing sand), Sarcophagus (88) | Ammit (74) |
 | Yggdrasil Hollows 1 | 45–52 | Root Squirrel (46, quick), Bramble (51, throws thorns) | |
 | Yggdrasil Hollows 2 | 53–60 | Root Serpent (55, poison), Moss Golem (58), Dark Elf (60, shadow arrows) | |
-| Yggdrasil Hollows 3 | 61–68 | Great Stag (63), Dryad (66, glowing leaves), Rot Beetle (68, poison) | Ratatoskr (74) |
+| Yggdrasil Hollows 3 | 61–68 | Great Stag (63), Dryad (66, glowing leaves, heals the others), Rot Beetle (68, poison) | Ratatoskr (74) |
 | Yggdrasil Hollows 4 (the great hall) | 69–75 | Root Warden (72), Thorn Drake (75, venom breath) | **Nidhogg (99, MVP)** |
 | Sphinx Halls 4 (the great hall) | 89–99 | Jackal Guardian (92, long spear), Falcon Sentinel (97, wind blades) | **Eternal Sphinx (99, MVP)** |
 | Any field in the valley, more at night (Moss Field and Fen Shore only at night) | | Wisp (11) | |
@@ -284,6 +284,9 @@ the Wyrmhide Cloak, Sandwalker Boots, the Wyrm Ring and its card.
 - **Rocks don't save you.** It finds its way round rocks, trees, tents and walls, out of any dead
   end, whether it is hunting you or roaming its map; stuck behind something too tight for it, it
   bounds over onto you (Bound, a red circle first).
+- **It won't let you stand and trade.** Stand still for 4 seconds near an MVP, a Hell boss or a
+  mini-boss and the ground cracks under your feet (**Tremor!**): a red circle that bursts a moment later.
+  One step aside and it misses; a melee fighter steps and swings on.
 - **An enraged MVP or Hell boss** may follow one move straight into another.
 - **Mini-bosses hunt like MVPs.** They follow you up to 18 paces and heal only after 10 seconds
   out of the fight, so stepping away briefly doesn't reset them.
@@ -385,7 +388,8 @@ between you and the camera turn see-through, so you never lose sight of your her
 dim underground, day or night.
 
 - **Floor 1:** Scarabs and Cobras. **Floor 2:** Mummies, Lamias (snake-women who spit venom from afar)
-  and the Pharaoh's Servants (skeletal priests who throw blue fire from crystal staves).
+  and the Pharaoh's Servants (skeletal priests who throw blue fire from crystal staves, and every 8 s wrap a
+  monster beside them in a shield that takes a quarter of its HP in blows: beat them first).
 - **Floor 3:** Sphinx Cubs, Sand Elementals (their whirling sand slows you), walking Sarcophagi, and
   **Ammit the Devourer** (Lv 74 mini-boss: a crocodile's head, a lion's mane and claws). It rushes,
   pounces, and **Devours**: a bite that heals it. It calls Sphinx Cubs.
@@ -432,7 +436,8 @@ round a rune circle of the World Tree. Every monster down there attacks on sight
   their bite poisons), Moss Golems (hunched giants of boulders under a mantle of moss,
   runes glowing in their cracks), and Dark Elves, hooded archers in violet cloaks
   and rune-traced leathers, loosing shadow arrows from tall black bows.
-- **Floor 3:** Great Stags, Dryads throwing glowing leaves, Rot Beetles (hulking beetles of rotting bark, violet toadstools
+- **Floor 3:** Great Stags, Dryads throwing glowing leaves (and every 6 s mending the most hurt monster near them
+  by 15% of its HP: beat them first), Rot Beetles (hulking beetles of rotting bark, violet toadstools
   growing on their backs, venom dripping from their mandibles), and **Ratatoskr** (Lv 74
   mini-boss), the World Tree's messenger squirrel: no bigger than a Bloop, like its kin, but quick and hard to hit, in dark
   plate traced with glowing gold runes, a torn red cloak and a great fiery tail. It dashes in (**Swift

@@ -17,7 +17,7 @@
 //   node build-tools/mvp-sim.mjs            every fight, the six jobs and the median
 //   node build-tools/mvp-sim.mjs --check    exit 1 if a fight leaves its tier (npm test runs it)
 import { setup, killTime, HEROES } from './second-sim.mjs';
-import { MOB_DEFS, MOVES, MVP_RAGE, MVP_MOVE, WYRM, RIDDLE, BARK, guardDef, raidDef } from '../src/mobs.js';
+import { MOB_DEFS, MOVES, MVP_RAGE, MVP_MOVE, WYRM, RIDDLE, BARK, TREMOR, fierce, guardDef, raidDef } from '../src/mobs.js';
 import { RAIDS } from '../src/raid.js';
 import { mobAttack, derive } from '../src/rules.js';
 
@@ -36,6 +36,9 @@ export const GEAR = {
 };
 // the second-job Job Level a hero of this Base Level usually has (a second job from about Base 55)
 const jobLvAt = (base) => Math.min(50, Math.max(1, base - 40));
+// Tremor (an MVP's, a Hell boss's): every cd s the hero steps out of the circle under them, losing STEP s of blows
+// (less for a bow or a caster, who is on the move anyway), and one step in ten comes too late
+const STEP = { melee: 0.4, ranged: 0.25 }, STEP_LATE = 0.08;
 const POTION = 205, POTION_GAP = 0.25, DODGE = 0.5, METEOR_DODGE = 0.75, KITE = 0.5, RIGHT = 0.85, DT = 0.1, LIMIT = 900;
 
 // the hero's damage a second on a target, by its rotation (cached per job, target and tier)
@@ -65,6 +68,7 @@ export function fight(job, def, base, gear) {
   let hp = ps.maxHp, mob = def.hp, t = 0, potions = 0, potT = 0, swingAt = def.adelay / 1000, stompAt = 4;
   let guards = [], called = 0, goneT = -1e9, shadows = [], mirrorAt = mirror ? (MOVES.mirror.cd || 30) * 0.5 : Infinity, tribeAt = def.summonCd || Infinity;
   let barkUntil = -1, barkAt = bark ? MOVES.bark.cd : Infinity, exposedUntil = -1, exaltedUntil = -1, stunUntil = -1;
+  let tremorAt = fierce(def) ? TREMOR.after + TREMOR.cd * 0.5 : Infinity, steppingUntil = -1;
   let riddleAt = riddle ? MOVES.riddle.cd * 0.6 : Infinity, gnawAt = gnaw ? MOVES.gnaw.cd : Infinity, gnawUntil = -1, gnawDealt = 0;
   const vsGuard = (g) => out * (dps(job, g, base, gear) / out); // (the hero's damage on a guard: its own DEF and element)
   const hit = (m, o = {}) => { const r = mobAttack(def, ps, m * (mob < def.hp * MVP_RAGE.below ? MVP_RAGE.atk : 1), o); hp -= r.dmg; };
@@ -100,7 +104,11 @@ export function fight(job, def, base, gear) {
     if (def.tribe && def.summon && t >= tribeAt) { tribeAt = t + def.summonCd * cdk; if (guards.length < def.summon.length) call(def.summon, def.summon.length - guards.length); }
     // the hero strikes: shadows and jars first (the boss is shielded), then guards, then the boss
     const target = gnawUntil > 0 ? null : shadows.find((o) => o.hp > 0) || guards.find((o) => o.hp > 0); // (Gnaw: tear it away first)
-    let blow = out * DT;
+    if (t >= tremorAt) {
+      tremorAt = t + TREMOR.cd * (rage ? 0.75 : 1);
+      if (t >= stunUntil && gnawUntil < 0 && !under) { steppingUntil = t + STEP[ranged ? 'ranged' : 'melee']; if (Math.random() < STEP_LATE) hit(TREMOR.mult, MVP_MOVE); }
+    }
+    let blow = t < steppingUntil ? 0 : out * DT;
     if (target) { target.hp -= vsGuard(target.def) * DT; if (target.hp <= 0) { shadows = shadows.filter((o) => o.hp > 0); guards = guards.filter((o) => o.hp > 0); if (!guards.length) goneT = t; } }
     else if (!under && !(t < barkUntil)) {
       blow *= (t < exposedUntil ? RIDDLE.exposed : 1) * (t < exaltedUntil ? RIDDLE.exalted : 1) * (def.tribe && guards.length ? 1 - def.tribe : 1);
@@ -146,6 +154,7 @@ export function fights() {
 }
 // a fight's runs for every job, and the median job's
 export function judge(f, runs = 30) {
+  seed = [...f.name].reduce((h, c) => (h * 31 + c.charCodeAt(0)) | 0, 20261105); // (each fight its own rolls: one fight's change never moves another's)
   const per = Object.fromEntries(JOBS.map((job) => {
     const rs = Array.from({ length: runs }, () => fight(job, f.def, f.base, f.gear));
     const med = (k) => rs.map((r) => r[k]).sort((a, b) => a - b)[runs >> 1];
