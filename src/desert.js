@@ -22,7 +22,9 @@ export const DESERT = {
   duneWorm: { kind: 'worm', size: [52, 52], body: [26, 40], hide: '#a88a6a', ridge: '#7a5e44', belly: '#d0b48e', flesh: '#9a3a3a', teeth: '#f2ead0', sand: '#d8b878' },
   sandWyrm: { kind: 'worm', mvp: true, size: [120, 124], body: [80, 108], hide: '#9a8064', ridge: '#6a5240', belly: '#c4a882', flesh: '#a83a3a', teeth: '#f6eedc', sand: '#d8b070', spine: '#e2d2b0' },
   scorpion: { kind: 'scorpion', size: [56, 44], body: [32, 26], shell: '#c0803e', dark: '#7a4a22', sting: '#2a1a10', eye: '#1e1410' },
-  tombScorpion: { kind: 'scorpion', size: [56, 44], body: [32, 26], shell: '#5a3a6a', dark: '#2e1e3a', sting: '#c8ff6a', eye: '#c8ff6a' },
+  // the tomb's (a look of its own, not the desert's in new colours: the owner's call): a dead scorpion, its plates bone,
+  // bound in old linen like the mummies it guards, a gold scarab on its back, its sting and eyes a cursed green
+  tombScorpion: { kind: 'scorpion', tomb: true, size: [56, 44], body: [32, 26], shell: '#c2b49a', dark: '#4a3e34', sting: '#9aff6a', eye: '#9aff6a', wrap: '#e6dcbc', gold: '#e3b341' },
   runner: { kind: 'runner', size: [56, 66], body: [30, 58], feather: '#f2c43a', dark: '#c8922a', crest: '#ffd84a', beak: '#f29a3a', eye: '#2a1a10', wrap: '#6a4226', buckle: '#d8b050', talon: '#2a2228', saddle: '#7a4a2a', cloth: '#2e3f7a' },
   rainbowRunner: { kind: 'runner', boss: true, size: [56, 66], body: [30, 58], feather: '#fbf4ec', dark: '#d8c8c8', crest: '#ff5a8a', beak: '#f2b04a', eye: '#2a9a9a', wrap: '#6a4226', buckle: '#d8b050', talon: '#2a2228', saddle: '#7a4a2a', cloth: '#2e3f7a', rainbow: RAINBOW },
   scarab: { kind: 'scarab', size: [40, 32], body: [22, 14], shell: '#2a7a7a', gold: '#e8c050', leg: '#1e3a3a' },
@@ -275,6 +277,13 @@ function scorpion(F, P, dir, { G, W, step, walk, f, atk }) {
     F.part(both(line(cx + 8, by - 1, cx + 14, by - 3, 2)), P.shell);
     F.part(poly([[cx + 14, by - 6], [cx + 20, by - 5 - pinch], [cx + 17, by - 3], [cx + 20, by - 1 + pinch], [cx + 14, by]]), P.shell);
     F.dot(cx + 8, by - 4, P.eye);
+    if (P.tomb) { // linen wound round it, a strip trailing, bone ridges, a cursed glow at the sting
+      for (const x of [-6, -1, 4]) F.part(line(cx + x - 1, by - 6, cx + x + 1, by + 1, 1), P.wrap, flat);
+      F.part(line(cx - 9, by - 1, cx - 14 - (f % 2), by + 3, 1), P.wrap, flat);
+      for (const [x, y] of seg.slice(1, 5)) F.part(line(x - 2, y - 1, x + 2, y + 1, 1), P.wrap, flat);
+      F.part(ellipse(cx - 1, by - 5, 1.6, 1.2), P.gold, flat);
+      for (let i = 0; i < 3; i++) F.dot(tx + 3 + (i % 2), ty - 2 - i * 2 - (f % 2), P.sting);
+    }
     return;
   }
   const front = dir === 'down';
@@ -287,6 +296,7 @@ function scorpion(F, P, dir, { G, W, step, walk, f, atk }) {
     seg.forEach(([x, y], i) => F.part(ellipse(x, y, 3 - i * 0.3, 2.6), P.shell));
     const [tx, ty] = seg[3];
     F.part(poly([[tx - 2, ty - 1], [tx + 2, ty - 1], [tx, ty + 4 + strike]]), P.sting);
+    if (P.tomb) { for (const [x, y] of seg.slice(0, 3)) F.part(line(x - 3, y + 1, x + 3, y - 1, 1), P.wrap, flat); for (let i = 0; i < 3; i++) F.dot(tx - 1 + (i % 2) * 2, ty - 3 - i * 2 - (f % 2), P.sting); }
   };
   if (!front) tail(by - 4);
   F.part(ellipse(cx, by - 3, 8, 5.5), P.shell);
@@ -294,6 +304,11 @@ function scorpion(F, P, dir, { G, W, step, walk, f, atk }) {
     const py = front ? by + 1 : by - 7;
     F.part(line(cx + s * 6, by - 2, cx + s * 11, py, 2), P.shell);
     F.part(poly([[cx + s * 9, py - 3], [cx + s * 15, py - 2 - pinch], [cx + s * 12, py], [cx + s * 15, py + 2 + pinch], [cx + s * 9, py + 3]]), P.shell);
+  }
+  if (P.tomb) { // linen across its back, a gold scarab on it, a strip trailing
+    for (const x of [-4, 0, 4]) F.part(line(cx + x - 2, by - 7, cx + x + 2, by + 1, 1), P.wrap, flat);
+    F.part(line(cx + 6, by, cx + 9 + (f % 2), by + 4, 1), P.wrap, flat);
+    if (!front) F.part(ellipse(cx, by - 3, 1.8, 1.4), P.gold, flat);
   }
   if (front) { F.dot(cx - 2, by - 4, P.eye); F.dot(cx + 2, by - 4, P.eye); tail(by - 8); }
 }

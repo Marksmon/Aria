@@ -115,7 +115,7 @@ Scorpion Sands with its Pyramid, then the Great Desert, where the Sand Wyrm hunt
 | Fen Shore | 3–10 | Blue Bloop (4, splits), Crab (6); Wisps only at night | |
 | Dark Dale | 12–18 | Mushroom (14, slowing spores) | |
 | Birch Grove | 16–26 | Red Sprout (18), Sprout, Bloop | Giant Sprout (55) |
-| Salt Bay | 20–32 | Sea Bloop (22), Blue Crab (26), Crab | King Crab (58) |
+| Salt Bay | 20–32 | Mudskipper (22), Blue Crab (26), Crab | King Crab (58) |
 | Ember Hill | 28–36 | Beetle (30) | **Fire Giant (60, MVP)** |
 | Black Wood | 32–42 | Dark Mushroom (34), Dark Wisp (38), Mushroom | Giant Mushroom (60) |
 | Ash Heath | 40–50 | Fire Beetle (42), Fire Wisp (45), Beetle | Giant Beetle (62) |
@@ -154,7 +154,12 @@ them; then they fight back for a while. Only the Dark Wisps, the fire beasts of 
 kobolds and goblins, the mini-bosses and the MVPs attack on sight. A Sprout runs away, and fights only when
 cornered.
 
-The new lands' monsters are palette swaps of the valley's, like a family of bloops in many colours. Monsters flash white when hit and wobble when nearly beaten; the one you fight shows a thin health
+The new lands' monsters are kin of the valley's, each with a look of its own: the Red Sprout a red radish brawler
+with root fists, the Mudskipper a fish hopping on the mud on its fins, a sail of a fin spotted blue along its back,
+the Blue Crab a broad swimming crab with one great claw, the Dark Mushroom a drooping ink cap dripping ink, eyes
+glowing under it, the Fire Beetle a black beetle cracked with magma and armed with stag jaws, the Lantern Wisp a
+paper lantern with a flame for a heart, the Dark Wisp a wisp of violet smoke with hollow eyes, and the Fire Wisp a
+living flame with horns of fire. Only the bloops come in many colours. Monsters flash white when hit and wobble when nearly beaten; the one you fight shows a thin health
 bar under its name (Settings can turn it off). A map is never left empty: half its monsters come
 back 25 s after they fall somewhere else on the map, well away from you; the other half come back
 where they first stood after 60 s (once you have moved on from there, or somewhere else if you
@@ -534,9 +539,10 @@ the clear reward, the cores, the rare finds and the boss's card.
 - **10 minutes** for the lot. After each wave you get back half your HP and SP, and before the boss
   all of it.
 - **The Kobold Camp:** Kobolds and Kobold Archers, then Kobold Assassins, then the **Kobold
-  Warlord**, the Kobold King's look in war-paint: he charges and hurls boulders and calls his
+  Warlord** in a horned iron helm, red war-paint across his eyes, a spiked mace and a round shield: he charges and hurls boulders and calls his
   warriors. **The Goblin Lair:** Goblins and Goblin Archers, then Goblin Assassins, then the
-  **Goblin Warlord**: he leaps on you, hurls axes, flies into frenzies and calls the horde.
+  **Goblin Warlord**, a red mohawk, blue war-paint down his cheeks, a wolf pelt, a war-horn at his belt and a
+  double-bladed battle-axe: he leaps on you, hurls axes, flies into frenzies and calls the horde.
   **Pharaoh's Tomb:** Scarabs and Mummies, then Tomb Scorpions, then the **Pharaoh**, a mummy king in a
   gold headdress with crook and flail. On Hell he seals himself in his **Sarcophagus**: four Canopic
   Jars rise round him, and he takes 90% less damage until they are broken.
@@ -1029,7 +1035,7 @@ A strong hit (150%) shows in gold, a weak one (25–50%) in grey.
 | Wind | **150%** | 50% | 100% | 25% | 100% |
 | Earth | 100% | 25% | 50% | **150%** | 100% |
 
-Water: Bloops, Blue and Sea Bloops, the crabs and the King Crab, Lamias · Earth: Sprouts, Mushrooms, Beetles,
+Water: Bloops and Blue Bloops, Mudskippers, the crabs and the King Crab, Lamias · Earth: Sprouts, Mushrooms, Beetles,
 the kobolds, Willows, Treants, Snakes, Wolves, the Giant Sprout, Elder Willow, Alpha Wolf, Ancient Treant and
 Kobold King, the desert's ants, cacti, worms and scorpions and the Sand Wyrm, and most of the dungeons'
 monsters (Scarabs, Cobras, Sphinx Cubs, Sand Elementals, the Eternal Sphinx; Root Squirrels, Brambles, Root
@@ -1063,7 +1069,7 @@ from Kari (Dalla has the cake and the pie). Their timers show in the buff bar.
 | Red Potion | 45–65 HP | Hild (Steinborg); Kari (Galdrheim); Eydis (Veidheim); Dalla (Rytingborg); Ragna brews it; Gel Thief, Yellow Bloop, Willow and 3 more |
 | Orange Potion | 105–145 HP | Hild (Steinborg); sela; Kari (Galdrheim); Eydis (Veidheim); Dalla (Rytingborg); Ragna brews it; Treant, Kobold, Beetle and 11 more |
 | White Potion | 175–235 HP | sela; Eydis (Veidheim); Dalla (Rytingborg); Ragna brews it; Goblin Archer, Fire Beetle, Goblin Assassin and 52 more |
-| Blue Potion | 40–60 SP | Hild (Steinborg); sela; Kari (Galdrheim); Eydis (Veidheim); Dalla (Rytingborg); Ragna brews it; Blue Bloop, Sea Bloop |
+| Blue Potion | 40–60 SP | Hild (Steinborg); sela; Kari (Galdrheim); Eydis (Veidheim); Dalla (Rytingborg); Ragna brews it; Blue Bloop, Mudskipper |
 | Berry | 16–22 HP | Hild (Steinborg); Kari (Galdrheim); Bloop, Sprout, Yellow Bloop, Red Sprout |
 | Crab Leg | 70–100 HP | Crab, Blue Crab, King Crab |
 | Green Herb | 5–8 HP, cures poison and spores | Hild (Steinborg); sela; Kari (Galdrheim); Eydis (Veidheim); Dalla (Rytingborg); Sprout, Willow, Mushroom, Snake |
@@ -1120,7 +1126,7 @@ bursts gold on the ground and shows in gold in your bag.
 | Ant-Jaw Knife | Weapon (dagger) | ATK 34 · Weapon Lv 1 · Earth element | Giant Ants (0.3%) |
 | Mushroom Cloak | Garment | DEF 1 · FLEE +4 | Mushrooms (0.25%) |
 | Thorn Ring | Accessory | HIT +3 · POW +1 | Red Sprouts (0.3%) and the Giant Sprout (5%) |
-| Sea Cloak | Garment | DEF 2 · Max SP +30 · FLEE +2 | Sea Bloop 0.25% |
+| Sea Cloak | Garment | DEF 2 · Max SP +30 · FLEE +2 | Mudskipper 0.25% |
 | Bark Shield | Shield | DEF 3 · Max HP +60 | Treants (0.2%) |
 | Coral Shield | Shield | DEF 4 · Max SP +20 | Blue Crabs (0.25%) and the King Crab (5%) |
 | Kobold Shield | Shield | DEF 4 · END +1 · Max HP +50 | Kobold 0.25% |
@@ -1344,7 +1350,7 @@ they come back whole and the slot stays open. A piece that breaks at Holger's gi
 | Mushroom Card (Sturdy) | Shoes | END +1 · Max HP +5% | Mushrooms (0.1%) |
 | Lantern Wisp Card (Glowing) | Wings | FNS +2 · KNL +1 | Lantern Wisps (0.1%) |
 | Red Sprout Card (Thorny) | Garment | FLEE +2 · Max HP +5% | Red Sprouts (0.1%) |
-| Sea Bloop Card (Briny) | Shield | DEF +1 · Max SP +5% | Sea Bloops (0.1%) |
+| Mudskipper Card (Briny) | Shield | DEF +1 · Max SP +5% | Mudskippers (0.1%) |
 | Treant Card (Rooted) | Shield | Max HP +8% | Treants (0.1%) |
 | Blue Crab Card (Plated) | Armor | DEF +3 · Max HP +5% | Blue Crabs (0.1%) |
 | Kobold Card (Strong) | Accessory | POW +2 | Kobolds (0.1%) |

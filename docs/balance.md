@@ -34,7 +34,7 @@ is still a Trainee there).
 ## What changed (October 2026 review)
 
 - Field monsters: Crab ATK -15%; Wisp ATK -25% and QKN 24 to 20; Mushroom ATK about -35%; Red Sprout
-  HP and ATK -20%; Sea Bloop ATK -10%; Blue Crab HP -20%. The agile late monsters dodged three blows
+  HP and ATK -20%; Mudskipper ATK -10%; Blue Crab HP -20%. The agile late monsters dodged three blows
   in four: Kobold Assassin QKN 58 to 50, Dark Wisp 60 to 47, Fire Beetle 34 to 31, Goblin Assassin
   75 to 60, Fire Wisp 70 to 53.
 - Mini-bosses: Giant Sprout 9,000 to 7,200 HP and ATK 80-108 to 44-59; King Crab 11,000 to 8,900 HP,
@@ -55,7 +55,7 @@ Main's newer commits reworked skills (multi-hit spells, statuses, Blade Dance, o
 raised the Blader's skills, trimmed the Sorcerer's spells and gave bosses telegraphed moves. The
 simulator now models multi-hit spells, the Sorcerer's opening cast from 5 paces, and boss moves
 against a kiting Sorcerer (half stepped out of). The bosses stay inside the targets for both jobs.
-The trimmed spells leave the Sorcerer short against some Water monsters at Base 22-34 (Sea Bloop,
+The trimmed spells leave the Sorcerer short against some Water monsters at Base 22-34 (Mudskipper,
 Blue Crab, Dark Mushroom); that is left as main's balance decision. Rows below Base 12 are a
 Trainee, not a Sorcerer.
 
@@ -86,7 +86,7 @@ levels Venom Strike pays more for its SP, so the sim throws a cloud only where i
 | Mushroom | 14 | 98% win · 22 s · 25% HP left | 100% win · 10 s · 56% HP left | 100% win · 9 s · 83% HP left | 100% win · 9 s · 69% HP left |
 | Lantern Wisp | 16 | 0% win · 18 s · boss at 33% | 0% win · 15 s · boss at 29% | 79% win · 17 s · 18% HP left | 36% win · 15 s · 0% HP left |
 | Red Sprout | 18 | 96% win · 5 s · 73% HP left | 100% win · 8 s · 53% HP left | 100% win · 4 s · 88% HP left | 100% win · 2 s · 88% HP left |
-| Sea Bloop | 22 | 100% win · 3 s · 80% HP left | 94% win · 11 s · 15% HP left | 100% win · 3 s · 100% HP left | 100% win · 2 s · 88% HP left |
+| Mudskipper | 22 | 100% win · 3 s · 80% HP left | 94% win · 11 s · 15% HP left | 100% win · 3 s · 100% HP left | 100% win · 2 s · 88% HP left |
 | Treant | 24 | 100% win · 5 s · 77% HP left | 100% win · 10 s · 37% HP left | 100% win · 8 s · 71% HP left | 100% win · 6 s · 65% HP left |
 | Blue Crab | 26 | 100% win · 3 s · 79% HP left | 99% win · 10 s · 9% HP left | 100% win · 2 s · 100% HP left | 100% win · 2 s · 86% HP left |
 | Kobold | 28 | 100% win · 4 s · 76% HP left | 100% win · 5 s · 66% HP left | 100% win · 3 s · 85% HP left | 99% win · 4 s · 74% HP left |
@@ -143,7 +143,7 @@ levels Venom Strike pays more for its SP, so the sim throws a cloud only where i
 The Sorcerer's column is with the November 2026 Rune Ward (the owner's call: a little help for the early
 Sorcerer, spell damage unchanged): it needs nothing now, costs 8 SP and cuts 25% of the damage from its first
 point (30% at Lv 10, was 2% a level), and the reference Sorcerer takes its first point right after Ember Bolt 5.
-Before it, a same-level Sorcerer won only 67% against Sea Bloops, 37% against Blue Crabs and 80% against Dark
+Before it, a same-level Sorcerer won only 67% against Mudskippers, 37% against Blue Crabs and 80% against Dark
 Mushrooms; now every field monster from Lv 12 is 85% or better. (A Frost Shard slow was tried too: Frost is
 Water, so it barely touched the Water monsters behind those losses, and its points cost damage. Left out.)
 

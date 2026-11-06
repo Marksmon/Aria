@@ -184,3 +184,14 @@ test("Poseidon, Hafnvik's MVP (the owner's sheet): Water, on the Storm Isles, hi
   assert.ok(MOB_DEFS.tidePrison.decoy && MOB_DEFS.tidePrison.el === 'neutral');
   assert.ok(MVP_ULTRAS.includes('poseidon_crown'));
 });
+
+test("no recoloured monsters (the owner's call): only bloops share a body in new colours; others share a look only as the same monster", () => {
+  const BLOOPS = /^slime/;
+  const byArt = {};
+  for (const [k, d] of Object.entries(MOB_DEFS)) {
+    if (d.decoy) continue; // (a boss's shadows are its own look)
+    if (d.tint) assert.match(d.art, BLOOPS, `${k} is tinted`);
+    if (!BLOOPS.test(d.art)) (byArt[d.art] ||= new Set()).add(d.name);
+  }
+  for (const [art, names] of Object.entries(byArt)) assert.equal(names.size, 1, `${art} is worn by ${[...names].join(', ')}`);
+});

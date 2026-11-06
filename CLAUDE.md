@@ -286,6 +286,10 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
 - **Picking a path:** once the hero picks a first job by Elder Halvard's fire, he sends them straight
   to that job's town, beside its trainer, and the town is saved as theirs: its Keeper signs them in
   and their save point moves there, as a Save here would (the owner's call, `toTrainer` in `main.js`).
+- **No recoloured monsters** (the owner's call, November 2026): a monster never borrows another's look in new
+  colours; each kin has a design of its own (`src/variants.js`: the Red Sprout, Blue Crab, Dark Mushroom, Fire Beetle,
+  the Lantern, Dark and Fire Wisps, and the Mudskipper, once the Sea Bloop; `painted.js`: the raids' Warlords). The
+  bloops may still share a body in new colours, and the mini-bosses keep their looks (the owner's calls).
 - **Names:** plain common names in game; the cooler Old Norse names wait in `docs/names-later.md`.
 - **README:** never mention Ragnarok (or its names: Poring, zeny...) in `README.md`; describe Aria
   on its own. The design notes in `docs/` and the code may still refer to it.

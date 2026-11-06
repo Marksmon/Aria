@@ -122,6 +122,11 @@ export const PAINTED = {
   goblinAssassin: { race: 'goblin', kind: 'assassin', skin: '#5a9446', cloth: '#2a2a32', strap: '#1e1e26', mask: '#1c1c22', sash: '#a8323a', metal: '#dcdfe6', wood: '#3a2a22', eye: '#ff6a3a' },
   // the MVPs: bigger frames (KW x KH), a crown, a cape and a two-handed weapon
   koboldKing: { race: 'kobold', king: true, fur: '#8a5a32', muzzle: '#e6cfa2', collar: '#f2ece0', cape: '#b02a2a', metal: '#9aa0aa', gold: '#f2c040', wood: '#4a2e1a', boot: '#4a3020', strap: '#4a3020', eye: '#ffd23a' },
+  // the raids' Warlords (each with a look of its own, not the kings' in war-paint: the owner's call): the Kobold
+  // Warlord in a horned iron helm and dark iron, red war-paint, a spiked mace and a round shield; the Goblin Warlord
+  // a red mohawk, blue war-paint, a wolf pelt, a double-bladed battle-axe and a war-horn at his belt
+  koboldWarlord: { race: 'kobold', king: true, warlord: true, fur: '#6a4a2e', muzzle: '#d8c09a', collar: '#5a4632', cape: '#3a3640', metal: '#5a5e68', gold: '#c8843a', wood: '#3a2a1a', boot: '#2a2420', strap: '#3a2a1a', eye: '#ff7a2a', paint: '#d83a2a', horn: '#e8dcc0', shield: '#7a5232' },
+  goblinWarlord: { race: 'goblin', king: true, warlord: true, skin: '#4a8a3a', collar: '#8a8a92', cape: '#5a5a64', cloth: '#3a2a22', bone: '#e8e0c8', metal: '#c8ccd4', wood: '#4a3020', boot: '#2a1e16', strap: '#2a1e16', eye: '#ffd23a', paint: '#4ab8ff', hair: '#d8402a' },
   goblinKing: { race: 'goblin', king: true, skin: '#5f9a45', collar: '#4a3a30', cape: '#6a3a8a', cloth: '#6a4a2a', bone: '#efe6cc', metal: '#b4b8c0', wood: '#5a3a22', boot: '#3a2a1e', strap: '#3a2a1e', eye: '#ff5a2a' },
 };
 export const KW = 64, KH = 68;  // a king's frame
@@ -423,17 +428,25 @@ function paintKing(id, dir, anim, f) {
   if (gob && !back) for (let i = -3; i <= 3; i += 2) F.dot(cx + i * 2, by + 3 + Math.abs(i), P.bone); // a necklace of teeth
   // arms: the weapon in one hand, the other at his side; both on the haft to attack
   const armL = back ? cx + 10 : cx - 10, armR = back ? cx - 10 : cx + 10;
-  const freeHand = atk >= 0 ? [wx + (back ? -4 : 4), wy + 2] : [back ? cx - 14 : cx + 14, handY];
+  const shielded = P.warlord && !gob; // (the Kobold Warlord keeps his shield up: one hand on the mace)
+  const freeHand = atk >= 0 && !shielded ? [wx + (back ? -4 : 4), wy + 2] : [back ? cx - 14 : cx + 14, handY - (shielded && atk >= 0 ? 3 : 0)];
+  const shield = () => { // a round shield, bronze-rimmed, a boss in the middle (from behind, its wooden back)
+    const [sx, sy] = freeHand;
+    F.part(ellipse(sx + (back ? -2 : 2), sy - 2, 7, 8), back ? P.wood : P.shield);
+    if (!back) { F.part(ellipse(sx + 2, sy - 2, 7, 8), P.shield); F.part(ellipse(sx + 2, sy - 2, 2.2, 2.2), P.gold); for (const a of [0.6, 2.2, 3.8, 5.4]) F.dot(sx + 2 + Math.cos(a) * 5, sy - 2 + Math.sin(a) * 6, P.gold); }
+  };
   if (back) { // the cape covers the back, flaring to the ankles
     F.part(line(armL, shoulderY, wx, wy, 3), skin);
     F.part(line(armR, shoulderY, ...freeHand, 3), skin);
     F.part(poly([[cx - 11, by], [cx + 11, by], [cx + 15 + sway, KG - 3], [cx - 15 + sway, KG - 3]]), P.cape);
+    if (shielded) shield();
     for (const x of [-6, 0, 6]) F.part(line(cx + x * 0.7, by + 4, cx + x * 1.3 + sway, KG - 5, 1), dark(P.cape), { flat: true, outline: false }); // its folds
     weapon(wx, wy, wang, false); // held at his side, beside the cape
   }
   // collar and shoulder plates
   F.part(ellipse(cx, by + 1, 12, 3.5), P.collar);
-  if (!gob) for (let i = -10; i <= 10; i += 5) F.dot(cx + i, by + 1, '#2a2226'); // ermine spots
+  if (!gob && !P.warlord) for (let i = -10; i <= 10; i += 5) F.dot(cx + i, by + 1, '#2a2226'); // ermine spots
+  if (P.warlord) for (let i = -10; i <= 10; i += 3) F.dot(cx + i, by + 2 + (i % 2), dark(P.collar)); // a shaggy pelt
   for (const sx of [-1, 1]) {
     F.part(ellipse(cx + sx * 12, shoulderY, 4, 3.5), gob ? P.bone : P.metal);
     if (gob) F.part(poly([[cx + sx * 11, shoulderY - 2], [cx + sx * 14, shoulderY - 9], [cx + sx * 14, shoulderY - 2]]), P.bone);
@@ -442,6 +455,8 @@ function paintKing(id, dir, anim, f) {
   paintKingHead(F, P, cx, hy, dir);
   if (!back) {
     F.part(line(armR, shoulderY + 1, ...freeHand, 3), skin); // the other hand: at his side, or across to the haft
+    if (shielded) shield();
+    if (P.warlord && gob) { F.part(both(line(cx + 6, legTop - 2, cx + 10, legTop + 3, 2), line(cx + 10, legTop + 3, cx + 13, legTop + 2, 2)), P.bone); F.dot(cx + 13, legTop + 2, dark(P.bone)); } // the war-horn at his belt
     weapon(wx, wy, wang, true);
     F.part(line(armL, shoulderY + 1, wx, wy, 3), skin);
   }
@@ -451,6 +466,20 @@ function paintKing(id, dir, anim, f) {
 // the great hammer (kobold) or cleaver (goblin), its grip at (hx, hy), pointing at ang
 function kingWeapon(F, P, hx, hy, ang, near) {
   const c = Math.cos(ang), s = Math.sin(ang), col = (x) => (near ? x : dark(x));
+  if (P.warlord && P.race === 'kobold') { // a spiked mace
+    F.part(line(hx - c * 4, hy - s * 4, hx + c * 15, hy + s * 15, 2), col(P.wood));
+    const bx = hx + c * 18, by = hy + s * 18;
+    for (let i = 0; i < 8; i++) { const a = i / 8 * Math.PI * 2; F.part(poly([[bx + Math.cos(a + 0.35) * 3.5, by + Math.sin(a + 0.35) * 3.5], [bx + Math.cos(a) * 7, by + Math.sin(a) * 7], [bx + Math.cos(a - 0.35) * 3.5, by + Math.sin(a - 0.35) * 3.5]]), col(P.metal)); }
+    F.part(ellipse(bx, by, 4.2, 4.2), col(P.metal));
+    F.part(ellipse(bx - 1, by - 1, 1.2, 1.2), col(P.gold), { outline: false, flat: true });
+    return;
+  }
+  if (P.warlord) { // a double-bladed battle-axe
+    F.part(line(hx - c * 6, hy - s * 6, hx + c * 20, hy + s * 20, 2), col(P.wood));
+    for (const side of [-1, 1]) F.part(poly([[hx + c * 13 - s * side * 1, hy + s * 13 + c * side * 1], [hx + c * 9 - s * side * 9, hy + s * 9 + c * side * 9], [hx + c * 15 - s * side * 10, hy + s * 15 + c * side * 10], [hx + c * 21 - s * side * 9, hy + s * 21 + c * side * 9], [hx + c * 17 - s * side * 1, hy + s * 17 + c * side * 1]]), col(P.metal));
+    F.part(line(hx + c * 15 - s * 9, hy + s * 15 + c * 9, hx + c * 15 + s * 9, hy + s * 15 - c * 9, 1), col(dark(P.metal)), { outline: false, flat: true });
+    return;
+  }
   if (P.race === 'kobold') {
     F.part(line(hx - c * 5, hy - s * 5, hx + c * 17, hy + s * 17, 2), col(P.wood));
     F.part(obox(hx, hy, c, s, 15, 22, -5, 5), col(P.metal));      // the head
@@ -475,9 +504,10 @@ function paintKingHead(F, P, cx, hy, dir) {
     else for (const sx of [-1, 1]) F.part(poly([[cx + sx * 10, hy - 2], [cx + sx * 15, hy - 15], [cx + sx * 6, hy - 8]]), skin);
   }
   F.part(ellipse(cx + (side ? -1 : 0), hy, side ? 8.5 : 10, 9.5), skin);
-  // the crown: a band and points; gems on gold, a little skull on bone
   const crownY = hy - 9;
-  if (side) {
+  if (P.warlord) warlordHead(F, P, cx, hy, side, back, gob);
+  // the crown: a band and points; gems on gold, a little skull on bone
+  else if (side) {
     F.part(rect(cx - 9, crownY - 1, cx + 5, crownY + 2), crown);
     for (const x of [-7, -3, 1, 4]) F.part(poly([[x + cx - 1.5, crownY - 1], [x + cx, crownY - (gob ? 7 : 5)], [x + cx + 1.5, crownY - 1]]), crown);
     if (!gob) F.dot(cx, crownY, '#d02a3a');
@@ -493,6 +523,13 @@ function paintKingHead(F, P, cx, hy, dir) {
     }
   }
   if (back) return;
+  if (P.warlord) { // war-paint: stripes across the eyes (kobold, red) or down the cheeks (goblin, blue)
+    for (const sx of side ? [1] : [-1, 1]) {
+      const ex = side ? cx + 1 : cx + sx * 4.5;
+      if (gob) for (const dx of [-1, 1]) F.part(line(ex + dx, hy + 1, ex + dx - sx, hy + 4, 1), P.paint, { outline: false, flat: true });
+      else F.part(line(ex - 3, hy - 4, ex + 3, hy + 1, 1), P.paint, { outline: false, flat: true });
+    }
+  }
   const eye = (x, y) => { F.dot(x, y, P.eye); F.dot(x + 1, y, P.eye); F.dot(x + (side ? 1 : x < cx ? 1 : 0), y, '#140c08'); };
   if (gob) {
     if (side) {
@@ -524,6 +561,22 @@ function paintKingHead(F, P, cx, hy, dir) {
       for (const sx of [-1, 1]) { F.dot(cx + sx * 6, hy - 4, '#23170f'); F.dot(cx + sx * 5, hy - 4, '#23170f'); F.dot(cx + sx * 4, hy - 3, '#23170f'); }
     }
   }
+}
+
+// a Warlord's head: the Kobold Warlord's horned iron helm, nose-guard and all; the Goblin Warlord's red mohawk
+function warlordHead(F, P, cx, hy, side, back, gob) {
+  if (gob) {
+    for (let i = -3; i <= 3; i++) { const x = side ? cx - 3 + i * 1.6 : cx, z = side ? 0 : i; F.part(poly([[x - 1.5 + (side ? 0 : 0), hy - 8 + Math.abs(z) * 0.6], [x + 1.5, hy - 8 + Math.abs(z) * 0.6], [x + (side ? -1 : 0), hy - 15 + Math.abs(i) * 1.1]]), P.hair); if (!side) break; }
+    if (!side) F.part(poly([[cx - 2.5, hy - 7], [cx + 2.5, hy - 7], [cx + 2, hy - 13], [cx, hy - 17], [cx - 2, hy - 13]]), P.hair);
+    return;
+  }
+  F.part(poly(side ? [[cx - 9, hy - 2], [cx - 8, hy - 9], [cx - 2, hy - 12], [cx + 5, hy - 9], [cx + 7, hy - 3]] : [[cx - 10, hy - 2], [cx - 9, hy - 9], [cx, hy - 12], [cx + 9, hy - 9], [cx + 10, hy - 2]]), P.metal); // the helm
+  F.part(rect(cx - (side ? 9 : 10), hy - 3, cx + (side ? 7 : 10), hy - 2), P.gold, { outline: false, flat: true });
+  for (const sx of side ? [-1] : [-1, 1]) { // its horns, sweeping out and up
+    const ox = side ? cx - 4 : cx + sx * 8;
+    F.part(both(line(ox, hy - 8, ox + sx * 5, hy - 11, 2), line(ox + sx * 5, hy - 11, ox + sx * 7, hy - 17, 2), line(ox + sx * 7, hy - 17, ox + sx * 6, hy - 20, 1)), P.horn);
+  }
+  if (!back) F.part(rect(cx + (side ? 4 : -0.5), hy - 3, cx + (side ? 5 : 0.5), hy + 1), P.metal, { outline: false, flat: true }); // the nose-guard
 }
 
 // every frame of a monster: { down: { idle: [canvas], walk: [4], attack: [4] }, up, right, left }

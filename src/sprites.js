@@ -10,6 +10,7 @@ import { desertSet, DESERT, moundSet, MOUND } from './desert.js';
 import { hallsSet, HALLS } from './halls.js';
 import { rootsSet, ROOTS } from './roots.js';
 import { coastSet, COAST } from './coast.js';
+import { variantSet, VARIANTS } from './variants.js';
 import { paintButler, BW, BH } from './butler.js';
 import { paintBleepBloop, BW as BBW, BH as BBH, BODY as BB_BODY } from './bleepbloop.js';
 import { POSES, LEGS, framePainter } from './design-anim.js';
@@ -1230,9 +1231,11 @@ export function createSprites() {
   };
   // the mini-bosses drawn with PixelLab: their kind's sheet redone as a boss of its own (BOSS_LOOKS)
   for (const [id, [base, recolor]] of Object.entries(BOSS_LOOKS)) MADE[id] = () => sheet(base, { recolor });
+  // the monsters that were once another's look in new colours, each with a design of its own now (variants.js)
+  for (const [id, D] of Object.entries(VARIANTS)) MADE[id] = () => codeSet(variantSet(id), ...D.size, D.body, 2 / D.size[1]);
   // kobolds and goblins, painted in code (painted.js) until they get PixelLab art
   for (const id of ['koboldWarrior', 'koboldArcher', 'koboldAssassin', 'goblinWarrior', 'goblinArcher', 'goblinAssassin']) MADE[id] = () => paintedSet(id, [16, 30]);
-  for (const id of ['koboldKing', 'goblinKing']) MADE[id] = () => paintedSet(id, [26, 48]);
+  for (const id of ['koboldKing', 'goblinKing', 'koboldWarlord', 'goblinWarlord']) MADE[id] = () => paintedSet(id, [26, 48]);
   // Veidheim's beasts: wolves, bears, snakes, willows and treants, painted in code (beasts.js)
   for (const [id, B] of Object.entries(BEASTS)) MADE[id] = () => codeSet(beastSet(id), ...B.size, B.body, 2 / B.size[1]);
   // the desert's monsters and Pharaoh's Tomb's, painted in code (desert.js); the Sand Wyrm's mound
