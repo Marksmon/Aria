@@ -260,7 +260,8 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
 - `main.js` wires the game together; self-contained parts live in their own modules, each an `install<Name>(ctx)`
   called where its lines used to be (names made later in `main.js`, or reassigned, are read through `ctx` getters):
   `bossmoves.js` (boss moves on screen, the MVP's rewards), `stands.js` (the story's survive and search steps),
-  `questworld.js` (search, defence and rare-hunt quests), `lessons.js` (the guided lessons, the goal arrow); data
+  `questworld.js` (search, defence and rare-hunt quests), `raids.js` (a raid run, its bars, history and pay),
+  `lessons.js` (the guided lessons, the goal arrow); data
   tables in `spawns.js` (every map's monsters) and `scenes.js` (the opening's shots). Move more the same way.
 - `npx vite build` must pass. Test in the browser with Playwright (the game exposes
   `window.__aria`).
