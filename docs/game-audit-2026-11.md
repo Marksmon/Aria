@@ -10,7 +10,7 @@ settled something, this audit builds on them instead of repeating them.
 | Item | Done |
 |---|---|
 | QA-1 the public signing key | A store release is a second app (`com.marksmon.aria`) signed from the repository's secrets (`.github/workflows/release.yml`, `docs/release.md`, idle until the key is added); the everyday APK keeps its key (the owner's rule); a test keeps every other keystore out |
-| QA-2, QA-3 the early fields and economy | `build-tools/field-bot.cjs` plays young heroes in Moss Field, Fen Shore and Birch Grove (results in the commit) |
+| QA-2, QA-3 the early fields and economy | `build-tools/field-bot.cjs` played young heroes in the real game. Moss Field, Trainee Base 5: 16 kills in 8 min, no potions, +236 perz. Fen Shore, Trainee Base 9: 65 kills in 6 min, no faint, no potion, +826 perz; Blader Base 12: 79 kills, +1,079 perz. So the fuller first fields are safe and pay. Birch Grove, Blader Base 18 (Ember Edge, the right element): 9 kills, 12 Red Potions, lowest HP 26%, **−296 perz** in 6 min: the Red Sprouts (520 HP, 35–46 ATK) still cost more than they drop. Left for the owner (fuller maps and the quest perz cut were the owner's calls). Also found: a carter's landing stranded the hero in Fen Shore's and Willow Marsh's lakes, fixed |
 | Real-phone measurement | Settings → Performance: fps, slowest frame, draw calls, textures, geometries, maps built, memory. The measuring itself needs the owner's phone |
 | QA-4 cutscenes clear traps | Traps and the Voodoo's dolls wait, hidden, through a cutscene |
 | QA-5 memory | Only the current and last five maps stay built (`MAP_BUDGET`); geometries fell from 279 to 40 over 13 maps in a test |
