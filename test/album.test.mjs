@@ -46,3 +46,21 @@ test("an MVP's card and ultra rare come likelier with every kill they don't drop
   assert.equal(rows.find((r) => r.type === 'jarl').chance, 0.013);
   assert.equal(rows.find((r) => r.type === 'slime').chance, null, 'only MVPs');
 });
+
+test('album sets: eight regions, every one with cards, a finished set giving its bonus', async () => {
+  const fs = await import('node:fs');
+  const { SETS, setProgress, setBonus } = await import('../src/album.js');
+  const { RAIDS } = await import('../src/raid.js');
+  const src = fs.readFileSync(new URL('../src/main.js', import.meta.url), 'utf8'), i = src.indexOf('const SPAWNS = {'), j = src.indexOf('\n};', i);
+  const SPAWNS = (0, eval)(`(${src.slice(i + 15, j + 2).replace(/\/\/[^\n]*/g, '')})`);
+  const bosses = Object.values(RAIDS).map((r) => r.boss[0]);
+  const empty = setProgress(MOB_DEFS, SPAWNS, CARD_OF, new Album(), bosses);
+  assert.equal(empty.length, SETS.length);
+  for (const p of empty) { assert.ok(p.cards.length >= 4, `${p.set.name}: ${p.cards.length} cards`); assert.equal(p.done, false); }
+  assert.equal(empty.find((p) => p.set.id === 'raids').cards.length, 4, 'the four raid bosses');
+  const a = new Album();
+  for (const c of empty.find((p) => p.set.id === 'south').cards) a.card(c);
+  const full = setProgress(MOB_DEFS, SPAWNS, CARD_OF, a, bosses);
+  assert.ok(full.find((p) => p.set.id === 'south').done);
+  assert.deepEqual(setBonus(full), { stats: { pow: 1 }, mhpRate: 0, mspRate: 0 });
+});

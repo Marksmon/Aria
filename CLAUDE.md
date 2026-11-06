@@ -215,6 +215,9 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   hard and tricky as a field MVP: `FIERCE` in `mobs.js`), for a hero in the best gear. Clear rewards
   (perz, materials) x1/x3/x6/x9. Raid EXP is held and paid at the end: x1.5 on a clear,
   nothing on a failure (the Tutorial too).
+- **The Monster Album** (the 📖 button, `src/album.js`): every monster, kills and cards found, and eight sets
+  (the owner's call): a region's monsters' cards (bosses aside; the raids' set is their bosses' cards), each
+  finished set a small bonus for good (`SETS`, added in `applyStats`). A new region gets a set.
 - **Character slots and storage** (`src/save.js`): three heroes, picked on the title screen (slot 1
   keeps the old save key). The Keepers' storage is one chest shared by every hero (from a first job on), saved apart from
   them; a save code backs up every hero and the storage together.

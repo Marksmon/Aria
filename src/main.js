@@ -33,7 +33,7 @@ import { Audio } from './audio.js';
 import { Wings, wingPicture } from './wings.js';
 import { clamp, lerp } from './noise.js';
 import { settings, pixelRatio } from './settings.js';
-import { Album, albumRows } from './album.js';
+import { Album, albumRows, setProgress, setBonus } from './album.js';
 
 const canvas = document.getElementById('game');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, powerPreference: 'high-performance' });
@@ -250,9 +250,17 @@ if (!album.load(save?.album)) {
   for (const s of [...inv.bag.slots, ...inv.chest.slots]) { const u = parseKey(s.id); if (ITEMS[u.base]?.card) album.card(u.base); for (const c of u.cards) album.card(c); }
   for (const id of Object.values(inv.gear)) if (id) for (const c of parseKey(id).cards) album.card(c);
 }
+// the album's sets (album.js SETS): a finished one gives its bonus for good (applyStats)
+const RAID_BOSSES = Object.values(RAIDS).map((r) => r.boss[0]);
+const albumSets = () => setProgress(MOB_DEFS, SPAWNS, CARD_OF, album, RAID_BOSSES);
 inv.gained = (id) => {
   const base = baseOf(id);
-  if (ITEMS[base]?.card && album.card(base)) menus.message(`A new card for your Monster Album: ${ITEMS[base].name}!`);
+  if (!ITEMS[base]?.card) return;
+  const before = albumSets().filter((p) => p.done).length;
+  if (!album.card(base)) return;
+  menus.message(`A new card for your Monster Album: ${ITEMS[base].name}!`);
+  const done = albumSets().filter((p) => p.done);
+  if (done.length > before) { const s = done.find((p) => p.cards.includes(base)) || done.at(-1); menus.message(`Album set complete: ${s.set.name}! ${s.set.text} for good.`); audio.play('levelup'); applyStats(); }
 };
 // where each monster lives, for the album: its maps (SPAWNS), the raid it fights in, or the quest that calls it
 const LIVES = {};
@@ -452,6 +460,10 @@ function arrowLanded() {
 const burstOfSpeed = () => { if (skillLv(prog, 'skirmisher')) skirmish = 3; };
 function applyStats() {
   const gear = inv.gearStats();
+  // the Monster Album's finished sets (album.js SETS)
+  const set = setBonus(albumSets());
+  for (const [k, v] of Object.entries(set.stats)) gear.stats[k] = (gear.stats[k] || 0) + v;
+  gear.mhpRate = (gear.mhpRate || 0) + set.mhpRate; gear.mspRate = (gear.mspRate || 0) + set.mspRate;
   const hide = skillLv(prog, 'ironhide');
   const sword = weaponKind() === 'sword', bow = weaponKind() === 'bow';
   const st = gear.stats;
@@ -2169,6 +2181,7 @@ const menus = new Menus(inv, prog, player, {
   soundOn: () => audio.enabled,
   toggleSound() { audio.setEnabled(!audio.enabled); },
   setting: (k) => settings.get(k),
+  albumSets: () => albumSets(),
   album: () => albumRows(MOB_DEFS, album, CARD_OF, livesAt, (type, id) => { const base = MOB_DEFS[type].drops.find(([i]) => i === id)?.[3]; return base ? pityChance(base, mobs.pity[type]?.[id]) : null; }),
   setSetting(k, v) { settings.set(k, v); },
   closed() { persist(); },

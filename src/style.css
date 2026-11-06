@@ -492,6 +492,9 @@ body.named #toasts { top: calc(175px + var(--pets-push, 0px) + env(safe-area-ins
 .al-kills { color: var(--w-dim); font-size: 11px; white-space: nowrap; }
 .al-card { width: 22px; height: 22px; }
 .al-card.none { filter: grayscale(1) brightness(.45); }
+.al-row.done b { color: var(--w-gold); }
+.al-row:has(.al-set) { flex-wrap: wrap; }
+.al-set { flex-basis: 100%; display: flex; flex-wrap: wrap; gap: 3px; }
 .al-empty { padding: 12px; color: var(--w-dim); text-align: center; }
 #winbtns button.pressed { background: var(--w-press); }
 

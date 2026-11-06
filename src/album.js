@@ -39,3 +39,37 @@ export function albumRows(mobs, album, cardOf, where, chance = () => null) {
     }))
     .sort((a, b) => a.lv - b.lv || a.name.localeCompare(b.name));
 }
+
+// The album's sets (the owner's call): every card of one region's own monsters (bosses and MVPs aside;
+// the raids' set is their bosses' cards). A finished set gives a small bonus for good (main.js applyStats).
+// maps: the region's maps (main.js SPAWNS); bonus: { stats: { pow: 1 } } or { mhpRate / mspRate: % }
+export const SETS = [
+  { id: 'fields', name: "Eldrun's Fields", maps: ['grove', 'fen', 'hollow', 'birch'], bonus: { mhpRate: 2 }, text: 'Max HP +2%' },
+  { id: 'south', name: 'The Shore and the South', maps: ['coast', 'ridge', 'deep', 'heath'], bonus: { stats: { pow: 1 } }, text: 'POW +1' },
+  { id: 'tribes', name: 'Kobold and Goblin Lands', maps: ['stones', 'coalpit', 'burnt', 'serpent'], bonus: { stats: { end: 1 } }, text: 'END +1' },
+  { id: 'hunt', name: "Veidheim's Lands", maps: ['marsh', 'oldwood', 'farm', 'wolfhill'], bonus: { stats: { fns: 1 } }, text: 'FNS +1' },
+  { id: 'sands', name: 'The Desert', maps: ['redsands', 'dunes', 'scorpion', 'desert'], bonus: { stats: { qkn: 1 } }, text: 'QKN +1' },
+  { id: 'halls', name: "The Sphinx's Halls", maps: ['halls1', 'halls2', 'halls3', 'halls4'], bonus: { stats: { knl: 1 } }, text: 'KNL +1' },
+  { id: 'ygg', name: "Yggdrasil's Hollows", maps: ['ygg1', 'ygg2', 'ygg3', 'ygg4'], bonus: { mspRate: 2 }, text: 'Max SP +2%' },
+  { id: 'raids', name: 'The Raids', raids: true, bonus: { stats: { ftn: 1 } }, text: 'FTN +1' },
+];
+// each set's cards and how many the album holds: [{ set, cards: [card ids], found, done }]. spawns: map ->
+// [[type, n, night?]...] (main.js SPAWNS); raidBosses: the raids' boss types
+export function setProgress(mobs, spawns, cardOf, album, raidBosses = []) {
+  return SETS.map((set) => {
+    const types = set.raids ? raidBosses : [...new Set(set.maps.flatMap((m) => (spawns[m] || []).map(([t]) => t)))].filter((t) => !mobs[t]?.boss && !mobs[t]?.mvp);
+    const cards = [...new Set(types.map((t) => cardOf[mobs[t]?.name]).filter(Boolean))];
+    const found = cards.filter((c) => album.cards.has(c)).length;
+    return { set, cards, found, done: cards.length > 0 && found === cards.length };
+  });
+}
+// every finished set's bonus, added up: { stats, mhpRate, mspRate }
+export function setBonus(progress) {
+  const out = { stats: {}, mhpRate: 0, mspRate: 0 };
+  for (const { set, done } of progress) if (done) {
+    for (const [k, v] of Object.entries(set.bonus.stats || {})) out.stats[k] = (out.stats[k] || 0) + v;
+    out.mhpRate += set.bonus.mhpRate || 0;
+    out.mspRate += set.bonus.mspRate || 0;
+  }
+  return out;
+}

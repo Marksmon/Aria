@@ -736,6 +736,10 @@ export class Menus {
     const rows = this.hooks.album?.() || [], tab = this.albumTab || 'all';
     const met = rows.filter((r) => r.met).length, cards = rows.filter((r) => r.card), found = cards.filter((r) => r.found).length;
     const shown = rows.filter((r) => (tab === 'met' ? r.met : tab === 'boss' ? !!r.kind : true));
+    // the Sets tab: each region's cards and its bonus (album.js SETS)
+    const sets = tab === 'sets' ? (this.hooks.albumSets?.() || []).map((p) => `<div class="al-row${p.done ? ' done' : ''}"><div class="al-main"><b>${esc(p.set.name)}</b>${p.done ? '<i class="al-kind">Done</i>' : ''}
+        <small>${esc(p.set.text)} for good, once every card is found</small></div><span class="al-kills">${p.found} / ${p.cards.length}</span>
+        <span class="al-set">${p.cards.map((c) => `<img class="ico al-card${(this.hooks.albumSets && rows.some((r) => r.card === c && r.found)) || p.done ? '' : ' none'}" src="${iconURL(c)}" alt="" title="${esc(ITEMS[c].name)}">`).join('')}</span></div>`).join('') : '';
     const tabBtn = (k, name) => `<button class="rtab${tab === k ? ' on' : ''}" data-act="albumtab" data-id="${k}">${name}</button>`;
     const row = (r) => {
       const el = r.el ? r.el[0].toUpperCase() + r.el.slice(1) : '';
@@ -745,8 +749,8 @@ export class Menus {
         <span class="al-kills">${r.kills ? `${r.kills.toLocaleString()} beaten` : ''}</span>${card}</div>`;
     };
     return `<div class="al-head"><span>Met <b>${met}</b> / ${rows.length}</span><span>Cards <b>${found}</b> / ${cards.length}</span></div>
-      <div class="rtabs">${tabBtn('all', 'All')}${tabBtn('met', 'Met')}${tabBtn('boss', 'Bosses')}</div>
-      <div class="al-list">${shown.map(row).join('') || '<p class="al-empty">No monster here yet: go and meet some!</p>'}</div>`;
+      <div class="rtabs">${tabBtn('all', 'All')}${tabBtn('met', 'Met')}${tabBtn('boss', 'Bosses')}${tabBtn('sets', 'Sets')}</div>
+      <div class="al-list">${tab === 'sets' ? sets : shown.map(row).join('') || '<p class="al-empty">No monster here yet: go and meet some!</p>'}</div>`;
   }
 
   // Holger's refining, Seyla's slots and card inserting: pick a piece (worn or in the bag), see the
