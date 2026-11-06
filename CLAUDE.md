@@ -22,9 +22,11 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   (70–76, a lagoon waded, `lake.shallow`) S; Captain Asgeir's ship (`ship: [{ to, fare, lv }]`) to the Storm Isles
   (76–82) and Loki's Gate (Base 90) (`voyage` maps with a `dock`; `isle`; a map's sea side is `shore`; a walkable pier
   is `piers`). The coast's monsters are painted in code in `src/coast.js`, **every one a kind new to Aria** (the owner's
-  call: no crab, golem, wolf or other kind already used): Sea Otter, Tusk Walrus, Wrecker; Shell Turtle, Reef Octopus,
-  Glass Jelly, Merrow (Water); Sky Manta (Wind), Isle Boar, Moss Troll; Bog Toad, Sea Hag (Shadow), Fire Salamander
-  (Fire). A Neutral monster looks plain, a creature with no glow; only an elemental one glows (the owner's call). The
+  call: no crab, golem, wolf or other kind already used), and the Neutral ones land creatures, people and things with
+  no sea about them in look or name (the owner's call: the coast is not a water region): Quill Porcupine, Tusk Boar,
+  Cliff Bandit; Blade Mantis, Chest Mimic, Glass Jelly (Neutral), Merrow (Water); Gale Moth (Wind), Living Armor, Moss
+  Troll; Owlbear, Moor Witch (Shadow), Fire Salamander (Fire). A Neutral monster looks plain, with no glow; only an
+  elemental one glows (the owner's call). The
   album's ninth set is Hafnvik's Coast. Its MVP is **Poseidon, Lord of the Tides** (the owner's sheet: pale blue skin,
   long white hair, a gold horned crown, glowing blue eyes, gold-trimmed armour, a lower body of flowing water, a gold
   trident; moves Tidal Barrage, Leviathan Surge, Oceanic Prison, Raging Maelstrom), summoning Merrows and Glass

@@ -40,10 +40,10 @@ export const SPAWNS = {
   ygg4: [['rootWarden', 8], ['thornDrake', 7], ['nidhogg', 1]],             // 69-75: the great hall, its guards and Nidhogg (99)
   // Hafnvik and its coast (the fifth city): mostly Neutral, a few elemental (the owner's call)
   port: [], lokigate: [],
-  tidecliff: [['seaOtter', 13], ['tuskWalrus', 12], ['wrecker', 4], ['seaOtter', 2, true], ['wrecker', 2, true]],              // Base 65-70
-  coral: [['reefOctopus', 10], ['shellTurtle', 10], ['merrow', 7], ['glassJelly', 5], ['glassJelly', 3, true], ['merrow', 2, true]], // Base 70-76
-  storm: [['isleBoar', 12], ['mossTroll', 10], ['skyManta', 6], ['skyManta', 3, true], ['mossTroll', 2, true]],                   // Base 76-82 (by ship)
-  beacon: [['bogToad', 13], ['seaHag', 6], ['fireSalamander', 6], ['seaHag', 3, true], ['fireSalamander', 2, true]],             // Base 82-88
+  tidecliff: [['quillPorcupine', 12], ['tuskBoar', 13], ['cliffBandit', 4], ['quillPorcupine', 2, true], ['cliffBandit', 2, true]],     // Base 65-70
+  coral: [['bladeMantis', 10], ['chestMimic', 8], ['merrow', 7], ['glassJelly', 6], ['glassJelly', 3, true], ['merrow', 2, true]],      // Base 70-76
+  storm: [['livingArmor', 11], ['mossTroll', 10], ['galeMoth', 6], ['galeMoth', 3, true], ['livingArmor', 2, true]],                 // Base 76-82 (by ship)
+  beacon: [['owlbear', 13], ['moorWitch', 6], ['fireSalamander', 6], ['moorWitch', 3, true], ['fireSalamander', 2, true]],             // Base 82-88
   delveA: [], delveB: [], // the Deep Halls: each floor's monsters are picked as it is carved (delve.js floorSpawns)
   halls1: [['hallScarab', 16], ['cobra', 13]],                               // Base 65-72
   halls2: [['hallMummy', 10], ['lamia', 9], ['servant', 9]],                 // 73-80
