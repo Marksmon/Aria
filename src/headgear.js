@@ -166,6 +166,9 @@ export const HEADGEAR = {
     back: null, // not seen from behind
   },
   raven_mask: { slot: 'face' }, // standard piece only
+  // the cities' pieces (draw-hats.py): standard pieces only
+  bandana: { slot: 'head' }, straw_hat: { slot: 'head' }, witch_hat: { slot: 'head' }, feather_cap: { slot: 'head' },
+  eyepatch: { slot: 'face' }, monocle: { slot: 'face' },
 };
 
 // the views of one piece as nearest-filtered textures: { front, side, sideL, back } (null = hidden)

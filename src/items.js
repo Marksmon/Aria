@@ -442,6 +442,13 @@ const BASE_ITEMS = {
   woven_cap:    { type: 'equip', slot: 'head', name: 'Leaf Cap', def: 1, desc: 'A little cap of leaves woven tight, with a sturdy cloth band. Popular with Trainees.' },
   flower_wreath: { type: 'equip', slot: 'head', name: 'Flower Crown', def: 0, flee: 1, desc: 'Meadow flowers on a green ring. Sprouts drop them sometimes; nobody knows where they find them.' },
   horned_helm:  { type: 'equip', slot: 'head', name: 'Horned Helm', def: 3, desc: 'Iron, brass and two proud horns. Heavy, loud, and very good at stopping clubs.' },
+  // the cities' hats and face pieces, mostly for the look (art/hg_<id>: build-tools/draw-hats.py)
+  bandana:      { type: 'equip', slot: 'head', name: 'Bandana', flee: 1, desc: 'A red cloth with white dots, tied tight behind the head, the tails left to flap. Sailors and caravan hands swear by it.' },
+  straw_hat:    { type: 'equip', slot: 'head', name: 'Straw Hat', def: 1, desc: 'A wide woven brim with a red ribbon round the crown. It keeps the desert sun off and looks good doing it.' },
+  witch_hat:    { type: 'equip', slot: 'head', name: 'Witch Hat', def: 1, stats: { knl: 1 }, desc: 'A tall purple hat with a crooked tip and a gold buckle, the kind Galdrheim\'s old masters wore. It makes you feel wiser.' },
+  feather_cap:  { type: 'equip', slot: 'head', name: 'Feathered Cap', def: 1, stats: { fns: 1 }, desc: 'A green felt hunter\'s cap with a short peak and a long red feather. Veidheim\'s archers wear them to the contests.' },
+  eyepatch:     { type: 'equip', slot: 'face', name: 'Eyepatch', perk: { crit: 1 }, desc: 'Black leather over one eye, its strap across the brow. One eye shut, the other finds the gap.' },
+  monocle:      { type: 'equip', slot: 'face', name: 'Monocle', hit: 2, desc: 'A gold-rimmed lens on a fine chain, held in by a stern frown. Scholars and card sharps both like them.' },
   // body armor: hard DEF
   clothes:      { type: 'equip', slot: 'armor', name: 'Cotton Shirt', def: 1, icon: 'armor0', desc: 'Patched cotton, comfortable and cheap. Better than nothing, but not by much.' },
   leaf_tunic:   { type: 'equip', slot: 'armor', name: 'Leaf Tunic',  def: 2, icon: 'armor1', desc: 'Leaves woven tight over a linen shirt. Surprisingly tough, and it smells of spring.' },
@@ -648,6 +655,7 @@ export const PRICES = {
   gooey_ring: 4000, tide_pendant: 5000, seedling_band: 5000, mud_buckler: 6000, spore_cloak: 7000, horn_blade: 15000, pebble_ring: 5000,
   wisp_lantern: 6000, bramble_ring: 6000, coral_shield: 8000, gloom_hood: 9000, cinder_mail: 14000, ember_charm: 9000,
   ember_crown: 30000, flame_circlet: 20000, round_glasses: 600, raven_mask: 400, woven_cap: 300, flower_wreath: 200, horned_helm: 1800,
+  bandana: 1500, straw_hat: 1200, witch_hat: 5000, feather_cap: 4000, eyepatch: 2500, monocle: 3000,
   clothes: 10, leaf_tunic: 300, shell_mail: 1100, beetle_plate: 2800, chain_mail: 3200, mage_robe: 2600,
   round_shield: 1200, wool_cape: 700, leather_boots: 500, swift_boots: 1000, torch: 100,
   iron_buckler: 3000, rune_shield: 5000, beetle_shield: 9000, tower_shield: 18000, kobold_shield: 9000, goblin_shield: 12000,
@@ -673,17 +681,17 @@ export const sellPrice = (id) => Math.floor((PRICES[baseOf(id)] || 0) / 2); // u
 export const SHOPS = {
   hild: ['potion', 'potion2', 'tonic', 'herb', 'berry', 'wander', 'homeward'],
   holger: ['iron_ore', 'steel_ore'], // the refiner's ores (Hard and Armor Ore only drop)
-  gunnar: ['twig_sword', 'stone_blade', 'iron_sword', 'clothes', 'chain_mail', 'round_shield', 'wool_cape', 'travel_cloak', 'leather_boots'],
+  gunnar: ['twig_sword', 'stone_blade', 'iron_sword', 'clothes', 'chain_mail', 'round_shield', 'wool_cape', 'travel_cloak', 'leather_boots', 'bandana', 'eyepatch'],
   // Galdrheim: Kari's curios (like Hild's, and Speed Potions), Orm's staves and robes
   kari: ['potion', 'potion2', 'tonic', 'herb', 'berry', 'quick', 'wander', 'homeward'],
   // Veidheim: Asa's bows and arrows, Eydis's hunting supplies (White Potions and Honey for the long hunts)
-  asa: ['hunting_bow', 'composite_bow', 'wooden_arrow', 'iron_arrow', 'fire_arrow', 'ice_arrow', 'wind_arrow', 'earth_arrow'],
+  asa: ['hunting_bow', 'composite_bow', 'wooden_arrow', 'iron_arrow', 'fire_arrow', 'ice_arrow', 'wind_arrow', 'earth_arrow', 'feather_cap'],
   eydis: ['potion', 'potion2', 'potion3', 'tonic', 'honey', 'herb', 'quick', 'wander', 'homeward'],
-  orm: ['oak_staff', 'birch_staff', 'frost_staff', 'rune_staff', 'mage_robe', 'wool_cape', 'leather_boots'],
+  orm: ['oak_staff', 'birch_staff', 'frost_staff', 'rune_staff', 'mage_robe', 'wool_cape', 'leather_boots', 'witch_hat', 'monocle'],
   // Rytingborg: Dalla's bazaar stall (dates and water for the road), Steinar's forge (daggers and
   // desert gear), Yrsa's daggers
   dalla: ['potion', 'potion2', 'potion3', 'tonic', 'dates', 'water_skin', 'herb', 'quick', 'wander', 'homeward'],
-  steinar: ['knife', 'sand_kris', 'iron_sword', 'clothes', 'chain_mail', 'round_shield', 'desert_wrap', 'leather_boots'],
+  steinar: ['knife', 'sand_kris', 'iron_sword', 'clothes', 'chain_mail', 'round_shield', 'desert_wrap', 'leather_boots', 'straw_hat', 'bandana'],
   yrsa: ['rusty_dagger', 'knife', 'sand_kris', 'main_gauche', 'assassin_garb'],
 };
 // who crafts a recipe: 'use' (Ragna's brews), 'magic' (Orm's staves and sorcerers' gear), 'gear' (Gunnar's forge)

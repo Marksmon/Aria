@@ -84,6 +84,10 @@ Two slots, like Ragnarok's: **Head** (hats, helmets, crowns) and **Face** (glass
 - `build-tools/pack-heads.py` keeps only what the piece adds to the bald head, shrinks it like
   the heads, and writes `src/art/hg_<id>.png` (a row per frame for an animated piece, like the
   Flame Circlet) and `hg_<id>.json`.
+- Pieces PixelLab didn't make are drawn in code as 3D shapes on the same bald head, turned to each
+  direction: `build-tools/draw-headgear.py` (the Giant Goat Horn Helm, the Elven Ears) and
+  `build-tools/draw-hats.py` (the shops' Bandana, Straw Hat, Witch Hat, Feathered Cap, Eyepatch and
+  Monocle). They write the same `hg_<id>.png` and `.json`, with the hat's `cut`.
 - The game paints it into each body frame at the head's spot, after the hair: face piece, then
   head piece. A helmet or cap hides the hair above its brim, a crown the spikes above it; a wreath
   rests in the hair.

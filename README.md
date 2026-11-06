@@ -1353,7 +1353,9 @@ new job can't use, and a second dagger in the Shield slot is for a Phantom only.
 (crafted), the animated **Fire Crown** (crafted from the Fire Giant's Fire Heart), the Horned Crown (Fire Giant),
 the World Tree Crown (Nidhogg), and two raid ultra rares, the Giant Goat Horn Helm and the Pharaoh's Headdress.
 On the face: Glasses and the Bird Mask (crafted), the Elven Ears (raid ultra rare) and the Sphinx's All-Seeing Eye
-(Eternal Sphinx, 0.5%). Hats hide the hair they cover.
+(Eternal Sphinx, 1%). The cities' shops sell a few more, mostly for the look: Gunnar a Bandana (FLEE +1) and an
+Eyepatch (+1% critical hits), Orm a Witch Hat (DEF 1, KNL +1) and a Monocle (HIT +2), Asa a Feathered Cap (DEF 1,
+FNS +1), and Steinar a Straw Hat (DEF 1) and the Bandana. Hats hide the hair they cover.
 
 **Your look.** A character is layers: the job's body, then one shared head (the
 standard face: eyes only, no mouth), then your hairstyle, then headgear. You choose your hero's
