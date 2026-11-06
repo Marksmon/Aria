@@ -12,6 +12,7 @@ import { NPCS, QUESTS, giverOf, rewardOf, SERIES } from './quests.js';
 import { ZONE_NAMES } from './world.js';
 import { RAIDS, waitText } from './raid.js';
 import { raidDef, MOB_DEFS } from './mobs.js';
+import { UI_SCALES, nextScale } from './settings.js';
 import { SKILLS, skillList, skillLv, learnBlock, trainTrees, spCost, castTime, pointsIn, WEAPON_NAMES, RETRAIN_COST, MK_POINTS } from './skills.js';
 
 // the Skills window's trees: every tree the hero has earned, the current job's first, then the jobs it
@@ -727,6 +728,7 @@ export class Menus {
     const on = this.hooks.soundOn?.();
     return `<div class="setrow"><span>Sound</span><button class="rbtn${on ? '' : ' soft'}" data-act="sound" aria-pressed="${!!on}">${on ? 'On' : 'Off'}</button></div>
       <div class="setrow"><span>Target health bar<small>A bar under the name of the monster you fight.</small></span><button class="rbtn${this.hooks.setting?.('targetBar') ? '' : ' soft'}" data-act="targetbar" aria-pressed="${!!this.hooks.setting?.('targetBar')}">${this.hooks.setting?.('targetBar') ? 'On' : 'Off'}</button></div>
+      <div class="setrow"><span>Interface size<small>The panel, buttons, hotbar, minimap and quest list. Windows keep their size.</small></span><button class="rbtn" data-act="uiscale">${esc((UI_SCALES.find((u) => u.k === this.hooks.setting?.('uiScale')) || UI_SCALES[1]).name)}</button></div>
       <div class="setrow"><span>Graphics<small>${this.hooks.setting?.('graphics') === 'fast' ? 'Fast: fewer pixels, for a smoother game on an older phone.' : 'Sharp: the clearest picture.'}</small></span><button class="rbtn${this.hooks.setting?.('graphics') === 'fast' ? ' soft' : ''}" data-act="graphics">${this.hooks.setting?.('graphics') === 'fast' ? 'Fast' : 'Sharp'}</button></div>
       <div class="setrow"><span>Main menu<small>Your game is saved first. Pick another hero there.</small></span><button class="rbtn" data-act="totitle">Back to main menu</button></div>`;
   }
@@ -1115,6 +1117,7 @@ export class Menus {
     if (act === 'weartitle') { this.hooks.wearTitle?.(t.dataset.id || null); this.render(id); }
     if (act === 'albumtab') { this.albumTab = t.dataset.id; this.render(id); }
     if (act === 'targetbar') { this.hooks.setSetting?.('targetBar', !this.hooks.setting?.('targetBar')); this.render(id); }
+    if (act === 'uiscale') { this.hooks.setSetting?.('uiScale', nextScale(this.hooks.setting?.('uiScale') ?? 1)); this.render(id); }
     if (act === 'graphics') { this.hooks.setSetting?.('graphics', this.hooks.setting?.('graphics') === 'fast' ? 'sharp' : 'fast'); this.render(id); }
     if (act === 'statreset') { this.pend = {}; this.hooks.ui?.(); this.render(id); }
     if (act === 'statconfirm') {

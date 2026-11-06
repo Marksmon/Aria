@@ -39,7 +39,10 @@ import { Goals, ACHIEVEMENTS, WEEKLY, weeklyReward, weekEnds } from './goals.js'
 const canvas = document.getElementById('game');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, powerPreference: 'high-performance' });
 renderer.setPixelRatio(pixelRatio(window.devicePixelRatio)); // Settings' Graphics: Sharp (up to 1.5x) or Fast (1x)
-settings.onChange((k) => { if (k === 'graphics') { renderer.setPixelRatio(pixelRatio(window.devicePixelRatio)); resize(); } });
+// the HUD's size (settings uiScale): a CSS zoom on its controls (style.css --ui)
+const applyScale = () => document.documentElement.style.setProperty('--ui', String(settings.get('uiScale')));
+applyScale();
+settings.onChange((k) => { if (k === 'graphics') { renderer.setPixelRatio(pixelRatio(window.devicePixelRatio)); resize(); } if (k === 'uiScale') { applyScale(); placeAtkBtn(); } });
 renderer.localClippingEnabled = true; // wading: sprites are cut at the waterline
 
 const scene = new THREE.Scene();
@@ -2351,13 +2354,15 @@ function placeAtkBtn() {
   const hb = document.getElementById('hotbar').getBoundingClientRect();
   if (!hb.width) return;
   // always beside it, on the left (the hotbar's slots shrink on a narrow screen so both fit: style.css)
-  atkBtn.style.left = `${Math.max(4, hb.left - atkBtn.offsetWidth - 8)}px`;
-  atkBtn.style.top = `${hb.top + (hb.height - atkBtn.offsetHeight) / 2}px`;
+  // (in screen px, then into the button's own zoomed px: the Interface size)
+  const z = settings.get('uiScale') || 1, ab = atkBtn.getBoundingClientRect();
+  atkBtn.style.left = `${Math.max(4, hb.left - ab.width - 8) / z}px`;
+  atkBtn.style.top = `${(hb.top + (hb.height - ab.height) / 2) / z}px`;
   // the quest list ends above the hotbar (on a short screen it scrolls rather than run under it)
   const ql = document.querySelector('#quests .qlist');
   // (held upright: never over about one quest's height, 165px, so it doesn't cover the field; it scrolls)
   const cap = innerHeight > innerWidth ? 165 : 230;
-  if (ql?.offsetParent) ql.style.maxHeight = `${Math.max(56, Math.min(cap, innerHeight * 0.34, hb.top - ql.getBoundingClientRect().top - 8))}px`;
+  if (ql?.offsetParent) ql.style.maxHeight = `${Math.max(56, Math.min(cap, innerHeight * 0.34, hb.top - ql.getBoundingClientRect().top - 8)) / (settings.get('uiScale') || 1)}px`; // (in its own zoomed px)
 }
 window.addEventListener('resize', placeAtkBtn);
 setInterval(placeAtkBtn, 500);

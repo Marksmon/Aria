@@ -23,7 +23,8 @@ The title screen has three character slots. Tap a hero and **Continue** (or **Pl
 empty slot to make a new one; **Delete** removes the picked hero (it asks twice). In the game, the **⚙**
 button (beside the minimap) opens Settings: Sound on or off, **Target health bar** (a thin bar under the
 name of the monster you fight, on or off), **Graphics** (Sharp, or Fast for a smoother game on an older
-phone), and **Back to main menu**, which saves and goes back to the title screen to play another hero.
+phone), **Interface size** (Small, Normal, Large or Larger: the panel, buttons, hotbar, minimap and quest list;
+windows keep their size), and **Back to main menu**, which saves and goes back to the title screen to play another hero.
 The game saves every few seconds and keeps a backup copy of each hero a minute old: a save that was cut
 short loads from the backup. If the phone ever refuses a save (its storage full), the game says so: back
 up your save from the title screen. Every

@@ -93,6 +93,18 @@ async function waitFor(url, ms = 30000) {
     await page.evaluate(() => window.__aria.menus.show('settings'));
     await page.waitForTimeout(300);
     for (const act of ['targetbar', 'graphics', 'targetbar', 'graphics']) { await page.click(`[data-act="${act}"]`); await page.waitForTimeout(150); }
+    // the Interface size: Normal -> Large -> Larger, every HUD button still on screen and tappable there, then round to Normal
+    for (let i = 0; i < 2; i++) { await page.click('[data-act="uiscale"]'); await page.waitForTimeout(150); }
+    await page.keyboard.press('Escape');
+    if ((await page.evaluate(() => window.__aria.settings.get('uiScale'))) !== 1.3) fail.push('the Interface size did not reach Larger');
+    for (const sel of ['#winbtns [data-btn="status"]', '#winbtns [data-btn="journal"]', '#atkbtn', '#optbtn', '#goalsbtn', '#minimap']) {
+      const why = await tappable(sel);
+      if (why) fail.push(`at the Larger size: ${why}`);
+    }
+    await page.evaluate(() => window.__aria.menus.show('settings'));
+    await page.waitForTimeout(300);
+    for (let i = 0; i < 2; i++) { await page.click('[data-act="uiscale"]'); await page.waitForTimeout(150); }
+    if ((await page.evaluate(() => window.__aria.settings.get('uiScale'))) !== 1) fail.push('the Interface size did not come round to Normal');
     await page.keyboard.press('Escape');
 
     step('a fight with the target bar');
