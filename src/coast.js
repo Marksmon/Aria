@@ -1,8 +1,11 @@
 // Hafnvik's coast (the fifth city's four fields, docs/fifth-city.md), its monsters painted pixel by pixel in code
-// like Yggdrasil's (roots.js): mostly Neutral, a few elemental for variety (the owner's call). New painters for the
+// like Yggdrasil's (roots.js): mostly Neutral, a few elemental for variety (the owner's call). A Neutral one looks
+// plain, a creature of shore and moor (the owner's call: no glowing runes, eyes or tips); only the elemental ones
+// glow: the Merrows' sea-blue harpoons (Water), the Storm Petrels' sparks (Wind), the Draugr's violet eyes and runes
+// (Shadow), the Beacon Wraiths' flame (Fire). New painters for the
 // Cliff Gulls and Storm Petrels (gull), the Merrows, fish-folk who throw harpoons (merrow), and the Glass Jellies
 // that drift over the shallows (jelly); Yggdrasil's golem, serpent, beetle, stag and warden painters in sea
-// colours for the Tide Golems and Isle Trolls, the Reef Eels, the Coral Beetles, the Storm Rams and the drowned
+// colours for the Tide Golems and Isle Trolls, the Reef Eels, the Coral Beetles, the Isle Elks and the drowned
 // Draugr (paintRootsKind). The Barnacle Crabs, Moor Hounds and Beacon Wraiths are sprites.js's crab, beasts.js's
 // wolf and the wisp in new colours.
 // Frames: 4 directions (down, up, right; left is right mirrored) x idle (1), walk (4) and attack (4).
@@ -14,18 +17,18 @@ const flat = { outline: false, flat: true };
 export const COAST = {
   // Tide Cliffs
   cliffGull: { kind: 'gull', size: [56, 52], body: [34, 30], feather: '#f4f2ec', wing: '#a8acb4', tip: '#3a3c44', beak: '#f0b030', leg: '#e88a3a', eye: '#1a1a1a' },
-  tideGolem: { kind: 'golem', size: [64, 64], body: [44, 56], stone: '#6e8a96', moss: '#2f7a6a', fern: '#5ab0a0', cap: '#e8e0d0', rune: '#8ae8ff', eye: '#9af0ff', crack: '#3e5058' },
+  tideGolem: { kind: 'golem', size: [64, 64], body: [44, 56], stone: '#8c908e', moss: '#3e5a4a', fern: '#56786a', cap: '#ecebe4', rune: '#626664', eye: '#222624', crack: '#5a5e5c' }, // grey, barnacles and seaweed
   // Coral Shallows
-  reefEel: { kind: 'serpent', size: [52, 50], body: [28, 38], bark: '#3a6a8a', ridge: '#244a62', belly: '#e8d8a0', moss: '#f07a8a', leaf: '#ffb0a0', horn: '#e8d8c0', eye: '#ffe86a', fang: '#f6f0e0', venom: '#9af0ff' },
-  coralBeetle: { kind: 'rotbeetle', size: [60, 50], body: [40, 32], shell: '#c85a5a', crack: '#7a2a2a', rot: '#f08a6a', cap: '#ff9ab0', capHi: '#ffd0dc', gill: '#fff0f0', leg: '#4a2020', eye: '#ffe0a0', jaw: '#5a2a2a', venom: '#9af0ff', spore: '#ffe0e8' },
-  merrow: { kind: 'merrow', size: [48, 64], body: [24, 56], scale: '#3a8a8a', belly: '#c8e8d8', fin: '#7ad0c0', hair: '#2a5a6a', eye: '#ffe86a', spear: '#c8b898', tip: '#e8f0f4', shell: '#f0c8b0' },
-  glassJelly: { kind: 'jelly', size: [48, 56], body: [28, 46], bell: '#a8d8f0', rim: '#e8f6ff', glow: '#7ae0ff', tent: '#c8a8f0', heart: '#f0a8d8' },
+  reefEel: { kind: 'serpent', size: [52, 50], body: [28, 38], bark: '#4a6a5e', ridge: '#2e4a40', belly: '#e0d4a8', moss: '#c87a6a', leaf: '#e0a890', horn: '#e0d4c0', eye: '#e8c860', fang: '#f6f0e0', venom: '#e8e0c8' },
+  coralBeetle: { kind: 'rotbeetle', size: [60, 50], body: [40, 32], shell: '#a8584e', crack: '#6a2a24', rot: '#d0806a', cap: '#e89aa0', capHi: '#f4c8c8', gill: '#f6ece8', leg: '#3a2420', eye: '#2a1a14', jaw: '#4a2a24', venom: '#f0e4d8', spore: '#f4e8e0' },
+  merrow: { kind: 'merrow', size: [48, 64], body: [24, 56], scale: '#2e7a9a', belly: '#c0e4f0', fin: '#5ad0f0', hair: '#1e4a7a', eye: '#9af0ff', spear: '#c8b898', tip: '#8ae8ff', shell: '#a8e0f8' },
+  glassJelly: { kind: 'jelly', size: [48, 56], body: [28, 46], bell: '#c8d4dc', rim: '#eef2f4', glow: '#b8c6d0', tent: '#b8a8c0', heart: '#d8c8d0' },
   // Storm Isles
   stormPetrel: { kind: 'gull', storm: true, size: [56, 52], body: [34, 30], feather: '#6a7080', wing: '#3a3e4a', tip: '#1e2028', beak: '#2a2a30', leg: '#2a2a30', eye: '#9ad8ff', spark: '#e8f4ff' },
-  stormRam: { kind: 'stag', size: [68, 68], body: [44, 56], coat: '#8a8e9a', belly: '#e0e0e8', antler: '#f0e8c8', glow: '#9ad8ff', eye: '#1a1a24', hoof: '#2a2a30' },
-  isleTroll: { kind: 'golem', size: [64, 64], body: [44, 56], stone: '#7a7266', moss: '#5a7a3a', fern: '#8aa858', cap: '#a89a7a', rune: '#c8e86a', eye: '#ffd23a', crack: '#4a443c' },
+  isleElk: { kind: 'stag', size: [68, 68], body: [44, 56], coat: '#9a8a72', belly: '#e8dcc8', antler: '#d8ccb0', glow: '#d8ccb0', eye: '#1a1408', hoof: '#3a2e22' },
+  isleTroll: { kind: 'golem', size: [64, 64], body: [44, 56], stone: '#7a6450', moss: '#5a8a34', fern: '#8ab850', cap: '#9a7a52', rune: '#4e3e30', eye: '#3a2618', crack: '#4a3a2c' }, // brown, mossy green
   // Beacon Moor
-  draugr: { kind: 'warden', size: [68, 80], body: [34, 72], bark: '#5a6a68', plate: '#56646c', moss: '#3a6a5a', leafy: '#6a9a7a', eye: '#7af0ff', blade: '#9aa8b0', rune: '#7af0ff' },
+  draugr: { kind: 'warden', size: [68, 80], body: [34, 72], bark: '#5a5e6a', plate: '#4a4e5e', moss: '#3a4a4a', leafy: '#5a6a6a', eye: '#c8a0ff', blade: '#8a8ea8', rune: '#b890ff' },
 };
 
 const ANIMS = { idle: 1, walk: 4, attack: 4 };

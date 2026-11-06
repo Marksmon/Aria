@@ -22,7 +22,7 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   (70–76, a lagoon waded, `lake.shallow`) S; Captain Asgeir's ship (`ship: [{ to, fare, lv }]`) to the Storm Isles
   (76–82) and Loki's Gate (Base 90) (`voyage` maps with a `dock`; `isle`; a map's sea side is `shore`; a walkable pier
   is `piers`). The coast's monsters are painted in code in `src/coast.js` (gull, merrow, jelly, and Yggdrasil's
-  painters in sea colours, `paintRootsKind`), 9 Neutral and 4 elemental (Tide Golem Water, Storm Petrel Wind, Draugr
+  painters in sea colours, `paintRootsKind`), 9 Neutral and 4 elemental (Merrow Water, Storm Petrel Wind, Draugr
   Shadow, Beacon Wraith Fire); the album's ninth set is Hafnvik's Coast. Next: its story chapter, quests, mini-boss, MVP.
 
 - **Jobs, skill points and second jobs:** read `docs/job-rules.md` before touching jobs, skills

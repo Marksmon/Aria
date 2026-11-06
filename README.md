@@ -131,9 +131,9 @@ Scorpion Sands with its Pyramid, then the Great Desert, where the Sand Wyrm hunt
 | Cactus Dunes | 55–60 | Cactus (55, throws needles), Dune Worm (58) | Cactus Lord (60) |
 | Scorpion Sands | 60–66 | Sand Scorpion (61, poison), Sand Runner (64) | Rainbow Runner (64) |
 | Great Desert | 62–70 | Soldier Ant (62), Cactus, Dune Worm, Sand Scorpion, Sand Runner | **Sand Wyrm (70, MVP)** |
-| Tide Cliffs | 65–70 | Cliff Gull (65, flies), Barnacle Crab (66, hard shell), Tide Golem (69, Water) | |
-| Coral Shallows | 70–76 | Reef Eel (71), Coral Beetle (73), Glass Jelly (74, numbing sting), Merrow (75, throws harpoons) | |
-| Storm Isles (by ship) | 76–82 | Storm Petrel (77, Wind), Storm Ram (79), Isle Troll (81) | |
+| Tide Cliffs | 65–70 | Cliff Gull (65, flies), Barnacle Crab (66, hard shell), Tide Golem (69) | |
+| Coral Shallows | 70–76 | Reef Eel (71), Coral Beetle (73), Glass Jelly (74, numbing sting), Merrow (75, Water, throws harpoons) | |
+| Storm Isles (by ship) | 76–82 | Storm Petrel (77, Wind), Isle Elk (79), Isle Troll (81) | |
 | Beacon Moor | 82–88 | Moor Hound (83, quick), Draugr (84, Shadow), Beacon Wraith (86, Fire, throws fire) | |
 | Sphinx Halls 1 | 65–72 | Scarab (66, hard shell), Cobra (71, poison) | |
 | Sphinx Halls 2 | 73–80 | Mummy (75), Lamia (78, spits venom), Pharaoh's Servant (80, blue fire, shields the others) | |
@@ -182,9 +182,9 @@ long pier sails to the Storm Isles, and, for heroes of Base 90, to **Loki's Gate
 Mischiefbringer keeps the door of the Deep Halls, an endless dungeon: each floor a new maze, harder than the last,
 a checkpoint and a cache every fifth floor. The coast's monsters (painted in code, `src/coast.js`) are mostly
 Neutral, with a few of an element for variety, so no one weapon element is best here: gulls and petrels, crabs,
-eels, beetles grown over with coral, fish-folk Merrows with harpoons, glassy jellies, rams and trolls of the
+eels, beetles grown over with coral, fish-folk Merrows with harpoons, glassy jellies, elks and trolls of the
 storm, moor hounds, drowned Draugr and the Beacon Wraiths. Their cards make the **Hafnvik's Coast** album set
-(Max HP and SP +1%); the Storm Ram's and the Draugr's are Head and Face cards for fighters.
+(Max HP and SP +1%); the Isle Elk's and the Draugr's are Head and Face cards for fighters.
 
 **The desert's monsters** (painted in code, `src/desert.js`). Red Bloops warm themselves on the Red
 Sands beside Giant Ants, red-brown and busy; both only fight back. Further out, Cacti stand still and
@@ -1363,7 +1363,7 @@ they come back whole and the slot stays open. A piece that breaks at Holger's gi
 | Thorn Drake Card (Draconic) | Armor | POW +1 · END +1 · Max HP +6% | Thorn Drakes (0.1%) |
 | Storm Petrel Card (Stormborne) | Shoes | FLEE +5 · QKN +2 | Storm Petrels (0.1%) |
 | Lamia Card (Bewitching) | Head or Face | ATK +8 · HIT +3 | Lamias (0.1%) |
-| Storm Ram Card (Ramming) | Head or Face | ATK +10 · HIT +4 | Storm Rams (0.1%) |
+| Isle Elk Card (Antlered) | Head or Face | ATK +10 · HIT +4 | Isle Elks (0.1%) |
 | Pharaoh's Servant Card (Devout) | Garment | KNL +1 · Max SP +8% | Pharaoh's Servants (0.1%) |
 | Isle Troll Card (Trollish) | Armor | DEF +2 · Max HP +800 | Isle Trolls (0.1%) |
 | Moor Hound Card (Hounding) | Weapon | ATK +16 · FNS +1 | Moor Hounds (0.1%) |
