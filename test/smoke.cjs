@@ -66,6 +66,14 @@ async function waitFor(url, ms = 30000) {
       if (!(await page.$(`#windows .w-${w}, #windows [data-win="${w}"], #windows > *`))) fail.push(`window ${w} did not open`);
       await page.keyboard.press('Escape');
     }
+    step('the folding panel');
+    await page.evaluate(() => document.querySelector('.g-skip')?.click());
+    await page.tap('#hudfold');
+    await page.waitForTimeout(200);
+    if (!(await page.evaluate(() => document.body.classList.contains('hudfold')))) fail.push('the panel did not fold');
+    await page.tap('#hudmenu');
+    await page.waitForTimeout(200);
+    if (await page.evaluate(() => document.body.classList.contains('hudfold'))) fail.push('☰ Menu did not open the panel');
     step('the Monster Album');
     await page.tap('#albumbtn');
     await page.waitForTimeout(300);

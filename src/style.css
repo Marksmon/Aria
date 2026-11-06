@@ -372,6 +372,20 @@ img { -webkit-user-drag: none; user-select: none; }
   flex-direction: column;
   gap: 3px;
 }
+/* the panel's fold: the HP and SP bars alone, and the six window buttons folded into one ☰ (main.js setFold) */
+#hudfold { position: absolute; top: 3px; right: 4px; width: 20px; height: 18px; padding: 0; border: 0; border-radius: 4px; background: rgba(255, 255, 255, .08);
+  color: #cfd8ea; font: 700 11px system-ui, sans-serif; line-height: 1; pointer-events: auto; }
+body.hudfold #hudfold { transform: rotate(180deg); }
+body.hudfold #info .exp { display: none; }
+body.hudfold #winbtns button:not(#hudmenu) { display: none; }
+#hudmenu { display: none; }
+body.hudfold #hudmenu { display: block; grid-column: 1 / -1; }
+body.hudfold #winbtns { top: calc(76px + env(safe-area-inset-top)); }
+body.hudfold.named #winbtns { top: calc(95px + env(safe-area-inset-top)); }
+/* the quest list steps back while you fight (main.js hudTick), and comes back a few seconds after */
+#quests { transition: opacity .4s; }
+#quests.fighting { opacity: .15; pointer-events: none; }
+#info .heroname, #info .who { padding-right: 20px; }
 #info .heroname { font-size: 13px; font-weight: 700; color: #ffe37a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 #info .heroname[hidden] { display: none; }
 body.named #winbtns { top: calc(123px + env(safe-area-inset-top)); }

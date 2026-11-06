@@ -3753,6 +3753,7 @@ function frame() {
   // windows never pause the game, like Ragnarok
   for (const w of ['items', 'equip', 'skills', 'status', 'raids', 'journal', 'settings', 'album']) if (input.tapped(w) && started) { menus.toggle(w); if (menus.isOpen(w)) story.flags[`opened_${w}`] = true; } // (a story step may ask for a window)
   if (input.tapped('attack') && started) attackNow();
+  if (input.tapped('hudfold') || input.tapped('hudmenu')) { setFold(!folded); audio.play('ui'); }
   if (input.tapped('close')) { if (bigmap.open) bigmap.close(); else menus.close(); }
   bigmap.update(dt);
   const live = started;
@@ -3766,6 +3767,7 @@ function frame() {
     if (stepT <= 0) { stepT = 1.4 / player.walkSpeed(); audio.play('step'); } // a footstep every 1.4 tiles
   }
   audio.update(dt, dayNight.night, musicMood(dt));
+  hudTick(dt);
   if (!started && !cine) cam.yaw += dt * 0.05; // slow orbit behind the title screen
   if (!started && cine) mobs.update(dt, CINE_HERO); // (the cutscene's world goes on)
   mobs.cam = b;
@@ -3828,6 +3830,24 @@ function frame() {
   wings.set(inv.gear.wings); // the Wings slot: wings on the back, or a light at the shoulder
   wings.update(dt, player, camera, t, world.heightAt(player.x, player.z));
   renderer.render(scene, camera);
+}
+
+// the hero's panel folds (the ▴ button, or ☰ to open it again; remembered on this phone), and opens by itself
+// while a lesson (guide.js) may point at its buttons. The quest list steps back while the hero fights
+const FOLD_KEY = 'aria.hudFold';
+let folded = false, fightT = 0;
+try { folded = localStorage.getItem(FOLD_KEY) === '1'; } catch { /* storage unavailable */ }
+function setFold(v, keep = true) {
+  folded = v;
+  document.body.classList.toggle('hudfold', v);
+  if (keep) try { localStorage.setItem(FOLD_KEY, v ? '1' : '0'); } catch { /* storage unavailable */ }
+}
+setFold(folded, false);
+function hudTick(dt) {
+  if (guide.running && folded) setFold(false, false); // (a lesson rings the window buttons: they show while it runs)
+  const fighting = player.goal?.mob?.alive || mobs.list.some((m) => m.alive && m.state === 'chase' && Math.hypot(m.x - player.x, m.z - player.z) < 7);
+  fightT = fighting ? 3 : Math.max(0, fightT - dt);
+  tracker.classList.toggle('fighting', fightT > 0 && !guide.running);
 }
 
 // the music's mood (audio.js MOODS): a boss fight (a boss or MVP hunting the hero near by, or a raid run,

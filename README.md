@@ -56,6 +56,7 @@ Classic MMORPG style: no on-screen controller. Landscape.
 | Hold a buff icon (left of the minimap: each buff on you, with its time left) to see what it does | Hover |
 | Attack button (left of the hotbar, showing your weapon): attack your target, or the nearest monster in sight if you have none (a melee hero walks to it) | Click |
 | Drag one finger: turn the camera · pinch: zoom | Drag or Q / E · mouse wheel |
+| The ▴ on the hero's panel folds it to the HP and SP bars, the six window buttons into one **☰ Menu** (tap it to open them again); it opens by itself during a lesson. The quest list fades while you fight | Click |
 | Window buttons under the HP / SP box: Status, Equip, Items, Skills, Raids, Quests | Alt+A, Alt+Q, Alt+E (or I / B), Alt+S · Esc closes |
 
 The hotbar starts empty. Windows are small, can be dragged anywhere by their title bar, and the
