@@ -49,7 +49,7 @@ test('cards are monsters: one card per monster, named after it (the owner\'s rul
 test('every portal leads to a map, and every map can be reached', () => {
   const reached = new Set();
   for (const [id, m] of Object.entries(MAPS)) for (const p of m.portals || []) { assert.ok(MAPS[p.to], `${id} portal to ${p.to}`); reached.add(p.to); }
-  for (const id of Object.keys(MAPS)) if (id !== 'camp') assert.ok(reached.has(id) || MAPS[id].arena || MAPS[id].delve, `${id} has no way in`); // (a raid's arena is reached from its guide)
+  for (const id of Object.keys(MAPS)) if (id !== 'camp') assert.ok(reached.has(id) || MAPS[id].arena || MAPS[id].delve || (MAPS[id].voyage && Object.values(NPCS).some((n) => n.ship?.some((d) => d.to === id))), `${id} has no way in`); // (a voyage's land: a Ship Captain sails there) // (a raid's arena is reached from its guide)
 });
 
 // what a quest or story step names: monsters, items, maps

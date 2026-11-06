@@ -9,6 +9,7 @@ import { beastSet, BEASTS } from './beasts.js';
 import { desertSet, DESERT, moundSet, MOUND } from './desert.js';
 import { hallsSet, HALLS } from './halls.js';
 import { rootsSet, ROOTS } from './roots.js';
+import { coastSet, COAST } from './coast.js';
 import { paintButler, BW, BH } from './butler.js';
 import { paintBleepBloop, BW as BBW, BH as BBH, BODY as BB_BODY } from './bleepbloop.js';
 import { POSES, LEGS, framePainter } from './design-anim.js';
@@ -112,6 +113,7 @@ const PAL = {
   bush: ['#3c7034', '#579739', '#7eba4a', '#b9dc75'],
   birch: ['#5f8f2e', '#86b440', '#b2d65a', '#e6f29a'],
   oak: ['#24402a', '#335a34', '#4a7a42', '#86b06a'],
+  jacaranda: ['#4a2a7a', '#6e44a8', '#9a70d6', '#d4bcf6'], // Hafnvik's purple-blossom trees (the owner's picture)
 };
 
 function treeRound(rng, pal, opts = {}) {
@@ -204,6 +206,44 @@ function reeds(rng) {
     g.strokeStyle = OUT; g.lineWidth = 6; g.stroke();
     g.strokeStyle = cols[i % 3]; g.lineWidth = 3.5; g.stroke();
     if (i % 3 === 0) rrect(g, x + bend - 4, 110 - h - 6, 8, 18, 4, '#7a4a2a', OUT, 2);
+  }
+  return c;
+}
+
+// ---------- Hafnvik's coast (the fifth city) ----------
+// coral: branching arms of pink, orange or violet, knobbed at their tips
+function coral(rng, i) {
+  const { c, g } = mk(96, 96);
+  const col = ['#f07a8a', '#f0a050', '#b880e8'][i % 3], tip = ['#ffd0d8', '#ffe0a8', '#e8d0ff'][i % 3];
+  const arm = (x, y, a, len, w, depth) => {
+    const x1 = x + Math.cos(a) * len, y1 = y - Math.sin(a) * len;
+    g.beginPath(); g.moveTo(x, y); g.lineTo(x1, y1); g.strokeStyle = OUT; g.lineWidth = w + 3; g.stroke();
+    g.strokeStyle = col; g.lineWidth = w; g.stroke();
+    if (depth > 0) for (const d of [-0.5, 0.45]) arm(x1, y1, a + d + (rng() - 0.5) * 0.3, len * 0.7, Math.max(3, w - 2), depth - 1);
+    else ell(g, x1, y1, w * 0.7, w * 0.7, tip, OUT, 2);
+  };
+  for (const a of [1.2, 1.57, 1.95]) arm(48, 92, a + (rng() - 0.5) * 0.3, 22 + rng() * 6, 8, 2);
+  return c;
+}
+// driftwood: a bleached log washed up, a stub of branch
+function driftwood(rng) {
+  const { c, g } = mk(112, 48);
+  g.save(); g.translate(56, 30); g.rotate((rng() - 0.5) * 0.25);
+  rrect(g, -46, -9, 92, 18, 9, '#c8b8a0', OUT, 3);
+  g.strokeStyle = '#a8987e'; g.lineWidth = 2; for (let k = 0; k < 4; k++) { g.beginPath(); g.moveTo(-38 + k * 20, -4); g.lineTo(-24 + k * 20, -2); g.stroke(); }
+  rrect(g, 8, -24, 10, 18, 4, '#c0b098', OUT, 2.5);
+  g.restore();
+  return c;
+}
+// kelp: dark ribbons standing in the shallows, swaying
+function kelp(rng) {
+  const { c, g } = mk(80, 112);
+  const cols = ['#5a6a2a', '#6e7a34', '#4a5a26'];
+  for (let i = 0; i < 7; i++) {
+    const x = 16 + rng() * 48, h = 54 + rng() * 48, bend = (rng() - 0.5) * 30;
+    g.beginPath(); g.moveTo(x, 110); g.bezierCurveTo(x + bend, 110 - h * 0.35, x - bend, 110 - h * 0.7, x + bend * 0.5, 110 - h);
+    g.strokeStyle = OUT; g.lineWidth = 9; g.stroke();
+    g.strokeStyle = cols[i % 3]; g.lineWidth = 6; g.stroke();
   }
   return c;
 }
@@ -1134,6 +1174,10 @@ const PROP_DEFS = {
   rack: { w: 2.0, coll: 0.5, shadow: 0.8, space: 0, variants: 1, make: () => rack() },
   woodpile: { w: 1.4, coll: 0.55, shadow: 0.7, space: 0, variants: 1, make: () => woodpile() },
   // Rytingborg and the desert
+  tree_jacaranda: { w: 3.0, coll: 0.45, shadow: 1.5, space: 1.7, variants: 2, make: (r) => treeRound(r, PAL.jacaranda, { trunk: '#6a5a4a', trunkDk: '#4a3e32' }) },
+  coral: { w: 1.1, coll: 0.3, shadow: 0.4, space: 1.0, variants: 3, make: (r, i) => coral(r, i) },
+  driftwood: { w: 1.5, coll: 0.3, shadow: 0.5, space: 1.3, variants: 2, make: (r) => driftwood(r) },
+  kelp: { w: 1.0, coll: 0, shadow: 0, space: 0.8, variants: 2, make: (r) => kelp(r) },
   tree_palm: { w: 3.0, coll: 0.35, shadow: 1.2, space: 1.7, variants: 3, make: (r) => treePalm(r) },
   cactus: { w: 1.3, coll: 0.35, shadow: 0.6, space: 1.3, variants: 3, make: (r) => cactusTall(r) },
   cactus_round: { w: 0.9, coll: 0.3, shadow: 0.4, space: 0.9, variants: 2, make: (r) => cactusRound(r) },
@@ -1197,6 +1241,11 @@ export function createSprites() {
   for (const [id, D] of Object.entries(HALLS)) MADE[id] = () => codeSet(hallsSet(id), ...D.size, D.body, 2 / D.size[1]);
   // Yggdrasil's monsters, painted in code (roots.js)
   for (const [id, D] of Object.entries(ROOTS)) MADE[id] = () => codeSet(rootsSet(id), ...D.size, D.body, 2 / D.size[1]);
+  // Hafnvik's coast, painted in code (coast.js); the Barnacle Crab and the Beacon Wraith are the crab and the wisp
+  // in new colours (the crab's red shell gone slate blue with pale barnacles, the wisp's glow a beacon's orange flame)
+  for (const [id, D] of Object.entries(COAST)) MADE[id] = () => codeSet(coastSet(id), ...D.size, D.body, 2 / D.size[1]);
+  MADE.barnacleCrab = () => sheet('crab', { recolor: recolorer([[(h, s) => s > 0.22 && (h < 50 || h > 320), (h, s, l) => [205, Math.min(1, s * 0.4), Math.min(0.85, l * 1.05)]]]) });
+  MADE.beaconWraith = () => sheet('wisp', { recolor: recolorer([[(h, s) => s > 0.12, (h, s, l) => [24, Math.min(1, s * 1.2 + 0.2), l]]]) });
   MADE.wyrmMound = () => { const fr = moundSet(); return codeSet({ down: { idle: [fr[0]], walk: fr } }, ...MOUND.size, MOUND.body, 2 / MOUND.size[1]); };
   for (const [id, make] of Object.entries(MADE)) lazy(id, make);
   // the camp's and Steinborg's people (one still being drawn borrows the Elder's look)

@@ -38,6 +38,12 @@ export const SPAWNS = {
   ygg2: [['rootSerpent', 10], ['mossGolem', 9], ['darkElf', 9]],             // 53-60
   ygg3: [['greatStag', 10], ['dryad', 9], ['rotBeetle', 8], ['ratatoskr', 1]], // 61-68, Ratatoskr the mini-boss (74)
   ygg4: [['rootWarden', 8], ['thornDrake', 7], ['nidhogg', 1]],             // 69-75: the great hall, its guards and Nidhogg (99)
+  // Hafnvik and its coast (the fifth city): mostly Neutral, a few elemental (the owner's call)
+  port: [], lokigate: [],
+  tidecliff: [['cliffGull', 13], ['barnacleCrab', 12], ['tideGolem', 4], ['cliffGull', 2, true], ['tideGolem', 2, true]],       // Base 65-70
+  coral: [['reefEel', 10], ['coralBeetle', 10], ['merrow', 7], ['glassJelly', 5], ['glassJelly', 3, true], ['merrow', 2, true]], // Base 70-76
+  storm: [['stormRam', 12], ['isleTroll', 10], ['stormPetrel', 6], ['stormPetrel', 3, true], ['isleTroll', 2, true]],             // Base 76-82 (by ship)
+  beacon: [['moorHound', 13], ['draugr', 6], ['beaconWraith', 6], ['draugr', 3, true], ['beaconWraith', 2, true]],                // Base 82-88
   delveA: [], delveB: [], // the Deep Halls: each floor's monsters are picked as it is carved (delve.js floorSpawns)
   halls1: [['hallScarab', 16], ['cobra', 13]],                               // Base 65-72
   halls2: [['hallMummy', 10], ['lamia', 9], ['servant', 9]],                 // 73-80

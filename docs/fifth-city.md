@@ -1,6 +1,12 @@
-# The fifth city: plan (the owner's calls, November 2026)
+# The fifth city: Hafnvik (the owner's calls, November 2026)
 
-The fifth and last early-game city closes the first half of Aria's making. What the owner has decided so far:
+The fifth and last early-game city closes the first half of Aria's making. **Built so far (the world):** Hafnvik
+(`port`, `city.js` LAYOUTS.port, after the owner's picture: white like Santorini), reached overland east of
+Scorpion Sands through the Tide Cliffs (the owner's call); Beacon Moor north, the Coral Shallows south; the Storm
+Isles and Loki's Gate by Captain Asgeir's ship (`ship` in NPCS, `voyage` maps); 13 monsters (`coast.js`), the
+Hafnvik's Coast album set; the Keeper, Sela's shop, Brand the Smith, Ylfa the Priestess (healer), and Loki at the
+Deep Halls' door. **Next:** the story chapter before the ending, the city's quests and series, a mini-boss or two,
+the region's MVP and its gear. What the owner has decided:
 
 ## The city
 

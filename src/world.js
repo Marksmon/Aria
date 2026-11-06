@@ -17,8 +17,8 @@
 //                                                                  |
 //                                        Red Sands - Rytingborg - Cactus Dunes
 //                                                                                |
-//                                                       Great Desert - Scorpion Sands (the Pyramid)
-//                                                            |
+//                                                       Great Desert - Scorpion Sands (the Pyramid) - Tide Cliffs - Hafnvik ~ (Captain Asgeir's ship) ~ Storm Isles
+//                                                            |                                        Beacon Moor (N) / Coral Shallows (S)    ~ (Base 90) ~ Loki's Gate -> the Deep Halls
 //                                                     (hidden) Sphinx Sands
 //                                                            |  (the door in the Sphinx's chest)
 //                                       Sphinx Halls 1 - 2 - 3 (mazes) - 4 (the Eternal Sphinx's great hall)
@@ -29,7 +29,7 @@
 // Every map is built once, at load, into its own group; only the current one is shown.
 import * as THREE from 'three';
 import { makeNoise, mulberry32, sstep, lerp, clamp } from './noise.js';
-import { buildCity, WALL } from './city.js';
+import { buildCity, WALL, PORT } from './city.js';
 import { SOIL, soilAt, cropSpots, fences } from './farm.js';
 import { buildPyramid, buildSphinx } from './monuments.js';
 import { carveMaze, buildMaze, floorTex, lookOf } from './dungeon.js';
@@ -68,6 +68,8 @@ export const ZONE_NAMES = {
   redsands: 'Red Sands',   // the red bloops' and giant ants' sands west of the city (a Trainee's field)
   dunes: 'Cactus Dunes',   // the cacti and the dune worms, east of the city
   scorpion: 'Scorpion Sands', // the scorpions and the runners, and the Pyramid
+  // Hafnvik, the fifth city, and its coast (docs/fifth-city.md)
+  port: 'Hafnvik', tidecliff: 'Tide Cliffs', coral: 'Coral Shallows', beacon: 'Beacon Moor', storm: 'Storm Isles', lokigate: "Loki's Gate",
   desert: 'Great Desert',  // the deep desert, where the Sand Wyrm swims under the dunes
   sphinx: 'Sphinx Sands',  // the Giant Sphinx's sands, open only to who solves its riddle
   ygg: 'Yggdrasil',        // the World Tree, north of the Old Forest, open only to who planted its seed
@@ -139,12 +141,22 @@ export const MAPS = {
     lake: { x: 32, z: 29, rx: 11.5, rz: 7.5, keep: [{ x0: 30.9, z0: 18, x1: 33.1, z1: 40 }, { x0: 18, z0: 27.8, x1: 46, z1: 30.2 }, { x: 32, z: 29, r: 3.4 }] } },
   redsands: { portals: [{ to: 'sand', ...E }], lift: [0.1, 0.5], dunes: 0.7, desert: true, clear: { x: 30, z: 30, r: 5 } },
   dunes:    { portals: [{ to: 'sand', ...W }, { to: 'scorpion', ...S }], lift: [0.3, 0.6], dunes: 1.3, desert: true, obelisk: [44, 20], clear: { x: 22, z: 42, r: 6 } },
-  scorpion: { portals: [{ to: 'dunes', ...N }, { to: 'desert', ...W }], lift: [0.2, 0.5], dunes: 0.9, desert: true,
+  scorpion: { portals: [{ to: 'dunes', ...N }, { to: 'desert', ...W }, { to: 'tidecliff', ...E }], lift: [0.2, 0.5], dunes: 0.9, desert: true,
     pyramid: { x: 42, z: 21, half: 7, h: 9.5 }, keep: [{ x0: 33, z0: 11, x1: 51, z1: 31 }], clear: { x: 24, z: 44, r: 6 } },
   desert:   { portals: [{ to: 'scorpion', ...E }, { to: 'sphinx', ...S, need: 'sphinx6' }], lift: [0.3, 0.8], dunes: 1.5, desert: true, obelisk: [32, 50], clear: { x: 30, z: 26, r: 8 } },
   // (the door in the Sphinx's chest is a portal down to its halls; out: where you arrive beside it, here
   // in front of the door, not into the Sphinx)
   sphinx:   { portals: [{ to: 'desert', ...S }, { to: 'halls1', x: 32, z: 36, out: [0, 2.6], door: true }], lift: [0, 0.2], dunes: 0.5, desert: true, sphinx: { x: 32, z: 30 }, keep: [{ x0: 21, z0: 6, x1: 43, z1: 50 }] },
+  // ---------- Hafnvik, the white port city, and its coast (the fifth city: docs/fifth-city.md, the owner's calls) ----------
+  // shore: the sea along one side (side: n | s | e | w), from `at` paces in; isle: an island in the open sea (r: its
+  // radius, wob: how ragged its shore); voyage: reached only by the Ship Captain's ship (dock: where it lands you).
+  // Its fields are mostly Neutral monsters with some elemental ones (spawns.js), Base 65-88
+  tidecliff: { portals: [{ to: 'scorpion', ...W }, { to: 'port', ...E }], lift: [0.7, 1.3], shore: { side: 's', at: 46 }, clear: { x: 32, z: 30, r: 6 } },
+  port:      { portals: [{ to: 'tidecliff', ...W }, { to: 'beacon', ...N }, { to: 'coral', ...S }], city: 'port', shore: { side: 'e', at: 46.6, even: true }, piers: [PORT.pier] },
+  coral:     { portals: [{ to: 'port', ...N }], lift: [-0.1, 0.35], shore: { side: 'e', at: 50 }, lake: { x: 27, z: 38, rx: 14, rz: 12, shallow: true }, clear: { x: 44, z: 20, r: 5 } },
+  beacon:    { portals: [{ to: 'port', ...S }], lift: [0.5, 1.1], shore: { side: 'e', at: 49 }, clear: { x: 30, z: 22, r: 6 } },
+  storm:     { voyage: true, portals: [{ to: 'port', x: 11, z: 32 }], dock: { x: 14, z: 32 }, isle: { r: 25, wob: 9 }, lift: [0.3, 0.9] },
+  lokigate:  { voyage: true, portals: [{ to: 'port', x: 22, z: 32 }], dock: { x: 25, z: 32 }, isle: { r: 12.5, wob: 3 }, lift: [0.1, 0.3], gate: { x: 38, z: 32 } },
   tomb:     { portals: [], arena: { r: 13, land: true, near: 'ruin_pillar' }, lift: [0, 0.2], tomb: true },
   // the Sphinx's Halls (dungeon.js): indoor (no sky, no day and night: daynight.js), three maze floors
   // (maze: its seed, its rooms [i, j, pillar?] of 2x2 cells, a share of loops; the stairs stand in
@@ -202,6 +214,7 @@ const GROUND = {
   scorpion: ['#d2ac6c', '#e0bc7e'],
   desert: ['#d6b070', '#e8c686'],
   sphinx: ['#dab676', '#eacb8e'],
+  tidecliff: ['#7f9a5e', '#9cb070'], port: ['#e6e0d2', '#f2ece0'], coral: ['#dccca2', '#ead9b2'], beacon: ['#6a7356', '#857a7a'], storm: ['#566a5a', '#748870'], lokigate: ['#4a4852', '#5e5a68'],
   tomb: ['#8a7252', '#9e8664'],
   ygg: ['#3f7034', '#56883e'],
   ygg1: ['#ffffff', '#f2ece4'], ygg2: ['#ffffff', '#f2ece4'], ygg3: ['#ffffff', '#f2ece4'], ygg4: ['#ffffff', '#f2ece4'],
@@ -242,9 +255,16 @@ const TABLE = {
   desert: [['rock_sand', 14], ['cactus', 14], ['cactus_round', 8], ['grass_dry', 18], ['bones', 9], ['ruin_block', 4], ['shrub_dry', 8], ['rock_small', 12]],
   sphinx: [['ruin_pillar', 18], ['ruin_block', 18], ['rock_sand', 10], ['grass_dry', 16], ['bones', 4], ['rock_small', 10]],
   tomb: [['urn', 10], ['ruin_block', 4], ['rock_small', 12], ['bones', 6]],
+  tidecliff: [['rock_grey', 16], ['rock_small', 18], ['grass', 26], ['shrub_dry', 10], ['flowers', 10], ['tree_pine', 6], ['driftwood', 5], ['tree_jacaranda', 3]],
+  port: [['grass', 4], ['flowers', 4]],
+  coral: [['coral', 16], ['kelp', 14], ['rock_small', 12], ['grass_dry', 16], ['tree_palm', 6], ['driftwood', 7], ['rock_grey', 4]],
+  beacon: [['grass_dark', 26], ['rock_grey', 14], ['shrub_dry', 14], ['flowers', 10], ['stump', 4], ['tree_dead', 6], ['ruin_block', 4], ['ruin_pillar', 3]],
+  storm: [['rock_grey', 18], ['grass', 20], ['shrub_dry', 12], ['tree_dead', 8], ['rock_small', 16], ['driftwood', 8], ['ruin_pillar', 4]],
+  lokigate: [['rock_grey', 20], ['rock_small', 20], ['grass_dark', 14], ['ruin_pillar', 8], ['bones', 4]],
   ygg: [['grass', 30], ['flowers', 24], ['bush', 10], ['mushrooms', 14], ['mushroom_big', 3], ['stump', 3], ['tree_oak', 5], ['rock_grey', 3]],
 };
 const BORDER = { grove: 'tree_grove', hollow: 'tree_dark', ridge: 'rock', fen: 'tree_willow', camp: 'tree_grove', city: 'tree_grove', magic: 'tree_birch', birch: 'tree_birch', coast: 'rock_grey', deep: 'tree_dark', heath: 'tree_dead', stones: 'rock', coalpit: 'rock_grey', burnt: 'tree_dead', serpent: 'tree_dark', hunt: 'tree_pine', farm: 'tree_grove', wolfhill: 'tree_pine', marsh: 'tree_willow', oldwood: 'tree_oak', koboldcamp: 'rock_grey', goblinlair: 'tree_dark',
+  tidecliff: 'rock_grey', port: 'tree_jacaranda', coral: 'tree_palm', beacon: 'rock_grey', storm: 'rock_grey', lokigate: 'crag',
   sand: 'tree_palm', redsands: 'crag', dunes: 'crag', scorpion: 'crag', desert: 'crag', sphinx: 'crag', tomb: 'ruin_pillar', ygg: 'tree_oak' };
 // a desert's edge: mostly red crags, now and then a rock arch, a palm or a sandstone boulder
 const DESERT_EDGE = [['crag', 70], ['rock_sand', 18], ['rock_arch', 3], ['tree_palm', 6], ['cactus', 6]];
@@ -264,7 +284,10 @@ function buildMap(id, scene, lib, shared) {
   for (const [k, v] of Object.entries(GROUND)) {
     groundCols[k] = Array.isArray(v) ? v.map((h) => new THREE.Color(h)) : new THREE.Color(v);
   }
-  const LAKE = def.lake, ARENA = def.arena, PLOTS = def.plots || [];
+  const LAKE = def.lake, ARENA = def.arena, PLOTS = def.plots || [], SHORE = def.shore, ISLE = def.isle;
+  // the sea along one side (shore): how far past its line a spot is (negative: on land), a little ragged
+  const shoreD = (x, z) => (SHORE.side === 'e' ? x : SHORE.side === 'w' ? -x : SHORE.side === 's' ? z : -z) - (SHORE.side === 'w' || SHORE.side === 'n' ? -SHORE.at : SHORE.at);
+  const OPEN_SEA = !!(SHORE || ISLE); // (a sea the hero can look out over: the water reaches the map's edge)
   const SEA = ARENA && !ARENA.land, PIT = ARENA && ARENA.land; // an island arena, or a clearing walled in
   const soilCols = SOIL.map((c) => new THREE.Color(c));
   const edgeDist = (x, z) => Math.min(x, z, SIZE - x, SIZE - z);
@@ -302,7 +325,10 @@ function buildMap(id, scene, lib, shared) {
     // soften dips so only the lake goes below water (lowest result ≈ WATER_Y + 0.1)
     if (h < WATER_Y + 0.25) h = WATER_Y + 0.25 + (h - WATER_Y - 0.25) * 0.2;
     const ld = lakeD(x, z);
-    if (ld < 1.5) h = lerp(h, -1.1, sstep(1.5, 0.65, ld));
+    if (ld < 1.5) h = lerp(h, LAKE.shallow ? WATER_Y - 0.13 : -1.1, sstep(1.5, 0.65, ld)); // (a shallow lagoon: waded all over)
+    if (SHORE) h = lerp(h, -1.35, sstep(SHORE.even ? -0.6 : -1.2, SHORE.even ? 0.6 : 2.6, shoreD(x, z) + (SHORE.even ? 0 : (noise.fbm(x * 0.12 + 4, z * 0.12) - 0.5) * 4)));
+    for (const P of def.piers || []) if (x > P.x0 && x < P.x1 && z > P.z0 && z < P.z1) h = Math.max(h, 0.05); // (a pier walked out on: ground under its planks)
+    if (ISLE) h = lerp(h, -1.4, sstep(ISLE.r - 2, ISLE.r + 2, campR(x, z) + (noise.fbm(x * 0.09 + 7, z * 0.09) - 0.5) * ISLE.wob));
     if (SEA) return lerp(h * 0.35 + 0.1, -1.4, sstep(ARENA.r - 2, ARENA.r + 1.5, campR(x, z))); // a low round island, sand sloping into the sea
     if (PIT) return h * 0.35 + 0.2 + Math.pow(Math.min(1, Math.max(0, campR(x, z) - ARENA.r + 1) / 6), 2) * 4; // a clearing, its walls rising all round
     // flat ground under the portals and along the trails' ends
@@ -310,7 +336,8 @@ function buildMap(id, scene, lib, shared) {
       const d = Math.hypot(x - p.x, z - p.z);
       if (d < 3) h = lerp(h, heightNoPortal(p.x, p.z), sstep(3, 1.2, d));
     }
-    const e = edgeDist(x, z);
+    // the map's rim rises (not where the sea runs out to it: a shore's sea side, an island)
+    const e = ISLE ? 99 : SHORE ? Math.min(...['n', 's', 'e', 'w'].filter((sd) => sd !== SHORE.side).map((sd) => ({ n: z, s: SIZE - z, e: SIZE - x, w: x })[sd])) : edgeDist(x, z);
     if (e < 6) h += Math.pow((6 - e) / 6, 2) * 3.5;
     return h + rampAt(x, z);
   }
@@ -338,10 +365,10 @@ function buildMap(id, scene, lib, shared) {
   }
 
   // a lake's shallow edge (to about knee deep) can be waded: the water hides the feet (see wading)
-  const SHALLOW = LAKE || SEA ? WATER_Y - 0.22 : WATER_Y + 0.08;
+  const SHALLOW = LAKE || SEA || OPEN_SEA ? WATER_Y - 0.22 : WATER_Y + 0.08;
   const walkable = (x, z) => edgeDist(x, z) > 2.4 && !(MZ && MZ.solid[Math.floor(z) * SIZE + Math.floor(x)]) && (!isCamp || campR(x, z) < CAMP_R) && (!PIT || campR(x, z) < ARENA.r) && heightAt(x, z) > SHALLOW;
   // standing in the water: how deep (0 on dry land)
-  const wading = (x, z) => (LAKE || SEA ? Math.max(0, WATER_Y + 0.04 - heightAt(x, z)) : 0);
+  const wading = (x, z) => (LAKE || SEA || OPEN_SEA ? Math.max(0, WATER_Y + 0.04 - heightAt(x, z)) : 0);
   const isSafe = () => isCamp || isCity; // towns are safe ground
 
   function colorAt(x, z, h) {
@@ -359,7 +386,7 @@ function buildMap(id, scene, lib, shared) {
     if (so >= 0) out.copy(soilCols[so]);
     const pd = pathDist(x, z);
     if (pd < 1.4 && so < 0) out.lerp(def.desert ? groundCols.sandpath : groundCols.dirt, sstep(1.4, 0.5, pd + (noise.n(x * 0.9, z * 0.9) - 0.5) * 0.6) * 0.9);
-    if ((SEA || lakeD(x, z) < 1.6) && h < WATER_Y + 0.45) out.lerp(groundCols.beach, sstep(WATER_Y + 0.45, WATER_Y + 0.05, h) * 0.85);
+    if ((SEA || OPEN_SEA || lakeD(x, z) < 1.6) && h < WATER_Y + 0.45) out.lerp(groundCols.beach, sstep(WATER_Y + 0.45, WATER_Y + 0.05, h) * 0.85);
     const e = Math.min(edgeDist(x, z), isCamp ? CAMP_R + 3 - campR(x, z) : 99);
     if (e < 6) out.multiplyScalar(1 - 0.3 * sstep(6, 1.5, e));
     out.multiplyScalar(0.9 + noise.fbm(x * 0.4, z * 0.4, 2) * 0.2);
@@ -435,6 +462,8 @@ function buildMap(id, scene, lib, shared) {
   // the desert's monuments (monuments.js): the Pyramid, the Giant Sphinx
   const mctx = { group, heightAt: (x, z) => heightAt(x, z), addBox: (x0, z0, x1, z1) => boxes.push({ x0, z0, x1, z1, kind: 'monument' }), addSolid: (x, z, coll) => solids.push({ x, z, coll }) };
   const monument = def.pyramid ? buildPyramid(mctx, def.pyramid) : def.sphinx ? buildSphinx(mctx, def.sphinx) : def.yggdrasil ? buildYggdrasil(mctx, def.yggdrasil) : null;
+  // Loki's Gate: a dark arch of rock over the stairs down to the Deep Halls, torches either side (delve.js)
+  if (def.gate) { place('rock_arch', def.gate.x, def.gate.z, true); for (const dz of [-2.4, 2.4]) place('torch', def.gate.x - 2.6, def.gate.z + dz, true); }
   // old stumps (the World Tree: the great stump the Treants guard, the one the seed is planted by)
   for (const [x, z] of def.stumps || []) { place('stump', x, z, true); place('mushrooms', x + 1.2, z + 0.8, true); }
   // an old obelisk with a few fallen stones round it (the Sphinx's Riddle)
@@ -478,6 +507,7 @@ function buildMap(id, scene, lib, shared) {
     const x = 0.5 + rng() * 63, z = 0.5 + rng() * 63;
     const e = isCamp ? campR(x, z) - CAMP_R : PIT ? campR(x, z) - ARENA.r : 3.6 - edgeDist(x, z);
     if (isCity && (inWalls(x, z, 1.6) || pathDist(x, z) < 4.5 || edgeDist(x, z) > 3.4)) continue; // keep the walls in view
+    if (OPEN_SEA && heightAt(x, z) < WATER_Y + 0.3) continue; // (no trees in the sea)
     if (isCity ? edgeDist(x, z) < 0.8 : isCamp || PIT ? e < 0.3 || e > 9 : e < 0 || edgeDist(x, z) < 0.8) continue;
     const type = id === 'ridge' && rng() < 0.3 ? 'tree_dead' : PIT && ARENA.near && z > CENTER + 4 ? ARENA.near : def.desert && !isCity ? pick(DESERT_EDGE) : BORDER[id];
     place(type, x, z);
@@ -534,13 +564,14 @@ function buildMap(id, scene, lib, shared) {
   group.add(terrain);
 
   // ---------- Water ----------
-  if (LAKE || SEA) {
-    const waterGeo = SEA ? new THREE.PlaneGeometry(SIZE * 3, SIZE * 3) : new THREE.PlaneGeometry(LAKE.rx * 3.2, LAKE.rz * 3.2);
+  if (LAKE || SEA || OPEN_SEA) {
+    const wide = SEA || OPEN_SEA;
+    const waterGeo = wide ? new THREE.PlaneGeometry(SIZE * 3, SIZE * 3) : new THREE.PlaneGeometry(LAKE.rx * 3.2, LAKE.rz * 3.2);
     waterGeo.rotateX(-Math.PI / 2);
     const water = new THREE.Mesh(waterGeo, new THREE.MeshLambertMaterial({
       color: '#5aa6c4', map: lib.water, transparent: true, opacity: 0.82, depthWrite: false,
     }));
-    water.position.set(SEA ? CENTER : LAKE.x, WATER_Y, SEA ? CENTER : LAKE.z);
+    water.position.set(wide ? CENTER : LAKE.x, WATER_Y, wide ? CENTER : LAKE.z);
     water.renderOrder = 1;
     group.add(water);
   }

@@ -58,7 +58,7 @@ Classic MMORPG style: no on-screen controller. Landscape.
 | Hotbar (bottom): eight slots (two rows of four on a phone held upright, the attack button as tall as both); tap one to use a skill or item (a skill shows its SP cost, veiled blue while you lack the SP; after any skill, skills wait half a second); the button at its end flips between 3 pages | 1–8 · Tab: next page |
 | Drag active skills (Skills window) and usable items (Items window) onto the hotbar; drag a slot off to clear it | Drag |
 | The 🏆 button: **Goals**. *This Week*: three hunts picked for your level (beat monsters near your level or of one kind, hand in quests, refine, clear a raid, and for a second job mini-bosses and, from Base 75, an MVP), paid the moment each is done (perz by your level, and from Base 30 a Hard or Armor Ore); new ones every Monday. *Achievements*: 18 milestones (first and second job, Base 50/75/99, a mini-boss, an MVP and every MVP, a raid and a Hell clear, every land walked, album milestones, a +10 refine, both secret ways, the story's end), each a title you can wear after your name | Click |
-| The 📖 button (beside ⚙): the **Monster Album**, every monster in Aria by level, how many you have beaten and whether you have found its card. One you haven't met yet shows as ??? with its level and the lands it lives in. Tabs: All, Met, Bosses, and **Sets**: find every card of one region's monsters (bosses aside; the raids' set is their bosses' cards) and it gives a small bonus for good: Eldrun's Fields Max HP +2%, the Shore and the South POW +1, Kobold and Goblin Lands END +1, Veidheim's Lands FNS +1, the Desert QKN +1, the Sphinx's Halls KNL +1, Yggdrasil's Hollows Max SP +2%, the Raids FTN +1 | Click |
+| The 📖 button (beside ⚙): the **Monster Album**, every monster in Aria by level, how many you have beaten and whether you have found its card. One you haven't met yet shows as ??? with its level and the lands it lives in. Tabs: All, Met, Bosses, and **Sets**: find every card of one region's monsters (bosses aside; the raids' set is their bosses' cards) and it gives a small bonus for good: Eldrun's Fields Max HP +2%, the Shore and the South POW +1, Kobold and Goblin Lands END +1, Veidheim's Lands FNS +1, the Desert QKN +1, the Sphinx's Halls KNL +1, Yggdrasil's Hollows Max SP +2%, Hafnvik's Coast Max HP and SP +1%, the Raids FTN +1 | Click |
 | Hold a buff icon (left of the minimap: each buff on you, with its time left) to see what it does | Hover |
 | Attack button (left of the hotbar, showing your weapon): attack your target, or the nearest monster in sight if you have none (a melee hero walks to it) | Click |
 | Drag one finger: turn the camera · pinch: zoom | Drag or Q / E · mouse wheel |
@@ -93,8 +93,9 @@ Coal Pit - Stone Field - Salt Bay - Fen Shore - Eldrun Camp   Ember Hill  -  Ash
                                                                   |
                                                  Red Sands - Rytingborg - Cactus Dunes
                                                                                 |
-                                                        Great Desert  -  Scorpion Sands
-                                                             :
+                                                        Great Desert  -  Scorpion Sands  -  Tide Cliffs  -  Hafnvik ~~ (ship) ~~ Storm Isles
+                                                             :                                            /     \        ~~ (ship, Base 90) ~~ Loki's Gate
+                                                             :                                   Beacon Moor   Coral Shallows
                                                (hidden) Sphinx Sands
                                                              |  (the door in the Sphinx's chest)
                          Sphinx Halls 1 - 2 - 3 (mazes) - 4 (the great hall): the first dungeon
@@ -130,6 +131,10 @@ Scorpion Sands with its Pyramid, then the Great Desert, where the Sand Wyrm hunt
 | Cactus Dunes | 55–60 | Cactus (55, throws needles), Dune Worm (58) | Cactus Lord (60) |
 | Scorpion Sands | 60–66 | Sand Scorpion (61, poison), Sand Runner (64) | Rainbow Runner (64) |
 | Great Desert | 62–70 | Soldier Ant (62), Cactus, Dune Worm, Sand Scorpion, Sand Runner | **Sand Wyrm (70, MVP)** |
+| Tide Cliffs | 65–70 | Cliff Gull (65, flies), Barnacle Crab (66, hard shell), Tide Golem (69, Water) | |
+| Coral Shallows | 70–76 | Reef Eel (71), Coral Beetle (73), Glass Jelly (74, numbing sting), Merrow (75, throws harpoons) | |
+| Storm Isles (by ship) | 76–82 | Storm Petrel (77, Wind), Storm Ram (79), Isle Troll (81) | |
+| Beacon Moor | 82–88 | Moor Hound (83, quick), Draugr (84, Shadow), Beacon Wraith (86, Fire, throws fire) | |
 | Sphinx Halls 1 | 65–72 | Scarab (66, hard shell), Cobra (71, poison) | |
 | Sphinx Halls 2 | 73–80 | Mummy (75), Lamia (78, spits venom), Pharaoh's Servant (80, blue fire, shields the others) | |
 | Sphinx Halls 3 | 81–88 | Sphinx Cub (83), Sand Elemental (86, slowing sand), Sarcophagus (88) | Ammit (74) |
@@ -167,6 +172,19 @@ heavy. Yellow Bloops hop about Willow Marsh too. Far off, the predators attack o
 in to bite, sometimes twice; Wolves run in packs and are as quick; Bears are slow, heavy and hit
 hard. They drop twigs, bark, pelts, skins and claws for Leif's leatherworks, Honey, and their own
 rare gear.
+
+**Hafnvik and its coast** (the fifth city). East of Scorpion Sands the desert runs down to the sea: the green
+Tide Cliffs, then **Hafnvik**, the white port city, its domes blue and its banners gold-starred: a temple on its
+terrace, a great goddess with spear and shield on the quay, an amphitheatre, a fountain with a golden armillary
+sphere, a market under blue awnings, and a harbour of ships between two lighthouses whose crystals glow blue at
+night. North of it lies Beacon Moor, south the Coral Shallows, a lagoon waded knee-deep. **Captain Asgeir** on the
+long pier sails to the Storm Isles, and, for heroes of Base 90, to **Loki's Gate**, a black rock where Loki the
+Mischiefbringer keeps the door of the Deep Halls, an endless dungeon: each floor a new maze, harder than the last,
+a checkpoint and a cache every fifth floor. The coast's monsters (painted in code, `src/coast.js`) are mostly
+Neutral, with a few of an element for variety, so no one weapon element is best here: gulls and petrels, crabs,
+eels, beetles grown over with coral, fish-folk Merrows with harpoons, glassy jellies, rams and trolls of the
+storm, moor hounds, drowned Draugr and the Beacon Wraiths. Their cards make the **Hafnvik's Coast** album set
+(Max HP and SP +1%); the Storm Ram's and the Draugr's are Head and Face cards for fighters.
 
 **The desert's monsters** (painted in code, `src/desert.js`). Red Bloops warm themselves on the Red
 Sands beside Giant Ants, red-brown and busy; both only fight back. Further out, Cacti stand still and
@@ -1025,18 +1043,18 @@ from Kari (Dalla has the cake and the pie). Their timers show in the buff bar.
 | Usable | Effect | Where |
 |---|---|---|
 | Red Potion | 45–65 HP | Hild (Steinborg); Kari (Galdrheim); Eydis (Veidheim); Dalla (Rytingborg); Ragna brews it; Gel Thief, Yellow Bloop, Willow and 3 more |
-| Orange Potion | 105–145 HP | Hild (Steinborg); Kari (Galdrheim); Eydis (Veidheim); Dalla (Rytingborg); Ragna brews it; Treant, Kobold, Beetle and 11 more |
-| White Potion | 175–235 HP | Eydis (Veidheim); Dalla (Rytingborg); Ragna brews it; Goblin Archer, Fire Beetle, Goblin Assassin and 38 more |
-| Blue Potion | 40–60 SP | Hild (Steinborg); Kari (Galdrheim); Eydis (Veidheim); Dalla (Rytingborg); Ragna brews it; Blue Bloop, Sea Bloop |
+| Orange Potion | 105–145 HP | Hild (Steinborg); sela; Kari (Galdrheim); Eydis (Veidheim); Dalla (Rytingborg); Ragna brews it; Treant, Kobold, Beetle and 11 more |
+| White Potion | 175–235 HP | sela; Eydis (Veidheim); Dalla (Rytingborg); Ragna brews it; Goblin Archer, Fire Beetle, Goblin Assassin and 51 more |
+| Blue Potion | 40–60 SP | Hild (Steinborg); sela; Kari (Galdrheim); Eydis (Veidheim); Dalla (Rytingborg); Ragna brews it; Blue Bloop, Sea Bloop |
 | Berry | 16–22 HP | Hild (Steinborg); Kari (Galdrheim); Bloop, Sprout, Yellow Bloop, Red Sprout |
 | Crab Leg | 70–100 HP | Crab, Blue Crab, King Crab |
-| Green Herb | 5–8 HP, cures poison and spores | Hild (Steinborg); Kari (Galdrheim); Eydis (Veidheim); Dalla (Rytingborg); Sprout, Willow, Mushroom, Snake |
+| Green Herb | 5–8 HP, cures poison and spores | Hild (Steinborg); sela; Kari (Galdrheim); Eydis (Veidheim); Dalla (Rytingborg); Sprout, Willow, Mushroom, Snake |
 | Speed Potion | attack speed +10% for 3 minutes | Kari (Galdrheim); Eydis (Veidheim); Dalla (Rytingborg); Ragna brews it; Kobold Assassin, Goblin Assassin |
-| Teleport Feather | a random spot on this map | Hild (Steinborg); Kari (Galdrheim); Eydis (Veidheim); Dalla (Rytingborg); Ragna brews it; Wisp, Lantern Wisp, Kobold Archer and 2 more |
+| Teleport Feather | a random spot on this map | Hild (Steinborg); sela; Kari (Galdrheim); Eydis (Veidheim); Dalla (Rytingborg); Ragna brews it; Wisp, Lantern Wisp, Kobold Archer and 2 more |
 | Honey | 150–210 HP | Eydis (Veidheim); Bear, Great Bear |
 | Dates | 120–170 HP | Dalla (Rytingborg) |
-| Water Skin | 30–45 SP | Dalla (Rytingborg) |
-| Return Feather | back to your save point | Hild (Steinborg); Kari (Galdrheim); Eydis (Veidheim); Dalla (Rytingborg); Ragna brews it |
+| Water Skin | 30–45 SP | sela; Dalla (Rytingborg) |
+| Return Feather | back to your save point | Hild (Steinborg); sela; Kari (Galdrheim); Eydis (Veidheim); Dalla (Rytingborg); Ragna brews it |
 | Fire Oil | the weapon's blows Fire for 5 minutes (not a bow) | Kari (Galdrheim); Dalla (Rytingborg) |
 | Frost Oil | the weapon's blows Water for 5 minutes (not a bow) | Kari (Galdrheim); Dalla (Rytingborg) |
 | Storm Oil | the weapon's blows Wind for 5 minutes (not a bow) | Kari (Galdrheim); Dalla (Rytingborg) |
@@ -1329,16 +1347,29 @@ they come back whole and the slot stays open. A piece that breaks at Holger's gi
 | Soldier Ant Card (Armoured) | Shield | DEF +3 · Max HP +4% | Soldier Ants (0.1%) |
 | Great Stag Card (Antlered) | Head or Face | ATK +10 · POW +1 | Great Stags (0.1%) |
 | Sand Runner Card (Fleet) | Accessory | FLEE +3 · QKN +1 · FTN +1 | Sand Runners (0.1%) |
+| Cliff Gull Card (Soaring) | Shoes | FLEE +6 · QKN +1 | Cliff Gulls (0.1%) |
+| Barnacle Crab Card (Barnacled) | Shield | DEF +3 · Max HP +300 | Barnacle Crabs (0.1%) |
 | Dryad Card (Blossoming) | Garment | KNL +2 · Max SP +60 | Dryads (0.1%) |
 | Scarab Card (Shelled) | Armor | DEF +3 · END +1 | Scarabs (0.1%) |
 | Rot Beetle Card (Rotting) | Weapon | ATK +14 · END +1 | Rot Beetles (0.1%) |
+| Tide Golem Card (Tidebound) | Armor | END +1 · Max HP +6% | Tide Golems (0.1%) |
 | Cobra Card (Fanged) | Weapon | ATK +5 · QKN +2 | Cobras (0.1%) |
+| Reef Eel Card (Slippery) | Weapon | ATK +14 · QKN +1 | Reef Eels (0.1%) |
 | Root Warden Card (Warding) | Shield | DEF +5 · Max HP +5% | Root Wardens (0.1%) |
+| Coral Beetle Card (Coral) | Garment | DEF +2 · FLEE +4 | Coral Beetles (0.1%) |
+| Glass Jelly Card (Glassy) | Accessory | KNL +1 · Max SP +6% | Glass Jellies (0.1%) |
+| Merrow Card (Harpooner's) | Accessory | HIT +5 · FNS +1 | Merrows (0.1%) |
 | Mummy Card (Undying) | Armor | Max HP +8% | Mummies (0.1%) |
 | Thorn Drake Card (Draconic) | Armor | POW +1 · END +1 · Max HP +6% | Thorn Drakes (0.1%) |
+| Storm Petrel Card (Stormborne) | Shoes | FLEE +5 · QKN +2 | Storm Petrels (0.1%) |
 | Lamia Card (Bewitching) | Head or Face | ATK +8 · HIT +3 | Lamias (0.1%) |
+| Storm Ram Card (Ramming) | Head or Face | ATK +10 · HIT +4 | Storm Rams (0.1%) |
 | Pharaoh's Servant Card (Devout) | Garment | KNL +1 · Max SP +8% | Pharaoh's Servants (0.1%) |
+| Isle Troll Card (Trollish) | Armor | DEF +2 · Max HP +800 | Isle Trolls (0.1%) |
+| Moor Hound Card (Hounding) | Weapon | ATK +16 · FNS +1 | Moor Hounds (0.1%) |
 | Sphinx Cub Card (Pouncing) | Shoes | FLEE +4 · QKN +2 | Sphinx Cubs (0.1%) |
+| Draugr Card (Drowned) | Head or Face | ATK +12 · POW +1 | Draugr (0.1%) |
+| Beacon Wraith Card (Beacon) | Garment | MATK +8% · Max SP +5% | Beacon Wraiths (0.1%) |
 | Sand Elemental Card (Whirling) | Garment | FLEE +5 · END +1 | Sand Elementals (0.1%) |
 | Sarcophagus Card (Entombed) | Shield | DEF +4 · Max HP +6% | Sarcophagi (0.1%) |
 | Jackal Guardian Card (Cursed) | Weapon | ATK +12 · POW +2 | Jackal Guardians (0.1%) |

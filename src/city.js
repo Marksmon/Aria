@@ -45,6 +45,19 @@ export const SAND = {
   chest: { x: 20.6, z: 46.8 },
   stall: { x: 28, z: 40.6 },
 };
+// Hafnvik, the white port city (the fifth city, after the owner's picture: white like Santorini): the sea along its
+// east side (world.js MAPS.port.shore), the quay and the walkable main pier (MAPS.port.piers), the temple on its
+// terrace, the goddess on her plinth, the amphitheatre, the plaza's fountain with its armillary sphere
+export const PORT = {
+  quay: 45.6,                                         // the quay's edge: the sea beyond it
+  pier: { x0: 45.4, z0: 30.7, x1: 57.6, z1: 33.3 },   // the main pier, walked out on to the Ship Captain
+  temple: { x0: 11, z0: 9.6, x1: 27.5, z1: 18.6, h: 2.4 },
+  statue: { x: 41.6, z: 14.4 },
+  arena: { x: 19.4, z: 44.4, r: 5.6 },
+  fountain: { x: 30, z: 31, r: 2.6 },
+  chest: { x: 13.6, z: 28.6 },
+  stall: { x: 37.8, z: 26.6 },
+};
 export const MAGIC = {
   circle: { x: 32, z: 33, r: 3 },
   chest: { x: 20.4, z: 44.2 },
@@ -104,6 +117,8 @@ function onion(r, h) {
   }
   return new THREE.LatheGeometry(pts, 18);
 }
+// a round blue cupola, Hafnvik's: a half sphere, its base at y = 0
+function cupola(r) { return new THREE.SphereGeometry(r, 18, 9, 0, Math.PI * 2, 0, Math.PI / 2); }
 // a dome's tiles: lapis blue with lighter diamonds and gold ribs
 function domeTex(rng, base) {
   return canvasTex(64, 64, (g) => {
@@ -272,6 +287,17 @@ function gable(w, d, rh, over = 0.35) {
 // ---------- the cities ----------
 // each city's look: stone, paving, roofs, plaster, timber, the banner over its gates, tower roofs
 const THEMES = {
+  // Hafnvik: whitewashed stone and plaster, blue cupolas and roofs, gold trim, blue banners with a gold ship's star
+  port: { stone: ['#f2eee6', '#c9c2b6'], stoneDark: '#dcd5c8', cobble: ['#ece6d8', '#b8b0a0'], dome: true, cupola: true, sea: 'e', wallBanners: true,
+    roofs: ['#2a56b4', '#3466cc', '#22479a', '#3f78da'], towerRoof: '#2a56b4',
+    plaster: ['#f6f2ea', '#fbf8f2', '#f0ebe0', '#f8f4ec'], timber: '#c8c0b2', glass: ['#2e5ab0', '#a8c8f0'],
+    banner: (g) => {
+      g.fillStyle = '#244ca8'; g.fillRect(0, 0, 32, 40); g.beginPath(); g.moveTo(0, 40); g.lineTo(16, 48); g.lineTo(32, 40); g.fill();
+      g.strokeStyle = '#f0c850'; g.lineWidth = 1.5; g.strokeRect(2, 2, 28, 37);
+      g.fillStyle = '#f0c850'; g.beginPath(); // a compass star of eight points
+      for (let i = 0; i < 16; i++) { const a = (i / 16) * Math.PI * 2, r = i % 2 ? 3.4 : i % 4 === 0 ? 11 : 7; g.lineTo(16 + Math.sin(a) * r, 20 - Math.cos(a) * r); }
+      g.fill(); g.fillStyle = '#244ca8'; g.beginPath(); g.arc(16, 20, 2, 0, 7); g.fill();
+    } },
   // Steinborg: warm red brick, red cone roofs flying pennants, red banners with a gold lily
   city: { stone: ['#b8735a', '#5a3428'], stoneDark: '#9a5a44', cobble: ['#a39b8c', '#6a645a'], pennants: true, wallBanners: true,
     roofs: ['#b03a2e', '#c04a34', '#8a3428', '#a8483a'], towerRoof: '#b03a2e',
@@ -329,7 +355,7 @@ const THEMES = {
 export function buildCity(ctx, variant = 'city') {
   const { group, place, addBox, addSolid } = ctx;
   const T = THEMES[variant];
-  const rng = mulberry32({ city: 512, magic: 733, hunt: 911, sand: 1213 }[variant]);
+  const rng = mulberry32({ city: 512, magic: 733, hunt: 911, sand: 1213, port: 1531 }[variant]);
   const fades = []; // { meshes, x, z, r, h }
   const fadeMats = new Map();
   const anims = []; // (now) => void: boats drifting, waterfalls running
@@ -381,7 +407,7 @@ export function buildCity(ctx, variant = 'city') {
   pave.rotateX(-Math.PI / 2);
   const puv = pave.attributes.uv;
   for (let i = 0; i < puv.count; i++) puv.setXY(i, puv.getX(i) * pw / 2, puv.getY(i) * pd / 2);
-  if (!T.sand) mesh(pave, M.floor || M.cobble, (WALL.x0 + WALL.x1) / 2, Y + 0.02, (WALL.z0 + WALL.z1) / 2).renderOrder = 0; // (Rytingborg's floor is the sand, its lake and its own paving)
+  if (!T.sand && !T.sea) mesh(pave, M.floor || M.cobble, (WALL.x0 + WALL.x1) / 2, Y + 0.02, (WALL.z0 + WALL.z1) / 2).renderOrder = 0; // (Rytingborg's floor is the sand, its lake and its own paving)
   // paved roads out through the gates
   const G = gateAt;
   for (const [x, z, w, d] of [G.s !== undefined && [G.s, 58.5, GATE * 2, 7], G.n !== undefined && [G.n, 5.5, GATE * 2, 7],
@@ -396,11 +422,13 @@ export function buildCity(ctx, variant = 'city') {
   // ---------- walls, gates and towers ----------
   const { x0, x1, z0, z1, t, h } = WALL;
   const side = (fixed, a, b, c) => (c !== undefined ? [[fixed, a, c - GATE], [fixed, c + GATE, b]] : [[fixed, a, b]]);
+  // (a port's sea side has no wall: its walls stop at the quay, PORT.quay)
+  const xEnd = T.sea === 'e' ? PORT.quay : x1;
   const runs = [ // [axis, fixed, from, to]
-    ...side(z0, x0, x1, G.n).map((r) => ['x', ...r]),
-    ...side(z1, x0, x1, G.s).map((r) => ['x', ...r]),
+    ...side(z0, x0, xEnd, G.n).map((r) => ['x', ...r]),
+    ...side(z1, x0, xEnd, G.s).map((r) => ['x', ...r]),
     ...side(x0, z0, z1, G.w).map((r) => ['z', ...r]),
-    ...side(x1, z0, z1, G.e).map((r) => ['z', ...r]),
+    ...(T.sea === 'e' ? [] : side(x1, z0, z1, G.e).map((r) => ['z', ...r])),
   ];
   const wallBan = T.wallBanners ? lam({ map: canvasTex(32, 48, T.banner), transparent: true, alphaTest: 0.5 }) : null;
   // a pennant on a thin pole, flapping (dir: which way it flies, +x or -x)
@@ -441,7 +469,7 @@ export function buildCity(ctx, variant = 'city') {
     }
   }
   // towers at the corners and beside each gateway; an arch over each gateway
-  const towers = [[x0, z0], [x1, z0], [x0, z1], [x1, z1]];
+  const towers = T.sea === 'e' ? [[x0, z0], [xEnd, z0], [x0, z1], [xEnd, z1]] : [[x0, z0], [x1, z0], [x0, z1], [x1, z1]];
   if (G.s !== undefined) towers.push([G.s - GATE - 0.6, z1], [G.s + GATE + 0.6, z1]);
   if (G.n !== undefined) towers.push([G.n - GATE - 0.6, z0], [G.n + GATE + 0.6, z0]);
   if (G.e !== undefined) towers.push([x1, G.e - GATE - 0.6], [x1, G.e + GATE + 0.6]);
@@ -453,7 +481,7 @@ export function buildCity(ctx, variant = 'city') {
     const body = T.wood ? mesh(boxUV(new THREE.BoxGeometry(r * 1.7, th, r * 1.7), r * 1.7, th, r * 1.7, 2), M.stone, tx, Y + th / 2, tz)
       : mesh(cylUV(new THREE.CylinderGeometry(r, r * 1.08, th, 14), r, th, 2), M.stone, tx, Y + th / 2, tz);
     const coneH = variant === 'magic' ? 2.6 : T.pennants ? 2.6 : 1.8;
-    const roofGeo = T.wood ? new THREE.ConeGeometry(r * 1.45, 1.5, 4) : T.dome ? onion(r * 1.05, 1.9) : new THREE.ConeGeometry(r * 1.3, coneH, 14);
+    const roofGeo = T.wood ? new THREE.ConeGeometry(r * 1.45, 1.5, 4) : T.cupola ? cupola(r * 1.08) : T.dome ? onion(r * 1.05, 1.9) : new THREE.ConeGeometry(r * 1.3, coneH, 14);
     if (T.wood) roofGeo.rotateY(Math.PI / 4);
     const roof = mesh(roofGeo, T.dome ? M.dome : M.towerRoof, tx, Y + th + (T.wood ? 1.55 : T.dome ? 0 : coneH / 2), tz);
     const parts = [body, roof];
@@ -564,7 +592,7 @@ export function buildCity(ctx, variant = 'city') {
 
   // ---------- minimap ----------
   function minimap(mg) {
-    mg.fillStyle = { magic: '#b6b0c8', hunt: '#7aa050', sand: '#e2cc9a' }[variant] || '#b3ab9c';
+    mg.fillStyle = { magic: '#b6b0c8', hunt: '#7aa050', sand: '#e2cc9a', port: '#ece6da' }[variant] || '#b3ab9c';
     mg.fillRect(x0 * 2, z0 * 2, (x1 - x0) * 2, (z1 - z0) * 2);
     extra?.underlay?.(mg);
     mg.fillStyle = variant === 'magic' ? '#8a7ab8' : '#e0cca4';
@@ -1347,6 +1375,255 @@ const LAYOUTS = {
     void addBox;
     return {
       minimap: (mg) => { mg.fillStyle = '#c890ff'; mg.beginPath(); mg.arc(MAGIC.circle.x * 2, MAGIC.circle.z * 2, 5, 0, Math.PI * 2); mg.fill(); },
+    };
+  },
+
+  // ---------- Hafnvik, the white port city (the fifth city, after the owner's picture: white like Santorini) ----------
+  // Whitewashed walls on the land sides, the sea along the east with no wall: a stone quay, three piers (the middle
+  // one walked out on, to the Ship Captain), ships moored at them, arched breakwaters out to two lighthouses with
+  // blue crystals glowing in their lanterns. Up on the north-west terrace the temple: white columns under a blue
+  // pediment roof, gold on its eaves, grand stairs down. By the harbour the goddess on her plinth, spear and shield.
+  // The plaza's fountain with a gold armillary sphere turning over it, the market's blue-and-white awnings, white
+  // houses with blue cupolas and doors, an amphitheatre in the south-west, purple-blossom trees, gulls wheeling.
+  port({ M, Y, rng, mesh, lam, stall, fadeable, anims, spin, P, addBox, addSolid, group, T, road, roadMat, junction }) {
+    const white = M.stone, marble = lam({ map: stoneTex(rng, '#fbf8f2', '#d8d2c6') });
+    marble.map.repeat.set(0.5, 0.5);
+    const blue = M.roofs[0], gold = M.gold;
+    const domeBlue = lam({ map: domeTex(rng, '#2a56b4') });
+    const pave = lam({ map: cobbleTex(rng, '#f0eadc', '#c4bcaa'), polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1 });
+    const flat = (w, d, mat, x, z, y = Y + 0.03) => {
+      const g = new THREE.PlaneGeometry(w, d); g.rotateX(-Math.PI / 2);
+      const u = g.attributes.uv; for (let i = 0; i < u.count; i++) u.setXY(i, u.getX(i) * w / 2, u.getY(i) * d / 2);
+      const m = mesh(g, mat, x, y, z); m.renderOrder = 0; return m;
+    };
+    const Q = PORT.quay;
+    // the city's floor: white paving from the west wall to the quay (the sea beyond it)
+    flat(Q - WALL.x0, WALL.z1 - WALL.z0, pave, (WALL.x0 + Q) / 2, (WALL.z0 + WALL.z1) / 2, Y + 0.02);
+    // the roads: the west gate to the quay through the plaza, and the north and south gates to it
+    { const rm = roadMat('#e6dcc8', '#a89a80', '#c8b89a'), f = PORT.fountain;
+      road(WALL.x0 + 0.5, f.z, f.x - f.r - 1.6, f.z, 3, { mat: rm }); road(f.x + f.r + 1.6, f.z, Q, f.z, 3, { mat: rm });
+      road(32, WALL.z0 + 0.5, 32, f.z - f.r - 1.6, 3, { mat: rm }); road(32, f.z + f.r + 1.6, 32, WALL.z1, 3, { mat: rm });
+      junction(32, f.z, 9.6, roadMat('#e6dcc8', '#a89a80', '#c8b89a', null, true)); }
+
+    // a Santorini house: white plaster, blue door and shutters, a flat roof with a parapet, perhaps a blue cupola
+    const face = (fw, front, door = '#2a56b4') => lam({ map: archFace(rng, fw, front, T.plaster[Math.floor(rng() * T.plaster.length)], door) });
+    const house = (x, z, w, d, o = {}) => {
+      const wh = o.h || 2.6, roofM = lam({ color: '#f6f2ea' });
+      const body = mesh(new THREE.BoxGeometry(w, wh, d), [face(d, false), face(d, false), roofM, roofM, face(w, true, o.door), face(w, false)], x, Y + wh / 2, z);
+      const parapet = mesh(new THREE.BoxGeometry(w + 0.2, 0.3, d + 0.2), [roofM, roofM, lam({ color: '#e8e2d6' }), roofM, roofM, roofM], x, Y + wh + 0.15, z);
+      const parts = [body, parapet];
+      if (o.cupola) parts.push(mesh(cupola(o.cupola), domeBlue, x + (o.dx || 0), Y + wh + 0.3, z + (o.dz || 0)), mesh(new THREE.ConeGeometry(0.06, 0.6, 6), gold, x + (o.dx || 0), Y + wh + 0.3 + o.cupola + 0.25, z + (o.dz || 0)));
+      if (o.awning) { const a = mesh(new THREE.BoxGeometry(Math.min(w - 0.6, 2.6), 0.06, 1.0), lam({ map: stripeTex('#2a56b4', '#f6f2ea') }), x, Y + wh * 0.62, z + d / 2 + 0.45); a.rotation.x = 0.35; parts.push(a); }
+      if (o.upper) { // a second, smaller storey set back, with its own cupola or a terrace rail
+        const uw = w * 0.55, ud = d * 0.6, ux = x - w * 0.18, uz = z - d * 0.15;
+        parts.push(mesh(new THREE.BoxGeometry(uw, 1.8, ud), [face(ud, false), face(ud, false), roofM, roofM, face(uw, false), face(uw, false)], ux, Y + wh + 0.9 + 0.15, uz));
+        parts.push(mesh(cupola(Math.min(uw, ud) * 0.42), domeBlue, ux, Y + wh + 1.95, uz));
+      }
+      addBox(x - w / 2, z - d / 2, x + w / 2, z + d / 2);
+      fadeable(parts, x, z, Math.max(w, d) / 2, wh + (o.upper ? 3.4 : o.cupola ? o.cupola + 0.6 : 0.4));
+      return parts;
+    };
+    const banMat = lam({ map: canvasTex(32, 48, T.banner), transparent: true, alphaTest: 0.5, side: THREE.DoubleSide });
+    const bannerPole = (x, z) => {
+      const parts = [mesh(new THREE.CylinderGeometry(0.07, 0.07, 3.4, 6), gold, x, Y + 1.7, z), mesh(new THREE.PlaneGeometry(0.8, 1.6), banMat, x + 0.42, Y + 2.5, z)];
+      anims.push((now) => { parts[1].rotation.y = Math.sin(now * 1.8 + x) * 0.25; });
+      addSolid(x, z, 0.2);
+      fadeable(parts, x, z, 0.6, 3.6);
+    };
+    const column = (x, z, h, r = 0.26, y0 = Y) => [
+      mesh(new THREE.CylinderGeometry(r, r * 1.08, h, 12), marble, x, y0 + h / 2, z),
+      mesh(new THREE.BoxGeometry(r * 2.6, 0.18, r * 2.6), marble, x, y0 + h + 0.09, z),
+      mesh(new THREE.BoxGeometry(r * 2.6, 0.18, r * 2.6), marble, x, y0 + 0.09, z),
+    ];
+
+    // ---------- the temple on its terrace (north-west) ----------
+    const Tp = PORT.temple;
+    {
+      const w = Tp.x1 - Tp.x0, d = Tp.z1 - Tp.z0, cx = (Tp.x0 + Tp.x1) / 2, cz = (Tp.z0 + Tp.z1) / 2, top = Y + Tp.h;
+      mesh(boxUV(new THREE.BoxGeometry(w, Tp.h, d), w, Tp.h, d, 2), white, cx, Y + Tp.h / 2, cz);
+      addBox(Tp.x0, Tp.z0, Tp.x1, Tp.z1, 'wall');
+      for (let x = Tp.x0 + 0.5; x < Tp.x1; x += 1.0) if (Math.abs(x - cx) > 2.6) mesh(new THREE.BoxGeometry(0.16, 0.6, 0.16), marble, x, top + 0.3, Tp.z1 - 0.2); // the balustrade
+      mesh(new THREE.BoxGeometry(w, 0.08, 0.2), gold, cx, top + 0.62, Tp.z1 - 0.2);
+      // the grand stairs down to the city
+      const sw = 4.6, n = 8, run = 2.4;
+      for (let i = 0; i < n; i++) { const sh = (Tp.h * (n - i)) / n; mesh(boxUV(new THREE.BoxGeometry(sw, sh, run / n), sw, sh, run / n, 1.5), marble, cx, Y + sh / 2, Tp.z1 + (i + 0.5) * (run / n)); }
+      addBox(cx - sw / 2 - 0.3, Tp.z1, cx + sw / 2 + 0.3, Tp.z1 + run);
+      for (const sx of [-1, 1]) { const b = mesh(new THREE.PlaneGeometry(1.0, 1.9), banMat, cx + sx * 4.2, Y + Tp.h - 1.0, Tp.z1 + 0.03); void b; }
+      // the temple: a stepped base, two rows of white columns, an architrave with a gold band, a blue pediment roof
+      const tw = 11, td = 5.2, ch = 3.4, tz = cz - 0.6;
+      mesh(new THREE.BoxGeometry(tw + 1, 0.3, td + 1), marble, cx, top + 0.15, tz);
+      mesh(new THREE.BoxGeometry(tw - 2.6, ch, td - 2.4), lam({ color: '#f4efe4' }), cx, top + 0.3 + ch / 2, tz); // the cella behind the columns
+      for (let i = 0; i < 7; i++) for (const zz of [tz + td / 2 - 0.2, tz - td / 2 + 0.2]) column(cx - tw / 2 + 0.5 + i * ((tw - 1) / 6), zz, ch, 0.24, top + 0.3);
+      mesh(new THREE.BoxGeometry(tw + 0.4, 0.5, td + 0.4), marble, cx, top + 0.3 + ch + 0.25, tz);
+      mesh(new THREE.BoxGeometry(tw + 0.45, 0.12, td + 0.45), gold, cx, top + 0.3 + ch + 0.56, tz);
+      mesh(gable(tw + 0.3, td + 0.3, 1.5, 0.15), [marble, blue], cx, top + 0.3 + ch + 0.62, tz);
+      for (const sx of [-1, 1]) mesh(new THREE.ConeGeometry(0.12, 0.7, 6), gold, cx + sx * (tw / 2 + 0.1), top + ch + 1.3, tz + td / 2);
+      // a small round shrine at the terrace's west end, under a blue cupola
+      const sx0 = Tp.x0 + 2.4, sz0 = Tp.z0 + 3;
+      for (let i = 0; i < 6; i++) { const a = (i / 6) * Math.PI * 2; column(sx0 + Math.cos(a) * 1.3, sz0 + Math.sin(a) * 1.3, 2.4, 0.16, top); }
+      mesh(new THREE.CylinderGeometry(1.6, 1.6, 0.25, 16), marble, sx0, top + 2.5, sz0);
+      mesh(cupola(1.45), domeBlue, sx0, top + 2.62, sz0);
+      // the cliff's waterfall: water spilling off the terrace's east side into a pool
+      const fallTex = canvasTex(32, 64, (g) => { g.fillStyle = 'rgba(140,210,240,.85)'; g.fillRect(0, 0, 32, 64); g.fillStyle = 'rgba(255,255,255,.6)'; for (let i = 0; i < 18; i++) g.fillRect((i * 7) % 30, (i * 13) % 60, 2, 10); });
+      fallTex.wrapS = fallTex.wrapT = THREE.RepeatWrapping;
+      const fm = new THREE.MeshBasicMaterial({ map: fallTex, transparent: true, depthWrite: false });
+      const fx0 = Tp.x1 + 0.05, fz0 = Tp.z0 + 3.2;
+      const fall = mesh(new THREE.PlaneGeometry(1.4, Tp.h + 0.2), fm, fx0, Y + Tp.h / 2, fz0); fall.rotation.y = Math.PI / 2; fall.renderOrder = 1;
+      const pool = new THREE.CircleGeometry(1.3, 18); pool.rotateX(-Math.PI / 2); mesh(pool, M.water, fx0 + 1.3, Y + 0.08, fz0);
+      addSolid(fx0 + 1.3, fz0, 1.5);
+      anims.push((now) => { fm.map.offset.y = now * 1.4; });
+    }
+
+    // ---------- the goddess on her plinth by the harbour, spear raised and shield at her side ----------
+    {
+      const { x, z } = PORT.statue, s = 1.35, parts = [];
+      parts.push(mesh(new THREE.CylinderGeometry(2.0, 2.3, 1.0, 20), marble, x, Y + 0.5, z));
+      parts.push(mesh(new THREE.CylinderGeometry(1.2, 1.5, 1.6, 16), marble, x, Y + 1.8, z));
+      parts.push(mesh(new THREE.CylinderGeometry(1.3, 1.3, 0.12, 16), gold, x, Y + 2.62, z));
+      const b0 = Y + 2.68;
+      parts.push(mesh(new THREE.CylinderGeometry(0.42 * s, 0.85 * s, 3.2 * s, 14), marble, x, b0 + 1.6 * s, z)); // her robe
+      parts.push(mesh(new THREE.CylinderGeometry(0.5 * s, 0.42 * s, 1.0 * s, 12), marble, x, b0 + 3.6 * s, z)); // her shoulders
+      parts.push(mesh(new THREE.SphereGeometry(0.34 * s, 12, 10), marble, x, b0 + 4.4 * s, z)); // her head
+      parts.push(mesh(new THREE.ConeGeometry(0.4 * s, 0.7 * s, 10), marble, x, b0 + 4.85 * s, z - 0.05)); // her helm
+      const arm = mesh(new THREE.CylinderGeometry(0.11 * s, 0.13 * s, 1.5 * s, 8), marble, x + 0.62 * s, b0 + 4.0 * s, z); arm.rotation.z = -0.35; parts.push(arm);
+      parts.push(mesh(new THREE.CylinderGeometry(0.05 * s, 0.05 * s, 6.2 * s, 6), marble, x + 0.95 * s, b0 + 3.4 * s, z + 0.05));
+      parts.push(mesh(new THREE.ConeGeometry(0.16 * s, 0.6 * s, 6), gold, x + 0.95 * s, b0 + 6.75 * s, z + 0.05));
+      const shield = mesh(new THREE.CylinderGeometry(0.85 * s, 0.85 * s, 0.12 * s, 18), marble, x - 0.9 * s, b0 + 1.9 * s, z + 0.15); shield.rotation.z = Math.PI / 2 - 0.15; shield.rotation.y = 0.5; parts.push(shield);
+      const boss = mesh(new THREE.CylinderGeometry(0.28 * s, 0.28 * s, 0.14 * s, 12), gold, x - 0.97 * s, b0 + 1.9 * s, z + 0.2); boss.rotation.z = Math.PI / 2 - 0.15; boss.rotation.y = 0.5; parts.push(boss);
+      addSolid(x, z, 2.2);
+      fadeable(parts, x, z, 2.2, 11);
+    }
+
+    // ---------- the plaza: the fountain, a gold armillary sphere turning over it ----------
+    {
+      const f = PORT.fountain;
+      const ring = new THREE.Shape(); ring.absarc(0, 0, f.r, 0, Math.PI * 2); const hl = new THREE.Path(); hl.absarc(0, 0, f.r - 0.3, 0, Math.PI * 2, true); ring.holes.push(hl);
+      mesh(new THREE.ExtrudeGeometry(ring, { depth: 0.55, bevelEnabled: false, curveSegments: 24 }).rotateX(-Math.PI / 2), marble, f.x, Y, f.z);
+      const pool = new THREE.CircleGeometry(f.r - 0.3, 24); pool.rotateX(-Math.PI / 2); mesh(pool, M.water, f.x, Y + 0.4, f.z);
+      mesh(new THREE.CylinderGeometry(0.3, 0.5, 2.2, 10), marble, f.x, Y + 1.1, f.z);
+      mesh(new THREE.CylinderGeometry(0.8, 0.5, 0.3, 14), marble, f.x, Y + 2.2, f.z);
+      const sphere = new THREE.Group(); sphere.position.set(f.x, Y + 3.3, f.z); group.add(sphere);
+      for (const [rx, ry] of [[0, 0], [Math.PI / 2, 0], [Math.PI / 2, Math.PI / 2], [0.4, 0.9]]) {
+        const t = new THREE.Mesh(new THREE.TorusGeometry(0.9, 0.05, 6, 28), gold); t.rotation.set(rx, ry, 0); sphere.add(t);
+      }
+      const core = new THREE.Mesh(new THREE.SphereGeometry(0.22, 12, 10), new THREE.MeshBasicMaterial({ color: '#7ac8ff' })); sphere.add(core);
+      anims.push((now) => { sphere.rotation.y = now * 0.4; sphere.rotation.x = Math.sin(now * 0.3) * 0.2; });
+      addSolid(f.x, f.z, f.r + 0.1);
+      for (const [dx, dz] of [[-4.6, -4.6], [4.6, -4.6], [-4.6, 4.6], [4.6, 4.6]]) bannerPole(f.x + dx, f.z + dz);
+    }
+
+    // ---------- the amphitheatre (south-west): rings of white tiers round a sand floor, open to the north-east ----------
+    {
+      const A = PORT.arena, parts = [];
+      const sand = new THREE.CircleGeometry(A.r - 2.2, 24); sand.rotateX(-Math.PI / 2); parts.push(mesh(sand, lam({ color: '#e8d8b0' }), A.x, Y + 0.04, A.z));
+      for (let k = 0; k < 3; k++) {
+        const r0 = A.r - 2.1 + k * 0.7, r1 = r0 + 0.7, sh = new THREE.Shape();
+        const a0 = 0.35, a1 = Math.PI * 2 - 0.35 - Math.PI / 2; // (the gap: toward the plaza)
+        sh.absarc(0, 0, r1, a0, a0 + a1, false); sh.absarc(0, 0, r0, a0 + a1, a0, true);
+        const g = new THREE.ExtrudeGeometry(sh, { depth: 0.35 + k * 0.35, bevelEnabled: false, curveSegments: 28 }); g.rotateX(-Math.PI / 2); g.rotateY(Math.PI / 4);
+        parts.push(mesh(g, marble, A.x, Y, A.z));
+      }
+      for (let i = 0; i < 9; i++) { const a = Math.PI / 4 + 0.35 + (i / 8) * (Math.PI * 1.5 - 0.7); parts.push(...column(A.x + Math.cos(a) * (A.r + 0.2), A.z - Math.sin(a) * (A.r + 0.2), 2.6, 0.2)); }
+      for (let i = 0; i < 16; i++) { const a = Math.PI / 4 + 0.35 + (i / 15) * (Math.PI * 1.5 - 0.7); addSolid(A.x + Math.cos(a) * (A.r - 0.9), A.z - Math.sin(a) * (A.r - 0.9), 1.1); }
+      void parts; // (low tiers and slim columns: they never hide the hero, so they never fade)
+    }
+
+    // ---------- the harbour: the quay, the piers, the ships, the breakwaters and the lighthouses ----------
+    const plank = M.plank;
+    { const qd = WALL.z1 - WALL.z0 + 4; mesh(boxUV(new THREE.BoxGeometry(1.0, 1.6, qd), 1, 1.6, qd, 2), white, Q + 0.3, Y - 0.6, (WALL.z0 + WALL.z1) / 2); } // the quay's face
+    for (let z = WALL.z0 + 1; z < WALL.z1; z += 2.2) if (Math.abs(z - 32) > 2) mesh(new THREE.CylinderGeometry(0.12, 0.14, 0.5, 8), M.stoneDark, Q - 0.2, Y + 0.25, z); // bollards
+    const pier = (z, len, walk) => { // a pier of planks on posts
+      const x0 = Q - 0.2, x1 = Q + len, w = walk ? PORT.pier.z1 - PORT.pier.z0 : 2.2, cx = (x0 + x1) / 2;
+      mesh(boxUV(new THREE.BoxGeometry(x1 - x0, 0.22, w), x1 - x0, 0.22, w, 1.5), plank, cx, Y + 0.02, z);
+      for (let x = x0 + 1; x < x1; x += 2) for (const s of [-1, 1]) mesh(new THREE.CylinderGeometry(0.1, 0.1, 1.8, 6), M.plankDark, x, Y - 0.8, z + s * (w / 2 - 0.1));
+      for (const s of [-1, 1]) mesh(new THREE.BoxGeometry(x1 - x0, 0.08, 0.08), M.plankDark, cx, Y + 0.55, z + s * (w / 2 - 0.05)); // the rails
+      if (walk) for (const s of [-1, 1]) addBox(x0, z + s * w / 2 - (s > 0 ? 0 : 0.2), x1, z + s * w / 2 + (s > 0 ? 0.2 : 0), 'fence');
+    };
+    pier(32, PORT.pier.x1 - Q, true); pier(20, 7, false); pier(44, 8, false);
+    // the ships: a long hull, two masts, square white sails with the blue star; moored, rocking gently
+    const sailTex = canvasTex(64, 64, (g) => { g.fillStyle = '#f6f2e8'; g.fillRect(0, 0, 64, 64); g.strokeStyle = '#d8d0c0'; g.lineWidth = 2; for (let y = 12; y < 64; y += 13) { g.beginPath(); g.moveTo(0, y); g.lineTo(64, y); g.stroke(); } g.fillStyle = '#2a56b4'; g.beginPath(); for (let i = 0; i < 16; i++) { const a = (i / 16) * Math.PI * 2, r = i % 2 ? 5 : 14; g.lineTo(32 + Math.sin(a) * r, 32 - Math.cos(a) * r); } g.fill(); });
+    const sailMat = lam({ map: sailTex, side: THREE.DoubleSide });
+    const hullMat = lam({ map: plankTex(rng, '#7a4a28') }), trim = lam({ color: '#2a56b4' });
+    const ship = (x, z, ph, scale = 1, ry = 0) => {
+      const g = new THREE.Group();
+      const hs = new THREE.Shape(); hs.moveTo(-3.2, 0.9); hs.quadraticCurveTo(-2.6, -0.6, 0, -0.7); hs.quadraticCurveTo(2.8, -0.6, 3.6, 1.2); hs.lineTo(-3.2, 0.9);
+      const hull = new THREE.Mesh(new THREE.ExtrudeGeometry(hs, { depth: 1.6, bevelEnabled: false }).translate(0, 0, -0.8), hullMat);
+      const band = new THREE.Mesh(new THREE.BoxGeometry(6.4, 0.16, 1.66), trim); band.position.set(0.1, 0.75, 0);
+      g.add(hull, band);
+      for (const [mx, mh] of [[-1.2, 4.2], [1.3, 4.8]]) {
+        const mast = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.09, mh, 6), M.plankDark); mast.position.set(mx, 0.8 + mh / 2, 0); g.add(mast);
+        for (const [sy, sw, sh] of [[0.8 + mh * 0.45, 2.2, 1.6], [0.8 + mh * 0.78, 1.7, 1.2]]) { const sl = new THREE.Mesh(new THREE.PlaneGeometry(sw, sh), sailMat); sl.position.set(mx, sy, 0.05); sl.rotation.y = Math.PI / 2; g.add(sl); }
+        const flag = new THREE.Mesh(new THREE.PlaneGeometry(0.6, 0.3), lam({ color: '#2a56b4', side: THREE.DoubleSide })); flag.position.set(mx + 0.3, 0.8 + mh + 0.1, 0); g.add(flag);
+      }
+      g.scale.setScalar(scale); g.rotation.y = ry;
+      g.position.set(x, WATER_LEVEL - 0.25, z);
+      group.add(g);
+      anims.push((now) => { g.position.y = WATER_LEVEL - 0.25 + Math.sin(now * 1.1 + ph) * 0.06; g.rotation.x = Math.sin(now * 0.8 + ph) * 0.03; });
+    };
+    ship(52, 27.4, 0, 0.9, 0); ship(52.5, 37, 1.7, 0.95, 0); ship(55, 48.6, 3.1, 0.8, 0.3); ship(55.5, 15.4, 2.2, 0.75, -0.2);
+    // the breakwaters: arched stone out to the two lighthouses (north-east and south-east)
+    const arches = canvasTex(128, 32, (g) => { g.fillStyle = '#efe9de'; g.fillRect(0, 0, 128, 32); g.fillStyle = '#4f8ab8'; for (let x = 8; x < 128; x += 32) { g.beginPath(); g.moveTo(x, 32); g.lineTo(x, 16); g.arc(x + 8, 16, 8, Math.PI, 0); g.lineTo(x + 16, 32); g.fill(); } g.fillStyle = '#d8d0c2'; g.fillRect(0, 0, 128, 3); });
+    arches.wrapS = THREE.RepeatWrapping;
+    const lantern = new THREE.MeshBasicMaterial({ color: '#7ad8ff' });
+    for (const lz of [11.4, 52.6]) {
+      const lx = 58.4, len = lx - Q - 1.6, cx = Q + len / 2, side = lam({ map: arches.clone() }); side.map.repeat.set(len / 8, 1); side.map.needsUpdate = true;
+      mesh(new THREE.BoxGeometry(len, 1.6, 1.8), [marble, marble, pave, marble, side, side], cx, Y - 0.6, lz);
+      for (const s of [-1, 1]) mesh(new THREE.BoxGeometry(len, 0.4, 0.2), marble, cx, Y + 0.4, lz + s * 0.8);
+      // the lighthouse: a white tower on a round rock, a blue band, a gallery, a glowing blue crystal in its lantern
+      const parts = [
+        mesh(new THREE.CylinderGeometry(2.0, 2.4, 1.6, 18), lam({ map: stoneTex(rng, '#a8a296', '#6a665e') }), lx, Y - 0.6, lz),
+        mesh(cylUV(new THREE.CylinderGeometry(0.95, 1.25, 6.4, 16), 1, 6.4, 2), white, lx, Y + 3.2, lz),
+        mesh(new THREE.CylinderGeometry(1.0, 1.0, 0.4, 16), trim, lx, Y + 4.4, lz),
+        mesh(new THREE.CylinderGeometry(1.35, 1.35, 0.22, 16), marble, lx, Y + 6.5, lz),
+        mesh(new THREE.CylinderGeometry(0.75, 0.75, 1.2, 10), lam({ color: '#cfe8f8', transparent: true, opacity: 0.55 }), lx, Y + 7.2, lz),
+        mesh(cupola(0.85), domeBlue, lx, Y + 7.8, lz),
+      ];
+      const crystal = mesh(new THREE.OctahedronGeometry(0.42), lantern, lx, Y + 7.2, lz); spin.push(crystal); parts.push(crystal);
+      const halo = new THREE.Mesh(new THREE.SphereGeometry(0.9, 12, 10), new THREE.MeshBasicMaterial({ color: '#7ad8ff', transparent: true, opacity: 0.25, depthWrite: false })); halo.position.set(lx, Y + 7.2, lz); group.add(halo); parts.push(halo);
+      anims.push((now) => { halo.scale.setScalar(1 + Math.sin(now * 2.4 + lz) * 0.15); });
+      fadeable(parts, lx, lz, 1.4, 9);
+    }
+
+    // ---------- houses: white, blue doors and cupolas, climbing the land side ----------
+    house(13.6, 23, 4, 4.2, { cupola: 1.1, upper: true });
+    house(14, 35.4, 4.4, 4, { awning: true });
+    house(36.4, 20.6, 4.6, 4, { cupola: 1.2 });
+    house(41.6, 21.4, 3.4, 3.4, { upper: true });
+    house(38.8, 44.4, 4.8, 4.2, { cupola: 1.2, upper: true });
+    house(30.4, 50.8, 5, 4, { awning: true });
+    house(37.4, 51.2, 4.4, 4, { cupola: 1.0 });
+    house(43, 51, 3.6, 4, {});
+    house(25.4, 22.6, 3.8, 3.6, { cupola: 0.9 });
+    house(42.2, 37.6, 3.6, 3.2, { awning: true }); // the harbour master's
+    // ---------- the market: blue-and-white awnings along the road to the quay ----------
+    const cloth = stripeTex('#2a56b4', '#f6f2ea'), cloth2 = stripeTex('#3a8ab8', '#f6f2ea');
+    stall(PORT.stall.x, PORT.stall.z, cloth); stall(42.2, 26.6, cloth2); stall(37.8, 35.6, cloth2); stall(26, 37.6, cloth);
+    P('chest', PORT.chest.x, PORT.chest.z);
+    for (const [x, z] of [[44.2, 29.4], [44.6, 34.8], [43.6, 17.8], [44.6, 41.8]]) { P('crate', x, z); P('barrel', x - 0.9, z + 0.3); }
+    P('barrel', 45, 46.2); P('crate', 45, 24);
+    // purple-blossom trees and a few cypresses in the yards
+    for (const [x, z] of [[17.6, 27], [22.6, 27.4], [17.4, 39], [24.4, 35.4], [35.2, 40.2], [26.4, 44.6], [34, 46], [12, 50.4], [22.4, 51.6], [28.6, 22.0], [29.2, 18.4]]) P('tree_jacaranda', x, z);
+    for (const [x, z] of [[11.4, 31.2], [11.6, 41.6], [27.6, 52.6]]) P('tree_pine', x, z);
+    for (const [x, z] of [[35.2, 31], [24.8, 31], [30, 25.6], [30, 36.4]]) P('lamp', x, z);
+    // gulls wheeling over the harbour
+    const gullTex = canvasTex(32, 16, (g) => { g.strokeStyle = '#ffffff'; g.lineWidth = 3; g.beginPath(); g.moveTo(1, 9); g.quadraticCurveTo(8, 1, 16, 9); g.quadraticCurveTo(24, 1, 31, 9); g.stroke(); g.strokeStyle = '#5a5a60'; g.lineWidth = 1; g.stroke(); });
+    const gm = new THREE.SpriteMaterial({ map: gullTex, transparent: true, depthWrite: false });
+    for (let i = 0; i < 6; i++) {
+      const gs = new THREE.Sprite(gm); gs.scale.set(0.7, 0.35, 1); group.add(gs);
+      const cx = 50 + (i % 3) * 3, cz = 18 + i * 5, r = 3 + (i % 2) * 2, sp = 0.35 + i * 0.05, h = 5 + (i % 3);
+      anims.push((now) => { const a = now * sp + i; gs.position.set(cx + Math.cos(a) * r, Y + h + Math.sin(now * 2 + i) * 0.3, cz + Math.sin(a) * r * 0.6); gs.scale.y = 0.35 * (0.7 + Math.abs(Math.sin(now * 5 + i)) * 0.5); });
+    }
+    void addBox;
+    return {
+      underlay: (mg) => { mg.fillStyle = '#d8d0c0'; mg.fillRect(Tp.x0 * 2, Tp.z0 * 2, (Tp.x1 - Tp.x0) * 2, (Tp.z1 - Tp.z0) * 2); },
+      minimap: (mg) => {
+        mg.fillStyle = '#4f9cc0'; mg.fillRect(Q * 2 + 1, 0, 128 - Q * 2, 128);
+        mg.fillStyle = '#a8865a'; mg.fillRect(Q * 2, PORT.pier.z0 * 2, (PORT.pier.x1 - Q) * 2, (PORT.pier.z1 - PORT.pier.z0) * 2);
+        mg.fillStyle = '#efe9de'; for (const lz of [11.4, 52.6]) { mg.fillRect(Q * 2, lz * 2 - 2, (58.4 - Q) * 2, 4); mg.beginPath(); mg.arc(58.4 * 2, lz * 2, 4, 0, Math.PI * 2); mg.fill(); }
+        const f = PORT.fountain; mg.fillStyle = '#7ac8ff'; mg.beginPath(); mg.arc(f.x * 2, f.z * 2, f.r * 2, 0, Math.PI * 2); mg.fill();
+        mg.fillStyle = '#f2eee6'; mg.beginPath(); mg.arc(PORT.statue.x * 2, PORT.statue.z * 2, 4, 0, Math.PI * 2); mg.fill();
+        const A = PORT.arena; mg.strokeStyle = '#c8c0b0'; mg.lineWidth = 3; mg.beginPath(); mg.arc(A.x * 2, A.z * 2, A.r * 2 - 2, 0, Math.PI * 2); mg.stroke();
+      },
     };
   },
 };

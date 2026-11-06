@@ -15,7 +15,15 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   everyone wear Wind). The **endless dungeon** (the Deep Halls, `src/delve.js`, built and tested, no entrance yet) is an
   unlockable destination of the Ship Captain from **Base 90**; its gatekeeper is **Loki the Mischiefbringer** (a name
   the owner chose, beyond the plain-names rule), who stands at its door and has `delve: true` in NPCS. The Sunken Ship
-  dungeon idea is set aside for now.
+  dungeon idea is set aside for now. **Built (November 2026):** the city is **Hafnvik** (`port`; the owner's picture:
+  white like Santorini, blue cupolas, gold, a temple, a goddess statue, an amphitheatre, an armillary fountain, a
+  harbour with ships and two blue-crystal lighthouses; `city.js` LAYOUTS.port, `PORT`), reached overland from the desert
+  coast (the owner's call): Scorpion Sands E → Tide Cliffs (65–70) → Hafnvik; Beacon Moor (82–88) N, Coral Shallows
+  (70–76, a lagoon waded, `lake.shallow`) S; Captain Asgeir's ship (`ship: [{ to, fare, lv }]`) to the Storm Isles
+  (76–82) and Loki's Gate (Base 90) (`voyage` maps with a `dock`; `isle`; a map's sea side is `shore`; a walkable pier
+  is `piers`). The coast's monsters are painted in code in `src/coast.js` (gull, merrow, jelly, and Yggdrasil's
+  painters in sea colours, `paintRootsKind`), 9 Neutral and 4 elemental (Tide Golem Water, Storm Petrel Wind, Draugr
+  Shadow, Beacon Wraith Fire); the album's ninth set is Hafnvik's Coast. Next: its story chapter, quests, mini-boss, MVP.
 
 - **Jobs, skill points and second jobs:** read `docs/job-rules.md` before touching jobs, skills
   or job quests. In short:
@@ -250,7 +258,7 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   hard and tricky as a field MVP: `FIERCE` in `mobs.js`), for a hero in the best gear. Clear rewards
   (perz, materials) x1/x3/x6/x9. Raid EXP is held and paid at the end: x1.5 on a clear,
   nothing on a failure (the Tutorial too).
-- **The Monster Album** (the 📖 button, `src/album.js`): every monster, kills and cards found, and eight sets
+- **The Monster Album** (the 📖 button, `src/album.js`): every monster, kills and cards found, and nine sets
   (the owner's call): a region's monsters' cards (bosses aside; the raids' set is their bosses' cards), each
   finished set a small bonus for good (`SETS`, added in `applyStats`). A new region gets a set.
 - **Goals** (the 🏆 button, `src/goals.js`, the owner's call): three weekly hunts fit for the hero's level and job

@@ -960,6 +960,7 @@ export class Menus {
       + (n.warp ? '<button class="rbtn" data-act="ferrylist">Travel</button>' : '')
       + (n.raid ? `<button class="rbtn" data-act="ferrylist">${esc(RAIDS[n.raid].name)}</button>` : '')
       + (n.delve ? '<button class="rbtn" data-act="ferrylist">The Deep Halls</button>' : '')
+      + (n.ship ? '<button class="rbtn" data-act="ferrylist">Set sail</button>' : '')
       + (n.keeper && this.hooks.keeperKnown?.(this.npc) ? '<button class="rbtn" data-act="chestwin">Storage</button><button class="rbtn" data-act="heal">Heal me</button>'
         + `<button class="rbtn" data-act="keepsave" ${this.hooks.savedAt?.() === this.npc ? 'disabled' : ''}>Save here</button><button class="rbtn" data-act="keeplist">Teleport</button>` : '')
       + (n.keeper && !this.hooks.keeperKnown?.(this.npc) ? '<button class="rbtn" data-act="keepreg">Sign the ledger</button>' : '');
@@ -972,6 +973,15 @@ export class Menus {
         <div class="btnrow"><button class="rbtn soft" data-act="close">Bye</button></div></div></div>`;
     }
     if (n.raid && this.ferrying) return this.raidPanel(n);
+    if (n.ship && this.ferrying) { // a Ship Captain's destinations: the fare, and the Base Level a far one asks
+      const list = this.hooks.shipList?.(this.npc) || [];
+      const rows = list.map((d) => (d.open ? fareRow('sail', d.to, ZONE_NAMES[d.to], d.fare, this.inv.perz)
+        : `<button class="farerow" disabled><span>${esc(ZONE_NAMES[d.to])}</span><b>Base ${d.lv}</b></button>`)).join('');
+      this.wins.talk.querySelector('.rw-title').textContent = n.name;
+      return `<div class="talkwrap"><img class="portrait" src="${this.portrait(this.npc)}" alt="">
+        <div class="say"><p>Where shall the Wave-Runner take you? You have ${this.inv.perz.toLocaleString()} perz.</p><div class="farelist">${rows}</div>
+        <div class="btnrow"><button class="rbtn soft" data-act="close">Bye</button></div></div></div>`;
+    }
     if (n.delve && this.ferrying) { // the Deep Halls: the first floor, or the deepest checkpoint reached
       const d = this.hooks.delveInfo?.() || { best: 0, cp: 1, open: false, lv: 70 };
       this.wins.talk.querySelector('.rw-title').textContent = n.name;
@@ -1189,6 +1199,7 @@ export class Menus {
     if (act === 'keepsave') { this.hooks.keeperSave?.(this.npc); this.render('talk'); }
     if (act === 'keepgo') this.hooks.keeperGo?.(t.dataset.id);
     if (act === 'delvego') this.hooks.delveGo?.(+t.dataset.id);
+    if (act === 'sail') this.hooks.sail?.(this.npc, t.dataset.id);
     if (act === 'qgo') this.hooks.questGo?.(this.questId);
     if (act === 'qkeeper') this.hooks.keeperRoadGo?.(this.questId);
     if (act === 'guideme') { this.close('quest'); this.hooks.guideMe?.(); }

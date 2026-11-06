@@ -504,6 +504,46 @@ export const NPCS = {
   },
 
   // ---------- Rytingborg, the oasis city south of Ember Hill: sand, daggers, and old secrets ----------
+  // ---------- Hafnvik, the white port city (the fifth city, docs/fifth-city.md) ----------
+  keeper_port: {
+    name: 'Keeper', map: 'port', x: 15.6, z: 29.6, dress: ROLE.keeper, keeper: true,
+    hello: 'Hafnvik\'s Keeper. Every ship that sails out of this harbour is written in a ledger somewhere. Sign mine, and so are you.',
+    later: () => '', bye: 'Fair winds.', quests: [],
+  },
+  // the Ship Captain (the owner's call): her ship sails to destinations (ship: [{ to, fare, lv }]); a destination
+  // with lv opens at that Base Level. Loki's Gate, the door of the endless dungeon, from Base 90
+  asgeir: {
+    name: 'Captain Asgeir', map: 'port', x: 55, z: 32, ship: [{ to: 'storm', fare: 4000 }, { to: 'lokigate', fare: 8000, lv: 90 }],
+    dress: { body: 'blader', main: [215, 0.55, 0.45], accent: [45, 0.8, 1.05], hair: 'long', dye: 'black', top: 'bandana' },
+    hello: 'The Wave-Runner sails with the tide. The Storm Isles, if you can stand the weather. And further out, for the bold, a rock where nobody sane lands.',
+    later: () => '', bye: 'Mind the gulls. They steal.', quests: [],
+    lore: ['Hafnvik was built white so the ships could find it from the sea, even in fog. The lighthouses do the rest.', 'There is a rock past the Storm Isles with stairs cut into it, going down. A fellow in a horned helm waits there, grinning. I only take heroes of real standing to him.'],
+  },
+  sela: {
+    name: 'Sela the Trader', map: 'port', x: 37.8, z: 28.6, shop: 'sela', dress: { body: 'trainee', main: [205, 0.55, 1.05], accent: [0, 0, 1.25], hair: 'long', dye: 'brown', top: 'straw_hat' },
+    hello: 'Fresh from the boats! Potions, salt fish, and everything the sea washes up. I buy what your bag is too heavy with.',
+    later: () => '', bye: 'Come back when the boats are in.', quests: [],
+  },
+  brand: {
+    name: 'Brand the Smith', map: 'port', x: 42, z: 40, shop: 'brand', craft: 'gear', dress: ROLE.smith,
+    hello: 'Sea air rusts a lesser blade in a week. Mine it does not. Bring me shells, scales and hide, and I will show you.',
+    later: () => '', bye: 'Oil your steel.', quests: [],
+  },
+  ylfa: {
+    name: 'Ylfa the Priestess', map: 'port', x: 21.8, z: 22.6, heal: true, dress: { body: 'sorc', main: [215, 0.35, 1.25], accent: [45, 0.75, 1.05], hair: 'long', dye: 'blonde', top: 'flower_wreath' },
+    hello: 'The goddess on the quay watches over every ship. In her temple, I watch over the sailors. Come, sit, be mended.',
+    later: () => '', bye: 'Go with her blessing.', quests: [],
+    lore: ['The goddess has no name the sailors agree on. She raised her spear against the sea once, they say, and the sea backed down.'],
+  },
+  // Loki the Mischiefbringer (the owner's call), at the door of the endless dungeon on Loki's Gate: he sends heroes
+  // down into the Deep Halls (delve: delve.js), from the first floor or the deepest checkpoint they have reached
+  loki: {
+    name: 'Loki the Mischiefbringer', map: 'lokigate', x: 35, z: 32, delve: true,
+    dress: { body: 'sorc', main: [140, 0.55, 0.6], accent: [45, 0.8, 1.05], hair: 'mane', dye: 'red', top: 'horned_helm' },
+    hello: 'Ah, a visitor! Do come in. Well, down. The halls go down and down, and every time you look they have moved a little. My doing? Perhaps.',
+    later: () => '', bye: 'Do come back. Or don\'t. I find out either way.', quests: [],
+    lore: ['I did not build these halls. I only found them, and moved the walls about a bit. It is more fun this way.', 'Every fifth floor I leave a little something. Call it an apology. Or bait.'],
+  },
   keeper_sand: {
     name: 'Keeper', map: 'sand', x: 22.6, z: 46.2, dress: ROLE.keeper, keeper: true,
     hello: 'Rytingborg\'s Keeper. Water, shade and a ledger: everything a traveller needs. Sign, and the oasis remembers you.',
@@ -631,7 +671,8 @@ export const NPCS = {
 // the Ferryman's fares, by map (only lands you have already walked)
 export const FARES = { camp: 300, city: 500, magic: 500, grove: 300, fen: 400, hollow: 600, birch: 700, coast: 900, ridge: 1200, deep: 1500, heath: 1800, stones: 2000, coalpit: 2400, burnt: 2600, serpent: 3000,
   marsh: 800, hunt: 900, oldwood: 1000, farm: 2400, wolfhill: 2400,
-  sand: 1500, redsands: 1600, dunes: 2600, scorpion: 2800, desert: 3200 };
+  sand: 1500, redsands: 1600, dunes: 2600, scorpion: 2800, desert: 3200,
+  port: 3600, tidecliff: 3400, coral: 3800, beacon: 4400 }; // (Hafnvik's coast; the Storm Isles only by Captain Asgeir's ship)
 // lands every Ferryman rides to even before you have walked there: Rytingborg, so a Trainee bound for
 // the Assassin's trial need not cross Ember Hill past the Fire Giant
 export const ALWAYS_FARES = ['sand'];

@@ -54,8 +54,13 @@ export function rootsFrame(id, dir, anim, f) {
   const P = ROOTS[id], [W, H] = P.size;
   const F = new Frame(W, H);
   const a = { G: H - 3, W, H, walk: anim === 'walk', f, step: anim === 'walk' ? [1, 0, -1, 0][f] : 0, atk: anim === 'attack' ? f : -1 };
-  ({ squirrel, bramble, elf, golem, stag, dryad, warden, dragon, ratatoskr, serpent, rotbeetle })[P.kind](F, P, dir, a);
+  paintRootsKind(F, P, dir, a);
   return F;
+}
+// one of these painters by its kind, for a palette from elsewhere (coast.js: Hafnvik's coast borrows the golem,
+// serpent, beetle, stag and warden in sea colours)
+export function paintRootsKind(F, P, dir, a) {
+  ({ squirrel, bramble, elf, golem, stag, dryad, warden, dragon, ratatoskr, serpent, rotbeetle })[P.kind](F, P, dir, a);
 }
 const W1 = (k) => Math.max(1, Math.round(k)); // a line width that grows with the size
 // a hole eaten through what is drawn: a red-rimmed ragged gap (Nidhogg's torn wings)

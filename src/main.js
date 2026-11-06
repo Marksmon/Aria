@@ -591,6 +591,7 @@ function enterMap(id, from, at) {
     delete mobs.fieldAt[id];
     at = at || DELVE_START;
   } else if (isDelve(from) && !at) { const h = delverSpot(); id = h.map; at = h; } // (the stairs up: home beside the one who sent them)
+  else if (MAPS[from]?.voyage && !at) { const c = Object.values(NPCS).find((n) => n.ship && n.map === id); if (c) at = { x: c.x - 1.4, z: c.z }; } // (sailed home: beside the captain)
   if (world.id) groundLeft[world.id] = fx.stashPickups();
   if (!sceneKeep) { clearTraps(); doll = null; } // (traps stay where they were set; a bound monster stays behind; a cutscene's shots keep both)
   const arrive = world.go(id, from);
@@ -1219,6 +1220,16 @@ const menus = new Menus(inv, prog, player, {
   // whose Keeper's ledger the hero has signed, for that Keeper's fare, arriving beside the person wanted (the
   // pacing pass: fewer walks back and forth for a talk)
   keeperRoad: (id) => keeperRoad(id),
+  // a Ship Captain (Captain Asgeir, Hafnvik): her destinations, each open from its Base Level, and setting sail
+  shipList: (npc) => (NPCS[npc]?.ship || []).map((d) => ({ ...d, open: prog.baseLv >= (d.lv || 0) })),
+  sail(npc, to) {
+    const d = NPCS[npc]?.ship?.find((o) => o.to === to);
+    if (!d || prog.baseLv < (d.lv || 0) || inv.perz < d.fare) return;
+    inv.perz -= d.fare;
+    menus.close('talk');
+    menus.message(`The Wave-Runner sails for ${ZONE_NAMES[to]}...`);
+    warp(to, null, MAPS[to].dock);
+  },
   // the Deep Halls' guide (the fifth city's Ship Captain, once made): the deepest floor reached, the checkpoint they can
   // be sent to, and whether they may go
   delveInfo: () => ({ best: delve.best, cp: checkpoint(delve.best), open: prog.baseLv >= DEPTH.open, lv: DEPTH.open }),
@@ -3172,7 +3183,7 @@ function hudTick(dt) {
 
 // the music's mood (audio.js MOODS): a boss fight (a boss or MVP hunting the hero near by, or a raid run,
 // held 4 s after), a dungeon, a wonder (the Sphinx's sands, the World Tree), a town, the desert, or a field
-const TOWNS = new Set(['camp', 'city', 'magic', 'hunt', 'sand']), SANDS = new Set(['redsands', 'dunes', 'scorpion', 'desert']), WONDERS = new Set(['sphinx', 'ygg']);
+const TOWNS = new Set(['camp', 'city', 'magic', 'hunt', 'sand', 'port']), SANDS = new Set(['redsands', 'dunes', 'scorpion', 'desert']), WONDERS = new Set(['sphinx', 'ygg', 'lokigate']);
 let bossMusicT = 0;
 function musicMood(dt) {
   const fight = raids.raid || mobs.list.some((m) => m.alive && (m.def.boss || m.def.mvp) && !m.def.decoy && m.state === 'chase' && Math.hypot(m.x - player.x, m.z - player.z) < 16);
@@ -3416,4 +3427,4 @@ if (go || toSelect) { title.classList.remove('wait'); bootGone(); } else {
   addEventListener('keydown', tap);
 }
 
-window.__aria = { scene, renderer, lib, MAPS, settings, album, goals, warp, enterMap, useSkill, useItem, story, SPOTS, player, world, cam, camera, mobs, allies, fx, inv, prog, quests, villagers, menus, hotbar, dayNight, audio, stats: world.stats, raid: () => raids.raid, raidAt: () => raids.raidAt, raidGo, raidLog: () => raidLog, storyDone, queueScene, chapterShots, cineShot, cine: () => cine, traps, delve, questWorld, keepers, visited, savePoint: () => savePoint, keepers, gainExp };
+window.__aria = { scene, renderer, lib, MAPS, settings, album, goals, warp, enterMap, useSkill, useItem, story, SPOTS, player, world, cam, camera, mobs, allies, fx, inv, prog, quests, villagers, menus, hotbar, dayNight, audio, stats: world.stats, raid: () => raids.raid, raidAt: () => raids.raidAt, raidGo, raidLog: () => raidLog, storyDone, queueScene, chapterShots, cineShot, cineOff: () => { cine = null; }, cine: () => cine, traps, delve, questWorld, keepers, visited, savePoint: () => savePoint, keepers, gainExp };
