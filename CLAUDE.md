@@ -84,7 +84,7 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   - The map lives on while the hero is away: on return, each monster has wandered (random walk at
     its stroll, `AWAY` in `mobs.js`: `wander`) and each boss has roamed spot to spot (`roamAway`)
     for the time away (capped at 3 min), done at once on arrival.
-  - A new map only needs its `SPAWNS` entry in `main.js`; all of the above comes with it. A dungeon floor is a map
+  - A new map only needs its `SPAWNS` entry in `src/spawns.js`; all of the above comes with it. A dungeon floor is a map
     with `maze` (and `indoor`) in `world.js` MAPS (`dungeon.js`); a portal's `out` says where you arrive beside it.
 - **The first-job pick comes at Trainee Job 9** (the owner's call: little grinding): a Trainee who reaches
   `CALL_JOB` anywhere after the Seeress is called home to Eldrun's 'paths' step at once (`Story.callHome`,

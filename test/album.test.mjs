@@ -3,6 +3,7 @@
 import test, { after } from 'node:test';
 import assert from 'node:assert/strict';
 import { Album, albumRows } from '../src/album.js';
+import { SPAWNS } from '../src/spawns.js';
 import { MOB_DEFS } from '../src/mobs.js';
 import { load, close } from './load.mjs';
 
@@ -48,11 +49,8 @@ test("an MVP's card and ultra rare come likelier with every kill they don't drop
 });
 
 test('album sets: eight regions, every one with cards, a finished set giving its bonus', async () => {
-  const fs = await import('node:fs');
   const { SETS, setProgress, setBonus } = await import('../src/album.js');
   const { RAIDS } = await import('../src/raid.js');
-  const src = fs.readFileSync(new URL('../src/main.js', import.meta.url), 'utf8'), i = src.indexOf('const SPAWNS = {'), j = src.indexOf('\n};', i);
-  const SPAWNS = (0, eval)(`(${src.slice(i + 15, j + 2).replace(/\/\/[^\n]*/g, '')})`);
   const bosses = Object.values(RAIDS).map((r) => r.boss[0]);
   const empty = setProgress(MOB_DEFS, SPAWNS, CARD_OF, new Album(), bosses);
   assert.equal(empty.length, SETS.length);

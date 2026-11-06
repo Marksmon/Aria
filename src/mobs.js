@@ -334,6 +334,25 @@ export const MOVES = {
 // the Eternal Sphinx's Riddle answered (MOVES.riddle): right, it is Dumbstruck for `stun` s and takes
 // `exposed` x as much for `exposeFor` s; wrong, it is Exalted, taking `exalted` x as much for `exaltFor` s
 export const RIDDLE = { stun: 3.5, exposed: 1.3, exposeFor: 9, exalted: 0.5, exaltFor: 8, ring: 4.2, r: 1.5 };
+// (main.js shows them: moved out of it)
+// The Riddle (the Eternal Sphinx, mobs.js MOVES.riddle): it asks, and three circles round you hold three
+// answers. Stand in the right one when its time is up. (A riddle is never asked twice running.)
+export const RIDDLES = [
+  ['What walks on four legs at dawn, on two at noon, and on three at dusk?', 'A person', 'A lion', 'A serpent'],
+  ['The more of me you take, the more you leave behind. What am I?', 'Footsteps', 'Gold', 'Sand'],
+  ['I have no mouth, yet I answer whoever calls into the dark. What am I?', 'An echo', 'A ghost', 'The wind'],
+  ['Feed me and I grow; give me water and I die. What am I?', 'Fire', 'A plant', 'A bloop'],
+  ['The more of me there is, the less you see. What am I?', 'Darkness', 'Sand', 'Fog'],
+  ['I run but never walk, I have a mouth but never eat, a bed but never sleep. What am I?', 'A river', 'A road', 'A worm'],
+  ['I am always coming, but I never arrive. What am I?', 'Tomorrow', 'The tide', 'Night'],
+  ['Taller than the trees, with roots nobody sees, I rise and rise, yet never grow. What am I?', 'A mountain', 'A pyramid', 'A tower'],
+  ['I have one eye, but I cannot see. What am I?', 'A needle', 'A storm', 'A cyclops'],
+  ['What can fill a whole room, yet takes up no space at all?', 'Light', 'Air', 'Sand'],
+  ['What is so fragile that saying its name breaks it?', 'Silence', 'Glass', 'A promise'],
+  ['I go up and come back down, yet I never move. What am I?', 'A stair', 'The sun', 'A bird'],
+  ['The poor have me, the rich need me, and eat me and you will die. What am I?', 'Nothing', 'Bread', 'Gold'],
+  ['What has a neck but no head, and wears a cap but has no hair?', 'A bottle', 'A jackal', 'A mummy'],
+];
 const MIRROR = 0.1;
 export const BARK = { taken: 0.7, reflect: 0.3 };
 // An MVP is a fight for a strong second job (or a party): below half its HP it is enraged for good

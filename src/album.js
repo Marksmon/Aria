@@ -42,7 +42,7 @@ export function albumRows(mobs, album, cardOf, where, chance = () => null) {
 
 // The album's sets (the owner's call): every card of one region's own monsters (bosses and MVPs aside;
 // the raids' set is their bosses' cards). A finished set gives a small bonus for good (main.js applyStats).
-// maps: the region's maps (main.js SPAWNS); bonus: { stats: { pow: 1 } } or { mhpRate / mspRate: % }
+// maps: the region's maps (spawns.js SPAWNS); bonus: { stats: { pow: 1 } } or { mhpRate / mspRate: % }
 export const SETS = [
   { id: 'fields', name: "Eldrun's Fields", maps: ['grove', 'fen', 'hollow', 'birch'], bonus: { mhpRate: 2 }, text: 'Max HP +2%' },
   { id: 'south', name: 'The Shore and the South', maps: ['coast', 'ridge', 'deep', 'heath'], bonus: { stats: { pow: 1 } }, text: 'POW +1' },
@@ -54,7 +54,7 @@ export const SETS = [
   { id: 'raids', name: 'The Raids', raids: true, bonus: { stats: { ftn: 1 } }, text: 'FTN +1' },
 ];
 // each set's cards and how many the album holds: [{ set, cards: [card ids], found, done }]. spawns: map ->
-// [[type, n, night?]...] (main.js SPAWNS); raidBosses: the raids' boss types
+// [[type, n, night?]...] (spawns.js SPAWNS); raidBosses: the raids' boss types
 export function setProgress(mobs, spawns, cardOf, album, raidBosses = []) {
   return SETS.map((set) => {
     const types = set.raids ? raidBosses : [...new Set(set.maps.flatMap((m) => (spawns[m] || []).map(([t]) => t)))].filter((t) => !mobs[t]?.boss && !mobs[t]?.mvp);

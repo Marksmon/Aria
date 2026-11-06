@@ -1,7 +1,7 @@
 // The Sphinx's Halls, Aria's first dungeon: four floors under the Giant Sphinx of Sphinx Sands, each a
 // 64x64 map. The first three are mazes of sandstone corridors, harder floor by floor (a levelling
 // site); the last is a great hall alone, where the Eternal Sphinx waits with its Guardians (the owner's
-// call: three maze floors, then the hall. MAPS.halls1..halls4 in world.js; their monsters in main.js SPAWNS).
+// call: three maze floors, then the hall. MAPS.halls1..halls4 in world.js; their monsters in spawns.js SPAWNS).
 //
 // The maze is laid on the tile grid the hero walks (tiles.js): 14 x 14 cells of 3 x 3 tiles, a wall
 // one tile thick between them (wall lines on tiles 3, 7, 11 ... 59, and the map's rim all wall), so
