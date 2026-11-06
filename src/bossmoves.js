@@ -40,7 +40,102 @@ export function installBossMoves(ctx) {
     if (a.kind === 'leap') fx.warn(a.spot.x, a.spot.z, a.mv.r, MOVES.leap.wind + MOVES.leap.air);
     if (a.kind === 'roots') for (const p of a.spots) fx.warn(p.x, p.z, a.mv.r, MOVES.roots.wind + MOVES.roots.land);
     if (a.kind === 'devour') fx.warn(a.spot.x, a.spot.z, 1.4, MOVES.devour.wind);
+    if (a.kind === 'surge') { // the line the serpent will run, marked all along
+      const M = MOVES.surge;
+      for (let d = 1.6; d <= M.len; d += 1.5) fx.warn(a.from.x + a.dir.x * d, a.from.z + a.dir.z * d, M.w, M.wind + d / M.len * 0.65, MOVE_COL.water);
+    }
+    if (a.kind === 'prison') fx.warn(a.spot.x, a.spot.z, MOVES.prison.r, MOVES.prison.wind);
+    if (a.kind === 'maelstrom') { fx.warn(a.spot.x, a.spot.z, MOVES.maelstrom.r, MOVES.maelstrom.wind, MOVE_COL.water); fx.warn(a.spot.x, a.spot.z, MOVES.maelstrom.core, MOVES.maelstrom.wind); }
   });
+  // ---------- Poseidon's moves (mobs.js MOVES.surge, prison, maelstrom) ----------
+  // Leviathan Surge: a sea serpent rushes down the marked line; whoever is on it when it passes is struck, once
+  mobs.on('surge', (m, a) => {
+    const map = world.id, M = MOVES.surge, steps = Math.ceil(M.len / 1.2);
+    let hit = false;
+    audio.play('dodge');
+    for (let i = 0; i <= steps; i++) setTimeout(() => {
+      if (world.id !== map) return;
+      const d = 1 + i * 1.2, x = a.from.x + a.dir.x * d, z = a.from.z + a.dir.z * d, gy = world.heightAt(x, z);
+      fx.puff(x, gy + 0.2, z, M.w * 1.1);
+      fx.sparkle(x, gy + 0.5, z, i % 2 ? '#f2fbff' : MOVE_COL.water, 6);
+      if (!hit && m.alive && Math.hypot(player.x - x, player.z - z) <= M.w + 0.3 && player.canBeHit() && player.state !== 'down') {
+        hit = true;
+        bossBlow(m, a.mv.mult, x, z, M.w);
+      }
+    }, i * M.every * 1000);
+  });
+  // Oceanic Prison: caught in its circle, a cage of water closes round you. You can't walk away and he is shielded
+  // while it stands; it drowns you every second, and crashes down on you if it still stands when its time is up.
+  // Break it (it takes your blows, and your beasts')
+  const prisons = [];
+  mobs.on('prison', (m, a) => {
+    const M = MOVES.prison, { x, z } = a.spot, gy = world.heightAt(x, z);
+    fx.puff(x, gy + 0.2, z, M.r * 1.2);
+    fx.sparkle(x, gy + 0.6, z, MOVE_COL.water, 18);
+    audio.play('hit');
+    if (Math.hypot(player.x - x, player.z - z) > M.r + 0.3 || !player.canBeHit() || player.state === 'down' || !m.alive) return;
+    const cell = mobs.prison(m, player.x, player.z);
+    prisons.push({ m, cell, mv: a.mv, map: world.id, t: M.hold * (m.enraged ? 0.8 : 1), tick: M.tick });
+    player.rootT = Math.max(player.rootT, 0.5); player.path = [];
+    player.command?.({ mob: cell });
+    fx.number(player.x, overHead(player, 1.6), player.z, 'Imprisoned!', 'miss');
+    ctx.menus.message('Poseidon\'s Oceanic Prison closes round you! Break it before you drown: strike the water, quickly!');
+  });
+  function prisonTick(dt) {
+    for (let i = prisons.length - 1; i >= 0; i--) {
+      const P = prisons[i], { m, cell } = P;
+      if (!cell.alive) { // broken
+        prisons.splice(i, 1);
+        player.rootT = 0;
+        if (world.id === P.map) { fx.sparkle(player.x, world.heightAt(player.x, player.z) + 1, player.z, '#f2fbff', 24); ctx.menus.message('You break out of the Oceanic Prison!'); }
+        continue;
+      }
+      if (world.id !== P.map || !m.alive || player.state === 'down') { mobs.vanish(cell); prisons.splice(i, 1); player.rootT = 0; continue; }
+      cell.x = player.x; cell.z = player.z; // (it holds you where you are)
+      player.rootT = Math.max(player.rootT, 0.25);
+      if ((P.tick -= dt) <= 0) {
+        P.tick = MOVES.prison.tick;
+        fx.number(player.x, overHead(player, 1.6), player.z, 'Drowning!', 'miss');
+        bossBlow(m, P.mv.drown, player.x, player.z, 99);
+      }
+      if ((P.t -= dt) <= 0) { // it crashes down on you
+        mobs.vanish(cell); prisons.splice(i, 1); player.rootT = 0;
+        cam.shake = 0.5;
+        fx.puff(player.x, world.heightAt(player.x, player.z) + 0.2, player.z, 2.2);
+        fx.sparkle(player.x, world.heightAt(player.x, player.z) + 1, player.z, MOVE_COL.water, 30);
+        audio.play('hit');
+        bossBlow(m, P.mv.crash, player.x, player.z, 99);
+        ctx.menus.message('The Oceanic Prison crashes down on you!');
+      }
+    }
+  }
+  // Raging Maelstrom: a whirlpool round where you stood, pulling you in to its heart, which strikes whoever is in it
+  const whirls = [];
+  mobs.on('maelstrom', (m, a) => {
+    const M = MOVES.maelstrom, { x, z } = a.spot;
+    whirls.push({ m, mv: a.mv, map: world.id, x, z, t: M.dur, tick: 0, spin: 0 });
+    fx.warn(x, z, M.r, M.dur, MOVE_COL.water);
+    fx.warn(x, z, M.core, M.dur);
+    cam.shake = 0.3; audio.play('night');
+    ctx.menus.message('Poseidon raises a Raging Maelstrom! It drags you to its heart: walk out of it, away from the middle!');
+  });
+  function whirlTick(dt) {
+    const M = MOVES.maelstrom;
+    for (let i = whirls.length - 1; i >= 0; i--) {
+      const W = whirls[i];
+      if ((W.t -= dt) <= 0 || !W.m.alive || world.id !== W.map) { whirls.splice(i, 1); continue; }
+      W.spin += dt * 4;
+      if (Math.random() < dt * 14) { const a = W.spin + Math.random() * 6.3, r = 0.6 + Math.random() * M.r; fx.sparkle(W.x + Math.cos(a) * r, world.heightAt(W.x, W.z) + 0.2, W.z + Math.sin(a) * r, Math.random() < 0.3 ? '#f2fbff' : MOVE_COL.water, 2); }
+      const dx = W.x - player.x, dz = W.z - player.z, d = Math.hypot(dx, dz);
+      if (d > M.r || player.state === 'down' || !player.canBeHit()) continue;
+      if (d > 0.05) { // the pull (walls still stop it)
+        const k = Math.min(d, M.pull * (W.m.enraged ? 1.25 : 1) * dt) / d;
+        const [nx, nz] = world.resolve(player.x + dx * k, player.z + dz * k, 0.3);
+        if (world.walkable(nx, nz) && !world.isSafe(nx, nz)) { player.x = nx; player.z = nz; }
+      }
+      if (d <= M.core && (W.tick -= dt) <= 0) { W.tick = M.tick; bossBlow(W.m, W.mv.mult, W.x, W.z, M.core); }
+    }
+  }
   // Tremor (mobs.js TREMOR): the ground cracks under a hero who stands still by an MVP; step aside
   mobs.on('tremor', (m, spot, T) => {
     const map = world.id;
@@ -227,6 +322,7 @@ export function installBossMoves(ctx) {
     fx.warn(x, z, b.r, b.dur, b.color || '#ff8a2a');
   }
   function burnTick(dt) {
+    prisonTick(dt); whirlTick(dt); // (Poseidon's, above)
     for (let i = burning.length - 1; i >= 0; i--) {
       const b = burning[i];
       b.t -= dt;
@@ -298,15 +394,15 @@ export function installBossMoves(ctx) {
     audio.play('night');
   });
   // a blow that barely lands (mobs.js ward): underground, behind his tribe, shrouded by shadows
-  const WARD_HINT = { under: 'Underground!', tribe: 'Guarded!', mirror: 'Shrouded!', jelly: 'Jelly Wall!', jar: 'Sealed!', exalt: 'Exalted!' };
+  const WARD_HINT = { prison: 'Shielded!', under: 'Underground!', tribe: 'Guarded!', mirror: 'Shrouded!', jelly: 'Jelly Wall!', jar: 'Sealed!', exalt: 'Exalted!' };
   let wardHintAt = 0;
   mobs.on('warded', (m) => {
-    const why = m.under ? 'under' : m.exaltT > 0 ? 'exalt' : m.def.tribe && mobs.guardsOf(m).some((g) => !g.def.decoy) ? 'tribe' : mobs.decoysOf(m)[0]?.type === 'jellyCore' ? 'jelly' : mobs.decoysOf(m)[0]?.type === 'canopicJar' ? 'jar' : 'mirror';
+    const why = mobs.decoysOf(m)[0]?.type === 'tidePrison' ? 'prison' : m.under ? 'under' : m.exaltT > 0 ? 'exalt' : m.def.tribe && mobs.guardsOf(m).some((g) => !g.def.decoy) ? 'tribe' : mobs.decoysOf(m)[0]?.type === 'jellyCore' ? 'jelly' : mobs.decoysOf(m)[0]?.type === 'canopicJar' ? 'jar' : 'mirror';
     fx.number(m.x, overHead(m, m.sprite.scale.y * 0.8 + 0.4), m.z, WARD_HINT[why], 'miss');
     if (why === 'tribe' && performance.now() - wardHintAt > 15000) { wardHintAt = performance.now(); ctx.menus.message(`The ${m.def.name} hides behind his tribe! Bring down his guards first.`); }
   });
   // "the Fire Giant", but BleepBloop is a name
-  const theName = (m) => (m.def.raidLv ? m.def.name : `the ${m.def.name}`);
+  const theName = (m) => (m.def.raidLv || m.def.proper ? m.def.name : `the ${m.def.name}`);
   const TheName = (m) => theName(m)[0].toUpperCase() + theName(m).slice(1);
   mobs.on('enrage', (m) => { // an MVP (or the Hell raid's boss) below half its HP (mobs.js MVP_RAGE)
     ctx.menus.message(`${TheName(m)} is enraged! It hits harder and faster now.`);
@@ -316,7 +412,7 @@ export function installBossMoves(ctx) {
     audio.play('night');
   });
   mobs.on('frenzy', (m) => {
-    ctx.menus.message(`The ${m.def.name} flies into a frenzy!`);
+    ctx.menus.message(`${TheName(m)} flies into a frenzy!`);
     fx.number(m.x, overHead(m, m.sprite.scale.y * 0.8 + 0.4), m.z, 'Frenzy!', 'skill');
     fx.sparkle(m.x, world.heightAt(m.x, m.z) + 1.2, m.z, '#ff4a3a', 18);
     audio.play('night');
@@ -349,7 +445,7 @@ export function installBossMoves(ctx) {
   });
   mobs.on('bossDown', (m) => {
     const mins = Math.round(m.def.respawn / 60);
-    setTimeout(() => ctx.menus.message(`The ${m.def.name} will return in about ${mins} minutes.`), 2500);
+    setTimeout(() => ctx.menus.message(`${TheName(m)} will return in about ${mins} minutes.`), 2500);
     persist();
   });
   // Ragnarok's MVP: the announcement over the slayer's head, MVP EXP and items straight to the bag
@@ -358,7 +454,7 @@ export function installBossMoves(ctx) {
     fx.number(player.x, overHead(player, 1.7), player.z, 'MVP', 'mvp', player);
     fx.sparkle(player.x, world.heightAt(player.x, player.z) + 1, player.z, '#ffd23a', 30);
     audio.play('levelup');
-    ctx.menus.message(`You defeated the ${d.name}! MVP! +${d.mvpExp * RATES.base} Base EXP`);
+    ctx.menus.message(`You defeated ${theName(m)}! MVP! +${d.mvpExp * RATES.base} Base EXP`);
     for (const [id, n] of d.mvpDrops) {
       const got = inv.add(id, n);
       if (got < n) inv.chest.add(id, n - got);
@@ -366,7 +462,7 @@ export function installBossMoves(ctx) {
     }
     gainExp(d.mvpExp, 0, RATES);
     const mins = Math.round(d.respawn / 60);
-    setTimeout(() => ctx.menus.message(`The ${d.name} will return in about ${mins} minutes.`), 2500);
+    setTimeout(() => ctx.menus.message(`${TheName(m)} will return in about ${mins} minutes.`), 2500);
     persist();
   });
   return { burnTick, matchupHint };

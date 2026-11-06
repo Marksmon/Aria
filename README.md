@@ -133,7 +133,7 @@ Scorpion Sands with its Pyramid, then the Great Desert, where the Sand Wyrm hunt
 | Great Desert | 62–70 | Soldier Ant (62), Cactus, Dune Worm, Sand Scorpion, Sand Runner | **Sand Wyrm (70, MVP)** |
 | Tide Cliffs | 65–70 | Quill Porcupine (65, shoots quills), Tusk Boar (66, charges), Cliff Bandit (69, a crossbow) | |
 | Coral Shallows | 70–76 | Blade Mantis (71, quick), Chest Mimic (73, a chest with teeth), Glass Jelly (74, numbing sting), Merrow (75, Water, throws harpoons) | |
-| Storm Isles (by ship) | 76–82 | Gale Moth (77, Wind, flies), Living Armor (79, an empty suit of armour), Moss Troll (81, a club) | |
+| Storm Isles (by ship) | 76–82 | Gale Moth (77, Wind, flies), Living Armor (79, an empty suit of armour), Moss Troll (81, a club) | **Poseidon (99, MVP)** |
 | Beacon Moor | 82–88 | Owlbear (83), Moor Witch (84, Shadow, dark bolts), Fire Salamander (86, Fire, quick) | |
 | Sphinx Halls 1 | 65–72 | Scarab (66, hard shell), Cobra (71, poison) | |
 | Sphinx Halls 2 | 73–80 | Mummy (75), Lamia (78, spits venom), Pharaoh's Servant (80, blue fire, shields the others) | |
@@ -188,6 +188,20 @@ suits of Living Armor, Moss Trolls and the Gale Moths (Wind); on Beacon Moor Owl
 Fire Salamanders (Fire). Only the elemental ones glow. Their cards make the **Hafnvik's Coast** album set (Max HP and
 SP +1%); the Tusk Boar's and the Moss Troll's are Head and Face cards for fighters.
 
+**Poseidon, Lord of the Tides** (Lv 99 MVP, 400,000 HP, Water) roams the Storm Isles: pale blue, his long white
+hair falling to the waist, a gold horned crown, glowing blue eyes and gold-trimmed armour, and below the waist no
+legs but the sea itself, a column of water coiling down into a whirl, his gold trident in hand. He rains orbs of the
+sea round you (**Tidal Barrage**, leaving riptide pools that drag at your feet), sends a sea serpent rushing down a
+marked line (**Leviathan Surge**), shuts you in a cage of water (**Oceanic Prison**: you can't walk, it drowns you
+every second and crashes down on you after 8 seconds, and he is shielded while it stands, so break it, quickly) and
+raises a whirlpool round you (**Raging Maelstrom**: it drags you to its heart, which strikes whoever is in it; walk
+out against the pull). He calls Merrows and Glass Jellies. He always drops **Pearls of the Tides** (1–3, and one more
+as his MVP reward: any shop pays well for them), now and then gear for every build (the Leviathan Blade, the Trident
+of the Tides, the Tidebreaker Bow, the Riptide Fang, all Water; the Seafoam Mantle; the Ring of the Tides), his card
+(Tidal Wave: some of your blows send a wave through the monsters round the one you struck), and very rarely (1%) his
+ultra rare: the **Crown of the Tides**, his gold horned crown, a sea-blue stone at the brow (Max HP and SP +10%,
+DEF 6, POW +3, KNL +3, END +2, FNS +2).
+
 **The desert's monsters** (painted in code, `src/desert.js`). Red Bloops warm themselves on the Red
 Sands beside Giant Ants, red-brown and busy; both only fight back. Further out, Cacti stand still and
 throw needles from afar, Dune Worms rise out of the sand to bite, Sand Scorpions sting (a sting may
@@ -219,7 +233,7 @@ the ATK): cut them down first. See `docs/balance.md`.
 ground around it every few seconds. MVPs are the hardest fights in Aria: several minutes each, a big bag of White and
 Blue Potions, and a plan. Each is made for a second job of its tier in the best gear short of MVP gear (a Lv 4 weapon
 at +7, armor at +4, monster and mini-boss cards): **Base 75** the Kobold King and the Goblin King, **Base 85** the
-Fire Giant, the Ancient Treant and the Sand Wyrm, **Base 95** the Eternal Sphinx and Nidhogg. Below its tier, or in
+Fire Giant, the Ancient Treant and the Sand Wyrm, **Base 95** the Eternal Sphinx, Nidhogg and Poseidon. Below its tier, or in
 plain gear, a hero falls to one. Their stomps, red circles and
 burning ground can't be dodged by FLEE and go through most of your DEF: step out of them.
 Each has skills of its own that punish standing and shooting, and the wrong element (Fire Arrows
@@ -274,6 +288,7 @@ easiest for some jobs and hardest for others (it tells you when it first comes f
 | Sand Wyrm | blades, daggers and fists +30% (soft flesh between its plates) | beasts −40%, arrows −10% (its plated hide) | Blader, Assassin and their second jobs | Beastmaster |
 | Nidhogg | arrows +30% (the soft skin under its wings) | blades, daggers and fists −25% (its black scales) | Archer, Windrunner | Blader, Assassin and their second jobs |
 | Eternal Sphinx | spells +30% (it honours wisdom) | beasts −30%, blades, daggers and fists −15% (its stone hide) | Sorcerer, Wizard | Beastmaster |
+| Poseidon | beasts +30% (they never fear the water) | spells −25% (the sea swallows them) | Beastmaster | Sorcerer, Wizard |
 
 The two-path jobs sit between: a Magic Knight's sword is half steel and half spell, a Moon
 Ranger's arrows half arrow and half spell.
@@ -364,6 +379,7 @@ fills up until it hits: step out of it.
 | Ratatoskr | **Swift Dash** (a charge) · **Bounding Leap** · **Rune Acorn** (thrown) · **Frenzy** |
 | Nidhogg | **Gnaw the Roots** (tear it away in time) · **Venom Breath** (thrown) · **Coil Rush** (a charge) · **Falling Roots** (venom where they land) · **Frenzy** |
 | Eternal Sphinx | **The Riddle** (stand in the right answer) · **Pounce** · **Falling Stones** (cursed sand where they land) · **Gaze of Ages** (thrown) · **Frenzy** |
+| Poseidon | **Tidal Barrage** (riptide pools where they land) · **Leviathan Surge** (a serpent down a marked line) · **Oceanic Prison** (break the cage) · **Raging Maelstrom** (walk out of its pull) · **Frenzy** |
 
 Each move hits for 1.4–2.4x the boss's ATK (the Eternal Sphinx's Judgment 3x; the Ancient Treant's roots and the Cactus Lord's needles less). Staying far away no longer keeps you safe: spells reach
 5 paces, and every boss has a move for 3–9 paces.
@@ -1046,7 +1062,7 @@ from Kari (Dalla has the cake and the pie). Their timers show in the buff bar.
 |---|---|---|
 | Red Potion | 45–65 HP | Hild (Steinborg); Kari (Galdrheim); Eydis (Veidheim); Dalla (Rytingborg); Ragna brews it; Gel Thief, Yellow Bloop, Willow and 3 more |
 | Orange Potion | 105–145 HP | Hild (Steinborg); sela; Kari (Galdrheim); Eydis (Veidheim); Dalla (Rytingborg); Ragna brews it; Treant, Kobold, Beetle and 11 more |
-| White Potion | 175–235 HP | sela; Eydis (Veidheim); Dalla (Rytingborg); Ragna brews it; Goblin Archer, Fire Beetle, Goblin Assassin and 51 more |
+| White Potion | 175–235 HP | sela; Eydis (Veidheim); Dalla (Rytingborg); Ragna brews it; Goblin Archer, Fire Beetle, Goblin Assassin and 52 more |
 | Blue Potion | 40–60 SP | Hild (Steinborg); sela; Kari (Galdrheim); Eydis (Veidheim); Dalla (Rytingborg); Ragna brews it; Blue Bloop, Sea Bloop |
 | Berry | 16–22 HP | Hild (Steinborg); Kari (Galdrheim); Bloop, Sprout, Yellow Bloop, Red Sprout |
 | Crab Leg | 70–100 HP | Crab, Blue Crab, King Crab |
@@ -1190,19 +1206,26 @@ bursts gold on the ground and shows in gold in your bag.
 | Sarcophagus Lid | Shield | DEF 7 · Max HP +120 | Sarcophagi (0.2%) |
 | Cursed Spear | Weapon (sword) (Blader) | ATK 112 · Weapon Lv 3 · Shadow element · POW +2 | Jackal Guardians (0.25%) |
 | Falcon Bow | Weapon (bow) (Archer) | ATK 105 · Weapon Lv 3 · Wind element · FNS +2 | Falcon Sentinels (0.25%) |
+| Crown of the Tides | Head | DEF 6 · POW +3 · KNL +3 · END +2 · FNS +2 · Max HP +10% · Max SP +10% | Poseidon (1%) |
 | Dragonbone Blade | Weapon (sword) (Blader) | ATK 152 · Weapon Lv 4 · POW +4 · END +1 | Nidhogg (2%) |
 | Dragonleaf Mantle | Garment | DEF 7 · END +2 · Max HP +8% · FLEE +6 | Nidhogg (3%) |
 | Dragonwing Bow | Weapon (bow) (Archer) | ATK 150 · Weapon Lv 4 · Shadow element · FNS +4 · POW +1 | Nidhogg (1%) |
 | Enigma Fang | Weapon (dagger) | ATK 120 · Weapon Lv 4 · QKN +3 · FTN +2 | the Eternal Sphinx (1%) |
+| Leviathan Blade | Weapon (sword) (Blader) | ATK 152 · Weapon Lv 4 · Water element · POW +3 · QKN +2 | Poseidon (2%) |
 | Nidhogg Fang | Weapon (dagger) | ATK 120 · Weapon Lv 4 · Shadow element · QKN +3 · 5% of your blows and spells poison a monster | Nidhogg (1%) |
 | Nidhogg Ring | Accessory | POW +2 · END +2 · Max HP +100 | Nidhogg (5%) |
 | Nidhogg Wings | Wings | POW +4 · END +4 · QKN +3 · Max HP +10% · FLEE +5 | Nidhogg (1%) |
 | Riddle Blade | Weapon (sword) (Blader) | ATK 150 · Weapon Lv 4 · POW +3 · KNL +2 | the Eternal Sphinx (2%) |
+| Ring of the Tides | Accessory | QKN +2 · FNS +2 · Max HP +80 | Poseidon (5%) |
+| Riptide Fang | Weapon (dagger) | ATK 120 · Weapon Lv 4 · Water element · QKN +3 · FNS +1 | Poseidon (1%) |
+| Seafoam Mantle | Garment | DEF 7 · QKN +2 · Max HP +7% · FLEE +7 | Poseidon (3%) |
 | Sphinx Ring | Accessory | POW +1 · QKN +1 · END +1 · KNL +1 · FNS +1 · FTN +1 · Max HP +60 | the Eternal Sphinx (5%) |
 | Sphinx Sceptre | Weapon (staff) (Sorcerer) | ATK 70 · Weapon Lv 4 · MATK +70% · KNL +6 · FNS +2 | the Eternal Sphinx (2%) |
 | Sphinx Wing Bow | Weapon (bow) (Archer) | ATK 150 · Weapon Lv 4 · Wind element · FNS +4 · QKN +1 | the Eternal Sphinx (1%) |
 | Sphinx Wing Mantle | Garment | DEF 7 · FTN +2 · Max HP +6% · FLEE +8 | the Eternal Sphinx (3%) |
 | Sphinx's All-Seeing Eye | Face | HIT +10 · MATK +10% · POW +3 · QKN +3 · END +3 · KNL +3 · FNS +3 · FTN +3 | the Eternal Sphinx (1%) |
+| Tidebreaker Bow | Weapon (bow) (Archer) | ATK 150 · Weapon Lv 4 · Water element · FNS +4 · QKN +1 | Poseidon (1%) |
+| Trident of the Tides | Weapon (staff) (Sorcerer) | ATK 72 · Weapon Lv 4 · Water element · MATK +70% · KNL +5 · FNS +3 | Poseidon (2%) |
 | World Tree Crown | Head | DEF 5 · END +2 · KNL +2 · FTN +2 · Max HP +8% · Max SP +8% | Nidhogg (1%) |
 | World Tree Staff | Weapon (staff) (Sorcerer) | ATK 70 · Weapon Lv 4 · Earth element · MATK +70% · KNL +6 · END +2 | Nidhogg (2%) |
 <!-- /tables:drops -->
@@ -1250,7 +1273,7 @@ no torch is needed.
 **Weapon levels.** Lv 4 weapons are the best there are: the crafted Giant, Lava and Sea Swords, the Great,
 Flame, Fire, Mushroom and Green Staves and the Heartwood Bow, Ammit's Claw, the Khopesh (Pharaoh's Tomb), and
 every MVP's weapons (the Fire Giant's Flame Sword and
-Flame Bow, the kings', the Ancient Treant's, the Sand Wyrm's, the Eternal Sphinx's and Nidhogg's). They refine
+Flame Bow, the kings', the Ancient Treant's, the Sand Wyrm's, the Eternal Sphinx's, Nidhogg's and Poseidon's). They refine
 for the most ATK (+7 a level) and only they take Seyla's card slots.
 
 ## Refining, slots and cards
@@ -1400,6 +1423,7 @@ they come back whole and the slot stays open. A piece that breaks at Holger's gi
 | Ratatoskr Card (Swift) | Garment | FLEE +6 · QKN +3 · FNS +2 · Keen Perception: your blows and spells land 10% harder on a monster 4 paces away or more | Ratatoskr (1%) |
 | Eternal Sphinx Card (Enigmatic) | Accessory | KNL +5 · FNS +4 · FTN +3 · Max SP +10% · Eternal Wisdom: your skills cost 15% less SP | the Eternal Sphinx (1%) |
 | Nidhogg Card (Gnawing) | Armor | DEF +6 · POW +5 · END +5 · Max HP +20% · Root Rot: a monster your blows or spells strike takes 8% more from everything for 5 s | Nidhogg (1%) |
+| Poseidon Card (Tidal) | Weapon | ATK +40 · MATK +15% · POW +4 · KNL +4 · Tidal Wave: 12% of your blows and spells send out a wave: every other monster within 2.5 paces takes half the blow | Poseidon (1%) |
 | Goblin Warlord Card (Warlike) | Head or Face | ATK +60 · QKN +7 · POW +4 · Frenzy: blows struck up close +15%, 10% of blows up close land twice | clearing the Goblin Lair (1%, any difficulty) |
 | Kobold Warlord Card (Unyielding) | Head or Face | DEF +7 · END +7 · POW +4 · Max HP +25% · Earthshaker: 8% of your blows and spells stun a monster | clearing the Kobold Camp (1%, any difficulty) |
 | Pharaoh Card (Royal) | Head or Face | MATK +15% · KNL +6 · FTN +4 · Max SP +15% · Soul Tax: 4% of the damage you deal comes back as SP | Pharaoh's Tomb (a clear: 1%) |
@@ -1416,7 +1440,7 @@ new job can't use, and a second dagger in the Shield slot is for a Phantom only.
 
 **Headgear you can see.** Two slots, Head and Face. On the head: the Leaf Cap, Flower Crown and Horned Helm
 (crafted), the animated **Fire Crown** (crafted from the Fire Giant's Fire Heart), the Horned Crown (Fire Giant),
-the World Tree Crown (Nidhogg), and two raid ultra rares, the Giant Goat Horn Helm and the Pharaoh's Headdress.
+the World Tree Crown (Nidhogg), the Crown of the Tides (Poseidon, 1%), and two raid ultra rares, the Giant Goat Horn Helm and the Pharaoh's Headdress.
 On the face: Glasses and the Bird Mask (crafted), the Elven Ears (raid ultra rare) and the Sphinx's All-Seeing Eye
 (Eternal Sphinx, 1%). The cities' shops sell a few more, mostly for the look: Gunnar a Bandana (FLEE +1) and an
 Eyepatch (+1% critical hits), Orm a Witch Hat (DEF 1, KNL +1) and a Monocle (HIT +2), Asa a Feathered Cap (DEF 1,

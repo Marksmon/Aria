@@ -27,10 +27,13 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   Cliff Bandit; Blade Mantis, Chest Mimic, Glass Jelly (Neutral), Merrow (Water); Gale Moth (Wind), Living Armor, Moss
   Troll; Owlbear, Moor Witch (Shadow), Fire Salamander (Fire). A Neutral monster looks plain, with no glow; only an
   elemental one glows (the owner's call). The
-  album's ninth set is Hafnvik's Coast. Its MVP is **Poseidon, Lord of the Tides** (the owner's sheet: pale blue skin,
-  long white hair, a gold horned crown, glowing blue eyes, gold-trimmed armour, a lower body of flowing water, a gold
-  trident; moves Tidal Barrage, Leviathan Surge, Oceanic Prison, Raging Maelstrom), summoning Merrows and Glass
-  Jellies. Next: Poseidon, then the story chapter, quests and a mini-boss.
+  album's ninth set is Hafnvik's Coast. Its MVP is **Poseidon, Lord of the Tides** (built, the owner's sheet: pale blue
+  skin, long white hair, a gold horned crown, glowing blue eyes, gold-trimmed armour, a lower body of flowing water, a
+  gold trident; painted in `coast.js`), roaming the Storm Isles, summoning Merrows and Glass Jellies, Water, tier 95.
+  His moves: Tidal Barrage (riptide pools), Leviathan Surge (`MOVES.surge`, a marked line), Oceanic Prison
+  (`MOVES.prison`: a `tidePrison` decoy cage round the hero, rooted and drowning, Poseidon shielded till it breaks,
+  crashing down after 8 s) and Raging Maelstrom (`MOVES.maelstrom`: a pull to a striking heart). His ultra rare is the
+  Crown of the Tides (Head, `build-tools/draw-tidecrown.py`). Next: the story chapter, quests and a mini-boss.
 
 - **Jobs, skill points and second jobs:** read `docs/job-rules.md` before touching jobs, skills
   or job quests. In short:
@@ -145,12 +148,13 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   unhittable, moving only while under and rooted while up, `WYRM`/`wyrmTick` in `mobs.js`; Eternal Sphinx: The Riddle,
   three answers in three circles round the hero: the right one Dumbstruck, a wrong one or none its Judgment and
   Exalted, `RIDDLE`/`RIDDLES`; the owner's call: it tests through riddles and combat; Nidhogg: Gnaw the Roots, a race to
-  tear it away before it heals and frenzies, `MOVES.gnaw`), and
+  tear it away before it heals and frenzies, `MOVES.gnaw`; Poseidon: Oceanic Prison, break the cage, and Raging
+  Maelstrom, walk out of its pull), and
   enraged below half HP (`MVP_RAGE`). Each MVP has a tier (the owner's call, November 2026: `TIERS` in
   `build-tools/mvp-sim.mjs`): a second job of its tier's Base Level in the best gear short of MVP gear (a Lv 4 weapon
   +7, armor +4, monster and mini-boss cards) beats it at a middle matchup in about 3–6 minutes on 100 White Potions:
-  Base 75 the Kobold and Goblin Kings, 85 the Fire Giant, Ancient Treant and Sand Wyrm, 95 the Eternal Sphinx and
-  Nidhogg (the hardest, for now). Mini-bosses are fierce like an MVP and made for a Lv 75 second job in shop gear;
+  Base 75 the Kobold and Goblin Kings, 85 the Fire Giant, Ancient Treant and Sand Wyrm, 95 the Eternal Sphinx,
+  Nidhogg and Poseidon (the hardest, for now). Mini-bosses are fierce like an MVP and made for a Lv 75 second job in shop gear;
   each raid's Hell boss for its Hell level in the same good gear (`FIERCE` `atkScale`/`hpScale`). `npm test` runs
   `mvp-sim --check`: retune with it (each boss's ATK and HP) when a boss or a job changes. Their levels say so (55–66: Giant Sprout and Elder Willow 55, King Crab 58, Giant Mushroom 60, Giant Beetle 62, Alpha Wolf 64, Great Bear 66; the desert's Cactus Lord 60 and Rainbow Runner 64; the Sphinx's Halls' Ammit 74; Yggdrasil's Ratatoskr 74, small for a boss: the owner's call), and they come only for second-job heroes (the owner's call, `picksFight` in `mobs.js`): a Trainee or first job is left be unless it strikes or taunts one. So no main story
   step or job trial needs a boss (they hunt the boss's kin); the one quest that does is Sigrid's The
@@ -160,7 +164,8 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   never a second card or a card that is not a monster. More Head/Face cards (for fighters: today's
   lean to casters and archers) wait for new monsters in a map extension. The MVP and raid boss cards
   each have an effect of their own, after the boss's moves (`card.perk`: Fire Giant burn, Kobold
-  King guard, Goblin King lucky dodge, Ancient Treant reflect, Sand Wyrm devour, Eternal Sphinx cheaper skills, `sage`; Nidhogg Root Rot, a monster struck takes more, `rot`; BleepBloop lifesteal, Kobold Warlord
+  King guard, Goblin King lucky dodge, Ancient Treant reflect, Sand Wyrm devour, Eternal Sphinx cheaper skills, `sage`; Nidhogg Root Rot, a monster struck takes more, `rot`; Poseidon Tidal Wave, half a blow to the monsters round
+  the one struck, `tide`; BleepBloop lifesteal, Kobold Warlord
   stun, Goblin Warlord melee and double blows, Pharaoh soul tax). Mini-boss cards have smaller ones of their own,
   never a weaker copy of an MVP's or raid boss's (the owner's call: Giant Sprout HP regen, King Crab
   never slowed, Giant Mushroom SP regen, Giant Beetle DEF pierce, Elder Willow faster casting,
@@ -177,7 +182,7 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   A* over the map (`src/path.js`), roaming or hunting.
   Each MVP has a matchup (`takes` in `mobs.js`, applied in `rules.js`): easiest for one job family
   and hardest for another (Fire Giant: bows / casters; Kobold King: casters / bows; Goblin King:
-  blades / bows and casters; Ancient Treant: beasts / blades; Sand Wyrm: blades and daggers / beasts; Eternal Sphinx: casters / beasts; Nidhogg: bows / blades and daggers).
+  blades / bows and casters; Ancient Treant: beasts / blades; Sand Wyrm: blades and daggers / beasts; Eternal Sphinx: casters / beasts; Nidhogg: bows / blades and daggers; Poseidon: beasts / casters).
 - **Card paintings** (the owner's call): a card can have an anime painting (2:3, the name and a BOSS badge painted in, after the Ragnarok card art), `src/art/cards/<card id>.jpg` (640 wide). A card with one gets a View art button in the Items window and an Art button where it sits in a piece; it opens full screen, the picture alone with no text under it, a tap closes it (`src/cardart.js`, loaded only when opened). The five first MVP cards have theirs; the Eternal Sphinx's, the mini-boss and raid cards come next.
 - **The desert and the Sphinx:** Rytingborg (`sand`), the Red Sands (a Trainee's field), the Cactus
   Dunes, Scorpion Sands (the Pyramid: the raid guide) and the Great Desert (the Sand Wyrm). The

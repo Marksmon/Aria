@@ -6,8 +6,14 @@ Scorpion Sands through the Tide Cliffs (the owner's call); Beacon Moor north, th
 Isles and Loki's Gate by Captain Asgeir's ship (`ship` in NPCS, `voyage` maps); 13 monsters (`coast.js`), every one a
 kind new to Aria (the owner's call), the
 Hafnvik's Coast album set; the Keeper, Sela's shop, Brand the Smith, Ylfa the Priestess (healer), and Loki at the
-Deep Halls' door. **Next:** the region's MVP, **Poseidon, Lord of the Tides** (the owner's sheet; Merrows and Glass
-Jellies his summons), then the story chapter before the ending, the city's quests and series, a mini-boss or two. What the owner has decided:
+Deep Halls' door; the region's MVP, **Poseidon, Lord of the Tides** (the owner's sheet; Merrows and Glass Jellies his
+summons), on the Storm Isles: Water, Lv 99, the Base 95 tier (`TIERS` in `build-tools/mvp-sim.mjs`), his moves Tidal
+Barrage (`meteors`, riptide pools), Leviathan Surge (`MOVES.surge`, a marked line), Oceanic Prison (`MOVES.prison`, a
+`tidePrison` decoy round the hero: rooted, drowning, he is shielded until it breaks) and Raging Maelstrom
+(`MOVES.maelstrom`, a pull to a striking heart), shown by `bossmoves.js`; matchup beasts +30% / spells −25%; gear for
+every build, the Poseidon Card (Tidal Wave, `perk.tide`) and the ultra rare Crown of the Tides (Head,
+`build-tools/draw-tidecrown.py`). **Next:** the story chapter before the ending, the city's quests and series, a
+mini-boss or two. What the owner has decided:
 
 ## The city
 

@@ -433,6 +433,17 @@ function cardOnHit(m, dmg) {
   if (ps.burn && m.alive) inflict(m, { kind: 'burn', chance: () => ps.burn, dur: 3 }, 1, dmg);
   if (ps.stun && m.alive) inflict(m, { kind: 'stun', chance: () => ps.stun, dur: 1.5 }, 1, dmg);
   if (ps.venom && m.alive) inflict(m, { kind: 'poison', chance: () => ps.venom, dur: 4 }, 1, dmg); // (the Cactus Lord Card, a Stinger)
+  if (ps.tide && dmg > 0 && Math.random() * 100 < ps.tide) { // (the Poseidon Card's Tidal Wave: half the blow to every other monster near it)
+    const n = Math.max(1, Math.round(dmg / 2));
+    fx.puff(m.x, world.heightAt(m.x, m.z) + 0.2, m.z, 2.5);
+    fx.sparkle(m.x, world.heightAt(m.x, m.z) + 0.5, m.z, '#7ad8ff', 14);
+    for (const o of mobs.list) {
+      if (o === m || !o.alive || !o.sprite.visible || Math.hypot(o.x - m.x, o.z - m.z) > 2.5 + o.def.r) continue;
+      o.hit(n, 0, 0);
+      fx.number(o.x, overHead(o, o.sprite.scale.y * 0.8), o.z, n, 'dealt');
+    }
+    if (skillClock - (procSaid.tide ?? -99) >= 2) { procSaid.tide = skillClock; fx.number(m.x, overHead(m, m.sprite.scale.y * 0.8 + 0.75), m.z, 'Tidal Wave', 'skill'); }
+  }
   if (ps.rot && m.alive && dmg > 0) { m.curseT = Math.max(m.curseT || 0, 5); m.curseBy = Math.max(m.curseBy || 0, ps.rot / 100); } // (the Nidhogg Card's Root Rot)
   if (ps.soultax && dmg > 0) { const n = player.healSp(Math.max(1, Math.round(dmg * ps.soultax / 100))); if (n > 0 && skillClock - (procSaid.soultax ?? -99) >= 1) { procSaid.soultax = skillClock; fx.number(player.x, overHead(player, 1.5), player.z, n, 'sp'); } } // (the Pharaoh Card)
   if (ps.lifesteal && dmg > 0) {

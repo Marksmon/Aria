@@ -105,6 +105,7 @@ export function derive(prog, gear) {
     execute: gear.perk?.execute || 0,      // % harder on a monster under 30% HP (the Ammit Card)
     sage: gear.perk?.sage || 0,            // % less SP for skills (the Eternal Sphinx Card)
     farshot: gear.perk?.farshot || 0,      // % harder from 4+ paces away (the Ratatoskr Card)
+    tide: gear.perk?.tide || 0,            // % of blows and spells that send out a wave (the Poseidon Card's Tidal Wave)
     rot: gear.perk?.rot || 0,              // % more a monster you hit takes from everything, for 5 s (the Nidhogg Card)
     def: clamp(gear.def || 0, 0, 100),            // hard DEF from equipment
     end,                                          // soft DEF comes from END each hit

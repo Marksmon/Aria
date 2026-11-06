@@ -227,7 +227,7 @@ export const MOB_DEFS = {
   // messenger squirrel, small for a boss but quick and keen, in runed plate with a fiery tail. It dashes
   // in, bounds onto you, throws glowing rune-acorns, flies into a frenzy when hurt, and calls its kin,
   // the Root Squirrels. Hard to hit (its AGI) and quick to strike twice
-  ratatoskr: { name: 'Ratatoskr', ai: 'boss', art: 'ratatoskr', aura: '#ffb040', el: 'wind', boss: true, lv: 74, hp: 260000, atk: [110, 142], def: 18, vit: 48, agi: 80, dex: 175, mdef: 30, exp: [80000, 56000], adelay: 1350, fierce: true, walk: 100, double: 0.15,
+  ratatoskr: { name: 'Ratatoskr', proper: true, ai: 'boss', art: 'ratatoskr', aura: '#ffb040', el: 'wind', boss: true, lv: 74, hp: 260000, atk: [110, 142], def: 18, vit: 48, agi: 80, dex: 175, mdef: 30, exp: [80000, 56000], adelay: 1350, fierce: true, walk: 100, double: 0.15,
     moves: [{ kind: 'charge', name: 'Swift Dash', mult: 1.5 }, { kind: 'leap', name: 'Bounding Leap', mult: 1.6, r: 1.7 }, { kind: 'throw', name: 'Rune Acorn', mult: 1.5, r: 1.4 }, { kind: 'frenzy' }],
     aggro: 6.5, chase: 12, reach: 0.8, w: 0.6, r: 0.32, summon: ['rootSquirrel', 'rootSquirrel', 'rootSquirrel'], summonText: 'Ratatoskr chatters, and its kin come running down the roots!', respawn: 540,
     drops: [['rune_tuft', 1, 1, 0.3], ['squirrel_tail', 3, 5, 1], ['potion3', 1, 2, 0.5], ['messenger_shroud', 1, 1, 0.03], ['rune_bracelet', 1, 1, 0.02], ['ratatoskr_tail', 1, 1, 0.02], ['ratatoskr_card', 1, 1, 0.01]] },
@@ -239,13 +239,26 @@ export const MOB_DEFS = {
   // enough damage in time (GNAW.tear of its HP) and it reels, stunned and open; fail, and it rises
   // gorged and in a frenzy. Between, it breathes venom, rushes you in its coils, brings roots crashing
   // down (leaving venom on the ground) and calls its brood and the Root Wardens
-  nidhogg: { name: 'Nidhogg', ai: 'boss', art: 'nidhogg', el: 'shadow', lv: 99, hp: 365000, atk: [112, 144], def: 34, vit: 70, agi: 45, dex: 210, mdef: 40, exp: [160000, 112000], adelay: 2100, walk: 140, aggro: 9, chase: 30, reach: 2.6, w: 4.8, r: 1.6, heavy: true, hall: true,
+  nidhogg: { name: 'Nidhogg', proper: true, ai: 'boss', art: 'nidhogg', el: 'shadow', lv: 99, hp: 365000, atk: [112, 144], def: 34, vit: 70, agi: 45, dex: 210, mdef: 40, exp: [160000, 112000], adelay: 2100, walk: 140, aggro: 9, chase: 30, reach: 2.6, w: 4.8, r: 1.6, heavy: true, hall: true,
     mvp: true, respawn: 2400, mvpExp: 60000, stomp: 2.2, takes: { ranged: 1.3, melee: 0.75 }, takesText: 'its black scales turn blades and fists (−25%), but arrows find the soft skin under its wings (+30%)',
     moves: [{ kind: 'gnaw', name: 'Gnaw the Roots', mult: 0.45 }, { kind: 'throw', name: 'Venom Breath', mult: 2.4, r: 1.8 }, { kind: 'charge', name: 'Coil Rush', mult: 2.2 }, { kind: 'meteors', name: 'Falling Roots', mult: 1.8, r: 1.6, color: '#7a5636' }, { kind: 'frenzy' }],
     burns: { r: 1.6, dur: 6, mult: 0.25, color: '#9aff6a', word: 'Venom!', text: 'venom pools' },
     summon: ['rootWarden', 'thornDrake', 'thornDrake'], summonText: 'Nidhogg roars, and its brood and the Root Wardens answer!', mvpDrops: [['ygg_berry', 2], ['potion3', 3]],
     wake: 'Far under the World Tree, something gnaws at its roots... Nidhogg stirs in its hall.',
     drops: [['ygg_berry', 1, 3, 1], ['potion3', 2, 3, 0.6], ['drake_scale', 4, 6, 1], ['hard_ore', 1, 2, 0.4], ['armor_ore', 1, 2, 0.4], ['nidhogg_ring', 1, 1, 0.05], ['dragonleaf_mantle', 1, 1, 0.03], ['dragonbone_blade', 1, 1, 0.02], ['worldtree_staff', 1, 1, 0.02], ['dragonwing_bow', 1, 1, 0.01], ['nidhogg_fang', 1, 1, 0.01], ['worldtree_crown', 1, 1, 0.01], ['nidhogg_card', 1, 1, 0.01], ['nidhogg_wings', 1, 1, 0.01]] },
+  // the MVP of Hafnvik's coast (the owner's sheet): Poseidon, Lord of the Tides, roaming the Storm Isles: pale blue,
+  // white-haired, a gold horned crown, the sea itself for legs and a gold trident. His moves (the owner's): Tidal
+  // Barrage, orbs of the sea raining round you and leaving riptide pools that drag at your feet; Leviathan Surge, a
+  // sea serpent rushing down a marked line; Oceanic Prison, a cage of water round you (break it, or drown in it: you
+  // can't walk, and he is shielded while it stands); Raging Maelstrom, a whirlpool pulling you in to its heart. He
+  // calls Merrows and Glass Jellies (the owner's call). proper: a name, never "the Poseidon"
+  poseidon: { name: 'Poseidon', proper: true, ai: 'boss', art: 'poseidon', el: 'water', lv: 99, hp: 400000, atk: [108, 138], def: 30, vit: 70, agi: 45, dex: 210, mdef: 40, exp: [160000, 112000], adelay: 2000, walk: 150, aggro: 9, chase: 30, reach: 2.4, w: 3.0, r: 1.3, heavy: true,
+    mvp: true, respawn: 2400, mvpExp: 60000, stomp: 2.2, takes: { beast: 1.3, magic: 0.75 }, takesText: 'the sea swallows spells (−25%), but beasts never fear the water: they tear into him (+30%)',
+    moves: [{ kind: 'meteors', name: 'Tidal Barrage', mult: 1.8, r: 1.6, color: '#7ad8ff' }, { kind: 'surge', name: 'Leviathan Surge', mult: 2.6 }, { kind: 'prison', name: 'Oceanic Prison', drown: 0.5, crash: 3.0 }, { kind: 'maelstrom', name: 'Raging Maelstrom', mult: 0.6 }, { kind: 'frenzy' }],
+    burns: { r: 1.5, dur: 5, mult: 0.2, slow: true, color: '#5ab8ec', word: 'Riptide!', text: 'riptide pools' },
+    summon: ['merrow', 'merrow', 'glassJelly', 'glassJelly'], summonText: 'Poseidon lifts his trident, and the Merrows and the Glass Jellies rise to his call!', mvpDrops: [['tide_pearl', 1], ['potion3', 3]],
+    wake: 'The sea rises over the Storm Isles, and something walks out of it... Poseidon, Lord of the Tides, has come.',
+    drops: [['tide_pearl', 1, 3, 1], ['potion3', 2, 3, 0.6], ['merrow_scale', 4, 6, 1], ['hard_ore', 1, 2, 0.4], ['armor_ore', 1, 2, 0.4], ['tide_ring', 1, 1, 0.05], ['seafoam_mantle', 1, 1, 0.03], ['leviathan_blade', 1, 1, 0.02], ['tide_trident', 1, 1, 0.02], ['tidebreaker_bow', 1, 1, 0.01], ['riptide_fang', 1, 1, 0.01], ['poseidon_card', 1, 1, 0.01], ['poseidon_crown', 1, 1, 0.01]] },
 };
 // the Sand Wyrm's rhythm (def.wyrm): seconds up (it can be hit, it doesn't move) and under (it
 // can't be hit, it swims for you), shorter enraged; swim: its pace under the sand against its walk;
@@ -285,6 +298,8 @@ MOB_DEFS.warlordShadow = { ...MOB_DEFS.goblinWarlord, raid: false, decoy: true, 
 MOB_DEFS.kingShadow = { ...MOB_DEFS.goblinKing, decoy: true, mvp: false, ai: 'tank', hp: 9000, atk: [140, 180], exp: [0, 0], drops: [], summon: null, moves: null, mvpDrops: null, wake: null, aggro: 12, chase: 30 };
 // BleepBloop's Jelly Wall (Hell): a quivering core of royal jelly that barely moves and only
 // slaps whoever stands on it. He takes 90% less damage while one stands (MIRROR)
+// Poseidon's Oceanic Prison: a cage of water round the hero it caught (MOVES.prison, bossmoves.js), there until broken
+MOB_DEFS.tidePrison = { name: 'Oceanic Prison', ai: 'prison', art: 'tidePrison', el: 'neutral', decoy: true, lv: 99, hp: 12000, atk: [0, 0], def: 10, vit: 30, agi: 1, dex: 60, exp: [0, 0], adelay: 9999, walk: 9999, aggro: 0, chase: 0, reach: 0, w: 1.5, r: 0.5, heavy: true, drops: [] };
 MOB_DEFS.jellyCore = { name: 'Jelly Core', ai: 'tank', art: 'slimeYellow', tint: '#ffd86a', el: 'neutral', decoy: true, lv: 99, hp: 10000, atk: [60, 80], def: 10, vit: 30, agi: 1, dex: 60, exp: [0, 0], adelay: 2000, walk: 5000, aggro: 3, chase: 30, reach: 0.9, w: 1.0, r: 0.45, heavy: true, drops: [] };
 // walk: ms a tile, as Ragnarok's monster database has it (Poring 400, Kobold 200, Goblin 150,
 // Goblin Leader 120, Ifrit 130; the hero 150), taken WALK_SCALE times as long. speed: tiles a second.
@@ -346,7 +361,16 @@ export const MOVES = {
   riddle: { cd: 30, below: 0.97, ask: 7, askRage: 5.5 },
   gnaw: { cd: 32, below: 0.92, dur: 9, heal: 0.008, tear: 0.012, stun: 3.5, exposeFor: 8, gorge: 0.03 },
   devour: { min: 0, max: 3.2, cd: 11, wind: 0.7 },
+  // Poseidon's: a sea serpent down a marked line (`len` paces long, `w` wide, a stretch every `every` s); a cage of
+  // water where you stand (`r`), that drowns you every `tick` s for its `drown` and crashes on you for its `crash`
+  // after `hold` s if you don't break it; a whirlpool round where you stand (`r` across, its heart `core`) for `dur` s,
+  // pulling you in `pull` paces a second (you walk faster than that: walk out), its heart striking every `tick` s
+  surge: { min: 2, max: 12, cd: 12, wind: 1.0, len: 13, w: 1.3, every: 0.05 },
+  prison: { min: 0, max: 9, cd: 24, wind: 0.9, r: 1.6, hold: 8, tick: 1 },
+  maelstrom: { min: 0, max: 10, cd: 26, wind: 1.0, dur: 6, r: 5.5, core: 1.6, pull: 1.6, tick: 0.5 },
 };
+// the moves that only mark the ground and land when their wind-up is done (main.js shows them: bossmoves.js)
+const MARKED = ['surge', 'prison', 'maelstrom'];
 // the Eternal Sphinx's Riddle answered (MOVES.riddle): right, it is Dumbstruck for `stun` s and takes
 // `exposed` x as much for `exposeFor` s; wrong, it is Exalted, taking `exalted` x as much for `exaltFor` s
 export const RIDDLE = { stun: 3.5, exposed: 1.3, exposeFor: 9, exalted: 0.5, exaltFor: 8, ring: 4.2, r: 1.5 };
@@ -453,7 +477,7 @@ export const GUARD = { hp: 0.5, atk: 0.6 };
 // adds a tenth of its chance (1% -> 1.1% -> 1.2%...), up to ten times it; it falls back to its own chance
 // when it drops. About 32 kills on average instead of 100. Kept per hero (mobs.pity, saved as mvpPity)
 export const PITY = { step: 0.1, cap: 10 };
-export const MVP_ULTRAS = ['allseeing_eye', 'nidhogg_wings']; // (items.js marks them ultra: test/data.test.mjs checks the two agree)
+export const MVP_ULTRAS = ['allseeing_eye', 'nidhogg_wings', 'poseidon_crown']; // (items.js marks them ultra: test/data.test.mjs checks the two agree)
 export const isChase = (item) => /_card$/.test(item) || MVP_ULTRAS.includes(item);
 export const pityChance = (base, misses = 0) => Math.min(base * PITY.cap, base * (1 + PITY.step * misses));
 const guardDefs = {};
@@ -724,8 +748,8 @@ class Mob {
     const score = (mv) => {
       let s = 1 + Math.random() * 0.6;
       if (['frenzy', 'bark', 'mirror', 'riddle', 'gnaw'].includes(mv.kind)) s += 2; // its own: as soon as it may
-      if (['charge', 'leap', 'burrow'].includes(mv.kind)) s += Math.min(this.kiteT, 6) * 0.5 + (casting ? 1.5 : 0) + (dist > 5 ? 0.6 : 0);
-      if (['throw', 'meteors', 'roots'].includes(mv.kind)) s += (still ? 0.8 : 0) + (dist >= 3 && dist <= 9 ? 0.5 : 0);
+      if (['charge', 'leap', 'burrow', 'surge'].includes(mv.kind)) s += Math.min(this.kiteT, 6) * 0.5 + (casting ? 1.5 : 0) + (dist > 5 ? 0.6 : 0);
+      if (['throw', 'meteors', 'roots', 'prison', 'maelstrom'].includes(mv.kind)) s += (still ? 0.8 : 0) + (dist >= 3 && dist <= 9 ? 0.5 : 0);
       if (mv.kind === this.lastMove) s -= 0.8;
       return s;
     };
@@ -759,7 +783,7 @@ class Mob {
         this.mgr.emit('move', this, this.act);
       } else {
         // (where it aims: where you are going, more often than not)
-        const spot = this.aimAt(p, mv.kind === 'throw' ? M.wind + M.land : mv.kind === 'leap' ? M.wind + M.air : mv.kind === 'roots' ? M.wind + M.land : mv.kind === 'charge' ? M.wind : 0);
+        const spot = this.aimAt(p, mv.kind === 'throw' ? M.wind + M.land : mv.kind === 'leap' ? M.wind + M.air : mv.kind === 'roots' ? M.wind + M.land : mv.kind === 'charge' || MARKED.includes(mv.kind) ? M.wind : 0);
         const sx = spot.x - this.x, sz = spot.z - this.z, sd = Math.hypot(sx, sz) || 1;
         this.heading = { x: sx / sd, z: sz / sd };
         if (mv.kind === 'charge') this.act = { kind: 'charge', mv, t: M.wind, phase: 'wind', left: Math.min(sd + 2, M.max) };
@@ -772,6 +796,8 @@ class Mob {
           this.act = { kind: 'roots', mv, t: M.wind, spots };
         }
         if (mv.kind === 'leap') this.act = { kind: 'leap', mv, t: M.wind + M.air, from: { x: this.x, z: this.z }, spot };
+        if (mv.kind === 'surge') this.act = { kind: 'surge', mv, t: M.wind, from: { x: this.x, z: this.z }, dir: { ...this.heading } };
+        if (mv.kind === 'prison' || mv.kind === 'maelstrom') this.act = { kind: mv.kind, mv, t: M.wind, spot };
         this.atkAnim = ATTACK_ANIM * 1.6;
         this.mgr.emit('move', this, this.act);
       }
@@ -845,6 +871,10 @@ class Mob {
     }
     if (a.kind === 'devour') {
       if (a.t <= 0) { this.act = null; this.atkAnim = ATTACK_ANIM; this.mgr.emit('devour', this, a.mv, a.spot); }
+      return { moving: false, lift: 0 };
+    }
+    if (MARKED.includes(a.kind)) { // it gathers the sea, then lets it go where it marked
+      if (a.t <= 0) { this.act = null; this.atkAnim = ATTACK_ANIM; this.mgr.emit(a.kind, this, a); }
       return { moving: false, lift: 0 };
     }
     if (a.kind === 'leap') {
@@ -1658,6 +1688,22 @@ export class MobManager {
     }
     for (const c of [boss, ...made]) this.fx.puff(c.x, this.world.heightAt(c.x, c.z) + 0.4, c.z, 1.2);
     this.emit('mirror', boss, mv);
+  }
+
+  // Poseidon's Oceanic Prison: a cage of water round the hero at (x, z); he is shielded while it stands (a decoy)
+  prison(boss, x, z) {
+    const c = this.guard(boss, 'tidePrison', 1);
+    c.def = MOB_DEFS.tidePrison; c.hp = c.def.hp;
+    c.x = x; c.z = z; c.home = { x, z };
+    c.sprite.renderOrder = 3; c.mat.depthTest = false; // (drawn over the hero inside it)
+    this.fx.puff(x, this.world.heightAt(x, z) + 0.4, z, 1.4);
+    return c;
+  }
+  // gone without a kill (a prison that crashed down, or its hero away): no drops, no EXP
+  vanish(m) {
+    if (!this.list.includes(m)) return;
+    m.alive = false;
+    this.remove(m);
   }
 
   // a king's guards: they come running, and don't come back once beaten

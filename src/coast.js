@@ -6,9 +6,9 @@
 // and the Gale Moths (Wind) (Storm Isles); Owlbears, the Moor Witches (Shadow) and the Fire Salamanders (Fire) (Beacon
 // Moor). A Neutral one looks plain, with no glow; only the elemental ones glow: the Merrows' sea-blue harpoons, the
 // Moths' wind streaming off their wings, the Witches' violet eyes and staff, the Salamanders' flames. The Merrows and
-// Glass Jellies are also Poseidon's summons.
+// Glass Jellies are also the summons of Poseidon, Lord of the Tides, the coast's MVP (the owner's sheet), painted here too.
 // Frames: 4 directions (down, up, right; left is right mirrored) x idle (1), walk (4) and attack (4).
-import { Frame, ellipse, rect, poly, line, dark, light } from './painted.js';
+import { Frame, ellipse, rect, poly, line, both, dark, light } from './painted.js';
 
 const flat = { outline: false, flat: true };
 // size: the frame; body: the standing figure in pixels (def.w is its width in the world)
@@ -30,6 +30,9 @@ export const COAST = {
   owlbear: { kind: 'owlbear', size: [60, 64], body: [38, 54], fur: '#6a5040', feather: '#a88a64', face: '#e0d0b0', beak: '#d8b040', claw: '#efe6cc', eye: '#e8a030', pupil: '#1a1008' },
   moorWitch: { kind: 'hag', size: [48, 64], body: [24, 58], skin: '#9aa088', robe: '#3a3448', rag: '#2a2636', kelp: '#7a7468', staff: '#5a4a3a', glow: '#b890ff', eye: '#c8a0ff', shell: '#d8d0e0', hat: '#2a2636' },
   fireSalamander: { kind: 'salamander', size: [64, 42], body: [46, 22], body1: '#c8401a', belly: '#f0a040', spot: '#8a2410', flame: '#ffd060', flame2: '#ff7a20', eye: '#ffe890' },
+  // the coast's MVP, roaming the Storm Isles (the owner's sheet), and the cage of his Oceanic Prison
+  poseidon: { kind: 'poseidon', size: [112, 146], body: [76, 136], skin: '#a8d0e4', hair: '#eef2f6', gold: '#e8b84a', plate: '#2a4a7a', eye: '#7af0ff', water: '#3a96d8', deep: '#1e5e9e', light: '#a8e8ff', foam: '#f2fbff' },
+  tidePrison: { kind: 'prison', size: [48, 66], body: [42, 62], water: '#5ab8ec', deep: '#2a78b8', light: '#c8f0ff', foam: '#f2fbff' },
 };
 
 const ANIMS = { idle: 1, walk: 4, attack: 4 };
@@ -46,7 +49,7 @@ function coastFrame(id, dir, anim, f) {
   const P = COAST[id], [W, H] = P.size;
   const F = new Frame(W, H);
   const a = { G: H - 3, W, H, walk: anim === 'walk', f, step: anim === 'walk' ? [1, 0, -1, 0][f] : 0, atk: anim === 'attack' ? f : -1 };
-  ({ porcupine, boar, wrecker, mantis, mimic, jelly, merrow, armor, troll, moth, owlbear, hag, salamander })[P.kind](F, P, dir, a);
+  ({ porcupine, boar, wrecker, mantis, mimic, jelly, merrow, armor, troll, moth, owlbear, hag, salamander, poseidon, prison })[P.kind](F, P, dir, a);
   return F;
 }
 
@@ -378,4 +381,127 @@ function moth(F, P, dir, { G, W, walk, f, atk }) {
     F.part(line(wx, wy, wx + s * 6, wy + 4 + (f % 2), 1), P.wind, flat);
     F.part(line(wx - s * 2, wy + 5, wx + s * 4, wy + 10, 1), P.gust, flat);
   }
+}
+
+// ---------- Poseidon, Lord of the Tides: the coast's MVP (the owner's sheet) ----------
+// Pale blue skin, long white hair, a gold horned crown, glowing blue eyes, gold-trimmed armour, and below the waist no
+// legs but the sea itself, a column of flowing water coiling down into a whirl; in his hand the gold trident. Attack:
+// the trident raised and brought down (side: thrust), a burst of spray at its prongs
+function trident(F, P, hx, hy, ang, len, splash) {
+  const ux = Math.sin(ang), uy = -Math.cos(ang), nx = Math.cos(ang), ny = Math.sin(ang);
+  const at = (u, n) => [hx + ux * u + nx * n, hy + uy * u + ny * n];
+  F.part(line(...at(-len * 0.28, 0), ...at(len * 0.72, 0), 2), P.gold);
+  F.part(ellipse(...at(-len * 0.28, 0), 1.6, 1.6), P.gold);
+  const c = len * 0.72;
+  F.part(line(...at(c, -6), ...at(c, 6), 2), P.gold); // the crossbar
+  F.part(line(...at(c - 1.5, -4), ...at(c - 1.5, 4), 1), dark(P.gold), flat);
+  for (const [n, l] of [[-6, 8], [0, 12], [6, 8]]) {
+    F.part(line(...at(c, n), ...at(c + l, n), 2), P.gold);
+    F.part(poly([at(c + l - 1, n - 2), at(c + l - 1, n + 2), at(c + l + 3, n)]), light(P.gold)); // a barbed point
+  }
+  F.part(ellipse(...at(c - 3, 0), 1.6, 1.6), P.eye, flat); // a blue stone where the prongs meet
+  if (splash) for (let i = 0; i < 9; i++) { const a = i / 9 * Math.PI * 2, r = 5 + (i % 3) * 2; F.dot(...at(c + 12 + Math.sin(a) * r, Math.cos(a) * r), i % 2 ? P.foam : P.light); }
+}
+function poseidon(F, P, dir, { G, W, walk, f, atk }) {
+  const cx = W / 2, side = dir === 'right', back = dir === 'up';
+  const ph = (walk ? f : atk >= 0 ? atk : 0) * 0.9, sway = walk ? [0, 1, 0, -1][f] : 0;
+  const lift = atk >= 0 ? [0, -6, 7, 2][atk] : 0;
+  // the sea for legs: a whirl at the bottom and a column of water coiling up to the waist
+  F.part(ellipse(cx, G - 5, 34, 6), P.deep);
+  F.part(ellipse(cx, G - 6, 27, 4), P.water, flat);
+  for (let i = 0; i < 10; i++) { const a = i / 10 * Math.PI * 2 + ph, x = cx + Math.cos(a) * 30, y = G - 5 + Math.sin(a) * 5; F.part(line(x, y, x + Math.sin(a) * 4, y - 1, 1), i % 2 ? P.foam : P.light, flat); }
+  const col = [];
+  for (let i = 0; i <= 16; i++) {
+    const t = i / 16, y = G - 8 - t * 62;
+    const x = cx + (side ? -12 * (1 - t) * (1 - t) - 2 : 0) + Math.sin(t * 6.5 + ph) * 6 * (1 - t * 0.6) + sway * t;
+    col.push([x, y, 24 - t * 12 - (side ? 5 : 0)]);
+  }
+  F.part(poly([...col.map(([x, y, r]) => [x - r, y]), ...col.slice().reverse().map(([x, y, r]) => [x + r, y])]), P.water);
+  // the flow: bands spiralling round it, deep and light by turns, foam curling off its edges
+  col.forEach(([x, y, r], i) => {
+    if (i >= 15) return;
+    const k = (i + Math.round(ph * 2)) % 3;
+    F.part(line(x - r + 2, y + 2, x + r - 3, y - 3, i % 2 ? 1 : 2), k === 0 ? P.light : k === 1 ? P.deep : P.water, flat);
+    if (i % 2 === 0) F.part(poly([[x - r, y], [x - r - 4, y - 2], [x - r - 2, y + 2]]), P.foam, flat);
+    else F.part(poly([[x + r, y], [x + r + 4, y - 2], [x + r + 2, y + 2]]), P.foam, flat);
+  });
+  for (let i = 0; i < 6; i++) F.dot(cx + Math.sin(i * 2.1 + ph) * 26, G - 20 - i * 9, P.light); // spray thrown off
+  const wy = G - 72 + sway * 0; // the waist
+  const hx = cx + (side ? 4 : 0), hy = G - 110;
+  // his long white hair, falling behind him to the waist
+  if (side) F.part(poly([[hx - 2, hy - 9], [hx - 10, hy - 4], [hx - 18, wy + 6], [hx - 12, wy + 10], [hx - 4, wy - 10], [hx + 2, hy]]), P.hair);
+  const mane = () => F.part(poly([[hx - 10, hy - 6], [hx + 10, hy - 6], [hx + 19, wy + (back ? 8 : -2)], [hx + 12, wy + (back ? 12 : 2)], [hx, wy + (back ? 14 : 0)], [hx - 12, wy + (back ? 12 : 2)], [hx - 19, wy + (back ? 8 : -2)]]), P.hair);
+  if (!side && !back) mane();
+  // the trident behind him (seen from behind, in his right hand on the left; from the side, held before him)
+  const tAng = side ? (atk >= 0 ? [-0.25, -0.45, 1.15, 0.7][atk] : 0.08) : 0;
+  const grip = side ? [cx + 16 + (atk === 2 ? 6 : 0), G - 88 + (atk === 2 ? 4 : 0)] : [cx + (back ? -30 : 30), G - 86 + lift];
+  if (back) trident(F, P, ...grip, tAng, 70, atk === 2);
+  // the torso: skin, the gold-trimmed breastplate, a belt of gold scales over the water
+  const sw = side ? 12 : 20;
+  F.part(poly([[hx - sw, G - 100], [hx + sw, G - 100], [hx + sw - 5, wy], [hx - sw + 5, wy]]), P.skin);
+  if (!back) {
+    F.part(poly([[hx - sw + 2, G - 99], [hx + sw - 2, G - 99], [hx + sw - 5, wy - 4], [hx + (side ? 4 : 0), wy - 1], [hx - sw + 5, wy - 4]]), P.plate);
+    F.part(line(hx - sw + 2, G - 99, hx + sw - 2, G - 99, 1), P.gold, flat);
+    F.part(both(line(hx - sw + 3, G - 98, hx - sw + 6, wy - 4, 1), line(hx + sw - 3, G - 98, hx + sw - 6, wy - 4, 1)), P.gold, flat);
+    const ex = hx + (side ? 4 : 0); // a gold trident on the breastplate
+    F.part(both(line(ex, G - 94, ex, G - 80, 1), line(ex - 3, G - 91, ex + 3, G - 91, 1), line(ex - 3, G - 91, ex - 3, G - 95, 1), line(ex + 3, G - 91, ex + 3, G - 95, 1)), P.gold, flat);
+  } else F.part(poly([[hx - sw + 3, G - 99], [hx + sw - 3, G - 99], [hx + 8, G - 90], [hx - 8, G - 90]]), P.plate); // (the back of it, above the hair)
+  F.part(rect(hx - sw + 4, wy - 3, hx + sw - 4, wy + 1), P.gold);
+  for (let x = hx - sw + 5; x <= hx + sw - 5; x += 4) F.part(poly([[x - 2, wy + 1], [x + 2, wy + 1], [x, wy + 5]]), dark(P.gold));
+  // the arms: gold-cuffed, the near hand on the trident
+  const shoulders = side ? [1] : [-1, 1];
+  for (const s of shoulders) {
+    const sx = hx + s * (side ? 2 : 21), sy = G - 97;
+    const holds = side || (back ? s === -1 : s === 1);
+    const [gx, gy] = holds ? grip : [hx + s * 27, G - 74 + (atk >= 0 ? [0, -4, -6, -2][atk] : 0)];
+    const ex = (sx + gx) / 2 + s * (side ? 0 : 4), ey = (sy + gy) / 2 + 3;
+    F.part(both(line(sx, sy, ex, ey, 5), line(ex, ey, gx, gy, 4)), P.skin);
+    F.part(line(ex + (gx - ex) * 0.4, ey + (gy - ey) * 0.4, ex + (gx - ex) * 0.8, ey + (gy - ey) * 0.8, 5), P.gold); // a gold bracer
+    F.part(ellipse(gx, gy, 2.6, 2.6), P.skin);
+    if (!holds && atk >= 1) for (let i = 0; i < 5; i++) F.dot(gx + Math.cos(i * 1.3) * 4, gy + Math.sin(i * 1.3) * 4, P.light); // the sea gathering in his open hand
+    F.part(ellipse(sx, sy - 1, 8, 5.5), P.plate); // a pauldron like a shell, gold-rimmed
+    F.part(line(sx - 7, sy + 3, sx + 7, sy + 3, 1), P.gold, flat);
+    for (const n of [-4, 0, 4]) F.part(line(sx + n * 0.6, sy - 5, sx + n, sy + 2, 1), dark(P.plate), flat);
+  }
+  if (!back) trident(F, P, ...grip, tAng, 70, atk === 2);
+  if (back) { mane(); for (const n of [-10, -4, 3, 9]) F.part(line(hx + n * 0.6, hy + 4, hx + n, wy + 8, 1), light(P.hair), flat); } // (from behind, it covers his back)
+  // the head: pale blue, glowing eyes, the gold horned crown
+  F.part(rect(hx - 3, hy + 6, hx + 3, G - 99), P.skin);
+  F.part(ellipse(hx + (side ? 1 : 0), hy, side ? 6.5 : 7.5, 9), P.skin);
+  if (back) F.part(ellipse(hx, hy + 1, 8, 9.5), P.hair);
+  else if (side) {
+    F.part(poly([[hx + 6, hy - 1], [hx + 9, hy + 2], [hx + 6, hy + 3]]), P.skin); // the nose
+    F.part(poly([[hx - 7, hy - 7], [hx + 3, hy - 9], [hx - 2, hy + 9], [hx - 8, hy + 6]]), P.hair); // the hair over the ear
+    F.part(rect(hx + 3, hy - 1, hx + 5, hy), P.eye, flat); F.dot(hx + 6, hy - 1, P.foam);
+    F.part(line(hx + 2, hy - 3, hx + 6, hy - 3, 1), dark(P.skin), flat);
+    F.part(line(hx + 4, hy + 5, hx + 6, hy + 5, 1), dark(P.skin), flat);
+  } else {
+    for (const s of [-1, 1]) F.part(poly([[hx + s * 7, hy - 6], [hx + s * 9, hy + 2], [hx + s * 11, hy + 14], [hx + s * 6, hy + 10]]), P.hair); // locks down past the face
+    for (const s of [-1, 1]) { F.part(rect(hx + s * 3 - 1, hy - 1, hx + s * 3 + 1, hy), P.eye, flat); F.dot(hx + s * 3, hy - 2, P.foam); F.part(line(hx + s * 1.5, hy - 3, hx + s * 5, hy - 4, 1), dark(P.skin), flat); }
+    F.part(line(hx - 2, hy + 5, hx + 2, hy + 5, 1), dark(P.skin), flat);
+  }
+  // the crown: a gold band, a blue stone, points, and two great horns sweeping up and out
+  const by = hy - 8;
+  F.part(rect(hx - 8, by - 1, hx + 8, by + 2), P.gold);
+  for (const s of side ? [-1] : [-1, 1]) {
+    const ox = hx + s * (side ? 5 : 7);
+    F.part(both(line(ox, by, ox + s * 6, by - 6, 3), line(ox + s * 6, by - 6, ox + s * 7, by - 13, 2), line(ox + s * 7, by - 13, ox + s * 4, by - 18, 1)), P.gold);
+  }
+  for (const n of side ? [-2, 3] : [-4, 0, 4]) F.part(poly([[hx + n - 1.5, by - 1], [hx + n + 1.5, by - 1], [hx + n, by - (n === 0 ? 7 : 4)]]), P.gold);
+  if (!back) F.part(ellipse(hx + (side ? 4 : 0), by + 0.5, 1.3, 1.3), P.eye, flat);
+}
+
+// ---------- the Oceanic Prison (Poseidon's): bars of water round whoever it caught, a dome of it over them ----------
+function prison(F, P, dir, { G, W, f }) {
+  const cx = W / 2, top = G - 58;
+  F.part(ellipse(cx, G - 2, 21, 4), P.deep);
+  F.part(ellipse(cx, G - 2, 15, 2), P.water, flat);
+  for (const n of [-1, -0.55, 0.55, 1]) { // the bars, bowed out like a cage
+    const pts = Array.from({ length: 9 }, (_, i) => { const t = i / 8; return [cx + n * 19 * Math.sin(Math.PI * (0.12 + t * 0.76)), top + 6 + t * (G - top - 8)]; });
+    for (let i = 0; i < 8; i++) F.part(line(...pts[i], ...pts[i + 1], Math.abs(n) === 1 ? 2 : 1), P.water, { outline: false });
+    for (let i = 1; i < 8; i += 3) F.dot(pts[i][0], pts[i][1], P.light);
+  }
+  for (let i = 0; i <= 12; i++) { const a = Math.PI + i / 12 * Math.PI; F.part(line(cx + Math.cos(a) * 19, top + 8 + Math.sin(a) * 9, cx + Math.cos(a + 0.27) * 19, top + 8 + Math.sin(a + 0.27) * 9, 2), P.water, { outline: false }); } // the dome
+  F.part(ellipse(cx, top - 2, 3, 2), P.light);
+  for (let i = 0; i < 6; i++) F.dot(cx - 14 + i * 6, top + 16 + ((i * 7 + f * 5) % 30), P.foam); // bubbles rising
 }

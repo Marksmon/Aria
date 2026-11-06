@@ -169,3 +169,18 @@ test('battle oils name an element, stat foods one stat each, and every one is so
     assert.ok(it.use.t > 0 && it.usable, `${id} lasts`);
   }
 });
+
+test("Poseidon, Hafnvik's MVP (the owner's sheet): Water, on the Storm Isles, his four moves, Merrows and Glass Jellies at his call, tier 95", async () => {
+  const { MOVES, MVP_ULTRAS } = await import('../src/mobs.js');
+  const { SPAWNS } = await import('../src/spawns.js');
+  const { TIERS } = await import('../build-tools/mvp-sim.mjs');
+  const P = MOB_DEFS.poseidon;
+  assert.ok(P.mvp && P.el === 'water' && TIERS.poseidon === 95);
+  assert.ok(SPAWNS.storm.some(([t]) => t === 'poseidon'));
+  assert.deepEqual(P.moves.filter((m) => m.name).map((m) => m.name), ['Tidal Barrage', 'Leviathan Surge', 'Oceanic Prison', 'Raging Maelstrom']);
+  for (const m of P.moves) assert.ok(MOVES[m.kind], m.kind);
+  assert.deepEqual([...new Set(P.summon)].sort(), ['glassJelly', 'merrow']);
+  // the Oceanic Prison's cage: a decoy anyone can break, whatever their weapon's element
+  assert.ok(MOB_DEFS.tidePrison.decoy && MOB_DEFS.tidePrison.el === 'neutral');
+  assert.ok(MVP_ULTRAS.includes('poseidon_crown'));
+});

@@ -11,7 +11,9 @@
 // enraged below half HP (MVP_RAGE), its guards at 80/50/25% and a minute after the last falls (a Kobold
 // King's every 30 s, and his Tribe's Shield while one stands), its shadows, jars or jelly cores (90% less
 // while one stands), and its own mechanic: Bark Armor (held off), the Sand Wyrm under the sand, the Sphinx's
-// Riddle (answered right 85% of the time), Nidhogg's Gnaw (torn away if the hero hits hard enough). White
+// Riddle (answered right 85% of the time), Nidhogg's Gnaw (torn away if the hero hits hard enough), Poseidon's Oceanic
+// Prison (caught half the time: broken by the hero's blows while it drowns them, or it crashes down) and Raging
+// Maelstrom (time lost walking out against its pull, its heart's blows now and then). White
 // Potions (205 HP) are drunk below half HP, as fast as a thumb taps them (four a second: the game has no potion cooldown); SP is not counted (Blue Potions).
 //
 //   node build-tools/mvp-sim.mjs            every fight, the six jobs and the median
@@ -62,7 +64,9 @@ function survivor(job, base, gear) {
 // one fight: { win, t, potions, left (the boss's HP share) }
 export function fight(job, def, base, gear) {
   const ps = survivor(job, base, gear), out = dps(job, def, base, gear), ranged = RANGED.has(job);
-  const moves = (def.moves || []).filter((m) => m.mult && MOVES[m.kind]).map((m) => ({ ...m, at: MOVES[m.kind].cd * 0.5 }));
+  const moves = (def.moves || []).filter((m) => m.mult && MOVES[m.kind] && m.kind !== 'maelstrom').map((m) => ({ ...m, at: MOVES[m.kind].cd * 0.5 }));
+  const prison = (def.moves || []).find((m) => m.kind === 'prison'), whirl = (def.moves || []).find((m) => m.kind === 'maelstrom');
+  let prisonAt = prison ? MOVES.prison.cd * 0.5 : Infinity, whirlAt = whirl ? MOVES.maelstrom.cd * 0.7 : Infinity;
   const mirror = (def.moves || []).find((m) => m.kind === 'mirror'), riddle = (def.moves || []).find((m) => m.kind === 'riddle');
   const gnaw = (def.moves || []).find((m) => m.kind === 'gnaw'), bark = (def.moves || []).some((m) => m.kind === 'bark');
   let hp = ps.maxHp, mob = def.hp, t = 0, potions = 0, potT = 0, swingAt = def.adelay / 1000, stompAt = 4;
@@ -90,6 +94,22 @@ export function fight(job, def, base, gear) {
       if (Math.random() < RIGHT) { stunUntil = t + ask + RIDDLE.stun; exposedUntil = t + ask + RIDDLE.exposeFor; }
       else { exaltedUntil = t + ask + RIDDLE.exaltFor; hit(riddle.mult || 3, MVP_MOVE); }
       exaltedUntil = Math.max(exaltedUntil, t + ask / 2); // (the asking: the hero is busy reading)
+    }
+    // Poseidon's Oceanic Prison: caught half the time; the cage takes the hero's blows (it shields him), drowns the
+    // hero every second, and crashes down if it still stands when its time is up
+    if (prison && t >= prisonAt) {
+      prisonAt = t + MOVES.prison.cd * cdk;
+      if (t >= stunUntil && Math.random() > DODGE) { const d = MOB_DEFS.tidePrison; shadows.push({ def: d, hp: d.hp, at: Infinity, cage: { at: t + 1, until: t + MOVES.prison.hold * (rage ? 0.8 : 1) } }); }
+    }
+    for (const o of shadows) if (o.cage && o.hp > 0) {
+      if (t >= o.cage.at) { o.cage.at = t + MOVES.prison.tick; hit(prison.drown, MVP_MOVE); }
+      if (t >= o.cage.until) { o.hp = 0; hit(prison.crash, MVP_MOVE); }
+    }
+    if (shadows.some((o) => o.hp <= 0)) shadows = shadows.filter((o) => o.hp > 0);
+    // Raging Maelstrom: the hero walks out against its pull (losing blows), caught in its heart now and then
+    if (whirl && t >= whirlAt) {
+      whirlAt = t + MOVES.maelstrom.cd * cdk;
+      if (t >= stunUntil) { steppingUntil = Math.max(steppingUntil, t + (ranged ? 0.8 : 1.4)); for (let i = 0; i < 3; i++) if (Math.random() > DODGE) hit(whirl.mult, MVP_MOVE); }
     }
     if (gnaw && t >= gnawAt && mob < def.hp * MOVES.gnaw.below) { gnawUntil = t + MOVES.gnaw.dur; gnawAt = t + MOVES.gnaw.cd * cdk; gnawDealt = 0; }
     // Gnaw (as mobs.js): torn away the moment enough damage lands (stunned, then exposed), else gorged at its end;
@@ -137,7 +157,7 @@ export function fight(job, def, base, gear) {
 export const TIERS = {
   koboldKing: 75, goblinKing: 75,
   jarl: 85, ancientTreant: 85, sandWyrm: 85,
-  eternalSphinx: 95, nidhogg: 95,
+  eternalSphinx: 95, nidhogg: 95, poseidon: 95,
 };
 export const MINI_LV = 75;
 export const BAR = { minT: 150, maxT: 400, potions: 100 }; // the median job: a fight of minutes, on a bag of White Potions
