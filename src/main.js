@@ -314,7 +314,12 @@ for (const r of Object.values(RAIDS)) for (const type of [...r.waves.flat().map(
 const livesAt = (type) => (LIVES[type] ? [...LIVES[type]].join(', ') : MOB_DEFS[type]?.noRespawn ? 'a quest calls it' : '');
 // stats + gear -> the player's battle numbers (Ragnarok rules); HP/SP stay put, capped by the new max
 // timed buffs, in seconds left: aspd (Quickening Draught), warcry (War Cry's ATK bonus)
-const buffs = { aspd: 0, warcry: 0, ward: 0, aegis: 0, momentum: 0, focus: 0, tailwind: 0, rush: 0, gust: 0, rhythm: 0, veil: 0, frenzy: 0, sub: 0 };
+const buffs = { aspd: 0, oil: 0, food_pow: 0, food_end: 0, food_qkn: 0, food_fns: 0, food_knl: 0, food_ftn: 0, warcry: 0, ward: 0, aegis: 0, momentum: 0, focus: 0, tailwind: 0, rush: 0, gust: 0, rhythm: 0, veil: 0, frenzy: 0, sub: 0 };
+// battle oils and stat foods (items.js use.oil / use.food)
+let oilEl = null;
+const OILS = { fire: 'fire_oil', water: 'frost_oil', wind: 'storm_oil', earth: 'stone_oil' };
+const FOODS = Object.fromEntries(Object.entries(ITEMS).filter(([, it]) => it.use?.food).map(([id, it]) => [it.use.food, id]));
+const FOOD_STATS = Object.keys(FOODS), FOOD_N = 3;
 let warcryLv = 0, wardLv = 0, endureGuard = 0, aegisLv = 0, focusLv = 0, tailLv = 0, gustHaste = 0;
 let endureFrom = null, endureLv = 0; // what set player.endureT (Guard or Stand Firm), for the buff bar
 // the Windrunner: Gale Rhythm's stacks (each arrow that lands), Skirmisher's empowered arrows left
@@ -514,6 +519,7 @@ function applyStats() {
   const st = gear.stats;
   st.fns = (st.fns || 0) + skillLv(prog, 'keeneye') + (buffs.focus > 0 ? focusLv : 0);
   if (buffs.focus > 0) st.qkn = (st.qkn || 0) + focusLv;
+  for (const k of FOOD_STATS) if (buffs[`food_${k}`] > 0) st[k] = (st[k] || 0) + FOOD_N; // stat foods
   gear.hit += bow ? skillLv(prog, 'longsight') : 0;
   const dagger = weaponKind() === 'dagger';
   if (prog.trees.has('phantom')) st.qkn = (st.qkn || 0) + skillLv(prog, 'phantomgrace'); // Phantom Grace
@@ -526,6 +532,7 @@ function applyStats() {
   gear.def += hide + (buffs.aegis > 0 && player.barrier > 0 ? aegisLv : 0) + skillLv(prog, 'beastbond') * allies.beasts.length; // Beast Bond
   if (buffs.aspd > 0) gear.aspdRate *= 0.9;
   if (bow) gear.aspdRate *= (1 - 0.02 * skillLv(prog, 'windborne')) * (buffs.tailwind > 0 ? 1 - 0.02 * tailLv : 1) * (1 - skillLv(prog, 'galerhythm') * galeStacks / 100);
+  if (buffs.oil > 0 && oilEl && !bow) gear.el = oilEl; // a battle oil (a bow's arrows set their own)
   if (buffs.imbue > 0 && imbueEl && sword) gear.el = imbueEl; // Elemental Blade
   player.statBonus = { ...gear.stats }; // (what gear, cards and skills add to each stat: the Status window shows it)
   const ps = derive(prog, gear);
@@ -2372,6 +2379,12 @@ function useItem(id) {
     player.slowT = 0; player.poisonT = 0;
   }
   if (u.buff) { buffs[u.buff] = u.t; applyStats(); menus.message(`${ITEMS[id].name}: ${ITEMS[id].desc}`); }
+  if (u.oil) { // a battle oil: the weapon's element for a while (a fresh oil replaces the last)
+    oilEl = u.oil; buffs.oil = u.t; applyStats();
+    fx.sparkle(player.x, y - 0.4, player.z, ELEMENTS[u.oil].color, 12);
+    menus.message(weaponKind() === 'bow' ? `${ITEMS[id].name}: it won't take on a bow (the arrows set the shot), but it stays on for a blade` : `${ITEMS[id].name}: your blows are ${ELEMENTS[u.oil].name} for ${u.t / 60} minutes`);
+  }
+  if (u.food) { buffs[`food_${u.food}`] = u.t; applyStats(); menus.message(`${ITEMS[id].name}: ${u.food.toUpperCase()} +${u.n} for ${u.t / 60} minutes`); }
   if (u.warp === 'random') warpRandom();
   if (u.warp === 'camp') { if (savePoint) warp(savePoint.map, null, { x: savePoint.x, z: savePoint.z }); else warpTo('camp'); } // to your save point
   audio.play('pickup');
@@ -3472,6 +3485,8 @@ function tickSkills(dt) {
     buffs[k] -= dt;
     if (buffs[k] <= 0 && k === 'aspd') { applyStats(); menus.message('The Speed Potion wears off'); }
     if (buffs[k] <= 0 && k === 'momentum') momentum = 0;
+    if (buffs[k] <= 0 && k === 'oil') { oilEl = null; applyStats(); menus.message('The oil on your weapon wears off'); }
+    if (buffs[k] <= 0 && k.startsWith('food_')) { applyStats(); menus.message(`${ITEMS[FOODS[k.slice(5)]].name} wears off`); }
     if (buffs[k] <= 0 && k === 'imbue') { imbueEl = null; applyStats(); menus.message('Your blade loses its element'); }
     if (buffs[k] <= 0 && k === 'aegis') { player.barrier = 0; applyStats(); }
     if (buffs[k] <= 0 && k === 'sub') menus.message('Your Substitute falls apart');
@@ -3659,6 +3674,8 @@ function buffList() {
   if (doll && dollT > 0) sk('doll', 'voodoodoll', dollT, `${doll.def.name} bound: Blight up to ${BLIGHT.dollMax}, +${3 * dollLv}%`);
   if (player.hiddenT > 0) out.push({ key: 'hidden', icon: SKILLS.vanish.icon, name: 'Hidden', left: player.hiddenT, fx: ambushMul() > 1 ? `Monsters lose you · next blow ×${ambushMul().toFixed(1)} (Ambush)` : 'Monsters lose you' });
   if (buffs.aspd > 0) out.push({ key: 'aspd', icon: 'quick', name: ITEMS.quick.name, left: buffs.aspd, fx: 'Attack speed +10%' });
+  if (buffs.oil > 0 && oilEl) out.push({ key: 'oil', icon: OILS[oilEl], name: ITEMS[OILS[oilEl]].name, left: buffs.oil, fx: `Weapon element: ${ELEMENTS[oilEl].name}${weaponKind() === 'bow' ? ' (not with a bow)' : buffs.imbue > 0 ? ' (under Elemental Blade)' : ''}` });
+  for (const k of FOOD_STATS) if (buffs[`food_${k}`] > 0) out.push({ key: `food_${k}`, icon: FOODS[k], name: ITEMS[FOODS[k]].name, left: buffs[`food_${k}`], fx: `${k.toUpperCase()} +${FOOD_N}` });
   return out;
 }
 const buffTime = (s) => (s >= 60 ? `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}` : `${Math.ceil(s)}s`);

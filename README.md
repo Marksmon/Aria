@@ -999,6 +999,13 @@ wings, headgear and charms are items: equip them from the Equips tab (the piece 
 the same bag slot). In the Equipment window, tap a worn piece to see what it is and double-tap it
 to take it off. Shops sell 1, 10 or all, and "Sell all" keeps what an active quest still needs.
 
+For a hard fight there are **battle oils** and **stat foods**. An oil (Fire, Frost, Storm or Stone, from Kari and
+Dalla) gives a sword, dagger or staff's blows its element for 5 minutes: the right one against a monster's
+element is up to 1.5x the damage (a bow's arrows set their own; a Magic Knight's Elemental Blade goes over it). A
+food gives one stat +3 for 10 minutes, and each is its own, so all six can be eaten together: Boar Roast (POW) and
+Hearty Stew (END) from Hild, Smoked Fish (FNS) and Honey Cake (QKN) from Eydis, Sage Tea (KNL) and Clover Pie (FTN)
+from Kari (Dalla has the cake and the pie). Their timers show in the buff bar.
+
 <!-- tables:usables -->
 | Usable | Effect | Where |
 |---|---|---|
@@ -1015,6 +1022,16 @@ to take it off. Shops sell 1, 10 or all, and "Sell all" keeps what an active que
 | Dates | 120–170 HP | Dalla (Rytingborg) |
 | Water Skin | 30–45 SP | Dalla (Rytingborg) |
 | Return Feather | back to your save point | Hild (Steinborg); Kari (Galdrheim); Eydis (Veidheim); Dalla (Rytingborg); Ragna brews it |
+| Fire Oil | the weapon's blows Fire for 5 minutes (not a bow) | Kari (Galdrheim); Dalla (Rytingborg) |
+| Frost Oil | the weapon's blows Water for 5 minutes (not a bow) | Kari (Galdrheim); Dalla (Rytingborg) |
+| Storm Oil | the weapon's blows Wind for 5 minutes (not a bow) | Kari (Galdrheim); Dalla (Rytingborg) |
+| Stone Oil | the weapon's blows Earth for 5 minutes (not a bow) | Kari (Galdrheim); Dalla (Rytingborg) |
+| Boar Roast | POW +3 for 10 minutes | Hild (Steinborg) |
+| Hearty Stew | END +3 for 10 minutes | Hild (Steinborg) |
+| Honey Cake | QKN +3 for 10 minutes | Eydis (Veidheim); Dalla (Rytingborg) |
+| Smoked Fish | FNS +3 for 10 minutes | Eydis (Veidheim) |
+| Sage Tea | KNL +3 for 10 minutes | Kari (Galdrheim) |
+| Clover Pie | FTN +3 for 10 minutes | Kari (Galdrheim); Dalla (Rytingborg) |
 | World Tree Berry | all HP and SP | Nidhogg |
 <!-- /tables:usables -->
 
@@ -1488,7 +1505,7 @@ leads to each.
 | Archmage Vigdis | Galdrheim | The Rune Trial · The Mother of Spores (40): 20 Dark Mushrooms · Fire and Ash (50): 15 Fire Dust, 10 Burnt Shells · The Spore Mother (70): the Giant Mushroom · Archmage's Bounty (85, again and again): the Giant Mushroom and the Elder Willow |
 | Orm the Staffwright | Galdrheim | shop, crafts sorcerers' gear (staves, robes) · The Staffwright: The Living Wood (26): a Giant Root, 8 Thorns · Dark Ink (36): 8 Dark Crystals, 8 Dark Spores · Ember Ink (45): 10 Fire Dust, 15 Glow Dust |
 | Seyla the Enchanter | Galdrheim | opens a card slot in a Lv 4 weapon (50%) |
-| Kari the Curio Seller | Galdrheim | shop: potions, feathers, Speed Potions |
+| Kari the Curio Seller | Galdrheim | shop: potions, feathers, Speed Potions, battle oils, Sage Tea, Clover Pie |
 | Brynja the Lorekeeper | Galdrheim | The Lorekeeper: The Drowned Tomes (20): find 4 tomes washed up on the Salt Bay shore · Thorny Pages (22): 25 Red Sprouts · The Shore Library (28): 25 Blue Crabs |
 | Torvald the Runecarver | Galdrheim | The Runecarver: Shadows in Black Wood (38): take rubbings of 3 Watcher stones in Black Wood · Backward Runes (42): 15 Goblins, 10 Archers, 5 Assassins · The Deep Carvers (55): 20 Kobold and 20 Goblin Assassins |
 | Hrafn the Stargazer, Signy the Apprentice | Galdrheim | tales of the city, the stars and the jotnar |
@@ -1498,14 +1515,14 @@ leads to each.
 | Leif the Tanner | Veidheim | makes hunters' gear (Hunter's Cloak and Boots, Claw Charm, Bark Armor, Alpha Cloak, Bear Heart Charm) · Pelts for the Winter (50): 10 Wolf Pelts, 5 Bear Claws · The Great Bear's Kin (59): 12 Bears · Winter Hides (64): 20 Wolf Pelts, 10 Bear Claws · Tanner's Bounty (90, again and again): the Great Bear and 20 Bears |
 | Bjarki the Beastmaster | Veidheim, by the lodge | the Beastmaster's trial; his wolf Grimr never bites (unless asked) |
 | Asa the Fletcher | Veidheim | shop: bows and arrows · makes bows (Vine, Ice, Willow, Fire, Steel, Gale, Heartwood) · The Fletcher: Wood for Bows (22): 12 Willow Twigs, 4 Thorns · Fang and Feather (48): 6 Wolf Fangs, 10 Willow Twigs |
-| Eydis the Trader | Veidheim | shop: potions (White too), Honey, Speed Potions, feathers |
+| Eydis the Trader | Veidheim | shop: potions (White too), Honey, Speed Potions, feathers, Smoked Fish, Honey Cake |
 | Halla the Healer | Veidheim | heals HP and SP for free |
 | Kalf the Gate Archer | Veidheim, at the north gate | The Gate Watch: Marsh Patrol (8): 12 Yellow Bloops, 8 Willows (no early quests send you into the Old Forest: the Ancient Treant roams it) |
 | Bodil the Sentry, Finn the Young Archer | Veidheim | tales of the village and its lands |
 | Old Ingrid the Seedkeeper | Veidheim, by the well | **The World Tree** (45–48), a secret series: it shows once you have walked Willow Marsh, the Old Forest, Barley Field and Wolf Hills, and its last step opens the way to Yggdrasil |
 | Tove the Carter | Veidheim | carts to any land you have walked |
 | Master Kol | Rytingborg | The Assassin's Trial · the Phantom's trial |
-| Dalla the Trader | Rytingborg, the bazaar | shop (potions, Dates, Water Skins) · The Bazaar: Warm Gel (6): 8 Red Gel · Jaws in the Sacks (10): 15 Giant Ants |
+| Dalla the Trader | Rytingborg, the bazaar | shop (potions, Dates, Water Skins, battle oils, Honey Cake, Clover Pie) · The Bazaar: Warm Gel (6): 8 Red Gel · Jaws in the Sacks (10): 15 Giant Ants |
 | Steinar the Smith | Rytingborg | shop, forge · The Smith: Soldier's Shells (62): 20 Ant Mandibles, 6 Worm Hides |
 | Yrsa the Bladewright | Rytingborg | daggers, **Make daggers** · The Bladewright: Venom for Steel (60): 10 Scorpion Tails, 10 Cactus Needles |
 | Thora the Caravan Master | Rytingborg | The Caravan: Needles on the Road (56): 20 Cacti · The Stinging Road (62): 25 Sand Scorpions · The Humming Sand (66): 20 Soldier Ants, 10 Dune Worms · Caravan Bounty (68, again and again): 30 Soldier Ants, 20 Sand Scorpions |

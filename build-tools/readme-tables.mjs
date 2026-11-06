@@ -31,6 +31,8 @@ function usables() {
     if (u.sp) fx.push(`${u.sp[0]}–${u.sp[1]} SP`);
     if (u.cure) fx.push('cures poison and spores');
     if (u.buff === 'aspd') fx.push(`attack speed +10% for ${u.t / 60} minutes`); // (main.js applyStats: aspdRate x0.9)
+    if (u.oil) fx.push(`the weapon's blows ${u.oil[0].toUpperCase()}${u.oil.slice(1)} for ${u.t / 60} minutes (not a bow)`); // (main.js applyStats: gear.el)
+    if (u.food) fx.push(`${u.food.toUpperCase()} +${u.n} for ${u.t / 60} minutes`);
     if (u.warp === 'random') fx.push('a random spot on this map');
     if (u.warp === 'camp') fx.push('back to your save point');
     const where = [...Object.entries(SHOPS).filter(([, l]) => l.includes(id)).map(([s]) => SHOPKEEPERS[s] || s),

@@ -113,3 +113,14 @@ test("the MVPs' ultra rares are the items marked ultra that an MVP drops, at 1% 
   assert.deepEqual(dropped.map(([id]) => id).sort(), [...MVP_ULTRAS].sort());
   for (const [id, , , c] of dropped) assert.equal(c, 0.01, id);
 });
+
+test('battle oils name an element, stat foods one stat each, and every one is sold', () => {
+  const sold = new Set(Object.values(SHOPS).flat());
+  const oils = Object.entries(ITEMS).filter(([, it]) => it.use?.oil), foods = Object.entries(ITEMS).filter(([, it]) => it.use?.food);
+  assert.deepEqual(oils.map(([, it]) => it.use.oil).sort(), ['earth', 'fire', 'water', 'wind']);
+  assert.deepEqual(foods.map(([, it]) => it.use.food).sort(), ['end', 'fns', 'ftn', 'knl', 'pow', 'qkn']);
+  for (const [id, it] of [...oils, ...foods]) {
+    assert.ok(sold.has(id), `${id} is in no shop`);
+    assert.ok(it.use.t > 0 && it.usable, `${id} lasts`);
+  }
+});

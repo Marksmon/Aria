@@ -79,6 +79,19 @@ const BASE_ITEMS = {
   dates:   { type: 'use', usable: true, name: 'Dates', use: { hp: [120, 170] }, desc: 'A handful of sticky dates from Rytingborg\'s palms. Sweet enough to keep a caravan walking. Restores 120–170 HP.' },
   water_skin: { type: 'use', usable: true, name: 'Water Skin', use: { sp: [30, 45] }, desc: 'Cold oasis water in a leather skin. In the desert it is worth more than gold. Restores 30–45 SP.' },
   homeward: { type: 'use', usable: true, name: 'Return Feather', use: { warp: 'camp' }, desc: 'A feather that remembers where you saved. Hold it tight and it carries you back to your save point (the camp, until you save with a Keeper).' },
+  // battle oils (main.js useItem, applyStats): a weapon's blows take an element for 5 minutes; a bow's arrows keep their own,
+  // and Elemental Blade's element goes over an oil's
+  fire_oil:  { type: 'use', usable: true, name: 'Fire Oil', use: { oil: 'fire', t: 300 }, desc: 'A red oil that smoulders on the blade. Rub it on your weapon and your blows burn with Fire for 5 minutes. Earth monsters dread it. Not for bows: the arrow sets the shot.' },
+  frost_oil: { type: 'use', usable: true, name: 'Frost Oil', use: { oil: 'water', t: 300 }, desc: 'A pale blue oil, cold as a glacier stream. Your blows take the Water element for 5 minutes, the bane of Fire monsters. Not for bows: the arrow sets the shot.' },
+  storm_oil: { type: 'use', usable: true, name: 'Storm Oil', use: { oil: 'wind', t: 300 }, desc: 'A yellow oil that crackles under the thumb. Your blows take the Wind element for 5 minutes, the bane of Water monsters. Not for bows: the arrow sets the shot.' },
+  stone_oil: { type: 'use', usable: true, name: 'Stone Oil', use: { oil: 'earth', t: 300 }, desc: 'A thick brown oil with grit in it. Your blows take the Earth element for 5 minutes, the bane of Wind monsters. Not for bows: the arrow sets the shot.' },
+  // stat foods: one stat +3 for 10 minutes; each food is its own, so six can be eaten together
+  boar_roast:  { type: 'use', usable: true, name: 'Boar Roast', use: { food: 'pow', n: 3, t: 600 }, desc: 'A slab of roast boar with crackling, the Watch\'s favourite. POW +3 for 10 minutes.' },
+  hearty_stew: { type: 'use', usable: true, name: 'Hearty Stew', use: { food: 'end', n: 3, t: 600 }, desc: 'A thick stew of roots and mutton that sticks to your ribs. END +3 for 10 minutes.' },
+  honey_cake:  { type: 'use', usable: true, name: 'Honey Cake', use: { food: 'qkn', n: 3, t: 600 }, desc: 'A light cake soaked in wild honey. It puts a spring in your hands. QKN +3 for 10 minutes.' },
+  smoked_fish: { type: 'use', usable: true, name: 'Smoked Fish', use: { food: 'fns', n: 3, t: 600 }, desc: 'A trout smoked over juniper, the hunter\'s breakfast before a long watch. FNS +3 for 10 minutes.' },
+  sage_tea:    { type: 'use', usable: true, name: 'Sage Tea', use: { food: 'knl', n: 3, t: 600 }, desc: 'A cup of hot sage and moonflower tea. The mind clears and the runes come easy. KNL +3 for 10 minutes.' },
+  clover_pie:  { type: 'use', usable: true, name: 'Clover Pie', use: { food: 'ftn', n: 3, t: 600 }, desc: 'A sweet pie baked with four-leaf clover, they say. Nobody has ever found one in it. FTN +3 for 10 minutes.' },
 
   // daggers (kind: dagger): the Assassin's weapon, and any job's. Weaker blows than a sword of the same
   // level, but quicker (rules.js: a dagger swings at the job's delay.dagger, else 80% of its sword's)
@@ -651,6 +664,8 @@ export const PRICES = {
   kobold_ring: 20000, goblin_charm: 24000, kobold_card: 40000, goblin_card: 40000, jarl_card: 60000, sprout_card: 16000, crab_card: 18000, mushroom_card: 20000, beetle_card: 22000,
   thorn: 70, salt: 90, pearl: 600, gloom: 150, shade: 180, cinder: 240, ember_dust: 220, shiny_gel: 1200,
   potion: 50, potion2: 180, potion3: 550, tonic: 300, berry: 20, crableg: 60, herb: 30, quick: 600, wander: 120, homeward: 300,
+  fire_oil: 800, frost_oil: 800, storm_oil: 800, stone_oil: 800,
+  boar_roast: 1200, hearty_stew: 1200, honey_cake: 1200, smoked_fish: 1200, sage_tea: 1200, clover_pie: 1200,
   twig_sword: 50, stone_blade: 500, ember_edge: 2400, iron_sword: 3800, oak_staff: 400, rune_staff: 4200, emberbrand: 40000,
   gooey_ring: 4000, tide_pendant: 5000, seedling_band: 5000, mud_buckler: 6000, spore_cloak: 7000, horn_blade: 15000, pebble_ring: 5000,
   wisp_lantern: 6000, bramble_ring: 6000, coral_shield: 8000, gloom_hood: 9000, cinder_mail: 14000, ember_charm: 9000,
@@ -679,18 +694,18 @@ export const sellPrice = (id) => Math.floor((PRICES[baseOf(id)] || 0) / 2); // u
 
 // what each Steinborg shop sells
 export const SHOPS = {
-  hild: ['potion', 'potion2', 'tonic', 'herb', 'berry', 'wander', 'homeward'],
+  hild: ['potion', 'potion2', 'tonic', 'herb', 'berry', 'wander', 'homeward', 'boar_roast', 'hearty_stew'],
   holger: ['iron_ore', 'steel_ore'], // the refiner's ores (Hard and Armor Ore only drop)
   gunnar: ['twig_sword', 'stone_blade', 'iron_sword', 'clothes', 'chain_mail', 'round_shield', 'wool_cape', 'travel_cloak', 'leather_boots', 'bandana', 'eyepatch'],
   // Galdrheim: Kari's curios (like Hild's, and Speed Potions), Orm's staves and robes
-  kari: ['potion', 'potion2', 'tonic', 'herb', 'berry', 'quick', 'wander', 'homeward'],
+  kari: ['potion', 'potion2', 'tonic', 'herb', 'berry', 'quick', 'wander', 'homeward', 'sage_tea', 'clover_pie', 'fire_oil', 'frost_oil', 'storm_oil', 'stone_oil'],
   // Veidheim: Asa's bows and arrows, Eydis's hunting supplies (White Potions and Honey for the long hunts)
   asa: ['hunting_bow', 'composite_bow', 'wooden_arrow', 'iron_arrow', 'fire_arrow', 'ice_arrow', 'wind_arrow', 'earth_arrow', 'feather_cap'],
-  eydis: ['potion', 'potion2', 'potion3', 'tonic', 'honey', 'herb', 'quick', 'wander', 'homeward'],
+  eydis: ['potion', 'potion2', 'potion3', 'tonic', 'honey', 'herb', 'quick', 'wander', 'homeward', 'smoked_fish', 'honey_cake'],
   orm: ['oak_staff', 'birch_staff', 'frost_staff', 'rune_staff', 'mage_robe', 'wool_cape', 'leather_boots', 'witch_hat', 'monocle'],
   // Rytingborg: Dalla's bazaar stall (dates and water for the road), Steinar's forge (daggers and
   // desert gear), Yrsa's daggers
-  dalla: ['potion', 'potion2', 'potion3', 'tonic', 'dates', 'water_skin', 'herb', 'quick', 'wander', 'homeward'],
+  dalla: ['potion', 'potion2', 'potion3', 'tonic', 'dates', 'water_skin', 'herb', 'quick', 'wander', 'homeward', 'fire_oil', 'frost_oil', 'storm_oil', 'stone_oil', 'honey_cake', 'clover_pie'],
   steinar: ['knife', 'sand_kris', 'iron_sword', 'clothes', 'chain_mail', 'round_shield', 'desert_wrap', 'leather_boots', 'straw_hat', 'bandana'],
   yrsa: ['rusty_dagger', 'knife', 'sand_kris', 'main_gauche', 'assassin_garb'],
 };
@@ -935,6 +950,15 @@ function potionIcon(g, col) {
   shape(g, () => g.roundRect(26, 8, 12, 12, 3), '#b07a4c', 3);
   shape(g, () => { g.moveTo(24, 20); g.lineTo(40, 20); g.lineTo(40, 26); g.quadraticCurveTo(54, 32, 52, 44); g.quadraticCurveTo(50, 56, 32, 56); g.quadraticCurveTo(14, 56, 12, 44); g.quadraticCurveTo(10, 32, 24, 26); g.closePath(); }, col);
   gloss(g, 22, 38, 4, 6);
+}
+
+// a slim vial of weapon oil with the element's colour and a drop on its label
+function oilIcon(g, col, glow) {
+  shape(g, () => g.roundRect(27, 6, 10, 8, 2), '#7a5a3a', 2.5);
+  shape(g, () => { g.moveTo(26, 14); g.lineTo(38, 14); g.lineTo(38, 22); g.lineTo(46, 30); g.lineTo(46, 54); g.lineTo(18, 54); g.lineTo(18, 30); g.lineTo(26, 22); g.closePath(); }, col);
+  shape(g, () => g.roundRect(21, 34, 22, 14, 3), '#efe2c0', 2);
+  shape(g, () => { g.moveTo(32, 36); g.quadraticCurveTo(38, 43, 32, 46); g.quadraticCurveTo(26, 43, 32, 36); g.closePath(); }, col, 1.5);
+  gloss(g, 23, 28, 2.5, 4); g.fillStyle = glow; g.beginPath(); g.arc(40, 50, 2, 0, 7); g.fill();
 }
 
 function featherIcon(g, vane, rib) {
@@ -1214,6 +1238,47 @@ const PAINT = {
     star(28, 34, 18, '#ffe37a'); star(46, 18, 9, '#fff3b0'); star(48, 46, 7, '#ffd34a');
   },
   potion: (g) => potionIcon(g, '#e2554a'),
+  fire_oil: (g) => oilIcon(g, '#ff7a2a', '#ffd04a'),
+  frost_oil: (g) => oilIcon(g, '#6cc4ef', '#e8f8ff'),
+  storm_oil: (g) => oilIcon(g, '#f2e05a', '#fffbe0'),
+  stone_oil: (g) => oilIcon(g, '#a8784a', '#e2c08a'),
+  boar_roast: (g) => {
+    shape(g, () => g.ellipse(30, 36, 20, 15, -0.3, 0, 7), '#a8582a');
+    shape(g, () => g.ellipse(28, 32, 13, 8, -0.3, 0, 7), '#d88a4a', 2.5);
+    shape(g, () => g.roundRect(44, 14, 6, 20, 3), '#f4ead6', 2.5); shape(g, () => g.arc(47, 13, 5, 0, 7), '#f4ead6', 2.5);
+    gloss(g, 24, 28, 4, 2.5);
+  },
+  hearty_stew: (g) => {
+    shape(g, () => { g.moveTo(10, 30); g.lineTo(54, 30); g.quadraticCurveTo(54, 54, 32, 54); g.quadraticCurveTo(10, 54, 10, 30); g.closePath(); }, '#8a5a3a');
+    shape(g, () => g.ellipse(32, 30, 22, 6, 0, 0, 7), '#c86a3a', 2.5);
+    for (const [x, y, c] of [[24, 29, '#f2c24a'], [36, 30, '#6bbd4a'], [42, 28, '#e88a5a']]) shape(g, () => g.arc(x, y, 3, 0, 7), c, 1.5);
+    for (const x of [24, 34, 44]) { g.beginPath(); g.moveTo(x, 20); g.quadraticCurveTo(x - 4, 14, x, 8); g.strokeStyle = '#efe6d0'; g.lineWidth = 2; g.stroke(); }
+  },
+  honey_cake: (g) => {
+    shape(g, () => g.roundRect(12, 30, 40, 22, 5), '#e8b45a');
+    shape(g, () => g.roundRect(12, 24, 40, 12, 5), '#f6d48a', 2.5);
+    shape(g, () => { g.moveTo(20, 30); g.quadraticCurveTo(22, 42, 26, 36); g.quadraticCurveTo(30, 44, 34, 34); g.quadraticCurveTo(40, 42, 44, 30); g.closePath(); }, '#f2a428', 2);
+    gloss(g, 22, 27, 4, 2);
+  },
+  smoked_fish: (g) => {
+    shape(g, () => { g.moveTo(8, 34); g.quadraticCurveTo(28, 14, 46, 32); g.lineTo(58, 22); g.lineTo(56, 46); g.lineTo(46, 36); g.quadraticCurveTo(28, 54, 8, 34); g.closePath(); }, '#b8783a');
+    shape(g, () => g.arc(18, 32, 2.5, 0, 7), '#2e2118', 1);
+    for (const x of [26, 32, 38]) { g.beginPath(); g.moveTo(x, 26); g.quadraticCurveTo(x + 3, 34, x, 42); g.strokeStyle = '#7a4a22'; g.lineWidth = 2; g.stroke(); }
+    gloss(g, 24, 27, 4, 2);
+  },
+  sage_tea: (g) => {
+    shape(g, () => { g.moveTo(14, 26); g.lineTo(46, 26); g.lineTo(42, 52); g.lineTo(18, 52); g.closePath(); }, '#e8e0cc');
+    g.beginPath(); g.arc(48, 38, 7, -1.4, 1.4); g.strokeStyle = OUT; g.lineWidth = 6; g.stroke(); g.strokeStyle = '#e8e0cc'; g.lineWidth = 3; g.stroke();
+    shape(g, () => g.ellipse(30, 27, 15, 3.5, 0, 0, 7), '#8abf5a', 2);
+    shape(g, () => g.ellipse(26, 40, 5, 3, -0.6, 0, 7), '#6bbd4a', 1.5);
+    for (const x of [24, 34]) { g.beginPath(); g.moveTo(x, 18); g.quadraticCurveTo(x - 4, 12, x, 6); g.strokeStyle = '#efe6d0'; g.lineWidth = 2; g.stroke(); }
+  },
+  clover_pie: (g) => {
+    shape(g, () => g.ellipse(32, 40, 24, 13, 0, 0, 7), '#d89a4a');
+    shape(g, () => g.ellipse(32, 36, 20, 9, 0, 0, 7), '#f2c47a', 2.5);
+    for (const [dx, dy] of [[-4, -3], [4, -3], [-4, 3], [4, 3]]) shape(g, () => g.arc(32 + dx, 35 + dy, 4, 0, 7), '#5aae3a', 1.5);
+    g.beginPath(); g.moveTo(32, 38); g.lineTo(34, 46); g.strokeStyle = '#3a7a24'; g.lineWidth = 2; g.stroke();
+  },
   potion2: (g) => potionIcon(g, '#f08a32'),
   potion3: (g) => potionIcon(g, '#f2cf3a'),
   tonic: (g) => potionIcon(g, '#4a8ce8'),
