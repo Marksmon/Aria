@@ -20,11 +20,12 @@ export function installBossMoves(ctx) {
       if (res.miss) fx.number(b.x, overHead(b, b.sprite.scale.y * 0.7), b.z, 'Miss', 'miss');
       else b.takeDamage(res.dmg, x, z);
     }
-    if (Math.hypot(player.x - x, player.z - z) > r + 0.3 || !player.canBeHit() || player.state === 'down') return;
+    if (Math.hypot(player.x - x, player.z - z) > r + 0.3 || !player.canBeHit() || player.state === 'down') return 0;
     cam.shake = 0.3;
     const res = mobAttack(m.def, player.ps, mult * m.fury, fierce(m.def) ? MVP_MOVE : undefined); // (an MVP's: no FLEE, little DEF)
-    if (res.miss) fx.number(player.x, overHead(player, 1.3), player.z, 'Miss', 'miss');
-    else player.takeDamage(res.dmg, x, z);
+    if (res.miss) { fx.number(player.x, overHead(player, 1.3), player.z, 'Miss', 'miss'); return 0; }
+    player.takeDamage(res.dmg, x, z);
+    return res.dmg; // (what landed: Soul Shackles drink it)
   }
   const MOVE_NAMES = { charge: 'Charge', throw: { fire: 'Fireball', shadow: 'Spore Pod', earth: 'Boulder', wind: 'Hurled Axe' }, leap: 'Leap' }; // (or the move's own name)
   mobs.on('move', (m, a) => {
@@ -45,7 +46,7 @@ export function installBossMoves(ctx) {
       for (let d = 1.6; d <= M.len; d += 1.5) fx.warn(a.from.x + a.dir.x * d, a.from.z + a.dir.z * d, M.w, M.wind + d / M.len * 0.65, MOVE_COL.water);
     }
     if (a.kind === 'prison') fx.warn(a.spot.x, a.spot.z, MOVES.prison.r, MOVES.prison.wind);
-    if (a.kind === 'maelstrom') { fx.warn(a.spot.x, a.spot.z, MOVES.maelstrom.r, MOVES.maelstrom.wind, MOVE_COL.water); fx.warn(a.spot.x, a.spot.z, MOVES.maelstrom.core, MOVES.maelstrom.wind); }
+    if (a.kind === 'maelstrom') { fx.warn(a.spot.x, a.spot.z, a.mv.r ?? MOVES.maelstrom.r, MOVES.maelstrom.wind, MOVE_COL.water); fx.warn(a.spot.x, a.spot.z, MOVES.maelstrom.core, MOVES.maelstrom.wind); }
   });
   // ---------- Poseidon's moves (mobs.js MOVES.surge, prison, maelstrom) ----------
   // Leviathan Surge: a sea serpent rushes down the marked line; whoever is on it when it passes is struck, once
@@ -112,12 +113,12 @@ export function installBossMoves(ctx) {
   // Raging Maelstrom: a whirlpool round where you stood, pulling you in to its heart, which strikes whoever is in it
   const whirls = [];
   mobs.on('maelstrom', (m, a) => {
-    const M = MOVES.maelstrom, { x, z } = a.spot;
-    whirls.push({ m, mv: a.mv, map: world.id, x, z, t: M.dur, tick: 0, spin: 0 });
-    fx.warn(x, z, M.r, M.dur, MOVE_COL.water);
-    fx.warn(x, z, M.core, M.dur);
+    const M = MOVES.maelstrom, { x, z } = a.spot, R = a.mv.r ?? M.r, domain = a.mv.pull === 0;
+    whirls.push({ m, mv: a.mv, map: world.id, x, z, t: M.dur, tick: 0, spin: 0, r: R, pull: a.mv.pull ?? M.pull, core: domain ? R : M.core });
+    fx.warn(x, z, R, M.dur, MOVE_COL.water);
+    if (!domain) fx.warn(x, z, M.core, M.dur);
     cam.shake = 0.3; audio.play('night');
-    ctx.menus.message('Poseidon raises a Raging Maelstrom! It drags you to its heart: walk out of it, away from the middle!');
+    ctx.menus.message(domain ? `${TheName(m)} raises the ${a.mv.name}! You drown and drag in it: get out of the circle!` : `${TheName(m)} raises the ${a.mv.name || 'Raging Maelstrom'}! It drags you to its heart: walk out of it, away from the middle!`);
   });
   function whirlTick(dt) {
     const M = MOVES.maelstrom;
@@ -125,15 +126,16 @@ export function installBossMoves(ctx) {
       const W = whirls[i];
       if ((W.t -= dt) <= 0 || !W.m.alive || world.id !== W.map) { whirls.splice(i, 1); continue; }
       W.spin += dt * 4;
-      if (Math.random() < dt * 14) { const a = W.spin + Math.random() * 6.3, r = 0.6 + Math.random() * M.r; fx.sparkle(W.x + Math.cos(a) * r, world.heightAt(W.x, W.z) + 0.2, W.z + Math.sin(a) * r, Math.random() < 0.3 ? '#f2fbff' : MOVE_COL.water, 2); }
+      if (Math.random() < dt * 14) { const a = W.spin + Math.random() * 6.3, r = 0.6 + Math.random() * W.r; fx.sparkle(W.x + Math.cos(a) * r, world.heightAt(W.x, W.z) + 0.2, W.z + Math.sin(a) * r, Math.random() < 0.3 ? '#f2fbff' : MOVE_COL.water, 2); }
       const dx = W.x - player.x, dz = W.z - player.z, d = Math.hypot(dx, dz);
-      if (d > M.r || player.state === 'down' || !player.canBeHit()) continue;
-      if (d > 0.05) { // the pull (walls still stop it)
-        const k = Math.min(d, M.pull * (W.m.enraged ? 1.25 : 1) * dt) / d;
+      if (d > W.r || player.state === 'down' || !player.canBeHit()) continue;
+      if (W.mv.slow) player.slowT = Math.max(player.slowT, 0.4); // (the Abyssal Domain: it drags at your feet)
+      if (d > 0.05 && W.pull > 0) { // the pull (walls still stop it)
+        const k = Math.min(d, W.pull * (W.m.enraged ? 1.25 : 1) * dt) / d;
         const [nx, nz] = world.resolve(player.x + dx * k, player.z + dz * k, 0.3);
         if (world.walkable(nx, nz) && !world.isSafe(nx, nz)) { player.x = nx; player.z = nz; }
       }
-      if (d <= M.core && (W.tick -= dt) <= 0) { W.tick = M.tick; bossBlow(W.m, W.mv.mult, W.x, W.z, M.core); }
+      if (d <= W.core && (W.tick -= dt) <= 0) { W.tick = M.tick; bossBlow(W.m, W.mv.mult, W.x, W.z, W.core); }
     }
   }
   // Tremor (mobs.js TREMOR): the ground cracks under a hero who stands still by an MVP; step aside
@@ -261,7 +263,7 @@ export function installBossMoves(ctx) {
       for (const p of spots) {
         const gy = world.heightAt(p.x, p.z);
         fx.puff(p.x, gy + 0.2, p.z, mv.r * 1.1);
-        fx.sparkle(p.x, gy + 0.3, p.z, '#8a6a3a', 14);
+        fx.sparkle(p.x, gy + 0.3, p.z, mv.color || '#8a6a3a', 14);
       }
       audio.play('hit');
       const caught = spots.some((p) => Math.hypot(player.x - p.x, player.z - p.z) <= mv.r + 0.3);
@@ -269,8 +271,10 @@ export function installBossMoves(ctx) {
       bossBlow(m, mv.mult, player.x, player.z, mv.r);
       player.rootT = (mv.hold || 3) * (m.enraged ? 1.4 : 1);
       player.path = [];
-      ctx.menus.message('Roots hold you fast! You can still fight, but not get away.');
-      fx.number(player.x, overHead(player, 1.5), player.z, 'Rooted!', 'miss');
+      const what = mv.drain ? 'Chains' : mv.color ? 'Arms of the deep' : 'Roots';
+      ctx.menus.message(`${what} hold you fast! You can still fight, but not get away.${mv.drain ? ' They drink your life into Davy Jones!' : ''}`);
+      fx.number(player.x, overHead(player, 1.5), player.z, mv.drain ? 'Shackled!' : 'Held!', 'miss');
+      if (mv.drain) drains.push({ m, mv, map: world.id, t: player.rootT, tick: 1 }); // (Soul Shackles: a drain each second while they hold)
     }, land * 1000);
   });
   // Bark Armor (the Ancient Treant): its bark hardens, and what hits it hits back
@@ -301,7 +305,11 @@ export function installBossMoves(ctx) {
         fx.puff(spot.x, gy + 0.2, spot.z, mv.r * 1.2);
         fx.sparkle(spot.x, gy + 0.3, spot.z, MOVE_COL[m.def.el] || '#ffffff', 16);
         audio.play('hit');
-        bossBlow(m, mv.mult, spot.x, spot.z, mv.r, true);
+        if (bossBlow(m, mv.mult, spot.x, spot.z, mv.r, true) && mv.curse) { // (Tidal Curse: healing halved a while)
+          player.healCurseT = mv.curse;
+          fx.number(player.x, overHead(player, 1.6), player.z, 'Cursed!', 'miss');
+          ctx.menus.message(`${TheName(m)}'s ${mv.name} is on you: you heal half as much for ${mv.curse} s.`);
+        }
       }, 0.9);
     }, Math.max(0, land - travel) * 1000);
   });
@@ -321,8 +329,21 @@ export function installBossMoves(ctx) {
     burning.push({ m, map: world.id, x, z, r: b.r, t: b.dur, tick: 0.5 });
     fx.warn(x, z, b.r, b.dur, b.color || '#ff8a2a');
   }
+  // Soul Shackles (Davy Jones): while the chains hold, each second they drink a blow's worth of your life into him
+  const drains = [];
+  function drainTick(dt) {
+    for (let i = drains.length - 1; i >= 0; i--) {
+      const D = drains[i];
+      D.t -= dt;
+      if (D.t <= 0 || !D.m.alive || world.id !== D.map || player.state === 'down') { drains.splice(i, 1); continue; }
+      if ((D.tick -= dt) > 0) continue;
+      D.tick = 1;
+      const n = bossBlow(D.m, D.mv.drain, player.x, player.z, 99);
+      if (n > 0) { D.m.hp = Math.min(D.m.def.hp, D.m.hp + n * 3); fx.number(D.m.x, overHead(D.m, D.m.sprite.scale.y * 0.8 + 0.4), D.m.z, `+${n * 3}`, 'heal'); fx.sparkle(player.x, world.heightAt(player.x, player.z) + 1, player.z, '#9af0e8', 8); }
+    }
+  }
   function burnTick(dt) {
-    prisonTick(dt); whirlTick(dt); // (Poseidon's, above)
+    prisonTick(dt); whirlTick(dt); drainTick(dt); // (Poseidon's and Davy Jones's, above)
     for (let i = burning.length - 1; i >= 0; i--) {
       const b = burning[i];
       b.t -= dt;
@@ -428,7 +449,7 @@ export function installBossMoves(ctx) {
       if (!foe.canBeHit(true) || foe.state === 'down') return; // (an arrow: it reaches the Hawk too)
       const res = mobAttack(m.def, foe.ps);
       if (res.miss) fx.number(foe.x, overHead(foe, 1.3), foe.z, res.dodge ? 'Lucky!' : 'Miss', 'miss');
-      else foe.takeDamage(res.dmg, m.x, m.z);
+      else { foe.takeDamage(res.dmg, m.x, m.z); if (foe === player && m.def.poison && Math.random() < m.def.poison) mobs.emit('venom', m); } // (a Blowgun Pirate's dart may poison you)
     }, 0.2);
   });
   mobs.on('dash', (m) => { audio.play('dodge'); fx.puff(m.x, world.heightAt(m.x, m.z) + 0.15, m.z, 0.5); });

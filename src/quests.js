@@ -513,7 +513,7 @@ export const NPCS = {
   // the Ship Captain (the owner's call): her ship sails to destinations (ship: [{ to, fare, lv }]); a destination
   // with lv opens at that Base Level. Loki's Gate, the door of the endless dungeon, from Base 90
   asgeir: {
-    name: 'Captain Asgeir', map: 'port', x: 55, z: 32, ship: [{ to: 'storm', fare: 4000 }, { to: 'lokigate', fare: 8000, lv: 90 }],
+    name: 'Captain Asgeir', map: 'port', x: 55, z: 32, ship: [{ to: 'storm', fare: 4000 }, { to: 'wreck', fare: 6000, lv: 85 }, { to: 'lokigate', fare: 8000, lv: 90 }],
     dress: { body: 'blader', main: [215, 0.55, 0.45], accent: [45, 0.8, 1.05], hair: 'long', dye: 'black', top: 'bandana' },
     hello: 'The Wave-Runner sails with the tide. The Storm Isles, if you can stand the weather. And further out, for the bold, a rock where nobody sane lands.',
     later: () => '', bye: 'Mind the gulls. They steal.', quests: [],

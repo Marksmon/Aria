@@ -171,6 +171,39 @@ export const MOB_DEFS = {
   glassJelly: { name: 'Glass Jelly', ai: 'puffer', art: 'glassJelly', el: 'neutral', lv: 74, hp: 6600, atk: [268, 336], def: 12, vit: 50, agi: 40, dex: 110, exp: [3150, 2205], mdef: 30, adelay: 1600, passive: true, walk: 260, aggro: 5, chase: 8, reach: 0.95, fly: true, puff: 'A glass-jelly sting! Your limbs go numb and slow', w: 1.0, r: 0.4, drops: [['jelly_glass', 1, 1, 0.5], ['potion3', 1, 1, 0.06], ['glassjelly_card', 1, 1, 0.001]] },
   merrow: { name: 'Merrow', ai: 'archer', art: 'merrow', el: 'water', lv: 75, hp: 6800, atk: [272, 340], def: 15, vit: 48, agi: 50, dex: 128, exp: [3250, 2275], mdef: 14, adelay: 1700, walk: 200, aggro: 6, chase: 9, range: 4.5, reach: 0.9, shot: '#c8e8f0', w: 0.95, r: 0.38, drops: [['merrow_scale', 1, 1, 0.5], ['potion3', 1, 1, 0.06], ['merrow_card', 1, 1, 0.001]] },
   galeMoth: { name: 'Gale Moth', ai: 'assassin', art: 'galeMoth', el: 'wind', lv: 77, hp: 6900, atk: [282, 354], def: 14, vit: 46, agi: 70, dex: 128, exp: [3450, 2415], adelay: 1200, walk: 120, aggro: 6.5, chase: 10, reach: 1.0, double: 0.15, fly: true, w: 1.4, r: 0.48, drops: [['moth_dust', 1, 1, 0.5], ['potion3', 1, 1, 0.06], ['galemoth_card', 1, 1, 0.001]] },
+  // ---------- the Sunken Galleon (the third dungeon, Base 85-99, galleon.js): its decks and holds, then the captain's hold.
+  // Floor 1: Conches, Puffer Fish, Zombies; floor 2: Pirate Skeletons, Blowgun Pirates, Octopuses; floor 3: Ghosts
+  // (Ghost: no Neutral blow touches them), Skeleton Assassins and the Kraken; the hold: Hydras and Davy Jones ----------
+  conch: { name: 'Conch', ai: 'tank', art: 'conch', el: 'water', lv: 85, hp: 9000, atk: [320, 400], def: 38, vit: 70, agi: 20, dex: 110, mdef: 20, exp: [12000, 8400], adelay: 1800, walk: 400, aggro: 5, chase: 8, reach: 1.0, w: 1.2, r: 0.48, heavy: true, drops: [['conch_shell', 1, 1, 0.5], ['potion3', 1, 1, 0.07], ['conch_card', 1, 1, 0.001]] },
+  pufferFish: { name: 'Puffer Fish', ai: 'puffer', art: 'pufferFish', el: 'water', lv: 86, hp: 8600, atk: [322, 404], def: 22, vit: 60, agi: 45, dex: 118, mdef: 20, exp: [12300, 8600], adelay: 1600, walk: 250, aggro: 6, chase: 9, reach: 1.0, puff: 'A burst of spines! They sting, and your feet drag', w: 1.0, r: 0.42, drops: [['puffer_spine', 1, 1, 0.5], ['potion3', 1, 1, 0.07], ['pufferfish_card', 1, 1, 0.001]] },
+  zombie: { name: 'Zombie', ai: 'tank', art: 'zombie', el: 'shadow', lv: 88, hp: 10800, atk: [330, 414], def: 24, vit: 78, agi: 18, dex: 110, exp: [13300, 9300], adelay: 1900, walk: 400, aggro: 6, chase: 9, reach: 1.0, poison: 0.1, sting: 'bite', w: 1.0, r: 0.42, drops: [['drowned_rag', 1, 1, 0.5], ['potion3', 1, 2, 0.08], ['zombie_card', 1, 1, 0.001]] },
+  pirateSkeleton: { name: 'Pirate Skeleton', ai: 'tank', art: 'pirateSkeleton', el: 'neutral', lv: 89, hp: 9400, atk: [338, 422], def: 28, vit: 64, agi: 52, dex: 130, exp: [13700, 9600], adelay: 1400, walk: 180, aggro: 6.5, chase: 10, reach: 1.1, double: 0.1, w: 1.0, r: 0.42, drops: [['old_doubloon', 1, 1, 0.5], ['potion3', 1, 1, 0.07], ['pirateskeleton_card', 1, 1, 0.001]] },
+  blowgunPirate: { name: 'Blowgun Pirate', ai: 'archer', art: 'blowgunPirate', el: 'neutral', lv: 90, hp: 8800, atk: [340, 428], def: 20, vit: 58, agi: 58, dex: 145, exp: [14100, 9870], adelay: 1600, walk: 200, aggro: 7, chase: 10, range: 5.5, reach: 1.0, shot: '#9aff6a', poison: 0.15, sting: 'dart', w: 1.05, r: 0.42, drops: [['poison_dart', 1, 1, 0.5], ['potion3', 1, 1, 0.07], ['blowgunpirate_card', 1, 1, 0.001]] },
+  octopus: { name: 'Octopus', ai: 'tank', art: 'octopus', el: 'water', lv: 92, hp: 9800, atk: [345, 432], def: 26, vit: 68, agi: 48, dex: 132, exp: [15100, 10570], adelay: 1500, walk: 260, aggro: 6, chase: 9, reach: 1.2, double: 0.15, w: 1.3, r: 0.5, drops: [['octopus_ink', 1, 1, 0.5], ['potion3', 1, 1, 0.07], ['octopus_card', 1, 1, 0.001]] },
+  ghost: { name: 'Ghost', ai: 'wisp', art: 'ghost', el: 'ghost', lv: 93, hp: 7800, atk: [352, 440], def: 10, vit: 50, agi: 70, dex: 140, mdef: 40, exp: [15600, 10900], adelay: 1300, walk: 160, aggro: 7, chase: 10, reach: 0.9, fly: true, glow: true, w: 1.0, r: 0.4, drops: [['ectoplasm', 1, 1, 0.5], ['potion3', 1, 1, 0.07], ['ghost_card', 1, 1, 0.001]] },
+  skeletonAssassin: { name: 'Skeleton Assassin', ai: 'assassin', art: 'skeletonAssassin', el: 'shadow', lv: 95, hp: 9200, atk: [360, 450], def: 24, vit: 60, agi: 85, dex: 150, exp: [16600, 11600], adelay: 1100, walk: 130, aggro: 7, chase: 11, reach: 0.95, double: 0.2, w: 1.05, r: 0.42, drops: [['bone_shard', 1, 1, 0.5], ['potion3', 1, 1, 0.07], ['skeletonassassin_card', 1, 1, 0.001]] },
+  hydra: { name: 'Hydra', ai: 'archer', art: 'hydra', el: 'water', hall: true, lv: 98, hp: 11800, atk: [368, 460], def: 30, vit: 74, agi: 46, dex: 150, mdef: 8, exp: [18300, 12800], adelay: 1500, walk: 220, aggro: 7, chase: 10, range: 5, reach: 1.2, shot: '#7ad8ff', w: 1.6, r: 0.55, heavy: true, drops: [['hydra_scale', 1, 1, 0.5], ['potion3', 1, 2, 0.08], ['hydra_card', 1, 1, 0.001]] },
+  // the Sunken Galleon's mini-boss, on the third floor (the owner's sheet): the Kraken, the Abyssal Devourer, dark blue,
+  // crowned with coral, its arms writhing every way (writhe). It slams a tentacle down (Tentacle Slam), seizes you
+  // (Abyssal Grab: held fast), blasts a line of the sea through you (Tidal Blast) and drags you into a whirlpool
+  // (Maelstrom); Octopuses and Puffer Fish come to it (the owner's call)
+  kraken: { name: 'Kraken', proper: true, ai: 'boss', art: 'kraken', aura: '#5ad8ff', el: 'water', boss: true, lv: 94, hp: 240000, atk: [84, 108], def: 30, vit: 66, agi: 30, dex: 175, mdef: 30, exp: [96000, 67200], adelay: 2000, fierce: true, walk: 220, writhe: true,
+    moves: [{ kind: 'throw', name: 'Tentacle Slam', mult: 1.7, r: 1.8 }, { kind: 'roots', name: 'Abyssal Grab', mult: 1.4, r: 1.6, hold: 2.5, color: '#22306a' }, { kind: 'surge', name: 'Tidal Blast', mult: 1.8 }, { kind: 'maelstrom', name: 'Maelstrom', mult: 0.5 }],
+    aggro: 6, chase: 12, reach: 2.2, w: 2.6, r: 1.0, heavy: true, summon: ['octopus', 'pufferFish'], summonText: 'The Kraken churns the water, and Octopuses and Puffer Fish come swimming to it!', respawn: 540,
+    drops: [['kraken_core', 1, 1, 0.3], ['octopus_ink', 3, 5, 1], ['potion3', 1, 2, 0.5], ['kraken_mail', 1, 1, 0.03], ['abyssal_staff', 1, 1, 0.02], ['kraken_card', 1, 1, 0.01]] },
+  // the Sunken Galleon's MVP, alone in the captain's hold (hall: it never leaves it): Davy Jones, the Forsaken Captain (the
+  // owner's sheet), Lv 110, Ghost: no Neutral blow touches him. He smashes his anchor down (Anchor Smash), sends a wave
+  // down a marked line (Tidal Wave), seizes you in a kraken's arm (Kraken's Grasp) or in chains that drain your life
+  // into his (Soul Shackles), brings a ghost ship's cannons down round you (Ghost Ship), curses you so you heal half as
+  // much (Tidal Curse), raises the Maelstrom of the Damned and a domain of drowning that slows you (Abyssal Domain);
+  // undead pirate skeletons and zombies answer his call (the owner's call)
+  davyJones: { name: 'Davy Jones', proper: true, ai: 'boss', art: 'davyJones', el: 'ghost', lv: 110, hp: 820000, atk: [70, 90], def: 36, vit: 80, agi: 50, dex: 240, mdef: 45, exp: [220000, 154000], adelay: 2000, walk: 150, aggro: 9, chase: 30, reach: 2.6, w: 3.2, r: 1.3, heavy: true, hall: true,
+    mvp: true, respawn: 2700, mvpExp: 80000, stomp: 2.4, takes: { magic: 1.2, melee: 0.85 }, takesText: 'his drowned flesh dulls blades and fists (−15%), but spells burn the curse on him (+20%); and no Neutral blow touches a Ghost: bring an element',
+    moves: [{ kind: 'leap', name: 'Anchor Smash', mult: 2.4, r: 2.4 }, { kind: 'surge', name: 'Tidal Wave', mult: 2.4 }, { kind: 'roots', name: "Kraken's Grasp", mult: 1.6, r: 1.8, hold: 3, color: '#22306a' }, { kind: 'roots', name: 'Soul Shackles', mult: 1.0, r: 1.6, hold: 3, drain: 0.5, color: '#8a8e96', cd: 18 }, { kind: 'meteors', name: 'Ghost Ship', mult: 1.8, r: 1.7, color: '#9af0e8' }, { kind: 'throw', name: 'Tidal Curse', mult: 1.8, r: 1.8, curse: 10 }, { kind: 'maelstrom', name: 'Maelstrom of the Damned', mult: 0.6 }, { kind: 'maelstrom', name: 'Abyssal Domain', mult: 0.35, pull: 0, slow: true, r: 6.5, cd: 32 }, { kind: 'frenzy' }],
+    burns: { r: 1.5, dur: 5, mult: 0.2, slow: true, color: '#9af0e8', word: 'Drowning!', text: 'drowning water' },
+    summon: ['pirateSkeleton', 'pirateSkeleton', 'zombie', 'zombie'], summonText: 'Davy Jones raises his anchor, and his drowned crew climb out of the deep!', mvpDrops: [['cursed_doubloon', 2], ['potion3', 3]],
+    wake: '"All souls belong to the sea..." Deep in the Sunken Galleon, Davy Jones waits in the captain\'s hold.',
+    drops: [['cursed_doubloon', 1, 3, 1], ['potion3', 2, 3, 0.6], ['ectoplasm', 4, 6, 1], ['hard_ore', 1, 2, 0.4], ['armor_ore', 1, 2, 0.4], ['locker_locket', 1, 1, 0.05], ['forsaken_coat', 1, 1, 0.03], ['cursed_cutlass', 1, 1, 0.02], ['locker_staff', 1, 1, 0.02], ['ghostship_bow', 1, 1, 0.01], ['shackle_fang', 1, 1, 0.01], ['davyjones_card', 1, 1, 0.01], ['forsaken_tricorn', 1, 1, 0.01]] },
   // the Storm Isles' mini-boss (the owner's call): the Headless Knight, lord of the Living Armors, his helmed head
   // under one arm and cold violet fire where it was. He charges (Spectral Charge), hurls his own head at you (Hurled
   // Head), leaps on you with a cleave (Cleaving Leap) and flies into a frenzy; the Living Armors rise to his call
@@ -484,7 +517,7 @@ export const GUARD = { hp: 0.5, atk: 0.6 };
 // adds a tenth of its chance (1% -> 1.1% -> 1.2%...), up to ten times it; it falls back to its own chance
 // when it drops. About 32 kills on average instead of 100. Kept per hero (mobs.pity, saved as mvpPity)
 export const PITY = { step: 0.1, cap: 10 };
-export const MVP_ULTRAS = ['allseeing_eye', 'nidhogg_wings', 'poseidon_crown']; // (items.js marks them ultra: test/data.test.mjs checks the two agree)
+export const MVP_ULTRAS = ['allseeing_eye', 'nidhogg_wings', 'poseidon_crown', 'forsaken_tricorn']; // (items.js marks them ultra: test/data.test.mjs checks the two agree)
 export const isChase = (item) => /_card$/.test(item) || MVP_ULTRAS.includes(item);
 export const pityChance = (base, misses = 0) => Math.min(base * PITY.cap, base * (1 + PITY.step * misses));
 const guardDefs = {};
@@ -745,7 +778,7 @@ class Mob {
     const d = this.def, still = this.mgr.stillT > 1 && p === this.mgr.hero, casting = !!p.cast;
     const ready = (d.moves || []).filter((mv) => {
       const M = MOVES[mv.kind];
-      if ((this.moveCd[mv.kind] || 0) > 0) return false;
+      if ((this.moveCd[mv.name || mv.kind] || 0) > 0) return false; // (two moves of one kind keep their own waits: by name)
       if (mv.kind === 'frenzy' || mv.kind === 'bark') return this.hp / d.hp <= M.below;
       if (mv.kind === 'mirror') return this.hp / d.hp <= M.below && !this.mgr.decoysOf(this).length;
       if (mv.kind === 'riddle' || mv.kind === 'gnaw') return this.hp / d.hp <= M.below && p === this.mgr.hero;
@@ -757,12 +790,12 @@ class Mob {
       if (['frenzy', 'bark', 'mirror', 'riddle', 'gnaw'].includes(mv.kind)) s += 2; // its own: as soon as it may
       if (['charge', 'leap', 'burrow', 'surge'].includes(mv.kind)) s += Math.min(this.kiteT, 6) * 0.5 + (casting ? 1.5 : 0) + (dist > 5 ? 0.6 : 0);
       if (['throw', 'meteors', 'roots', 'prison', 'maelstrom'].includes(mv.kind)) s += (still ? 0.8 : 0) + (dist >= 3 && dist <= 9 ? 0.5 : 0);
-      if (mv.kind === this.lastMove) s -= 0.8;
+      if ((mv.name || mv.kind) === this.lastMove) s -= 0.8;
       return s;
     };
     const mv = ready.sort((a, b) => score(b) - score(a))[0];
     if (!mv) return;
-    this.lastMove = mv.kind;
+    this.lastMove = mv.name || mv.kind;
     {
       const M = MOVES[mv.kind];
       if (mv.kind === 'frenzy') {
@@ -808,7 +841,7 @@ class Mob {
         this.atkAnim = ATTACK_ANIM * 1.6;
         this.mgr.emit('move', this, this.act);
       }
-      this.moveCd[mv.kind] = (mv.cd ?? M.cd) * (this.enraged && mv.kind !== 'frenzy' ? MVP_RAGE.cd : 1); // (a move may wait longer than its kind: mv.cd)
+      this.moveCd[mv.name || mv.kind] = (mv.cd ?? M.cd) * (this.enraged && mv.kind !== 'frenzy' ? MVP_RAGE.cd : 1); // (a move may wait longer than its kind: mv.cd)
       if (mv.kind === 'bark' || mv.kind === 'mirror' || mv.kind === 'frenzy') { this.nextMove = 0.5; return; } // (a self move: it can act again at once)
       this.nextMove = this.enraged ? (Math.random() < BRAIN.combo ? 0.35 : MVP_RAGE.gap) : fierce(d) ? MVP_GAP : 2.2;
       this.nextMove *= 0.8 + Math.random() * 0.4; // (never quite the same beat: its moves can't be counted)
@@ -1494,7 +1527,7 @@ class Mob {
     else if (moving && this.def.ai === 'hopper' && A.hop) {
       const ph = this.hop % 1;
       if (ph < 0.55) { list = A.hop; k = ph / 0.55; }
-    } else if (this.def.fly && A.walk) { list = A.walk; k = (this.t * 1.6) % 1; } // fliers flutter in place
+    } else if ((this.def.fly || this.def.writhe) && A.walk) { list = A.walk; k = (this.t * (this.def.writhe ? 0.8 : 1.6)) % 1; } // fliers flutter in place; the Kraken's arms never rest (writhe)
     else if (moving && A.walk) { list = A.walk; k = (this.walked / (STRIDE * this.def.w)) % 1; }
     return list[Math.max(0, Math.min(list.length - 1, Math.floor(k * list.length)))]; // a long wind-up holds the first frame
   }

@@ -217,6 +217,7 @@ export class Player {
   }
 
   heal(n) {
+    if (this.healCurseT > 0) n = Math.round(n / 2); // (Davy Jones's Tidal Curse: half as much healing)
     const before = this.hp;
     this.hp = Math.min(this.maxHp, this.hp + n);
     return this.hp - before;
@@ -299,6 +300,7 @@ export class Player {
     this.slowT = this.ps?.sureFoot ? 0 : this.slowT - dt; // (the King Crab Card's Sea Legs: never slowed)
     this.rootT -= dt;
     this.standCd = (this.standCd || 0) - dt;
+    this.healCurseT = (this.healCurseT || 0) - dt;
     this.endureT -= dt;
 
     if (this.state === 'down') {

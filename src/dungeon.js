@@ -38,6 +38,13 @@ export const FLOOR_LOOK = {
   tree2: { tree: true, wall: '#6a4a2e', course: '#34220f', band: '#3f6a34', glyph: '#8af0ff', paint: '#9affc0', floor: '#4e3c28', flag: '#36281a', top: '#3f6a34' },
   tree3: { tree: true, wall: '#5a3e26', course: '#2a1a0c', band: '#365a2e', glyph: '#c8a0ff', paint: '#9affc0', floor: '#443424', flag: '#2e2216', top: '#365a2e' },
   tree4: { tree: true, wall: '#4a3220', course: '#22140a', band: '#2e4a28', glyph: '#ff9a6a', paint: '#c8a0ff', floor: '#3a2c1e', flag: '#281c12', top: '#2e4a28' },
+  // the Sunken Galleon (look: 'ship'): its decks and holds, walls of rotten planks, barnacles and weed on them, a line of
+  // portholes glowing a drowned blue; floors of deck boards, puddled; masts for pillars, iron-banded; ghost lanterns.
+  // Deeper, the wood blackens and the light turns colder
+  ship1: { ship: true, wall: '#6a5236', course: '#3a2a1a', band: '#4a7a6a', glyph: '#9af0e8', paint: '#e8e2d0', floor: '#5e4a32', flag: '#3a2c1c', top: '#4a3a28' },
+  ship2: { ship: true, wall: '#5a4630', course: '#2e2216', band: '#3e6a5e', glyph: '#8ae0ff', paint: '#e8e2d0', floor: '#4e3e2c', flag: '#30241a', top: '#3e3222' },
+  ship3: { ship: true, wall: '#4a3a2a', course: '#241a12', band: '#2e5a52', glyph: '#7ad0ff', paint: '#c8d8e0', floor: '#403428', flag: '#261c14', top: '#32281e' },
+  ship4: { ship: true, wall: '#3a3026', course: '#1a140e', band: '#24484a', glyph: '#9af0e8', paint: '#b8c8e0', floor: '#342a22', flag: '#1e1610', top: '#2a221a' },
 };
 export const lookOf = (M) => FLOOR_LOOK[M.look || M.floor] || FLOOR_LOOK[1];
 
@@ -122,7 +129,20 @@ export function carveMaze(M) {
     const ways = [solid[at(cx - 2, cz)], solid[at(cx + 2, cz)], solid[at(cx, cz - 2)], solid[at(cx, cz + 2)]].filter((v) => !v).length;
     if (ways === 1) deadEnds.push([cx + 0.5, cz + 0.5]);
   }
-  return { solid, hall, deadEnds };
+  // the galleon's floors are flooded here and there (the owner's call: not all wood): pools of seawater to wade
+  // through, in a corridor or a room (never on the stairs); floods: [[x, z, r]...]
+  const floods = [];
+  if (lookOf(M).ship) {
+    const keep = [[31.5, 55.5], [31.5, 7.5], [55.5, 31.5], [7.5, 31.5]];
+    for (let tries = 0; floods.length < (H?.only ? 4 : 7) && tries < 400; tries++) {
+      const x = 6 + rng() * 52, z = 6 + rng() * 52, r = 2.4 + rng() * 2.8;
+      if (solid[at(Math.floor(x), Math.floor(z))]) continue;
+      if (keep.some(([kx, kz]) => Math.hypot(kx - x, kz - z) < r + 4) || floods.some(([fx, fz, fr]) => Math.hypot(fx - x, fz - z) < r + fr + 3)) continue;
+      floods.push([x, z, r]);
+    }
+  }
+  const flooded = floods.length ? (x, z) => floods.some(([fx, fz, r]) => Math.hypot(x - fx, z - fz) < r) : null;
+  return { solid, hall, deadEnds, floods, flooded };
 }
 
 function canvasTex(w, h, draw) {
@@ -139,6 +159,7 @@ function canvasTex(w, h, draw) {
 // (eyes, ankhs, birds, wavy water) at eye height, painted here and there
 function wallTex(L, rng) {
   if (L.tree) return barkWall(L, rng);
+  if (L.ship) return plankWall(L, rng);
   return canvasTex(128, 128, (g) => {
     g.fillStyle = L.wall; g.fillRect(0, 0, 128, 128);
     for (let i = 0; i < 220; i++) { g.fillStyle = rng() < 0.5 ? 'rgba(80,50,25,.14)' : 'rgba(255,240,210,.12)'; g.fillRect(rng() * 128, rng() * 128, 2 + rng() * 5, 2 + rng() * 3); }
@@ -198,7 +219,32 @@ function barkWall(L, rng) {
     }
   });
 }
+// the galleon's hull from inside: rotten planks, ribs, nails, barnacles and weed low down, a porthole glowing
+function plankWall(L, rng) {
+  return canvasTex(128, 128, (g) => {
+    g.fillStyle = L.wall; g.fillRect(0, 0, 128, 128);
+    for (let y = 0; y < 128; y += 16) { // the planks, their seams and grain
+      g.fillStyle = rng() < 0.5 ? 'rgba(0,0,0,.08)' : 'rgba(255,240,210,.06)'; g.fillRect(0, y, 128, 16);
+      g.fillStyle = L.course; g.fillRect(0, y, 128, 2);
+      for (let x = (y / 16) % 2 ? 20 : 60; x < 128; x += 80) { g.fillRect(x, y, 2, 16); g.fillStyle = '#8a8a8a'; g.fillRect(x + 4, y + 7, 2, 2); g.fillStyle = L.course; }
+      for (let i = 0; i < 5; i++) { g.fillStyle = 'rgba(40,25,10,.25)'; g.fillRect(rng() * 128, y + 4 + rng() * 9, 10 + rng() * 20, 1); }
+    }
+    g.fillStyle = L.course; g.fillRect(0, 0, 6, 128); g.fillRect(64, 0, 6, 128); // the ribs
+    g.fillStyle = L.band; for (let i = 0; i < 40; i++) g.fillRect(rng() * 128, 104 + rng() * 24, 3 + rng() * 4, 2 + rng() * 3); // weed
+    g.fillStyle = '#d8d4c8'; for (let i = 0; i < 26; i++) { g.beginPath(); g.arc(rng() * 128, 96 + rng() * 32, 1.5 + rng() * 1.5, 0, 7); g.fill(); } // barnacles
+    const px = 32 + Math.floor(rng() * 2) * 64; // a porthole, the drowned light through it
+    g.fillStyle = '#5a4a3a'; g.beginPath(); g.arc(px, 48, 11, 0, 7); g.fill();
+    g.fillStyle = L.glyph; g.globalAlpha = 0.8; g.beginPath(); g.arc(px, 48, 8, 0, 7); g.fill(); g.globalAlpha = 1;
+    g.fillStyle = '#ffffff'; g.globalAlpha = 0.5; g.beginPath(); g.arc(px - 3, 45, 2.5, 0, 7); g.fill(); g.globalAlpha = 1;
+    for (let i = 0; i < 4; i++) { g.strokeStyle = 'rgba(20,12,6,.6)'; g.lineWidth = 1; g.beginPath(); let x = rng() * 128, y = rng() * 128; g.moveTo(x, y); for (let k = 0; k < 3; k++) { x += (rng() - 0.5) * 12; y += 6 + rng() * 8; g.lineTo(x, y); } g.stroke(); } // splits in the wood
+  });
+}
 function topTex(L, rng) {
+  if (L.ship) return canvasTex(64, 64, (g) => { // the deck above: boards
+    g.fillStyle = L.top; g.fillRect(0, 0, 64, 64);
+    g.fillStyle = L.course; for (let x = 0; x < 64; x += 8) g.fillRect(x, 0, 1.5, 64);
+    for (let i = 0; i < 40; i++) { g.fillStyle = 'rgba(0,0,0,.15)'; g.fillRect(rng() * 64, rng() * 64, 1, 5); }
+  });
   if (L.tree) return canvasTex(64, 64, (g) => { // moss
     g.fillStyle = L.top; g.fillRect(0, 0, 64, 64);
     for (let i = 0; i < 120; i++) { g.fillStyle = rng() < 0.5 ? 'rgba(20,40,10,.25)' : 'rgba(180,230,120,.15)'; g.fillRect(rng() * 64, rng() * 64, 2 + rng() * 3, 2); }
@@ -211,6 +257,17 @@ function topTex(L, rng) {
 }
 // the floor: big worn flagstones, two to a tile
 export function floorTex(L, rng) {
+  if (L.ship) return canvasTex(128, 128, (g) => { // deck boards, nailed, puddles of seawater, weed washed in
+    g.fillStyle = L.floor; g.fillRect(0, 0, 128, 128);
+    for (let x = 0; x < 128; x += 16) {
+      g.fillStyle = rng() < 0.5 ? 'rgba(0,0,0,.07)' : 'rgba(255,240,210,.05)'; g.fillRect(x, 0, 16, 128);
+      g.fillStyle = L.flag; g.fillRect(x, 0, 2, 128);
+      const y = Math.floor(rng() * 128); g.fillRect(x, y, 16, 2); g.fillStyle = '#7a7a7a'; g.fillRect(x + 4, y + 4, 1.5, 1.5); g.fillRect(x + 11, y + 4, 1.5, 1.5);
+    }
+    for (let i = 0; i < 120; i++) { g.fillStyle = 'rgba(30,20,10,.18)'; g.fillRect(rng() * 128, rng() * 128, 1, 6 + rng() * 8); }
+    for (let i = 0; i < 3; i++) { g.fillStyle = 'rgba(80,150,160,.22)'; g.beginPath(); g.ellipse(rng() * 128, rng() * 128, 10 + rng() * 14, 5 + rng() * 6, rng() * 3, 0, 7); g.fill(); } // puddles
+    for (let i = 0; i < 6; i++) { g.fillStyle = 'rgba(60,110,80,.35)'; g.fillRect(rng() * 128, rng() * 128, 6, 2); } // weed
+  });
   if (L.tree) return canvasTex(128, 128, (g) => { // dark earth, leaf litter, roots running through it
     g.fillStyle = L.floor; g.fillRect(0, 0, 128, 128);
     for (let i = 0; i < 260; i++) { g.fillStyle = rng() < 0.5 ? 'rgba(20,12,4,.2)' : 'rgba(200,170,110,.08)'; g.fillRect(rng() * 128, rng() * 128, 2 + rng() * 3, 2); }
@@ -318,7 +375,7 @@ export function buildMaze(ctx, M, maze) {
   // the hall's pillars: round, banded in gold, a lotus capital
   const pillars = [];
   const pmat = cutaway(new THREE.MeshLambertMaterial({ map: wt }));
-  const gold = cutaway(new THREE.MeshLambertMaterial(L.tree ? { color: L.band } : { color: '#e2b440', emissive: '#2a1a04' })); // (in the World Tree: moss, not gold)
+  const gold = cutaway(new THREE.MeshLambertMaterial(L.tree ? { color: L.band } : L.ship ? { color: '#4a4a52' } : { color: '#e2b440', emissive: '#2a1a04' })); // (in the World Tree: moss, not gold; in the galleon: iron bands round a mast)
   const pgeo = new THREE.CylinderGeometry(0.46, 0.52, PILLAR_H, 12), cap = new THREE.CylinderGeometry(0.72, 0.44, 0.45, 12), ring = new THREE.CylinderGeometry(0.54, 0.54, 0.22, 12);
   for (let z = 0; z < N; z++) for (let x = 0; x < N; x++) {
     if (solid[at(x, z)] !== 2) continue;
@@ -340,7 +397,7 @@ export function buildMaze(ctx, M, maze) {
   }
   for (const [x, z] of nearWall) if (ctx.place(L.tree ? 'mushroom_big' : 'torch', x, z, true)) torches.push({ x, z }); // (no fire inside the World Tree: glowing mushrooms)
   maze.deadEnds.forEach(([x, z], k) => {
-    const kind = L.tree ? (k % 4 === 0 ? 'mushroom_big' : k % 3 === 0 ? 'bones' : k % 2 ? 'mushrooms' : 'stump') : k % 5 === 0 ? 'sarcophagus' : k % 3 === 0 ? 'bones' : 'urn';
+    const kind = L.ship ? (k % 4 === 0 ? 'chest' : k % 3 === 0 ? 'bones' : k % 2 ? 'barrel' : 'crate') : L.tree ? (k % 4 === 0 ? 'mushroom_big' : k % 3 === 0 ? 'bones' : k % 2 ? 'mushrooms' : 'stump') : k % 5 === 0 ? 'sarcophagus' : k % 3 === 0 ? 'bones' : 'urn';
     ctx.place(kind, x + (rng() - 0.5) * 0.8, z + (rng() - 0.5) * 0.8, true);
   });
   if (maze.hall) { // the hall: braziers down both sides, obelisks at the back, a runner from the gate, the winged sun
@@ -349,7 +406,11 @@ export function buildMaze(ctx, M, maze) {
       const m = new THREE.Mesh(new THREE.PlaneGeometry(w, d).rotateX(-Math.PI / 2), new THREE.MeshLambertMaterial({ map: tex, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2 }));
       m.position.set(x, 0.01, z); m.renderOrder = 0.5; group.add(m);
     };
-    const runner = L.tree ? canvasTex(32, 128, (g) => { // a path of moss, glowing runes down it
+    const runner = L.ship ? canvasTex(32, 128, (g) => { // a rotten crimson carpet down the captain's hold, gold-edged
+      g.fillStyle = '#5a1a22'; g.fillRect(0, 0, 32, 128);
+      g.fillStyle = '#a8843a'; g.fillRect(0, 0, 3, 128); g.fillRect(29, 0, 3, 128);
+      g.fillStyle = 'rgba(0,0,0,.3)'; for (let i = 0; i < 50; i++) g.fillRect(rng() * 32, rng() * 128, 4, 3);
+    }) : L.tree ? canvasTex(32, 128, (g) => { // a path of moss, glowing runes down it
       g.fillStyle = '#2e4a28'; g.fillRect(0, 0, 32, 128);
       g.fillStyle = '#3f6a34'; for (let i = 0; i < 60; i++) g.fillRect(rng() * 32, rng() * 128, 3, 2);
       g.fillStyle = L.glyph; for (let y = 8; y < 128; y += 32) { g.fillRect(15, y, 2, 12); g.fillRect(11, y + 3, 10, 2); }
@@ -362,7 +423,14 @@ export function buildMaze(ctx, M, maze) {
     const sunZ = (H.z0 + H.z1) / 2 - 2, from = sunZ + 5.5; // (the runner from the gate to the winged sun's foot)
     runner.repeat.set(1, Math.round((H.z1 - from) / 2.5));
     decal(runner, H.gate.x, (from + H.z1) / 2, 3, H.z1 - from);
-    const sunTex = L.tree ? canvasTex(256, 256, (g) => { // the World Tree in a ring of runes: its crown above, its roots below
+    const sunTex = L.ship ? canvasTex(256, 256, (g) => { // a compass rose inlaid in the deck, and the drowned light round it
+      g.translate(128, 128);
+      g.strokeStyle = L.glyph; g.lineWidth = 4; g.beginPath(); g.arc(0, 0, 116, 0, 7); g.stroke();
+      g.lineWidth = 2; g.beginPath(); g.arc(0, 0, 100, 0, 7); g.stroke();
+      for (let k = 0; k < 16; k++) { const a = k / 16 * Math.PI * 2, r = k % 4 === 0 ? 112 : k % 2 ? 60 : 84; g.fillStyle = k % 2 ? '#a8843a' : '#e8e2d0'; g.beginPath(); g.moveTo(Math.cos(a - 0.12) * 14, Math.sin(a - 0.12) * 14); g.lineTo(Math.cos(a) * r, Math.sin(a) * r); g.lineTo(Math.cos(a + 0.12) * 14, Math.sin(a + 0.12) * 14); g.fill(); }
+      g.fillStyle = L.glyph; g.beginPath(); g.arc(0, 0, 10, 0, 7); g.fill();
+      g.globalAlpha = 0.25; g.fillStyle = '#000'; for (let i = 0; i < 300; i++) g.fillRect(-128 + Math.random() * 256, -128 + Math.random() * 256, 2, 2);
+    }) : L.tree ? canvasTex(256, 256, (g) => { // the World Tree in a ring of runes: its crown above, its roots below
       g.translate(128, 128);
       g.strokeStyle = L.glyph; g.lineWidth = 5; g.beginPath(); g.arc(0, 0, 118, 0, 7); g.stroke();
       g.lineWidth = 2; g.beginPath(); g.arc(0, 0, 104, 0, 7); g.stroke();
@@ -390,7 +458,7 @@ export function buildMaze(ctx, M, maze) {
     sunTex.wrapS = sunTex.wrapT = THREE.ClampToEdgeWrapping;
     decal(sunTex, H.gate.x, sunZ, 14, 14);
     for (let z = H.z0 + 5.5; z < H.z1 - 2; z += 5) for (const x of [H.x0 + 1.5, H.x1 - 1.5]) ctx.place(L.tree ? 'mushroom_big' : 'torch', x, z, true);
-    for (const x of [H.x0 + 8, H.x1 - 8]) ctx.place(L.tree ? 'mushroom_big' : 'obelisk', x, H.z0 + 1.6, true);
+    for (const x of [H.x0 + 8, H.x1 - 8]) ctx.place(L.tree ? 'mushroom_big' : L.ship ? 'chest' : 'obelisk', x, H.z0 + 1.6, true);
   }
   return {
     pillars,
@@ -403,10 +471,10 @@ export function buildMaze(ctx, M, maze) {
       for (let z = 0; z < N; z++) for (let x = 0; x < N; x++) {
         const v = solid[at(x, z)];
         if (!v) continue;
-        mg.fillStyle = v === 2 ? (L.tree ? L.band : '#e2b440') : L.course;
+        mg.fillStyle = v === 2 ? (L.tree || L.ship ? L.band : '#e2b440') : L.course;
         mg.fillRect(x * 2, z * 2, 2, 2);
       }
-      if (maze.hall) { const H = maze.hall; mg.strokeStyle = L.tree ? L.glyph : '#e2b440'; mg.lineWidth = 1; mg.strokeRect(H.x0 * 2 + 1, H.z0 * 2 + 1, (H.x1 - H.x0) * 2 - 2, (H.z1 - H.z0) * 2 - 2); }
+      if (maze.hall) { const H = maze.hall; mg.strokeStyle = L.tree || L.ship ? L.glyph : '#e2b440'; mg.lineWidth = 1; mg.strokeRect(H.x0 * 2 + 1, H.z0 * 2 + 1, (H.x1 - H.x0) * 2 - 2, (H.z1 - H.z0) * 2 - 2); }
     },
   };
 }

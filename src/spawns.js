@@ -39,7 +39,12 @@ export const SPAWNS = {
   ygg3: [['greatStag', 10], ['dryad', 9], ['rotBeetle', 8], ['ratatoskr', 1]], // 61-68, Ratatoskr the mini-boss (74)
   ygg4: [['rootWarden', 8], ['thornDrake', 7], ['nidhogg', 1]],             // 69-75: the great hall, its guards and Nidhogg (99)
   // Hafnvik and its coast (the fifth city): mostly Neutral, a few elemental (the owner's call)
-  port: [], lokigate: [],
+  port: [], lokigate: [], wreck: [],
+  // the Sunken Galleon (the third dungeon, Base 85-99): filled in below with its monsters
+  galleon1: [['conch', 12], ['pufferFish', 11], ['zombie', 9], ['pufferFish', 2, true], ['zombie', 2, true]],                  // 85-88
+  galleon2: [['pirateSkeleton', 11], ['blowgunPirate', 10], ['octopus', 9], ['pirateSkeleton', 2, true], ['octopus', 2, true]], // 89-92
+  galleon3: [['ghost', 10], ['skeletonAssassin', 10], ['octopus', 4], ['kraken', 1], ['ghost', 2, true]],                        // 93-96, the Kraken (94)
+  galleon4: [['hydra', 8], ['davyJones', 1]],                                                                                  // the captain's hold: Hydras and Davy Jones (110)
   tidecliff: [['quillPorcupine', 12], ['tuskBoar', 13], ['cliffBandit', 4], ['quillPorcupine', 2, true], ['cliffBandit', 2, true]],     // Base 65-70
   coral: [['bladeMantis', 10], ['chestMimic', 8], ['merrow', 7], ['glassJelly', 6], ['glassJelly', 3, true], ['merrow', 2, true]],      // Base 70-76
   storm: [['livingArmor', 11], ['mossTroll', 10], ['galeMoth', 6], ['poseidon', 1], ['headlessKnight', 1], ['galeMoth', 3, true], ['livingArmor', 2, true]],                 // Base 76-82 (by ship)

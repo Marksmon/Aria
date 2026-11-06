@@ -13,8 +13,10 @@ Barrage (`meteors`, riptide pools), Leviathan Surge (`MOVES.surge`, a marked lin
 (`MOVES.maelstrom`, a pull to a striking heart), shown by `bossmoves.js`; matchup beasts +30% / spells −25%; gear for
 every build, the Poseidon Card (Tidal Wave, `perk.tide`) and the ultra rare Crown of the Tides (Head,
 `build-tools/draw-tidecrown.py`). The region's mini-boss is the **Headless Knight** (the owner's call: Lv 80, Shadow, on the Storm Isles, lord of the
-Living Armors, his head under his arm; Spectral Charge, Hurled Head, Cleaving Leap; card: Last Stand). **Next:** the
-story chapter before the ending, the city's quests and series. What the owner has decided:
+Living Armors, his head under his arm; Spectral Charge, Hurled Head, Cleaving Leap; card: Last Stand). The **Sunken Galleon** is built (the
+owner's calls and pictures): a broken galleon alone in the sea (Asgeir, Base 85), three flooded floors and the
+captain's hold (Base 85-99), the Kraken (mini-boss) and Davy Jones (MVP, Lv 110, Ghost, tier 99), and the Ghost
+element. **Next:** the story chapter before the ending, the city's quests and series. What the owner has decided:
 
 ## The city
 
@@ -51,4 +53,4 @@ The fifth city's chapter goes just before the ending (`goldring` stays last); th
 
 ## Set aside
 
-The Sunken Ship dungeon (the owner's call: not for now).
+The Sunken Galleon dungeon: built (above), the owner's call, November 2026.

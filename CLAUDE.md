@@ -15,13 +15,22 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   everyone wear Wind). The **endless dungeon** (the Deep Halls, `src/delve.js`, built and tested, no entrance yet) is an
   unlockable destination of the Ship Captain from **Base 90**; its gatekeeper is **Loki the Mischiefbringer** (a name
   the owner chose, beyond the plain-names rule), who stands at its door and has `delve: true` in NPCS. The Sunken Ship
-  dungeon idea is set aside for now. **Built (November 2026):** the city is **Hafnvik** (`port`; the owner's picture:
+  dungeon is built as the Sunken Galleon (below). **Built (November 2026):** the city is **Hafnvik** (`port`; the owner's picture:
   white like Santorini, blue cupolas, gold, a temple, a goddess statue, an amphitheatre, an armillary fountain, a
   harbour with ships and two blue-crystal lighthouses; `city.js` LAYOUTS.port, `PORT`), reached overland from the desert
   coast (the owner's call): Scorpion Sands E → Tide Cliffs (65–70) → Hafnvik; Beacon Moor (82–88) N, Coral Shallows
   (70–76, a lagoon waded, `lake.shallow`) S; Captain Asgeir's ship (`ship: [{ to, fare, lv }]`) to the Storm Isles
   (76–82) and Loki's Gate (Base 90) (`voyage` maps with a `dock`; `isle`; a map's sea side is `shore`; a walkable pier
-  is `piers`). The coast's monsters are painted in code in `src/coast.js`, **every one a kind new to Aria** (the owner's
+  is `piers`). The **Sunken Galleon** (the third dungeon, built November 2026, the owner's calls and pictures): Asgeir
+  sails to it from Base 85 (`wreck`): no land, a broken galleon alone in the sea, wood brown, its deck the ground
+  (`galleon` on the map: `monuments.js` `buildGalleon`/`galleonDeck`), a hatch down to `galleon1`-`galleon4` (Base
+  85-99, `dungeon.js` looks `ship1`-`ship4`: plank walls, deck floors, masts, and flooded pools waded through,
+  `floods`). Its monsters are painted in `src/galleon.js`: Conch, Puffer Fish, Zombie; Pirate Skeleton, Blowgun Pirate
+  (a blowgun: poison darts), Octopus; Ghost, Skeleton Assassin and the **Kraken** (the mini-boss, Lv 94, the owner's
+  sheet; its arms writhe every way, `writhe`; summons Octopuses and Puffer Fish); in the hold Hydras and **Davy Jones**
+  (the MVP, Lv 110, Ghost, tier Base 99, the owner's sheet; no phases, the owner's call; summons Pirate Skeletons and
+  Zombies; moves by name, `moveCd` keyed by `mv.name`). **Ghost** is an element (the owner's call, `rules.js`): a
+  Neutral blow deals nothing, every other element 150%, Shadow 175% (Light too, when Aria has it). The coast's monsters are painted in code in `src/coast.js`, **every one a kind new to Aria** (the owner's
   call: no crab, golem, wolf or other kind already used), and the Neutral ones land creatures, people and things with
   no sea about them in look or name (the owner's call: the coast is not a water region): Quill Porcupine, Tusk Boar,
   Cliff Bandit; Blade Mantis, Chest Mimic, Glass Jelly (Neutral), Merrow (Water); Gale Moth (Wind), Living Armor, Moss
@@ -155,9 +164,9 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   `build-tools/mvp-sim.mjs`): a second job of its tier's Base Level in the best gear short of MVP gear (a Lv 4 weapon
   +7, armor +4, monster and mini-boss cards) beats it at a middle matchup in about 3–6 minutes on 100 White Potions:
   Base 75 the Kobold and Goblin Kings, 85 the Fire Giant, Ancient Treant and Sand Wyrm, 95 the Eternal Sphinx,
-  Nidhogg and Poseidon (the hardest, for now). Mini-bosses are fierce like an MVP and made for a Lv 75 second job in shop gear;
+  Nidhogg and Poseidon, 99 Davy Jones (Lv 110, the hardest, the owner's call). Mini-bosses are fierce like an MVP and made for a Lv 75 second job in shop gear;
   each raid's Hell boss for its Hell level in the same good gear (`FIERCE` `atkScale`/`hpScale`). `npm test` runs
-  `mvp-sim --check`: retune with it (each boss's ATK and HP) when a boss or a job changes. Their levels say so (55–66: Giant Sprout and Elder Willow 55, King Crab 58, Giant Mushroom 60, Giant Beetle 62, Alpha Wolf 64, Great Bear 66; the desert's Cactus Lord 60 and Rainbow Runner 64; the Sphinx's Halls' Ammit 74; Yggdrasil's Ratatoskr 74, small for a boss: the owner's call; the Storm Isles' Headless Knight 80, lord of the Living Armors: the owner's call), and they come only for second-job heroes (the owner's call, `picksFight` in `mobs.js`): a Trainee or first job is left be unless it strikes or taunts one. So no main story
+  `mvp-sim --check`: retune with it (each boss's ATK and HP) when a boss or a job changes. Their levels say so (55–66: Giant Sprout and Elder Willow 55, King Crab 58, Giant Mushroom 60, Giant Beetle 62, Alpha Wolf 64, Great Bear 66; the desert's Cactus Lord 60 and Rainbow Runner 64; the Sphinx's Halls' Ammit 74; Yggdrasil's Ratatoskr 74, small for a boss: the owner's call; the Storm Isles' Headless Knight 80, lord of the Living Armors: the owner's call; the Sunken Galleon's Kraken 94), and they come only for second-job heroes (the owner's call, `picksFight` in `mobs.js`): a Trainee or first job is left be unless it strikes or taunts one. So no main story
   step or job trial needs a boss (they hunt the boss's kin); the one quest that does is Sigrid's The
   Waking Wood (Lv 70: the Great Bear and the Alpha Wolf, two mini-bosses), and it can be quit. Boss and MVP cards drop at 1%
   (other cards 0.1%); an MVP's card and ultra rare rise a tenth of their chance with every kill they miss, up
@@ -166,11 +175,11 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   lean to casters and archers) wait for new monsters in a map extension. The MVP and raid boss cards
   each have an effect of their own, after the boss's moves (`card.perk`: Fire Giant burn, Kobold
   King guard, Goblin King lucky dodge, Ancient Treant reflect, Sand Wyrm devour, Eternal Sphinx cheaper skills, `sage`; Nidhogg Root Rot, a monster struck takes more, `rot`; Poseidon Tidal Wave, half a blow to the monsters round
-  the one struck, `tide`; BleepBloop lifesteal, Kobold Warlord
+  the one struck, `tide`; Davy Jones Soul Shackles, chains a monster in place, `shackle`; BleepBloop lifesteal, Kobold Warlord
   stun, Goblin Warlord melee and double blows, Pharaoh soul tax). Mini-boss cards have smaller ones of their own,
   never a weaker copy of an MVP's or raid boss's (the owner's call: Giant Sprout HP regen, King Crab
   never slowed, Giant Mushroom SP regen, Giant Beetle DEF pierce, Elder Willow faster casting,
-  Alpha Wolf crits, Great Bear harder blows at low HP, Cactus Lord venom, Rainbow Runner quick after a kill, Ammit harder on a monster under 30% HP, `execute`; Ratatoskr harder from 4 paces off, `farshot`; Headless Knight Last Stand, a fainting blow leaves 1 HP once every 2 minutes, `laststand`). Every card keeps its stats
+  Alpha Wolf crits, Great Bear harder blows at low HP, Cactus Lord venom, Rainbow Runner quick after a kill, Ammit harder on a monster under 30% HP, `execute`; Ratatoskr harder from 4 paces off, `farshot`; Headless Knight Last Stand, a fainting blow leaves 1 HP once every 2 minutes, `laststand`; Kraken Ink Cloud, blinds, `ink`). Every card keeps its stats
   (the owner's call; MVP and boss cards too); an effect comes on top.
   **Boss AI** (`BRAIN` in `mobs.js`, every mini-boss, raid boss and MVP): it aims where a running
   hero is going (not a step aside), picks moves for the moment (gap-closers on kiters and casters,
@@ -183,7 +192,7 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   A* over the map (`src/path.js`), roaming or hunting.
   Each MVP has a matchup (`takes` in `mobs.js`, applied in `rules.js`): easiest for one job family
   and hardest for another (Fire Giant: bows / casters; Kobold King: casters / bows; Goblin King:
-  blades / bows and casters; Ancient Treant: beasts / blades; Sand Wyrm: blades and daggers / beasts; Eternal Sphinx: casters / beasts; Nidhogg: bows / blades and daggers; Poseidon: beasts / casters).
+  blades / bows and casters; Ancient Treant: beasts / blades; Sand Wyrm: blades and daggers / beasts; Eternal Sphinx: casters / beasts; Nidhogg: bows / blades and daggers; Poseidon: beasts / casters; Davy Jones: casters / beasts).
 - **Card paintings** (the owner's call): a card can have an anime painting (2:3, the name and a BOSS badge painted in, after the Ragnarok card art), `src/art/cards/<card id>.jpg` (640 wide). A card with one gets a View art button in the Items window and an Art button where it sits in a piece; it opens full screen, the picture alone with no text under it, a tap closes it (`src/cardart.js`, loaded only when opened). The five first MVP cards have theirs; the Eternal Sphinx's, the mini-boss and raid cards come next.
 - **The desert and the Sphinx:** Rytingborg (`sand`), the Red Sands (a Trainee's field), the Cactus
   Dunes, Scorpion Sands (the Pyramid: the raid guide) and the Great Desert (the Sand Wyrm). The
@@ -271,7 +280,7 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   hard and tricky as a field MVP: `FIERCE` in `mobs.js`), for a hero in the best gear. Clear rewards
   (perz, materials) x1/x3/x6/x9. Raid EXP is held and paid at the end: x1.5 on a clear,
   nothing on a failure (the Tutorial too).
-- **The Monster Album** (the 📖 button, `src/album.js`): every monster, kills and cards found, and nine sets
+- **The Monster Album** (the 📖 button, `src/album.js`): every monster, kills and cards found, and ten sets
   (the owner's call): a region's monsters' cards (bosses aside; the raids' set is their bosses' cards), each
   finished set a small bonus for good (`SETS`, added in `applyStats`). A new region gets a set.
 - **Goals** (the 🏆 button, `src/goals.js`, the owner's call): three weekly hunts fit for the hero's level and job

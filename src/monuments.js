@@ -255,3 +255,130 @@ export function buildSphinx({ group, heightAt, addBox }, at) {
     },
   };
 }
+
+// ---------- the Sunken Galleon (the owner's picture: no land, a broken galleon alone in the middle of the sea) ----------
+// at: { x, z, len, beam }: its deck is the ground you walk on, plank by plank, the bow to the west and the stern to the
+// east, where the captain's quarters rise. Holes are stove through the deck (the sea shows through, nobody walks them),
+// two masts are snapped (one lies across the deck), the third stands with rags of sail; a compass rose inlaid mid-deck
+// glows a drowned blue, ghost lanterns burn along the rails, and the Kraken's arms rise out of the sea round it.
+// The hatch down into it is a portal (MAPS.wreck). deck(x, z): is this spot the deck (world.js walks it)
+const GAL_HOLES = [[-9, 3.2, 1.6], [6, -3.6, 1.8], [-16, -1.6, 1.2]]; // [along, across, r] from the middle
+export function galleonDeck(at) {
+  const { x: X, z: Z, len, beam } = at;
+  const half = (u) => (u < -1 || u > 1 ? -1 : u > 0 ? Math.sqrt(1 - u ** 6) : Math.sqrt(1 - u * u)) * beam / 2; // (a blunt stern east, a pointed bow west)
+  return (x, z) => {
+    const u = (x - X) / (len / 2);
+    if (Math.abs(z - Z) > half(u) - 0.6) return false;
+    return !GAL_HOLES.some(([a, c, r]) => Math.hypot(x - X - a, z - Z - c) < r);
+  };
+}
+export function buildGalleon({ group, heightAt, addBox }, at) {
+  const rng = mulberry32(919);
+  const { x: X, z: Z, len, beam } = at, D = 0.06; // (the deck's height)
+  const onDeck = galleonDeck(at);
+  const F = fader();
+  const planks = (base, n) => canvasTex(64, 64, (g) => {
+    g.fillStyle = base; g.fillRect(0, 0, 64, 64);
+    for (let y = 0; y < 64; y += 8) { g.fillStyle = rng() < 0.5 ? 'rgba(0,0,0,.1)' : 'rgba(255,230,190,.07)'; g.fillRect(0, y, 64, 8); g.fillStyle = 'rgba(30,18,8,.6)'; g.fillRect(0, y, 64, 1); g.fillRect(Math.floor(rng() * 56), y, 1, 8); }
+    for (let i = 0; i < n; i++) { g.fillStyle = 'rgba(30,18,8,.25)'; g.fillRect(rng() * 64, rng() * 64, 6 + rng() * 10, 1); }
+    g.fillStyle = 'rgba(90,150,150,.18)'; for (let i = 0; i < 3; i++) { g.beginPath(); g.ellipse(rng() * 64, rng() * 64, 5, 2.5, 0, 0, 7); g.fill(); } // seawater on it
+  });
+  const deckTex = planks('#7a5432', 30); deckTex.repeat.set(1, 1);
+  const deckMat = lam({ map: deckTex }), hullMat = lam({ map: planks('#5a3a22', 20) }), dark = lam({ color: '#3a2616' }), trim = lam({ color: '#a8843a' });
+  // the deck: a tile of planks for every half pace of it (none over the holes)
+  const P = [], N = [], UV = [], I = [];
+  for (let z = Z - beam / 2; z < Z + beam / 2; z += 0.5) for (let x = X - len / 2; x < X + len / 2; x += 0.5) {
+    if (!onDeck(x + 0.25, z + 0.25)) continue;
+    const o = P.length / 3;
+    P.push(x, D, z, x + 0.5, D, z, x + 0.5, D, z + 0.5, x, D, z + 0.5);
+    for (let k = 0; k < 4; k++) N.push(0, 1, 0);
+    UV.push(x / 4, z / 4, (x + 0.5) / 4, z / 4, (x + 0.5) / 4, (z + 0.5) / 4, x / 4, (z + 0.5) / 4);
+    I.push(o, o + 2, o + 1, o, o + 3, o + 2);
+  }
+  const dg = new THREE.BufferGeometry();
+  dg.setAttribute('position', new THREE.Float32BufferAttribute(P, 3)); dg.setAttribute('normal', new THREE.Float32BufferAttribute(N, 3)); dg.setAttribute('uv', new THREE.Float32BufferAttribute(UV, 2)); dg.setIndex(I);
+  const deck = new THREE.Mesh(dg, deckMat);
+  group.add(deck);
+  // the hull's sides, from the rail down into the sea, and the rail along them
+  const outline = [];
+  for (let i = 0; i <= 40; i++) { const u = -1 + 2 * i / 40, hw = (u > 0 ? Math.sqrt(Math.max(0, 1 - u ** 6)) : Math.sqrt(Math.max(0, 1 - u * u))) * beam / 2; outline.push([X + u * len / 2, Z - hw]); }
+  for (let i = 40; i >= 0; i--) { const u = -1 + 2 * i / 40, hw = (u > 0 ? Math.sqrt(Math.max(0, 1 - u ** 6)) : Math.sqrt(Math.max(0, 1 - u * u))) * beam / 2; outline.push([X + u * len / 2, Z + hw]); }
+  const shape = new THREE.Shape(outline.map(([x, z]) => new THREE.Vector2(x, z)));
+  const hullGeo = new THREE.ExtrudeGeometry(shape, { depth: 2.4, bevelEnabled: false }).rotateX(Math.PI / 2);
+  const hull = new THREE.Mesh(hullGeo, [new THREE.MeshBasicMaterial({ visible: false }), hullMat]);
+  hull.position.y = D + 0.62; // (its top edge a bulwark above the deck)
+  group.add(hull);
+  const railGeo = new THREE.BoxGeometry(1, 0.12, 0.16);
+  for (let i = 0; i < outline.length - 1; i++) {
+    const [ax, az] = outline[i], [bx, bz] = outline[i + 1], L = Math.hypot(bx - ax, bz - az);
+    if (L < 0.05) continue;
+    const r = new THREE.Mesh(railGeo, trim); r.scale.x = L; r.position.set((ax + bx) / 2, D + 0.68, (az + bz) / 2); r.rotation.y = -Math.atan2(bz - az, bx - ax); group.add(r);
+  }
+  // the hatches stove in: the sea seen through each hole, ragged boards round it
+  for (const [a, c, r] of GAL_HOLES) for (let k = 0; k < 7; k++) {
+    const t = k / 7 * Math.PI * 2, b = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.08, 0.22), dark);
+    b.position.set(X + a + Math.cos(t) * (r + 0.2), D + 0.03, Z + c + Math.sin(t) * (r + 0.2)); b.rotation.y = -t + 1.2; group.add(b);
+  }
+  // the compass rose mid-deck, glowing a drowned blue
+  const rose = canvasTex(256, 256, (g) => {
+    g.translate(128, 128);
+    g.strokeStyle = '#d8b25a'; g.lineWidth = 6; g.beginPath(); g.arc(0, 0, 118, 0, 7); g.stroke();
+    g.strokeStyle = '#5ad8ff'; g.lineWidth = 3; g.beginPath(); g.arc(0, 0, 104, 0, 7); g.stroke(); g.beginPath(); g.arc(0, 0, 70, 0, 7); g.stroke();
+    for (let k = 0; k < 16; k++) { const a = k / 16 * Math.PI * 2, r = k % 4 === 0 ? 112 : k % 2 ? 56 : 86; g.fillStyle = k % 2 ? '#d8b25a' : '#e8f4ff'; g.beginPath(); g.moveTo(Math.cos(a - 0.13) * 14, Math.sin(a - 0.13) * 14); g.lineTo(Math.cos(a) * r, Math.sin(a) * r); g.lineTo(Math.cos(a + 0.13) * 14, Math.sin(a + 0.13) * 14); g.fill(); }
+    g.fillStyle = '#9af0ff'; g.beginPath(); g.arc(0, 0, 12, 0, 7); g.fill();
+  });
+  rose.wrapS = rose.wrapT = THREE.ClampToEdgeWrapping;
+  const roseMesh = new THREE.Mesh(new THREE.PlaneGeometry(9, 9).rotateX(-Math.PI / 2), new THREE.MeshLambertMaterial({ map: rose, transparent: true, depthWrite: false, emissive: '#1a4a5a', polygonOffset: true, polygonOffsetFactor: -2 }));
+  roseMesh.position.set(X - 1, D + 0.01, Z); roseMesh.renderOrder = 0.5; group.add(roseMesh);
+  // the masts: the foremast standing with rags of sail, the mainmast snapped and lying across the deck, the mizzen a stump
+  const sailTex = canvasTex(64, 64, (g) => { g.fillStyle = '#4a4a56'; g.beginPath(); g.moveTo(0, 0); g.lineTo(64, 0); g.lineTo(56, 26); g.lineTo(64, 64); g.lineTo(44, 50); g.lineTo(30, 64); g.lineTo(14, 44); g.lineTo(0, 62); g.closePath(); g.fill(); g.fillStyle = 'rgba(90,200,230,.25)'; for (let i = 0; i < 10; i++) g.fillRect(rng() * 60, rng() * 60, 5, 3); });
+  const sail = lam({ map: sailTex, transparent: true, side: THREE.DoubleSide, alphaTest: 0.4 });
+  const mast = (x, z, h, lean = 0) => {
+    const m = new THREE.Group();
+    const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.28, h, 8), dark); pole.position.y = h / 2; m.add(pole);
+    m.position.set(x, D, z); m.rotation.z = lean; group.add(m);
+    addBox(x - 0.4, z - 0.4, x + 0.4, z + 0.4);
+    return m;
+  };
+  const fore = mast(X - len * 0.3, Z, 11, 0.08);
+  const yard = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 6, 6), dark); yard.rotation.x = Math.PI / 2; yard.position.y = 8.5; fore.add(yard);
+  const rag = new THREE.Mesh(new THREE.PlaneGeometry(5.6, 4.4), sail); rag.rotation.y = Math.PI / 2; rag.position.y = 6.1; fore.add(rag);
+  mast(X + 2, Z - 1, 2.2); // the mainmast's stump
+  const fallen = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.26, 13, 8), dark); // and the mainmast, lying across the deck and out over the rail
+  fallen.rotation.set(0, 0.7, Math.PI / 2 - 0.05); fallen.position.set(X + 4.5, D + 0.3, Z + 3.4); group.add(fallen);
+  for (let k = -2; k <= 1; k++) addBox(X + 4.5 + k * 1.3 * Math.cos(0.7) - 0.35, Z + 3.4 - k * 1.3 * Math.sin(0.7) - 0.35, X + 4.5 + k * 1.3 * Math.cos(0.7) + 0.35, Z + 3.4 - k * 1.3 * Math.sin(0.7) + 0.35);
+  mast(X + len * 0.27, Z, 3.4, -0.1); // the mizzen
+  // the captain's quarters at the stern: a raised castle, gold-trimmed, lit windows, a door (solid; the hold is below)
+  const cx0 = X + len / 2 - 8.5, cx1 = X + len / 2 - 0.4, cw = beam / 2 - 1.2;
+  const castle = new THREE.Mesh(new THREE.BoxGeometry(cx1 - cx0, 2.6, cw * 2), hullMat); castle.position.set((cx0 + cx1) / 2, D + 1.3, Z); group.add(castle);
+  const roof = new THREE.Mesh(new THREE.BoxGeometry(cx1 - cx0 + 0.4, 0.2, cw * 2 + 0.4), trim); roof.position.set((cx0 + cx1) / 2, D + 2.7, Z); group.add(roof);
+  const win = lam({ color: '#9af0e8', emissive: '#3aa8a8' });
+  for (const wz of [-cw + 1.2, -1.4, 1.4, cw - 1.2]) { const w = new THREE.Mesh(new THREE.PlaneGeometry(0.9, 0.7), win); w.position.set(cx0 - 0.01, D + 1.6, Z + wz); w.rotation.y = -Math.PI / 2; group.add(w); }
+  for (let k = 0; k < 5; k++) { const w = new THREE.Mesh(new THREE.PlaneGeometry(0.8, 0.7), win); w.position.set(cx0 + 1 + k * 1.5, D + 1.6, Z + cw + 0.01); group.add(w); }
+  addBox(cx0, Z - cw, cx1, Z + cw);
+  F.add([castle, roof], (cx0 + cx1) / 2, Z, 3, 2.6);
+  // ghost lanterns along the rails
+  const glow = lam({ color: '#9af0e8', emissive: '#4ac8c0' });
+  for (let k = 0; k < 8; k++) {
+    const u = -0.8 + k * 0.22, x = X + u * len / 2, side = k % 2 ? 1 : -1, hw = (u > 0 ? Math.sqrt(Math.max(0, 1 - u ** 6)) : Math.sqrt(Math.max(0, 1 - u * u))) * beam / 2;
+    if (x > cx0 - 0.5) continue;
+    const post = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 1.3, 5), dark); post.position.set(x, D + 0.65, Z + side * (hw - 0.4)); group.add(post);
+    const l = new THREE.Mesh(new THREE.SphereGeometry(0.2, 8, 6), glow); l.position.set(x, D + 1.35, Z + side * (hw - 0.4)); group.add(l);
+  }
+  // the bowsprit, out over the sea
+  const sprit = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.18, 7, 6), dark); sprit.rotation.z = Math.PI / 2 - 0.3; sprit.position.set(X - len / 2 - 2.4, D + 1.6, Z); group.add(sprit);
+  // the Kraken's arms rising out of the sea round it, curling over
+  const arm = lam({ color: '#22306a' }), sucker = lam({ color: '#c8b8e8' });
+  for (const [ax, az, dir, h] of [[X - 18, Z - 13, 1, 7], [X + 14, Z + 12, -1, 8], [X + 26, Z - 11, -1, 6], [X - 24, Z + 10, 1, 6]]) {
+    const pts = []; for (let i = 0; i <= 8; i++) { const t = i / 8, a = t * 3.2; pts.push(new THREE.Vector3(ax + dir * Math.sin(a) * h * 0.4, -0.8 + Math.sin(Math.min(1, t * 1.3) * Math.PI / 2) * h - (t > 0.75 ? (t - 0.75) * 10 : 0), az + Math.cos(a) * 1.2)); }
+    const curve = new THREE.CatmullRomCurve3(pts);
+    const tube = new THREE.Mesh(new THREE.TubeGeometry(curve, 24, 0.55, 8), arm); group.add(tube);
+    for (let i = 1; i < 7; i++) { const p = curve.getPoint(i / 8); const s = new THREE.Mesh(new THREE.SphereGeometry(0.16, 6, 4), sucker); s.position.set(p.x - dir * 0.45, p.y, p.z + 0.3); group.add(s); }
+  }
+  return { occlude: F.occlude, minimap(mg) {
+    mg.fillStyle = '#7a5432';
+    for (let z = Z - beam / 2; z < Z + beam / 2; z += 1) for (let x = X - len / 2; x < X + len / 2; x += 1) if (onDeck(x + 0.5, z + 0.5)) mg.fillRect(x * 2, z * 2, 2, 2);
+    mg.fillStyle = '#4a3020'; mg.fillRect(cx0 * 2, (Z - cw) * 2, (cx1 - cx0) * 2, cw * 4);
+    mg.fillStyle = '#9af0e8'; mg.fillRect((X - 2) * 2, (Z - 1) * 2, 4, 4);
+  } };
+}

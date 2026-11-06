@@ -48,7 +48,7 @@ test("an MVP's card and ultra rare come likelier with every kill they don't drop
   assert.equal(rows.find((r) => r.type === 'slime').chance, null, 'only MVPs');
 });
 
-test('album sets: nine regions, every one with cards, a finished set giving its bonus', async () => {
+test('album sets: ten regions, every one with cards, a finished set giving its bonus', async () => {
   const { SETS, setProgress, setBonus } = await import('../src/album.js');
   const { RAIDS } = await import('../src/raid.js');
   const bosses = Object.values(RAIDS).map((r) => r.boss[0]);

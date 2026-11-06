@@ -11,6 +11,7 @@ import { hallsSet, HALLS } from './halls.js';
 import { rootsSet, ROOTS } from './roots.js';
 import { coastSet, COAST } from './coast.js';
 import { variantSet, VARIANTS } from './variants.js';
+import { galleonSet, GALLEON } from './galleon.js';
 import { paintButler, BW, BH } from './butler.js';
 import { paintBleepBloop, BW as BBW, BH as BBH, BODY as BB_BODY } from './bleepbloop.js';
 import { POSES, LEGS, framePainter } from './design-anim.js';
@@ -1233,6 +1234,8 @@ export function createSprites() {
   for (const [id, [base, recolor]] of Object.entries(BOSS_LOOKS)) MADE[id] = () => sheet(base, { recolor });
   // the monsters that were once another's look in new colours, each with a design of its own now (variants.js)
   for (const [id, D] of Object.entries(VARIANTS)) MADE[id] = () => codeSet(variantSet(id), ...D.size, D.body, 2 / D.size[1]);
+  // the Sunken Galleon's monsters, the Kraken and Davy Jones, painted in code (galleon.js)
+  for (const [id, D] of Object.entries(GALLEON)) MADE[id] = () => codeSet(galleonSet(id), ...D.size, D.body, 2 / D.size[1]);
   // kobolds and goblins, painted in code (painted.js) until they get PixelLab art
   for (const id of ['koboldWarrior', 'koboldArcher', 'koboldAssassin', 'goblinWarrior', 'goblinArcher', 'goblinAssassin']) MADE[id] = () => paintedSet(id, [16, 30]);
   for (const id of ['koboldKing', 'goblinKing', 'koboldWarlord', 'goblinWarlord']) MADE[id] = () => paintedSet(id, [26, 48]);

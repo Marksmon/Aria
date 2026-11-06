@@ -181,7 +181,8 @@ function fight(h, def, opts = {}) {
 // (a Sorcerer with potions also carries 15 Blue Potions, and drinks one whenever SP runs low)
 
 export function sim(kind, base, type, opts) {
-  const h = hero(kind, base), def = MOB_DEFS[type], rs = [];
+  const def = MOB_DEFS[type], h0 = hero(kind, base), rs = [];
+  const h = def.el === 'ghost' ? { ...h0, ps: { ...h0.ps, el: 'wind' } } : h0; // (no Neutral blow touches a Ghost: the hero comes with a Storm Oil or Wind Arrows)
   for (let i = 0; i < RUNS; i++) rs.push(fight(h, def, opts));
   const med = (f) => { const v = rs.map(f).sort((a, b) => a - b); return v[v.length >> 1]; };
   return { h, wins: rs.filter((r) => r.win).length / RUNS, t: med((r) => r.t), potions: med((r) => r.potions), hpLeft: med((r) => r.hpLeft), mobLeft: med((r) => r.mobLeft || 0) };

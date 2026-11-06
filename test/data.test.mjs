@@ -195,3 +195,29 @@ test("no recoloured monsters (the owner's call): only bloops share a body in new
   }
   for (const [art, names] of Object.entries(byArt)) assert.equal(names.size, 1, `${art} is worn by ${[...names].join(', ')}`);
 });
+
+test("Ghost (the owner's call): a Neutral blow does nothing, every other element 150%, Shadow 175%", async () => {
+  const { elementMod, playerAttack, magicAttack } = await import('../src/rules.js');
+  assert.equal(elementMod('neutral', 'ghost'), 0);
+  for (const el of ['water', 'earth', 'fire', 'wind']) assert.equal(elementMod(el, 'ghost'), 1.5, el);
+  assert.equal(elementMod('shadow', 'ghost'), 1.75);
+  const ghost = MOB_DEFS.ghost;
+  const ps = { batk: 200, watk: 200, fns: 50, wlv: 4, mastery: 10, hit: 999, crit: 0, el: 'neutral', matk: [300, 300] };
+  assert.equal(playerAttack(ps, ghost, 1, 1, true).dmg, 0);
+  assert.equal(magicAttack(ps, ghost, 1, 'neutral').dmg, 0);
+  assert.ok(playerAttack({ ...ps, el: 'wind' }, ghost, 1, 1, true).dmg > 0);
+});
+
+test("the Sunken Galleon (the owner's call): Asgeir sails there from Base 85, Davy Jones (Lv 110, Ghost) in its hold, the Kraken on its third floor", async () => {
+  const { SPAWNS } = await import('../src/spawns.js');
+  const { TIERS } = await import('../build-tools/mvp-sim.mjs');
+  assert.deepEqual(NPCS.asgeir.ship.find((s) => s.to === 'wreck'), { to: 'wreck', fare: 6000, lv: 85 });
+  const D = MOB_DEFS.davyJones, K = MOB_DEFS.kraken;
+  assert.ok(D.mvp && D.el === 'ghost' && D.lv === 110 && D.hall && TIERS.davyJones === 99);
+  assert.ok(!D.phases, 'no phases (the owner\'s call)');
+  assert.deepEqual([...new Set(D.summon)].sort(), ['pirateSkeleton', 'zombie']);
+  assert.ok(K.boss && !K.mvp && K.writhe);
+  assert.deepEqual([...new Set(K.summon)].sort(), ['octopus', 'pufferFish']);
+  assert.ok(SPAWNS.galleon3.some(([t]) => t === 'kraken') && SPAWNS.galleon4.some(([t]) => t === 'davyJones'));
+  for (const t of ['conch', 'pufferFish', 'zombie', 'pirateSkeleton', 'blowgunPirate', 'octopus', 'ghost', 'skeletonAssassin', 'hydra']) assert.ok(Object.values(SPAWNS).some((l) => l.some(([x]) => x === t)), t);
+});

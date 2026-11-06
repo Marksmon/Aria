@@ -401,7 +401,7 @@ const repeat = (sk, lv, fn) => { for (let i = 0; i < sk.hits(lv); i++) later(i *
 // a status from a skill (skills.js status): freeze, paralyze and stun leave a monster helpless; a burn
 // hurts it each second for a fifth of the hit that lit it. Bosses resist: a third of the chance, for
 // half as long, and nothing takes hold while a boss is in the middle of a move.
-const STATUS_TEXT = { freeze: 'Frozen', paralyze: 'Paralyzed', stun: 'Stunned', burn: 'Burning', poison: 'Poisoned', blind: 'Blinded' };
+const STATUS_TEXT = { freeze: 'Frozen', paralyze: 'Paralyzed', stun: 'Stunned', burn: 'Burning', poison: 'Poisoned', blind: 'Blinded', hold: 'Shackled' };
 function inflict(m, st, lv, hitDmg = 0) {
   if (!st || !m.alive || m.act) return;
   const boss = m.def.boss || m.def.mvp;
@@ -419,6 +419,8 @@ function inflict(m, st, lv, hitDmg = 0) {
     m.poisonDmg = Math.max(1, Math.round(hitDmg * 0.2));
   } else if (st.kind === 'blind') { // (the Shadowblade's Shadow Bloom: its blows miss now and then, mobs.js)
     m.blindT = dur; m.blindBy = BLIND;
+  } else if (st.kind === 'hold') { // (chained where it stands: it still fights, but can't walk: the Davy Jones Card)
+    m.slowT = Math.max(m.slowT || 0, dur); m.slowBy = 1;
   } else {
     m.stunT = Math.max(m.stunT, dur);
     m.status = st.kind;
@@ -433,6 +435,8 @@ function cardOnHit(m, dmg) {
   if (ps.burn && m.alive) inflict(m, { kind: 'burn', chance: () => ps.burn, dur: 3 }, 1, dmg);
   if (ps.stun && m.alive) inflict(m, { kind: 'stun', chance: () => ps.stun, dur: 1.5 }, 1, dmg);
   if (ps.venom && m.alive) inflict(m, { kind: 'poison', chance: () => ps.venom, dur: 4 }, 1, dmg); // (the Cactus Lord Card, a Stinger)
+  if (ps.ink && m.alive) inflict(m, { kind: 'blind', chance: () => ps.ink, dur: 4 }, 1, dmg); // (the Kraken Card's Ink Cloud)
+  if (ps.shackle && m.alive) inflict(m, { kind: 'hold', chance: () => ps.shackle, dur: 2 }, 1, dmg); // (the Davy Jones Card's Soul Shackles)
   if (ps.tide && dmg > 0 && Math.random() * 100 < ps.tide) { // (the Poseidon Card's Tidal Wave: half the blow to every other monster near it)
     const n = Math.max(1, Math.round(dmg / 2));
     fx.puff(m.x, world.heightAt(m.x, m.z) + 0.2, m.z, 2.5);
@@ -680,6 +684,10 @@ player.on('swing', () => { audio.play('swing'); if (player.hiddenT > 0) unhide(t
 player.on('noammo', () => menus.message('Equip arrows to shoot (the Arrows slot)'));
 // the first weak elemental hit ever explains the grey number, once
 function weakTip(m, el) {
+  if (m.def.el === 'ghost' && (el || 'neutral') === 'neutral') { // (once, its own tip: a Neutral blow on a Ghost does nothing)
+    if (!story.flags.ghostTip) { story.flag('ghostTip'); menus.message(`Your blow passes straight through the ${m.def.name}: a Ghost takes nothing from Neutral. Strike it with an element (a battle oil, elemental arrows, a spell): every one hits a Ghost hard, Shadow hardest.`); }
+    return;
+  }
   if (story.flags.elementTip) return;
   story.flag('elementTip');
   const E = (e) => e[0].toUpperCase() + e.slice(1);
@@ -825,7 +833,7 @@ mobs.on('death', (m, drops) => {
 
 // a Sand Scorpion's sting (def.poison): poisoned for 6 s
 mobs.on('venom', (m) => {
-  if (!(player.poisonT > 0)) { player.poisonTick = 1; menus.message(`The ${m.def.name}'s sting poisons you! Green Herbs cure it.`); }
+  if (!(player.poisonT > 0)) { player.poisonTick = 1; menus.message(`The ${m.def.name}'s ${m.def.sting || 'sting'} poisons you! Green Herbs cure it.`); }
   player.poisonT = 6;
   fx.number(player.x, overHead(player, 1.7), player.z, 'Poisoned', 'miss');
 });
@@ -2868,6 +2876,7 @@ function buffList() {
   if (buffs.imbue > 0 && imbueEl) sk('imbue', 'elemblade', buffs.imbue, `Element: ${imbueEl[0].toUpperCase()}${imbueEl.slice(1)}`);
   if (buffs.momentum > 0 && momentum) { sk('momentum', 'momentum', buffs.momentum, `ATK +${momentum * lvOf('momentum')}%`); out.at(-1).stacks = momentum; }
   if (player.rootT > 0) out.push({ key: 'root', icon: 'skill_earthsplit', name: 'Rooted', left: player.rootT, fx: "Can't walk, dash or leap away" });
+  if (player.healCurseT > 0) out.push({ key: 'healcurse', icon: 'skill_earthsplit', name: 'Tidal Curse', left: player.healCurseT, fx: 'Healing halved' });
   if (buffs.sub > 0) sk('sub', 'substitute', buffs.sub, `The doll takes your blows: ${Math.ceil(player.barrier)} left · Blight and weaken all within 2.5 paces (blows −${6 + 2 * auraLv}%)`);
   if (doll && dollT > 0) sk('doll', 'voodoodoll', dollT, `${doll.def.name} bound: Blight up to ${BLIGHT.dollMax}, +${3 * dollLv}%`);
   if (player.hiddenT > 0) out.push({ key: 'hidden', icon: SKILLS.vanish.icon, name: 'Hidden', left: player.hiddenT, fx: ambushMul() > 1 ? `Monsters lose you · next blow ×${ambushMul().toFixed(1)} (Ambush)` : 'Monsters lose you' });
@@ -3198,7 +3207,7 @@ function hudTick(dt) {
 
 // the music's mood (audio.js MOODS): a boss fight (a boss or MVP hunting the hero near by, or a raid run,
 // held 4 s after), a dungeon, a wonder (the Sphinx's sands, the World Tree), a town, the desert, or a field
-const TOWNS = new Set(['camp', 'city', 'magic', 'hunt', 'sand', 'port']), SANDS = new Set(['redsands', 'dunes', 'scorpion', 'desert']), WONDERS = new Set(['sphinx', 'ygg', 'lokigate']);
+const TOWNS = new Set(['camp', 'city', 'magic', 'hunt', 'sand', 'port']), SANDS = new Set(['redsands', 'dunes', 'scorpion', 'desert']), WONDERS = new Set(['sphinx', 'ygg', 'lokigate', 'wreck']);
 let bossMusicT = 0;
 function musicMood(dt) {
   const fight = raids.raid || mobs.list.some((m) => m.alive && (m.def.boss || m.def.mvp) && !m.def.decoy && m.state === 'chase' && Math.hypot(m.x - player.x, m.z - player.z) < 16);

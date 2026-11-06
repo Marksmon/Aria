@@ -52,6 +52,7 @@ export const SETS = [
   { id: 'halls', name: "The Sphinx's Halls", maps: ['halls1', 'halls2', 'halls3', 'halls4'], bonus: { stats: { knl: 1 } }, text: 'KNL +1' },
   { id: 'ygg', name: "Yggdrasil's Hollows", maps: ['ygg1', 'ygg2', 'ygg3', 'ygg4'], bonus: { mspRate: 2 }, text: 'Max SP +2%' },
   { id: 'coast', name: "Hafnvik's Coast", maps: ['tidecliff', 'coral', 'storm', 'beacon'], bonus: { mhpRate: 1, mspRate: 1 }, text: 'Max HP and SP +1%' },
+  { id: 'galleon', name: 'The Sunken Galleon', maps: ['galleon1', 'galleon2', 'galleon3', 'galleon4'], bonus: { mhpRate: 1, stats: { end: 1 } }, text: 'Max HP +1%, END +1' },
   { id: 'raids', name: 'The Raids', raids: true, bonus: { stats: { ftn: 1 } }, text: 'FTN +1' },
 ];
 // each set's cards and how many the album holds: [{ set, cards: [card ids], found, done }]. spawns: map ->

@@ -16,14 +16,19 @@ export const ELEMENTS = {
   fire: { name: 'Fire', color: '#ff7a2a' },
   wind: { name: 'Wind', color: '#fff27a' },
   shadow: { name: 'Shadow', color: '#a383d6' },
+  ghost: { name: 'Ghost', color: '#9af0e8' },
 };
+// Ghost (the owner's call, November 2026: the Sunken Ship's ghosts and Davy Jones): a Neutral blow passes
+// straight through it (nothing lands), every other element hits it for 150%, Shadow for 175% (and Light, when Aria
+// has it). A ghost's own blows land as a plain blow would (but on another ghost, 175%)
 const EL_TABLE = {
-  neutral: { neutral: 100, water: 100, earth: 100, fire: 100, wind: 100, shadow: 100 },
-  water:   { neutral: 100, water: 25,  earth: 100, fire: 150, wind: 50,  shadow: 100 },
-  earth:   { neutral: 100, water: 100, earth: 25,  fire: 50,  wind: 150, shadow: 100 },
-  fire:    { neutral: 100, water: 50,  earth: 150, fire: 25,  wind: 100, shadow: 100 },
-  wind:    { neutral: 100, water: 150, earth: 50,  fire: 100, wind: 25,  shadow: 100 },
-  shadow:  { neutral: 100, water: 100, earth: 100, fire: 100, wind: 100, shadow: 25 },
+  neutral: { neutral: 100, water: 100, earth: 100, fire: 100, wind: 100, shadow: 100, ghost: 0 },
+  water:   { neutral: 100, water: 25,  earth: 100, fire: 150, wind: 50,  shadow: 100, ghost: 150 },
+  earth:   { neutral: 100, water: 100, earth: 25,  fire: 50,  wind: 150, shadow: 100, ghost: 150 },
+  fire:    { neutral: 100, water: 50,  earth: 150, fire: 25,  wind: 100, shadow: 100, ghost: 150 },
+  wind:    { neutral: 100, water: 150, earth: 50,  fire: 100, wind: 25,  shadow: 100, ghost: 150 },
+  shadow:  { neutral: 100, water: 100, earth: 100, fire: 100, wind: 100, shadow: 25,  ghost: 175 },
+  ghost:   { neutral: 100, water: 100, earth: 100, fire: 100, wind: 100, shadow: 100, ghost: 175 },
 };
 // how much of an attack of element `atk` lands on a monster of element `def` (1 = all of it)
 export const elementMod = (atk = 'neutral', def = 'neutral') => (EL_TABLE[atk]?.[def] ?? 100) / 100;
@@ -106,7 +111,9 @@ export function derive(prog, gear) {
     sage: gear.perk?.sage || 0,            // % less SP for skills (the Eternal Sphinx Card)
     farshot: gear.perk?.farshot || 0,      // % harder from 4+ paces away (the Ratatoskr Card)
     tide: gear.perk?.tide || 0,
-    laststand: gear.perk?.laststand || 0,  // s between Last Stands (the Headless Knight Card): a fainting blow leaves 1 HP            // % of blows and spells that send out a wave (the Poseidon Card's Tidal Wave)
+    laststand: gear.perk?.laststand || 0,
+    ink: gear.perk?.ink || 0,              // % of blows and spells that blind a monster (the Kraken Card's Ink Cloud)
+    shackle: gear.perk?.shackle || 0,      // % of blows and spells that chain a monster in place (the Davy Jones Card)  // s between Last Stands (the Headless Knight Card): a fainting blow leaves 1 HP            // % of blows and spells that send out a wave (the Poseidon Card's Tidal Wave)
     rot: gear.perk?.rot || 0,              // % more a monster you hit takes from everything, for 5 s (the Nidhogg Card)
     def: clamp(gear.def || 0, 0, 100),            // hard DEF from equipment
     end,                                          // soft DEF comes from END each hit
@@ -144,7 +151,7 @@ export function playerAttack(ps, md, mult = 1, hitMult = 1, skill = false) {
   if (!crit) dmg = dmg * (100 - md.def * (1 - (ps.pierce || 0) / 100)) / 100 - mobSoftDef(md.vit);
   const el = elementMod(ps.el, md.el);
   const close = !ps.beast && !ps.ranged; // a blow struck up close (the Goblin Warlord Card's)
-  dmg = Math.max(1, Math.floor((Math.floor(dmg) + ps.mastery) * el * takes(md, ps.beast ? 'beast' : ps.ranged ? 'ranged' : 'melee') * (close ? 1 + (ps.meleeRate || 0) / 100 : 1)));
+  dmg = el === 0 ? 0 : Math.max(1, Math.floor((Math.floor(dmg) + ps.mastery) * el * takes(md, ps.beast ? 'beast' : ps.ranged ? 'ranged' : 'melee') * (close ? 1 + (ps.meleeRate || 0) / 100 : 1))); // (a Neutral blow on a Ghost: nothing)
   return { miss: false, crit, dmg, el };
 }
 
@@ -174,5 +181,5 @@ export function magicAttack(ps, md, mult = 1, element = 'neutral') {
   let dmg = (lo + rnd(Math.max(1, hi - lo + 1))) * mult;
   dmg = dmg * (100 - (md.mdef || 0)) / 100 - Math.floor(md.vit / 2);
   const el = elementMod(element, md.el);
-  return { miss: false, crit: false, dmg: Math.max(1, Math.floor(dmg * el * takes(md, 'magic'))), el };
+  return { miss: false, crit: false, dmg: el === 0 ? 0 : Math.max(1, Math.floor(dmg * el * takes(md, 'magic'))), el };
 }

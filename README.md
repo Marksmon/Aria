@@ -58,7 +58,7 @@ Classic MMORPG style: no on-screen controller. Landscape.
 | Hotbar (bottom): eight slots (two rows of four on a phone held upright, the attack button as tall as both); tap one to use a skill or item (a skill shows its SP cost, veiled blue while you lack the SP; after any skill, skills wait half a second); the button at its end flips between 3 pages | 1–8 · Tab: next page |
 | Drag active skills (Skills window) and usable items (Items window) onto the hotbar; drag a slot off to clear it | Drag |
 | The 🏆 button: **Goals**. *This Week*: three hunts picked for your level (beat monsters near your level or of one kind, hand in quests, refine, clear a raid, and for a second job mini-bosses and, from Base 75, an MVP), paid the moment each is done (perz by your level, and from Base 30 a Hard or Armor Ore); new ones every Monday. *Achievements*: 18 milestones (first and second job, Base 50/75/99, a mini-boss, an MVP and every MVP, a raid and a Hell clear, every land walked, album milestones, a +10 refine, both secret ways, the story's end), each a title you can wear after your name | Click |
-| The 📖 button (beside ⚙): the **Monster Album**, every monster in Aria by level, how many you have beaten and whether you have found its card. One you haven't met yet shows as ??? with its level and the lands it lives in. Tabs: All, Met, Bosses, and **Sets**: find every card of one region's monsters (bosses aside; the raids' set is their bosses' cards) and it gives a small bonus for good: Eldrun's Fields Max HP +2%, the Shore and the South POW +1, Kobold and Goblin Lands END +1, Veidheim's Lands FNS +1, the Desert QKN +1, the Sphinx's Halls KNL +1, Yggdrasil's Hollows Max SP +2%, Hafnvik's Coast Max HP and SP +1%, the Raids FTN +1 | Click |
+| The 📖 button (beside ⚙): the **Monster Album**, every monster in Aria by level, how many you have beaten and whether you have found its card. One you haven't met yet shows as ??? with its level and the lands it lives in. Tabs: All, Met, Bosses, and **Sets**: find every card of one region's monsters (bosses aside; the raids' set is their bosses' cards) and it gives a small bonus for good: Eldrun's Fields Max HP +2%, the Shore and the South POW +1, Kobold and Goblin Lands END +1, Veidheim's Lands FNS +1, the Desert QKN +1, the Sphinx's Halls KNL +1, Yggdrasil's Hollows Max SP +2%, Hafnvik's Coast Max HP and SP +1%, the Sunken Galleon Max HP +1% and END +1, the Raids FTN +1 | Click |
 | Hold a buff icon (left of the minimap: each buff on you, with its time left) to see what it does | Hover |
 | Attack button (left of the hotbar, showing your weapon): attack your target, or the nearest monster in sight if you have none (a melee hero walks to it) | Click |
 | Drag one finger: turn the camera · pinch: zoom | Drag or Q / E · mouse wheel |
@@ -142,6 +142,10 @@ Scorpion Sands with its Pyramid, then the Great Desert, where the Sand Wyrm hunt
 | Yggdrasil Hollows 2 | 53–60 | Root Serpent (55, poison), Moss Golem (58), Dark Elf (60, shadow arrows) | |
 | Yggdrasil Hollows 3 | 61–68 | Great Stag (63), Dryad (66, glowing leaves, heals the others), Rot Beetle (68, poison) | Ratatoskr (74) |
 | Yggdrasil Hollows 4 (the great hall) | 69–75 | Root Warden (72), Thorn Drake (75, venom breath) | **Nidhogg (99, MVP)** |
+| Sunken Galleon 1 (by ship, Base 85) | 85–88 | Conch (85), Puffer Fish (86, spines), Zombie (88, its bite poisons) | |
+| Sunken Galleon 2 | 89–92 | Pirate Skeleton (89), Blowgun Pirate (90, poison darts), Octopus (92) | |
+| Sunken Galleon 3 | 93–96 | Ghost (93, Ghost), Skeleton Assassin (95) | Kraken (94) |
+| Sunken Galleon 4 (the captain's hold) | 97–99 | Hydra (98, three heads) | **Davy Jones (110, MVP)** |
 | Sphinx Halls 4 (the great hall) | 89–99 | Jackal Guardian (92, long spear), Falcon Sentinel (97, wind blades) | **Eternal Sphinx (99, MVP)** |
 | Any field in the valley, more at night (Moss Field and Fen Shore only at night) | | Wisp (11) | |
 
@@ -201,6 +205,29 @@ Armors to his side. He drops his violet plume (the Headless Knight's Crest), now
 the **Headsman's Blade** (Shadow), and his card: **Last Stand**, once every 2 minutes a blow that would make you faint
 leaves you standing at 1 HP.
 
+**The Sunken Galleon** (the third dungeon, Base 85–99). From Base 85 Captain Asgeir also sails out to it: no land,
+only a great broken galleon alone in the open sea, its brown deck the ground you walk on, holes stove through it, two
+masts snapped and a compass rose inlaid mid-deck glowing a drowned blue, the captain's quarters at its stern and the
+Kraken's arms rising from the sea round it. A hatch goes down into it: three floors of its decks and holds, rotten
+planks and barnacles, portholes glowing, some of it flooded so you wade knee-deep, and the captain's hold. Conches,
+Puffer Fish and drowned Zombies on the first; Pirate Skeletons, Blowgun Pirates and Octopuses on the second; Ghosts
+and Skeleton Assassins on the third, with the **Kraken** (Lv 94 mini-boss, Water: dark blue, a crown of bronze coral,
+glowing eyes and markings, its arms writhing every way), who slams a tentacle down, seizes you (**Abyssal Grab**),
+blasts a line of the sea through you (**Tidal Blast**) and drags you into a **Maelstrom**, and calls Octopuses and
+Puffer Fish. In the hold, Hydras guard **Davy Jones**, the Forsaken Captain (Lv 110 MVP, the hardest fight in Aria):
+a tricorn, a beard of tentacles, glowing eyes, a long coat hung with chains and a great anchor. He smashes his anchor
+down, sends a **Tidal Wave** down a marked line, seizes you in a kraken's arm (**Kraken's Grasp**) or in chains that
+drink your life into him (**Soul Shackles**), brings a **Ghost Ship's** cannons down round you, curses you so you heal
+half as much (**Tidal Curse**), and raises the **Maelstrom of the Damned** and a domain of drowning that drags at your
+feet (**Abyssal Domain**); his drowned crew, pirate skeletons and zombies, climb out of the deep to him. He always
+drops **Cursed Doubloons**, now and then gear for every build (the Cursed Cutlass, the Staff of the Locker, the Ghost
+Ship Bow, the Shackle Fang, all Ghost; the Forsaken Captain's Coat; the Locket of the Locker), his card (Soul
+Shackles: some of your blows chain a monster where it stands) and very rarely (1%) his ultra rare: the **Forsaken
+Captain's Tricorn**.
+
+**Ghost.** The Ghosts and Davy Jones are of the Ghost element: a Neutral blow passes straight through them and does
+nothing. Every other element hits a Ghost for 150%, Shadow for 175%: bring a battle oil, elemental arrows or spells.
+
 **Poseidon, Lord of the Tides** (Lv 99 MVP, 400,000 HP, Water) roams the Storm Isles: pale blue, his long white
 hair falling to the waist, a gold horned crown, glowing blue eyes and gold-trimmed armour, and below the waist no
 legs but the sea itself, a column of water coiling down into a whirl, his gold trident in hand. He rains orbs of the
@@ -246,7 +273,7 @@ the ATK): cut them down first. See `docs/balance.md`.
 ground around it every few seconds. MVPs are the hardest fights in Aria: several minutes each, a big bag of White and
 Blue Potions, and a plan. Each is made for a second job of its tier in the best gear short of MVP gear (a Lv 4 weapon
 at +7, armor at +4, monster and mini-boss cards): **Base 75** the Kobold King and the Goblin King, **Base 85** the
-Fire Giant, the Ancient Treant and the Sand Wyrm, **Base 95** the Eternal Sphinx, Nidhogg and Poseidon. Below its tier, or in
+Fire Giant, the Ancient Treant and the Sand Wyrm, **Base 95** the Eternal Sphinx, Nidhogg and Poseidon, **Base 99** Davy Jones (Lv 110). Below its tier, or in
 plain gear, a hero falls to one. Their stomps, red circles and
 burning ground can't be dodged by FLEE and go through most of your DEF: step out of them.
 Each has skills of its own that punish standing and shooting, and the wrong element (Fire Arrows
@@ -302,6 +329,7 @@ easiest for some jobs and hardest for others (it tells you when it first comes f
 | Nidhogg | arrows +30% (the soft skin under its wings) | blades, daggers and fists −25% (its black scales) | Archer, Windrunner | Blader, Assassin and their second jobs |
 | Eternal Sphinx | spells +30% (it honours wisdom) | beasts −30%, blades, daggers and fists −15% (its stone hide) | Sorcerer, Wizard | Beastmaster |
 | Poseidon | beasts +30% (they never fear the water) | spells −25% (the sea swallows them) | Beastmaster | Sorcerer, Wizard |
+| Davy Jones | spells +20% (they burn the curse on him) | blades and fists −15%; Neutral blows nothing (Ghost) | Sorcerer, Wizard | Beastmaster (beasts strike Neutral) |
 
 The two-path jobs sit between: a Magic Knight's sword is half steel and half spell, a Moon
 Ranger's arrows half arrow and half spell.
@@ -393,6 +421,8 @@ fills up until it hits: step out of it.
 | Ratatoskr | **Swift Dash** (a charge) · **Bounding Leap** · **Rune Acorn** (thrown) · **Frenzy** |
 | Nidhogg | **Gnaw the Roots** (tear it away in time) · **Venom Breath** (thrown) · **Coil Rush** (a charge) · **Falling Roots** (venom where they land) · **Frenzy** |
 | Eternal Sphinx | **The Riddle** (stand in the right answer) · **Pounce** · **Falling Stones** (cursed sand where they land) · **Gaze of Ages** (thrown) · **Frenzy** |
+| Kraken | **Tentacle Slam** (thrown down) · **Abyssal Grab** (holds you) · **Tidal Blast** (down a marked line) · **Maelstrom** (walk out of its pull) |
+| Davy Jones | **Anchor Smash** · **Tidal Wave** · **Kraken's Grasp** · **Soul Shackles** (they drink your life) · **Ghost Ship** (drowning water where they land) · **Tidal Curse** (half the healing) · **Maelstrom of the Damned** · **Abyssal Domain** (slows) · **Frenzy** |
 | Poseidon | **Tidal Barrage** (riptide pools where they land) · **Leviathan Surge** (a serpent down a marked line) · **Oceanic Prison** (break the cage) · **Raging Maelstrom** (walk out of its pull) · **Frenzy** |
 
 Each move hits for 1.4–2.4x the boss's ATK (the Eternal Sphinx's Judgment 3x; the Ancient Treant's roots and the Cactus Lord's needles less). Staying far away no longer keeps you safe: spells reach
@@ -1037,12 +1067,14 @@ Earth). An elemental staff also adds 15% to spells of its own element (Frostwood
 Water, Emberheart and the Giant's staff Fire, Giant Root Earth, Nightshade and Mothercap Shadow).
 A strong hit (150%) shows in gold, a weak one (25–50%) in grey.
 
-| Attack \ Monster | Water | Earth | Fire | Wind | Shadow |
-|---|---|---|---|---|---|
-| Fire | 50% | **150%** | 25% | 100% | 100% |
-| Water | 25% | 100% | **150%** | 50% | 100% |
-| Wind | **150%** | 50% | 100% | 25% | 100% |
-| Earth | 100% | 25% | 50% | **150%** | 100% |
+| Attack \ Monster | Water | Earth | Fire | Wind | Shadow | Ghost |
+|---|---|---|---|---|---|---|
+| Fire | 50% | **150%** | 25% | 100% | 100% | **150%** |
+| Water | 25% | 100% | **150%** | 50% | 100% | **150%** |
+| Wind | **150%** | 50% | 100% | 25% | 100% | **150%** |
+| Earth | 100% | 25% | 50% | **150%** | 100% | **150%** |
+| Shadow | 100% | 100% | 100% | 100% | 25% | **175%** |
+| Neutral | 100% | 100% | 100% | 100% | 100% | 0% |
 
 Water: Bloops and Blue Bloops, Mudskippers, the crabs and the King Crab, Lamias · Earth: Sprouts, Mushrooms, Beetles,
 the kobolds, Willows, Treants, Snakes, Wolves, the Giant Sprout, Elder Willow, Alpha Wolf, Ancient Treant and
@@ -1052,7 +1084,8 @@ Serpents, Moss Golems, Dryads, Root Wardens) · Fire: Red Bloops, Fire Beetles, 
 the Fire Giant · Wind: Wisps, Yellow Bloops, the goblins and the Goblin King, the Sand and Rainbow Runners,
 Falcon Sentinels, Great Stags, Ratatoskr · Shadow: Dark Mushrooms, Dark Wisps, the Giant Mushroom, the tomb's
 Mummies and the Pharaoh, Pharaoh's Servants, Jackal Guardians, Sarcophagi, Ammit, Dark Elves, Rot Beetles, Thorn
-Drakes and Nidhogg · Neutral: Bears and the Great Bear.
+Drakes and Nidhogg, Zombies, Skeleton Assassins · Water too: Conches, Puffer Fish, Octopuses, Hydras and the Kraken ·
+Ghost: Ghosts and Davy Jones · Neutral: Bears and the Great Bear, Pirate Skeletons and Blowgun Pirates.
 
 **Staves** raise MATK: Wooden (+15%, given on the job change), Birch (+20%, Orm), Rune (+25%),
 Ice (+28%), Root (+30%), Water (+32%), Dark (+34%, Dark Wisp 0.2%), Fire (+38%), Mushroom (+40%,
@@ -1077,7 +1110,7 @@ from Kari (Dalla has the cake and the pie). Their timers show in the buff bar.
 |---|---|---|
 | Red Potion | 45–65 HP | Hild (Steinborg); Kari (Galdrheim); Eydis (Veidheim); Dalla (Rytingborg); Ragna brews it; Gel Thief, Yellow Bloop, Willow and 3 more |
 | Orange Potion | 105–145 HP | Hild (Steinborg); sela; Kari (Galdrheim); Eydis (Veidheim); Dalla (Rytingborg); Ragna brews it; Treant, Kobold, Beetle and 11 more |
-| White Potion | 175–235 HP | sela; Eydis (Veidheim); Dalla (Rytingborg); Ragna brews it; Goblin Archer, Fire Beetle, Goblin Assassin and 53 more |
+| White Potion | 175–235 HP | sela; Eydis (Veidheim); Dalla (Rytingborg); Ragna brews it; Goblin Archer, Fire Beetle, Goblin Assassin and 64 more |
 | Blue Potion | 40–60 SP | Hild (Steinborg); sela; Kari (Galdrheim); Eydis (Veidheim); Dalla (Rytingborg); Ragna brews it; Blue Bloop, Mudskipper |
 | Berry | 16–22 HP | Hild (Steinborg); Kari (Galdrheim); Bloop, Sprout, Yellow Bloop, Red Sprout |
 | Crab Leg | 70–100 HP | Crab, Blue Crab, King Crab |
@@ -1222,6 +1255,8 @@ bursts gold on the ground and shows in gold in your bag.
 | Sandstorm Ring | Accessory | END +2 · QKN +1 · FLEE +3 | Sand Elementals (0.25%) |
 | Sarcophagus Lid | Shield | DEF 7 · Max HP +120 | Sarcophagi (0.2%) |
 | Cursed Spear | Weapon (sword) (Blader) | ATK 112 · Weapon Lv 3 · Shadow element · POW +2 | Jackal Guardians (0.25%) |
+| Abyssal Staff | Weapon (staff) (Sorcerer) | ATK 62 · Weapon Lv 4 · Water element · MATK +58% · KNL +4 · FNS +2 | the Kraken (2%) |
+| Kraken Scale Mail | Armor | DEF 9 · END +2 · QKN +2 · Max HP +240 | the Kraken (3%) |
 | Falcon Bow | Weapon (bow) (Archer) | ATK 105 · Weapon Lv 3 · Wind element · FNS +2 | Falcon Sentinels (0.25%) |
 | Crown of the Tides | Head | DEF 6 · POW +3 · KNL +3 · END +2 · FNS +2 · Max HP +10% · Max SP +10% | Poseidon (1%) |
 | Dragonbone Blade | Weapon (sword) (Blader) | ATK 152 · Weapon Lv 4 · POW +4 · END +1 | Nidhogg (2%) |
@@ -1245,6 +1280,13 @@ bursts gold on the ground and shows in gold in your bag.
 | Trident of the Tides | Weapon (staff) (Sorcerer) | ATK 72 · Weapon Lv 4 · Water element · MATK +70% · KNL +5 · FNS +3 | Poseidon (2%) |
 | World Tree Crown | Head | DEF 5 · END +2 · KNL +2 · FTN +2 · Max HP +8% · Max SP +8% | Nidhogg (1%) |
 | World Tree Staff | Weapon (staff) (Sorcerer) | ATK 70 · Weapon Lv 4 · Earth element · MATK +70% · KNL +6 · END +2 | Nidhogg (2%) |
+| Cursed Cutlass | Weapon (sword) (Blader) | ATK 152 · Weapon Lv 4 · Ghost element · POW +3 · QKN +2 | Davy Jones (2%) |
+| Forsaken Captain's Coat | Garment | DEF 7 · END +2 · Max HP +8% · FLEE +7 | Davy Jones (3%) |
+| Forsaken Captain's Tricorn | Head | DEF 6 · POW +3 · QKN +3 · FTN +3 · END +2 · Max HP +10% · Max SP +10% | Davy Jones (1%) |
+| Ghost Ship Bow | Weapon (bow) (Archer) | ATK 152 · Weapon Lv 4 · Ghost element · FNS +4 · QKN +1 | Davy Jones (1%) |
+| Locket of the Locker | Accessory | KNL +2 · FTN +2 · Max HP +80 | Davy Jones (5%) |
+| Shackle Fang | Weapon (dagger) | ATK 122 · Weapon Lv 4 · Ghost element · QKN +3 · FTN +1 | Davy Jones (1%) |
+| Staff of the Locker | Weapon (staff) (Sorcerer) | ATK 72 · Weapon Lv 4 · Ghost element · MATK +72% · KNL +5 · FNS +3 | Davy Jones (2%) |
 <!-- /tables:drops -->
 
 Two accessory slots, a shield, a garment and an arrows slot join head, face, armor, weapon, shoes and wings.
@@ -1411,11 +1453,20 @@ they come back whole and the slot stays open. A piece that breaks at Holger's gi
 | Owlbear Card (Burly) | Armor | END +1 · Max HP +6% | Owlbears (0.1%) |
 | Sphinx Cub Card (Pouncing) | Shoes | FLEE +4 · QKN +2 | Sphinx Cubs (0.1%) |
 | Moor Witch Card (Hexing) | Garment | MATK +8% · Max SP +5% | Moor Witches (0.1%) |
+| Conch Card (Spiralled) | Shield | DEF +4 · Max HP +300 | Conches (0.1%) |
 | Fire Salamander Card (Burning) | Shield | DEF +3 · Max HP +300 | Fire Salamanders (0.1%) |
+| Puffer Fish Card (Prickly) | Accessory | FLEE +4 · END +1 | Puffer Fish (0.1%) |
 | Sand Elemental Card (Whirling) | Garment | FLEE +5 · END +1 | Sand Elementals (0.1%) |
 | Sarcophagus Card (Entombed) | Shield | DEF +4 · Max HP +6% | Sarcophagi (0.1%) |
+| Zombie Card (Undying) | Armor | END +2 · Max HP +5% | Zombies (0.1%) |
+| Pirate Skeleton Card (Plundering) | Head or Face | ATK +14 · POW +2 | Pirate Skeletons (0.1%) |
+| Blowgun Pirate Card (Venomous) | Accessory | HIT +6 · FNS +2 | Blowgun Pirates (0.1%) |
 | Jackal Guardian Card (Cursed) | Weapon | ATK +12 · POW +2 | Jackal Guardians (0.1%) |
+| Octopus Card (Eight-Armed) | Garment | FLEE +6 · FTN +2 | Octopuses (0.1%) |
+| Ghost Card (Spectral) | Garment | KNL +2 · Max SP +6% | Ghosts (0.1%) |
+| Skeleton Assassin Card (Silent) | Head or Face | ATK +10 · QKN +2 · POW +1 | Skeleton Assassins (0.1%) |
 | Falcon Sentinel Card (Hawk-eyed) | Accessory | HIT +6 · FNS +2 | Falcon Sentinels (0.1%) |
+| Hydra Card (Three-Headed) | Armor | DEF +3 · Max HP +6% | Hydras (0.1%) |
 <!-- /tables:cards -->
 
 <!-- tables:bosscards -->
@@ -1439,9 +1490,11 @@ they come back whole and the slot stays open. A piece that breaks at Holger's gi
 | Ammit Card (Devouring) | Weapon | ATK +18 · POW +3 · Weighing of the Heart: your blows and spells land 15% harder on a monster under 30% HP | Ammit (1%) |
 | Ratatoskr Card (Swift) | Garment | FLEE +6 · QKN +3 · FNS +2 · Keen Perception: your blows and spells land 10% harder on a monster 4 paces away or more | Ratatoskr (1%) |
 | Headless Knight Card (Deathless) | Armor | DEF +4 · END +3 · Max HP +8% · Last Stand: once every 2 minutes, a blow that would make you faint leaves you standing at 1 HP | the Headless Knight (1%) |
+| Kraken Card (Abyssal) | Shoes | FLEE +6 · QKN +3 · Ink Cloud: 6% of your blows and spells blind a monster | the Kraken (1%) |
 | Eternal Sphinx Card (Enigmatic) | Accessory | KNL +5 · FNS +4 · FTN +3 · Max SP +10% · Eternal Wisdom: your skills cost 15% less SP | the Eternal Sphinx (1%) |
 | Nidhogg Card (Gnawing) | Armor | DEF +6 · POW +5 · END +5 · Max HP +20% · Root Rot: a monster your blows or spells strike takes 8% more from everything for 5 s | Nidhogg (1%) |
 | Poseidon Card (Tidal) | Weapon | ATK +40 · MATK +15% · POW +4 · KNL +4 · Tidal Wave: 12% of your blows and spells send out a wave: every other monster within 2.5 paces takes half the blow | Poseidon (1%) |
+| Davy Jones Card (Forsaken) | Garment | FLEE +8 · FTN +5 · QKN +4 · Max HP +15% · Soul Shackles: 8% of your blows and spells chain a monster where it stands | Davy Jones (1%) |
 | Goblin Warlord Card (Warlike) | Head or Face | ATK +60 · QKN +7 · POW +4 · Frenzy: blows struck up close +15%, 10% of blows up close land twice | clearing the Goblin Lair (1%, any difficulty) |
 | Kobold Warlord Card (Unyielding) | Head or Face | DEF +7 · END +7 · POW +4 · Max HP +25% · Earthshaker: 8% of your blows and spells stun a monster | clearing the Kobold Camp (1%, any difficulty) |
 | Pharaoh Card (Royal) | Head or Face | MATK +15% · KNL +6 · FTN +4 · Max SP +15% · Soul Tax: 4% of the damage you deal comes back as SP | Pharaoh's Tomb (a clear: 1%) |

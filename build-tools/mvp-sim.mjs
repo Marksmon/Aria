@@ -45,11 +45,12 @@ const POTION = 205, POTION_GAP = 0.25, DODGE = 0.5, METEOR_DODGE = 0.75, KITE = 
 
 // the hero's damage a second on a target, by its rotation (cached per job, target and tier)
 const dpsCache = new Map();
+// (a Ghost takes nothing from a Neutral blow: the hero comes with an element, a battle oil on the blade, Wind Arrows)
 function dps(job, def, base, gear) {
   const key = `${job}|${def.name}|${def.lv}|${def.hp}|${base}|${gear}`;
   if (!dpsCache.has(key)) {
-    const g = GEAR[gear], hp = 200000;
-    setup({ boss: { ...def, hp }, hp, base, jobLv: jobLvAt(base), sword: g.sword, bow: g.bow, staff: g.staff });
+    const g = GEAR[gear], hp = 200000, el = def.el === 'ghost' ? { el: 'wind' } : {};
+    setup({ boss: { ...def, hp }, hp, base, jobLv: jobLvAt(base), sword: { ...g.sword, ...el }, bow: { ...g.bow, ...el }, staff: g.staff });
     dpsCache.set(key, hp / killTime(job, 9));
   }
   return dpsCache.get(key);
@@ -158,6 +159,7 @@ export const TIERS = {
   koboldKing: 75, goblinKing: 75,
   jarl: 85, ancientTreant: 85, sandWyrm: 85,
   eternalSphinx: 95, nidhogg: 95, poseidon: 95,
+  davyJones: 99, // (Lv 110: the hardest of them, the owner's call)
 };
 export const MINI_LV = 75;
 export const BAR = { minT: 150, maxT: 400, potions: 100 }; // the median job: a fight of minutes, on a bag of White Potions
