@@ -480,6 +480,9 @@ body.named #toasts { top: calc(175px + var(--pets-push, 0px) + env(safe-area-ins
 #albumbtn { position: absolute; top: calc(12px + env(safe-area-inset-top)); right: calc(158px + env(safe-area-inset-right)); width: 26px; height: 24px;
   padding: 0; border: 1px solid var(--w-line); border-radius: 4px; background: var(--w-bg); font-size: 14px; line-height: 1; pointer-events: auto; }
 #albumbtn.pressed { background: var(--w-press); }
+#goalsbtn { position: absolute; top: calc(12px + env(safe-area-inset-top)); right: calc(188px + env(safe-area-inset-right)); width: 26px; height: 24px;
+  padding: 0; border: 1px solid var(--w-line); border-radius: 4px; background: var(--w-bg); font-size: 14px; line-height: 1; pointer-events: auto; }
+#goalsbtn.pressed { background: var(--w-press); }
 /* the Monster Album: counts, tabs and one row a monster (a ??? for one not met yet) */
 .al-head { display: flex; justify-content: space-between; padding: 6px 8px; font-size: 12px; color: var(--w-dim); }
 .al-head b { color: var(--w-gold); }

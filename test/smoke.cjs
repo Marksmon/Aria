@@ -81,6 +81,14 @@ async function waitFor(url, ms = 30000) {
     if (al < 50) fail.push(`the Monster Album shows ${al} monsters`);
     for (const t of ['met', 'boss', 'sets', 'all']) { await page.click(`[data-act="albumtab"][data-id="${t}"]`); await page.waitForTimeout(100); }
     await page.keyboard.press('Escape');
+    step('goals');
+    await page.tap('#goalsbtn');
+    await page.waitForTimeout(3500); // (the week's hunts come with the first check)
+    await page.evaluate(() => window.__aria.menus.render('goals'));
+    const hunts = await page.evaluate(() => document.querySelectorAll('#windows .al-row').length);
+    if (hunts < 3) fail.push(`the Goals window shows ${hunts} hunts`);
+    await page.click('[data-act="goalstab"][data-id="ach"]'); await page.waitForTimeout(150);
+    await page.keyboard.press('Escape');
     step('settings');
     await page.evaluate(() => window.__aria.menus.show('settings'));
     await page.waitForTimeout(300);

@@ -33,7 +33,8 @@ import { Audio } from './audio.js';
 import { Wings, wingPicture } from './wings.js';
 import { clamp, lerp } from './noise.js';
 import { settings, pixelRatio } from './settings.js';
-import { Album, albumRows, setProgress, setBonus } from './album.js';
+import { Album, albumRows, setProgress, setBonus, SETS } from './album.js';
+import { Goals, ACHIEVEMENTS, WEEKLY, weeklyReward, weekEnds } from './goals.js';
 
 const canvas = document.getElementById('game');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, powerPreference: 'high-performance' });
@@ -250,6 +251,50 @@ if (!album.load(save?.album)) {
   for (const s of [...inv.bag.slots, ...inv.chest.slots]) { const u = parseKey(s.id); if (ITEMS[u.base]?.card) album.card(u.base); for (const c of u.cards) album.card(c); }
   for (const id of Object.values(inv.gear)) if (id) for (const c of parseKey(id).cards) album.card(c);
 }
+// Goals (goals.js): the weekly hunts (paid when done) and the achievements (a title each)
+const goals = new Goals();
+goals.load(save?.goals);
+const PLURAL = { Wolf: 'Wolves', Cactus: 'Cacti', Mummy: 'Mummies', Sarcophagus: 'Sarcophagi', 'Dark Elf': 'Dark Elves' };
+const plural = (n) => PLURAL[n] || n.replace(/y$/, 'ie') + 's';
+// the monster kinds a weekly hunt may name: the field and dungeon kinds within 8 levels of the hero
+const nearKinds = () => Object.fromEntries([...new Set(Object.values(SPAWNS).flat().map(([t]) => t))]
+  .filter((t) => MOB_DEFS[t] && !MOB_DEFS[t].boss && !MOB_DEFS[t].mvp && !MOB_DEFS[t].noRespawn && Math.abs(MOB_DEFS[t].lv - prog.baseLv) <= 8)
+  .map((t) => [t, plural(MOB_DEFS[t].name)]));
+const heroSalt = () => [...(player.look.name || '')].reduce((a, c) => (a * 31 + c.charCodeAt(0)) | 0, 7);
+function payGoal(g) {
+  const r = weeklyReward(g.kind, goals.weekly.lv);
+  inv.perz += r.perz;
+  for (const [id, n] of Object.entries(r.items)) inv.add(id, n);
+  audio.play('heart');
+  menus.message(`Weekly hunt done: ${WEEKLY[g.kind].text(g)}! +${r.perz.toLocaleString()} perz${Object.keys(r.items).length ? ` and ${Object.entries(r.items).map(([id, n]) => `${n} ${ITEMS[id].name}`).join(', ')}` : ''}`);
+  persist();
+}
+const goalEvent = (ev) => { for (const g of goals.on(ev)) payGoal(g); };
+// the achievements' view of the game (goals.js ACHIEVEMENTS)
+function goalState() {
+  const kills = (f) => Object.entries(album.kills).filter(([t]) => MOB_DEFS[t] && f(MOB_DEFS[t]));
+  const lands = Object.keys(MAPS).filter((id) => !MAPS[id].arena);
+  const worn = Object.values(inv.gear).filter(Boolean).map((k) => parseKey(k).refine);
+  const sets = albumSets();
+  return {
+    tier: prog.tier, firsts: prog.unlocked.filter((j) => JOBS[j]?.tier === 1).length, baseLv: prog.baseLv,
+    minis: kills((d) => d.boss && !d.mvp && !d.raid && !d.raidLv).reduce((a, [, n]) => a + n, 0),
+    mvps: kills((d) => d.mvp).reduce((a, [, n]) => a + n, 0), mvpKinds: kills((d) => d.mvp).length, mvpTotal: Object.values(MOB_DEFS).filter((d) => d.mvp).length,
+    raidClears: raidLog.filter((e) => e.won && e.diff !== 'tutorial').length, hellClears: raidLog.filter((e) => e.won && e.diff === 'hell').length,
+    landsWalked: lands.filter((id) => visited.has(id)).length, landsTotal: lands.length,
+    met: Object.keys(album.kills).length, sets: sets.filter((p) => p.done).length, setsTotal: SETS.length,
+    bestRefine: Math.max(goals.bestRefine, ...worn, 0), secrets: ['sphinx6', 'tree6'].filter((q) => quests.done.includes(q)).length,
+    storyDone: !story.step,
+  };
+}
+let goalT = 0;
+function goalTick(dt) {
+  if ((goalT -= dt) > 0 || !started) return;
+  goalT = 3;
+  if (goals.ensureWeek(Date.now(), prog.baseLv, prog.tier, nearKinds(), heroSalt())) persist();
+  for (const a of goals.check(goalState())) { audio.play('levelup'); menus.message(`Achievement: ${a.text}! You may wear the title "${a.title}" (Goals, 🏆).`); persist(); }
+}
+
 // the album's sets (album.js SETS): a finished one gives its bonus for good (applyStats)
 const RAID_BOSSES = Object.values(RAIDS).map((r) => r.boss[0]);
 const albumSets = () => setProgress(MOB_DEFS, SPAWNS, CARD_OF, album, RAID_BOSSES);
@@ -522,7 +567,7 @@ const ui = new UI(world);
 ui.mobs = mobs;
 ui.prog = prog;
 ui.jobName = () => JOBS[prog.job].name;
-ui.heroName = () => player.look.name || '';
+ui.heroName = () => (player.look.name || '') + (player.look.name && goals.title ? ` · ${goals.title}` : ''); // (an achievement's title, worn: goals.js)
 
 const cam = { yaw: save?.yaw ?? 0, dist: save?.dist ?? 12, target: new THREE.Vector3(), shake: 0 };
 
@@ -720,7 +765,7 @@ mobs.on('death', (m, drops) => {
   }
   m.blight = 0;
   if (m === doll) doll = null;
-  if (!m.def.decoy && MOB_DEFS[m.type]) album.kill(m.type);
+  if (!m.def.decoy && MOB_DEFS[m.type]) { album.kill(m.type); goalEvent({ kind: 'kill', lv: m.def.lv, type: m.type, boss: !!m.def.boss, mvp: !!m.def.mvp, heroLv: prog.baseLv }); }
   if (raid && m.def.raidLv) { raid.exp[0] += m.def.exp[0] * RATES.base; raid.exp[1] += m.def.exp[1] * RATES.job; } // a raid holds its EXP until the run ends
   else gainExp(m.def.exp[0], prog.job === 'novice' && m.def.tjob ? m.def.tjob : m.def.exp[1], RATES); // (a Trainee earns a bloop field's big Job EXP: tjob)
   for (const id of quests.onKill(m.type)) questComplete(id);
@@ -1608,6 +1653,7 @@ function endRaid(win, why, stay = false, short = why) {
   raid = null;
   raidsDone.add(run.id); // done once: the Raids window may send them from anywhere now
   if (win && !D.tutorial) raidAt[run.id] = run.start + R.cooldown; // only a clear starts the cooldown (from going in)
+  if (win && !D.tutorial) goalEvent({ kind: 'raid' });
   // only a clear pays; a cleared Tutorial run (and only that) moves the story on
   const paid = win ? raidReward(run.id, run.diff) : { perz: 0, items: [] };
   logRaid({ id: run.id, diff: run.diff, at: run.start, secs: Math.round(R.secs - Math.max(0, run.left)), won: win, why: win ? null : short, perz: paid.perz, exp: [b, j], items: paid.items });
@@ -2125,6 +2171,7 @@ const menus = new Menus(inv, prog, player, {
   equipped() { audio.play('ui'); persist(); },
   // Holger, Seyla or a card: a bright chime when it works, a crash when the piece breaks
   upgraded(mode, res) {
+    if (mode === 'refine' && res.ok) { goals.bestRefine = Math.max(goals.bestRefine, parseKey(res.key).refine); goalEvent({ kind: 'refine' }); }
     if (res.ok) { audio.play('levelup'); fx.sparkle(player.x, world.heightAt(player.x, player.z) + 1, player.z, '#ffd23a', 18); }
     else { audio.play('hit'); fx.puff(player.x, world.heightAt(player.x, player.z) + 0.8, player.z, 0.8); }
     persist();
@@ -2171,6 +2218,7 @@ const menus = new Menus(inv, prog, player, {
     if (!r) return;
     audio.play('craft');
     giveReward(r);
+    goalEvent({ kind: 'quest' });
     // a series (the job trials) carries straight on to its next step
     if (NEXT[id]) { quests.accept(NEXT[id]); menus.message(`Step done. Next: ${QUESTS[NEXT[id]].title}`); }
     refreshQuests();
@@ -2182,6 +2230,9 @@ const menus = new Menus(inv, prog, player, {
   toggleSound() { audio.setEnabled(!audio.enabled); },
   setting: (k) => settings.get(k),
   albumSets: () => albumSets(),
+  goals: () => ({ weekly: (goals.weekly?.goals || []).map((g) => ({ ...g, text: WEEKLY[g.kind].text(g), reward: weeklyReward(g.kind, goals.weekly.lv) })), ends: goals.weekly ? weekEnds(goals.weekly.week) : 0,
+    ach: ACHIEVEMENTS.map((a) => ({ ...a, at: goals.ach[a.id] || 0 })), title: goals.title }),
+  wearTitle(t) { goals.title = t && ACHIEVEMENTS.some((a) => a.title === t && goals.ach[a.id]) ? t : null; persist(); },
   album: () => albumRows(MOB_DEFS, album, CARD_OF, livesAt, (type, id) => { const base = MOB_DEFS[type].drops.find(([i]) => i === id)?.[3]; return base ? pityChance(base, mobs.pity[type]?.[id]) : null; }),
   setSetting(k, v) { settings.set(k, v); },
   closed() { persist(); },
@@ -3566,7 +3617,7 @@ let saveWarned = false;
 function persist() {
   if (!started || resetting) return;
   const isle = raidOf(world.id), back = isle && raid?.back, at = back || (isle ? boatSpot(isle) : player); // a run is never saved: back on the shore (or where they set out from)
-  const ok = writeSave({ album: album.toJSON(), mvpPity: mobs.pity, story: story.toJSON(), look: player.look, visited: [...visited], keepers: [...keepers], savePoint, raidAt, raidsDone: [...raidsDone], raidLog, raidRun: raid ? { id: raid.id, diff: raid.diff, at: raid.start } : null, map: back ? back.map : isle ? isle.from : world.id, mvpAt: mobs.mvpAt, bossHp: mobs.bossSnapshot(), bossAt: mobs.bossAt, fieldAt: mobs.fieldSnapshot(), x: at.x, z: at.z, yaw: cam.yaw, dist: cam.dist, hp: player.hp, sp: player.sp, inv: inv.toJSON(), prog: prog.toJSON(), quests: quests.toJSON(), hotbar: hotbar.toJSON(), time: dayNight.t });
+  const ok = writeSave({ goals: goals.toJSON(), album: album.toJSON(), mvpPity: mobs.pity, story: story.toJSON(), look: player.look, visited: [...visited], keepers: [...keepers], savePoint, raidAt, raidsDone: [...raidsDone], raidLog, raidRun: raid ? { id: raid.id, diff: raid.diff, at: raid.start } : null, map: back ? back.map : isle ? isle.from : world.id, mvpAt: mobs.mvpAt, bossHp: mobs.bossSnapshot(), bossAt: mobs.bossAt, fieldAt: mobs.fieldSnapshot(), x: at.x, z: at.z, yaw: cam.yaw, dist: cam.dist, hp: player.hp, sp: player.sp, inv: inv.toJSON(), prog: prog.toJSON(), quests: quests.toJSON(), hotbar: hotbar.toJSON(), time: dayNight.t });
   writeStorage(inv.chest.toJSON());
   // the phone refused the save (storage full or blocked): say so once, so the player can back up
   if (!ok && !saveWarned) { saveWarned = true; menus.message('Could not save! Back up your save from the title screen (Account) soon.'); }
@@ -3764,7 +3815,7 @@ function frame() {
 
   const b = camBasis();
   // windows never pause the game, like Ragnarok
-  for (const w of ['items', 'equip', 'skills', 'status', 'raids', 'journal', 'settings', 'album']) if (input.tapped(w) && started) { menus.toggle(w); if (menus.isOpen(w)) story.flags[`opened_${w}`] = true; } // (a story step may ask for a window)
+  for (const w of ['items', 'equip', 'skills', 'status', 'raids', 'journal', 'settings', 'album', 'goals']) if (input.tapped(w) && started) { menus.toggle(w); if (menus.isOpen(w)) story.flags[`opened_${w}`] = true; } // (a story step may ask for a window)
   if (input.tapped('attack') && started) attackNow();
   if (input.tapped('hudfold') || input.tapped('hudmenu')) { setFold(!folded); audio.play('ui'); }
   if (input.tapped('close')) { if (bigmap.open) bigmap.close(); else menus.close(); }
@@ -3781,6 +3832,7 @@ function frame() {
   }
   audio.update(dt, dayNight.night, musicMood(dt));
   hudTick(dt);
+  goalTick(dt);
   if (!started && !cine) cam.yaw += dt * 0.05; // slow orbit behind the title screen
   if (!started && cine) mobs.update(dt, CINE_HERO); // (the cutscene's world goes on)
   mobs.cam = b;
@@ -4109,4 +4161,4 @@ if (go || toSelect) { title.classList.remove('wait'); bootGone(); } else {
   addEventListener('keydown', tap);
 }
 
-window.__aria = { scene, renderer, lib, MAPS, settings, album, warp, enterMap, useSkill, useItem, story, SPOTS, player, world, cam, camera, mobs, allies, fx, inv, prog, quests, villagers, menus, hotbar, dayNight, audio, stats: world.stats, raid: () => raid, raidAt: () => raidAt, raidGo, raidLog: () => raidLog, storyDone, savePoint: () => savePoint, keepers, gainExp };
+window.__aria = { scene, renderer, lib, MAPS, settings, album, goals, warp, enterMap, useSkill, useItem, story, SPOTS, player, world, cam, camera, mobs, allies, fx, inv, prog, quests, villagers, menus, hotbar, dayNight, audio, stats: world.stats, raid: () => raid, raidAt: () => raidAt, raidGo, raidLog: () => raidLog, storyDone, savePoint: () => savePoint, keepers, gainExp };

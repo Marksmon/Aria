@@ -218,6 +218,9 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
 - **The Monster Album** (the 📖 button, `src/album.js`): every monster, kills and cards found, and eight sets
   (the owner's call): a region's monsters' cards (bosses aside; the raids' set is their bosses' cards), each
   finished set a small bonus for good (`SETS`, added in `applyStats`). A new region gets a set.
+- **Goals** (the 🏆 button, `src/goals.js`, the owner's call): three weekly hunts fit for the hero's level and job
+  (new every Monday, paid the moment done) and achievements, each a title worn after the name (`ACHIEVEMENTS`).
+  The game feeds it kills, raid clears, refines and quest hand-ins (`goalEvent`) and checks the rest every 3 s.
 - **Character slots and storage** (`src/save.js`): three heroes, picked on the title screen (slot 1
   keeps the old save key). The Keepers' storage is one chest shared by every hero (from a first job on), saved apart from
   them; a save code backs up every hero and the storage together.

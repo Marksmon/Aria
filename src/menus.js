@@ -65,6 +65,7 @@ const WINDOWS = {
   journal: { title: 'Quests',    at: [0.50, 0.16], w: 345 },
   settings: { title: 'Settings', at: [0.50, 0.22], w: 253 },
   album:  { title: 'Monster Album', at: [0.50, 0.14], w: 368 },
+  goals:  { title: 'Goals', at: [0.50, 0.14], w: 368 },
 };
 // the smith window's three jobs: Holger's refining, Seyla's slots, pressing in a card
 const SMITHS = {
@@ -753,6 +754,27 @@ export class Menus {
       <div class="al-list">${tab === 'sets' ? sets : shown.map(row).join('') || '<p class="al-empty">No monster here yet: go and meet some!</p>'}</div>`;
   }
 
+  // Goals (the 🏆 button, goals.js): this week's three hunts, paid when done, and the achievements, each a
+  // title the hero may wear after their name
+  goals() {
+    const d = this.hooks.goals?.() || { weekly: [], ach: [] }, tab = this.goalsTab || 'weekly';
+    const tabBtn = (k, name) => `<button class="rtab${tab === k ? ' on' : ''}" data-act="goalstab" data-id="${k}">${name}</button>`;
+    let body;
+    if (tab === 'weekly') {
+      const left = Math.max(0, d.ends - Date.now()), days = Math.floor(left / 864e5), hrs = Math.floor(left / 36e5) % 24;
+      body = `<div class="al-head"><span>New hunts in <b>${days ? `${days} d ${hrs} h` : `${hrs} h`}</b></span><span>Paid the moment they are done</span></div>`
+        + (d.weekly.map((g) => `<div class="al-row${g.done ? ' done' : ''}"><div class="al-main"><b>${esc(g.text)}</b>${g.done ? '<i class="al-kind">Done</i>' : ''}
+          <small>${g.reward.perz.toLocaleString()} perz${Object.entries(g.reward.items).map(([id, n]) => ` · ${n} ${esc(ITEMS[id].name)}`).join('')}</small></div>
+          <span class="al-kills">${g.have} / ${g.n}</span></div>`).join('') || '<p class="al-empty">Your hunts come in a moment.</p>');
+    } else {
+      const got = d.ach.filter((a) => a.at).length;
+      body = `<div class="al-head"><span>Earned <b>${got}</b> / ${d.ach.length}</span><span>${d.title ? `Wearing <b>${esc(d.title)}</b>` : 'No title worn'}</span></div>`
+        + d.ach.map((a) => `<div class="al-row${a.at ? ' done' : ' unmet'}"><div class="al-main"><b>${esc(a.title)}</b><small>${esc(a.text)}</small></div>
+          ${a.at ? `<button class="rbtn${d.title === a.title ? '' : ' soft'}" data-act="weartitle" data-id="${esc(d.title === a.title ? '' : a.title)}">${d.title === a.title ? 'Worn' : 'Wear'}</button>` : ''}</div>`).join('');
+    }
+    return `<div class="rtabs">${tabBtn('weekly', 'This Week')}${tabBtn('ach', 'Achievements')}</div><div class="al-list">${body}</div>`;
+  }
+
   // Holger's refining, Seyla's slots and card inserting: pick a piece (worn or in the bag), see the
   // odds and the cost, and try. A try that can break the piece asks twice.
   smith() {
@@ -1089,6 +1111,8 @@ export class Menus {
     if (act === 'totitle') this.hooks.toTitle?.(); // back to the title screen, to play another hero
     if (act === 'sound') { this.hooks.toggleSound?.(); this.render(id); }
     if (act === 'goldpay') { this.inv.goldPay = !this.inv.goldPay; this.render(id); }
+    if (act === 'goalstab') { this.goalsTab = t.dataset.id; this.render(id); }
+    if (act === 'weartitle') { this.hooks.wearTitle?.(t.dataset.id || null); this.render(id); }
     if (act === 'albumtab') { this.albumTab = t.dataset.id; this.render(id); }
     if (act === 'targetbar') { this.hooks.setSetting?.('targetBar', !this.hooks.setting?.('targetBar')); this.render(id); }
     if (act === 'graphics') { this.hooks.setSetting?.('graphics', this.hooks.setting?.('graphics') === 'fast' ? 'sharp' : 'fast'); this.render(id); }
