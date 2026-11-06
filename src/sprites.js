@@ -1241,11 +1241,8 @@ export function createSprites() {
   for (const [id, D] of Object.entries(HALLS)) MADE[id] = () => codeSet(hallsSet(id), ...D.size, D.body, 2 / D.size[1]);
   // Yggdrasil's monsters, painted in code (roots.js)
   for (const [id, D] of Object.entries(ROOTS)) MADE[id] = () => codeSet(rootsSet(id), ...D.size, D.body, 2 / D.size[1]);
-  // Hafnvik's coast, painted in code (coast.js); the Barnacle Crab and the Beacon Wraith are the crab and the wisp
-  // in new colours (the crab's red shell gone slate blue with pale barnacles, the wisp's glow a beacon's orange flame)
+  // Hafnvik's coast, every monster a kind of its own, painted in code (coast.js)
   for (const [id, D] of Object.entries(COAST)) MADE[id] = () => codeSet(coastSet(id), ...D.size, D.body, 2 / D.size[1]);
-  MADE.barnacleCrab = () => sheet('crab', { recolor: recolorer([[(h, s) => s > 0.22 && (h < 50 || h > 320), (h, s, l) => [205, Math.min(1, s * 0.4), Math.min(0.85, l * 1.05)]]]) });
-  MADE.beaconWraith = () => sheet('wisp', { recolor: recolorer([[(h, s) => s > 0.12, (h, s, l) => [24, Math.min(1, s * 1.2 + 0.2), l]]]) });
   MADE.wyrmMound = () => { const fr = moundSet(); return codeSet({ down: { idle: [fr[0]], walk: fr } }, ...MOUND.size, MOUND.body, 2 / MOUND.size[1]); };
   for (const [id, make] of Object.entries(MADE)) lazy(id, make);
   // the camp's and Steinborg's people (one still being drawn borrows the Elder's look)

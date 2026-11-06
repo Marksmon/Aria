@@ -8,8 +8,6 @@ import { Frame, ellipse, rect, poly, line, both, dark, light } from './painted.j
 const flat = { outline: false, flat: true };
 // size: the frame; body: the standing figure in pixels (for sizing in the world: def.w is its width)
 export const BEASTS = {
-  // Hafnvik's coast: the Moor Hounds of Beacon Moor, peat-dark, amber-eyed (Neutral: plain beasts, no glow)
-  moorHound: { kind: 'quad', size: [56, 44], body: [20, 26], fur: '#4a3e34', back: '#2e2620', belly: '#7a6a5a', muzzle: '#5a4a3e', eye: '#d8a040', mouth: '#6a2a2a', tail: 'bush' },
   wolf: { kind: 'quad', size: [56, 44], body: [20, 26], fur: '#8a8e96', back: '#5e626c', belly: '#d8d8d4', muzzle: '#c8c8c4', eye: '#ffd23a', mouth: '#8a2a2a', tail: 'bush' },
   bear: { kind: 'quad', size: [64, 56], body: [28, 34], fur: '#7a5232', back: '#5a3a22', belly: '#a87a4e', muzzle: '#c89a6a', eye: '#1e1410', mouth: '#8a2a2a', claw: '#efe6cc', tail: 'stub', bear: true },
   snake: { kind: 'snake', size: [52, 40], body: [22, 22], skin: '#5f9440', belly: '#e0d07a', spot: '#2f5a2a', eye: '#ffd23a', tongue: '#d8303a' },

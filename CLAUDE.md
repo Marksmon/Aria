@@ -21,9 +21,14 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   coast (the owner's call): Scorpion Sands E → Tide Cliffs (65–70) → Hafnvik; Beacon Moor (82–88) N, Coral Shallows
   (70–76, a lagoon waded, `lake.shallow`) S; Captain Asgeir's ship (`ship: [{ to, fare, lv }]`) to the Storm Isles
   (76–82) and Loki's Gate (Base 90) (`voyage` maps with a `dock`; `isle`; a map's sea side is `shore`; a walkable pier
-  is `piers`). The coast's monsters are painted in code in `src/coast.js` (gull, merrow, jelly, and Yggdrasil's
-  painters in sea colours, `paintRootsKind`), 9 Neutral and 4 elemental (Merrow Water, Storm Petrel Wind, Draugr
-  Shadow, Beacon Wraith Fire); the album's ninth set is Hafnvik's Coast. Next: its story chapter, quests, mini-boss, MVP.
+  is `piers`). The coast's monsters are painted in code in `src/coast.js`, **every one a kind new to Aria** (the owner's
+  call: no crab, golem, wolf or other kind already used): Sea Otter, Tusk Walrus, Wrecker; Shell Turtle, Reef Octopus,
+  Glass Jelly, Merrow (Water); Sky Manta (Wind), Isle Boar, Moss Troll; Bog Toad, Sea Hag (Shadow), Fire Salamander
+  (Fire). A Neutral monster looks plain, a creature with no glow; only an elemental one glows (the owner's call). The
+  album's ninth set is Hafnvik's Coast. Its MVP is **Poseidon, Lord of the Tides** (the owner's sheet: pale blue skin,
+  long white hair, a gold horned crown, glowing blue eyes, gold-trimmed armour, a lower body of flowing water, a gold
+  trident; moves Tidal Barrage, Leviathan Surge, Oceanic Prison, Raging Maelstrom), summoning Merrows and Glass
+  Jellies. Next: Poseidon, then the story chapter, quests and a mini-boss.
 
 - **Jobs, skill points and second jobs:** read `docs/job-rules.md` before touching jobs, skills
   or job quests. In short:

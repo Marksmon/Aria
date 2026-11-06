@@ -131,10 +131,10 @@ Scorpion Sands with its Pyramid, then the Great Desert, where the Sand Wyrm hunt
 | Cactus Dunes | 55–60 | Cactus (55, throws needles), Dune Worm (58) | Cactus Lord (60) |
 | Scorpion Sands | 60–66 | Sand Scorpion (61, poison), Sand Runner (64) | Rainbow Runner (64) |
 | Great Desert | 62–70 | Soldier Ant (62), Cactus, Dune Worm, Sand Scorpion, Sand Runner | **Sand Wyrm (70, MVP)** |
-| Tide Cliffs | 65–70 | Cliff Gull (65, flies), Barnacle Crab (66, hard shell), Tide Golem (69) | |
-| Coral Shallows | 70–76 | Reef Eel (71), Coral Beetle (73), Glass Jelly (74, numbing sting), Merrow (75, Water, throws harpoons) | |
-| Storm Isles (by ship) | 76–82 | Storm Petrel (77, Wind), Isle Elk (79), Isle Troll (81) | |
-| Beacon Moor | 82–88 | Moor Hound (83, quick), Draugr (84, Shadow), Beacon Wraith (86, Fire, throws fire) | |
+| Tide Cliffs | 65–70 | Sea Otter (65, quick, bites twice), Tusk Walrus (66, tough), Wrecker (69, a bandit with a crossbow) | |
+| Coral Shallows | 70–76 | Reef Octopus (71, throws ink), Shell Turtle (73, very tough), Glass Jelly (74, numbing sting), Merrow (75, Water, throws harpoons) | |
+| Storm Isles (by ship) | 76–82 | Sky Manta (77, Wind, flies), Isle Boar (79, charges), Moss Troll (81, a club) | |
+| Beacon Moor | 82–88 | Bog Toad (83, slowing spit), Sea Hag (84, Shadow, dark bolts), Fire Salamander (86, Fire, quick) | |
 | Sphinx Halls 1 | 65–72 | Scarab (66, hard shell), Cobra (71, poison) | |
 | Sphinx Halls 2 | 73–80 | Mummy (75), Lamia (78, spits venom), Pharaoh's Servant (80, blue fire, shields the others) | |
 | Sphinx Halls 3 | 81–88 | Sphinx Cub (83), Sand Elemental (86, slowing sand), Sarcophagus (88) | Ammit (74) |
@@ -180,11 +180,13 @@ sphere, a market under blue awnings, and a harbour of ships between two lighthou
 night. North of it lies Beacon Moor, south the Coral Shallows, a lagoon waded knee-deep. **Captain Asgeir** on the
 long pier sails to the Storm Isles, and, for heroes of Base 90, to **Loki's Gate**, a black rock where Loki the
 Mischiefbringer keeps the door of the Deep Halls, an endless dungeon: each floor a new maze, harder than the last,
-a checkpoint and a cache every fifth floor. The coast's monsters (painted in code, `src/coast.js`) are mostly
-Neutral, with a few of an element for variety, so no one weapon element is best here: gulls and petrels, crabs,
-eels, beetles grown over with coral, fish-folk Merrows with harpoons, glassy jellies, elks and trolls of the
-storm, moor hounds, drowned Draugr and the Beacon Wraiths. Their cards make the **Hafnvik's Coast** album set
-(Max HP and SP +1%); the Isle Elk's and the Draugr's are Head and Face cards for fighters.
+a checkpoint and a cache every fifth floor. The coast's monsters (painted in code, `src/coast.js`) are kinds found nowhere else in Aria, and mostly
+Neutral, a few of an element for variety, so no one weapon element is best here: on the Tide Cliffs Sea Otters, Tusk
+Walruses and the Wreckers, coast bandits with crossbows; in the Coral Shallows Shell Turtles, Reef Octopuses that
+throw ink, Glass Jellies and the Merrows, fish-folk with harpoons (Water); on the Storm Isles Sky Mantas riding the
+wind (Wind), Isle Boars and Moss Trolls; on Beacon Moor Bog Toads, the Sea Hags, kelp-haired sea witches (Shadow), and
+Fire Salamanders (Fire). Only the elemental ones glow. Their cards make the **Hafnvik's Coast** album set (Max HP and
+SP +1%); the Isle Boar's and the Moss Troll's are Head and Face cards for fighters.
 
 **The desert's monsters** (painted in code, `src/desert.js`). Red Bloops warm themselves on the Red
 Sands beside Giant Ants, red-brown and busy; both only fight back. Further out, Cacti stand still and
@@ -1347,29 +1349,29 @@ they come back whole and the slot stays open. A piece that breaks at Holger's gi
 | Soldier Ant Card (Armoured) | Shield | DEF +3 · Max HP +4% | Soldier Ants (0.1%) |
 | Great Stag Card (Antlered) | Head or Face | ATK +10 · POW +1 | Great Stags (0.1%) |
 | Sand Runner Card (Fleet) | Accessory | FLEE +3 · QKN +1 · FTN +1 | Sand Runners (0.1%) |
-| Cliff Gull Card (Soaring) | Shoes | FLEE +6 · QKN +1 | Cliff Gulls (0.1%) |
-| Barnacle Crab Card (Barnacled) | Shield | DEF +3 · Max HP +300 | Barnacle Crabs (0.1%) |
+| Sea Otter Card (Nimble) | Shoes | FLEE +6 · QKN +1 | Sea Otters (0.1%) |
 | Dryad Card (Blossoming) | Garment | KNL +2 · Max SP +60 | Dryads (0.1%) |
 | Scarab Card (Shelled) | Armor | DEF +3 · END +1 | Scarabs (0.1%) |
+| Tusk Walrus Card (Blubbery) | Armor | END +1 · Max HP +6% | Tusk Walruses (0.1%) |
 | Rot Beetle Card (Rotting) | Weapon | ATK +14 · END +1 | Rot Beetles (0.1%) |
-| Tide Golem Card (Tidebound) | Armor | END +1 · Max HP +6% | Tide Golems (0.1%) |
+| Wrecker Card (Wrecker's) | Weapon | ATK +14 · QKN +1 | Wreckers (0.1%) |
 | Cobra Card (Fanged) | Weapon | ATK +5 · QKN +2 | Cobras (0.1%) |
-| Reef Eel Card (Slippery) | Weapon | ATK +14 · QKN +1 | Reef Eels (0.1%) |
+| Reef Octopus Card (Inky) | Accessory | KNL +1 · Max SP +6% | Reef Octopuses (0.1%) |
 | Root Warden Card (Warding) | Shield | DEF +5 · Max HP +5% | Root Wardens (0.1%) |
-| Coral Beetle Card (Coral) | Garment | DEF +2 · FLEE +4 | Coral Beetles (0.1%) |
+| Shell Turtle Card (Shelled) | Shield | DEF +3 · Max HP +300 | Shell Turtles (0.1%) |
 | Glass Jelly Card (Glassy) | Accessory | KNL +1 · Max SP +6% | Glass Jellies (0.1%) |
 | Merrow Card (Harpooner's) | Accessory | HIT +5 · FNS +1 | Merrows (0.1%) |
 | Mummy Card (Undying) | Armor | Max HP +8% | Mummies (0.1%) |
 | Thorn Drake Card (Draconic) | Armor | POW +1 · END +1 · Max HP +6% | Thorn Drakes (0.1%) |
-| Storm Petrel Card (Stormborne) | Shoes | FLEE +5 · QKN +2 | Storm Petrels (0.1%) |
+| Sky Manta Card (Gliding) | Shoes | FLEE +5 · QKN +2 | Sky Mantas (0.1%) |
 | Lamia Card (Bewitching) | Head or Face | ATK +8 · HIT +3 | Lamias (0.1%) |
-| Isle Elk Card (Antlered) | Head or Face | ATK +10 · HIT +4 | Isle Elks (0.1%) |
+| Isle Boar Card (Tusked) | Head or Face | ATK +10 · HIT +4 | Isle Boars (0.1%) |
 | Pharaoh's Servant Card (Devout) | Garment | KNL +1 · Max SP +8% | Pharaoh's Servants (0.1%) |
-| Isle Troll Card (Trollish) | Armor | DEF +2 · Max HP +800 | Isle Trolls (0.1%) |
-| Moor Hound Card (Hounding) | Weapon | ATK +16 · FNS +1 | Moor Hounds (0.1%) |
+| Moss Troll Card (Trollish) | Head or Face | ATK +12 · POW +1 | Moss Trolls (0.1%) |
+| Bog Toad Card (Toad's) | Weapon | ATK +16 · FNS +1 | Bog Toads (0.1%) |
 | Sphinx Cub Card (Pouncing) | Shoes | FLEE +4 · QKN +2 | Sphinx Cubs (0.1%) |
-| Draugr Card (Drowned) | Head or Face | ATK +12 · POW +1 | Draugr (0.1%) |
-| Beacon Wraith Card (Beacon) | Garment | MATK +8% · Max SP +5% | Beacon Wraiths (0.1%) |
+| Sea Hag Card (Hexing) | Garment | MATK +8% · Max SP +5% | Sea Hags (0.1%) |
+| Fire Salamander Card (Burning) | Armor | DEF +2 · Max HP +800 | Fire Salamanders (0.1%) |
 | Sand Elemental Card (Whirling) | Garment | FLEE +5 · END +1 | Sand Elementals (0.1%) |
 | Sarcophagus Card (Entombed) | Shield | DEF +4 · Max HP +6% | Sarcophagi (0.1%) |
 | Jackal Guardian Card (Cursed) | Weapon | ATK +12 · POW +2 | Jackal Guardians (0.1%) |
