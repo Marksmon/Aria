@@ -461,18 +461,27 @@ function cardOnHit(m, dmg) {
   if (ps.stun && m.alive) inflict(m, { kind: 'stun', chance: () => ps.stun, dur: 1.5 }, 1, dmg);
   if (ps.venom && m.alive) inflict(m, { kind: 'poison', chance: () => ps.venom, dur: 4 }, 1, dmg); // (the Cactus Lord Card, a Stinger)
   if (ps.rot && m.alive && dmg > 0) { m.curseT = Math.max(m.curseT || 0, 5); m.curseBy = Math.max(m.curseBy || 0, ps.rot / 100); } // (the Nidhogg Card's Root Rot)
-  if (ps.soultax && dmg > 0) player.healSp(Math.max(1, Math.round(dmg * ps.soultax / 100))); // (the Pharaoh Card)
+  if (ps.soultax && dmg > 0) { const n = player.healSp(Math.max(1, Math.round(dmg * ps.soultax / 100))); if (n > 0 && skillClock - (procSaid.soultax ?? -99) >= 1) { procSaid.soultax = skillClock; fx.number(player.x, overHead(player, 1.5), player.z, n, 'sp'); } } // (the Pharaoh Card)
   if (ps.lifesteal && dmg > 0) {
     const n = player.heal(Math.max(1, Math.round(dmg * ps.lifesteal / 100)));
     if (n > 0) fx.number(player.x, overHead(player, 1.3), player.z, n, 'heal');
   }
 }
 let skillClock = 0; // seconds since the game started, for those windows
+// a passive that just took hold says so: its name over the monster it worked on (or over you), at most
+// once every 2 s each, so a build's quiet bonuses can be seen working
+const procSaid = {};
+function proc(id, m = null) {
+  if (skillClock - (procSaid[id] ?? -99) < 2) return;
+  procSaid[id] = skillClock;
+  const o = m || player, h = m ? m.sprite.scale.y * 0.8 + 0.75 : 2.1;
+  fx.number(o.x, overHead(o, h), o.z, SKILLS[id]?.name || id, 'skill');
+}
 // what is in hand: 'sword', 'staff', 'bow', 'dagger', or 'none' (bare hands: no blade skills, no sword mastery)
 const weaponKind = () => { const it = ITEMS[inv.gear.weapon]; return !it ? 'none' : it.kind === 'staff' || it.kind === 'bow' || it.kind === 'dagger' ? it.kind : 'sword'; };
 // an Archer's bonuses on one monster: Hunter's Mark on it, Steady Aim from 4 paces
 // the Shadowblade's Cruel Edge: a sword harder on a monster below half its HP
-const cruel = (m) => (weaponKind() === 'sword' && m.hp < m.def.hp / 2 ? 1 + 0.04 * skillLv(prog, 'cruedge') : 1) * backstab(m) * weighed(m);
+const cruel = (m) => (weaponKind() === 'sword' && m.hp < m.def.hp / 2 && skillLv(prog, 'cruedge') ? (proc('cruedge', m), 1 + 0.04 * skillLv(prog, 'cruedge')) : 1) * backstab(m) * weighed(m);
 // the Ammit Card's Weighing of the Heart: blows and spells land harder on a monster under 30% HP
 // and the Ratatoskr Card's Keen Perception: harder from 4 paces or more
 const weighed = (m) => (player.ps.execute && m.hp < m.def.hp * 0.3 ? 1 + player.ps.execute / 100 : 1)
@@ -493,10 +502,10 @@ function backstab(m) {
 }
 function bowMul(m) {
   let k = cruel(m);
-  if (weaponKind() === 'bow' && skillLv(prog, 'predator') && (m.slowT > 0 || m.stunT > 0 || m.poisonT > 0)) k *= 1 + 0.05 * skillLv(prog, 'predator'); // the Hunter's Predator
+  if (weaponKind() === 'bow' && skillLv(prog, 'predator') && (m.slowT > 0 || m.stunT > 0 || m.poisonT > 0)) { k *= 1 + 0.05 * skillLv(prog, 'predator'); proc('predator', m); } // the Hunter's Predator
   if (m.markT > skillClock) k *= 1 + 0.04 * m.markLv;
   if (weaponKind() === 'bow' && skillLv(prog, 'steadyaim') && Math.hypot(m.x - player.x, m.z - player.z) - m.def.r >= 4) k *= 1.1;
-  if (skirmish > 0 && weaponKind() === 'bow') { skirmish--; k *= 1 + 0.08 * skillLv(prog, 'skirmisher'); }
+  if (skirmish > 0 && weaponKind() === 'bow') { skirmish--; k *= 1 + 0.08 * skillLv(prog, 'skirmisher'); proc('skirmisher', m); }
   return k;
 }
 // an arrow landed: Gale Rhythm adds a stack (up to 5, for 6 s)
@@ -680,9 +689,9 @@ player.on('strike', (m, res) => {
     }
     if (player.bow) arrowLanded();
     // the Voodoo's Toxic Blade: a dagger's blow may add a stack of Blight
-    if (!res.skill && weaponKind() === 'dagger' && skillLv(prog, 'toxicblade') && Math.random() < 0.1 * skillLv(prog, 'toxicblade')) blight(m, 1);
+    if (!res.skill && weaponKind() === 'dagger' && skillLv(prog, 'toxicblade') && Math.random() < 0.1 * skillLv(prog, 'toxicblade')) { proc('toxicblade', m); blight(m, 1); }
     // Battle Rhythm: every third hit that lands gives back 3 SP, so a Blader keeps swinging skills
-    if (skillLv(prog, 'rhythm') && ++rhythm % 3 === 0) player.healSp(3);
+    if (skillLv(prog, 'rhythm') && ++rhythm % 3 === 0) { const n = player.healSp(3); if (n > 0) fx.number(player.x, overHead(player, 1.5), player.z, n, 'sp'); }
   }
 });
 player.on('hurt', (n) => {

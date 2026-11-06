@@ -638,6 +638,9 @@ once the need is met; it scrolls when it is bigger than the window), and beside 
 tap: what it does now and at the next level, its SP, cast time, cooldown and weapon, what it
 needs (other trees' skills too), and **Raise**, or why it can't be raised yet. Drag a learnt active
 from the tree onto the hotbar.
+Passives that work by chance or on a condition show when they take hold: "Double!", "Combo!", Backstab,
+Cruel Edge, Predator, Skirmisher or Toxic Blade floats up over the monster, and SP given back (Battle Rhythm,
+the Pharaoh Card) shows as a blue number.
 
 Aria's own jobs and skills, kept modest. A **Trainee** puts points into **Basic Training**; the
 other Trainee skills come free with Job Levels. At Trainee Job 10 with Basic Training 9, a job
