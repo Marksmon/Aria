@@ -9,6 +9,13 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   first four are Steinborg, Galdrheim, Veidheim and Rytingborg, the desert's oasis city; the owner will add the fifth), then 5
   late-game cities. The first half of development ends when the 5 early-game cities are done; the
   late-game cities come after. Build new cities and their maps to the map defaults below.
+- **The fifth city** (the owner's calls, November 2026; `docs/fifth-city.md`): a port city with a Ship Captain whose
+  ship sails to destinations. Its four fields fill the open-field gap (Base 65–88) and are **mostly Neutral monsters with
+  some elemental ones for variety**, so no one weapon element rules the late game (an all-Water region would make
+  everyone wear Wind). The **endless dungeon** (the Deep Halls, `src/delve.js`, built and tested, no entrance yet) is an
+  unlockable destination of the Ship Captain from **Base 90**; its gatekeeper is **Loki the Mischiefbringer** (a name
+  the owner chose, beyond the plain-names rule), who stands at its door and has `delve: true` in NPCS. The Sunken Ship
+  dungeon idea is set aside for now.
 
 - **Jobs, skill points and second jobs:** read `docs/job-rules.md` before touching jobs, skills
   or job quests. In short:
@@ -214,7 +221,13 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   (no land counts as walked), and a scene waits until no monster is on their heels. The Quests window's Main
   tab plays a chapter's again (▶ Watch). A new chapter gets an opening (a test checks it).
 - **Quests:** side quests and job trials can be quit from the Quest View; the main story quest
-  can never be quit.
+  can never be quit. Quests come in many kinds (the audit, November 2026): kill and fetch stay under 70% of them
+  (`npm test` checks it), with search, defend, quiz, deliver, visit and **escort** (`questworld.js`: the giver walks to a
+  place on their own map at a walking pace, ambushes come for them, they have HP; Hakon's The Salt Road is the first).
+  A quest that changes kind is listed in `V4_RESET` (quests.js) so a hero who had it under way starts it afresh. From a
+  town with a Keeper, the Quest View offers the **Keepers' road** to the quest's town, for the fare.
+- **The story's pacing** (the audit): a talk step that only relays a message is folded into the step before it (a
+  letter, a runner, the person arriving); the old step's id goes in `RENAMED` (story.js) so saves on it go on.
 - **EXP rates:** battles pay x4 (`RATES`: monsters, mini-bosses, MVPs, raids); quests pay x2
   (`QUEST_RATE`: side quests, job trials, the main story).
 - **Raids** (`src/raid.js`): Bloop Island (the Boatman, Salt Bay), the Kobold Camp (Brokk, Coal Pit),
@@ -266,6 +279,22 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   differs). Never change that key: phones would refuse the update and players lose their saves.
 - After a build, give the owner the APK link:
   https://github.com/Marksmon/Aria/releases/download/apk-latest/Aria.apk
+- Memory stays bounded (the audit, November 2026): only the map the hero is on and the last few walked stay built
+  (`MAP_BUDGET` in `main.js`, `world.evict`); the rest give their geometries, materials and textures back and are built
+  again when entered (their monsters, drops and bosses are kept as ever; villagers stand solid again on a rebuilt map).
+  Settings → **Performance** shows fps, the slowest frame, draw calls, textures, geometries, maps built and memory: use
+  it to measure on a real phone. Settings also has **Window text size** (windows zoom, `--wz`; `menus.place` keeps them
+  on screen) and **Screen shake**.
+- Danger on the ground (a boss move, Tremor, Meteor Rain, burning ground: `fx.warn`'s danger colours) never shows by
+  colour alone: a thick dashed ring, a striped fill, a pulse that quickens (colour-blind players).
+- Saves (`save.js`): the APK also mirrors every save to the app's own storage (Capacitor Preferences, carried by
+  Android's backup) and puts back any the WebView lost on start; after a chapter, a reminder to make a save code if
+  none was made this week.
+- Signing: the everyday APK keeps `build-tools/debug.keystore` (public, never changed); a store release is a second
+  app (`com.marksmon.aria`) signed with a key kept only in the repository's secrets (`.github/workflows/release.yml`,
+  `docs/release.md`). No other keystore is ever committed (`npm test` checks it).
+- `build-tools/field-bot.cjs` plays a young hero in the early fields of the built game (kills, faints, potions, loot):
+  run it after changing early monsters, fields or the economy.
 - Start-up stays light (phones stalled on a blank sky when it wasn't): a map is built the first time it
   is entered (`buildWorld`; its people stand there then, `Villagers.build`), a monster's sprite set is
   made the first time one is met (`mobs` in `createSprites`), and a sheet's frames get their canvas and

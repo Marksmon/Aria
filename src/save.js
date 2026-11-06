@@ -7,6 +7,49 @@ const STORE_KEY = 'aria.storage';
 export const SLOTS = 3;
 const keyOf = (i) => (i ? `${KEY}.${i + 1}` : KEY);
 
+// ---------- the native mirror (the APK only): every save is also kept in the app's own storage (Capacitor
+// Preferences, Android's SharedPreferences), which Android's backup can carry to a reinstall or a new phone. The
+// WebView's storage can be emptied under the hero's feet (the OS reclaiming space); on start, a save missing from it
+// is put back from the mirror (restoreMirror). Writes are gathered and sent every 20 s, and at once when the app
+// goes to the background
+const MIRROR_EVERY = 20000;
+const BACKED_KEY = 'aria.backedUp'; // when a save code was last made (backup nudges: main.js)
+let prefs = null;
+const native = () => !!globalThis.Capacitor?.isNativePlatform?.();
+const Prefs = () => (prefs ||= import('@capacitor/preferences').then((m) => m.Preferences).catch(() => null));
+const pending = new Map();
+let flushT = null;
+function flushMirror() {
+  flushT = null;
+  if (!pending.size) return;
+  const items = [...pending]; pending.clear();
+  Prefs().then((P) => { if (P) for (const [key, value] of items) (value === null ? P.remove({ key }) : P.set({ key, value })).catch(() => {}); });
+}
+function mirror(key, value, now = false) {
+  if (!native()) return;
+  pending.set(key, value);
+  if (now) flushMirror();
+  else flushT ||= setTimeout(flushMirror, MIRROR_EVERY);
+}
+if (typeof document !== 'undefined') document.addEventListener('visibilitychange', () => { if (document.hidden) flushMirror(); });
+// put back from the mirror every save the WebView no longer has: how many came back (the page then reloads once)
+export async function restoreMirror() {
+  if (!native()) return 0;
+  const P = await Prefs();
+  if (!P) return 0;
+  let n = 0;
+  for (const key of [SLOT_KEY, STORE_KEY, BACKED_KEY, ...Array.from({ length: SLOTS }, (_, i) => keyOf(i))]) {
+    try {
+      if (localStorage.getItem(key) !== null) continue;
+      const { value } = await P.get({ key });
+      if (value !== null && value !== undefined) { localStorage.setItem(key, value); n++; }
+    } catch { /* the next */ }
+  }
+  return n;
+}
+// a save code was made: when (backup nudges read it)
+export const backedUpAt = () => { try { return +localStorage.getItem(BACKED_KEY) || 0; } catch { return 0; } };
+
 export function activeSlot() {
   try {
     const i = parseInt(localStorage.getItem(SLOT_KEY), 10);
@@ -17,6 +60,7 @@ export function activeSlot() {
 }
 export function setActiveSlot(i) {
   try { localStorage.setItem(SLOT_KEY, String(i)); } catch { /* storage unavailable */ }
+  mirror(SLOT_KEY, String(i));
 }
 
 // the shared storage, as [[id, n], ...]
@@ -29,7 +73,9 @@ export function loadStorage() {
   }
 }
 export function writeStorage(arr) {
-  try { localStorage.setItem(STORE_KEY, JSON.stringify(arr)); } catch { /* storage unavailable */ }
+  const text = JSON.stringify(arr);
+  try { localStorage.setItem(STORE_KEY, text); } catch { /* storage unavailable */ }
+  mirror(STORE_KEY, text);
 }
 
 // a save from before the shared storage kept its own chest: it moves into the storage, once.
@@ -66,6 +112,7 @@ const bakAt = {};
 export function writeSave(data, i = activeSlot(), now = Date.now()) {
   try {
     const text = JSON.stringify(data);
+    mirror(keyOf(i), text); // (first: a full WebView storage still leaves the mirror a copy)
     localStorage.setItem(keyOf(i), text);
     if (!(now - (bakAt[i] || 0) < BAK_EVERY) || localStorage.getItem(keyOf(i) + BAK) === null) { localStorage.setItem(keyOf(i) + BAK, text); bakAt[i] = now; }
     return true;
@@ -76,6 +123,7 @@ export function writeSave(data, i = activeSlot(), now = Date.now()) {
 
 export function clearSave(i = activeSlot()) {
   try { localStorage.removeItem(keyOf(i)); localStorage.removeItem(keyOf(i) + BAK); } catch { /* ignore */ }
+  mirror(keyOf(i), null, true);
 }
 
 // a backup as one line of text, to keep anywhere (notes, a chat) and paste back in. ARIA2 holds
@@ -95,7 +143,10 @@ export function saveCode() {
     const slots = [];
     for (let i = 0; i < SLOTS; i++) slots.push(loadSave(i));
     if (!slots.some(Boolean)) return '';
-    return CODE + pack(JSON.stringify({ slots, storage: loadStorage() }));
+    const code = CODE + pack(JSON.stringify({ slots, storage: loadStorage() }));
+    try { localStorage.setItem(BACKED_KEY, String(Date.now())); } catch { /* ignore */ }
+    mirror(BACKED_KEY, String(Date.now()));
+    return code;
   } catch {
     return '';
   }
@@ -120,6 +171,7 @@ export function loadCode(code, slot = activeSlot()) {
       if (!data) return false;
       localStorage.removeItem(keyOf(slot) + BAK);
       localStorage.setItem(keyOf(slot), JSON.stringify(data));
+      mirror(keyOf(slot), JSON.stringify(data), true);
       return 'slot';
     }
     const all = read((d) => Array.isArray(d?.slots) && d.slots.some((x) => x?.prog));
@@ -129,7 +181,9 @@ export function loadCode(code, slot = activeSlot()) {
       localStorage.removeItem(keyOf(i) + BAK); // (the old backup is not this hero's)
       if (d?.prog) localStorage.setItem(keyOf(i), JSON.stringify(d));
       else localStorage.removeItem(keyOf(i));
+      mirror(keyOf(i), d?.prog ? JSON.stringify(d) : null);
     }
+    flushMirror();
     writeStorage(Array.isArray(all.storage) ? all.storage : []);
     return 'all';
   } catch {

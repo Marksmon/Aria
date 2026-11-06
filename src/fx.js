@@ -1,6 +1,9 @@
 // Short-lived visual effects and ground pickups (drops, hearts).
 import * as THREE from 'three';
 
+// the colours of danger on the ground (fx.warn): a boss move's red, burning ground's orange
+const DANGER = ['#ff4a3a', '#ff8a2a'];
+
 export class FX {
   constructor(scene, world, lib) {
     this.scene = scene;
@@ -15,8 +18,11 @@ export class FX {
   }
 
   // a circle on the ground: red where a boss move will land, the fill growing until it hits (life s);
-  // a spell's colour for the area it covers while it lasts
+  // a spell's colour for the area it covers while it lasts. Danger (a boss move, Tremor, Meteor Rain, burning ground)
+  // never shows by its colour alone (a colour-blind player must see it too): its ring is dashed and thick, its fill
+  // striped, and it pulses faster as the blow nears
   warn(x, z, r, life, color = '#ff4a3a') {
+    const danger = DANGER.includes(color);
     if (!this.warnTex) {
       const tex = (fill) => {
         const c = document.createElement('canvas');
@@ -27,6 +33,23 @@ export class FX {
         return new THREE.CanvasTexture(c);
       };
       this.warnTex = [tex(false), tex(true)];
+      // danger: a thick dashed ring and a striped fill
+      const dash = document.createElement('canvas');
+      dash.width = dash.height = 128;
+      const d = dash.getContext('2d');
+      d.strokeStyle = '#ffffff'; d.lineWidth = 11;
+      for (let i = 0; i < 16; i++) { d.beginPath(); d.arc(64, 64, 57, (i / 16) * Math.PI * 2, ((i + 0.6) / 16) * Math.PI * 2); d.stroke(); }
+      d.beginPath(); d.arc(64, 64, 50, 0, Math.PI * 2); d.lineWidth = 2; d.stroke();
+      d.fillStyle = 'rgba(255,255,255,.14)'; d.beginPath(); d.arc(64, 64, 50, 0, Math.PI * 2); d.fill();
+      const hatch = document.createElement('canvas');
+      hatch.width = hatch.height = 128;
+      const h = hatch.getContext('2d');
+      h.save(); h.beginPath(); h.arc(64, 64, 60, 0, Math.PI * 2); h.clip();
+      h.fillStyle = 'rgba(255,255,255,.22)'; h.fillRect(0, 0, 128, 128);
+      h.strokeStyle = 'rgba(255,255,255,.55)'; h.lineWidth = 7;
+      for (let i = -128; i < 256; i += 18) { h.beginPath(); h.moveTo(i, 0); h.lineTo(i + 128, 128); h.stroke(); }
+      h.restore();
+      this.dangerTex = [new THREE.CanvasTexture(dash), new THREE.CanvasTexture(hatch)];
       this.warnGeo = new THREE.PlaneGeometry(2, 2).rotateX(-Math.PI / 2);
     }
     let w = this.warnPool.pop();
@@ -40,10 +63,14 @@ export class FX {
       w = { ring: mesh(this.warnTex[0]), fill: mesh(this.warnTex[1]) };
     }
     const y = this.world.heightAt(x, z) + 0.12;
-    for (const m of [w.ring, w.fill]) { m.position.set(x, y, z); m.visible = true; m.material.color.set(color); }
+    const [ringTex, fillTex] = danger ? this.dangerTex : this.warnTex;
+    for (const [m, map] of [[w.ring, ringTex], [w.fill, fillTex]]) {
+      if (m.material.map !== map) { m.material.map = map; m.material.needsUpdate = true; }
+      m.position.set(x, y, z); m.visible = true; m.material.color.set(color); m.material.opacity = 1;
+    }
     w.ring.scale.set(r, 1, r);
     w.fill.scale.set(0.01, 1, 0.01);
-    Object.assign(w, { r, t: 0, life });
+    Object.assign(w, { r, t: 0, life, danger });
     this.warns.push(w);
   }
 
@@ -329,6 +356,10 @@ export class FX {
       w.t += dt;
       const k = Math.min(1, w.t / w.life), s = Math.max(0.01, w.r * k);
       w.fill.scale.set(s, 1, s);
+      if (w.danger) { // a pulse that quickens as the blow nears, and the ring turning: seen without its colour
+        w.ring.material.opacity = 0.55 + 0.45 * Math.abs(Math.sin(w.t * (6 + 16 * k)));
+        w.ring.rotation.y += dt * 1.2;
+      }
       if (w.t >= w.life) { w.ring.visible = w.fill.visible = false; this.warns.splice(i, 1); this.warnPool.push(w); }
     }
     if (this.mark) {

@@ -38,6 +38,7 @@ export const SPAWNS = {
   ygg2: [['rootSerpent', 10], ['mossGolem', 9], ['darkElf', 9]],             // 53-60
   ygg3: [['greatStag', 10], ['dryad', 9], ['rotBeetle', 8], ['ratatoskr', 1]], // 61-68, Ratatoskr the mini-boss (74)
   ygg4: [['rootWarden', 8], ['thornDrake', 7], ['nidhogg', 1]],             // 69-75: the great hall, its guards and Nidhogg (99)
+  delveA: [], delveB: [], // the Deep Halls: each floor's monsters are picked as it is carved (delve.js floorSpawns)
   halls1: [['hallScarab', 16], ['cobra', 13]],                               // Base 65-72
   halls2: [['hallMummy', 10], ['lamia', 9], ['servant', 9]],                 // 73-80
   halls3: [['sphinxCub', 10], ['sandElemental', 9], ['sarcophagus', 8], ['ammit', 1]], // 81-88, Ammit the mini-boss (74)

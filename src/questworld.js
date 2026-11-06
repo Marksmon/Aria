@@ -5,6 +5,8 @@
 import { MOB_DEFS } from './mobs.js';
 import { QUESTS } from './quests.js';
 import { ZONE_NAMES } from './world.js';
+import { NPCS } from './quests.js';
+import { findPath } from './path.js';
 
 export function installQuestWorld(ctx) {
   const { audio, cam, fx, inv, mobs, player, questComplete, quests, refreshQuests, world } = ctx;
@@ -58,7 +60,113 @@ export function installQuestWorld(ctx) {
       if (quests.ready(id, inv)) questComplete(id); else refreshQuests();
     }
     tickDefense(dt);
+    tickEscort(dt);
     sphinxDoor();
+  }
+
+  // ---------- an escort (kind 'escort'): the giver walks with the hero to a place on their own map ----------
+  // It starts when the hero stands beside them with the quest under way. They walk the way A* finds (path.js) at a
+  // walking pace, wait while the hero is more than WAIT paces behind, and each ambush comes when they are that far
+  // along: its monsters go for the walker (their foe), who has HP of their own (q.hp). Arriving pays at once, there;
+  // falling, or the hero leaving the map or fainting, sends them home and the escort can be begun again
+  const PACE = 2.2, WAIT = 7;
+  let escort = null;
+  const short = (q) => NPCS[q.who].name.split(' ')[0];
+  function note(q) { quests.escortNote = { [escort.id]: `${short(q)}: HP ${Math.max(0, Math.ceil(escort.hp))}/${q.hp} · ${Math.round(100 * escort.done / escort.len)}% of the way` }; }
+  function place(v, x, z) {
+    v.x = x; v.z = z; v.y = world.heightAt(x, z);
+    v.s.position.set(x, v.y, z);
+    v.shadow?.position.set(x, v.y + 0.03, z);
+  }
+  function startEscort(id, v, path) {
+    const q = QUESTS[id];
+    let len = 0;
+    for (let i = 0, px = v.x, pz = v.z; i < path.length; i++) { len += Math.hypot(path[i].x - px, path[i].z - pz); px = path[i].x; pz = path[i].z; }
+    const proxy = {
+      x: v.x, z: v.z, alive: true, state: 'normal', name: NPCS[q.who].name,
+      ps: { dodge: 0, flee: 20 + q.lv, def: 20, end: Math.round(q.lv * 0.6), guard: 0 },
+      canBeHit: () => !!escort,
+      takeDamage(dmg) {
+        if (!escort) return;
+        escort.hp -= dmg;
+        fx.number(proxy.x, world.heightAt(proxy.x, proxy.z) + 1.8, proxy.z, dmg, 'taken');
+        if (escort.hp <= 0) endEscort(`${NPCS[q.who].name} is hurt and limps home. Talk to them to try the road again.`);
+      },
+    };
+    escort = { id, v, path, i: 0, len: Math.max(1, len), done: 0, hp: q.hp, next: 0, list: [], home: { x: v.x, z: v.z }, proxy, waitT: 0 };
+    note(q);
+    audio.play('ui');
+    ctx.menus.message(`${NPCS[q.who].name} sets off for ${q.place}. Stay close, and keep the ambushes off them!`);
+    refreshQuests();
+  }
+  function endEscort(msg) {
+    const q = QUESTS[escort.id];
+    for (const m of escort.list) if (mobs.list.includes(m)) mobs.remove(m);
+    escort.proxy.alive = false;
+    escort.v.walkFace = null;
+    place(escort.v, escort.home.x, escort.home.z);
+    quests.escortNote = null;
+    escort = null;
+    if (msg) { ctx.menus.message(msg); audio.play('block'); }
+    refreshQuests();
+    return q;
+  }
+  function ambush(q, k) {
+    const e = escort, ahead = e.path[Math.min(e.path.length - 1, e.i + 4)] || e.path.at(-1);
+    let n = 0;
+    for (const [type, count] of q.ambush[k]) for (let c = 0; c < count; c++, n++) {
+      const a = Math.random() * Math.PI * 2, r = 5 + Math.random() * 2;
+      let x = ahead.x + Math.cos(a) * r, z = ahead.z + Math.sin(a) * r;
+      if (!world.walkable(x, z)) { x = ahead.x; z = ahead.z; }
+      const m = mobs.add(type, x, z);
+      m.temp = true;
+      m.foe = e.proxy;
+      m.provoke();
+      e.list.push(m);
+    }
+    audio.play('night');
+    ctx.menus.message(`Ambush! ${n} come out of the rocks for ${short(q)}!`);
+  }
+  function tickEscort(dt) {
+    if (!escort) {
+      for (const [id, a] of Object.entries(quests.active)) {
+        const q = QUESTS[id];
+        if (q.kind !== 'escort' || a >= 1 || q.map !== world.id || player.state !== 'normal') continue;
+        const v = ctx.villagers?.list.find((o) => o.id === q.who && o.s);
+        if (!v || Math.hypot(v.x - player.x, v.z - player.z) > 2.2) continue;
+        const path = findPath(world, v.x, v.z, q.to.x, q.to.z, 0.3);
+        if (path?.length) startEscort(id, v, path);
+        break;
+      }
+      return;
+    }
+    const e = escort, q = QUESTS[e.id], v = e.v;
+    if (!(e.id in quests.active) || world.id !== q.map || player.state === 'down') { endEscort(world.id === q.map ? `${NPCS[q.who].name} turns back for home.` : null); return; }
+    // the walkers that keep on: the monsters of the ambush still after the walker
+    for (const m of e.list) if (m.alive && !m.foe) { m.foe = e.proxy; }
+    const behind = Math.hypot(player.x - v.x, player.z - v.z) > WAIT;
+    const fighting = e.list.some((m) => m.alive && Math.hypot(m.x - v.x, m.z - v.z) < 3);
+    if (behind || fighting) { // they wait for the hero, and stop to cower while monsters are on them
+      v.walkFace = null;
+      if (behind && (e.waitT -= dt) <= 0) { e.waitT = 8; ctx.menus.message(`${short(q)} waits for you.`); }
+    } else {
+      const p = e.path[e.i];
+      const dx = p.x - v.x, dz = p.z - v.z, d = Math.hypot(dx, dz), step = Math.min(d, PACE * dt);
+      if (d > 0.01) { v.walkFace = { x: dx / d, z: dz / d }; place(v, v.x + (dx / d) * step, v.z + (dz / d) * step); e.done += step; }
+      if (d - step < 0.05) e.i++;
+    }
+    e.proxy.x = v.x; e.proxy.z = v.z;
+    // the ambushes: each when they are its share of the way along
+    const k = e.next;
+    if (k < q.ambush.length && e.done / e.len >= (k + 1) / (q.ambush.length + 1)) { e.next++; ambush(q, k); }
+    note(q);
+    if (e.i >= e.path.length) { // arrived: paid at once, there; they walk home afterwards (back at their spot)
+      quests.active[e.id] = 1;
+      const id = e.id;
+      ctx.menus.message(`${NPCS[q.who].name}: "${q.thanks}"`);
+      endEscort();
+      ctx.handIn?.(id);
+    }
   }
   // the Giant Sphinx's door (Sphinx Sands): its seal gives way, and steps lead down into the Sphinx's
   // Halls, the first dungeon (dungeon.js; the portal in front of it: world.js MAPS.sphinx)
@@ -107,5 +215,5 @@ export function installQuestWorld(ctx) {
     if (quests.ready(id, inv)) questComplete(id);
     else { waveRest = 6; ctx.menus.message(`Wave held! Catch your breath: the next one comes in a few seconds.`); refreshQuests(); }
   }
-  return { tickQuestWorld, get defense() { return defense; } };
+  return { tickQuestWorld, get defense() { return defense; }, get escort() { return escort; } };
 }

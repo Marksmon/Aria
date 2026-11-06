@@ -30,7 +30,15 @@ export class Villagers {
 
   build(map) {
     const { lib, world, sg, shadowMat } = this, where = world.maps[map];
-    if (this.groups[map]) return;
+    if (this.groups[map]) { // the map was built again (world.evict gave its memory back): its people stand where they did, solid again
+      for (const v of this.list) {
+        if (v.map !== map) continue;
+        const n = NPCS[v.id];
+        where.addSolid(n.x, n.z, 0.35);
+        if (n.pet) where.addSolid(n.x + n.pet.dx, n.z + n.pet.dz, 0.3);
+      }
+      return;
+    }
     this.groups[map] = new THREE.Group();
     this.groups[map].visible = this.map === map;
     this.scene.add(this.groups[map]);
@@ -111,11 +119,11 @@ export class Villagers {
       if (gone) { v.mark.visible = false; continue; }
       v.t += dt;
       const dx = player.x - v.x, dz = player.z - v.z, d = Math.hypot(dx, dz);
-      v.face = d < NOTICE && d > 0.01 ? { x: dx / d, z: dz / d } : { x: 0, z: 1 };
+      v.face = v.walkFace || (d < NOTICE && d > 0.01 ? { x: dx / d, z: dz / d } : { x: 0, z: 1 }); // (walkFace: on the road, an escort)
       const turn = 'downright' in v.art.anims ? dirFor8 : dirFor;
       const tex = v.art.anims[turn(v.face.x, v.face.z, cam)].idle[0];
       if (v.mat.map !== tex) { v.mat.map = tex; v.s.center.y = tex.userData.anchor; }
-      v.s.scale.y = v.h * (1 + Math.sin(v.t * 2.2) * 0.015);
+      v.s.scale.y = v.h * (1 + Math.sin(v.t * (v.walkFace ? 14 : 2.2)) * (v.walkFace ? 0.035 : 0.015)); // (walking: a quicker bob)
       v.mark.position.set(v.x, v.y + v.top + (v.tag ? 0.55 : 0.15) + Math.sin(v.t * 3) * 0.06, v.z); // a quest mark sits over a RAID tag
     }
   }

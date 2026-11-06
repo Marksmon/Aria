@@ -12,7 +12,7 @@ import { NPCS, QUESTS, giverOf, rewardOf, SERIES } from './quests.js';
 import { ZONE_NAMES } from './world.js';
 import { RAIDS, waitText } from './raid.js';
 import { raidDef, MOB_DEFS } from './mobs.js';
-import { UI_SCALES, nextScale } from './settings.js';
+import { UI_SCALES, nextScale, TEXT_SIZES, nextText } from './settings.js';
 import { SKILLS, skillList, skillLv, learnBlock, trainTrees, spCost, castTime, pointsIn, WEAPON_NAMES, RETRAIN_COST, MK_POINTS } from './skills.js';
 
 // the Skills window's trees: every tree the hero has earned, the current job's first, then the jobs it
@@ -47,6 +47,8 @@ function treeLayout(job) {
 
 // a row of a carter's or a Keeper's list of places: the name, and the fare on the right (too dear: greyed)
 const fareRow = (act, id, name, fare, perz) => `<button class="farerow" data-act="${act}" data-id="${id}" ${perz < fare ? 'disabled' : ''}><span>${esc(name)}</span><b>${fare.toLocaleString()} perz</b></button>`;
+// a window's zoom (the Window text size setting: main.js sets --wz on the page; the hero's making keeps 1)
+const wz = (el) => parseFloat(getComputedStyle(el).zoom) || 1;
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const icon = (id, cls = '') => `<img class="ico ${cls}" src="${iconURL(id)}" alt="">`;
 
@@ -408,7 +410,9 @@ export class Menus {
   quest() {
     const id = this.questId, inv = this.inv, t = this.hooks.questTarget?.(id);
     // Quit sits at the far left of the row, away from Close and Go there, and asks twice
-    const go = (label, quit = '') => `<div class="btnrow qrow">${quit}<button class="rbtn soft" data-act="close">Close</button><button class="rbtn" data-act="qgo" ${t ? '' : 'disabled'}>${label}</button></div>`;
+    const road = this.hooks.keeperRoad?.(id); // (from a town: the Keepers' road to the place, for the fare)
+    const roadBtn = road ? `<div class="btnrow"><button class="rbtn soft" data-act="qkeeper" ${inv.perz < road.fare ? 'disabled' : ''}>Keepers' road to ${esc(ZONE_NAMES[road.map])} · ${road.fare.toLocaleString()} perz</button></div>` : '';
+    const go = (label, quit = '') => `${roadBtn}<div class="btnrow qrow">${quit}<button class="rbtn soft" data-act="close">Close</button><button class="rbtn" data-act="qgo" ${t ? '' : 'disabled'}>${label}</button></div>`;
     const where = t ? `<div class="rnote">➜ ${esc(ZONE_NAMES[t.map])}: ${esc(t.why)}</div>` : '';
     if (id === 'story') {
       const s = this.hooks.storyStep?.();
@@ -456,7 +460,7 @@ export class Menus {
       return;
     }
     el.className = `rw rw-${id} ui-click`;
-    el.style.width = `min(${def.w}px, calc(100vw - 16px))`;
+    el.style.width = `min(${def.w}px, calc((100vw - 16px) / var(--wz, 1)))`;
     el.innerHTML = `<div class="rw-bar"><span class="rw-title">${esc(def.title)}</span><button class="rw-x" data-act="close" aria-label="Close">×</button></div><div class="rw-body"></div>`;
     this.layer.appendChild(el);
     this.wins[id] = el;
@@ -481,20 +485,22 @@ export class Menus {
     });
   }
 
+  // windows are drawn at the Window text size (settings textSize, CSS --wz, a zoom): a zoomed window's left, top and
+  // max height are scaled with it, so they are set here in screen pixels divided by the zoom
   place(el, x, y) {
-    const W = window.innerWidth, H = window.innerHeight;
-    const left = Math.max(0, Math.min(W - el.offsetWidth, x));
-    el.style.left = left + 'px';
+    const W = window.innerWidth, H = window.innerHeight, z = wz(el);
+    const left = Math.max(0, Math.min(W - el.offsetWidth * z, x));
+    el.style.left = left / z + 'px';
     // the hotbar is drawn over the windows (so things can be dragged onto it): a window that would
     // reach under it stops above it, moving up to fit if it can, and scrolls if it is still too long
     const hb = document.getElementById('hotbar')?.getBoundingClientRect();
-    const under = hb && hb.height && left < hb.right && left + el.offsetWidth > hb.left;
+    const under = hb && hb.height && left < hb.right && left + el.offsetWidth * z > hb.left;
     const floor = under ? hb.top - 4 : H - 6;
     el.style.maxHeight = 'none';
-    const tall = el.offsetHeight;
+    const tall = el.offsetHeight * z;
     const top = Math.max(0, Math.min(H - 28, y, floor - tall));
-    el.style.top = top + 'px';
-    el.style.maxHeight = Math.max(80, floor - top) + 'px'; // long windows scroll instead of running off screen
+    el.style.top = top / z + 'px';
+    el.style.maxHeight = Math.max(80, floor - top) / z + 'px'; // long windows scroll instead of running off screen
   }
 
   raise(el) { el.style.zIndex = ++this.top; }
@@ -504,12 +510,12 @@ export class Menus {
     el.querySelector('.rw-bar').addEventListener('pointerdown', (e) => {
       if (e.target.closest('button')) return;
       e.preventDefault();
-      const ox = e.clientX - el.offsetLeft, oy = e.clientY - el.offsetTop;
+      const z = wz(el), ox = e.clientX - el.offsetLeft * z, oy = e.clientY - el.offsetTop * z;
       const move = (ev) => this.place(el, ev.clientX - ox, ev.clientY - oy);
       const up = () => {
         window.removeEventListener('pointermove', move);
         window.removeEventListener('pointerup', up);
-        this.pos[id] = [el.offsetLeft / window.innerWidth, el.offsetTop / window.innerHeight];
+        this.pos[id] = [el.offsetLeft * wz(el) / window.innerWidth, el.offsetTop * wz(el) / window.innerHeight];
         try { localStorage.setItem(POS_KEY, JSON.stringify(this.pos)); } catch { /* storage unavailable */ }
       };
       window.addEventListener('pointermove', move);
@@ -732,6 +738,9 @@ export class Menus {
       <div class="setrow"><span>Target health bar<small>A bar under the name of the monster you fight.</small></span><button class="rbtn${this.hooks.setting?.('targetBar') ? '' : ' soft'}" data-act="targetbar" aria-pressed="${!!this.hooks.setting?.('targetBar')}">${this.hooks.setting?.('targetBar') ? 'On' : 'Off'}</button></div>
       <div class="setrow"><span>Interface size<small>The panel, buttons, hotbar, minimap and quest list. Windows keep their size.</small></span><button class="rbtn" data-act="uiscale">${esc((UI_SCALES.find((u) => u.k === this.hooks.setting?.('uiScale')) || UI_SCALES[1]).name)}</button></div>
       <div class="setrow"><span>Graphics<small>${this.hooks.setting?.('graphics') === 'fast' ? 'Fast: fewer pixels, for a smoother game on an older phone.' : 'Sharp: the clearest picture.'}</small></span><button class="rbtn${this.hooks.setting?.('graphics') === 'fast' ? ' soft' : ''}" data-act="graphics">${this.hooks.setting?.('graphics') === 'fast' ? 'Fast' : 'Sharp'}</button></div>
+      <div class="setrow"><span>Window text size<small>The windows, their text and buttons.</small></span><button class="rbtn" data-act="textsize">${esc((TEXT_SIZES.find((u) => u.k === this.hooks.setting?.('textSize')) || TEXT_SIZES[0]).name)}</button></div>
+      <div class="setrow"><span>Screen shake<small>The screen shakes for big blows, boss moves and quakes.</small></span><button class="rbtn${this.hooks.setting?.('shake') === false ? ' soft' : ''}" data-act="shake" aria-pressed="${this.hooks.setting?.('shake') !== false}">${this.hooks.setting?.('shake') === false ? 'Off' : 'On'}</button></div>
+      <div class="setrow"><span>Performance<small>Frame rate, draw calls and memory, top left: for checking the game on your phone.</small></span><button class="rbtn${this.hooks.setting?.('perf') ? '' : ' soft'}" data-act="perf" aria-pressed="${!!this.hooks.setting?.('perf')}">${this.hooks.setting?.('perf') ? 'On' : 'Off'}</button></div>
       <div class="setrow"><span>Main menu<small>Your game is saved first. Pick another hero there.</small></span><button class="rbtn" data-act="totitle">Back to main menu</button></div>`;
   }
 
@@ -950,6 +959,7 @@ export class Menus {
       + (n.heal ? '<button class="rbtn" data-act="heal">Heal me</button>' : '')
       + (n.warp ? '<button class="rbtn" data-act="ferrylist">Travel</button>' : '')
       + (n.raid ? `<button class="rbtn" data-act="ferrylist">${esc(RAIDS[n.raid].name)}</button>` : '')
+      + (n.delve ? '<button class="rbtn" data-act="ferrylist">The Deep Halls</button>' : '')
       + (n.keeper && this.hooks.keeperKnown?.(this.npc) ? '<button class="rbtn" data-act="chestwin">Storage</button><button class="rbtn" data-act="heal">Heal me</button>'
         + `<button class="rbtn" data-act="keepsave" ${this.hooks.savedAt?.() === this.npc ? 'disabled' : ''}>Save here</button><button class="rbtn" data-act="keeplist">Teleport</button>` : '')
       + (n.keeper && !this.hooks.keeperKnown?.(this.npc) ? '<button class="rbtn" data-act="keepreg">Sign the ledger</button>' : '');
@@ -962,6 +972,15 @@ export class Menus {
         <div class="btnrow"><button class="rbtn soft" data-act="close">Bye</button></div></div></div>`;
     }
     if (n.raid && this.ferrying) return this.raidPanel(n);
+    if (n.delve && this.ferrying) { // the Deep Halls: the first floor, or the deepest checkpoint reached
+      const d = this.hooks.delveInfo?.() || { best: 0, cp: 1, open: false, lv: 70 };
+      this.wins.talk.querySelector('.rw-title').textContent = n.name;
+      const go = (k, label) => `<button class="rbtn" data-act="delvego" data-id="${k}" ${d.open ? '' : 'disabled'}>${label}</button>`;
+      return `<div class="talkwrap"><img class="portrait" src="${this.portrait(this.npc)}" alt="">
+        <div class="say"><p>${d.open ? 'Down there the halls go on without end. Each floor is carved anew, harder than the last; every fifth floor I can take you back to.' : `Not yet. Come back at Base Level ${d.lv}: the first floor alone would eat you.`}</p>
+        <p>${d.best ? `Your deepest: Floor ${d.best}.` : 'You have not been down yet.'}</p>
+        <div class="btnrow wrap">${go(1, 'Floor 1')}${d.cp > 1 ? go(d.cp, `Floor ${d.cp}`) : ''}<button class="rbtn soft" data-act="close">Bye</button></div></div></div>`;
+    }
     if (n.warp && this.ferrying) { // the lands you have walked, and the fare to each
       const list = this.hooks.ferryList?.() || [];
       const rows = list.map(([m, fare]) => fareRow('ferry', m, ZONE_NAMES[m], fare, this.inv.perz)).join('');
@@ -1120,6 +1139,9 @@ export class Menus {
     if (act === 'albumtab') { this.albumTab = t.dataset.id; this.render(id); }
     if (act === 'targetbar') { this.hooks.setSetting?.('targetBar', !this.hooks.setting?.('targetBar')); this.render(id); }
     if (act === 'uiscale') { this.hooks.setSetting?.('uiScale', nextScale(this.hooks.setting?.('uiScale') ?? 1)); this.render(id); }
+    if (act === 'textsize') { this.hooks.setSetting?.('textSize', nextText(this.hooks.setting?.('textSize') ?? 1)); this.render(id); }
+    if (act === 'shake') { this.hooks.setSetting?.('shake', this.hooks.setting?.('shake') === false); this.render(id); }
+    if (act === 'perf') { this.hooks.setSetting?.('perf', !this.hooks.setting?.('perf')); this.render(id); }
     if (act === 'graphics') { this.hooks.setSetting?.('graphics', this.hooks.setting?.('graphics') === 'fast' ? 'sharp' : 'fast'); this.render(id); }
     if (act === 'statreset') { this.pend = {}; this.hooks.ui?.(); this.render(id); }
     if (act === 'statconfirm') {
@@ -1166,7 +1188,9 @@ export class Menus {
     if (act === 'keepreg') { this.hooks.keeperRegister?.(this.npc); this.render('talk'); }
     if (act === 'keepsave') { this.hooks.keeperSave?.(this.npc); this.render('talk'); }
     if (act === 'keepgo') this.hooks.keeperGo?.(t.dataset.id);
+    if (act === 'delvego') this.hooks.delveGo?.(+t.dataset.id);
     if (act === 'qgo') this.hooks.questGo?.(this.questId);
+    if (act === 'qkeeper') this.hooks.keeperRoadGo?.(this.questId);
     if (act === 'guideme') { this.close('quest'); this.hooks.guideMe?.(); }
     if (act === 'qquit') {
       if (!this.quitSure) { this.quitSure = true; this.render(id); return; } // asks twice

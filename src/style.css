@@ -503,6 +503,7 @@ body.named #toasts { top: calc(175px + var(--pets-push, 0px) + env(safe-area-ins
 
 #windows { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
 .rw {
+  zoom: var(--wz, 1); /* the Window text size setting (menus.js place() keeps it on screen) */
   position: absolute;
   pointer-events: auto;
   background: var(--w-bg);
@@ -512,7 +513,7 @@ body.named #toasts { top: calc(175px + var(--pets-push, 0px) + env(safe-area-ins
   color: var(--w-text);
   overflow: hidden;
   font: 13px/1.25 Tahoma, Verdana, system-ui, sans-serif;
-  max-height: calc(100vh - 8px);
+  max-height: calc((100vh - 8px) / var(--wz, 1));
   display: flex;
   flex-direction: column;
 }
@@ -943,7 +944,7 @@ button.eq:active { background: var(--w-sel); }
 .cardrow.empty i { width: 14px; height: 18px; border: 1px dashed var(--w-line); border-radius: 2px; flex: none; margin: 0 2px; }
 
 /* the Boatman's crossings (menus.js raidPanel): difficulties on the left, the one picked on the right */
-.rw-talk.raidwin { width: min(620px, calc(100vw - 16px)) !important; }
+.rw-talk.raidwin { width: min(620px, calc((100vw - 16px) / var(--wz, 1))) !important; }
 .raidui { display: flex; gap: 8px; padding: 6px 8px 8px; align-items: flex-start; }
 .raidlist { display: flex; flex-direction: column; gap: 4px; flex: none; width: 104px; }
 .raidlist .rbtn { display: flex; flex-direction: column; align-items: flex-start; text-align: left; padding: 5px 8px; line-height: 1.15; }
@@ -992,6 +993,7 @@ button.eq:active { background: var(--w-sel); }
 /* ---------- the hero's making (menus.js creator): the hero turns on the left, the choices on the right ---------- */
 body.creating #hud > *:not(#windows) { visibility: hidden; }
 .creator { position: fixed; inset: 0; z-index: 45; pointer-events: auto; }
+.rw.creator { zoom: 1; } /* (the hero's making fills the screen: the Window text size leaves it be) */
 .creator > .rw-body { position: absolute; inset: 0; display: grid; grid-template-columns: 1fr minmax(300px, 400px); overflow: hidden;
   background: linear-gradient(90deg, rgba(8, 6, 4, 0) 0%, rgba(8, 6, 4, .1) 40%, rgba(12, 10, 8, .55) 58%, rgba(14, 12, 10, .9) 66%); }
 .cr-stage { position: relative; }
@@ -1130,3 +1132,7 @@ body.creating #hud > *:not(#windows) { visibility: hidden; }
 
 /* a story cutscene in the middle of the game (main.js playScene): the HUD steps aside for the shots */
 body.cinema #hud { visibility: hidden; }
+
+/* the performance readout (Settings: Performance), top left: for measuring the game on a real phone */
+#perf { position: fixed; left: 4px; top: 4px; z-index: 70; padding: 3px 6px; border-radius: 4px; background: rgba(0, 0, 0, .62); color: #b8ffb0;
+  font: 11px/1.3 ui-monospace, Menlo, Consolas, monospace; white-space: pre; pointer-events: none; }

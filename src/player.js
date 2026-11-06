@@ -338,8 +338,9 @@ export class Player {
     } else if (this.moving && this.state === 'normal') {
       tex = A.walk[Math.floor(this.animT * A.walk.length) % A.walk.length]; // every frame is part of the cycle
     }
+    tex ||= A.idle[0] || this.mat.map; // (a frame missing while a body is still being painted: keep what is shown)
     this.art.ensure?.(tex); // a body painted in code paints a frame it hasn't reached yet
-    if (this.mat.map !== tex) { this.mat.map = tex; this.sprite.center.y = tex.userData.anchor; }
+    if (tex && this.mat.map !== tex) { this.mat.map = tex; this.sprite.center.y = tex.userData?.anchor ?? this.sprite.center.y; }
     this.tex = tex;
 
     this.mat.color.set(this.rootT > 0 ? '#d8b88a' : this.slowT > 0 ? '#c8e6a0' : '#ffffff');
@@ -359,7 +360,7 @@ export class Player {
   // a standard body: its head is painted into the frames (dressHead). An older, headless one: the
   // head and hair layers go on this frame's neck anchor
   placeHead() {
-    const h = this.tex.userData.head, hd = HEADS?.dirs?.[this.dir], body = this.sprite;
+    const h = this.tex?.userData?.head, hd = HEADS?.dirs?.[this.dir], body = this.sprite; // (a frame not drawn yet: no head this frame)
     if (this.art.bald) {
       this.headSpr.visible = this.hairSpr.visible = false;
       this.dressHead();

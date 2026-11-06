@@ -72,6 +72,7 @@ export const ZONE_NAMES = {
   sphinx: 'Sphinx Sands',  // the Giant Sphinx's sands, open only to who solves its riddle
   ygg: 'Yggdrasil',        // the World Tree, north of the Old Forest, open only to who planted its seed
   tomb: "Pharaoh's Tomb",  // the fourth raid (raid.js): the burial hall under the Pyramid
+  delveA: 'The Deep Halls', delveB: 'The Deep Halls', // the endless dungeon (delve.js)
   halls1: 'Sphinx Halls 1', // the first dungeon (dungeon.js), behind the door in the Giant Sphinx's
   halls2: 'Sphinx Halls 2', // chest: three maze floors, harder floor by floor, and the Eternal Sphinx's
   halls3: 'Sphinx Halls 3', // great hall at the bottom
@@ -161,6 +162,12 @@ export const MAPS = {
   ygg2: { portals: [{ to: 'ygg1', x: 31.5, z: 7.5 }, { to: 'ygg3', x: 7.5, z: 31.5 }], indoor: true, maze: { floor: 2, look: 'tree2', seed: 622, loops: 0.1, start: [6, 0], rooms: [[6, 0], [0, 6], [9, 3, true], [4, 9, true], [11, 10, true]] } },
   ygg3: { portals: [{ to: 'ygg2', x: 7.5, z: 31.5 }, { to: 'ygg4', x: 55.5, z: 31.5 }], indoor: true, maze: { floor: 3, look: 'tree3', seed: 733, loops: 0.09, start: [0, 6], rooms: [[0, 6], [12, 6], [6, 2, true], [5, 10, true], [9, 6, true]] } },
   ygg4: { portals: [{ to: 'ygg3', x: 31.5, z: 55.5 }], indoor: true, maze: { floor: 4, look: 'tree4', seed: 844, hall: { i0: 2, j0: 1, i1: 11, j1: 13, only: true } } }, // (the great hall alone)
+  // the Deep Halls (delve.js): an endless dungeon, two maps taking turns, each carved afresh for the floor below (its
+  // seed, its stone and its monsters set by delve.js prepareFloor). Stairs down at the far end; the stairs up go home
+  // beside whoever sent the hero down (main.js delverSpot; the portal's `to` is only a fallback: the fifth city's id
+  // once it exists, the owner's call: the Ship Captain there offers it from Base 90)
+  delveA: { delve: true, portals: [{ to: 'city', x: 31.5, z: 55.5 }, { to: 'delveB', x: 31.5, z: 7.5 }], indoor: true, maze: { floor: 1, seed: 1, loops: 0.12, start: [6, 13], rooms: [[6, 12], [6, 0], [2, 4, true], [10, 8, true], [3, 9, true]] } },
+  delveB: { delve: true, portals: [{ to: 'city', x: 31.5, z: 55.5 }, { to: 'delveA', x: 31.5, z: 7.5 }], indoor: true, maze: { floor: 1, seed: 2, loops: 0.12, start: [6, 13], rooms: [[6, 12], [6, 0], [10, 4, true], [2, 8, true], [9, 9, true]] } },
   halls4: { portals: [{ to: 'halls3', x: 31.5, z: 55.5 }], indoor: true, maze: { floor: 4, seed: 404, hall: { i0: 2, j0: 1, i1: 11, j1: 13, only: true } } }, // (no maze: the great hall alone)
 };
 const SEG = 128; // terrain vertices per side - 1 (0.5 unit spacing)
@@ -198,6 +205,7 @@ const GROUND = {
   tomb: ['#8a7252', '#9e8664'],
   ygg: ['#3f7034', '#56883e'],
   ygg1: ['#ffffff', '#f2ece4'], ygg2: ['#ffffff', '#f2ece4'], ygg3: ['#ffffff', '#f2ece4'], ygg4: ['#ffffff', '#f2ece4'],
+  delveA: ['#ffffff', '#f2ece4'], delveB: ['#ffffff', '#f2ece4'],
   halls1: ['#ffffff', '#f2ece4'], halls2: ['#ffffff', '#f2ece4'], halls3: ['#ffffff', '#f2ece4'], halls4: ['#ffffff', '#f2ece4'], // (the floor's own flags tint it: dungeon.js)
   dirt: '#b49a6c',
   sandpath: '#c8a46c',
@@ -794,23 +802,50 @@ export function buildWorld(scene, lib) {
   // each map is built the first time it is needed (entered), not all at load; built: the ids done,
   // onBuild(id): told of each (the villagers stand their people there)
   const maps = {}, built = new Set();
-  for (const id of Object.keys(MAPS)) {
-    Object.defineProperty(maps, id, {
+  const lazy = (id) => Object.defineProperty(maps, id, {
       enumerable: true,
       configurable: true,
       get() {
         const m = buildMap(id, scene, lib, shared);
-        Object.defineProperty(maps, id, { value: m, enumerable: true });
+        Object.defineProperty(maps, id, { value: m, enumerable: true, configurable: true }); // (configurable: unbuild may make it lazy again)
         built.add(id);
         api.onBuild?.(id);
         return m;
       },
     });
+  for (const id of Object.keys(MAPS)) lazy(id);
+  // what every map shares (the props' materials, the portals'): never given back with one map
+  const keepRes = new Set([...tintMats, pg, shared.portalMat, shared.glowMat, shared.moteMat, ...Object.values(tex)]);
+  for (const m of tintMats) if (m.map) keepRes.add(m.map);
+  // a built map gives its memory back (geometries, materials, textures) and is built afresh the next time it is
+  // entered: main.js keeps the map the hero is on and the last few (MAP_BUDGET). Its monsters, drops and bosses
+  // are kept by mobs.js and main.js as ever, so only the scenery is made again
+  function unbuild(id) {
+    const m = Object.getOwnPropertyDescriptor(maps, id)?.value;
+    if (!m || m === cur) return false;
+    scene.remove(m.group);
+    const gone = new Set();
+    m.group.traverse((o) => {
+      if (o.geometry && !o.isSprite && !keepRes.has(o.geometry)) gone.add(o.geometry);
+      for (const mat of [o.material].flat().filter(Boolean)) {
+        if (keepRes.has(mat)) continue;
+        gone.add(mat);
+        for (const v of Object.values(mat)) if (v?.isTexture && !keepRes.has(v)) gone.add(v);
+      }
+    });
+    for (const r of gone) r.dispose();
+    lazy(id);
+    built.delete(id);
+    return true;
   }
   let cur = null;
   const api = {
     maps,
     built,
+    builtCount: () => built.size,
+    // give back every built map but these (the current one is always kept)
+    unbuild: (id) => unbuild(id), // (the Deep Halls: a floor carved afresh)
+    evict(keep) { let n = 0; for (const id of [...built]) if (!keep.includes(id) && unbuild(id)) n++; return n; },
     onBuild: null,
     tintMats,
     spawn: { x: 32, z: 36.2 },

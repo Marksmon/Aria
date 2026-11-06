@@ -49,13 +49,15 @@ test('cards are monsters: one card per monster, named after it (the owner\'s rul
 test('every portal leads to a map, and every map can be reached', () => {
   const reached = new Set();
   for (const [id, m] of Object.entries(MAPS)) for (const p of m.portals || []) { assert.ok(MAPS[p.to], `${id} portal to ${p.to}`); reached.add(p.to); }
-  for (const id of Object.keys(MAPS)) if (id !== 'camp') assert.ok(reached.has(id) || MAPS[id].arena, `${id} has no way in`); // (a raid's arena is reached from its guide)
+  for (const id of Object.keys(MAPS)) if (id !== 'camp') assert.ok(reached.has(id) || MAPS[id].arena || MAPS[id].delve, `${id} has no way in`); // (a raid's arena is reached from its guide)
 });
 
 // what a quest or story step names: monsters, items, maps
 function check(where, q) {
   const mobs = q.mobs && !Array.isArray(q.mobs) ? Object.keys(q.mobs) : q.mobs; // (a list, or how many of each)
-  for (const id of [q.mob, mobs, q.spawn?.mob, (q.waves || []).map((w) => w[0])].flat().filter(Boolean)) assert.ok(mobOk(id), `${where}: monster ${id}`);
+  for (const id of [q.mob, mobs, q.spawn?.mob, (q.waves || []).map((w) => w[0]), (q.ambush || []).flat().map((w) => w[0])].flat().filter(Boolean)) assert.ok(mobOk(id), `${where}: monster ${id}`);
+  if (q.kind === 'escort') assert.ok(NPCS[q.who]?.map === q.map && q.to && q.hp > 0 && q.ambush?.length && q.place, `${where}: an escort needs its person on its map, a place to go, HP and ambushes`);
+  for (const [x, z] of (q.kind === 'search' && Array.isArray(q.spots?.[0]) ? q.spots : [])) assert.ok(x > 3 && x < 61 && z > 3 && z < 61, `${where}: spot ${x},${z}`);
   for (const id of Object.keys({ ...(q.items || {}), ...(q.reward?.items || {}) })) assert.ok(itemOk(id), `${where}: item ${id}`);
   if (typeof q.map === 'string') assert.ok(MAPS[q.map], `${where}: map ${q.map}`);
 }
@@ -85,6 +87,15 @@ test('the story: its people exist, its searches and stands are on real maps, and
 
 // the story's cutscenes (scenes.js): every chapter opens with one, every shot is on a real map and looks at
 // something that is there, and each big moment belongs to a real step (or a secret series' last quest)
+// the quest-variety pass (the audit, P1): kill and fetch are no longer most of the side quests' kinds, and every
+// other kind the game knows is used
+test('quests come in many kinds: kill and fetch under 70%, escort, defend, search and quiz all used', () => {
+  const kinds = Object.values(QUESTS).map((q) => q.kind || 'kill');
+  const share = kinds.filter((k) => k === 'kill' || k === 'fetch').length / kinds.length;
+  assert.ok(share < 0.7, `kill and fetch are ${(share * 100).toFixed(0)}% of quests`);
+  for (const k of ['escort', 'defend', 'search', 'quiz', 'deliver', 'visit']) assert.ok(kinds.includes(k), `no ${k} quest`);
+});
+
 test('the story\'s cutscenes: every chapter has an opening, every shot is on a real map, at a real place', async () => {
   const { CHAPTER_SHOTS, STEP_SHOTS, SECRET_SHOTS, INTRO_SHOTS } = await import('../src/scenes.js');
   const chapters = [...new Set(STORY.map((s) => s.ch.split(':')[0]))].filter((c) => c !== 'Prologue');

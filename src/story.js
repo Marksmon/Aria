@@ -281,17 +281,14 @@ export const STORY = [
     reward: { xp: 4000, perz: 20000, items: { glow_charm: 1 } } },
 
   // ---------- Chapter 5: the salt road (the kobolds of Stone Field and Coal Pit) ----------
-  { id: 'saltroad', ch: 'Chapter 5: The Salt Road', title: 'Trouble on the Salt Road', kind: 'talk', npc: 'ulfr', goal: 'Captain Ulfr has sent for you (by the south gate of Steinborg)',
-    say: [['ulfr', 'There you are. The Giant sleeps, but the valley does not. The salt carts from Salt Bay have stopped coming, and the last carter who made it here was half dead.'],
-      ['ulfr', 'He swore kobolds did it. Kobolds! They keep to their stone hills and bark at anyone who comes near. They do not rob carts.'],
-      ['ulfr', 'Go west through Fen Shore to Salt Bay. Hakon the carter is waiting by the west road. Ivar\'s carts or the Keepers will bring you back quickly.']],
-    reward: { xp: 5000, perz: 1000 } },
-  { id: 'carter', ch: 'Chapter 5: The Salt Road', title: 'The Carter\'s Tale', kind: 'talk', npc: 'hakon', goal: 'Find Hakon the Carter by the west road of Salt Bay',
-    say: [['hakon', 'Kobolds, I tell you, a dozen of them, out of Stone Field with axes and bows. Took my horse and my cart.'],
+  // (Captain Ulfr's errand, once a step of its own, comes by letter: one talk less on the way, the audit's pacing pass)
+  { id: 'carter', ch: 'Chapter 5: The Salt Road', title: 'The Carter\'s Tale', kind: 'talk', npc: 'hakon', goal: 'Captain Ulfr sends word: the salt carts from Salt Bay have stopped. Find Hakon the Carter by the west road of Salt Bay (west through Fen Shore)',
+    say: [['hakon', 'Captain Ulfr sent you? Good. He is the only one in Steinborg who believed me.'],
+      ['hakon', 'Kobolds, I tell you, a dozen of them, out of Stone Field with axes and bows. Took my horse and my cart.'],
       ['hakon', 'And here is the strange thing: they left the salt. They took the lamp oil, the pitch, the tinder. Every kobold I ever met runs from a torch. Why would they steal fire?'],
       ['hakon', 'The road goes west, round the bay and into their hills. If you go, go armed.'],
       ['hakon', 'One more thing. The Boatman by the water says the salt could go round by boat, if not for the bloops of Bloop Island. Help him first, and the road will wait.']],
-    reward: { xp: 4000 } },
+    reward: { xp: 9000, perz: 1000 } },
   // the first raid (raid.js): a clear of the Boatman's Tutorial run (and only that) moves the story on
   { id: 'bloopisle', ch: 'Chapter 5: The Salt Road', title: 'Bloop Island', kind: 'raid', raid: 'bloop', map: 'coast', npc: 'boatman', goal: 'Clear the Tutorial crossing to Bloop Island (the Boatman by the water in Salt Bay)',
     hint: 'Three waves of bloops, then BleepBloop, in 10 minutes. The Tutorial run starts no cooldown: lose, and the Boatman rows you out again whenever you are ready.',
@@ -314,14 +311,13 @@ export const STORY = [
   { id: 'miner', ch: 'Chapter 5: The Salt Road', title: 'The Escaped Miner', kind: 'talk', npc: 'dag', goal: 'Talk to Dag the Miner by the east road of Coal Pit',
     say: [['dag', 'Quiet! They will hear you. I was a miner here before the kobolds took the pit, and their prisoner after. I got loose three nights ago.'],
       ['dag', 'It is not the kobolds\' doing. Goblins came down from Burnt Wood, north of Galdrheim, last winter, with whips. The Kobold King bowed to them. Now the kobolds dig the red coal day and night, steal fire to light the tunnels, and the goblins cart the coal away north.'],
-      ['dag', 'Where to, I could not say. But I heard the word their drivers use for it: the Waking Fire.']],
-    reward: { xp: 12000, perz: 4000, items: { hard_ore: 2 } } },
+      ['dag', 'Where to, I could not say. But I heard the word their drivers use for it: the Waking Fire.'],
+      [null, 'You send Dag\'s news to Captain Ulfr by the Keepers. His answer is back before nightfall:'],
+      ['ulfr', 'Goblins with whips, and a Waking Fire. I do not like the sound of either.'],
+      ['ulfr', 'Burnt Wood lies beyond Galdrheim\'s north gate. It was a green wood once; the goblins burnt it bare when they came. If the coal goes north, it goes through Burnt Wood. Break their coal-train.']],
+    reward: { xp: 18000, perz: 4000, items: { hard_ore: 2 } } },
 
   // ---------- Chapter 6: the goblin war-band ----------
-  { id: 'wakingfire', ch: 'Chapter 6: The Goblin War-Band', title: 'The Waking Fire', kind: 'talk', npc: 'ulfr', goal: 'Bring Dag\'s news to Captain Ulfr (Steinborg)',
-    say: [['ulfr', 'Goblins with whips, and a Waking Fire. I do not like the sound of either.'],
-      ['ulfr', 'Burnt Wood lies beyond Galdrheim\'s north gate. It was a green wood once; the goblins burnt it bare when they came. If the coal goes north, it goes through Burnt Wood. Break their coal-train.']],
-    reward: { xp: 6000 } },
   { id: 'coaltrain', ch: 'Chapter 6: The Goblin War-Band', title: 'Break the Coal-Train', kind: 'kill', mobs: ['goblinWarrior', 'goblinArcher', 'goblinAssassin'], n: 15, map: 'burnt', goal: 'Defeat 15 goblins in Burnt Wood (north of Galdrheim)',
     hint: 'Goblins of level 38 to 44. They hunt in packs, so fight at the edge of a group, not in the middle of it.',
     say: [[null, 'Among the burnt stumps lie split sacks of red coal. A trail of black dust runs north, towards Serpent Wood, and wagon ruts lead away south and east, the long way round to Ash Heath.']],
@@ -401,14 +397,12 @@ export const STORY = [
   { id: 'prisons', ch: 'Chapter 9: The Eye in the Sand', title: 'The Eight Prisons', kind: 'talk', npc: 'vigdis', goal: 'Bring Gunnhild\'s tale to Archmage Vigdis (Galdrheim)',
     say: [['vigdis', 'Eight jotnar were sung into the stone, Brynja\'s books say, and they never say where. Now we know where one of them is: under a stone face in the desert, and the face is its keeper.'],
       ['vigdis', 'The rune-cutter is not waking the Fire Giant alone. They are loosening every prison, one ring at a time.'],
-      ['vigdis', 'And Hrafn came to me last night, white as chalk. The Wolf\'s Eye flared when those runes were cut. Go to him.']],
-    reward: { xp: 120000, perz: 20000 } },
+      ['vigdis', 'And here is Hrafn, white as chalk. He has not slept.'],
+      ['hrafn', 'You look up now, I hope. The Wolf\'s Eye flared the night your runes were cut, and it has not gone back. Its light falls north and east, on the old woods past Veidheim.'],
+      ['hrafn', 'Something there is wrong in a way the stars notice. Ask in Veidheim: Old Ingrid by the well has kept their seeds for sixty years.']],
+    reward: { xp: 180000, perz: 20000 } },
 
   // ---------- Chapter 10: the gnawed roots (about Base 60-66) ----------
-  { id: 'wolfseye', ch: 'Chapter 10: The Gnawed Roots', title: 'The Wolf\'s Eye', kind: 'talk', npc: 'hrafn', goal: 'Find Hrafn the Stargazer in Galdrheim',
-    say: [['hrafn', 'You look up now, I hope. The Wolf\'s Eye flared the night your runes were cut, and it has not gone back. Its light falls north and east, on the old woods past Veidheim.'],
-      ['hrafn', 'Something there is wrong in a way the stars notice. Ask in Veidheim: Old Ingrid by the well has kept their seeds for sixty years.']],
-    reward: { xp: 60000 } },
   { id: 'rotroots', ch: 'Chapter 10: The Gnawed Roots', title: 'Rot That Writes', kind: 'talk', npc: 'ingrid', goal: 'Ask Old Ingrid the Seedkeeper (by Veidheim\'s well) about the old woods',
     say: [['ingrid', 'The Old Forest is sick, dear. The roots are rotting, and the rot does not spread like rot. It runs up the trunks backwards, in lines. Like writing.'],
       ['ingrid', 'And the Treants have gone mad with it. They tear at anything that comes near the forest\'s heart. Stand there, and they will come for you. Someone must, if we are to see what the rot has written.']],
@@ -436,14 +430,13 @@ export const STORY = [
   { id: 'threewells', ch: 'Chapter 10: The Gnawed Roots', title: 'Three Wells', kind: 'talk', npc: 'vigdis', goal: 'Bring word of the gnawed roots to Archmage Vigdis (Galdrheim)',
     say: [['vigdis', 'The oldest songs say the roots of the world drink from three wells. I always took it for a skald\'s way of talking. I was wrong.'],
       ['vigdis', 'One of the three is our own rune-well, here in Galdrheim. Every rune we cut drinks from it. If the roots are rotting backwards, someone is poisoning the song at its spring.'],
-      ['vigdis', 'Rest tonight. Tomorrow we look at the well.']],
-    reward: { xp: 200000, perz: 25000 } },
+      ['vigdis', 'Rest tonight. Tomorrow we look at the well.'],
+      [null, 'Before dawn, Brynja the Lorekeeper is at your door, a lamp in her hand.'],
+      ['brynja', 'Quietly, please, even now. The rune-well\'s crystal has sunk in the night. Every rune in the city is dimming, and my books are going blank at the edges.'],
+      ['brynja', 'The well\'s spring rises outside our south gate, in Fen Shore, under the old stones by the road. Vigdis is going down to raise the crystal from there, and things are pouring out of the water. She needs someone to hold the spring while she sings.']],
+    reward: { xp: 280000, perz: 25000 } },
 
   // ---------- Chapter 11: the hand that cuts backwards (about Base 66-72) ----------
-  { id: 'sunkwell', ch: 'Chapter 11: The Hand That Cuts Backwards', title: 'The Sunken Crystal', kind: 'talk', npc: 'brynja', goal: 'Brynja the Lorekeeper has sent for you (Galdrheim\'s library)',
-    say: [['brynja', 'Quietly, please, even now. The rune-well\'s crystal has sunk in the night. Every rune in the city is dimming, and my books are going blank at the edges.'],
-      ['brynja', 'The well\'s spring rises outside our south gate, in Fen Shore, under the old stones by the road. Vigdis is going down to raise the crystal from there, and things are pouring out of the water. She needs someone to hold the spring while she sings.']],
-    reward: { xp: 80000 } },
   { id: 'runespring', ch: 'Chapter 11: The Hand That Cuts Backwards', title: 'The Rune-Spring', kind: 'survive', map: 'fen', at: { x: 32, z: 14 }, secs: 60, color: '#b48aff',
     heralds: { early: ['shadeWisp', 'shadeWisp'], late: ['shadeWisp', 'shadeWisp', 'wisp'], after: 25 }, every: 10, most: 5,
     startText: 'Vigdis\'s song rises from the spring, and the water goes black. Dark Wisps pour out of it! Hold the spring until the crystal is raised!',
@@ -524,7 +517,8 @@ const OLD_ORDER = ['wake', 'stats', 'slimes', 'training', 'hotbar', 'report', 'n
 // their kin, so no story step needs a boss
 // finn, hunterkeeper, trade, trainee: Chapter 1 made shorter (Finn's lines went to 'eastward', the trade lesson to
 // 'sigridword'); a hero who was on one of the last three goes on to choosing a path
-const RENAMED = { finn: 'marshroad', hunterkeeper: 'paths', trade: 'paths', trainee: 'paths', ready: 'runesong', lastfire: 'runesong', jarl: 'rekindled', ledger: 'carter', matron: 'redsprouts', furnace: 'coalfeast' };
+// saltroad, wakingfire, wolfseye, sunkwell: talks folded into the step before them (the pacing pass, November 2026)
+const RENAMED = { saltroad: 'carter', wakingfire: 'coaltrain', wolfseye: 'rotroots', sunkwell: 'runespring', finn: 'marshroad', hunterkeeper: 'paths', trade: 'paths', trainee: 'paths', ready: 'runesong', lastfire: 'runesong', jarl: 'rekindled', ledger: 'carter', matron: 'redsprouts', furnace: 'coalfeast' };
 
 // directions: which way to walk from one map to reach another, through which portal
 export function route(from, to) {

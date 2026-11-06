@@ -11,12 +11,15 @@ import { FX } from './fx.js';
 import { MobManager, MOB_DEFS, MOVES, MVP_MOVE, RIDDLE, RIDDLES, fierce, guardDef, raidDef, pityChance } from './mobs.js';
 import { Allies, ROAR } from './allies.js';
 import { RAIDS, rollReward } from './raid.js';
-import { loadSave, writeSave, loadStorage, writeStorage, clearSave, saveCode, loadCode, SLOTS, activeSlot, setActiveSlot } from './save.js';
+import { loadSave, writeSave, loadStorage, writeStorage, clearSave, saveCode, loadCode, SLOTS, activeSlot, setActiveSlot, restoreMirror, backedUpAt } from './save.js';
+// the APK's native copy of the saves: any the WebView lost come back, and the page starts again once to load them
+restoreMirror().then((n) => { try { if (n && !sessionStorage.getItem('aria.mirrored')) { sessionStorage.setItem('aria.mirrored', '1'); location.reload(); } } catch { /* ignore */ } });
 import { Inventory } from './inventory.js';
 import { Progress, JOBS, RATES, QUEST_RATE, STAT_KEYS } from './progress.js';
 import { Quests, QUESTS, NPCS, FARES, ALWAYS_FARES, NEXT, SERIES, giverOf } from './quests.js';
 import { Story, INTRO, STORY, CALLINGS, CALL_HOME, route } from './story.js';
 import { SPAWNS } from './spawns.js';
+import { isDelve, prepareFloor, deepen, START as DELVE_START, DEPTH, checkpoint } from './delve.js';
 import { INTRO_SHOTS, CHAPTER_SHOTS, STEP_SHOTS, SECRET_SHOTS } from './scenes.js';
 import { installLessons } from './lessons.js';
 import { installStands } from './stands.js';
@@ -49,7 +52,13 @@ renderer.setPixelRatio(pixelRatio(window.devicePixelRatio)); // Settings' Graphi
 // the HUD's size (settings uiScale): a CSS zoom on its controls (style.css --ui)
 const applyScale = () => document.documentElement.style.setProperty('--ui', String(settings.get('uiScale')));
 applyScale();
-settings.onChange((k) => { if (k === 'graphics') { renderer.setPixelRatio(pixelRatio(window.devicePixelRatio)); resize(); } if (k === 'uiScale') { applyScale(); placeAtkBtn(); } });
+// the Window text size: every window zooms (menus.js place() keeps them on screen); open ones are placed again
+const applyText = () => {
+  document.documentElement.style.setProperty('--wz', String(settings.get('textSize')));
+  for (const el of document.querySelectorAll('#windows .rw:not(.creator)')) if (el.offsetParent) { const r = el.getBoundingClientRect(); menus.place(el, r.left, r.top); }
+};
+document.documentElement.style.setProperty('--wz', String(settings.get('textSize')));
+settings.onChange((k) => { if (k === 'graphics') { renderer.setPixelRatio(pixelRatio(window.devicePixelRatio)); resize(); } if (k === 'uiScale') { applyScale(); placeAtkBtn(); } if (k === 'textSize') applyText(); });
 renderer.localClippingEnabled = true; // wading: sprites are cut at the waterline
 
 const scene = new THREE.Scene();
@@ -236,7 +245,7 @@ const goalEvent = (ev) => { for (const g of goals.on(ev)) payGoal(g); };
 // the achievements' view of the game (goals.js ACHIEVEMENTS)
 function goalState() {
   const kills = (f) => Object.entries(album.kills).filter(([t]) => MOB_DEFS[t] && f(MOB_DEFS[t]));
-  const lands = Object.keys(MAPS).filter((id) => !MAPS[id].arena);
+  const lands = Object.keys(MAPS).filter((id) => !MAPS[id].arena && !MAPS[id].delve);
   const worn = Object.values(inv.gear).filter(Boolean).map((k) => parseKey(k).refine);
   const sets = albumSets();
   return {
@@ -361,6 +370,7 @@ const traps = [];
 function clearTraps() { for (const t of traps) fx.release(t.s); traps.length = 0; }
 // the Voodoo's Substitute (its level, for its poison haze; the doll's soak is player.barrier), and the Voodoo Doll: the monster bound to it, for how long
 let auraLv = 0, auraTick = 0, doll = null, dollT = 0, dollLv = 0, subProp = null;
+let sceneKeep = null; // (a story cutscene under way: the hero's traps and doll wait for them, hidden: playScene)
 // the Voodoo's Blight (skills.js BLIGHT): stacks on a monster, each eating a share of the MATK a second,
 // in Shadow, through MDEF (no hold, so bosses don't resist it)
 const bound = (m) => doll && dollT > 0 && doll === m;
@@ -562,13 +572,36 @@ world.open = (need) => quests.done.includes(need) || (need in quests.active && q
 const keepers = new Set(save?.keepers || ['keeper_camp']);
 let savePoint = save?.savePoint || null; // { keeper, map, x, z }; none = the camp fire
 const groundLeft = {}; // per map: the drops left lying there (fx.stashPickups); their time runs on
+const MAP_BUDGET = 6; // built maps kept at once (world.evict): the current one and the five last walked
+let recentMaps = [];
+let cine = null; // a cutscene's shot, or the hero's making: the camera frames its own point (cineShot)
+// the Deep Halls (delve.js): the floor the hero is on, the deepest reached (saved), and the floor they are sent to.
+// Whoever has `delve` in NPCS sends them down (the fifth city's Ship Captain, once made: the owner's call), and the
+// stairs up bring them home beside that person (none yet: Steinborg's gate)
+const delve = { floor: 0, best: save?.delve?.best | 0, pending: 0 };
+const delverOf = () => Object.values(NPCS).find((n) => n.delve);
+const delverSpot = () => { const n = delverOf(); return n ? { map: n.map || 'camp', x: n.x, z: n.z + 1.4 } : { map: 'city', x: 36.4, z: 53 }; };
 function enterMap(id, from, at) {
+  // a floor of the Deep Halls: the next one down, or the one the hero is sent to, carved afresh before it is built
+  if (isDelve(id)) {
+    delve.floor = isDelve(from) ? delve.floor + 1 : delve.pending || 1;
+    delve.pending = 0;
+    if (world.built.has(id)) world.unbuild(id);
+    prepareFloor(id, delve.floor);
+    delete mobs.fieldAt[id];
+    at = at || DELVE_START;
+  } else if (isDelve(from) && !at) { const h = delverSpot(); id = h.map; at = h; } // (the stairs up: home beside the one who sent them)
   if (world.id) groundLeft[world.id] = fx.stashPickups();
-  clearTraps(); doll = null; // (traps stay where they were set; a bound monster stays behind)
+  if (!sceneKeep) { clearTraps(); doll = null; } // (traps stay where they were set; a bound monster stays behind; a cutscene's shots keep both)
   const arrive = world.go(id, from);
   visited.add(id);
+  // a phone's memory: only the maps last walked stay built (the rest are made again when entered; their monsters,
+  // drops and bosses are kept as ever). Not during a cutscene, which passes through many maps for a moment
+  recentMaps = [id, ...recentMaps.filter((m) => m !== id)].slice(0, MAP_BUDGET);
+  if (!cine) world.evict(recentMaps);
   const pos = at || arrive;
   mobs.setMap(SPAWNS[world.id], 11 + world.id.length);
+  if (isDelve(world.id)) delveArrive();
   villagers.show(world.id);
   player.tiles.rebuild();
   fx.restorePickups(groundLeft[world.id]);
@@ -944,6 +977,30 @@ function hops(from, to) {
 const mapsOf = (mob) => Object.keys(SPAWNS).filter((m) => SPAWNS[m].some(([t]) => t === mob));
 const nearestMap = (maps) => [...maps].sort((a, b) => hops(world.id, a) - hops(world.id, b))[0];
 // where a quest sends you next: { map, npc (talk to them there), why }, or null
+// a floor of the Deep Halls reached: its monsters made stronger past the deepest level, the record, and every fifth
+// floor's cache the first time
+function delveArrive() {
+  const k = delve.floor;
+  for (const m of mobs.list) deepen(m, k);
+  menus.message(`The Deep Halls · Floor ${k}${DEPTH.mult(k) > 1 ? ` · the monsters are ${Math.round((DEPTH.mult(k) - 1) * 100)}% stronger` : ''}. The stairs down are at the far end.`);
+  if (k > delve.best) {
+    delve.best = k;
+    if (k % DEPTH.every === 0) {
+      const r = DEPTH.cache(k);
+      giveReward(r);
+      menus.message(`A delver's cache on Floor ${k}! You can be sent straight here from now on.`);
+    }
+  }
+}
+// the Keepers' road to a quest's place: { map, npc, keeper, fare } when the hero stands in a town with a Keeper
+// and has signed the ledger of the town the place is in (fields have no Keeper: the road ends at a town)
+function keeperRoad(id) {
+  const t = questTarget(id);
+  if (!t || t.map === world.id || warping || raids.raid) return null;
+  const hereKeeper = Object.entries(NPCS).some(([k, n]) => k.startsWith('keeper_') && (n.map || 'camp') === world.id);
+  const [k] = Object.entries(NPCS).find(([kk, n]) => kk.startsWith('keeper_') && (n.map || 'camp') === t.map && keepers.has(kk)) || [];
+  return hereKeeper && k ? { map: t.map, npc: t.npc, keeper: k, fare: FARES[t.map] } : null;
+}
 function questTarget(id) {
   if (id === 'story') {
     const s = story.step, map = s && story.map();
@@ -955,6 +1012,7 @@ function questTarget(id) {
   if (q.kind === 'search') return { map: q.map, why: `${q.thing}s` };
   if (q.kind === 'defend') return { map: q.map, at: q.at, why: q.place };
   if (q.kind === 'deliver') return { map: NPCS[q.to].map || 'camp', npc: q.to, why: NPCS[q.to].name };
+  if (q.kind === 'escort') return questWorld.escort?.id === id ? { map: q.map, at: q.to, why: q.place } : { map: q.map, npc: q.who, why: `${NPCS[q.who].name}: stand beside them to set off` };
   if (q.kind === 'kill') { // for a hunt of several kinds, the first kind still wanted
     const mob = q.mobs ? Object.keys(q.mobs).find((m) => (quests.active[id][m] || 0) < q.mobs[m]) : q.mob;
     const map = nearestMap(mapsOf(mob));
@@ -1040,7 +1098,7 @@ const { tickVigil, tickStorySearch, tickStorySpawn } = stands;
 const raids = installRaids({ audio, cam, fx, gainExp, goalEvent, inv, lib, mobs, persist, player, prog, refreshQuests, save, story, warp, world, get menus() { return menus; }, get warping() { return warping; }, get storyLive() { return storyLive; }, get questWorld() { return questWorld; } });
 const { raidsDone, raidLog, raidOf, boatSpot, mobPortrait, raidInfo, raidGo, tickRaid } = raids;
 // ---------- quests out in the world: src/questworld.js (searches, defences, rare hunts, the Sphinx's door) ----------
-const questWorld = installQuestWorld({ audio, cam, fx, inv, mobs, player, questComplete, quests, refreshQuests, world, secretScene: (id) => queueScene(SECRET_SHOTS[id]), get menus() { return menus; }, get dayNight() { return dayNight; } });
+const questWorld = installQuestWorld({ audio, cam, fx, inv, mobs, player, questComplete, quests, refreshQuests, world, villagers, secretScene: (id) => queueScene(SECRET_SHOTS[id]), handIn: (id) => menus.hooks.handIn(id), get menus() { return menus; }, get dayNight() { return dayNight; } });
 const { tickQuestWorld } = questWorld;
 
 // ---------- the story ----------
@@ -1147,6 +1205,27 @@ const menus = new Menus(inv, prog, player, {
     persist();
   },
   keeperList: (here) => [...keepers].filter((k) => k !== here && NPCS[k]).map((k) => [k, FARES[NPCS[k].map || 'camp']]),
+  // the Quest View's Keepers' road: from a town with a Keeper, to the quest's or the story's place in another town
+  // whose Keeper's ledger the hero has signed, for that Keeper's fare, arriving beside the person wanted (the
+  // pacing pass: fewer walks back and forth for a talk)
+  keeperRoad: (id) => keeperRoad(id),
+  // the Deep Halls' guide (the fifth city's Ship Captain, once made): the deepest floor reached, the checkpoint they can
+  // be sent to, and whether they may go
+  delveInfo: () => ({ best: delve.best, cp: checkpoint(delve.best), open: prog.baseLv >= DEPTH.open, lv: DEPTH.open }),
+  delveGo(k) {
+    if (prog.baseLv < DEPTH.open || (k !== 1 && k !== checkpoint(delve.best))) return;
+    delve.pending = k;
+    menus.close('talk');
+    warp('delveA', null);
+  },
+  keeperRoadGo(id) {
+    const r = keeperRoad(id);
+    if (!r || inv.perz < r.fare) return;
+    inv.perz -= r.fare;
+    menus.close();
+    const n = r.npc && NPCS[r.npc], k = NPCS[r.keeper];
+    warp(r.map, null, n ? { x: n.x, z: n.z + 1.4 } : { x: k.x, z: k.z + 1.4 });
+  },
   keeperGo(k) {
     const n = NPCS[k], fare = FARES[n.map || 'camp'];
     if (!keepers.has(k) || inv.perz < fare) return;
@@ -2714,8 +2793,8 @@ let resetting = false;
 let saveWarned = false;
 function persist() {
   if (!started || resetting || cine) return; // (never mid-cutscene: the hero is not where the camera is)
-  const isle = raidOf(world.id), back = isle && raids.raid?.back, at = back || (isle ? boatSpot(isle) : player); // a run is never saved: back on the shore (or where they set out from)
-  const ok = writeSave({ goals: goals.toJSON(), album: album.toJSON(), mvpPity: mobs.pity, story: story.toJSON(), look: player.look, visited: [...visited], keepers: [...keepers], savePoint, raidAt: raids.raidAt, raidsDone: [...raidsDone], raidLog, raidRun: raids.raid ? { id: raids.raid.id, diff: raids.raid.diff, at: raids.raid.start } : null, map: back ? back.map : isle ? isle.from : world.id, mvpAt: mobs.mvpAt, bossHp: mobs.bossSnapshot(), bossAt: mobs.bossAt, fieldAt: mobs.fieldSnapshot(), x: at.x, z: at.z, yaw: cam.yaw, dist: cam.dist, hp: player.hp, sp: player.sp, inv: inv.toJSON(), prog: prog.toJSON(), quests: quests.toJSON(), hotbar: hotbar.toJSON(), time: dayNight.t });
+  const isle = raidOf(world.id), deep = isDelve(world.id), back = isle ? raids.raid?.back : deep ? delverSpot() : null, at = back || (isle ? boatSpot(isle) : player); // a run is never saved: back on the shore (or where they set out from); the Deep Halls, back by the one who sent them down
+  const ok = writeSave({ goals: goals.toJSON(), album: album.toJSON(), mvpPity: mobs.pity, story: story.toJSON(), look: player.look, visited: [...visited], keepers: [...keepers], savePoint, raidAt: raids.raidAt, raidsDone: [...raidsDone], raidLog, delve: { best: delve.best }, raidRun: raids.raid ? { id: raids.raid.id, diff: raids.raid.diff, at: raids.raid.start } : null, map: back ? back.map : isle ? isle.from : world.id, mvpAt: mobs.mvpAt, bossHp: mobs.bossSnapshot(), bossAt: mobs.bossAt, fieldAt: mobs.fieldSnapshot(), x: at.x, z: at.z, yaw: cam.yaw, dist: cam.dist, hp: player.hp, sp: player.sp, inv: inv.toJSON(), prog: prog.toJSON(), quests: quests.toJSON(), hotbar: hotbar.toJSON(), time: dayNight.t });
   writeStorage(inv.chest.toJSON());
   // the phone refused the save (storage full or blocked): say so once, so the player can back up
   if (!ok && !saveWarned) { saveWarned = true; menus.message('Could not save! Back up your save from the title screen (Account) soon.'); }
@@ -2844,7 +2923,6 @@ function tickAura(dt, t, b) {
 
 // ---------- the camera in a cutscene, and while the hero is made: it frames a point (focus: {x, z}),
 // from dist, turning (spin, rad/s), at its own pitch, shifted sideways (side: the hero left of centre) ----------
-let cine = null;
 const CINE_HERO = { x: -999, z: -999, state: 'down', ps: {}, canBeHit: () => false }; // (no hero for the monsters to notice)
 function cineShot(s) {
   if (world.id !== s.map) enterMap(s.map, null, s.map === 'camp' ? null : { x: 3, z: 3 }); // (the hero out of the shot)
@@ -2884,9 +2962,18 @@ function queueScene(shots, then) { if (shots?.length) sceneQueue.push({ shots, t
 function storyScenes(s, next) {
   if (STEP_SHOTS[s?.id]) queueScene(STEP_SHOTS[s.id]);
   const ch = (st) => st?.ch.split(':')[0];
-  if (next && ch(next) !== ch(s) && CHAPTER_SHOTS[ch(next)]) queueScene(CHAPTER_SHOTS[ch(next)], () => menus.message(`Story: ${next.title}. ${next.goal}`));
+  if (next && ch(next) !== ch(s) && CHAPTER_SHOTS[ch(next)]) queueScene(CHAPTER_SHOTS[ch(next)], () => { menus.message(`Story: ${next.title}. ${next.goal}`); backupNudge(); });
+  else if (!next) backupNudge();
 }
-const sceneSafe = () => !cine && !warping && player.state === 'normal' && !menus.isOpen('story') && !stands.vigil && !raids.raid && !raidOf(world.id)
+// a new chapter (or the story's end): if no save code was made this past week, a reminder to make one, at most
+// once a day (the heroes live on this phone; a code keeps them safe anywhere: title screen, Account)
+function backupNudge() {
+  const now = Date.now(), DAY = 864e5;
+  if (now - backedUpAt() < 7 * DAY || now - (story.flags.nudgedAt || 0) < DAY) return;
+  story.flags.nudgedAt = now;
+  menus.message('Keep your heroes safe: make a save code now and then (title screen → Account → Back up save) and keep it somewhere else.');
+}
+const sceneSafe = () => !isDelve(world.id) && !cine && !warping && player.state === 'normal' && !menus.isOpen('story') && !stands.vigil && !raids.raid && !raidOf(world.id)
   && !mobs.list.some((m) => m.alive && (m.state === 'chase' || m.angry > 0) && Math.hypot(m.x - player.x, m.z - player.z) < 14);
 // a chapter's cutscenes, to watch again from the Quests window: its opening, and the big moments the hero has passed
 function chapterShots(ch) {
@@ -2898,12 +2985,21 @@ function playScene(shots, then) {
   const back = { map: world.id, x: player.x, z: player.z, t: dayNight.t, yaw: cam.yaw, dist: cam.dist, walked: new Set(visited) };
   menus.close(); bigmap.close?.(); player.stop(); stopNav();
   persist(); // (saved where the hero stands, before the shots move anything)
+  // the Hunter's traps and the Voodoo's dolls wait, hidden, for the hero's return; the bound monster is found again
+  // by its kind and spot (the map's monsters are made afresh when the hero comes back to it)
+  const props = [...traps.map((t) => t.s), subProp, dollProp].filter(Boolean);
+  sceneKeep = { props, doll: doll && { type: doll.type, x: doll.x, z: doll.z } };
+  for (const o of props) o.visible = false;
   document.body.classList.add('cinema');
   playCutscene(shots, cineShot, () => {
     cine = null;
     document.body.classList.remove('cinema');
     for (const v of [...visited]) if (!back.walked.has(v)) visited.delete(v);
     if (world.id !== back.map || Math.hypot(player.x - back.x, player.z - back.z) > 0.01) enterMap(back.map, null, back);
+    for (const o of sceneKeep.props) o.visible = true;
+    const was = sceneKeep.doll;
+    if (was && !mobs.list.includes(doll)) doll = mobs.list.filter((m) => m.alive && m.type === was.type).sort((a, b) => Math.hypot(a.x - was.x, a.z - was.z) - Math.hypot(b.x - was.x, b.z - was.z))[0] || null;
+    sceneKeep = null;
     dayNight.t = back.t; dayNight.update(0, 0);
     cam.yaw = back.yaw; cam.dist = back.dist;
     then?.();
@@ -2999,7 +3095,7 @@ function frame() {
   const pitch = cine?.pitch ?? lerp(0.72, 0.98, (cam.dist - 7) / 13);
   const horiz = Math.cos(pitch) * cam.dist;
   cam.shake = Math.max(0, cam.shake - dt);
-  const sh = cam.shake * 0.5;
+  const sh = settings.get('shake') === false ? 0 : cam.shake * 0.5; // (Settings: Screen shake)
   camera.position.set(
     cam.target.x + Math.sin(cam.yaw) * horiz + (Math.random() - 0.5) * sh,
     cam.target.y + 0.7 + Math.sin(pitch) * cam.dist,
@@ -3025,6 +3121,25 @@ function frame() {
   wings.set(inv.gear.wings); // the Wings slot: wings on the back, or a light at the shoulder
   wings.update(dt, player, camera, t, world.heightAt(player.x, player.z));
   renderer.render(scene, camera);
+  tickPerf();
+}
+
+// ---------- the performance readout (Settings: Performance): to measure the game on a real phone ----------
+// frames a second and the slowest frame over the last second, the renderer's draw calls and triangles, the
+// textures and geometries held, the maps built, and the page's memory where the browser tells it
+// (real time, not the game's step, which is capped at 50 ms)
+let perfEl = null, perfT = 0, perfN = 0, perfWorst = 0, perfLast = 0;
+function tickPerf() {
+  const on = settings.get('perf');
+  if (!on) { if (perfEl) { perfEl.remove(); perfEl = null; } return; }
+  const now = performance.now(), dt = perfLast ? (now - perfLast) / 1000 : 0;
+  perfLast = now;
+  if (!perfEl) { perfEl = document.createElement('div'); perfEl.id = 'perf'; document.body.appendChild(perfEl); perfT = 0; perfN = 0; perfWorst = 0; }
+  perfN++; perfT += dt; perfWorst = Math.max(perfWorst, dt);
+  if (perfT < 1) return;
+  const i = renderer.info, mem = performance.memory ? `${Math.round(performance.memory.usedJSHeapSize / 1048576)} MB` : 'n/a';
+  perfEl.textContent = `${Math.round(perfN / perfT)} fps · worst ${Math.round(perfWorst * 1000)} ms\n${i.render.calls} draws · ${Math.round(i.render.triangles / 1000)}k tris\n${i.memory.textures} tex · ${i.memory.geometries} geo · ${world.builtCount?.() ?? '?'} maps\nheap ${mem} · ${world.id}`;
+  perfT = 0; perfN = 0; perfWorst = 0;
 }
 
 // the hero's panel folds (the ▴ button, or ☰ to open it again; remembered on this phone), and opens by itself
@@ -3291,4 +3406,4 @@ if (go || toSelect) { title.classList.remove('wait'); bootGone(); } else {
   addEventListener('keydown', tap);
 }
 
-window.__aria = { scene, renderer, lib, MAPS, settings, album, goals, warp, enterMap, useSkill, useItem, story, SPOTS, player, world, cam, camera, mobs, allies, fx, inv, prog, quests, villagers, menus, hotbar, dayNight, audio, stats: world.stats, raid: () => raids.raid, raidAt: () => raids.raidAt, raidGo, raidLog: () => raidLog, storyDone, queueScene, chapterShots, cineShot, cine: () => cine, visited, savePoint: () => savePoint, keepers, gainExp };
+window.__aria = { scene, renderer, lib, MAPS, settings, album, goals, warp, enterMap, useSkill, useItem, story, SPOTS, player, world, cam, camera, mobs, allies, fx, inv, prog, quests, villagers, menus, hotbar, dayNight, audio, stats: world.stats, raid: () => raids.raid, raidAt: () => raids.raidAt, raidGo, raidLog: () => raidLog, storyDone, queueScene, chapterShots, cineShot, cine: () => cine, traps, delve, questWorld, keepers, visited, savePoint: () => savePoint, keepers, gainExp };

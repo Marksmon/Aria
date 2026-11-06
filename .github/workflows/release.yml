@@ -1,0 +1,89 @@
+name: Store release
+
+# A store build of Aria (docs/release.md): its own app id, signed with a release key kept only in the repository's
+# secrets. Run by hand (Actions → Store release → Run workflow). The everyday APK (android.yml) is untouched: it
+# keeps build-tools/debug.keystore, so phones that have it keep updating.
+on:
+  workflow_dispatch:
+    inputs:
+      app_id:
+        description: The store app's id (never the debug app's com.marksmon.aibachu)
+        default: com.marksmon.aria
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      BUILD_NUMBER: ${{ github.run_number }}
+      RELEASE_STORE_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}
+      RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
+      RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: The release key is in the secrets, and is not the public debug key
+        env:
+          KEY_B64: ${{ secrets.RELEASE_KEYSTORE_B64 }}
+          APP_ID: ${{ inputs.app_id }}
+        run: |
+          if [ -z "$KEY_B64" ] || [ -z "$RELEASE_STORE_PASSWORD" ] || [ -z "$RELEASE_KEY_ALIAS" ]; then
+            echo "::error::Add RELEASE_KEYSTORE_B64, RELEASE_STORE_PASSWORD, RELEASE_KEY_ALIAS and RELEASE_KEY_PASSWORD to the repository's secrets first (docs/release.md)."
+            exit 1
+          fi
+          if [ "$APP_ID" = "com.marksmon.aibachu" ]; then echo "::error::The store app needs its own id"; exit 1; fi
+          echo "$KEY_B64" | base64 -d > "$RUNNER_TEMP/release.jks"
+          echo "RELEASE_KEYSTORE=$RUNNER_TEMP/release.jks" >> "$GITHUB_ENV"
+          debug=$(keytool -list -v -keystore build-tools/debug.keystore -storepass android | grep -m1 'SHA256:' | awk '{print $2}')
+          rel=$(keytool -list -v -keystore "$RUNNER_TEMP/release.jks" -storepass "$RELEASE_STORE_PASSWORD" -alias "$RELEASE_KEY_ALIAS" | grep -m1 'SHA256:' | awk '{print $2}')
+          test -n "$rel" && test "$rel" != "$debug"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Build web game
+        run: |
+          npm ci
+          npm test
+          npm run build
+
+      - name: Create Android project (the store app's id)
+        env:
+          APP_ID: ${{ inputs.app_id }}
+        run: |
+          node -e "const f='capacitor.config.json',c=JSON.parse(require('fs').readFileSync(f));c.appId=process.env.APP_ID;require('fs').writeFileSync(f,JSON.stringify(c,null,2))"
+          npx cap add android
+          node build-tools/patch-android.mjs
+          npx cap sync android
+
+      - name: Build the bundle and the APK
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew bundleRelease assembleRelease --no-daemon
+
+      - name: Check both are signed with the release key
+        run: |
+          rel=$(keytool -list -v -keystore "$RELEASE_KEYSTORE" -storepass "$RELEASE_STORE_PASSWORD" -alias "$RELEASE_KEY_ALIAS" | grep -m1 'SHA256:' | awk '{print $2}')
+          apk=$(keytool -printcert -jarfile android/app/build/outputs/apk/release/app-release.apk | grep -m1 'SHA256:' | awk '{print $2}')
+          echo "key: $rel"; echo "apk: $apk"
+          test -n "$rel" && test "$rel" = "$apk"
+          cp android/app/build/outputs/bundle/release/app-release.aab Aria-store.aab
+          cp android/app/build/outputs/apk/release/app-release.apk Aria-store.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Aria-store
+          path: |
+            Aria-store.aab
+            Aria-store.apk

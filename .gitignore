@@ -2,3 +2,9 @@ node_modules
 dist/
 android/
 __pycache__/
+
+# release keys never go in the repository (docs/release.md)
+*.jks
+*.keystore
+!build-tools/debug.keystore
+*.b64

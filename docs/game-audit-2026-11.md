@@ -5,6 +5,23 @@ written from six seats: producer, critic, developer, designer, QA tester and mar
 to be argued with. Where the earlier reviews (`docs/improvement-plan.md`, `docs/balance.md`) already
 settled something, this audit builds on them instead of repeating them.
 
+## Status: the P0 and P1 items (done 6 November 2026)
+
+| Item | Done |
+|---|---|
+| QA-1 the public signing key | A store release is a second app (`com.marksmon.aria`) signed from the repository's secrets (`.github/workflows/release.yml`, `docs/release.md`, idle until the key is added); the everyday APK keeps its key (the owner's rule); a test keeps every other keystore out |
+| QA-2, QA-3 the early fields and economy | `build-tools/field-bot.cjs` plays young heroes in Moss Field, Fen Shore and Birch Grove (results in the commit) |
+| Real-phone measurement | Settings → Performance: fps, slowest frame, draw calls, textures, geometries, maps built, memory. The measuring itself needs the owner's phone |
+| QA-4 cutscenes clear traps | Traps and the Voodoo's dolls wait, hidden, through a cutscene |
+| QA-5 memory | Only the current and last five maps stay built (`MAP_BUDGET`); geometries fell from 279 to 40 over 13 maps in a test |
+| QA-7 colour-only danger | Danger circles are dashed, striped and pulse |
+| QA-8 saves | Mirrored to the app's own storage on Android and restored if the WebView lost them; backup reminders |
+| Window text size | Settings → Window text size; also Screen shake |
+| Story pacing | Four relay talks folded in (31 talk steps → 27); the Keepers' road from a quest's Quest View |
+| Quest variety | 15 quests changed kind (6 defend, 7 search, 2 quiz) and a new kind, escort (Hakon's The Salt Road): kill and fetch from 80% to 67% |
+| Endless dungeon | The Deep Halls (`src/delve.js`), built and tested; by the owner's call its door opens with the fifth city (the Ship Captain's destination from Base 90, Loki the Mischiefbringer at the gate: `docs/fifth-city.md`) |
+| Also found | Two crashes when a hero frame is not painted yet (`player.js`), fixed |
+
 ## How this audit knows what it says
 
 Every finding is tagged with how sure it is:

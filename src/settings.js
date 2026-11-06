@@ -5,8 +5,12 @@ export const DEFAULTS = {
   targetBar: true,  // a thin health bar under the name of the monster you fight or picked
   graphics: 'sharp', // 'sharp': the screen's own sharpness (up to 1.5x); 'fast': 1x, for a quicker frame on a weak phone
   uiScale: 1,       // the HUD's size (UI_SCALES): the panel, buttons, hotbar, minimap and quest list; windows keep theirs
+  textSize: 1,      // the windows' size (TEXT_SIZES): their text and buttons, for reading on a small screen
+  shake: true,      // the screen shakes for big blows, boss moves and the story's quakes
+  perf: false,      // the performance readout: frame rate, draw calls, textures, memory (to measure on a real phone)
 };
 export const UI_SCALES = [{ k: 0.85, name: 'Small' }, { k: 1, name: 'Normal' }, { k: 1.15, name: 'Large' }, { k: 1.3, name: 'Larger' }];
+export const TEXT_SIZES = [{ k: 1, name: 'Normal' }, { k: 1.15, name: 'Large' }, { k: 1.3, name: 'Larger' }];
 export const GRAPHICS = { sharp: { name: 'Sharp', ratio: 1.5 }, fast: { name: 'Fast', ratio: 1 } };
 
 function read() {
@@ -20,6 +24,8 @@ function read() {
 const values = { ...DEFAULTS, ...read() };
 if (!GRAPHICS[values.graphics]) values.graphics = DEFAULTS.graphics;
 if (!UI_SCALES.some((u) => u.k === values.uiScale)) values.uiScale = DEFAULTS.uiScale;
+if (!TEXT_SIZES.some((u) => u.k === values.textSize)) values.textSize = DEFAULTS.textSize;
+export const nextText = (k) => TEXT_SIZES[(TEXT_SIZES.findIndex((u) => u.k === k) + 1) % TEXT_SIZES.length].k;
 // the next size up (the last wraps round to the first)
 export const nextScale = (k) => UI_SCALES[(UI_SCALES.findIndex((u) => u.k === k) + 1) % UI_SCALES.length].k;
 const listeners = [];

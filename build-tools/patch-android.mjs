@@ -48,4 +48,24 @@ if (build > 0) {
   writeFileSync(gradle, g);
 }
 
+// A store release (.github/workflows/release.yml, docs/release.md): a second app with its own id, signed with a
+// release key that lives only in the repository's secrets, never in the tree. RELEASE_KEYSTORE is the key file's
+// path on the CI machine; the passwords and alias come from the environment too. The debug APK above is untouched.
+if (process.env.RELEASE_KEYSTORE) {
+  const gradle = 'android/app/build.gradle';
+  let g = readFileSync(gradle, 'utf8');
+  const store = resolve(process.env.RELEASE_KEYSTORE).replace(/\\/g, '/');
+  const release = `
+        release {
+            storeFile file("${store}")
+            storePassword System.getenv("RELEASE_STORE_PASSWORD")
+            keyAlias System.getenv("RELEASE_KEY_ALIAS")
+            keyPassword System.getenv("RELEASE_KEY_PASSWORD")
+        }`;
+  g = g.replace(/signingConfigs\s*\{/, (m) => m + release);
+  g = g.replace(/buildTypes\s*\{([\s\S]*?)release\s*\{/, (m) => `${m}\n            signingConfig signingConfigs.release`);
+  if (!g.includes('signingConfig signingConfigs.release')) throw new Error('could not add the release key to build.gradle');
+  writeFileSync(gradle, g);
+}
+
 console.log(`Patched manifest (landscape), styles (fullscreen), version (build ${build || 'none'}) and signing key.`);

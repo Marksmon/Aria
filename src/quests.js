@@ -217,7 +217,7 @@ export const NPCS = {
     name: 'Hakon the Carter', map: 'coast', x: 12, z: 10, dress: { body: 'trainee', main: [8, 0.5, 1.05], accent: [35, 0.4, 1], hair: 'messy', dye: 'brown', top: 'woven_cap' },
     hello: 'Lost my cart, lost my horse, and I am not going back down that road alone.',
     later: () => '', bye: 'Mind the kobolds. They bite.',
-    quests: [],
+    quests: ['saltpans'],
   },
   dag: {
     name: 'Dag the Miner', map: 'coalpit', x: 51, z: 28, dress: { body: 'trainee', main: [220, 0.08, 0.7], accent: [28, 0.6, 1], hair: 'messy', dye: 'red' },
@@ -942,6 +942,18 @@ export const QUESTS = {
     thanks: 'Twenty Blue Crabs! The fishers will feast for a week. Well fought.',
     reward: { xp: 20000, perz: 6000, items: { potion2: 10 } },
   },
+  // an escort (kind 'escort', questworld.js): the giver walks with the hero from where they stand to a place (to)
+  // on their own map, at a walking pace, waiting when the hero falls behind; ambushes come for them on the way
+  // (ambush: one wave a step along the road), and they have hp of their own. Arriving pays at once, there; if they
+  // fall, they limp home, and the escort can be tried again
+  saltpans: {
+    title: 'The Salt Road: Back to the Salt Pans', kind: 'escort', map: 'coast', who: 'hakon', to: { x: 44, z: 46 }, place: 'the salt pans', hp: 2400,
+    ambush: [[['koboldWarrior', 2]], [['koboldArcher', 2], ['koboldWarrior', 1]], [['koboldWarrior', 2], ['koboldAssassin', 1]]], lv: 30,
+    intro: 'My salt is still sitting in the pans on the east shore, where the kobolds jumped me. Walk me there, will you? I go at a carter\'s pace. If the kobolds come out of the rocks again, they will come for me, not you: keep them off.',
+    thanks: 'The salt pans! And the salt still in them. You have saved my winter, friend. Take this: you have earned more than salt.',
+    reward: { xp: 16000, perz: 6000, items: { potion2: 8, salt: 10 } },
+  },
+
   // ---------- Galdrheim ----------
   tomes: {
     title: 'The Lorekeeper 1: The Drowned Tomes', kind: 'search', map: 'coast', thing: 'Drowned Tome', spots: [[16, 10], [32.5, 44.5], [34, 22], [10, 49]], lv: 20,
@@ -963,11 +975,12 @@ export const QUESTS = {
     reward: { xp: 60000, perz: 10000, items: { tonic: 10 } },
   },
   giantbeetle: {
-    title: 'The Beetles of Ash Heath', kind: 'kill', mob: 'cinderBeetle', n: 20, lv: 46,
-    intro: 'In Ash Heath a Giant Beetle burns the heath wherever it walks, and its Fire Beetles carry the fire on. Nobody can stop the giant; kill twenty Fire Beetles and the fires will die down.',
+    title: 'The Beetles of Ash Heath', kind: 'defend', map: 'heath', at: { x: 40, z: 44 }, place: 'the Watch\'s fire-break', waves: [['cinderBeetle', 4], ['cinderBeetle', 5], ['cinderBeetle', 6]], lv: 46,
+    intro: 'In Ash Heath a Giant Beetle burns the heath wherever it walks, and its Fire Beetles carry the fire on. The Watch has dug a fire-break in the south of the heath. Hold it against the Fire Beetles, three waves, and the fires will die down. Leave the Giant be.',
     thanks: 'You did what the whole Watch could not. Steinborg owes you.',
-    reward: { xp: 120000, perz: 15000, items: { potion3: 10 } },
+        reward: { xp: 120000, perz: 15000, items: { potion3: 10 } },
   },
+
   shades: {
     title: 'The Runecarver 1: Shadows in Black Wood', kind: 'search', map: 'deep', thing: 'Watcher stone', spots: [[18, 18], [46, 24], [26, 46]], verb: 'Rubbing taken', lv: 38,
     intro: 'Three old Watcher stones stand among the black trees of Black Wood, older than Galdrheim. Find them, look for the faint glow, and take a rubbing of each for me. Mind the Dark Wisps: they come for you on sight.',
@@ -1013,17 +1026,19 @@ export const QUESTS = {
     reward: { xp: 200000, perz: 18000, items: { potion3: 12, honey: 6 } },
   },
   bowstaves: {
-    title: 'The Fletcher 1: Wood for Bows', kind: 'fetch', items: { willow_twig: 12, thorn: 4 }, lv: 22,
-    intro: 'Bows need willow that still wants to bend, and the bow-grips need something with a bite. Bring me twelve Willow Twigs from the marsh and four Thorns from the Red Sprouts of Birch Grove, to wind the grips tight.',
+    title: 'The Fletcher 1: Wood for Bows', kind: 'search', map: 'marsh', thing: 'Seasoned willow stave', verb: 'Stave taken', spots: [[14, 16], [40, 14], [50, 26], [16, 46], [36, 50]], lv: 22,
+    intro: 'Bows need willow that still wants to bend. The best staves are the ones the Walking Willows drop when they root for the night: they lie in the reeds all over Willow Marsh. Five of them, before they take root again.',
     thanks: 'Lovely wood. Still twitching, too. Every archer in the village will shoot a little straighter because of you.',
-    reward: { xp: 9000, perz: 4000, items: { potion2: 6, quick: 2 } },
+        reward: { xp: 9000, perz: 4000, items: { potion2: 6, quick: 2 } },
   },
+
   elderwillow: {
-    title: 'The Walking Willows', kind: 'kill', mob: 'willow', n: 20, lv: 10,
-    intro: 'The Elder Willow of Willow Marsh, west of the gate, is calling the willows out of the water, and they walk farther every night. Nobody can fell the Elder, but cut down twenty Willows before they reach the fields.',
+    title: 'The Walking Willows', kind: 'defend', map: 'marsh', at: { x: 44, z: 44 }, place: 'the old footbridge', waves: [['willow', 3], ['willow', 4], ['willow', 5]], lv: 10,
+    intro: 'The Elder Willow of Willow Marsh, west of the gate, is calling the willows out of the water, and they walk farther every night. Nobody can fell the Elder, but the willows cross at the old footbridge in the east of the marsh. Stand on it and turn them back, three waves of them.',
     thanks: 'The marsh is still at last. Even the frogs are quieter. Veidheim owes you a great deal.',
-    reward: { xp: 6000, perz: 3000, items: { potion2: 6 } },
+        reward: { xp: 6000, perz: 3000, items: { potion2: 6 } },
   },
+
   ancienttreant: {
     title: 'The Waking Wood', kind: 'kill', mobs: { greatBear: 1, alphaWolf: 1 }, lv: 70,
     intro: 'Since the Ancient Treant woke in the Old Forest, the beasts of the hills have grown bold, as if the whole wild were waking with it. Two lead them: the Great Bear of Wolf Hills and the Alpha Wolf of Barley Field. No hunter can fell a tree that has stood a thousand years, but they can fall. Bring down both, and the wild settles again.',
@@ -1039,11 +1054,12 @@ export const QUESTS = {
     reward: { xp: 300, perz: 300, items: { potion: 5 } },
   },
   fenpatrol: {
-    title: 'The Valley Watch 2: The Fen Road', kind: 'kill', mobs: { blueSlime: 12, crab: 6 }, lv: 6,
-    intro: 'The fishers walk the Fen Shore road west of camp, and the Blue Bloops and Crabs will not let them pass. Twelve Bloops and six Crabs should do.',
+    title: 'The Valley Watch 2: The Fen Road', kind: 'defend', map: 'fen', at: { x: 30, z: 40 }, place: 'the fishers\' road shrine', waves: [['blueSlime', 3], ['crab', 2], ['crab', 3]], lv: 6,
+    intro: 'The fishers walk the Fen Shore road west of camp, and the Blue Bloops and Crabs will not let them pass. Halfway along stands an old road shrine where they rest. Hold it against three waves, so the fishers can get by.',
     thanks: 'The fishers came home with full nets. They asked your name.',
-    reward: { xp: 900, perz: 600, items: { potion: 5 } },
+        reward: { xp: 900, perz: 600, items: { potion: 5 } },
   },
+
   mushroomblight: {
     title: 'The Valley Watch 4: The Spore Blight', kind: 'kill', mob: 'mushling', n: 20, lv: 14,
     intro: 'Mushrooms are spreading through Dark Dale, east of Moss Field, and their spores reach our tents on the wind. Twenty of them, and mind the slowing clouds.',
@@ -1051,29 +1067,41 @@ export const QUESTS = {
     reward: { xp: 3500, perz: 1500, items: { potion2: 5 } },
   },
   crabboil: {
-    title: 'Astrid\'s Kitchen 2: Crab Boil', kind: 'fetch', items: { crableg: 8, shell: 10 }, lv: 12,
-    intro: 'A crab boil for the whole camp! Eight Crab Legs and ten Shells from the Crabs of Fen Shore, and I will do the rest.',
+    title: 'Astrid\'s Kitchen 2: Crab Boil', kind: 'quiz', items: { crableg: 8, shell: 10 }, lv: 12, task: 'cook the crab boil with Astrid',
+    intro: 'A crab boil for the whole camp! Eight Crab Legs and ten Shells from the Crabs of Fen Shore, and then you cook it with me.',
+    questions: [
+      { q: 'The Shells go in first. Why?', options: ['They make the broth', 'They are the meat', 'For the noise'], a: 0,
+        why: 'The broth! Boil the shells first and the whole pot tastes of the sea.', hint: 'Shells? To eat? Think again, dear.' },
+      { q: 'A Crab of Fen Shore pinches back. What keeps a young hero safe?', options: ['Fighting three at once', 'One at a time, with a potion ready', 'Running past them'], a: 1,
+        why: 'One at a time. They hit hard for their size.', hint: 'Ask any fisher with nine fingers. Try again.' },
+      { q: 'Crabs are of the Water. Which weapon bites them best?', options: ['A Water one', 'A Wind one', 'A Fire one'], a: 1,
+        why: 'Wind beats Water. The Huntmaster says so, and she would know.', hint: 'Not quite: water does little to water, and fire less still.' },
+    ],
     thanks: 'Into the pot they go! Here, take this, and come back for seconds.',
-    reward: { xp: 2500, perz: 1200, items: { potion: 8 } },
+        reward: { xp: 2500, perz: 1200, items: { potion: 8 } },
   },
+
   mushroomstew: {
-    title: 'Astrid\'s Kitchen 3: Forest Stew', kind: 'fetch', items: { spore: 12, herb: 4 }, lv: 16,
-    intro: 'A stew to warm the scouts: twelve Spores from the Mushrooms of Dark Dale and four Green Herbs. Don\'t breathe the spores in!',
+    title: 'Astrid\'s Kitchen 3: Forest Stew', kind: 'search', map: 'hollow', thing: 'Patch of forest garlic', verb: 'Garlic picked', spots: [[16, 18], [46, 16], [18, 46], [46, 46], [32, 22]], lv: 16,
+    intro: 'A stew to warm the scouts needs forest garlic, and it only grows in the dark of Dark Dale, under the Mushrooms\' caps. Five patches. Don\'t breathe the spores in!',
     thanks: 'It smells like a forest after rain. Wonderful. Thank you, dear.',
-    reward: { xp: 4500, perz: 2000, items: { potion2: 4 } },
+        reward: { xp: 4500, perz: 2000, items: { potion2: 4 } },
   },
+
   saltfish: {
-    title: 'Astrid\'s Kitchen 4: Salted Supper', kind: 'fetch', items: { salt: 10, gel: 10 }, lv: 24,
-    intro: 'For a winter store I need ten Salt from the Sea Bloops of Salt Bay, and ten Bloop Gel to seal the jars.',
+    title: 'Astrid\'s Kitchen 4: Salted Supper', kind: 'search', map: 'coast', thing: 'Salt crust', verb: 'Salt scraped', spots: [[40, 12], [50, 22], [36, 54], [52, 50]], lv: 24,
+    intro: 'For a winter store I need salt, and the best is the crust the tide leaves on the rocks of Salt Bay. Scrape four crusts for me, from the rocks along the east shore.',
     thanks: 'The cellar will be full all winter. You\'re a treasure.',
-    reward: { xp: 3800, perz: 3500, items: { potion2: 6 } },
+        reward: { xp: 3800, perz: 3500, items: { potion2: 6 } },
   },
+
   honeycake: {
-    title: 'Astrid\'s Kitchen 5: Honey Cake', kind: 'fetch', items: { honey: 6 }, lv: 56,
-    intro: 'The finest cake needs the finest honey: six pots from the Bears of Wolf Hills. Don\'t let them eat you first.',
+    title: 'Astrid\'s Kitchen 5: Honey Cake', kind: 'search', map: 'wolfhill', thing: 'Wild honeycomb', verb: 'Honeycomb taken', spots: [[14, 30], [30, 14], [52, 30], [26, 52]], lv: 56,
+    intro: 'The finest cake needs the finest honey, and the wild bees of Wolf Hills hide it in the rocks where only the Bears can find it. Find four combs before the Bears do. Don\'t let them eat you first.',
     thanks: 'Honey cake for everyone! And the biggest slice is yours.',
-    reward: { xp: 190000, perz: 15000, items: { potion3: 10 } },
+        reward: { xp: 190000, perz: 15000, items: { potion3: 10 } },
   },
+
   mapsouth: {
     title: 'Sigrun\'s Map 2: The Southern Lands', kind: 'visit', zones: ['ridge', 'deep', 'heath'], lv: 32,
     intro: 'My map stops at Dark Dale. Walk Ember Hill, Black Wood and Ash Heath for me, and I\'ll fill in the south.',
@@ -1087,11 +1115,12 @@ export const QUESTS = {
     reward: { xp: 64000, perz: 12000, items: { potion3: 6 } },
   },
   koboldfur: {
-    title: 'The Trade Road 2: Kobold Fur', kind: 'fetch', items: { kobold_fur: 15 }, lv: 30,
-    intro: 'Kobold fur sells well in the north. Fifteen pelts from the Kobolds of Stone Field, west of Salt Bay, and we split the profit.',
+    title: 'The Trade Road 2: Kobold Fur', kind: 'search', map: 'stones', thing: 'Lost fur bale', verb: 'Bale found', spots: [[22, 22], [42, 42], [20, 42], [42, 22]], lv: 30,
+    intro: 'The kobolds of Stone Field robbed my fur wagon and dragged the bales back to their camps, west of Salt Bay. Four bales, one by each camp. Get them back and we split the profit.',
     thanks: 'Thick, warm and only a little smelly. A pleasure doing business.',
-    reward: { xp: 12000, perz: 7000, items: { potion2: 8 } },
+        reward: { xp: 12000, perz: 7000, items: { potion2: 8 } },
   },
+
   goblinteeth: {
     title: 'The Trade Road 3: Goblin Teeth', kind: 'fetch', items: { goblin_tooth: 15 }, lv: 40,
     intro: 'Carvers in Galdrheim want goblin teeth for charms. Fifteen from the goblins of Burnt Wood, north of Galdrheim.',
@@ -1123,11 +1152,20 @@ export const QUESTS = {
     reward: { xp: 70000, perz: 12000, items: { potion3: 6 } },
   },
   honeysalve: {
-    title: 'The Herbalist 3: Honey Salve', kind: 'fetch', items: { honey: 8 }, lv: 60,
-    intro: 'Honey heals burns like nothing else. Eight pots from the Bears of Wolf Hills.',
+    title: 'The Herbalist 3: Honey Salve', kind: 'quiz', items: { honey: 8 }, lv: 60, task: 'make the salve with Ragna',
+    intro: 'Honey heals burns like nothing else. Bring me eight pots from the Bears of Wolf Hills, and we make the salve together, so you know it too.',
+    questions: [
+      { q: 'A hunter is stung by a Sand Scorpion and his blood turns green. What do you give him?', options: ['Honey', 'A Green Herb', 'Water'], a: 1,
+        why: 'A Green Herb cures poison. Honey is for the burns.', hint: 'Honey on a sting? He will be sticky and still poisoned.' },
+      { q: 'A burn keeps biting after the fire is gone. How long does it last?', options: ['A few seconds, a bite each second', 'Until you sleep', 'Forever'], a: 0,
+        why: 'A few seconds. The salve takes the sting out while it lasts.', hint: 'Not so bad as that. Think how a burn fades.' },
+      { q: 'Where does the honey go: on the burn or under the bandage?', options: ['On the burn, then the bandage', 'In the tea', 'On the bandage only'], a: 0,
+        why: 'On the burn, thin, and the bandage over it. You have the hands for this.', hint: 'Tea is for after. Try again.' },
+    ],
     thanks: 'Sweet and soothing. The Watch\'s medics will thank you.',
-    reward: { xp: 260000, perz: 22000, items: { potion3: 12 } },
+        reward: { xp: 260000, perz: 22000, items: { potion3: 12 } },
   },
+
   darkink: {
     title: 'The Staffwright 2: Dark Ink', kind: 'fetch', items: { shade: 8, gloom: 8 }, lv: 36,
     intro: 'Runes for a staff need dark ink: eight Dark Crystals from the Dark Wisps and eight Dark Spores from the Dark Mushrooms of Black Wood.',
@@ -1135,11 +1173,12 @@ export const QUESTS = {
     reward: { xp: 22000, perz: 8000, items: { tonic: 10 } },
   },
   emberink: {
-    title: 'The Staffwright 3: Ember Ink', kind: 'fetch', items: { ember_dust: 10, glow: 15 }, lv: 45,
-    intro: 'Now the fire runes: ten Fire Dust from the Fire Wisps of Ash Heath and fifteen Glow Dust.',
+    title: 'The Staffwright 3: Ember Ink', kind: 'search', map: 'heath', thing: 'Warm ember-stone', verb: 'Ember-stone taken', spots: [[16, 16], [46, 16], [14, 40], [30, 52]], lv: 45,
+    intro: 'Now the fire runes. Ink that burns must be ground from ember-stones that are still warm: the Fire Wisps of Ash Heath leave them where they sleep. Four of them, while they glow.',
     thanks: 'It glows on the page! A staff of this will burn bright.',
-    reward: { xp: 58000, perz: 12000, items: { tonic: 12 } },
+        reward: { xp: 58000, perz: 12000, items: { tonic: 12 } },
   },
+
   redsprouts: {
     title: 'The Lorekeeper 2: Thorny Pages', kind: 'kill', mob: 'russet', n: 25, lv: 22,
     intro: 'The Red Sprouts of Birch Grove trample the old library garden. Twenty-five of them, please.',
@@ -1177,11 +1216,12 @@ export const QUESTS = {
     reward: { xp: 76000, perz: 12000, items: { potion3: 5 } },
   },
   farmguard: {
-    title: 'The Farmer 3: Guard the Harvest', kind: 'kill', mobs: { snake: 25, wolf: 15 }, lv: 56,
-    intro: 'Harvest is coming, and the Snakes and Wolves of Barley Field know it. Twenty-five Snakes and fifteen Wolves.',
+    title: 'The Farmer 3: Guard the Harvest', kind: 'defend', map: 'farm', at: { x: 44, z: 33 }, place: 'the haystacks', waves: [['snake', 5], ['wolf', 4], ['snake', 6], ['wolf', 5]], lv: 56,
+    intro: 'Harvest is coming, and the Snakes and Wolves of Barley Field know it. The sheaves are stacked by the haystacks in the east field. Stand guard there: snakes first, then wolves, and they come in waves.',
     thanks: 'The harvest is in, every sheaf! Here, take this, and some bread.',
-    reward: { xp: 190000, perz: 15000, items: { potion3: 10 } },
+        reward: { xp: 190000, perz: 15000, items: { potion3: 10 } },
   },
+
   goblinwar: {
     title: 'The Watch at War 1: Serpent Wood', kind: 'kill', mobs: { goblinWarrior: 20, goblinArcher: 15, goblinAssassin: 15 }, lv: 52,
     intro: 'The goblins gather in Serpent Wood. Break their war-band: twenty Goblins, fifteen Archers, fifteen Assassins.',
@@ -1373,11 +1413,12 @@ export const QUESTS = {
     reward: { xp: 900, perz: 600, items: { dates: 2 } },
   },
   ratsofsand: {
-    title: 'The Bazaar 2: Jaws in the Sacks', kind: 'kill', mob: 'giantAnt', n: 15, lv: 10,
-    intro: 'Giant Ants keep getting into my date sacks. They are as big as dogs and twice as rude. Fifteen of them, out in the Red Sands, and they will learn.',
-    thanks: 'Not one ant in the sacks this morning. You are a hero, a small one.',
-    reward: { xp: 2500, perz: 1500, items: { dates: 4 } },
+    title: 'The Bazaar 2: Jaws in the Sacks', kind: 'defend', map: 'redsands', at: { x: 30, z: 30 }, place: 'Dalla\'s date cart', waves: [['giantAnt', 2], ['giantAnt', 3], ['giantAnt', 4]], lv: 10,
+    intro: 'Giant Ants keep getting into my date sacks. They are as big as dogs and twice as rude. My cart is stuck out in the middle of the Red Sands with a broken wheel. Guard it while my boy mends it: they will come in waves.',
+    thanks: 'The wheel is mended and not one sack was touched. You are a hero, a small one.',
+        reward: { xp: 2500, perz: 1500, items: { dates: 4 } },
   },
+
   redwatch: {
     title: 'The Gate Watch: Red Sands', kind: 'kill', mob: 'redSlime', n: 20, lv: 8,
     intro: 'The Red Bloops roll right up to the west gate when the sun goes down. Twenty of them, and the gate watch sleeps easier.',
@@ -1391,11 +1432,12 @@ export const QUESTS = {
     reward: { xp: 190000, perz: 15000, items: { potion3: 8 } },
   },
   caravan2: {
-    title: 'The Caravan 2: The Stinging Road', kind: 'kill', mob: 'scorpion', n: 25, lv: 62,
-    intro: 'Past the dunes the road runs by the Pyramid, and the Sand Scorpions own it. Twenty-five of them. Carry Green Herbs: their sting poisons.',
-    thanks: 'The road is clear to the Pyramid. The tomb robbers will be pleased. I am not, but the money is good.',
-    reward: { xp: 290000, perz: 22000, items: { potion3: 10 } },
+    title: 'The Caravan 2: The Stinging Road', kind: 'defend', map: 'scorpion', at: { x: 24, z: 44 }, place: 'the caravan camp', waves: [['scorpion', 4], ['scorpion', 5], ['scorpion', 6]], lv: 62,
+    intro: 'Past the dunes the road runs by the Pyramid, and the Sand Scorpions own it. My caravan is camped south-west of the Pyramid, waiting for the road to clear. The scorpions come at night in swarms: hold the camp against three of them. Carry Green Herbs: their sting poisons.',
+    thanks: 'The camp held, and the wagons rolled out at dawn. The tomb robbers will be pleased. I am not, but the money is good.',
+        reward: { xp: 290000, perz: 22000, items: { potion3: 10 } },
   },
+
   caravan3: {
     title: 'The Caravan 3: The Humming Sand', kind: 'kill', mobs: { soldierAnt: 20, duneWorm: 10 }, lv: 66,
     intro: 'The Great Desert. Soldier Ants in columns, Dune Worms under every dune, and something bigger under them. Twenty ants, ten worms, and if the sand starts to hum, run.',
@@ -1409,11 +1451,12 @@ export const QUESTS = {
     reward: { xp: 560000, perz: 28000, items: { potion3: 15 } },
   },
   waterskins: {
-    title: 'The Water-seller 1: Skins for Water', kind: 'fetch', items: { worm_hide: 8 }, lv: 58,
-    intro: 'Worm Hide makes the best water skins: nothing leaks, nothing gets in. Eight from the Dune Worms, and I make a skin for every caravan.',
-    thanks: 'Not a drop lost. Here, have some water. Free. This once.',
-    reward: { xp: 200000, perz: 16000, items: { water_skin: 10 } },
+    title: 'The Water-seller 1: Skins for Water', kind: 'search', map: 'desert', thing: 'Old cistern', verb: 'Cistern found', spots: [[14, 14], [50, 12], [14, 44], [48, 38]], lv: 58,
+    intro: 'Skins are no good without water to fill them. The old caravan cisterns of the Great Desert are buried under the sand, but the water is still down there. Find four of them, and I will send my diggers.',
+    thanks: 'Four cisterns! Sweet water for every caravan. Here, have some. Free. This once.',
+        reward: { xp: 200000, perz: 16000, items: { water_skin: 10 } },
   },
+
   shadefeathers: {
     title: 'The Water-seller 2: Feathers for the Shade', kind: 'fetch', items: { runner_feather: 10 }, lv: 63,
     intro: 'My stall needs shade, and nothing makes shade like a fan of Runner Feathers. Ten of them, from the Sand Runners by the Pyramid. They kick, so do not stand behind them.',
@@ -1571,6 +1614,8 @@ export const giverOf = (id) => Object.keys(NPCS).find((n) => NPCS[n].quests.incl
 // the spots found
 const fresh = (q) => (q.kind === 'visit' || q.kind === 'search' ? [] : q.mobs ? {} : 0);
 const V3_RESET = ['warden', 'lights'];
+// quests that changed kind in the quest-variety pass (November 2026): a hero who had one under way starts it afresh
+const V4_RESET = ['fenpatrol', 'elderwillow', 'giantbeetle', 'farmguard', 'caravan2', 'ratsofsand', 'bowstaves', 'honeycake', 'waterskins', 'emberink', 'saltfish', 'koboldfur', 'mushroomstew', 'crabboil', 'honeysalve'];
 const plural = (n, name) => `${n} ${name}${n > 1 && !name.endsWith('s') ? 's' : ''}`;
 
 export class Quests {
@@ -1633,6 +1678,7 @@ export class Quests {
     if (q.kind === 'search') return a.length >= q.spots.length;
     if (q.kind === 'defend') return a >= q.waves.length;
     if (q.kind === 'deliver') return a >= 1;
+    if (q.kind === 'escort') return a >= 1;
     return this.hasItems(id, inv);
   }
 
@@ -1729,6 +1775,7 @@ export class Quests {
     if (q.kind === 'search') return `${q.thing}s found ${a.length}/${q.spots.length}`;
     if (q.kind === 'defend') return `Waves held ${Math.min(a, q.waves.length)}/${q.waves.length}`;
     if (q.kind === 'deliver') return a ? 'Delivered' : `Take the ${q.thing} to ${NPCS[q.to].name}`;
+    if (q.kind === 'escort') return a ? 'Arrived' : this.escortNote?.[id] || `Walk with ${NPCS[q.who].name.split(' ')[0]} to ${q.place}`; // (questworld.js: the way and their HP)
     return this.itemsLine(q, inv);
   }
 
@@ -1743,6 +1790,7 @@ export class Quests {
     if (q.kind === 'search') return `Find ${q.spots.length} ${q.thing}s in ${ZONE_NAMES[q.map]}`;
     if (q.kind === 'defend') return `Hold ${q.place} in ${ZONE_NAMES[q.map]} against ${q.waves.length} waves`;
     if (q.kind === 'deliver') return `Take the ${q.thing} to ${NPCS[q.to].name} (${ZONE_NAMES[NPCS[q.to].map || 'camp']})`;
+    if (q.kind === 'escort') return `Walk ${NPCS[q.who].name} to ${q.place} (${ZONE_NAMES[q.map]}) and keep the ambushes off them`;
     const bring = q.items ? 'Bring ' + Object.entries(q.items).map(([item, n]) => `${n} ${ITEMS[item].name}`).join(', ') : '';
     if (q.kind === 'quiz') return bring ? `${bring}, then ${q.task}` : q.task;
     return bring;
@@ -1752,13 +1800,14 @@ export class Quests {
   // a quiz was kills or nothing, so its questions start from the first.
   // v3: side quests became searches, a defence, a delivery and a rare hunt: counts kept from the old
   // kill quests (Wisps, Mushrooms) mean nothing now and start again
-  toJSON() { return { v: 3, active: this.active, done: this.done }; }
+  toJSON() { return { v: 4, active: this.active, done: this.done }; }
   load(d) {
     if (!d) return;
     this.done = (d.done || []).filter((id) => QUESTS[id]);
     for (const [id, a] of Object.entries(d.active || {})) {
       if (!QUESTS[id] || this.done.includes(id)) continue;
       const q = QUESTS[id];
+      if (V4_RESET.includes(id) && (d.v || 1) < 4) { this.active[id] = fresh(q); continue; }
       if (q.kind === 'visit' || q.kind === 'search') this.active[id] = Array.isArray(a) ? a : [];
       else if (q.mobs) this.active[id] = a && typeof a === 'object' && !Array.isArray(a) ? a : {};
       else if ((q.kind === 'quiz' && (d.v || 1) < 2) || (V3_RESET.includes(id) && (d.v || 1) < 3)) this.active[id] = 0;

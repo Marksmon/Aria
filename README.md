@@ -24,10 +24,14 @@ empty slot to make a new one; **Delete** removes the picked hero (it asks twice)
 button (beside the minimap) opens Settings: Sound on or off, **Target health bar** (a thin bar under the
 name of the monster you fight, on or off), **Graphics** (Sharp, or Fast for a smoother game on an older
 phone), **Interface size** (Small, Normal, Large or Larger: the panel, buttons, hotbar, minimap and quest list;
-windows keep their size), and **Back to main menu**, which saves and goes back to the title screen to play another hero.
+windows keep their size), **Window text size** (Normal, Large or Larger: the windows themselves), **Screen shake** (on or
+off), **Performance** (frame rate, draw calls and memory at the top of the screen, to see how the game runs on your
+phone), and **Back to main menu**, which saves and goes back to the title screen to play another hero.
 The game saves every few seconds and keeps a backup copy of each hero a minute old: a save that was cut
 short loads from the backup. If the phone ever refuses a save (its storage full), the game says so: back
-up your save from the title screen. Every
+up your save from the title screen. The phone app also keeps a second copy of every save in its own storage (which Android's backup
+can carry to a new phone), and puts back any save the game's storage lost. After a chapter, if you have not made a save
+code this week, the game reminds you to. Every
 hero keeps their own level, job, bag, gear, perz and quests, but the Keepers' storage (300 slots) is
 shared: what one hero puts away, the others can take out. Its window has sections (All, Usables,
 Equips, Miscs, Cards), each showing the bag's and the storage's items of that kind; tap a stack to
@@ -1463,19 +1467,23 @@ rings the portal to take, or the person to talk to. A purple **!** marks who the
 | 2: The Four Paths | **By the fire** in Eldrun: the Elder tells what each first job grows into (Blader to BladeMaster, Sorcerer to Wizard, Archer to Windrunner, Assassin to Phantom) and the mixed second jobs of two paths (Magic Knight, Moon Ranger, Beastmaster), each shown as it would look on your own hero (a mixed job with the two first jobs it comes from), and you pick your first path · the Elder sends you straight to that trainer's town (Steinborg, Galdrheim, Veidheim or Rytingborg) · pass a job trial. Any trainer will still try you if you change your mind, and once you have passed one trial the other first-job trials stay open: the story says so, and notices which path you took |
 | 3: Embers in the Wilds | Saeunn's warning · defeat 12 Red Sprouts in Birch Grove · travel to Ember Hill |
 | 4: The Fire-Ring | Archmage Vigdis will sing the fire-ring's runes anew · **the Vigil on Ember Hill**: stand in her rune circle and hold off the Giant's heralds for 75 seconds while her song reaches him · bring the song home: the fire-ring rekindled |
-| 5: The Salt Road | Captain Ulfr: kobolds rob the salt carts · Hakon the Carter in Salt Bay · **Bloop Island**: the Boatman's Tutorial crossing (the first raid) · defeat 12 kobolds in Stone Field · Saeunn and the glowing red coal · go down into Coal Pit · Dag the Miner: the goblins drive the kobolds to dig for a "Waking Fire" |
-| 6: The Goblin War-Band | tell Ulfr · defeat 15 goblins in Burnt Wood · Archmage Vigdis reads the two coal trails |
+| 5: The Salt Road | Captain Ulfr's word: kobolds rob the salt carts · Hakon the Carter in Salt Bay · **Bloop Island**: the Boatman's Tutorial crossing (the first raid) · defeat 12 kobolds in Stone Field · Saeunn and the glowing red coal · go down into Coal Pit · Dag the Miner: the goblins drive the kobolds to dig for a "Waking Fire" (his news goes to Ulfr by the Keepers) |
+| 6: The Goblin War-Band | defeat 15 goblins in Burnt Wood · Archmage Vigdis reads the two coal trails |
 | 7: The Second Path | take a second job (any of the ten the hero's points open) |
 | 8: The Waking Fire | defeat 20 Fire Beetles in Ash Heath · travel to Serpent Wood · defeat 20 goblins, the keepers of the goblins' backward fire-ring · the backward rune-stone to Vigdis · home to the Elder |
-| 9: The Eye in the Sand | the rune-stone's second mark, a sun over sand · Thora the Caravan Master: caravans lost on the Pyramid road, and a robed figure drawing in the sand · defeat 20 Sand Scorpions in Scorpion Sands · **find three backward runes** cut into the Cactus Dunes, Scorpion Sands and the Great Desert (they glint gold: walk over each) · Old Gunnhild: a stone face sleeps under the sand, and it keeps something · Vigdis: eight jotnar were sung into the stone, and someone is loosening every prison |
-| 10: The Gnawed Roots | Hrafn: the Wolf's Eye flared · Old Ingrid: the Old Forest's roots rot backwards, like writing · **the Forest's Heart**: hold it for 60 seconds against the maddened Treants · find three rotted runestones in the Old Forest, their roots gnawed · Bjarki: something under the north is awake · Vigdis: the world's roots drink from three wells, and one is Galdrheim's |
-| 11: The Hand That Cuts Backwards | Brynja: the rune-well's crystal has sunk · **the Rune-Spring**: hold it in Fen Shore for 60 seconds while Vigdis raises the crystal · look at the three Watchers in Black Wood: one recarved backwards, a chisel at its foot · **Torvald the Runecarver, unmasked**: he wants the jotnar free, and vanishes in fire (he is gone from Galdrheim after this) · Saeunn will sing with Vigdis · carry her rune-lantern, the ring's first flame, to the Elder |
+| 9: The Eye in the Sand | the rune-stone's second mark, a sun over sand · Thora the Caravan Master: caravans lost on the Pyramid road, and a robed figure drawing in the sand · defeat 20 Sand Scorpions in Scorpion Sands · **find three backward runes** cut into the Cactus Dunes, Scorpion Sands and the Great Desert (they glint gold: walk over each) · Old Gunnhild: a stone face sleeps under the sand, and it keeps something · Vigdis: eight jotnar were sung into the stone, and someone is loosening every prison (Hrafn is with her: the Wolf's Eye flared) |
+| 10: The Gnawed Roots | Old Ingrid: the Old Forest's roots rot backwards, like writing · **the Forest's Heart**: hold it for 60 seconds against the maddened Treants · find three rotted runestones in the Old Forest, their roots gnawed · Bjarki: something under the north is awake · Vigdis: the world's roots drink from three wells, and one is Galdrheim's · before dawn, Brynja: the rune-well's crystal has sunk |
+| 11: The Hand That Cuts Backwards | **the Rune-Spring**: hold it in Fen Shore for 60 seconds while Vigdis raises the crystal · look at the three Watchers in Black Wood: one recarved backwards, a chisel at its foot · **Torvald the Runecarver, unmasked**: he wants the jotnar free, and vanishes in fire (he is gone from Galdrheim after this) · Saeunn will sing with Vigdis · carry her rune-lantern, the ring's first flame, to the Elder |
 | 12: The Last Fire-Ring | Ember Hill burns inside Torvald's backward ring · defeat 25 of the Giant's heralds to put out its four fires · **The Last Fire-Ring**: hold the rune circle for 120 seconds while the song is sung, the half-woken Giant's **Meteor Rain** falling round you as red circles (step out: each costs 12% of your HP) · Torvald's chisel in the ash · the ring burns gold. The keepsake: **Torvald's Chisel** (an accessory: HIT +3, KNL +2, FNS +2) |
 
 The second saga (chapters 5–8) runs from about Base 32 to Base 55, the third (chapters 9–12) from about 55 to 75.
 A hero who finished a saga picks up at the next chapter. No MVP or mini-boss is part of the story: the Fire Giant, the
 kings and the rest wait as optional fights for the strongest (in the last stand the Giant only rains fire: he can't be
 fought there). The Sphinx's Halls and Yggdrasil stay secrets the story walks round, open to whoever finds the way.
+
+**The Keepers' road.** From a town with a Keeper, the Quest View of a quest or the story whose place is in another
+town (one whose Keeper's ledger you have signed) offers the Keepers' road there for that Keeper's fare, and you arrive
+beside the person you want.
 
 **Cutscenes.** Every chapter opens with a short cutscene of its own lands, and the story's big moments get
 one too: the Giant turning in his sleep, the end of each saga, Torvald's flight, the Giant sinking back into
@@ -1500,9 +1508,13 @@ level).
 **Kinds of quest.** Hunt (defeat monsters), gather (bring items), **cook or brew** (bring the
 makings, then answer the cook's or brewer's questions; a wrong answer only gets a hint), **search**
 (walk over the glinting things on a map), **defend** (stand by a place and hold it against waves; walk
-away and the wave scatters), **deliver** (carry something to someone in another land) and **rare
+away and the wave scatters), **deliver** (carry something to someone in another land), **escort**
+(walk beside someone to a place on their map: they keep pace with you, wait when you fall behind, and
+ambushes come for them, not you; they have their own health bar in the quest list, and if they fall they
+limp home and you can try again; Hakon the Carter's The Salt Road is the first) and **rare
 hunt** (a unique monster that appears only while the quest is on, some only at night). "Go there"
-leads to each.
+leads to each. Danger on the ground (a boss's blow about to land, Meteor Rain) is a thick dashed ring
+with a striped fill that pulses faster as it comes, so it reads without its red.
 
 | Who | Where | Quests (Base Level) |
 |---|---|---|

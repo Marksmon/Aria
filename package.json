@@ -17,6 +17,7 @@
   "dependencies": {
     "@capacitor/android": "^7.6.9",
     "@capacitor/core": "^7.6.9",
+    "@capacitor/preferences": "^7.0.4",
     "three": "^0.170.0"
   },
   "devDependencies": {
