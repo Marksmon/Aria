@@ -1539,6 +1539,10 @@ export const QUESTS = {
     reward: { xp: 250000, perz: 25000, items: { potion3: 10 } },
   },
 };
+// quests pay less perz than written above (the owner's call, November 2026: what monsters drop, sold in the shops,
+// is the hero's main income; a quest's perz is a thank-you). Applied once here, so the Quest View shows what is paid
+export const QUEST_PERZ = 0.4;
+for (const q of Object.values(QUESTS)) if (q.reward?.perz) q.reward.perz = Math.max(50, Math.round(q.reward.perz * QUEST_PERZ / 50) * 50);
 
 // quests that come in a series (the job trials): each step's next one, accepted as soon as it is
 // handed in. The steps on the way give nothing; the last one pays the whole series' reward.

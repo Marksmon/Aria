@@ -1118,3 +1118,12 @@ body.creating #hud > *:not(#windows) { visibility: hidden; }
 /* the Interface size setting (settings.js uiScale, main.js applyScale): the HUD's controls zoom together, each
    from its own corner (their px offsets scale with them, so the columns keep their spacing); windows keep theirs */
 #info, #winbtns, #pets, #hotbar, #atkbtn, #buffbar, #quests, #minimap, #clock, #optbtn, #albumbtn, #goalsbtn, #raidbar, #bossbar { zoom: var(--ui, 1); }
+
+/* a carter's or a Keeper's places: one scrolling list, a row each, the fare on the right (menus.js fareRow) */
+.farelist { display: flex; flex-direction: column; gap: 3px; max-height: min(46vh, 230px); overflow-y: auto; margin: 4px 0 6px;
+  padding: 3px; border: 1px solid var(--w-line); border-radius: 6px; background: rgba(0, 0, 0, .12); -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
+.farerow { display: flex; justify-content: space-between; align-items: center; gap: 10px; width: 100%; min-height: 30px; padding: 4px 10px;
+  border: 1px solid var(--w-line); border-radius: 5px; background: var(--w-bg); color: var(--w-text); font: 13px Tahoma, Verdana, system-ui, sans-serif; text-align: left; pointer-events: auto; }
+.farerow b { color: var(--w-gold); font-weight: 700; white-space: nowrap; }
+.farerow:active:not(:disabled) { background: var(--w-press); }
+.farerow:disabled { opacity: .45; }

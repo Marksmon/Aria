@@ -512,6 +512,10 @@ export const STORY = [
     reward: { xp: 400000, perz: 100000, items: { torvald_chisel: 1, hard_ore: 5, armor_ore: 5 } } },
 ];
 
+// the story pays half the perz written above (the owner's call, November 2026: selling drops is the main income)
+export const STORY_PERZ = 0.5;
+for (const st of STORY) if (st.reward?.perz) st.reward.perz = Math.max(50, Math.round(st.reward.perz * STORY_PERZ / 50) * 50);
+
 // the steps as they were before the Fire Giant left the story, and where those steps went
 const OLD_ORDER = ['wake', 'stats', 'slimes', 'training', 'hotbar', 'report', 'north', 'captain', 'seeress', 'trade', 'path', 'heralds', 'matron', 'roots', 'emberhill', 'ready', 'lastfire', 'jarl', 'rekindled'];
 // ledger: the Keepers' step moved from Chapter 5 to Chapter 1 ('keepers'); a hero who was on it goes on to the carter

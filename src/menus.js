@@ -45,6 +45,8 @@ function treeLayout(job) {
   return (layouts[job] = { at, w, h });
 }
 
+// a row of a carter's or a Keeper's list of places: the name, and the fare on the right (too dear: greyed)
+const fareRow = (act, id, name, fare, perz) => `<button class="farerow" data-act="${act}" data-id="${id}" ${perz < fare ? 'disabled' : ''}><span>${esc(name)}</span><b>${fare.toLocaleString()} perz</b></button>`;
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const icon = (id, cls = '') => `<img class="ico ${cls}" src="${iconURL(id)}" alt="">`;
 
@@ -953,19 +955,19 @@ export class Menus {
       + (n.keeper && !this.hooks.keeperKnown?.(this.npc) ? '<button class="rbtn" data-act="keepreg">Sign the ledger</button>' : '');
     if (n.keeper && this.ferrying) { // the Keepers' road: towns where you have signed, and the fare
       const list = this.hooks.keeperList?.(this.npc) || [];
-      const rows = list.map(([k, fare]) => `<button class="rbtn" data-act="keepgo" data-id="${k}" ${this.inv.perz < fare ? 'disabled' : ''}>${esc(ZONE_NAMES[NPCS[k].map || 'camp'])} · ${fare.toLocaleString()} perz</button>`).join('');
+      const rows = list.map(([k, fare]) => fareRow('keepgo', k, ZONE_NAMES[NPCS[k].map || 'camp'], fare, this.inv.perz)).join('');
       this.wins.talk.querySelector('.rw-title').textContent = n.name;
       return `<div class="talkwrap"><img class="portrait" src="${this.portrait(this.npc)}" alt="">
-        <div class="say"><p>Which town? You have ${this.inv.perz.toLocaleString()} perz.</p><div class="btnrow wrap">${rows || '<span>You have not signed any other Keeper\'s ledger yet.</span>'}</div>
+        <div class="say"><p>Which town? You have ${this.inv.perz.toLocaleString()} perz.</p>${rows ? `<div class="farelist">${rows}</div>` : '<span>You have not signed any other Keeper\'s ledger yet.</span>'}
         <div class="btnrow"><button class="rbtn soft" data-act="close">Bye</button></div></div></div>`;
     }
     if (n.raid && this.ferrying) return this.raidPanel(n);
     if (n.warp && this.ferrying) { // the lands you have walked, and the fare to each
       const list = this.hooks.ferryList?.() || [];
-      const rows = list.map(([m, fare]) => `<button class="rbtn" data-act="ferry" data-id="${m}" ${this.inv.perz < fare ? 'disabled' : ''}>${esc(ZONE_NAMES[m])} · ${fare.toLocaleString()} perz</button>`).join('');
+      const rows = list.map(([m, fare]) => fareRow('ferry', m, ZONE_NAMES[m], fare, this.inv.perz)).join('');
       this.wins.talk.querySelector('.rw-title').textContent = n.name;
       return `<div class="talkwrap"><img class="portrait" src="${this.portrait(this.npc)}" alt="">
-        <div class="say"><p>Where to? You have ${this.inv.perz.toLocaleString()} perz.</p><div class="btnrow wrap">${rows || '<span>You have not walked any other land yet.</span>'}</div>
+        <div class="say"><p>Where to? You have ${this.inv.perz.toLocaleString()} perz.</p>${rows ? `<div class="farelist">${rows}</div>` : '<span>You have not walked any other land yet.</span>'}
         <div class="btnrow"><button class="rbtn soft" data-act="close">Bye</button></div></div></div>`;
     }
     if (n.retrain && this.retraining) { // the trainers: stats, and a job's skills, back to be placed again

@@ -76,8 +76,12 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
 - **Map defaults (every map, and any new map gets them unless the owner says otherwise):**
   - Monsters follow the hero round the map with no time limit while the hero is near, and give up
     only past `FOLLOW.lose` x their aggro range (or on safe ground / Play Dead). They are never
-    anchored: once they give up they wander on from there (their home moves); only a dead one
-    respawns at its first spot (`spawn`). No leash back home for field monsters (`mobs.js`).
+    anchored: once they give up they wander on from there (their home moves). A dead one comes back
+    (the owner's call, November 2026: a map is never left empty, `COMEBACK` in `mobs.js`): every other
+    one is a roamer, back in 25 s at a random spot 16+ paces from the hero; the rest at their first spot
+    (`spawn`) after their respawn time, or at a random spot if the hero still stands there 30 s later.
+    Every field map has 10 more monsters by day than it had before November 2026 (`spawns.js`).
+    No leash back home for field monsters (`mobs.js`).
   - Every map keeps its monsters as the hero left them: spot, HP, count, respawn timers, the timers
     running on while away (`fieldAt`, saved). Bosses and MVPs keep their spot, wounds and guards
     (`bossAt`, `bossHp`). Drops stay on their map with their 45/90 s timer running (`groundLeft`).

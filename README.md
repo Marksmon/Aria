@@ -146,8 +146,10 @@ kobolds and goblins, the mini-bosses and the MVPs attack on sight. A Sprout runs
 cornered.
 
 The new lands' monsters are palette swaps of the valley's, like a family of bloops in many colours. Monsters flash white when hit and wobble when nearly beaten; the one you fight shows a thin health
-bar under its name (Settings can turn it off). They respawn 60 s
-after they fall, twice as fast at night.
+bar under its name (Settings can turn it off). A map is never left empty: half its monsters come
+back 25 s after they fall somewhere else on the map, well away from you; the other half come back
+where they first stood after 60 s (once you have moved on from there, or somewhere else if you
+haven't), twice as fast at night.
 
 **Kobolds and goblins** (hand-drawn in code for now, `src/painted.js`) come in three kinds:
 warriors close in and hit hard, **archers** keep about five paces away and shoot arrows (step in
@@ -1408,7 +1410,8 @@ Potions), and **Orm the Staffwright** sells staves and robes. In Veidheim, **Asa
 **Eydis** potions (White too), Honey and feathers. In Rytingborg, **Dalla** sells potions, Dates and Water
 Skins, **Steinar** daggers, swords and desert gear, and **Yrsa** daggers. Any shop buys anything for half its
 price.
-Quests pay perz too. Your perz shows in the Items window.
+Quests pay a little perz too (a thank-you: what monsters drop, sold in the shops, is where your perz comes from).
+Your perz shows in the Items window.
 
 **Crafting** is done in the cities (the campfire is just a fire now): in Steinborg, **Gunnar the
 Gear Crafter** forges weapons, armor, headgear and charms, and **Ragna the Herbalist** brews

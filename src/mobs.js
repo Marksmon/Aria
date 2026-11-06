@@ -408,6 +408,11 @@ const FOLLOW = { lose: 2.2 };
 // across the map. Done in a moment on arrival (wander, roamAway), not frame by frame
 const AWAY = { stroll: 0.6, walking: 0.5, cap: 180 };
 const RESPAWN = 60;
+// how a map's own monsters come back (the owner's call, November 2026: a map is never left empty): every other
+// one is a roamer, back `roam` s after it falls at a random spot of the map, 16 paces or more from the hero; the
+// rest come back at their own spot after their respawn time (RESPAWN), once the hero is 14 paces from it, and if
+// the hero still stands there `overdue` s later, at a random spot instead
+export const COMEBACK = { roam: 25, overdue: 30 };
 // a wounded boss or MVP heals 5% of its HP a minute while it isn't fighting you, on its map or not;
 // what it has left is kept when you leave (bossHp, saved), so a fight can be picked up again
 const BOSS_REGEN = 0.05;
@@ -1514,6 +1519,7 @@ export class MobManager {
       return;
     }
     const rng = mulberry32(seed);
+    let k = 0; // (every other field monster a roamer: COMEBACK)
     for (const [type, count, nightOnly] of spawns) {
       for (let i = 0; i < count; i++) {
         const s = this.findSpot(rng, null, MOB_DEFS[type]);
@@ -1523,6 +1529,7 @@ export class MobManager {
         const m = this.add(type, s.x, s.z);
         m.nightOnly = !!nightOnly;
         m.field = true;
+        m.roamer = k++ % 2 === 1;
         if (nightOnly && !this.night) { m.alive = false; m.sprite.visible = m.shadow.visible = false; this.dead.push({ m, t: 0 }); }
       }
     }
@@ -1581,11 +1588,13 @@ export class MobManager {
   // their respawn time has passed while you were away (twice as fast for what a quest hunts)
   restoreField(f) {
     const away = Math.max(0, (Date.now() - f.at) / 1000);
+    let k = 0;
     for (const [type, x, z, hx, hz, hp, dead, nightOnly, sx = hx, sz = hz] of f.mobs) {
       if (!MOB_DEFS[type]) continue;
       const m = this.add(type, sx, sz);
       m.home = { x: hx, z: hz };
       m.field = true;
+      m.roamer = k++ % 2 === 1; // (in the order they were spawned: setMap)
       m.nightOnly = !!nightOnly;
       const night = m.def.night || m.nightOnly;
       let left = dead;
@@ -1719,7 +1728,7 @@ export class MobManager {
       this.remove(m);
       return;
     }
-    this.dead.push({ m, t: m.def.respawn || RESPAWN });
+    this.dead.push({ m, t: m.roamer ? COMEBACK.roam : m.def.respawn || RESPAWN });
   }
 
   update(dt, player) {
@@ -1785,9 +1794,12 @@ export class MobManager {
       e.t -= dt * (this.night ? 2 : 1) * (wanted ? 2 : 1);
       const far = Math.hypot(player.x - e.m.spawn.x, player.z - e.m.spawn.z) > 14;
       const nightOnly = e.m.def.night || e.m.nightOnly;
-      if (e.t <= 0 && far && (!nightOnly || this.night)) {
-        e.m.home = { ...e.m.spawn };
-        e.m.reset(e.m.spawn.x, e.m.spawn.z);
+      if (e.t > 0 || (nightOnly && !this.night)) continue;
+      // back at its own spot, or (a roamer, or the hero still standing there) at a random one well away from them
+      const at = !e.m.roamer && far ? e.m.spawn : e.m.roamer || e.t <= -COMEBACK.overdue ? this.findSpot(Math.random, player, e.m.def) : null;
+      if (at) {
+        e.m.home = { x: at.x, z: at.z };
+        e.m.reset(at.x, at.z);
         this.dead.splice(i, 1);
       }
     }
