@@ -436,6 +436,12 @@ Every MVP, Hell boss and mini-boss also has **Tremor** (`TREMOR` in `mobs.js`): 
 within 9 paces gets a red circle at their feet that bursts 1.2 s later (1.5x, a boss move), at most every 9 s. The
 sim has the hero step out of it every time it comes (0.4 s of blows lost, 0.25 s for a bow or a caster), one
 step in twelve too late; with it the Giant Beetle's ATK came down 3% to stay in its bar.
+**In the real game** (`build-tools/boss-bot.cjs`, November 2026): a bot BladeMaster built like the sim's, fighting
+in the built game with its skills, White Potions below half HP and a step aside from each Tremor. The Kobold King
+(Base 75, good gear) fell in 364 s on 76 potions (the sim: 292 s, 87); the Giant Sprout (Base 75, shop gear) in
+190 s on 58 (the sim: 222 s, 114). Both inside their bands: the sim's tiers hold in play, the real fight a little
+slower on the MVP (the bot loses time walking back to the boss) and cheaper on potions (it steps out of Tremor's
+circles, and some of the boss's swings miss as it turns).
 This is a model (with a fixed random seed per fight, so its check is steady and one fight's change never moves another's): the in-game feel should be playtested. `npm test` runs `mvp-sim --check`.
 
 | Fight | Base, gear | blademaster | shadowblade | windrunner | hunter | wizard | voodoo | middle |
