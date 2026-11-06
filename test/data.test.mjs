@@ -214,7 +214,10 @@ test("the Sunken Galleon (the owner's call): Asgeir sails there from Base 85, Da
   assert.deepEqual(NPCS.asgeir.ship.find((s) => s.to === 'wreck'), { to: 'wreck', fare: 6000, lv: 85 });
   const D = MOB_DEFS.davyJones, K = MOB_DEFS.kraken;
   assert.ok(D.mvp && D.el === 'ghost' && D.lv === 110 && D.hall && TIERS.davyJones === 99);
-  assert.ok(!D.phases, 'no phases (the owner\'s call)');
+  // three phases for him (the owner's call), none for the Kraken: each phase's moves are his
+  assert.deepEqual(D.phases.map((p) => p.name), ['The Cursed Captain', 'The Drowned Fleet', 'The Abyssal King']);
+  for (const p of D.phases) for (const n of p.moves) assert.ok(D.moves.some((m) => (m.name || m.kind) === n), n);
+  assert.ok(!K.phases);
   assert.deepEqual([...new Set(D.summon)].sort(), ['pirateSkeleton', 'zombie']);
   assert.ok(K.boss && !K.mvp && K.writhe);
   assert.deepEqual([...new Set(K.summon)].sort(), ['octopus', 'pufferFish']);

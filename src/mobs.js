@@ -196,10 +196,18 @@ export const MOB_DEFS = {
   // down a marked line (Tidal Wave), seizes you in a kraken's arm (Kraken's Grasp) or in chains that drain your life
   // into his (Soul Shackles), brings a ghost ship's cannons down round you (Ghost Ship), curses you so you heal half as
   // much (Tidal Curse), raises the Maelstrom of the Damned and a domain of drowning that slows you (Abyssal Domain);
-  // undead pirate skeletons and zombies answer his call (the owner's call)
-  davyJones: { name: 'Davy Jones', proper: true, ai: 'boss', art: 'davyJones', el: 'ghost', lv: 110, hp: 820000, atk: [70, 90], def: 36, vit: 80, agi: 50, dex: 240, mdef: 45, exp: [220000, 154000], adelay: 2000, walk: 150, aggro: 9, chase: 30, reach: 2.6, w: 3.2, r: 1.3, heavy: true, hall: true,
+  // undead pirate skeletons and zombies answer his call (the owner's call). Three phases (the owner's call, phases):
+  // the Cursed Captain, the Drowned Fleet (ghost ships, and the drowned's spirits rise to him) and the Abyssal King (a
+  // colossal sea horror, galleon.js abyss)
+  davyJones: { name: 'Davy Jones', proper: true, ai: 'boss', art: 'davyJones', el: 'ghost', lv: 110, hp: 820000, atk: [82, 104], def: 36, vit: 80, agi: 50, dex: 240, mdef: 45, exp: [220000, 154000], adelay: 2000, walk: 150, aggro: 9, chase: 30, reach: 2.6, w: 3.2, r: 1.3, heavy: true, hall: true,
     mvp: true, respawn: 2700, mvpExp: 80000, stomp: 2.4, takes: { magic: 1.2, melee: 0.85 }, takesText: 'his drowned flesh dulls blades and fists (−15%), but spells burn the curse on him (+20%); and no Neutral blow touches a Ghost: bring an element',
     moves: [{ kind: 'leap', name: 'Anchor Smash', mult: 2.4, r: 2.4 }, { kind: 'surge', name: 'Tidal Wave', mult: 2.4 }, { kind: 'roots', name: "Kraken's Grasp", mult: 1.6, r: 1.8, hold: 3, color: '#22306a' }, { kind: 'roots', name: 'Soul Shackles', mult: 1.0, r: 1.6, hold: 3, drain: 0.5, color: '#8a8e96', cd: 18 }, { kind: 'meteors', name: 'Ghost Ship', mult: 1.8, r: 1.7, color: '#9af0e8' }, { kind: 'throw', name: 'Tidal Curse', mult: 1.8, r: 1.8, curse: 10 }, { kind: 'maelstrom', name: 'Maelstrom of the Damned', mult: 0.6 }, { kind: 'maelstrom', name: 'Abyssal Domain', mult: 0.35, pull: 0, slow: true, r: 6.5, cd: 32 }, { kind: 'frenzy' }],
+    // his three phases (the owner's sheet): each brings its own moves (of those above), as his HP falls past `below`
+    phases: [
+      { below: 1, name: 'The Cursed Captain', moves: ['Anchor Smash', 'Tidal Wave', 'Soul Shackles', 'Tidal Curse'] },
+      { below: 0.66, name: 'The Drowned Fleet', moves: ['Ghost Ship', 'Tidal Wave', "Kraken's Grasp", 'Soul Shackles', 'Tidal Curse'], summon: ['ghost', 'ghost', 'ghost'], text: 'Davy Jones raises his anchor to the sky: ghost ships fill the dark above, and the spirits of the drowned rise with them!' },
+      { below: 0.33, name: 'The Abyssal King', art: 'davyAbyss', w: 4.8, writhe: true, moves: ['Maelstrom of the Damned', 'Abyssal Domain', "Kraken's Grasp", 'Anchor Smash', 'Tidal Wave', 'frenzy'], text: 'The sea swallows Davy Jones whole, and something colossal rises out of it: the Abyssal King!' },
+    ],
     burns: { r: 1.5, dur: 5, mult: 0.2, slow: true, color: '#9af0e8', word: 'Drowning!', text: 'drowning water' },
     summon: ['pirateSkeleton', 'pirateSkeleton', 'zombie', 'zombie'], summonText: 'Davy Jones raises his anchor, and his drowned crew climb out of the deep!', mvpDrops: [['cursed_doubloon', 2], ['potion3', 3]],
     wake: '"All souls belong to the sea..." Deep in the Sunken Galleon, Davy Jones waits in the captain\'s hold.',
@@ -719,6 +727,7 @@ class Mob {
     this.mat.userData.fx = null;
     this.guardsGoneT = -1e9; // when (its own clock, this.t) its last guard fell
     this.sprite.visible = this.shadow.visible = true;
+    if (d.phases) { this.phase = 0; this.phaseDef = null; this.art = this.mgr.lib.mobs[d.art]; } // (an MVP with phases starts at its first)
     const upp = d.w / this.art.body[0]; // def.w is the body width
     this.sprite.scale.set(this.art.fw * upp, this.art.fh * upp, 1);
     this.mat.rotation = 0;
@@ -773,10 +782,34 @@ class Mob {
     return true;
   }
 
+  // an MVP with phases (Davy Jones, def.phases): as its HP falls past each phase's `below` it moves on to it (never
+  // back): its moves are that phase's, it may take another look (art, w, writhe), and it may call others to it (summon)
+  phaseTick() {
+    const d = this.def, share = this.hp / d.hp;
+    let k = this.phase || 0;
+    while (k + 1 < d.phases.length && share <= d.phases[k + 1].below) k++;
+    if (k === (this.phase || 0) && this.phaseDef) return;
+    this.phase = k;
+    const ph = this.phaseDef = d.phases[k];
+    if (ph.art && this.mgr.lib.mobs[ph.art]) {
+      this.art = this.mgr.lib.mobs[ph.art];
+      const upp = (ph.w || d.w) / this.art.body[0];
+      this.sprite.scale.set(this.art.fw * upp, this.art.fh * upp, 1);
+    }
+    if (k === 0 || this.calmT > BRAIN.calm) return; // (the first phase, or a wounded one met again after a rest: no announcement, no call)
+    this.act = null; this.nextMove = 1.2;
+    this.mgr.emit('phase', this, ph, k);
+    for (const type of ph.summon || []) { const c = this.mgr.guard(this, type, ph.summon.length); c.state = 'chase'; c.chaseT = 15; c.angry = 30; }
+  }
+  movesNow() {
+    const d = this.def, names = this.phaseDef?.moves;
+    return names ? (d.moves || []).filter((mv) => names.includes(mv.name || mv.kind)) : d.moves || [];
+  }
+
   // a boss picks the move that suits the moment (BRAIN), of those it is ready and in range for (MOVES)
   pickMove(p, dist, dx, dz) {
     const d = this.def, still = this.mgr.stillT > 1 && p === this.mgr.hero, casting = !!p.cast;
-    const ready = (d.moves || []).filter((mv) => {
+    const ready = this.movesNow().filter((mv) => {
       const M = MOVES[mv.kind];
       if ((this.moveCd[mv.name || mv.kind] || 0) > 0) return false; // (two moves of one kind keep their own waits: by name)
       if (mv.kind === 'frenzy' || mv.kind === 'bark') return this.hp / d.hp <= M.below;
@@ -1233,6 +1266,7 @@ class Mob {
     this.exposeT -= dt; this.exaltT -= dt;
     this.calmT = this.state === 'chase' ? 0 : this.calmT + dt;
     if ((d.mvp || d.boss) && this.calmT > BRAIN.calm && this.hp < d.hp) this.hp = Math.min(d.hp, this.hp + d.hp * BOSS_REGEN / 60 * dt);
+    if (d.phases && this.alive) this.phaseTick();
     // an MVP below half its HP is enraged (MVP_RAGE); healed back over 60% it calms down
     if (fierce(d) && this.alive) {
       if (!this.enraged && this.hp / d.hp <= MVP_RAGE.below) { this.enraged = true; this.mgr.emit('enrage', this); }
@@ -1527,7 +1561,7 @@ class Mob {
     else if (moving && this.def.ai === 'hopper' && A.hop) {
       const ph = this.hop % 1;
       if (ph < 0.55) { list = A.hop; k = ph / 0.55; }
-    } else if ((this.def.fly || this.def.writhe) && A.walk) { list = A.walk; k = (this.t * (this.def.writhe ? 0.8 : 1.6)) % 1; } // fliers flutter in place; the Kraken's arms never rest (writhe)
+    } else if ((this.def.fly || this.def.writhe || this.phaseDef?.writhe) && A.walk) { list = A.walk; k = (this.t * (this.def.fly ? 1.6 : 0.8)) % 1; } // fliers flutter in place; the Kraken's arms never rest (writhe)
     else if (moving && A.walk) { list = A.walk; k = (this.walked / (STRIDE * this.def.w)) % 1; }
     return list[Math.max(0, Math.min(list.length - 1, Math.floor(k * list.length)))]; // a long wind-up holds the first frame
   }

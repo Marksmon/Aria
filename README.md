@@ -215,7 +215,10 @@ and Skeleton Assassins on the third, with the **Kraken** (Lv 94 mini-boss, Water
 glowing eyes and markings, its arms writhing every way), who slams a tentacle down, seizes you (**Abyssal Grab**),
 blasts a line of the sea through you (**Tidal Blast**) and drags you into a **Maelstrom**, and calls Octopuses and
 Puffer Fish. In the hold, Hydras guard **Davy Jones**, the Forsaken Captain (Lv 110 MVP, the hardest fight in Aria):
-a tricorn, a beard of tentacles, glowing eyes, a long coat hung with chains and a great anchor. He smashes his anchor
+a tricorn, a beard of tentacles, glowing eyes, a long coat hung with chains and a great anchor. He fights in three
+phases: **the Cursed Captain**, with his anchor; **the Drowned Fleet** (below two thirds of his HP), ghost ships firing
+down and the spirits of the drowned rising to him; and **the Abyssal King** (below a third), when the sea swallows him
+and he rises again a colossal sea horror crowned with coral, its arms of the deep writhing. He smashes his anchor
 down, sends a **Tidal Wave** down a marked line, seizes you in a kraken's arm (**Kraken's Grasp**) or in chains that
 drink your life into him (**Soul Shackles**), brings a **Ghost Ship's** cannons down round you, curses you so you heal
 half as much (**Tidal Curse**), and raises the **Maelstrom of the Damned** and a domain of drowning that drags at your
@@ -422,7 +425,7 @@ fills up until it hits: step out of it.
 | Nidhogg | **Gnaw the Roots** (tear it away in time) · **Venom Breath** (thrown) · **Coil Rush** (a charge) · **Falling Roots** (venom where they land) · **Frenzy** |
 | Eternal Sphinx | **The Riddle** (stand in the right answer) · **Pounce** · **Falling Stones** (cursed sand where they land) · **Gaze of Ages** (thrown) · **Frenzy** |
 | Kraken | **Tentacle Slam** (thrown down) · **Abyssal Grab** (holds you) · **Tidal Blast** (down a marked line) · **Maelstrom** (walk out of its pull) |
-| Davy Jones | **Anchor Smash** · **Tidal Wave** · **Kraken's Grasp** · **Soul Shackles** (they drink your life) · **Ghost Ship** (drowning water where they land) · **Tidal Curse** (half the healing) · **Maelstrom of the Damned** · **Abyssal Domain** (slows) · **Frenzy** |
+| Davy Jones | three phases · **Anchor Smash** · **Tidal Wave** · **Kraken's Grasp** · **Soul Shackles** (they drink your life) · **Ghost Ship** (drowning water where they land) · **Tidal Curse** (half the healing) · **Maelstrom of the Damned** · **Abyssal Domain** (slows) · **Frenzy** |
 | Poseidon | **Tidal Barrage** (riptide pools where they land) · **Leviathan Surge** (a serpent down a marked line) · **Oceanic Prison** (break the cage) · **Raging Maelstrom** (walk out of its pull) · **Frenzy** |
 
 Each move hits for 1.4–2.4x the boss's ATK (the Eternal Sphinx's Judgment 3x; the Ancient Treant's roots and the Cactus Lord's needles less). Staying far away no longer keeps you safe: spells reach

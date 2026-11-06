@@ -432,6 +432,14 @@ export function installBossMoves(ctx) {
     cam.shake = 0.4;
     audio.play('night');
   });
+  // a phase of an MVP's (Davy Jones, mobs.js phaseTick): its name over it, the change told, the screen shaken
+  mobs.on('phase', (m, ph) => {
+    fx.number(m.x, overHead(m, m.sprite.scale.y * 0.8 + 0.6), m.z, ph.name, 'crit');
+    fx.sparkle(m.x, world.heightAt(m.x, m.z) + 1.5, m.z, MOVE_COL.water, 40);
+    fx.puff(m.x, world.heightAt(m.x, m.z) + 0.2, m.z, 3);
+    cam.shake = 0.7; audio.play('night');
+    if (ph.text) ctx.menus.message(ph.text);
+  });
   mobs.on('frenzy', (m) => {
     ctx.menus.message(`${TheName(m)} flies into a frenzy!`);
     fx.number(m.x, overHead(m, m.sprite.scale.y * 0.8 + 0.4), m.z, 'Frenzy!', 'skill');

@@ -28,8 +28,10 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   `floods`). Its monsters are painted in `src/galleon.js`: Conch, Puffer Fish, Zombie; Pirate Skeleton, Blowgun Pirate
   (a blowgun: poison darts), Octopus; Ghost, Skeleton Assassin and the **Kraken** (the mini-boss, Lv 94, the owner's
   sheet; its arms writhe every way, `writhe`; summons Octopuses and Puffer Fish); in the hold Hydras and **Davy Jones**
-  (the MVP, Lv 110, Ghost, tier Base 99, the owner's sheet; no phases, the owner's call; summons Pirate Skeletons and
-  Zombies; moves by name, `moveCd` keyed by `mv.name`). **Ghost** is an element (the owner's call, `rules.js`): a
+  (the MVP, Lv 110, Ghost, tier Base 99, the owner's sheet; three phases, the owner's call (`phases`, `phaseTick`: the
+  Cursed Captain; the Drowned Fleet below 66%, Ghost Ship and Ghosts called; the Abyssal King below 33%, a colossal sea
+  horror, `davyAbyss`), the Kraken none; summons Pirate Skeletons and Zombies; moves by name, `moveCd` keyed by
+  `mv.name`). **Ghost** is an element (the owner's call, `rules.js`): a
   Neutral blow deals nothing, every other element 150%, Shadow 175% (Light too, when Aria has it). The coast's monsters are painted in code in `src/coast.js`, **every one a kind new to Aria** (the owner's
   call: no crab, golem, wolf or other kind already used), and the Neutral ones land creatures, people and things with
   no sea about them in look or name (the owner's call: the coast is not a water region): Quill Porcupine, Tusk Boar,

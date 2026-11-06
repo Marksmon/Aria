@@ -29,6 +29,8 @@ export const GALLEON = {
   // the mini-boss and the MVP
   kraken: { kind: 'kraken', size: [150, 124], body: [84, 84], skin: '#22306a', deep: '#141c44', sucker: '#c8b8e8', glow: '#5ad8ff', coral: '#c89a5a', coral2: '#8a6a3a', eye: '#9af0ff', core: '#7ae8ff' },
   davyJones: { kind: 'davy', size: [104, 132], body: [66, 120], coat: '#1e2436', coat2: '#2e3650', sash: '#7a1e22', hat: '#14161e', trim: '#a8843a', skin: '#5a7a7a', tent: '#b8ccc4', tent2: '#7a948c', chain: '#8a8e96', anchor: '#3a3a40', rust: '#7a4a2a', eye: '#7af0ff', water: '#3aa8d8', foam: '#c8f4ff' },
+  // his third phase, the Abyssal King (the owner's sheet: he becomes a colossal sea horror)
+  davyAbyss: { kind: 'abyss', size: [180, 170], body: [120, 150], deep: '#1a2a4a', coat: '#1e2436', coat2: '#2e3650', sash: '#7a1e22', hat: '#14161e', trim: '#a8843a', skin: '#5a7a7a', tent: '#b8ccc4', tent2: '#7a948c', chain: '#8a8e96', anchor: '#3a3a40', rust: '#7a4a2a', eye: '#7af0ff', water: '#3aa8d8', foam: '#c8f4ff' },
 };
 
 const ANIMS = { idle: 1, walk: 4, attack: 4 };
@@ -45,7 +47,7 @@ function galleonFrame(id, dir, anim, f) {
   const P = GALLEON[id], [W, H] = P.size;
   const F = new Frame(W, H);
   const a = { G: H - 3, W, walk: anim === 'walk', f, step: anim === 'walk' ? [1, 0, -1, 0][f] : 0, atk: anim === 'attack' ? f : -1, side: dir === 'right', back: dir === 'up' };
-  ({ conch, puffer, zombie, skeleton, blower, octopus, ghost, hydra, kraken, davy })[P.kind](F, P, a);
+  ({ conch, puffer, zombie, skeleton, blower, octopus, ghost, hydra, kraken, davy, abyss })[P.kind](F, P, a);
   return F;
 }
 
@@ -383,4 +385,57 @@ function davy(F, P, { G, W, step, walk, f, atk, side, back }) {
   F.part(poly(side ? [[fx - 14, ty + 2], [fx + 11, ty + 1], [fx + 8, ty - 4], [fx - 2, ty - 10], [fx - 9, ty - 5]] : [[fx - 17, ty + 1], [fx - 8, ty + 4], [fx, ty + 2], [fx + 8, ty + 4], [fx + 17, ty + 1], [fx + 10, ty - 6], [fx, ty - 11], [fx - 10, ty - 6]]), P.hat);
   F.part(line(fx - (side ? 14 : 17), ty + 1, fx + (side ? 11 : 17), ty + 1, 1), P.trim, flat);
   if (!back && !side) F.part(ellipse(fx, ty - 3, 2, 2), P.trim); // a gold skull-pin
+}
+
+// ---------- the Abyssal King (Davy Jones's third phase, the owner's sheet): a colossal sea horror rising from a
+// maelstrom: a body of rotted coat and barnacled flesh, a crown of coral and bone, three glowing eyes, a great beard of
+// tentacles, the anchor grown huge in one fist, a mass of arms for the other, and great arms of the deep writhing up
+// behind him (writhe: they never rest, each its own way) ----------
+function abyss(F, P, { G, W, walk, f, atk, side, back }) {
+  const cx = W / 2, ph = (walk ? f : atk >= 0 ? atk : 0) / 4 * Math.PI * 2, slam = atk >= 0 ? [0, -8, 10, 3][atk] : 0;
+  const wave = (k) => Math.sin(ph * (k % 3 === 0 ? 1 : k % 3 === 1 ? -1 : 2) + k * 1.7);
+  const arm = (x0, y0, dir, h, curl, col, k) => { // an arm of the deep, rising and curling over
+    const pts = [];
+    for (let i = 0; i <= 10; i++) { const t = i / 10, a = t * (curl + wave(k) * 0.4); pts.push([x0 + dir * (Math.sin(a) * h * 0.5 + t * 10), y0 - Math.sin(Math.min(1, t * 1.2) * Math.PI / 2) * (h + wave(k + 3) * 8) + (t > 0.7 ? (t - 0.7) * 34 : 0)]); }
+    for (let i = 0; i < 10; i++) F.part(line(...pts[i], ...pts[i + 1], Math.max(2, 9 - i * 0.75)), col);
+    for (let i = 2; i < 10; i += 2) F.part(ellipse(pts[i][0] - dir * 2.5, pts[i][1] + 1, 1.8, 1.3), P.tent, flat);
+    for (let i = 1; i < 9; i += 3) F.dot(pts[i][0] + dir, pts[i][1] - 3, P.eye);
+  };
+  // the arms of the deep behind him
+  [[-1, 96, 2.5], [1, 92, 2.7], [-1, 70, 3.1], [1, 74, 3.0]].forEach(([s, h, c], k) => arm(cx + s * 24, G - 12, s, h, c, P.deep, k));
+  // the maelstrom he rises out of
+  for (let r = 44; r > 10; r -= 7) F.part(ellipse(cx, G - 8, r, r * 0.18), r % 2 ? P.water : P.deep);
+  for (let i = 0; i < 18; i++) { const a = i / 18 * Math.PI * 2 + f * 0.6, r = 18 + (i % 4) * 7; F.part(line(cx + Math.cos(a) * r, G - 8 + Math.sin(a) * r * 0.18, cx + Math.cos(a + 0.5) * r, G - 8 + Math.sin(a + 0.5) * r * 0.18 - (i % 3 === 0 ? 7 : 0), 2), i % 3 ? P.water : P.foam, flat); }
+  // the body: rotted coat over barnacled flesh, chains across it
+  const sh = G - 92, waist = G - 28;
+  F.part(poly([[cx - 30, sh], [cx + 30, sh], [cx + 26, waist], [cx + 34, G - 12], [cx - 34, G - 12], [cx - 26, waist]]), P.coat);
+  if (!back) {
+    F.part(poly([[cx - 12, sh + 2], [cx + 12, sh + 2], [cx + 10, waist], [cx - 10, waist]]), P.skin);
+    for (const [x, y] of [[-6, 14], [4, 20], [-3, 30], [7, 36], [-8, 44], [2, 50]]) F.part(ellipse(cx + x, sh + y, 1.8, 1.4), P.foam); // barnacles
+    for (let k = 0; k < 3; k++) for (let i = 0; i <= 10; i++) { const t = i / 10; F.part(ellipse(cx - 28 + t * 56, sh + 10 + k * 16 + Math.sin(t * Math.PI) * 6, 1.6, 1.1), P.chain); }
+    F.part(rect(cx - 28, waist - 8, cx + 28, waist - 3), P.sash);
+  }
+  // the shoulders and arms: the anchor grown huge in one fist, a mass of tentacles for the other
+  for (const s of [-1, 1]) F.part(ellipse(cx + s * 30, sh + 4, 12, 9), P.coat2);
+  const anchorArm = back ? -1 : 1;
+  const hx = cx + anchorArm * 44, hy = sh + 30 + slam;
+  F.part(both(line(cx + anchorArm * 30, sh + 6, cx + anchorArm * 42, sh + 20, 8), line(cx + anchorArm * 42, sh + 20, hx, hy, 7)), P.coat);
+  F.part(ellipse(hx, hy, 5, 5), P.skin);
+  F.part(line(hx, hy - 34, hx, hy + 30, 5), P.anchor); // the anchor's shank, held upright, and its great flukes
+  for (const v of [-1, 1]) { F.part(both(line(hx, hy + 30, hx + v * 16, hy + 22, 5), line(hx + v * 16, hy + 22, hx + v * 22, hy + 10, 3)), P.anchor); F.part(poly([[hx + v * 20, hy + 8], [hx + v * 27, hy + 10], [hx + v * 22, hy + 16]]), P.anchor); }
+  F.part(ellipse(hx, hy - 36, 4, 4), P.anchor);
+  F.part(line(hx - 1, hy - 20, hx - 1, hy + 24, 1), P.water, flat);
+  for (let k = 0; k < 4; k++) arm(cx - anchorArm * 34, sh + 14, -anchorArm, 26 + k * 4, 2.4 + k * 0.3, P.tent2, k + 7); // the other arm: tentacles
+  // the head: a crown of coral and bone, three glowing eyes, a great beard of tentacles
+  const hy2 = sh - 16;
+  F.part(ellipse(cx, hy2, 17, 15), P.skin);
+  for (let k = -3; k <= 3; k++) { const x = cx + k * 5, h = 16 - Math.abs(k) * 2.5; F.part(poly([[x - 2.5, hy2 - 10], [x + 2.5, hy2 - 10], [x + k * 1.2, hy2 - 10 - h]]), k % 2 ? P.trim : P.foam); }
+  if (!back) {
+    for (let k = 0; k < 11; k++) { // the beard
+      const x0 = cx - 13 + k * 2.6, len = 26 + (k % 3) * 8 - Math.abs(k - 5) * 1.5, curl = (k % 2 ? 1 : -1) * (3 + wave(k + 20) * 2);
+      F.part(both(line(x0, hy2 + 6, x0 + curl * 0.5, hy2 + 6 + len * 0.6, 3), line(x0 + curl * 0.5, hy2 + 6 + len * 0.6, x0 + curl, hy2 + 6 + len, 2)), k % 2 ? P.tent : P.tent2);
+      F.part(ellipse(x0 + curl, hy2 + 6 + len, 1.4, 1.4), P.tent);
+    }
+    for (const [x, y, r] of [[-7, -2, 2.6], [7, -2, 2.6], [0, -8, 2]]) { F.part(ellipse(cx + x, hy2 + y, r + 0.6, r * 0.7), P.eye, flat); F.dot(cx + x, hy2 + y, '#ffffff'); }
+  }
 }

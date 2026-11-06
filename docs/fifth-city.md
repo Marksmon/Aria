@@ -15,8 +15,8 @@ every build, the Poseidon Card (Tidal Wave, `perk.tide`) and the ultra rare Crow
 `build-tools/draw-tidecrown.py`). The region's mini-boss is the **Headless Knight** (the owner's call: Lv 80, Shadow, on the Storm Isles, lord of the
 Living Armors, his head under his arm; Spectral Charge, Hurled Head, Cleaving Leap; card: Last Stand). The **Sunken Galleon** is built (the
 owner's calls and pictures): a broken galleon alone in the sea (Asgeir, Base 85), three flooded floors and the
-captain's hold (Base 85-99), the Kraken (mini-boss) and Davy Jones (MVP, Lv 110, Ghost, tier 99), and the Ghost
-element. **Next:** the story chapter before the ending, the city's quests and series. What the owner has decided:
+captain's hold (Base 85-99), the Kraken (mini-boss) and Davy Jones (MVP, Lv 110, Ghost, tier 99, three phases: the Cursed Captain, the Drowned
+Fleet, the Abyssal King), and the Ghost element. **Next:** the story chapter before the ending, the city's quests and series. What the owner has decided:
 
 ## The city
 

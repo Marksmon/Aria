@@ -65,7 +65,11 @@ function survivor(job, base, gear) {
 // one fight: { win, t, potions, left (the boss's HP share) }
 export function fight(job, def, base, gear) {
   const ps = survivor(job, base, gear), out = dps(job, def, base, gear), ranged = RANGED.has(job);
-  const moves = (def.moves || []).filter((m) => m.mult && MOVES[m.kind] && m.kind !== 'maelstrom').map((m) => ({ ...m, at: MOVES[m.kind].cd * 0.5 }));
+  // an MVP with phases (Davy Jones): each move only in the phases that hold it; a phase may call others to it
+  const phases = def.phases, phaseAt = (share) => { let k = 0; while (phases && k + 1 < phases.length && share <= phases[k + 1].below) k++; return k; };
+  const inPhase = (m, k) => !phases || phases[k].moves.includes(m.name || m.kind);
+  let phaseNow = 0;
+  const moves = (def.moves || []).filter((m) => m.mult && MOVES[m.kind] && !(m.kind === 'maelstrom' && !phases)).map((m) => ({ ...m, at: MOVES[m.kind].cd * 0.5 }));
   const prison = (def.moves || []).find((m) => m.kind === 'prison'), whirl = (def.moves || []).find((m) => m.kind === 'maelstrom');
   let prisonAt = prison ? MOVES.prison.cd * 0.5 : Infinity, whirlAt = whirl ? MOVES.maelstrom.cd * 0.7 : Infinity;
   const mirror = (def.moves || []).find((m) => m.kind === 'mirror'), riddle = (def.moves || []).find((m) => m.kind === 'riddle');
@@ -81,6 +85,7 @@ export function fight(job, def, base, gear) {
   while (t < LIMIT) {
     t += DT;
     const rage = mob < def.hp * MVP_RAGE.below, cdk = rage ? MVP_RAGE.cd : 1;
+    if (phases) { const k = phaseAt(mob / def.hp); if (k > phaseNow) { phaseNow = k; if (phases[k].summon) call(phases[k].summon); } }
     // the boss's own mechanic
     const under = def.wyrm && (t % (rage ? WYRM.upRage + WYRM.underRage : WYRM.up + WYRM.under)) >= (rage ? WYRM.upRage : WYRM.up);
     if (bark && t >= barkAt) { barkUntil = t + MOVES.bark.dur; barkAt = t + MOVES.bark.cd * cdk; }
@@ -139,8 +144,8 @@ export function fight(job, def, base, gear) {
     // the boss's blows
     if (t >= swingAt) { swingAt = t + def.adelay / 1000 * (rage ? MVP_RAGE.adelay : 1); if (!under && t >= stunUntil && gnawUntil < 0 && !(ranged && Math.random() < KITE)) hit(1); }
     if (t >= stompAt) { stompAt = t + (rage ? MVP_RAGE.stomp : 7); if (t >= stunUntil && gnawUntil < 0 && Math.random() > DODGE) hit(def.stomp || 1.5, MVP_MOVE); }
-    for (const m of moves) if (t >= m.at) {
-      m.at = t + MOVES[m.kind].cd * cdk;
+    for (const m of moves) if (t >= m.at && inPhase(m, phaseNow)) {
+      m.at = t + (m.cd ?? MOVES[m.kind].cd) * cdk;
       if (t < stunUntil || gnawUntil > 0) continue;
       const n = m.kind === 'meteors' ? (rage ? 7 : 5) : 1, miss = m.kind === 'meteors' ? METEOR_DODGE : DODGE;
       for (let i = 0; i < n; i++) if (Math.random() > miss) hit(m.mult, MVP_MOVE);
