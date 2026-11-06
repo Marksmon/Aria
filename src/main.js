@@ -599,7 +599,7 @@ function enterMap(id, from, at) {
   // drops and bosses are kept as ever). Not during a cutscene, which passes through many maps for a moment
   recentMaps = [id, ...recentMaps.filter((m) => m !== id)].slice(0, MAP_BUDGET);
   if (!cine) world.evict(recentMaps);
-  const pos = at || arrive;
+  let pos = at || arrive;
   mobs.setMap(SPAWNS[world.id], 11 + world.id.length);
   if (isDelve(world.id)) delveArrive();
   villagers.show(world.id);
@@ -607,6 +607,16 @@ function enterMap(id, from, at) {
   fx.restorePickups(groundLeft[world.id]);
   delete groundLeft[world.id];
   player.stop();
+  // an arrival with no portal behind it (a carter, a feather) lands at the map's middle, which on some maps is a lake
+  // (Fen Shore, Willow Marsh) or a fountain: the nearest open tile instead, so the hero is never stranded
+  const free = (x, z) => world.walkable(x, z) && !player.tiles.blocked[Math.floor(z) * 64 + Math.floor(x)];
+  if (!free(pos.x, pos.z)) {
+    search: for (let r = 1; r < 24; r++) for (let dz = -r; dz <= r; dz++) for (let dx = -r; dx <= r; dx++) {
+      if (Math.max(Math.abs(dx), Math.abs(dz)) !== r) continue;
+      const x = Math.floor(pos.x) + dx + 0.5, z = Math.floor(pos.z) + dz + 0.5;
+      if (x > 1 && z > 1 && x < 63 && z < 63 && free(x, z)) { pos = { x, z }; break search; }
+    }
+  }
   player.setPos(pos.x, pos.z);
   allies.carry(player); // the beasts come along
   cam.target.set(player.x, world.heightAt(player.x, player.z), player.z);
