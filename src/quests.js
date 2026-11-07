@@ -189,7 +189,7 @@ export const NPCS = {
     quests: [],
     lore: [
       'I learnt the runes in Galdrheim, at Vigdis\'s feet. I came to Steinborg because stone-folk need a seer more than sorcerers do.',
-      'The Fire Giant is the last of the fire-jotnar. His kin burnt half the world before the first settlers sang them to sleep.',
+      'The Fire Giant is the strongest of the fire-jotnar. His kin burnt half the world before the first settlers sang them to sleep.',
       'Every rune on Eldrun\'s fire-ring was cut by a Galdrheim hand. When the fires fail, the runes fail with them.',
     ],
   },

@@ -382,3 +382,60 @@ export function buildGalleon({ group, heightAt, addBox }, at) {
     mg.fillStyle = '#9af0e8'; mg.fillRect((X - 2) * 2, (Z - 1) * 2, 4, 4);
   } };
 }
+
+// ---------- the old beacon on Beacon Moor ----------
+// A weathered stone tower on a round plinth in the moor's clearing, an iron fire-basket on top, ringed by low
+// standing stones open to the south. Its fire is a dim ember until the story relights it (The Moor Beacon, story.js beaconfire);
+// then it burns blue and white like Hafnvik's lighthouses. at: { x, z }; lit(): is it burning now?
+export function buildBeacon({ group, heightAt, addSolid }, at, lit = () => true) {
+  const rng = mulberry32(577);
+  const { x, z } = at, y = heightAt(x, z) - 0.15;
+  const F = fader();
+  const stone = lam({ map: canvasTex(64, 64, (g) => {
+    g.fillStyle = '#7d786c'; g.fillRect(0, 0, 64, 64);
+    for (let yy = 0; yy < 64; yy += 10) { g.fillStyle = 'rgba(40,36,30,.45)'; g.fillRect(0, yy, 64, 2); for (let xx = (yy / 10) % 2 ? 0 : 8; xx < 64; xx += 16) g.fillRect(xx, yy, 2, 10); }
+    for (let i = 0; i < 90; i++) { g.fillStyle = rng() < 0.5 ? 'rgba(60,80,50,.35)' : 'rgba(210,205,190,.18)'; g.fillRect(rng() * 64, rng() * 64, 2 + rng() * 4, 1 + rng() * 3); }
+  }) });
+  const iron = lam({ color: '#2e2a28' });
+  const parts = [];
+  const add = (geo, mat, px, py, pz) => { const m = new THREE.Mesh(geo, mat); m.position.set(px, py, pz); group.add(m); parts.push(m); return m; };
+  add(new THREE.CylinderGeometry(2.3, 2.6, 0.7, 16), stone, x, y + 0.35, z);          // the plinth
+  add(new THREE.CylinderGeometry(1.1, 1.5, 4.6, 8), stone, x, y + 3.0, z);            // the tower
+  add(new THREE.CylinderGeometry(1.45, 1.3, 0.35, 10), stone, x, y + 5.4, z);         // its cap
+  add(new THREE.CylinderGeometry(1.05, 0.55, 0.7, 10, 1, true), iron, x, y + 5.9, z); // the fire-basket
+  for (let i = 0; i < 6; i++) { const a = (i / 6) * Math.PI * 2; add(new THREE.BoxGeometry(0.08, 0.9, 0.08), iron, x + Math.cos(a) * 0.95, y + 6.05, z + Math.sin(a) * 0.95); }
+  F.add(parts.slice(), x, z, 1.6, 6.5);
+  // the low standing stones round it, leaning a little, moss on their feet
+  for (let i = 0; i < 8; i++) {
+    if (i === 2) continue; // (a gap on the south side, where the story's singers stand: story.js beaconfire)
+    const a = (i / 8) * Math.PI * 2, r = 4.2 + rng() * 0.6, sx = x + Math.cos(a) * r, sz = z + Math.sin(a) * r, h = 1.0 + rng() * 0.8;
+    const s = new THREE.Mesh(new THREE.BoxGeometry(0.6, h, 0.4), stone);
+    s.position.set(sx, heightAt(sx, sz) + h / 2 - 0.1, sz); s.rotation.set((rng() - 0.5) * 0.2, -a, (rng() - 0.5) * 0.2);
+    group.add(s); addSolid(sx, sz, 0.35);
+  }
+  addSolid(x, z, 2.2);
+  // the fire: a cone of flame and a halo, ember-red and low while it sleeps, tall blue and white once relit
+  const flameMat = new THREE.MeshBasicMaterial({ color: '#c8401a', transparent: true, opacity: 0.85, depthWrite: false });
+  const flame = new THREE.Mesh(new THREE.ConeGeometry(0.6, 1.4, 10), flameMat);
+  const haloMat = new THREE.MeshBasicMaterial({ color: '#ff6a2a', transparent: true, opacity: 0.2, depthWrite: false });
+  const halo = new THREE.Mesh(new THREE.SphereGeometry(1.4, 12, 10), haloMat);
+  const light = new THREE.PointLight('#ff6a2a', 3, 12, 1.4);
+  for (const o of [flame, halo, light]) { o.position.set(x, y + 6.6, z); group.add(o); }
+  let t = 0, was = null;
+  return { occlude: F.occlude, update(dt) {
+    t += dt;
+    const on = lit();
+    if (on !== was) {
+      was = on;
+      flameMat.color.set(on ? '#bfefff' : '#c8401a'); haloMat.color.set(on ? '#7ad8ff' : '#ff6a2a'); light.color.set(on ? '#7ad8ff' : '#ff6a2a');
+    }
+    const k = 1 + Math.sin(t * 7) * 0.08 + Math.sin(t * 17) * 0.05;
+    flame.scale.set(on ? k : 0.55 * k, on ? 1.4 * k : 0.4 * k, on ? k : 0.55 * k);
+    flame.position.y = y + 6.1 + flame.scale.y * 0.7;
+    halo.scale.setScalar(on ? 1.2 * k : 0.6 * k);
+    light.intensity = (on ? 7 : 2) * k;
+  }, minimap(mg) {
+    mg.fillStyle = '#8a857a'; mg.beginPath(); mg.arc(x * 2, z * 2, 4.6, 0, Math.PI * 2); mg.fill();
+    mg.fillStyle = was ? '#7ad8ff' : '#c8401a'; mg.beginPath(); mg.arc(x * 2, z * 2, 2, 0, Math.PI * 2); mg.fill();
+  } };
+}

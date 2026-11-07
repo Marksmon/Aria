@@ -31,7 +31,7 @@ import * as THREE from 'three';
 import { makeNoise, mulberry32, sstep, lerp, clamp } from './noise.js';
 import { buildCity, WALL, PORT } from './city.js';
 import { SOIL, soilAt, cropSpots, fences } from './farm.js';
-import { buildPyramid, buildSphinx, buildGalleon, galleonDeck } from './monuments.js';
+import { buildPyramid, buildSphinx, buildGalleon, galleonDeck, buildBeacon } from './monuments.js';
 import { carveMaze, buildMaze, floorTex, lookOf } from './dungeon.js';
 import { buildYggdrasil } from './yggdrasil.js';
 
@@ -155,7 +155,7 @@ export const MAPS = {
   tidecliff: { portals: [{ to: 'scorpion', ...W }, { to: 'port', ...E }], lift: [0.7, 1.3], shore: { side: 's', at: 46 }, clear: { x: 32, z: 30, r: 6 } },
   port:      { portals: [{ to: 'tidecliff', ...W }, { to: 'beacon', ...N }, { to: 'coral', ...S }], city: 'port', shore: { side: 'e', at: 46.6, even: true }, piers: [PORT.pier] },
   coral:     { portals: [{ to: 'port', ...N }], lift: [-0.1, 0.35], shore: { side: 'e', at: 50 }, lake: { x: 27, z: 38, rx: 14, rz: 12, shallow: true }, clear: { x: 44, z: 20, r: 5 } },
-  beacon:    { portals: [{ to: 'port', ...S }], lift: [0.5, 1.1], shore: { side: 'e', at: 49 }, clear: { x: 30, z: 22, r: 6 } },
+  beacon:    { portals: [{ to: 'port', ...S }], lift: [0.5, 1.1], shore: { side: 'e', at: 49 }, clear: { x: 30, z: 22, r: 7 }, beacon: { x: 30, z: 22, lit: 'wavrunner' } }, // (the old beacon: monuments.js buildBeacon, relit by the story's beaconfire)
   storm:     { voyage: true, portals: [{ to: 'port', x: 11, z: 32 }], dock: { x: 14, z: 32 }, isle: { r: 25, wob: 9 }, lift: [0.3, 0.9] },
   // the Sunken Galleon (Captain Asgeir sails there from Base 85; the owner's picture): no land, a broken galleon alone in
   // the open sea, its deck the ground (galleon: monuments.js buildGalleon). Asgeir's ship comes alongside it (the
@@ -480,7 +480,7 @@ function buildMap(id, scene, lib, shared) {
 
   // the desert's monuments (monuments.js): the Pyramid, the Giant Sphinx
   const mctx = { group, heightAt: (x, z) => heightAt(x, z), addBox: (x0, z0, x1, z1) => boxes.push({ x0, z0, x1, z1, kind: 'monument' }), addSolid: (x, z, coll) => solids.push({ x, z, coll }) };
-  const monument = def.pyramid ? buildPyramid(mctx, def.pyramid) : def.sphinx ? buildSphinx(mctx, def.sphinx) : def.yggdrasil ? buildYggdrasil(mctx, def.yggdrasil) : def.galleon ? buildGalleon(mctx, def.galleon) : null;
+  const monument = def.pyramid ? buildPyramid(mctx, def.pyramid) : def.sphinx ? buildSphinx(mctx, def.sphinx) : def.yggdrasil ? buildYggdrasil(mctx, def.yggdrasil) : def.galleon ? buildGalleon(mctx, def.galleon) : def.beacon ? buildBeacon(mctx, def.beacon, () => shared.open(`story:${def.beacon.lit}`)) : null;
   // Loki's Gate: a dark arch of rock over the stairs down to the Deep Halls, torches either side (delve.js)
   if (def.gate) { place('rock_arch', def.gate.x, def.gate.z, true); for (const dz of [-2.4, 2.4]) place('torch', def.gate.x - 2.6, def.gate.z + dz, true); }
   // old stumps (the World Tree: the great stump the Treants guard, the one the seed is planted by)

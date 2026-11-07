@@ -70,33 +70,46 @@ export const CHAPTER_SHOTS = {
     { map: 'ridge', time: 0.9, focus: 'jarl', dist: 18, pitch: 0.45, yaw: 4.2, spin: 0.05, secs: 6.5, shake: 0.7, sound: 'night', text: 'On Ember Hill, four backward fires blaze round the place where the Giant sleeps lightest.', card: { title: 'Chapter 12', sub: 'The Last Fire-Ring' } },
   ],
   'Chapter 13': [
-    { map: 'tidecliff', time: 0.1, focus: { x: 40, z: 40 }, dist: 18, pitch: 0.45, yaw: 0.6, spin: 0.04, secs: 6, text: 'East of the desert, the land falls away to the sea. And the sea is smoking: steam curls off the grey water like breath.' },
-    { map: 'port', time: 0.12, focus: 'npc:ylfa', pitch: 0.92, dist: 16, yaw: 2.2, spin: 0.04, secs: 6, text: 'In Hafnvik, the white port, a priestess writes a letter to a camp she has only heard of in songs.', card: { title: 'Chapter 13', sub: 'The Smoking Sea' } },
+    { map: 'camp', time: 0.3, focus: 'fire', dist: 9, pitch: 0.58, yaw: 1.2, spin: 0.05, secs: 5.5, text: 'In Eldrun the fire-ring burns gold, and for a season the ground is quiet. Then a rider comes up the salt road with a letter sealed with a ship\'s star.' },
+    { map: 'tidecliff', time: 0.1, focus: { x: 40, z: 40 }, dist: 18, pitch: 0.45, yaw: 0.6, spin: 0.04, secs: 6, sound: 'night', text: 'East of the desert, the land falls away to the sea. And the sea is smoking: steam curls off the grey water like breath on a cold morning.' },
+    { map: 'port', time: 0.12, focus: { x: 43.2, z: 15.6 }, y: 4.5, dist: 17, pitch: 0.3, yaw: 0.9, spin: 0.04, secs: 6, text: 'Hafnvik, the white port, built so ships could find it even in fog. On its quay a goddess raises her spear against the sea.' },
+    { map: 'port', time: 0.14, focus: 'npc:ylfa', pitch: 0.92, dist: 13, yaw: 2.2, spin: 0.05, secs: 5.5, text: 'In her temple, a priestess waits for the one who sang a Giant down.', card: { title: 'Chapter 13', sub: 'The Smoking Sea' } },
   ],
   'Chapter 14': [
-    { map: 'beacon', time: 0.82, focus: { x: 30, z: 26 }, dist: 15, pitch: 0.5, yaw: 1.4, spin: 0.05, secs: 6, sound: 'night', text: 'On Beacon Moor the witches sing to the fire under the ground, and the old beacon gutters.' },
-    { map: 'port', time: 0.84, focus: 'npc:asgeir', pitch: 0.92, dist: 16, yaw: 4.4, spin: 0.04, secs: 5.5, text: 'And in the harbour, the lighthouses burn dimmer every night.', card: { title: 'Chapter 14', sub: 'The Dimming Lights' } },
+    { map: 'port', time: 0.88, focus: { x: 54.4, z: 50.6 }, y: 3.5, dist: 16, pitch: 0.28, yaw: 4.3, spin: 0.03, secs: 6, text: 'Night over Hafnvik. Its two lighthouses burn blue at the harbour mouth, dimmer than they burnt last week, and dimmer still than the week before.' },
+    { map: 'coral', time: 0.86, focus: { x: 24, z: 22 }, dist: 13, pitch: 0.55, yaw: 3.0, spin: 0.06, secs: 5.5, text: 'In the shallows, in the moor\'s rocks, on the cliffs, the fishers find runes nobody cut: turned backwards, and warm to the touch.' },
+    { map: 'beacon', time: 0.82, focus: { x: 30, z: 25 }, dist: 15, pitch: 0.5, yaw: 1.4, spin: 0.05, secs: 6, sound: 'night', text: 'And on Beacon Moor the witches gather round the old beacon, and sing to the fire under the ground.', card: { title: 'Chapter 14', sub: 'The Dimming Lights' } },
   ],
   'Chapter 15': [
-    { map: 'port', time: 0.3, focus: 'npc:asgeir', pitch: 0.92, dist: 10, yaw: 1.0, spin: 0.06, secs: 5.5, text: 'Steam rises thickest over the Storm Isles, and no sailor in Hafnvik will go near them.' },
-    { map: 'storm', time: 0.7, focus: { x: 36, z: 30 }, dist: 18, pitch: 0.45, yaw: 3.0, spin: 0.04, secs: 6, shake: 0.3, sound: 'night', text: 'On the shore, empty armour stands watch over a ring of stones the sea has not seen in three hundred years.', card: { title: 'Chapter 15', sub: 'The Storm Isles' } },
+    { map: 'port', time: 0.3, focus: 'npc:asgeir', pitch: 0.92, dist: 10, yaw: 1.0, spin: 0.06, secs: 5.5, text: 'Steam rises thickest over the Storm Isles, and no sailor in Hafnvik will go near them. Except, perhaps, the one who owns the Wave-Runner.' },
+    { map: 'storm', time: 0.68, focus: { x: 30, z: 40 }, dist: 20, pitch: 0.42, yaw: 0.4, spin: 0.04, secs: 6, shake: 0.2, text: 'On the isles\' black sand, empty suits of armour stand in rows, as if on watch. They have stood there for three hundred years.' },
+    { map: 'storm', time: 0.7, focus: { x: 36, z: 30 }, dist: 14, pitch: 0.55, yaw: 3.0, spin: 0.05, secs: 5.5, sound: 'night', text: 'Above them, on the highest isle, a ring of stones the sea has not seen lit since the first ship landed. The ground between them glows.', card: { title: 'Chapter 15', sub: 'The Storm Isles' } },
   ],
   'Chapter 16': [
-    { map: 'wreck', time: 0.86, focus: { x: 32, z: 32 }, dist: 24, pitch: 0.55, yaw: 0.4, spin: 0.03, secs: 6.5, sound: 'night', text: 'Alone on the open sea lies the ship that carried the first settlers to Aria, broken and black, and still crewed by its dead.', card: { title: 'Chapter 16', sub: 'The Settlers\' Log' } },
+    { map: 'port', time: 0.92, focus: { x: 54.4, z: 50.6 }, y: 3, dist: 22, pitch: 0.3, yaw: 4.0, spin: 0.04, secs: 5.5, text: 'Three hundred years ago, a ship brought the first settlers to Aria, and the first flame with them. Then it sank, off this coast, and the sailors stopped speaking its name.' },
+    { map: 'wreck', time: 0.86, focus: { x: 32, z: 32 }, dist: 24, pitch: 0.55, yaw: 0.4, spin: 0.03, secs: 6.5, sound: 'night', text: 'There it lies still: broken and black, alone on the open sea, as if the sea were holding it up. And still crewed by its dead.' },
+    { map: 'galleon1', time: 0.5, focus: { x: 30, z: 30 }, dist: 11, pitch: 0.62, yaw: 1.8, spin: 0.05, secs: 5.5, text: 'Somewhere in its flooded holds, the settlers\' captain kept a log.', card: { title: 'Chapter 16', sub: 'The Settlers\' Log' } },
   ],
   'Chapter 17': [
     { map: 'magic', time: 0.88, focus: 'npc:brynja', pitch: 0.92, dist: 10, yaw: 3.4, spin: 0.05, secs: 5.5, text: '"Let our children\'s children finish it." Three hundred years late, the settlers\' last words are read aloud.' },
-    { map: 'magic', time: 0.9, focus: 'npc:vigdis', pitch: 0.92, dist: 12, yaw: 0.8, spin: 0.05, secs: 5.5, text: 'Four binding runes, left in four keepings, waiting for someone strong enough to use them.', card: { title: 'Chapter 17', sub: 'The Four Bindings' } },
+    { map: 'city', time: 0.9, focus: 'npc:saeunn', pitch: 0.92, dist: 12, yaw: 1.6, spin: 0.05, secs: 5, text: 'Four binding runes, left in four keepings: one under a Seeress\'s rug...' },
+    { map: 'port', time: 0.9, focus: { x: 43.2, z: 15.6 }, y: 4.5, dist: 17, pitch: 0.3, yaw: 0.6, spin: 0.06, secs: 5, text: 'one in a goddess\'s hand...' },
+    { map: 'sand', time: 0.9, focus: 'npc:gunnhild', pitch: 0.92, dist: 11, yaw: 3.0, spin: 0.05, secs: 5, text: 'one under an old woman\'s chair...' },
+    { map: 'magic', time: 0.9, focus: 'npc:vigdis', pitch: 0.92, dist: 12, yaw: 0.8, spin: 0.05, secs: 5.5, text: 'and one in the heart of a well, under every other rune, waiting for someone strong enough to use them.', card: { title: 'Chapter 17', sub: 'The Four Bindings' } },
   ],
   'Chapter 18': [
-    { map: 'ridge', time: 0.62, focus: 'jarl', dist: 17, pitch: 0.48, yaw: 1.6, spin: 0.04, secs: 6, shake: 0.4, sound: 'night', text: 'Under Ember Hill the Giant dreams, and his heralds feed him fire, and his fire runs out under all of Aria.', card: { title: 'Chapter 18', sub: 'The Starved Fire' } },
+    { map: 'ridge', time: 0.62, focus: 'jarl', dist: 17, pitch: 0.48, yaw: 1.6, spin: 0.04, secs: 6, shake: 0.4, sound: 'night', text: 'Under Ember Hill the Giant dreams, and his heralds feed him fire.' },
+    { map: 'beacon', time: 0.64, focus: { x: 40, z: 40 }, dist: 16, pitch: 0.48, yaw: 2.6, spin: 0.05, secs: 5.5, text: 'And far away on the coast, the salamanders gather the sea-fire and carry it back to him like coals. The hill will not open while he is fed.', card: { title: 'Chapter 18', sub: 'The Starved Fire' } },
   ],
   'Chapter 19': [
     { map: 'camp', time: 0.86, focus: 'fire', dist: 10, pitch: 0.58, yaw: 2.8, spin: 0.05, secs: 5.5, text: 'In Eldrun, an old man stops singing, for the first time in his life, and picks up a staff.' },
-    { map: 'ridge', time: 0.88, focus: 'jarl', dist: 19, pitch: 0.45, yaw: 3.8, spin: 0.04, secs: 6, shake: 0.6, sound: 'night', text: 'On Ember Hill, four bindings wait to be set round the place where the Giant sleeps.', card: { title: 'Chapter 19', sub: 'The Crater of Binding' } },
+    { map: 'magic', time: 0.88, focus: 'npc:vigdis', pitch: 0.92, dist: 10, yaw: 4.0, spin: 0.05, secs: 5, text: 'From Galdrheim, from Steinborg and from the coast, the singers set out for the hill, the four bindings with them.' },
+    { map: 'ridge', time: 0.88, focus: 'jarl', dist: 19, pitch: 0.45, yaw: 3.8, spin: 0.04, secs: 6, shake: 0.6, sound: 'night', text: 'On Ember Hill, the ground is cool, and very, very quiet. Something vast is holding its breath.', card: { title: 'Chapter 19', sub: 'The Crater of Binding' } },
   ],
   'Chapter 20': [
-    { map: 'ridge', time: 0.94, focus: 'jarl', dist: 14, pitch: 0.52, yaw: 0.2, spin: 0.06, secs: 6.5, shake: 0.9, sound: 'night', text: 'In the Crater of Binding the Fire Giant wakes, fully, for the first time in three hundred years. And there is nowhere left for either of you to go.', card: { title: 'Chapter 20', sub: 'The Fire Giant' } },
+    { map: 'ridge', time: 0.94, focus: { x: 32, z: 30 }, dist: 12, pitch: 0.6, yaw: 0.2, spin: 0.06, secs: 6, shake: 0.6, sound: 'night', text: 'The Crater of Binding glows red in the dark, and four voices sing round it. Nothing that goes in can come out.' },
+    { map: 'ridge', time: 0.95, focus: 'jarl', dist: 14, pitch: 0.52, yaw: 2.2, spin: 0.06, secs: 6.5, shake: 0.9, text: 'Below, the Fire Giant wakes, fully, for the first time in three hundred years.' },
+    { map: 'camp', time: 0.95, focus: 'fire', dist: 8, pitch: 0.6, yaw: 4.6, spin: 0.06, secs: 5.5, text: 'Every fire in Aria leans towards Ember Hill, as if it were listening.', card: { title: 'Chapter 20', sub: 'The Fire Giant' } },
   ],
 };
 
@@ -133,13 +146,42 @@ export const STEP_SHOTS = {
     { map: 'camp', time: 0.04, focus: 'fire', dist: 12, pitch: 0.5, yaw: 0.6, spin: 0.05, secs: 6, sound: 'heart', text: 'The fire-ring of Eldrun burns gold, as it did when the first settlers lit it.' },
     { map: 'tidecliff', time: 0.06, focus: { x: 40, z: 40 }, dist: 18, pitch: 0.45, yaw: 0.6, spin: 0.04, secs: 6, text: 'But far to the east, past the desert, the sea has begun to smoke.', card: { title: 'The Third Saga', sub: 'The Last Fire-Ring' } },
   ],
+  // the settlers came by sea: Hafnvik's own ring, the lighthouses and the goddess
+  ylfacall: [
+    { map: 'port', time: 0.9, focus: { x: 54.4, z: 12.4 }, y: 3.5, dist: 15, pitch: 0.26, yaw: 4.5, spin: 0.05, secs: 5.5, text: 'Three lights round the sea: two lighthouses at the harbour mouth...' },
+    { map: 'port', time: 0.9, focus: { x: 43.2, z: 15.6 }, y: 4.5, dist: 14, pitch: 0.28, yaw: 1.2, spin: 0.06, secs: 5.5, text: 'and the goddess on the quay between them, her spear raised. The settlers lit all three with the first flame, to keep something under the water asleep.' },
+  ],
+  // the fourth saga's twist: no hand cut the coast's runes; the Giant's own fire is writing them
+  meltedrunes: [
+    { map: 'ridge', time: 0.9, focus: 'jarl', dist: 15, pitch: 0.5, yaw: 4.8, spin: 0.05, secs: 6, shake: 0.5, sound: 'night', text: 'Under Ember Hill, the Giant dreams. And when he dreams, his fire runs out under the land like roots.' },
+    { map: 'tidecliff', time: 0.9, focus: { x: 44, z: 22 }, dist: 11, pitch: 0.55, yaw: 2.0, spin: 0.06, secs: 6, text: 'Wherever it surfaces, the stone melts into backward runes by itself, and the old prisons crack. Torvald only ever helped it along.' },
+  ],
+  // the beacon relit: Hafnvik's lights blaze again
+  beaconfire: [
+    { map: 'beacon', time: 0.9, focus: { x: 30, z: 25 }, y: 4, dist: 16, pitch: 0.3, yaw: 0.3, spin: 0.07, secs: 5.5, sound: 'heart', text: 'The old beacon flares up blue and white over the moor...' },
+    { map: 'port', time: 0.91, focus: { x: 54.4, z: 50.6 }, y: 3.5, dist: 16, pitch: 0.28, yaw: 4.3, spin: 0.04, secs: 6, text: 'and at the harbour mouth, both lighthouses answer, bright as the day they were lit. But past them, out at sea, the steam still rises.' },
+  ],
   // the sea-ring holds: the fourth saga's turn
   seastand: [
     { map: 'storm', time: 0.5, focus: { x: 36, z: 30 }, dist: 14, pitch: 0.5, yaw: 1.2, spin: 0.06, secs: 6, sound: 'heart', text: 'The sea round the Storm Isles goes still, and cold, and clear. Only a red vein in the rock remains, running west, under the sea.' },
   ],
+  // the settlers' log found: their captain's last words
+  logpages: [
+    { map: 'galleon2', time: 0.5, focus: { x: 20, z: 40 }, dist: 10, pitch: 0.62, yaw: 2.6, spin: 0.05, secs: 6, text: '"We could not end him. We could only sing him down."' },
+    { map: 'wreck', time: 0.88, focus: { x: 32, z: 32 }, dist: 20, pitch: 0.5, yaw: 3.4, spin: 0.04, secs: 6, sound: 'night', text: '"Let our children\'s children finish it, in the Crater of Binding under the hill, where the fire can be held while he is fought."' },
+  ],
   // the fourth saga ends: the settlers' log read
   readlog: [
     { map: 'magic', time: 0.9, focus: 'npc:brynja', pitch: 0.92, dist: 9, yaw: 4.2, spin: 0.05, secs: 6, text: 'Every ring Aria ever lit was only a lullaby. The settlers always meant for the Giant to be ended.', card: { title: 'The Fourth Saga', sub: 'The Drowned Fire' } },
+  ],
+  // the four bindings together
+  runebind: [
+    { map: 'magic', time: 0.92, focus: 'npc:vigdis', pitch: 0.92, dist: 8, yaw: 1.2, spin: 0.07, secs: 5.5, sound: 'heart', text: 'Stone, sea, sand and rune. Laid together on Vigdis\'s table, the four bindings make a ring, and the ring glows gold.' },
+  ],
+  // the fire starved: the red vein under Aria goes dark
+  coalcarriers: [
+    { map: 'beacon', time: 0.7, focus: { x: 40, z: 40 }, dist: 14, pitch: 0.5, yaw: 1.0, spin: 0.05, secs: 5.5, text: 'The last salamander gutters out on the moor, and the red vein under the land goes dark behind it...' },
+    { map: 'ridge', time: 0.72, focus: 'jarl', dist: 18, pitch: 0.45, yaw: 3.2, spin: 0.04, secs: 6, shake: 0.3, text: 'all the way back to Ember Hill. For the first time in three hundred years, the hill is cold.' },
   ],
   // the Crater of Binding opens
   bindingring: [

@@ -2977,10 +2977,10 @@ function cineShot(s) {
   const near = mobs.list.find((m) => m.alive && m.type === 'wisp') || mobs.list.find((m) => m.alive), field = near ? { x: near.x, z: near.z } : { x: 32, z: 32 }; // (where something moves)
   const npc = typeof s.focus === 'string' && s.focus.startsWith('npc:') && NPCS[s.focus.slice(4)], at = typeof s.focus === 'object' && s.focus;
   const focus = npc ? () => npc : at ? () => at : { fire: () => ({ x: 32, z: 32 }), field: () => field, hero: () => player, jarl: () => jarl() || { x: 32, z: 40 } }[s.focus];
-  cine = { focus, dist: s.dist, pitch: s.pitch, spin: s.spin, side: 0 };
+  cine = { focus, dist: s.dist, pitch: s.pitch, spin: s.spin, side: 0, y: s.y || 0 }; // (y: look that high above the ground: a statue, a tower)
   cam.yaw = s.yaw;
   const f = focus();
-  cam.target.set(f.x, world.heightAt(f.x, f.z), f.z);
+  cam.target.set(f.x, world.heightAt(f.x, f.z) + cine.y, f.z);
   if (s.shake) cam.shake = s.shake;
   if (s.sound) audio.play(s.sound);
 }
@@ -3130,7 +3130,7 @@ function frame() {
   if (cine) { // a cutscene's shot, or the hero's making: the camera frames its own point
     const f = cine.focus(), up = cine.up || 0; // (side: to the screen's right, so the focus sits left; up: toward the camera, so it sits high)
     const rx = Math.cos(cam.yaw) * (cine.side || 0) + Math.sin(cam.yaw) * up, rz = -Math.sin(cam.yaw) * (cine.side || 0) + Math.cos(cam.yaw) * up;
-    cam.target.lerp(tmpV.set(f.x + rx, world.heightAt(f.x, f.z), f.z + rz), 1 - Math.exp(-4 * dt));
+    cam.target.lerp(tmpV.set(f.x + rx, world.heightAt(f.x, f.z) + (cine.y || 0), f.z + rz), 1 - Math.exp(-4 * dt));
     cam.yaw += cine.spin * dt;
     cam.dist = cine.dist;
   } else {

@@ -147,7 +147,7 @@ export const STORY = [
   // the Seeress reads the hero's runes: three questions, and the calling they point to (CALLINGS)
   { id: 'seeress', ch: 'Chapter 1: The Stone-Fort', title: 'The Seeress', kind: 'talk', npc: 'saeunn', goal: 'Find Saeunn the Seeress at her tower (north-east of the city)',
     say: [['saeunn', 'So. You are the one the runes showed me: a stranger by a dying fire.'],
-      ['saeunn', 'Beneath Ember Hill sleeps the Fire Giant, the last of the fire-jotnar. The fire-ring kept him dreaming. When the ring goes out, he wakes, and all of Aria burns.', { shake: 0.25 }],
+      ['saeunn', 'Beneath Ember Hill sleeps the Fire Giant, the strongest of the fire-jotnar. The fire-ring kept him dreaming. When the ring goes out, he wakes, and all of Aria burns.', { shake: 0.25 }],
       ['saeunn', 'You cannot face him as you are. But the runes know what you could become. Sit. Answer from the heart: the runes hear the truth, and nothing else.'],
       ['saeunn', 'A wolf blocks the road at dusk, teeth bared. What do you do?', { choices: [['Draw steel and meet it head-on.', 'blade'], ['Speak a word of fire, and watch it run.', 'rune'], ['Climb a rock and strike it from afar.', 'bow']] }],
       ['saeunn', 'You set out into lands no one has mapped. What do you carry?', { choices: [['A shield and a steady arm.', 'blade'], ['A book of old words.', 'rune'], ['Sharp eyes and a light pack.', 'bow']] }],

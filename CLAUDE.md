@@ -18,7 +18,7 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   dungeon is built as the Sunken Galleon (below). **Built (November 2026):** the city is **Hafnvik** (`port`; the owner's picture:
   white like Santorini, blue cupolas, gold, a temple, a goddess statue, an amphitheatre, an armillary fountain, a
   harbour with ships and two blue-crystal lighthouses; `city.js` LAYOUTS.port, `PORT`), reached overland from the desert
-  coast (the owner's call): Scorpion Sands E → Tide Cliffs (65–70) → Hafnvik; Beacon Moor (82–88) N, Coral Shallows
+  coast (the owner's call): Scorpion Sands E → Tide Cliffs (65–70) → Hafnvik; Beacon Moor (82–88) N (its old beacon, `monuments.js` `buildBeacon`, an ember till the story relights it blue), Coral Shallows
   (70–76, a lagoon waded, `lake.shallow`) S; Captain Asgeir's ship (`ship: [{ to, fare, lv }]`) to the Storm Isles
   (76–82) and Loki's Gate (Base 90) (`voyage` maps with a `dock`; `isle`; a map's sea side is `shore`; a walkable pier
   is `piers`). The **Sunken Galleon** (the third dungeon, built November 2026, the owner's calls and pictures): Asgeir
@@ -253,7 +253,7 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   ending cutscene. It is the one story step that needs a boss (a test checks it). Played through, a hero ends at about
   Base 90. The late-game cities get a new main story of their own later.
 - **Story cutscenes** (the owner's call, `scenes.js`, played by `main.js` `playScene`): every chapter opens with
-  one (`CHAPTER_SHOTS`, keyed by the chapter's number), the big moments follow their step (`STEP_SHOTS`: the
+  one (`CHAPTER_SHOTS`, keyed by the chapter's number; a shot's `y` looks that high above the ground, for a statue or a tower), the big moments follow their step (`STEP_SHOTS`: the
   Giant stirring, each saga's end, Torvald unmasked, the Giant sinking, the ending), and the secret series'
   hidden ways open with one (`SECRET_SHOTS`). Shots may be on any map; the hero is put back where they stood
   (no land counts as walked), and a scene waits until no monster is on their heels. The Quests window's Main
