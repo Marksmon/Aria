@@ -164,9 +164,13 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   Maelstrom, walk out of its pull), and
   enraged below half HP (`MVP_RAGE`). Each MVP has a tier (the owner's call, November 2026: `TIERS` in
   `build-tools/mvp-sim.mjs`): a second job of its tier's Base Level in the best gear short of MVP gear (a Lv 4 weapon
-  +7, armor +4, monster and mini-boss cards) beats it at a middle matchup in about 3–6 minutes on 100 White Potions:
+  +7, armor +4, monster and mini-boss cards) beats it at a middle matchup (the median of all ten second jobs) in about 3–6
+  minutes on 60 White Potions (it was 100 before potions healed more with END, below):
   Base 75 the Kobold and Goblin Kings, 85 the Fire Giant, Ancient Treant and Sand Wyrm, 95 the Eternal Sphinx,
-  Nidhogg and Poseidon, 99 Davy Jones (Lv 110, the hardest, the owner's call). Mini-bosses are fierce like an MVP and made for a Lv 75 second job in shop gear;
+  Nidhogg and Poseidon, 99 Davy Jones (Lv 110, the hardest, the owner's call). **Every job can win every boss** (the owner's
+  call, November 2026): none loses, and the hardest matchup takes at most `SPREAD` (1.6) times the middle's time (the
+  frail jobs may drink more); and a hero ten levels past a tier in gear short of it (a Lv 3 weapon at its safe +5) still
+  wins (`mvp-sim --check` checks all three). Mini-bosses are fierce like an MVP and made for a Lv 75 second job in shop gear;
   each raid's Hell boss for its Hell level in the same good gear (`FIERCE` `atkScale`/`hpScale`). `npm test` runs
   `mvp-sim --check`: retune with it (each boss's ATK and HP) when a boss or a job changes. Their levels say so (55–66: Giant Sprout and Elder Willow 55, King Crab 58, Giant Mushroom 60, Giant Beetle 62, Alpha Wolf 64, Great Bear 66; the desert's Cactus Lord 60 and Rainbow Runner 64; the Sphinx's Halls' Ammit 74; Yggdrasil's Ratatoskr 74, small for a boss: the owner's call; the Storm Isles' Headless Knight 80, lord of the Living Armors: the owner's call; the Sunken Galleon's Kraken 94), and they come only for second-job heroes (the owner's call, `picksFight` in `mobs.js`): a Trainee or first job is left be unless it strikes or taunts one. So no main story
   step or job trial needs a boss but the story's last fight, the Fire Giant in the Crater of Binding (they hunt the boss's kin); the one quest that does is Sigrid's The
@@ -195,6 +199,11 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   Each MVP has a matchup (`takes` in `mobs.js`, applied in `rules.js`): easiest for one job family
   and hardest for another (Fire Giant: bows / casters; Kobold King: casters / bows; Goblin King:
   blades / bows and casters; Ancient Treant: beasts / blades; Sand Wyrm: blades and daggers / beasts; Eternal Sphinx: casters / beasts; Nidhogg: bows / blades and daggers; Poseidon: beasts / casters; Davy Jones: casters / beasts).
+  The Shadowblade's and the Voodoo's Shadow arts land `SHADOW_ART` (75%) on a Shadow monster, not a quarter (`rules.js`, `ps.art`),
+  and a battle oil on a Beastmaster coats its beasts' claws (so it can hurt a Ghost). Mini-bosses and Hell bosses have
+  matchups too (`takes`), set so every job can win them.
+- **Potions heal more with END** (the owner's call, November 2026): +2% a point (`POTION_END`, `potionHeal` in
+  `rules.js`), in the game and every simulator; the Items window says how much more for the hero.
 - **Card paintings** (the owner's call): a card can have an anime painting (2:3, the name and a BOSS badge painted in, after the Ragnarok card art), `src/art/cards/<card id>.jpg` (640 wide). A card with one gets a View art button in the Items window and an Art button where it sits in a piece; it opens full screen, the picture alone with no text under it, a tap closes it (`src/cardart.js`, loaded only when opened). The five first MVP cards have theirs; the Eternal Sphinx's, the mini-boss and raid cards come next.
 - **The desert and the Sphinx:** Rytingborg (`sand`), the Red Sands (a Trainee's field), the Cactus
   Dunes, Scorpion Sands (the Pyramid: the raid guide) and the Great Desert (the Sand Wyrm). The

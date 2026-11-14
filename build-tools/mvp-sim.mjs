@@ -21,15 +21,13 @@
 import { setup, killTime, HEROES } from './second-sim.mjs';
 import { MOB_DEFS, MOVES, MVP_RAGE, MVP_MOVE, WYRM, RIDDLE, BARK, TREMOR, fierce, guardDef, raidDef } from '../src/mobs.js';
 import { RAIDS } from '../src/raid.js';
-import { mobAttack, derive } from '../src/rules.js';
+import { mobAttack, derive, potionHeal } from '../src/rules.js';
 
 // a fixed seed, so a check gives the same answer every time (the game's own rolls use Math.random too)
 let seed = 20261105;
 Math.random = () => { seed |= 0; seed = (seed + 0x6d2b79f5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
-// the six the tiers were set by (the check's middle is theirs), and the four added in November 2026 (reported beside
-// them, and in the spread below, until the tiers are set again over all ten: the Moon Ranger by day)
-const TIER_JOBS = ['blademaster', 'shadowblade', 'windrunner', 'hunter', 'wizard', 'voodoo'];
-const JOBS = [...TIER_JOBS, 'phantom', 'magicknight', 'moonranger', 'beastmaster'];
+// all ten second jobs (the Moon Ranger by day); a fight's middle is theirs (November 2026: it was the first six)
+const JOBS = ['blademaster', 'shadowblade', 'windrunner', 'hunter', 'wizard', 'voodoo', 'phantom', 'magicknight', 'moonranger', 'beastmaster'];
 const RANGED = new Set(['windrunner', 'hunter', 'wizard', 'voodoo', 'moonranger', 'beastmaster']);
 // gear: the weapons the rotations swing, and what the hero wears (DEF, Max HP %)
 export const GEAR = {
@@ -55,7 +53,7 @@ const POTION = 205, POTION_GAP = 0.25, DODGE = 0.5, METEOR_DODGE = 0.75, KITE = 
 const dpsCache = new Map();
 // (a Ghost takes nothing from a Neutral blow: the hero comes with an element, a battle oil on the blade, Wind Arrows)
 function dps(job, def, base, gear) {
-  const key = `${job}|${def.name}|${def.lv}|${def.hp}|${base}|${gear}`;
+  const key = `${job}|${def.name}|${def.lv}|${def.hp}|${base}|${gear}|${JSON.stringify(def.takes || {})}`;
   if (!dpsCache.has(key)) {
     const g = GEAR[gear], hp = 200000, el = def.el === 'ghost' ? { el: 'wind' } : {};
     setup({ boss: { ...def, hp }, hp, base, jobLv: jobLvAt(base), sword: { ...g.sword, ...el }, bow: { ...g.bow, ...el }, staff: g.staff });
@@ -160,7 +158,7 @@ export function fight(job, def, base, gear) {
     }
     for (const o of [...guards, ...shadows]) if (o.hp > 0 && t >= o.at) { o.at = t + o.def.adelay / 1000; if (!(ranged && Math.random() < KITE)) hp -= mobAttack(o.def, ps).dmg; }
     // a White Potion below half HP
-    if (hp < ps.maxHp * 0.5 && t >= potT) { hp = Math.min(ps.maxHp, hp + POTION); potions++; potT = t + POTION_GAP; }
+    if (hp < ps.maxHp * 0.5 && t >= potT) { hp = Math.min(ps.maxHp, hp + potionHeal(POTION, ps.end)); potions++; potT = t + POTION_GAP; } // (END: +2% a point)
     if (hp <= 0) return { win: false, t, potions, left: mob / def.hp };
   }
   return { win: false, t, potions, left: mob / def.hp };
@@ -178,7 +176,7 @@ export const MINI_LV = 75;
 // the main story's own boss (the Fire Giant in the Crater of Binding, Chapter 20): for a second job at the story's end,
 // in the gear a story hero has (shop gear), not the best
 export const STORY = { jarlBound: 90 };
-export const BAR = { minT: 150, maxT: 400, potions: 100 }; // the median job: a fight of minutes, on a bag of White Potions
+export const BAR = { minT: 150, maxT: 400, potions: 60 }; // the median job: a fight of minutes, on a bag of White Potions
 const hellBoss = (id) => {
   const R = RAIDS[id], D = R.difficulties.hell;
   return { name: `${MOB_DEFS[R.boss[0]].name} (Hell)`, def: raidDef(R.boss[0], D.lv + R.boss[1], { ...D.boss, fierce: true }), base: D.lv, gear: 'good' };
@@ -199,11 +197,11 @@ export function judge(f, runs = 30) {
     const med = (k) => rs.map((r) => r[k]).sort((a, b) => a - b)[runs >> 1];
     return [job, { wins: rs.filter((r) => r.win).length / runs, t: med('t'), potions: med('potions'), left: med('left') }];
   }));
-  // the middle matchup: the median of the six jobs the tiers were set by, measure by measure (wins, time, potions);
-  // all: the same over every job simulated
+  // the middle matchup: the median of the ten jobs, measure by measure (wins, time, potions)
   const med = (list, k) => { const v = list.map((j) => per[j][k]).sort((x, y) => x - y), n = v.length; return n % 2 ? v[n >> 1] : (v[n / 2 - 1] + v[n / 2]) / 2; };
   const middle = (list) => ({ wins: med(list, 'wins'), t: med(list, 't'), potions: med(list, 'potions'), left: med(list, 'left') });
-  return { per, mid: middle(TIER_JOBS), all: middle(JOBS) };
+  const mid = middle(JOBS);
+  return { per, mid, all: mid };
 }
 // how far a fight's jobs lie apart (November 2026, reported: `--check` does not fail on it yet): the jobs that lose it
 // (under 80% of their fights), and the hardest matchup that still wins, as a multiple of the middle of all ten
@@ -212,6 +210,8 @@ export function spread({ per, all }) {
   const worst = won.sort((a, b) => per[b].potions / (all.potions || 1) + per[b].t / all.t - per[a].potions / (all.potions || 1) - per[a].t / all.t)[0];
   return { lost, worst, time: worst ? per[worst].t / all.t : 0, potions: worst ? per[worst].potions / (all.potions || 1) : 0, over: JOBS.filter((j) => per[j].potions > BAR.potions) };
 }
+// the hardest matchup's fight, against the middle's (the owner's call, November 2026)
+export const SPREAD = 1.6;
 const ok = (m) => m.wins >= 0.8 && m.t >= BAR.minT && m.t <= BAR.maxT && m.potions <= BAR.potions;
 
 if (import.meta.url === `file://${process.argv[1]}`) {
@@ -233,17 +233,29 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   // the spread of each fight over the ten jobs
   console.log('\n| Fight | middle of ten | loses it | hardest that wins | over 100 potions |');
   console.log('|---|---|---|---|---|');
-  let dead = 0, far = 0;
+  let dead = 0, far = 0, farP = 0;
   for (const { f, j } of rows) {
     const sp = spread(j);
-    dead += sp.lost.length; if (sp.time > 1.6 || sp.potions > 1.6) far++;
+    dead += sp.lost.length; if (sp.time > SPREAD) far++; if (sp.potions > SPREAD) farP++;
     console.log(`| ${f.name} | ${fmt(j.all)} | ${sp.lost.join(', ') || '-'} | ${sp.worst ? `${sp.worst}: ${sp.time.toFixed(1)}x the time, ${sp.potions.toFixed(1)}x the potions` : '-'} | ${sp.over.join(', ') || '-'} |`);
   }
-  console.log(`\n${dead} matchups lost outright; ${far} of ${rows.length} fights have a winning job past 1.6x the middle.`);
+  console.log(`\n${dead} matchups lost outright; ${far} of ${rows.length} fights have a job past ${SPREAD}x the middle's time, ${farP} one past ${SPREAD}x its potions (the frail jobs, by design).`);
+  // the owner's matchup rule (November 2026): no job loses a boss, and none takes over SPREAD x the middle fight's time
+  for (const { f, j } of rows) for (const [job, r] of Object.entries(j.per)) {
+    if (r.wins < 0.8) off.push(`${f.name}: the ${job} loses it`);
+    else if (r.t > SPREAD * j.mid.t) off.push(`${f.name}: the ${job} takes ${(r.t / j.mid.t).toFixed(2)}x the middle's time`);
+  }
+  // and a hero ten levels past a tier in gear short of it (a Lv 3 weapon at its safe +5) still wins (the owner's call)
+  console.log('\nTen levels past the tier, in gear a hero has before any MVP (a Lv 3 weapon at +5):\n');
+  for (const f of fights().filter((x) => x.gear === 'good')) {
+    const g = { ...f, gear: 'reach', base: Math.min(99, f.base + 10) }, j = judge(g);
+    console.log(`  ${f.name} at Base ${g.base}: ${fmt(j.mid)}`);
+    if (j.mid.wins < 0.8) off.push(`${f.name}: a Base ${g.base} hero in lesser gear can't finish it (${fmt(j.mid)})`);
+  }
   // --reach: the same MVP and Hell fights in the gear a hero can have before any MVP has fallen (GEAR.reach)
   if (process.argv.includes('--reach')) table(fights().filter((f) => f.gear === 'good').map((f) => ({ ...f, gear: 'reach' })), 'In gear a hero can have before any MVP has fallen (a Lv 3 weapon at its safe +5):');
   if (process.argv.includes('--check')) {
     if (off.length) { console.log(`OUT OF TIER:\n  ${off.join('\n  ')}`); process.exit(1); }
-    console.log('every boss in its tier');
+    console.log('every boss in its tier, every job able to win it within the spread, and a stronger hero in lesser gear too');
   }
 }

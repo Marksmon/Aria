@@ -326,15 +326,19 @@ easiest for some jobs and hardest for others (it tells you when it first comes f
 
 | MVP | Takes more from | Takes less from | Easiest for | Hardest for |
 |---|---|---|---|---|
-| Fire Giant | arrows +40% (a huge target) | spells −40% (its fire soul swallows them), beasts −20% | Archer, Windrunner | Sorcerer, Wizard |
+| Fire Giant | arrows +20% (a huge target), spells +5% | beasts −20% (its fire cows them) | Archer, Windrunner | Sorcerer, Wizard (its Meteor Rain) |
 | Kobold King | spells +40% (kobolds fear sorcery) | arrows −50% (his tribe's shields) | Sorcerer, Wizard | Archer, Windrunner |
-| Goblin King | blades and fists +40% | arrows and spells −30% (his crown's wind ward) | Blader, BladeMaster | the bow jobs and casters |
-| Ancient Treant | beasts +60% (fangs and claws tear bark), spells +10% | blades and fists −40% (the bark turns them) | Beastmaster | Blader, BladeMaster |
-| Sand Wyrm | blades, daggers and fists +30% (soft flesh between its plates) | beasts −40%, arrows −10% (its plated hide) | Blader, Assassin and their second jobs | Beastmaster |
-| Nidhogg | arrows +30% (the soft skin under its wings) | blades, daggers and fists −25% (its black scales) | Archer, Windrunner | Blader, Assassin and their second jobs |
-| Eternal Sphinx | spells +30% (it honours wisdom) | beasts −30%, blades, daggers and fists −15% (its stone hide) | Sorcerer, Wizard | Beastmaster |
-| Poseidon | beasts +30% (they never fear the water) | spells −25% (the sea swallows them) | Beastmaster | Sorcerer, Wizard |
-| Davy Jones | spells +20% (they burn the curse on him) | blades and fists −15%; Neutral blows nothing (Ghost) | Sorcerer, Wizard | Beastmaster (beasts strike Neutral) |
+| Goblin King | blades and fists +20%, spells +10% | arrows −20% (his crown's wind ward) | Blader, BladeMaster | the bow jobs and casters (his Mirror Image) |
+| Ancient Treant | beasts +55% (fangs and claws tear bark), spells +10% | blades and fists −20% (the bark turns them), arrows −5% | Beastmaster | Blader, BladeMaster |
+| Sand Wyrm | blades, daggers and fists +30% (soft flesh between its plates), spells +5% | beasts −10%, arrows −10% (its plated hide) | Blader, Assassin and their second jobs | Beastmaster |
+| Nidhogg | arrows +15% (the soft skin under its wings), blades +10% | none (its Gnaw is the race) | Archer, Windrunner | Blader, Assassin and their second jobs |
+| Eternal Sphinx | spells +30% (it honours wisdom) | beasts −25%, blades, daggers and fists −5% (its stone hide) | Sorcerer, Wizard | Beastmaster |
+| Poseidon | beasts +30% (they never fear the water) | spells −15% (the sea swallows them) | Beastmaster | Sorcerer, Wizard |
+| Davy Jones | spells +20% (they burn the curse on him) | blades and fists −5%; Neutral blows nothing (Ghost) | Sorcerer, Wizard | Beastmaster (a battle oil on you coats its beasts' claws) |
+
+Every job can win every MVP (the owner's call, November 2026): the hardest matchup takes at most about 1.6 times as
+long as a middle one. The Shadowblade's and the Voodoo's Shadow arts still land 75% on a Shadow monster (not the
+quarter any other Shadow blow does), and a Beastmaster's beasts strike in the element of the battle oil on its hero.
 
 The two-path jobs sit between: a Magic Knight's sword is half steel and half spell, a Moon
 Ranger's arrows half arrow and half spell.
@@ -356,7 +360,7 @@ circle shows it just before). **Up**, it can't move: it stays where it rose, and
 hit it. Up, it bites, sweeps the ground, spits sand (**Sand Spit**), drops sand from the sky
 (**Sandfall**) and leaves quicksand that burns; it calls Dune Worms and Soldier Ants. Enraged, it
 stays up for less time and dives sooner. Blades, daggers and fists find the soft flesh between its
-plates (+30%); arrows glance off (−10%) and claws and fangs barely scratch it (beasts −40%). It comes
+plates (+30%); arrows glance off (−10%) and claws and fangs slide on its plates (beasts −10%). It comes
 back 30 minutes after it falls, and drops the Wyrm Fang (a dagger), the Dune Bow, the Dune Staff,
 the Wyrmhide Cloak, Sandwalker Boots, the Wyrm Ring and its card.
 
@@ -1004,9 +1008,9 @@ weakness, shown when you take it:
 | Moon Ranger | ATK and MATK arrows, the moon | the best bow on packs, stronger at night | weaker by day, hungry for SP |
 | Beastmaster | three beasts fed by its stats | never alone: the beasts take the blows | its own blows are modest; a fallen beast is gone 20 s |
 | Phantom | two daggers and illusions | the highest steady melee damage | far squishier than a BladeMaster |
-| Shadowblade | the Ambush, Backstab, executions | the biggest single blows, a teleport to any monster's back, and every kill hides it again | bosses see through hiding; Shadow cuts barely scratch Shadow monsters; one area skill |
+| Shadowblade | the Ambush, Backstab, executions | the biggest single blows, a teleport to any monster's back, and every kill hides it again | bosses see through hiding; its Shadow cuts land only 75% on Shadow monsters (Shadow arts); one area skill |
 | Hunter | traps | holds and paralysis on whole packs, and the Land Mine, the biggest blast in Aria; never missing, through DEF | traps need monsters to walk in (floating Wisps never do); less steady damage than a Windrunner |
-| Voodoo | Blight that stacks | through MDEF, never resisted: the strongest over a long fight | slow to start, frail (its Substitute doll takes blows, for a price in HP); weak on Shadow monsters |
+| Voodoo | Blight that stacks | through MDEF, never resisted: the strongest over a long fight | slow to start, frail (its Substitute doll takes blows, for a price in HP); its Shadow lands only 75% on Shadow monsters |
 
 The Shadowblade has its own look, after the owner's sheet: a long black coat whose torn tails burn with
 violet shadow-flame, a high collar, layered plate pauldrons, chains at the hip, plated boots and a long

@@ -102,9 +102,9 @@ another's (no second stack-and-spend like Momentum, no second set of pets like t
 | Moon Ranger | ATK + MATK arrows, the moon | the best bow on packs, stronger at night | weaker by day; SP |
 | Beastmaster | three beasts fed by its stats | never alone: the beasts take the blows | modest own blows; a fallen beast is gone 20 s |
 | Phantom | two daggers, illusions | the highest steady melee damage | far squishier than a BladeMaster |
-| Shadowblade | **the Ambush** (a blow out of hiding), **Backstab**, executions | the biggest single blows; Umbral Step teleports it to any monster's back; every kill hides it again (Night Stalker) | bosses see through hiding (only the Ambush of Umbral Step lands on them); Shadow cuts barely scratch Shadow monsters; one area skill; fewer HP than a BladeMaster |
+| Shadowblade | **the Ambush** (a blow out of hiding), **Backstab**, executions | the biggest single blows; Umbral Step teleports it to any monster's back; every kill hides it again (Night Stalker) | bosses see through hiding (only the Ambush of Umbral Step lands on them); its Shadow cuts land only 75% on Shadow monsters (Shadow arts); one area skill; fewer HP than a BladeMaster |
 | Hunter | **traps** set at its feet | holds and paralysis on whole packs, and the Land Mine, the biggest blast in Aria; trap damage never misses and goes through DEF | traps need a monster to walk in (floating Wisps never do; one that stands off never springs them); less steady damage than a Windrunner |
-| Voodoo | **Blight**, a curse that stacks | through MDEF and never resisted: the strongest over a long fight; Curse Circle makes everything take more | slow to start, little burst; frail (HP factor 62), its Substitute doll paid for in HP; Shadow is weak on Shadow monsters |
+| Voodoo | **Blight**, a curse that stacks | through MDEF and never resisted: the strongest over a long fight; Curse Circle makes everything take more | slow to start, little burst; frail (HP factor 62), its Substitute doll paid for in HP; its Shadow lands only 75% on Shadow monsters (Shadow arts) |
 
 ## The Assassin's crosses: Shadowblade, Hunter, Voodoo
 
@@ -255,6 +255,8 @@ bow range.
 - **Multi-hit, Ragnarok style:** the Wizard's area spells strike again and again over a few seconds
   (Storm Gust, Lord of Vermillion), and so do Piercing Edge, Final Blade, Elemental Edge and
   Elemental Nova. `hits`/`every` on the skill, `power` per hit.
+- **Shadow arts** (the owner's call, November 2026: every job can win every boss): the Shadowblade's and the Voodoo's Shadow
+  blows, spells and Blight land 75% on a Shadow monster (`SHADOW_ART` in `rules.js`), where any other Shadow blow lands 25%.
 - **Status effects** (freeze, paralyze, stun, burn) come with area skills and by element. Bosses
   resist: a third of the chance for half as long, never immune.
 
@@ -289,6 +291,9 @@ MATK part), used by both the damage and the skill text.
   also draw blows away. The Assassin likewise out-damages the Blader (about 1.4x).
 - **Magic Knight:** between the two on one target, close to the BladeMaster on packs, with the most
   HP and its Stone Aegis barrier.
+  (November 2026, the owner's call: it dealt about half the BladeMaster's damage; Elemental Edge 340% ATK + 220% MATK and
+  Elemental Nova 305% + 180% at their top levels put it at about 0.93x the BladeMaster, `second-sim --check` keeps it
+  between the BladeMaster and the Wizard.)
 - **The Assassin's crosses** (`node build-tools/second-sim.mjs`, a rotation model: Base 80, Job 30,
   a neutral Lv 55 boss of 300,000 HP): the **Shadowblade** about 1.1x the BladeMaster on a lone boss
   (an Ambush and a Backstab after each Umbral Step; in a field, Night Stalker's Ambushes carry it

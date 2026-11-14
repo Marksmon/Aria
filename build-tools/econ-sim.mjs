@@ -18,6 +18,7 @@ import { load, close } from '../test/load.mjs';
 import { MOB_DEFS } from '../src/mobs.js'; // (a monster's drops already hold the refining stones every monster may drop: ORE_DROPS)
 import { SPAWNS } from '../src/spawns.js';
 import { sim } from './sim.mjs';
+import { potionHeal } from '../src/rules.js';
 
 const { ITEMS, PRICES, sellPrice } = await load('items');
 await close();
@@ -41,7 +42,7 @@ export function row(type, kind = 'blader') {
   const d = MOB_DEFS[type], r = sim(kind, d.lv, type), pot = potionAt(d.lv), inc = income(d), ps = r.h.ps, k = d.lv >= SECOND_AT ? SECOND : 1;
   const t = r.t / k, lost = (1 - r.hpLeft) * ps.maxHp / k;
   const deficit = Math.max(0, lost - ps.hpRegen * t / 6);
-  const cost = deficit / healOf(pot) * PRICES[pot], rest = deficit / ((ps.hpRegen + Math.ceil(ps.maxHp * 0.05)) / 3);
+  const cost = deficit / potionHeal(healOf(pot), ps.end) * PRICES[pot], rest = deficit / ((ps.hpRegen + Math.ceil(ps.maxHp * 0.05)) / 3);
   return { type, name: d.name, lv: d.lv, kind, wins: r.wins, t, lost, share: lost / ps.maxHp, pot, cost, rest, ...inc,
     drink: (inc.steady - cost) * 3600 / (t + WALK), sit: inc.steady * 3600 / (t + WALK + rest), potions: inc.steady / PRICES[pot] };
 }

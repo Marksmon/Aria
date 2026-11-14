@@ -2,6 +2,7 @@
 // Ragna's herbs), the chest (camp and Steinborg storage), shops and dialogue. Each is a small window you drag by its title bar; several can be open
 // at once and the game keeps running behind them. Positions are remembered per device.
 // Pickup toasts and messages live here too. Plain DOM over the canvas.
+import { POTION_END } from './rules.js';
 import { ITEMS, RECIPES, SLOTS, SHOPS, PRICES, sellPrice, equipLine, iconURL, canWear, jobLine, recipeKind, upgradeLine, refineInfo, canEnchant, canInsert, ENCHANT, MAX_REFINE, enchantStep, cardOn, cardLine, UNCARD_FEE, GOLD_FEE, parseKey, makeKey } from './items.js';
 import { BAG_SLOTS, CHEST_SLOTS } from './inventory.js';
 import { hasCardArt, showCardArt } from './cardart.js';
@@ -587,7 +588,7 @@ export class Menus {
     return `<div class="rtabs">${Object.entries(tabs).map(([k, n]) => `<button class="rtab${this.tab === k ? ' on' : ''}" data-act="tab" data-id="${k}">${n}</button>`).join('')}</div>
       ${this.grid(inv.bag.ofType(this.tab), 'bag')}
       <div class="rdetail">${sel
-        ? `<b class="${sel.rare ? 'rare' : ''}">${esc(sel.name)}${sel.rare ? ' ✦' : ''}</b>${line}<span>${esc(sel.desc)}${sel.from ? ' Dropped by ' + esc(sel.from) + '.' : ''}${sel.usable ? ' Drag it onto the hotbar to use it quickly.' : ''}</span>${act}`
+        ? `<b class="${sel.rare ? 'rare' : ''}">${esc(sel.name)}${sel.rare ? ' ✦' : ''}</b>${line}<span>${esc(sel.desc)}${sel.from ? ' Dropped by ' + esc(sel.from) + '.' : ''}${sel.use?.hp && !sel.use.cure ? ` Your END makes it heal ${Math.round(POTION_END * 100 * Math.max(0, this.hooks.statEnd?.() || 0))}% more.` : ''}${sel.usable ? ' Drag it onto the hotbar to use it quickly.' : ''}</span>${act}`
         : '<span>Tap an item to see what it is.</span>'}</div>
       <div class="rfoot"><span>${inv.bag.slots.length} / ${BAG_SLOTS} slots</span><span class="perz">${inv.perz.toLocaleString()} perz</span></div>`;
   }

@@ -11,7 +11,7 @@
 // boss (KITE). An Archer shoots twice before a monster reaches it and keeps stepping back, so a
 // share of every monster's swings miss it (ARCHER_KITE; KITE against bosses). Things the sim leaves
 // out: walking, kiting, flinching, regen during the fight.
-import { derive, playerAttack, mobAttack, magicAttack, elementMod } from '../src/rules.js';
+import { derive, playerAttack, mobAttack, magicAttack, elementMod, potionHeal } from '../src/rules.js';
 import { MOB_DEFS, guardDef, MOVES } from '../src/mobs.js';
 import { Progress } from '../src/progress.js';
 import { SKILLS, spCost, castTime, wardCut } from '../src/skills.js';
@@ -85,7 +85,7 @@ const bestBolt = (prog, def) => Object.keys(BOLTS).filter((k) => prog.skills[k])
 // one fight. Returns { win, t, potions, hpLeft }. With guards up, the hero cuts them down first
 // (GUARDS_FIRST), as a player should; the boss calls them again 2 minutes after the last one falls
 function fight(h, def, opts = {}) {
-  const ps = h.ps, potHp = POTIONS[opts.potion || 'potion2'], potMax = opts.potions ?? 0;
+  const ps = h.ps, potHp = potionHeal(POTIONS[opts.potion || 'potion2'], ps.end), potMax = opts.potions ?? 0; // (END: +2% a point)
   let blue = 0; const blueMax = h.kind === 'sorcerer' ? (opts.blue ?? (opts.potions ? 15 : 0)) : 0; // Blue Potions for SP
   let hp = ps.maxHp, sp = ps.maxSp, mob = def.hp, t = 0, potions = 0, next = 0, mobNext = def.adelay / 1000, stompAt = def.boss || def.mvp ? 7 : Infinity;
   // a boss's moves reach 3 to 9 paces: they find a Sorcerer kiting it, not a Blader at its side

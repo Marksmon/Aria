@@ -36,7 +36,7 @@ import { Guide } from './guide.js';
 import { BigMap } from './bigmap.js';
 import { headsReady, paintHead, lookPortrait, hairstyles, HAIR_BODY } from './hair.js';
 import { headgearReady, gearCut, paintGears } from './headgear.js';
-import { derive, playerAttack, mobAttack, magicAttack, elementMod, ELEMENTS } from './rules.js';
+import { derive, playerAttack, mobAttack, magicAttack, elementMod, artMod, ELEMENTS, potionHeal } from './rules.js';
 import { SKILLS, EDGE_FX, AMBUSH, BLIND, BLIGHT, wardCut, skillLv, spCost, castTime, learn, skillList, weaponOk, WEAPON_NAMES, BOW_RANGE, unlearnFirstJob, unlearnSecondJob, RETRAIN_COST } from './skills.js';
 import { Menus } from './menus.js';
 import { iconTexture, iconURL, ENCHANT, ITEMS, baseOf, parseKey, canWear, maybeSlotted } from './items.js';
@@ -318,7 +318,8 @@ function beastStats(kind) {
   // KNL sharpens their instincts (allies.js INSTINCTS: Maul, Hamstring, Dive): harder, sooner, and a
   // stun or slow that lasts longer (KNL 80 at a full share: about 1.5x the blow, 0.75x the wait, 1.4x as long)
   const sharp = { mult: 1 + knl * 0.006 * s, cd: Math.max(0.6, 1 - knl * 0.003 * s), dur: 1 + knl * 0.005 * s };
-  const common = { crit: R(3 + ftn / 3 * s), dodge: R(2 + ftn / 10 * s), mastery: 0, el: 'neutral', wlv: 2, beast: true, sharp };
+  // (a battle oil on the hero coats the beasts' claws too: the owner's call, November 2026, so a Beastmaster can hurt a Ghost)
+  const common = { crit: R(3 + ftn / 3 * s), dodge: R(2 + ftn / 10 * s), mastery: 0, el: buffs.oil > 0 && oilEl ? oilEl : 'neutral', wlv: 2, beast: true, sharp };
   // a little of every stat, for all: END's toughness, FNS and KNL's aim, QKN's pace and footwork
   const hp = end * 4 * m, def = end * 0.15 * m, hit = (fns + knl) * 0.5 * m, flee = qkn * 0.5 * m, pace = 1 - qkn * 0.003 * m;
   if (kind === 'bear') {
@@ -387,7 +388,7 @@ function blight(m, n = 1) {
 function blightDmg(m) {
   const md = m.effDef(), per = (BLIGHT.base + BLIGHT.per * skillLv(prog, 'hexcraft')) / 100 * (bound(m) ? 1 + 0.03 * dollLv : 1);
   const matk = (player.ps.matk[0] + player.ps.matk[1]) / 2;
-  return Math.max(1, Math.floor(matk * per * m.blight * elementMod('shadow', md.el) * (md.takes?.magic ?? 1)));
+  return Math.max(1, Math.floor(matk * per * m.blight * artMod(player.ps.art, 'shadow', md.el) * (md.takes?.magic ?? 1)));
 }
 let nav = null; // auto-navigation: { quest, map, npc, why } while walking to a quest by itself
 // second-job synergies: the BladeMaster's Momentum stacks, the last spell's element (Resonance),
@@ -541,6 +542,7 @@ function applyStats() {
   player.leftShare = 0.5 + 0.05 * skillLv(prog, 'twinblades'); // a Phantom's left dagger: its share of a blow (Twin Blades)
   player.doubleAttack = dagger ? 5 * skillLv(prog, 'doubleattack') : 0; // Double Attack: % of normal attacks that strike twice
   ps.maxSp = Math.floor(ps.maxSp * (1 + skillLv(prog, 'manawell') / 50));
+  ps.art = prog.job === 'shadowblade' || prog.job === 'voodoo'; // Shadow arts: their Shadow still bites a Shadow monster (rules.js SHADOW_ART)
   player.ps = ps;
   player.maxHp = ps.maxHp;
   player.maxSp = ps.maxSp;
@@ -1198,6 +1200,7 @@ const { guide, win, GUIDES, tickGuide, tickGoalArrow, startStory, collect } = in
 
 // ---------- menus + camp interactions ----------
 const menus = new Menus(inv, prog, player, {
+  statEnd: () => player.ps?.end || 0, // (a potion heals 2% more a point of END: the Items window says how much)
   useItem: (id) => useItem(id),
   // Gyda the Healer: HP and SP back to full, for nothing
   heal() {
@@ -1584,7 +1587,7 @@ function useItem(id) {
   inv.bag.remove(id, 1);
   const y = overHead(player, 1.3);
   if (u.hp) {
-    const n = player.heal(roll(u.hp));
+    const n = player.heal(potionHeal(roll(u.hp), player.ps.end)); // (END: +2% a point, rules.js)
     fx.number(player.x, y, player.z, n, 'heal');
   }
   if (u.sp) fx.number(player.x, y, player.z, player.healSp(roll(u.sp)), 'sp');

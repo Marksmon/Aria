@@ -13,7 +13,7 @@
 // Hard, early in the second job; x3 on Hell), and its area skills (Storm Gust, Blade Dance...) also
 // hit up to 3 more of a wave for half. Left out: walking, kiting a wave, statuses.
 import { hero } from './sim.mjs';
-import { playerAttack, mobAttack, magicAttack, elementMod, derive } from '../src/rules.js';
+import { playerAttack, mobAttack, magicAttack, elementMod, derive, potionHeal } from '../src/rules.js';
 import { raidDef, MOVES, GUARD } from '../src/mobs.js';
 import { SKILLS, spCost, castTime } from '../src/skills.js';
 import { RAIDS } from '../src/raid.js';
@@ -66,7 +66,7 @@ export function run(raidId, diff, kind, heroLv, potion, pots, second) {
       if (t > R.secs) return false;
       regen(t);
       if (t === next) {
-        if (hp < ps.maxHp * 0.45 && used < pots) { hp = Math.min(ps.maxHp, hp + HEAL[potion]); used++; next = t + 0.4; continue; }
+        if (hp < ps.maxHp * 0.45 && used < pots) { hp = Math.min(ps.maxHp, hp + potionHeal(HEAL[potion], ps.end)); used++; next = t + 0.4; continue; }
         if (sp < 25 && blue < blueMax) { sp = Math.min(ps.maxSp, sp + 50); blue++; next = t + 0.4; continue; }
         const tgt = live.filter((f) => f !== boss)[0] || boss; // the small ones first
         let [dmg, wait] = strike(tgt.def);

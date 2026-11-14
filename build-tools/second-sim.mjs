@@ -7,7 +7,7 @@
 //   node build-tools/second-sim.mjs
 // It is also a module: setup() points the rotations at another boss, Base Level, Job Level and gear, and
 // killTime() runs one (build-tools/mvp-sim.mjs, the MVPs and the raid bosses).
-import { derive, playerAttack, magicAttack, elementMod } from '../src/rules.js';
+import { derive, playerAttack, magicAttack, elementMod, artMod } from '../src/rules.js';
 import { Progress } from '../src/progress.js';
 import { SKILLS, AMBUSH, BLIGHT } from '../src/skills.js';
 
@@ -31,7 +31,9 @@ function hero(job, from, stats, skills, gear) {
     }
   }
   const g = { hit: 0, flee: 0, aspdRate: 1, def: 20, mastery: 9, ...gear };
-  return { p, g, ps: derive(p, g) };
+  const ps = derive(p, g);
+  ps.art = job === 'shadowblade' || job === 'voodoo'; // (Shadow arts, as main.js applyStats)
+  return { p, g, ps };
 }
 // stat builds of about the same cost (Base 80)
 const MELEE = { pow: 80, qkn: 60, end: 40, fns: 40, ftn: 10, knl: 10 };
@@ -51,7 +53,7 @@ function beasts(p) {
   const st = (k) => p.total(k), base = p.baseLv, s = 1, m = s * 0.25, R = Math.round;
   const pow = st('pow'), end = st('end'), fns = st('fns'), qkn = st('qkn'), knl = st('knl'), ftn = st('ftn');
   const sharp = { mult: 1 + knl * 0.006 * s, cd: Math.max(0.6, 1 - knl * 0.003 * s) };
-  const common = { crit: R(3 + ftn / 3 * s), mastery: 0, el: 'neutral', wlv: 2, beast: true }, hit = (fns + knl) * 0.5 * m, pace = 1 - qkn * 0.003 * m;
+  const common = { crit: R(3 + ftn / 3 * s), mastery: 0, el: BOWG.el || 'neutral', wlv: 2, beast: true } /* (a battle oil coats their claws: main.js) */, hit = (fns + knl) * 0.5 * m, pace = 1 - qkn * 0.003 * m;
   return { sharp,
     bear: { ...common, batk: R(pow * s + end * 0.5 * s + base * 1.2), watk: R(30 + base * 1.2), fns: R(base * 0.8), hit: R(base + 25 + hit), interval: 1.6 * pace },
     wolf: { ...common, batk: R(pow * 0.8 * s + fns * 1.8 * s + base * 0.5), watk: R(20 + base), fns, hit: R(base + fns * 2.5 * s + hit), interval: 1.0 * pace },
@@ -151,18 +153,25 @@ export const JOBS_SIM = {
     }
     return t;
   },
+  // the Wizard picks its spells by the boss's element (its own mechanic: a Wizard is strong on a weakness, far behind on
+  // a monster that resists): its two best area spells of different elements (Resonance), and between them a Stone Spike
+  // to Shatter (unless Earth is resisted) and the bolt that hits hardest
   wizard() {
     const { ps } = hero('wizard', ['mage'], CASTER, {}, STAFF);
     let t = 0, hp = HP, cd = {}, last = null, shatter = false;
     const cast = (id, lv) => SKILLS[id].cast(lv) * ps.castRate * 0.85;
     const spell = (m, el) => { let k = 1.3 * (last && last !== el ? 1.3 : 1) * (shatter && el !== 'earth' ? 1.3 : 1); if (el !== 'earth') shatter = false; last = el; return magicAttack(ps, BOSS, m * k, el).dmg; };
+    const worth = ([id, el, n]) => P(id, 10) * n * elementMod(el, BOSS.el);
+    const big = [['meteor', 'fire', SKILLS.meteor.hits(10) / 2], ['stormgust', 'water', 10], ['thunder', 'wind', 6]].sort((a, b) => worth(b) - worth(a)).slice(0, 2);
+    const bolt = [['spark', 'fire', 1], ['frost', 'water', 10], ['arc', 'wind', 1]].sort((a, b) => worth(b) / cast(b[0], 10) - worth(a) / cast(a[0], 10))[0];
+    const spike = elementMod('earth', BOSS.el) >= 1;
     while (hp > 0 && t < 900) {
       const ready = (k) => (cd[k] || 0) <= t;
       let dmg = 0, dt;
-      if (ready('meteor')) { for (let i = 0; i < SKILLS.meteor.hits(10); i++) if (Math.random() < 0.5) dmg += spell(P('meteor', 10), 'fire'); dt = cast('meteor', 10); cd.meteor = t + dt + 4; }
-      else if (ready('thunder')) { for (let i = 0; i < 6; i++) dmg += spell(P('thunder', 10), 'wind'); dt = cast('thunder', 10); cd.thunder = t + dt + 3; }
-      else if (!shatter) { dmg += spell(P('stonespike', 10), 'earth'); shatter = true; dt = cast('stonespike', 10); }
-      else { dmg += spell(P('spark', 10), 'fire'); dt = cast('spark', 10); }
+      const b = big.find(([id]) => ready(id));
+      if (b) { const [id, el] = b; /* (half of the meteors land on a lone boss) */ for (let i = 0; i < SKILLS[id].hits(10); i++) if (id !== 'meteor' || Math.random() < 0.5) dmg += spell(P(id, 10), el); dt = cast(id, 10); cd[id] = t + dt + (b === big[0] ? 4 : 3); }
+      else if (spike && !shatter) { dmg += spell(P('stonespike', 10), 'earth'); shatter = true; dt = cast('stonespike', 10); }
+      else { const [id, el] = bolt; for (let i = 0; i < (SKILLS[id].hits?.(10) || 1); i++) dmg += spell(P(id, 10), el); dt = cast(id, 10); }
       hp -= dmg; t += Math.max(dt, 0.6);
     }
     return t;
@@ -181,7 +190,7 @@ export const JOBS_SIM = {
       else if (ready('circle')) { dt = cast('cursecircle', 10); curseUntil = t + dt + 6; cd.circle = t + dt + 4; for (let i = 0; i < 6; i++) { dmg += magicAttack(ps, BOSS, P('cursecircle', 10), 'shadow').dmg * 1.2; } add(3); }
       else { dt = Math.max(0.8, cast('poisonthrow', 10)); dmg += magicAttack(ps, BOSS, P('poisonthrow', 10), 'shadow').dmg * curse; add(2 + (t < dollUntil ? 1 : 0)); }
       // the Blight ticks over the action's time
-      for (let s = 0; s < dt; s += 0.1) { if ((tick -= 0.1) <= 0) { tick = 1; if (t + s < until) dmg += matk() * per * stacks * (t + s < dollUntil ? 1.15 : 1) * elementMod('shadow', BOSS.el) * curse; } }
+      for (let s = 0; s < dt; s += 0.1) { if ((tick -= 0.1) <= 0) { tick = 1; if (t + s < until) dmg += matk() * per * stacks * (t + s < dollUntil ? 1.15 : 1) * artMod(true, 'shadow', BOSS.el) * curse; } }
       hp -= dmg; t += dt;
     }
     return t;
@@ -283,7 +292,9 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   // The CI runs it (.github/workflows/test.yml), so a balance change that breaks a rule is caught
   const BANDS = { 'Shadowblade / BladeMaster': [res.blademaster / res.shadowblade, 0.98, 1.25], 'Hunter / Windrunner': [res.windrunner / res.hunter, 0.78, 1.02], 'Voodoo / Wizard': [res.wizard / res.voodoo, 0.97, 1.22],
     // the Windrunner's trait (progress.js JOB_TRAITS): the most damage on one target of the one-path second jobs
-    'Windrunner / BladeMaster': [res.blademaster / res.windrunner, 1.1, 2.0], 'Windrunner / Wizard': [res.wizard / res.windrunner, 1.1, 2.5] };
+    'Windrunner / BladeMaster': [res.blademaster / res.windrunner, 1.1, 2.0], 'Windrunner / Wizard': [res.wizard / res.windrunner, 1.1, 2.5],
+    // the Magic Knight between the BladeMaster and the Wizard on one target (the owner's call, November 2026: it dealt half)
+    'Magic Knight between BladeMaster and Wizard': [res.magicknight, res.blademaster * 0.97, res.wizard * 1.03] };
   if (process.argv.includes('--check')) {
     const off = Object.entries(BANDS).filter(([, [r, lo, hi]]) => !(r >= lo && r <= hi));
     for (const [k, [r, lo, hi]] of off) console.log(`OUT OF BAND: ${k} ${r.toFixed(2)} (wanted ${lo}-${hi})`);

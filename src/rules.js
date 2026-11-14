@@ -32,6 +32,11 @@ const EL_TABLE = {
 };
 // how much of an attack of element `atk` lands on a monster of element `def` (1 = all of it)
 export const elementMod = (atk = 'neutral', def = 'neutral') => (EL_TABLE[atk]?.[def] ?? 100) / 100;
+// Shadow arts (the owner's call, November 2026: no job may be unable to win a boss): the Shadowblade's and the
+// Voodoo's Shadow blows and curses still land SHADOW_ART on a Shadow monster, not a quarter (ps.art: those jobs)
+export const SHADOW_ART = 0.75;
+const elementOf = (ps, atk, def) => { const m = elementMod(atk, def); return ps?.art && atk === 'shadow' && def === 'shadow' ? Math.max(m, SHADOW_ART) : m; };
+export const artMod = (art, atk, def) => elementOf(art ? { art } : null, atk, def);
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 
 // per job: HP/SP growth, weapon delay (ms, before stats) and base carrying weight
@@ -54,6 +59,10 @@ export const JOB_RULES = {
   hunter:      { hpFactor: 75, hpIncrease: 500, spIncrease: 420, delay: { fist: 460, sword: 660, bow: 520, dagger: 460 }, weight: 2800 }, // Ragnarok's Hunter: traps from FNS and KNL
   voodoo:      { hpFactor: 62, hpIncrease: 500, spIncrease: 800, delay: { fist: 460, sword: 640, dagger: 460 }, weight: 2400 }, // a caster with a dagger, a little sturdier than the Wizard (and its Substitute doll)
 };
+// a healing item heals more for a tougher hero (the owner's call, November 2026, the classic rule Aria's formulas
+// follow): +2% for every point of END. A flat White Potion was 2.5% of a Base 80 hero's HP
+export const POTION_END = 0.02;
+export const potionHeal = (n, end) => Math.round(n * (1 + POTION_END * Math.max(0, end || 0)));
 // a dagger swings quicker than a sword: at the job's own dagger delay, else 80% of its sword's. Two
 // daggers (a Phantom's, gear.left) swing together, a little slower than one (DUAL)
 export const DAGGER = 0.8, DUAL = 1.15;
@@ -149,7 +158,7 @@ export function playerAttack(ps, md, mult = 1, hitMult = 1, skill = false) {
   const wdmg = crit ? ps.watk : wmin + rnd(Math.max(1, ps.watk - wmin + 1));
   let dmg = (ps.batk + wdmg) * mult;
   if (!crit) dmg = dmg * (100 - md.def * (1 - (ps.pierce || 0) / 100)) / 100 - mobSoftDef(md.vit);
-  const el = elementMod(ps.el, md.el);
+  const el = elementOf(ps, ps.el, md.el);
   const close = !ps.beast && !ps.ranged; // a blow struck up close (the Goblin Warlord Card's)
   dmg = el === 0 ? 0 : Math.max(1, Math.floor((Math.floor(dmg) + ps.mastery) * el * takes(md, ps.beast ? 'beast' : ps.ranged ? 'ranged' : 'melee') * (close ? 1 + (ps.meleeRate || 0) / 100 : 1))); // (a Neutral blow on a Ghost: nothing)
   return { miss: false, crit, dmg, el };
@@ -180,6 +189,6 @@ export function magicAttack(ps, md, mult = 1, element = 'neutral') {
   const [lo, hi] = ps.matk;
   let dmg = (lo + rnd(Math.max(1, hi - lo + 1))) * mult;
   dmg = dmg * (100 - (md.mdef || 0)) / 100 - Math.floor(md.vit / 2);
-  const el = elementMod(element, md.el);
+  const el = elementOf(ps, element, md.el);
   return { miss: false, crit: false, dmg: el === 0 ? 0 : Math.max(1, Math.floor(dmg * el * takes(md, 'magic'))), el };
 }

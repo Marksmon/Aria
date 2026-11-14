@@ -577,7 +577,7 @@ export const SKILLS = {
   },
   elemedge: {
     name: 'Elemental Edge', job: 'magicknight', kind: 'active', max: 10, target: 'mob', range: 1.35, weapon: 'sword', edge: true, icon: 'skill_elemedge',
-    sp: (lv) => 6 + lv, cd: 0.5, power: (lv) => 100 + 10 * lv, mpower: (lv) => 55 + 8 * lv, hits: () => 2, every: 0.15,
+    sp: (lv) => 6 + lv, cd: 0.5, power: (lv) => 170 + 17 * lv, mpower: (lv) => 90 + 13 * lv, // (raised November 2026: it dealt about half a BladeMaster's damage; now between the BladeMaster and the Wizard, build-tools/second-sim.mjs) hits: () => 2, every: 0.15,
     status: { chance: (lv) => 3 * lv }, // the kind and how long come from the element (EDGE_FX)
     desc: (lv) => `Two quick cuts in your blade's element (see Elemental Blade; none without it): ${SKILLS.elemedge.power(lv)}% ATK and ${SKILLS.elemedge.mpower(lv)}% MATK each. By element, ${SKILLS.elemedge.status.chance(lv)}% chance each: Fire burns, Water freezes, Earth stuns, and Wind crackles into the monsters beside your target for half and may paralyze them (bosses resist).`,
   },
@@ -588,7 +588,7 @@ export const SKILLS = {
   },
   nova: {
     name: 'Elemental Nova', job: 'magicknight', kind: 'active', max: 5, needs: { elemedge: 3, elemchain: 1 }, weapon: 'sword', icon: 'skill_nova',
-    sp: (lv) => 30 + 3 * lv, cd: 4, power: (lv) => 100 + 16 * lv, mpower: (lv) => 60 + 10 * lv, hits: () => 3, every: 0.25, areas: [2.5, 4, 5.5],
+    sp: (lv) => 30 + 3 * lv, cd: 4, power: (lv) => 170 + 27 * lv, mpower: (lv) => 100 + 16 * lv, hits: () => 3, every: 0.25, areas: [2.5, 4, 5.5],
     status: { chance: (lv) => 4 * lv },
     desc: (lv) => `Drive your sword into the ground: three waves of your blade's element roll out around you, to 2.5, 4 and 5.5 paces, ${SKILLS.nova.power(lv)}% ATK and ${SKILLS.nova.mpower(lv)}% MATK each to everything they reach (the nearest are caught by all three), with a ${SKILLS.nova.status.chance(lv)}% chance each to burn, freeze, paralyze or stun by element (bosses resist).`,
   },

@@ -59,7 +59,7 @@ export const MOB_DEFS = {
   // craft the best gear.
   matron: { name: 'Giant Sprout', ai: 'boss', art: 'sproutBoss', aura: '#ff9a4a', el: 'earth', boss: true, lv: 55, hp: 380000, atk: [126, 162], def: 10, vit: 25, agi: 18, dex: 120, exp: [30000, 21000], adelay: 1900, fierce: true, walk: 300, moves: [{ kind: 'throw', name: 'Seed Pod', mult: 1.5, r: 1.5 }], aggro: 5.5, chase: 12, reach: 1.3, w: 2.0, r: 0.75, heavy: true, summon: ['russet', 'russet'], summonText: 'The Giant Sprout shakes its leaves, and Red Sprouts come running!', respawn: 300, drops: [['heartwood', 1, 1, 0.3], ['thorn', 3, 5, 1], ['potion2', 1, 2, 0.5], ['thorn_mantle', 1, 1, 0.03], ['bramble_ring', 1, 1, 0.05], ['sprout_card', 1, 1, 0.01]] },
   tideKing: { name: 'King Crab', ai: 'boss', art: 'crabBoss', aura: '#5ac8ff', el: 'water', boss: true, lv: 58, hp: 350000, atk: [120, 156], def: 18, vit: 32, agi: 22, dex: 125, exp: [32000, 22400], adelay: 1900, fierce: true, walk: 200, moves: [{ kind: 'charge', mult: 1.5 }], aggro: 5.5, chase: 12, reach: 1.4, w: 2.3, r: 0.85, heavy: true, summon: ['tidecrab', 'tidecrab'], summonText: 'The King Crab clacks its claws, and Blue Crabs scuttle in!', respawn: 300, drops: [['king_pearl', 1, 1, 0.3], ['pearl', 1, 2, 0.6], ['crableg', 2, 3, 1], ['tidebreaker', 1, 1, 0.02], ['coral_shield', 1, 1, 0.05], ['crab_card', 1, 1, 0.01]] },
-  gloomMother: { name: 'Giant Mushroom', ai: 'boss', art: 'mushBoss', aura: '#c87aff', el: 'shadow', boss: true, lv: 60, hp: 305000, atk: [115, 150], def: 14, vit: 40, agi: 28, dex: 130, exp: [46000, 32200], adelay: 1900, fierce: true, walk: 250, moves: [{ kind: 'throw', mult: 1.5, r: 1.8 }], aggro: 5.5, chase: 12, reach: 1.4, w: 2.2, r: 0.8, heavy: true, mdef: 30, summon: ['gloomcap', 'gloomcap'], summonText: 'The Giant Mushroom puffs, and Dark Mushrooms sprout around it!', respawn: 420, drops: [['gloom_heart', 1, 1, 0.3], ['gloom', 2, 4, 1], ['potion3', 1, 2, 0.4], ['gloom_staff', 1, 1, 0.02], ['gloom_hood', 1, 1, 0.05], ['mushroom_card', 1, 1, 0.01]] },
+  gloomMother: { name: 'Giant Mushroom', ai: 'boss', art: 'mushBoss', aura: '#c87aff', el: 'shadow', boss: true, lv: 60, hp: 305000, atk: [115, 150], def: 14, vit: 40, agi: 28, dex: 130, exp: [46000, 32200], adelay: 1900, fierce: true, takes: { magic: 1.5 }, takesText: 'its spores catch light: spells burn it (+50%)', walk: 250, moves: [{ kind: 'throw', mult: 1.5, r: 1.8 }], aggro: 5.5, chase: 12, reach: 1.4, w: 2.2, r: 0.8, heavy: true, mdef: 30, summon: ['gloomcap', 'gloomcap'], summonText: 'The Giant Mushroom puffs, and Dark Mushrooms sprout around it!', respawn: 420, drops: [['gloom_heart', 1, 1, 0.3], ['gloom', 2, 4, 1], ['potion3', 1, 2, 0.4], ['gloom_staff', 1, 1, 0.02], ['gloom_hood', 1, 1, 0.05], ['mushroom_card', 1, 1, 0.01]] },
   cinderLord: { name: 'Giant Beetle', ai: 'boss', art: 'beetleBoss', aura: '#ff7a2a', el: 'fire', boss: true, lv: 62, hp: 315000, atk: [148, 194], def: 22, vit: 48, agi: 32, dex: 135, exp: [48000, 33600], adelay: 1900, fierce: true, walk: 200, moves: [{ kind: 'charge', mult: 1.6 }], aggro: 5.5, chase: 12, reach: 1.5, w: 2.4, r: 0.9, heavy: true, summon: ['cinderBeetle', 'cinderBeetle'], summonText: 'The Giant Beetle roars, and Fire Beetles answer!', respawn: 480, drops: [['cinder_core', 1, 1, 0.3], ['cinder', 2, 4, 1], ['potion3', 1, 2, 0.5], ['cinder_greaves', 1, 1, 0.03], ['cinder_mail', 1, 1, 0.04], ['beetle_card', 1, 1, 0.01]] },
   // MVP boss of Ember Hill: one at a time, back 15 minutes after it falls. Its slayer gets the MVP
   // reward on top of the drops. Stomps the ground around it every few seconds (stomp: x its ATK),
@@ -67,7 +67,7 @@ export const MOB_DEFS = {
   // A fight of several minutes for a strong second job. Its own moves (MOVES): Meteor Rain, and
   // burning ground (burns) wherever its meteors and leaps land: keep moving, and fight off the fire.
   jarl: { name: 'Fire Giant', ai: 'boss', art: 'jarl', el: 'fire', lv: 60, hp: 765000, atk: [75, 100], def: 20, vit: 40, agi: 30, dex: 160, mdef: 40, exp: [60000, 42000], adelay: 2400, walk: 130, aggro: 7, chase: 25, reach: 1.9, w: 3.1, r: 1.15, heavy: true,
-    mvp: true, respawn: 900, mvpExp: 30000, stomp: 1.8, takes: { ranged: 1.4, magic: 0.6, beast: 0.8 }, takesText: 'its fire soul swallows spells (−40%) and its fire cows beasts (−20%), but it is a huge target for arrows (+40%)', moves: [{ kind: 'meteors', name: 'Meteor Rain', mult: 1.8, r: 1.5 }, { kind: 'throw', mult: 2.0, r: 2.0 }, { kind: 'leap', mult: 1.8, r: 2.2 }], burns: { r: 1.5, dur: 6, mult: 0.35 },
+    mvp: true, respawn: 900, mvpExp: 30000, stomp: 1.8, takes: { ranged: 1.2, magic: 1.05, beast: 0.8 }, takesText: 'it is a huge target for arrows (+20%), but its fire cows beasts (−20%); spells reach it, and its Meteor Rain is what makes a caster\'s fight long', moves: [{ kind: 'meteors', name: 'Meteor Rain', mult: 1.8, r: 1.5 }, { kind: 'throw', mult: 2.0, r: 2.0 }, { kind: 'leap', mult: 1.8, r: 2.2 }], burns: { r: 1.5, dur: 6, mult: 0.35 },
     summon: ['emberWisp', 'emberWisp', 'cinderBeetle', 'cinderBeetle', 'cinderBeetle'], summonText: 'The Fire Giant roars, and the fire answers!', mvpDrops: [['potion3', 3], ['ember_heart', 1]],
     wake: 'The ground trembles… the Fire Giant has woken in Ember Hill!',
     drops: [['potion2', 2, 3, 0.8], ['potion3', 1, 2, 0.5], ['stone', 4, 6, 1], ['jarl_horn', 1, 1, 0.25], ['ember_crown', 1, 1, 0.05], ['jarl_mantle', 1, 1, 0.03], ['jarl_staff', 1, 1, 0.02], ['emberbrand', 1, 1, 0.01], ['flame_bow', 1, 1, 0.01], ['devil_wings', 1, 1, 0.03], ['jarl_card', 1, 1, 0.01]] },
@@ -91,7 +91,7 @@ export const MOB_DEFS = {
     wake: 'War drums in the quarry… the Kobold King holds court in Coal Pit!',
     drops: [['potion3', 1, 2, 0.5], ['kobold_fur', 4, 6, 1], ['hard_ore', 1, 2, 0.4], ['armor_ore', 1, 2, 0.4], ['kobold_ring', 1, 1, 0.05], ['king_mantle', 1, 1, 0.03], ['runestone_staff', 1, 1, 0.02], ['quarry_cleaver', 1, 1, 0.01], ['kobold_card', 1, 1, 0.01]] },
   goblinKing: { name: 'Goblin King', ai: 'boss', art: 'goblinKing', el: 'wind', lv: 55, hp: 400000, atk: [116, 151], def: 22, vit: 48, agi: 34, dex: 150, mdef: 30, exp: [48000, 33600], adelay: 2200, walk: 120, aggro: 7, chase: 25, reach: 1.4, w: 1.3, r: 0.6, heavy: true,
-    mvp: true, respawn: 1800, mvpExp: 24000, stomp: 1.7, takes: { melee: 1.4, ranged: 0.7, magic: 0.7 }, takesText: 'his crown\'s wind ward turns arrows and spells (−30%), but not cold steel: blades and fists hit him hard (+40%)', moves: [{ kind: 'mirror', name: 'Mirror Image' }, { kind: 'leap', mult: 1.7, r: 1.8 }, { kind: 'throw', mult: 1.4, r: 1.3 }, { kind: 'frenzy' }], summon: ['goblinWarrior', 'goblinWarrior', 'goblinArcher', 'goblinAssassin'], mvpDrops: [['potion3', 3], ['hard_ore', 3]],
+    mvp: true, respawn: 1800, mvpExp: 24000, stomp: 1.7, takes: { melee: 1.2, ranged: 0.8, magic: 1.1 }, takesText: 'his crown\'s wind ward turns arrows (−20%), but cold steel hits him hard (+20%); spells get through (+10%), and his Mirror Image is what makes a caster\'s fight long', moves: [{ kind: 'mirror', name: 'Mirror Image' }, { kind: 'leap', mult: 1.7, r: 1.8 }, { kind: 'throw', mult: 1.4, r: 1.3 }, { kind: 'frenzy' }], summon: ['goblinWarrior', 'goblinWarrior', 'goblinArcher', 'goblinAssassin'], mvpDrops: [['potion3', 3], ['hard_ore', 3]],
     wake: 'Horns in the dark wood… the Goblin King rides out in Serpent Wood!',
     drops: [['potion3', 1, 2, 0.6], ['goblin_tooth', 4, 6, 1], ['hard_ore', 1, 3, 0.45], ['armor_ore', 1, 3, 0.45], ['goblin_charm', 1, 1, 0.05], ['trickster_boots', 1, 1, 0.03], ['great_bow', 1, 1, 0.02], ['hexbone_staff', 1, 1, 0.02], ['goblin_cleaver', 1, 1, 0.01], ['goblin_card', 1, 1, 0.01]] },
   // ---------- Veidheim and its lands (beasts.js) ----------
@@ -107,7 +107,7 @@ export const MOB_DEFS = {
   bear: { name: 'Bear', ai: 'tank', art: 'bear', el: 'neutral', lv: 53, hp: 4300, atk: [185, 232], def: 24, vit: 52, agi: 34, dex: 70, exp: [1420, 995], adelay: 1500, walk: 155, aggro: 5, chase: 9, reach: 1.0, w: 1.35, r: 0.55, heavy: true, drops: [['bear_claw', 1, 1, 0.5], ['honey', 1, 1, 0.15], ['potion3', 1, 1, 0.05], ['bear_hide', 1, 1, 0.0015], ['bear_n_card', 1, 1, 0.001], ['bear_paws', 1, 1, 0.0015]] },
   // Willow Marsh's mini-boss: the oldest willow by the water, with its willows round it (a step
   // after the Giant Sprout of Birch Grove)
-  elderWillow: { name: 'Elder Willow', ai: 'boss', art: 'elderWillow', aura: '#d8f070', el: 'earth', boss: true, lv: 55, hp: 400000, atk: [117, 153], def: 8, vit: 22, agi: 16, dex: 120, mdef: 15, exp: [28000, 19600], adelay: 1900, fierce: true, walk: 250, moves: [{ kind: 'throw', name: 'Seed Cloud', mult: 1.5, r: 1.8 }], aggro: 5.5, chase: 12, reach: 1.5, w: 1.5, r: 0.75, heavy: true, summon: ['willow', 'willow'], summonText: 'The Elder Willow creaks, and Willows shuffle out of the reeds!', respawn: 300, drops: [['willow_heart', 1, 1, 0.3], ['willow_twig', 3, 5, 1], ['potion2', 1, 2, 0.5], ['willow_staff', 1, 1, 0.03], ['willow_charm', 1, 1, 0.04], ['willow_card', 1, 1, 0.01]] },
+  elderWillow: { name: 'Elder Willow', ai: 'boss', art: 'elderWillow', aura: '#d8f070', el: 'earth', boss: true, lv: 55, hp: 400000, atk: [117, 153], def: 8, vit: 22, agi: 16, dex: 120, mdef: 15, exp: [28000, 19600], adelay: 1900, fierce: true, takes: { magic: 1.15 }, takesText: 'its old wood is dry: spells catch in it (+15%)', walk: 250, moves: [{ kind: 'throw', name: 'Seed Cloud', mult: 1.5, r: 1.8 }], aggro: 5.5, chase: 12, reach: 1.5, w: 1.5, r: 0.75, heavy: true, summon: ['willow', 'willow'], summonText: 'The Elder Willow creaks, and Willows shuffle out of the reeds!', respawn: 300, drops: [['willow_heart', 1, 1, 0.3], ['willow_twig', 3, 5, 1], ['potion2', 1, 2, 0.5], ['willow_staff', 1, 1, 0.03], ['willow_charm', 1, 1, 0.04], ['willow_card', 1, 1, 0.01]] },
   // the predators' mini-bosses: the Alpha Wolf leads the packs of Barley Field (it pounces from
   // afar), the Great Bear rules Wolf Hills beside the Ancient Treant (it charges)
   alphaWolf: { name: 'Alpha Wolf', ai: 'boss', art: 'alphaWolf', aura: '#b8d0ff', el: 'earth', boss: true, lv: 64, hp: 320000, atk: [158, 202], def: 14, vit: 34, agi: 40, dex: 145, exp: [54000, 37800], adelay: 1600, fierce: true, walk: 120, moves: [{ kind: 'leap', name: 'Pounce', mult: 1.6, r: 1.6 }], aggro: 6, chase: 12, reach: 1.2, w: 1.5, r: 0.6, summon: ['wolf', 'wolf'], summonText: 'The Alpha Wolf howls, and the pack comes running!', respawn: 480, drops: [['alpha_pelt', 1, 1, 0.3], ['wolf_pelt', 3, 5, 1], ['potion3', 1, 2, 0.5], ['wolf_cape', 1, 1, 0.03], ['alpha_card', 1, 1, 0.01]] },
@@ -118,7 +118,7 @@ export const MOB_DEFS = {
   // two moves of its own (MOVES): Grasping Roots hold a hero who keeps away (a quick Windrunner
   // too) while it comes for them, and Bark Armor sends back what hits it.
   ancientTreant: { name: 'Ancient Treant', ai: 'boss', art: 'ancientTreant', aura: '#ff9ac8', el: 'earth', lv: 62, hp: 375000, atk: [80, 104], def: 20, vit: 45, agi: 30, dex: 165, mdef: 35, exp: [76000, 53200], adelay: 2000, walk: 170, aggro: 7, chase: 25, reach: 2.0, w: 2.8, r: 1.15, heavy: true,
-    mvp: true, respawn: 2100, mvpExp: 36000, stomp: 2.0, takes: { melee: 0.6, magic: 1.1, beast: 1.6 }, takesText: 'its bark turns blades and fists (−40%), but fangs and claws tear it (beasts +60%), and spells find its old wounds (+10%)', moves: [{ kind: 'roots', name: 'Grasping Roots', mult: 1.0, r: 1.6, hold: 2.5 }, { kind: 'bark', name: 'Bark Armor' }, { kind: 'throw', name: 'Root Stone', mult: 2.2, r: 2.0 }, { kind: 'charge', name: 'Uprooting Charge', mult: 2.2 }], summon: ['treant', 'treant', 'willow', 'willow'], summonText: 'The Ancient Treant groans, and the Old Forest answers: Treants and Willows uproot themselves!', mvpDrops: [['potion3', 3], ['ancient_seed', 1]],
+    mvp: true, respawn: 2100, mvpExp: 36000, stomp: 2.0, takes: { melee: 0.8, ranged: 0.95, magic: 1.1, beast: 1.55 }, takesText: 'its bark turns blades and fists (−20%), but fangs and claws tear it (beasts +55%), and spells find its old wounds (+10%)', moves: [{ kind: 'roots', name: 'Grasping Roots', mult: 1.0, r: 1.6, hold: 2.5 }, { kind: 'bark', name: 'Bark Armor' }, { kind: 'throw', name: 'Root Stone', mult: 2.2, r: 2.0 }, { kind: 'charge', name: 'Uprooting Charge', mult: 2.2 }], summon: ['treant', 'treant', 'willow', 'willow'], summonText: 'The Ancient Treant groans, and the Old Forest answers: Treants and Willows uproot themselves!', mvpDrops: [['potion3', 3], ['ancient_seed', 1]],
     wake: 'The hills shake… the Ancient Treant walks in Wolf Hills!',
     drops: [['potion3', 1, 2, 0.6], ['old_bark', 4, 6, 1], ['ancient_heartwood', 1, 1, 0.25], ['hard_ore', 1, 2, 0.4], ['armor_ore', 1, 2, 0.4], ['oak_ring', 1, 1, 0.05], ['barkskin_mail', 1, 1, 0.03], ['elder_staff', 1, 1, 0.02], ['grove_blade', 1, 1, 0.01], ['ancient_bow', 1, 1, 0.01], ['treant_card', 1, 1, 0.01]] },
   // ---------- Rytingborg's desert (desert.js) ----------
@@ -137,7 +137,7 @@ export const MOB_DEFS = {
   // the desert's mini-bosses: the Cactus Lord of Cactus Dunes (a storm of needles, a thorny rush) and
   // the Rainbow Runner of Scorpion Sands (a dash and a flying kick)
   cactusLord: { name: 'Cactus Lord', ai: 'boss', art: 'cactusLord', aura: '#b8f060', el: 'earth', boss: true, lv: 60, hp: 295000, atk: [105, 135], def: 24, vit: 55, agi: 34, dex: 145, mdef: 20, exp: [52000, 36400], adelay: 1900, fierce: true, walk: 300, moves: [{ kind: 'meteors', name: 'Needle Storm', mult: 1.3, r: 1.4, color: '#9ad050', cd: 16 }, { kind: 'charge', name: 'Thorn Rush', mult: 1.6 }], aggro: 5.5, chase: 12, reach: 1.5, w: 2.0, r: 0.8, heavy: true, summon: ['cactus', 'cactus'], summonText: 'The Cactus Lord rattles its spines, and Cacti hop out of the sand!', respawn: 540, drops: [['cactus_heart', 1, 1, 0.3], ['cactus_needle', 3, 5, 1], ['potion3', 1, 2, 0.5], ['thorn_coat', 1, 1, 0.03], ['cactus_spine', 1, 1, 0.02], ['cactuslord_card', 1, 1, 0.01]] },
-  rainbowRunner: { name: 'Rainbow Runner', ai: 'boss', art: 'rainbowRunner', aura: '#ff8ad8', el: 'wind', boss: true, lv: 64, hp: 350000, atk: [112, 145], def: 20, vit: 50, agi: 60, dex: 160, exp: [64000, 44800], adelay: 1500, fierce: true, walk: 100, moves: [{ kind: 'charge', name: 'Rainbow Dash', mult: 1.6 }, { kind: 'leap', name: 'Rainbow Kick', mult: 1.7, r: 1.8 }], aggro: 6, chase: 12, reach: 1.3, w: 1.6, r: 0.6, summon: ['runner', 'runner'], summonText: 'The Rainbow Runner crows, and Sand Runners come racing!', respawn: 540, drops: [['rainbow_plume', 1, 1, 0.3], ['runner_feather', 3, 5, 1], ['potion3', 1, 2, 0.5], ['rainbow_sash', 1, 1, 0.03], ['runner_talon', 1, 1, 0.02], ['rainbow_card', 1, 1, 0.01]] },
+  rainbowRunner: { name: 'Rainbow Runner', ai: 'boss', art: 'rainbowRunner', aura: '#ff8ad8', el: 'wind', boss: true, lv: 64, hp: 350000, atk: [112, 145], def: 20, vit: 50, agi: 60, dex: 160, exp: [64000, 44800], adelay: 1500, fierce: true, takes: { melee: 1.2 }, takesText: 'quick to dodge, but slow to turn: a blade that reaches it bites deep (+20%)', walk: 100, moves: [{ kind: 'charge', name: 'Rainbow Dash', mult: 1.6 }, { kind: 'leap', name: 'Rainbow Kick', mult: 1.7, r: 1.8 }], aggro: 6, chase: 12, reach: 1.3, w: 1.6, r: 0.6, summon: ['runner', 'runner'], summonText: 'The Rainbow Runner crows, and Sand Runners come racing!', respawn: 540, drops: [['rainbow_plume', 1, 1, 0.3], ['runner_feather', 3, 5, 1], ['potion3', 1, 2, 0.5], ['rainbow_sash', 1, 1, 0.03], ['runner_talon', 1, 1, 0.02], ['rainbow_card', 1, 1, 0.01]] },
   // the MVP of the Great Desert, after the owner's picture: a massive armoured worm whose head opens
   // like a flower round a maw of hooked teeth. Almost half the time it is under the sand (wyrm,
   // WYRM): it can't be hit there, and only there does it move, a mound swimming toward you, until it
@@ -145,7 +145,7 @@ export const MOB_DEFS = {
   // sweeps its tail (stomp), spits sand (throw) and brings the dunes down on you (Sandfall), each
   // leaving quicksand that slows you; it calls Dune Worms and a Soldier Ant
   sandWyrm: { name: 'Sand Wyrm', ai: 'boss', art: 'sandWyrm', el: 'earth', lv: 70, hp: 385000, atk: [86, 112], def: 26, vit: 60, agi: 30, dex: 170, mdef: 30, exp: [98000, 68600], adelay: 2000, walk: 150, aggro: 7.5, chase: 25, reach: 2.4, w: 4.0, r: 1.4, heavy: true,
-    mvp: true, wyrm: true, mound: 'wyrmMound', respawn: 1800, mvpExp: 42000, stomp: 2.0, takes: { melee: 1.3, ranged: 0.9, beast: 0.6 }, takesText: 'its plated hide turns claws and fangs (beasts −40%) and arrows glance off it (−10%), but a blade between its plates finds soft flesh (blades, daggers and fists +30%)',
+    mvp: true, wyrm: true, mound: 'wyrmMound', respawn: 1800, mvpExp: 42000, stomp: 2.0, takes: { melee: 1.3, ranged: 0.9, magic: 1.05, beast: 0.9 }, takesText: 'its plated hide turns claws and fangs (beasts −10%) and arrows glance off it (−10%), but a blade between its plates finds soft flesh (blades, daggers and fists +30%)',
     moves: [{ kind: 'throw', name: 'Sand Spit', mult: 2.2, r: 2.0 }, { kind: 'meteors', name: 'Sandfall', mult: 1.8, r: 1.6, color: '#d8b070' }], burns: { r: 1.6, dur: 6, mult: 0.25, slow: true, color: '#c89a50', word: 'Quicksand!', text: 'quicksand' },
     summon: ['duneWorm', 'duneWorm', 'duneWorm', 'soldierAnt'], summonText: 'The Sand Wyrm roars, and the sand boils with worms!', mvpDrops: [['potion3', 3], ['wyrm_tooth', 1]],
     wake: 'The dunes heave… the Sand Wyrm hunts under the Great Desert!',
@@ -187,7 +187,7 @@ export const MOB_DEFS = {
   // crowned with coral, its arms writhing every way (writhe). It slams a tentacle down (Tentacle Slam), seizes you
   // (Abyssal Grab: held fast), blasts a line of the sea through you (Tidal Blast) and drags you into a whirlpool
   // (Maelstrom); Octopuses and Puffer Fish come to it (the owner's call)
-  kraken: { name: 'Kraken', proper: true, ai: 'boss', art: 'kraken', aura: '#5ad8ff', el: 'water', boss: true, lv: 94, hp: 240000, atk: [84, 108], def: 30, vit: 66, agi: 30, dex: 175, mdef: 30, exp: [96000, 67200], adelay: 2000, fierce: true, walk: 220, writhe: true,
+  kraken: { name: 'Kraken', proper: true, ai: 'boss', art: 'kraken', aura: '#5ad8ff', el: 'water', boss: true, lv: 94, hp: 240000, atk: [84, 108], def: 30, vit: 66, agi: 30, dex: 175, mdef: 30, exp: [96000, 67200], adelay: 2000, fierce: true, takes: { melee: 1.2, magic: 1.1 }, takesText: 'its soft arms part for a blade (+20%) and boil under spells (+10%)', walk: 220, writhe: true,
     moves: [{ kind: 'throw', name: 'Tentacle Slam', mult: 1.7, r: 1.8 }, { kind: 'roots', name: 'Abyssal Grab', mult: 1.4, r: 1.6, hold: 2.5, color: '#22306a' }, { kind: 'surge', name: 'Tidal Blast', mult: 1.8 }, { kind: 'maelstrom', name: 'Maelstrom', mult: 0.5 }],
     aggro: 6, chase: 12, reach: 2.2, w: 2.6, r: 1.0, heavy: true, summon: ['octopus', 'pufferFish'], summonText: 'The Kraken churns the water, and Octopuses and Puffer Fish come swimming to it!', respawn: 540,
     drops: [['kraken_core', 1, 1, 0.3], ['octopus_ink', 3, 5, 1], ['potion3', 1, 2, 0.5], ['kraken_mail', 1, 1, 0.03], ['abyssal_staff', 1, 1, 0.02], ['kraken_card', 1, 1, 0.01]] },
@@ -200,7 +200,7 @@ export const MOB_DEFS = {
   // the Cursed Captain, the Drowned Fleet (ghost ships, and the drowned's spirits rise to him) and the Abyssal King (a
   // colossal sea horror, galleon.js abyss)
   davyJones: { name: 'Davy Jones', proper: true, ai: 'boss', art: 'davyJones', el: 'ghost', lv: 110, hp: 820000, atk: [82, 104], def: 36, vit: 80, agi: 50, dex: 240, mdef: 45, exp: [220000, 154000], adelay: 2000, walk: 150, aggro: 9, chase: 30, reach: 2.6, w: 3.2, r: 1.3, heavy: true, hall: true,
-    mvp: true, respawn: 2700, mvpExp: 80000, stomp: 2.4, takes: { magic: 1.2, melee: 0.85 }, takesText: 'his drowned flesh dulls blades and fists (−15%), but spells burn the curse on him (+20%); and no Neutral blow touches a Ghost: bring an element',
+    mvp: true, respawn: 2700, mvpExp: 80000, stomp: 2.4, takes: { magic: 1.2, melee: 0.95 }, takesText: 'his drowned flesh dulls blades and fists (−5%), but spells burn the curse on him (+20%); and no Neutral blow touches a Ghost: bring an element (a battle oil coats a Beastmaster\'s beasts too)',
     moves: [{ kind: 'leap', name: 'Anchor Smash', mult: 2.4, r: 2.4 }, { kind: 'surge', name: 'Tidal Wave', mult: 2.4 }, { kind: 'roots', name: "Kraken's Grasp", mult: 1.6, r: 1.8, hold: 3, color: '#22306a' }, { kind: 'roots', name: 'Soul Shackles', mult: 1.0, r: 1.6, hold: 3, drain: 0.5, color: '#8a8e96', cd: 18 }, { kind: 'meteors', name: 'Ghost Ship', mult: 1.8, r: 1.7, color: '#9af0e8' }, { kind: 'throw', name: 'Tidal Curse', mult: 1.8, r: 1.8, curse: 10 }, { kind: 'maelstrom', name: 'Maelstrom of the Damned', mult: 0.6 }, { kind: 'maelstrom', name: 'Abyssal Domain', mult: 0.35, pull: 0, slow: true, r: 6.5, cd: 32 }, { kind: 'frenzy' }],
     // his three phases (the owner's sheet): each brings its own moves (of those above), as his HP falls past `below`
     phases: [
@@ -215,7 +215,7 @@ export const MOB_DEFS = {
   // the Storm Isles' mini-boss (the owner's call): the Headless Knight, lord of the Living Armors, his helmed head
   // under one arm and cold violet fire where it was. He charges (Spectral Charge), hurls his own head at you (Hurled
   // Head), leaps on you with a cleave (Cleaving Leap) and flies into a frenzy; the Living Armors rise to his call
-  headlessKnight: { name: 'Headless Knight', ai: 'boss', art: 'headlessKnight', aura: '#b07aff', el: 'shadow', boss: true, lv: 80, hp: 225000, atk: [86, 110], def: 28, vit: 60, agi: 40, dex: 170, mdef: 25, exp: [86000, 60200], adelay: 1800, fierce: true, walk: 170,
+  headlessKnight: { name: 'Headless Knight', ai: 'boss', art: 'headlessKnight', aura: '#b07aff', el: 'shadow', boss: true, lv: 80, hp: 225000, atk: [86, 110], def: 28, vit: 60, agi: 40, dex: 170, mdef: 25, exp: [86000, 60200], adelay: 1800, fierce: true, takes: { melee: 1.05, ranged: 0.95 }, takesText: 'his empty plate turns arrows a little (−5%), but a blade finds the gaps (+5%)', walk: 170,
     moves: [{ kind: 'charge', name: 'Spectral Charge', mult: 1.7 }, { kind: 'throw', name: 'Hurled Head', mult: 1.6, r: 1.6 }, { kind: 'leap', name: 'Cleaving Leap', mult: 1.8, r: 1.9 }, { kind: 'frenzy' }],
     aggro: 6, chase: 12, reach: 1.7, w: 2.1, r: 0.8, heavy: true, summon: ['livingArmor', 'livingArmor'], summonText: 'The Headless Knight raises his sword, and the Living Armors march to his side!', respawn: 540,
     drops: [['knight_crest', 1, 1, 0.3], ['rusted_plate', 3, 5, 1], ['potion3', 1, 2, 0.5], ['oathless_plate', 1, 1, 0.03], ['headsman_blade', 1, 1, 0.02], ['headlessknight_card', 1, 1, 0.01]] },
@@ -249,7 +249,7 @@ export const MOB_DEFS = {
   // pounces, rains stones from the ceiling (leaving cursed sand that slows you), fixes you with its
   // Gaze (a bolt of gold light) and calls its cubs and its Guardians (the owner's call)
   eternalSphinx: { name: 'Eternal Sphinx', ai: 'boss', art: 'eternalSphinx', el: 'earth', lv: 99, hp: 730000, atk: [90, 115], def: 30, vit: 70, agi: 45, dex: 210, mdef: 45, exp: [160000, 112000], adelay: 2100, walk: 140, aggro: 9, chase: 30, reach: 2.6, w: 4.6, r: 1.6, heavy: true, hall: true,
-    mvp: true, respawn: 2400, mvpExp: 60000, stomp: 2.2, takes: { magic: 1.3, melee: 0.85, beast: 0.7 }, takesText: 'its stone hide turns claws and fangs (beasts −30%) and dulls blades (−15%), but it honours wisdom: spells strike true (+30%)',
+    mvp: true, respawn: 2400, mvpExp: 60000, stomp: 2.2, takes: { magic: 1.3, melee: 0.95, beast: 0.75 }, takesText: 'its stone hide turns claws and fangs (beasts −25%) and dulls blades (−5%), but it honours wisdom: spells strike true (+30%)',
     moves: [{ kind: 'riddle', name: 'The Riddle', mult: 3.0 }, { kind: 'leap', name: 'Pounce', mult: 2.2, r: 2.2 }, { kind: 'meteors', name: 'Falling Stones', mult: 1.8, r: 1.6, color: '#c8a46a' }, { kind: 'throw', name: 'Gaze of Ages', mult: 2.4, r: 1.8 }, { kind: 'frenzy' }],
     burns: { r: 1.6, dur: 6, mult: 0.25, slow: true, color: '#e8c050', word: 'Cursed sand!', text: 'cursed sand' },
     summon: ['sphinxCub', 'sphinxCub', 'jackal', 'falcon'], summonText: 'The Eternal Sphinx roars, and its cubs and Guardians answer!', mvpDrops: [['gold_bar', 1], ['potion3', 3]],
@@ -275,7 +275,7 @@ export const MOB_DEFS = {
   // messenger squirrel, small for a boss but quick and keen, in runed plate with a fiery tail. It dashes
   // in, bounds onto you, throws glowing rune-acorns, flies into a frenzy when hurt, and calls its kin,
   // the Root Squirrels. Hard to hit (its AGI) and quick to strike twice
-  ratatoskr: { name: 'Ratatoskr', proper: true, ai: 'boss', art: 'ratatoskr', aura: '#ffb040', el: 'wind', boss: true, lv: 74, hp: 260000, atk: [110, 142], def: 18, vit: 48, agi: 80, dex: 175, mdef: 30, exp: [80000, 56000], adelay: 1350, fierce: true, walk: 100, double: 0.15,
+  ratatoskr: { name: 'Ratatoskr', proper: true, ai: 'boss', art: 'ratatoskr', aura: '#ffb040', el: 'wind', boss: true, lv: 74, hp: 260000, atk: [110, 142], def: 18, vit: 48, agi: 80, dex: 175, mdef: 30, exp: [80000, 56000], adelay: 1350, fierce: true, takes: { melee: 1.6 }, takesText: 'hard to catch, but small and soft once caught: blades and fists hit it hard (+60%)', walk: 100, double: 0.15,
     moves: [{ kind: 'charge', name: 'Swift Dash', mult: 1.5 }, { kind: 'leap', name: 'Bounding Leap', mult: 1.6, r: 1.7 }, { kind: 'throw', name: 'Rune Acorn', mult: 1.5, r: 1.4 }, { kind: 'frenzy' }],
     aggro: 6.5, chase: 12, reach: 0.8, w: 0.6, r: 0.32, summon: ['rootSquirrel', 'rootSquirrel', 'rootSquirrel'], summonText: 'Ratatoskr chatters, and its kin come running down the roots!', respawn: 540,
     drops: [['rune_tuft', 1, 1, 0.3], ['squirrel_tail', 3, 5, 1], ['potion3', 1, 2, 0.5], ['messenger_shroud', 1, 1, 0.03], ['rune_bracelet', 1, 1, 0.02], ['ratatoskr_tail', 1, 1, 0.02], ['ratatoskr_card', 1, 1, 0.01]] },
@@ -288,7 +288,7 @@ export const MOB_DEFS = {
   // gorged and in a frenzy. Between, it breathes venom, rushes you in its coils, brings roots crashing
   // down (leaving venom on the ground) and calls its brood and the Root Wardens
   nidhogg: { name: 'Nidhogg', proper: true, ai: 'boss', art: 'nidhogg', el: 'shadow', lv: 99, hp: 365000, atk: [112, 144], def: 34, vit: 70, agi: 45, dex: 210, mdef: 40, exp: [160000, 112000], adelay: 2100, walk: 140, aggro: 9, chase: 30, reach: 2.6, w: 4.8, r: 1.6, heavy: true, hall: true,
-    mvp: true, respawn: 2400, mvpExp: 60000, stomp: 2.2, takes: { ranged: 1.3, melee: 0.75 }, takesText: 'its black scales turn blades and fists (−25%), but arrows find the soft skin under its wings (+30%)',
+    mvp: true, respawn: 2400, mvpExp: 60000, stomp: 2.2, takes: { ranged: 1.15, melee: 1.1 }, takesText: 'arrows find the soft skin under its wings (+15%), and a blade must tear it from the roots (+10%), for its Gnaw is a race',
     moves: [{ kind: 'gnaw', name: 'Gnaw the Roots', mult: 0.45 }, { kind: 'throw', name: 'Venom Breath', mult: 2.4, r: 1.8 }, { kind: 'charge', name: 'Coil Rush', mult: 2.2 }, { kind: 'meteors', name: 'Falling Roots', mult: 1.8, r: 1.6, color: '#7a5636' }, { kind: 'frenzy' }],
     burns: { r: 1.6, dur: 6, mult: 0.25, color: '#9aff6a', word: 'Venom!', text: 'venom pools' },
     summon: ['rootWarden', 'thornDrake', 'thornDrake'], summonText: 'Nidhogg roars, and its brood and the Root Wardens answer!', mvpDrops: [['ygg_berry', 2], ['potion3', 3]],
@@ -301,7 +301,7 @@ export const MOB_DEFS = {
   // can't walk, and he is shielded while it stands); Raging Maelstrom, a whirlpool pulling you in to its heart. He
   // calls Merrows and Glass Jellies (the owner's call). proper: a name, never "the Poseidon"
   poseidon: { name: 'Poseidon', proper: true, ai: 'boss', art: 'poseidon', el: 'water', lv: 99, hp: 400000, atk: [108, 138], def: 30, vit: 70, agi: 45, dex: 210, mdef: 40, exp: [160000, 112000], adelay: 2000, walk: 150, aggro: 9, chase: 30, reach: 2.4, w: 3.0, r: 1.3, heavy: true,
-    mvp: true, respawn: 2400, mvpExp: 60000, stomp: 2.2, takes: { beast: 1.3, magic: 0.75 }, takesText: 'the sea swallows spells (−25%), but beasts never fear the water: they tear into him (+30%)',
+    mvp: true, respawn: 2400, mvpExp: 60000, stomp: 2.2, takes: { beast: 1.3, magic: 0.85 }, takesText: 'the sea swallows spells (−15%), but beasts never fear the water: they tear into him (+30%)',
     moves: [{ kind: 'meteors', name: 'Tidal Barrage', mult: 1.8, r: 1.6, color: '#7ad8ff' }, { kind: 'surge', name: 'Leviathan Surge', mult: 2.6 }, { kind: 'prison', name: 'Oceanic Prison', drown: 0.5, crash: 3.0 }, { kind: 'maelstrom', name: 'Raging Maelstrom', mult: 0.6 }, { kind: 'frenzy' }],
     burns: { r: 1.5, dur: 5, mult: 0.2, slow: true, color: '#5ab8ec', word: 'Riptide!', text: 'riptide pools' },
     summon: ['merrow', 'merrow', 'glassJelly', 'glassJelly'], summonText: 'Poseidon lifts his trident, and the Merrows and the Glass Jellies rise to his call!', mvpDrops: [['tide_pearl', 1], ['potion3', 3]],
@@ -580,8 +580,8 @@ const FIERCE = {
       { kind: 'frenzy' },
     ],
     burns: { r: 1.5, dur: 4, mult: 0.2, slow: true, color: '#c89a50', word: 'Quicksand!', text: 'quicksand' },
-    takes: { melee: 1.2, magic: 1.2, ranged: 0.7, beast: 0.8 },
-    takesText: 'his wrappings turn arrows (−30%) and beasts gag on the dust (−20%), but blades and spells tear the old linen (+20%)',
+    takes: { melee: 1.35, magic: 1.05, ranged: 0.55, beast: 0.8 },
+    takesText: 'his wrappings turn arrows (−45%) and beasts gag on the dust (−20%), but blades tear the old linen (+35%) and spells too (+5%)',
   },
   koboldWarlord: {
     fierce: true, stomp: 2.0, adelay: 2000, summonCd: 30, stats: { def: 22, vit: 50, dex: 150 }, hpScale: 2.23, atkScale: 0.42, tribe: 0.7,
@@ -592,8 +592,8 @@ const FIERCE = {
       { kind: 'throw', name: 'Boulder', mult: 1.8, r: 1.8 },
     ],
     burns: { r: 1.5, dur: 4, mult: 0.2, slow: true, color: '#a8784a', word: 'Rubble!', text: 'slowing rubble' },
-    takes: { ranged: 0.6, magic: 1.3 },
-    takesText: 'his warriors\' shields catch arrows (−40%), but kobolds fear sorcery (+30%); and he hides behind his guards (70% less damage while one stands)',
+    takes: { ranged: 0.6, magic: 1.1, melee: 1.25 },
+    takesText: 'his warriors\' shields catch arrows (−40%), but kobolds fear sorcery (+10%) and his own hide is soft to a blade (+25%); and he hides behind his guards (70% less damage while one stands)',
   },
   goblinWarlord: {
     fierce: true, stomp: 2.0, adelay: 1900, summonCd: 30, stats: { def: 22, vit: 50, dex: 160 }, hpScale: 1.44, atkScale: 0.52,
@@ -604,8 +604,8 @@ const FIERCE = {
       { kind: 'frenzy' },
     ],
     burns: { r: 1.5, dur: 4, mult: 0.25, color: '#ff7030', word: 'Burning!', text: 'burning ground' },
-    takes: { melee: 1.3, ranged: 0.8, magic: 0.8 },
-    takesText: 'his war-paint wards off arrows and spells (−20%), but not cold steel (+30%)',
+    takes: { melee: 1.6, ranged: 0.8, magic: 0.8 },
+    takesText: 'his war-paint wards off arrows and spells (−20%), but not cold steel (+60%)',
   },
   bleepBloop: {
     fierce: true, stomp: 2.0, adelay: 2000, summonCd: 30, stats: { def: 22, vit: 50, dex: 160 }, hpScale: 1.9, atkScale: 0.5,
@@ -616,8 +616,8 @@ const FIERCE = {
       { kind: 'charge', name: "Veteran's Charge", mult: 1.8 },
     ],
     burns: { r: 1.5, dur: 4, mult: 0.2, slow: true, color: '#ff7a8a', word: 'Sticky!', text: 'sticky puddles' },
-    takes: { melee: 0.7, magic: 1.3, beast: 0.8 },
-    takesText: 'blades and fists sink into his jelly (−30%) and beasts get stuck (−20%), but spells burst it (+30%)',
+    takes: { melee: 1.25, ranged: 0.6, magic: 1.15, beast: 0.8 },
+    takesText: 'arrows sink into his jelly (−40%) and beasts get stuck (−20%), but blades cut it (+25%) and spells burst it (+15%)',
   },
 };
 const raidDefs = {};
