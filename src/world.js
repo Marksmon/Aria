@@ -919,7 +919,7 @@ export function buildWorld(scene, lib) {
     zoneAt: () => cur.id,
     addSolid: (x, z, c) => cur.addSolid(x, z, c),
     update: (dt, t) => cur.update(dt, t),
-    updateOcclusion: (px, pz, cam) => cur.updateOcclusion(px, pz, cam),
+    updateOcclusion: (px, pz, cam, also) => cur.updateOcclusion(px, pz, cam, also), // (also: the monster fought; what hides it fades too)
     // switch maps; returns where you arrive coming from map `from` (beside its portal back)
     go(id, from) {
       cur.group.visible = false;

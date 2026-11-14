@@ -348,9 +348,9 @@ export class Menus {
         <div class="cr-field"><span>Body</span><div class="cr-seg">${seg('m', 'Male')}${seg('f', 'Female')}</div></div>
         <div class="cr-field"><span>Hairstyle</span><div class="cr-hair">${hair}</div></div>
         <div class="cr-field"><span>Hair colour <i>${esc(DYES[d.dye].name)}</i></span><div class="swatches">${dyes}</div></div>
+        <small class="cr-note">${this.lookBlocked() ? 'Give your hero a name to begin.' : 'You can change your look later at the Stylist in Steinborg.'}</small>
         <div class="cr-actions"><button class="rbtn soft" data-act="lookrandom" title="A random look">🎲 Random</button>
           <button class="rbtn cr-go" data-act="lookok" ${this.lookBlocked() ? 'disabled' : ''}>Begin your journey ▸</button></div>
-        <small class="cr-note">${this.lookBlocked() ? 'Give your hero a name to begin.' : 'You can change your look later at the Stylist in Steinborg.'}</small>
       </div>`;
   }
 
@@ -928,8 +928,11 @@ export class Menus {
       for (const id of SHOPS[this.shopId] || []) {
         const it = ITEMS[id], p = PRICES[id], stack = it.type !== 'equip';
         const what = it.type === 'equip' ? [SLOTS[it.slot], equipLine(it), jobLine(it)].filter(Boolean).join(' · ') : it.desc;
-        h += `<div class="ritem">${icon(id, 'sm')}<div><b>${esc(it.name)}</b><small>${esc(what)}</small><span class="rtag price">${p.toLocaleString()} perz</span></div>
-          <div class="btncol"><button class="rbtn" data-act="buy" data-id="${id}" data-n="1" ${inv.perz >= p ? '' : 'disabled'}>Buy</button>${stack ? `<button class="rbtn soft" data-act="buy" data-id="${id}" data-n="10" ${inv.perz >= p * 10 ? '' : 'disabled'}>×10</button>` : ''}</div></div>`;
+        // a row is short: one line of what it is (tap it for the rest), so more of the shop fits a phone's screen;
+        // potions and the like are bought by the 1, 10 or 50 (an MVP fight asks for a bag of them)
+        const more = this.shopMore === id;
+        h += `<div class="ritem shop${more ? ' more' : ''}">${icon(id, 'sm')}<div data-act="shopmore" data-id="${id}"><b>${esc(it.name)}</b><small>${esc(what)}</small><span class="rtag price">${p.toLocaleString()} perz</span></div>
+          <div class="btncol${stack ? ' buyrow' : ''}"><button class="rbtn" data-act="buy" data-id="${id}" data-n="1" ${inv.perz >= p ? '' : 'disabled'}>Buy</button>${stack ? [10, 50].map((n) => `<button class="rbtn soft" data-act="buy" data-id="${id}" data-n="${n}" ${inv.perz >= p * n ? '' : 'disabled'}>×${n}</button>`).join('') : ''}</div></div>`;
       }
       h += '</div>';
     } else {
@@ -1222,6 +1225,7 @@ export class Menus {
     if (act === 'raidback') { this.close('talk'); this.show('raids'); } // back to the Raids window it came from
     if (act === 'raidpick') { this.raidPick = t.dataset.id; this.render('talk'); }
     if (act === 'shoptab') { this.shopTab = t.dataset.id; this.sellSel = null; this.render(id); }
+    if (act === 'shopmore') { this.shopMore = this.shopMore === t.dataset.id ? null : t.dataset.id; this.render(id); } // a shop row's full text, opened and shut
     if (act === 'buy') {
       const n = +t.dataset.n;
       if (inv.buy(t.dataset.id, n)) { this.hooks.traded?.('buy'); this.message(`Bought ${n > 1 ? n + ' ' : ''}${ITEMS[t.dataset.id].name} for ${(PRICES[t.dataset.id] * n).toLocaleString()} perz`); }

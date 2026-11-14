@@ -4,7 +4,8 @@
 // talks, for a person); tap open ground and the hero walks to the nearest spot it can reach there.
 // Monsters are only for reading: tapping one does nothing. Mini-bosses and the MVP say whether
 // they are out. The game keeps running while the map is open; tap the
-// minimap again, the × or Esc to close it.
+// minimap again, the × or Esc to close it. A dungeon's maze shows only what the hero has seen of it
+// (explored.js): its stairs and monsters are listed once seen, and open ground is walked to only where known.
 import { ZONE_NAMES } from './world.js';
 import { NPCS } from './quests.js';
 import { MOB_DEFS } from './mobs.js';
@@ -12,14 +13,15 @@ import { MOB_DEFS } from './mobs.js';
 const SIZE = 64; // a field is 64 x 64 paces; the minimap image draws 2 pixels a pace
 
 export class BigMap {
-  // deps: { world, player, mobs, spots, goal: () => {x, z} | null, go: (target) => void }
+  // deps: { world, player, mobs, spots, goal: () => {x, z} | null, go: (target) => void,
+  //   explored (explored.js: what the hero has seen of a maze), met: (type) => has the hero beaten one }
   constructor(deps) {
     Object.assign(this, deps);
     this.el = document.createElement('div');
     this.el.id = 'bigmap';
     this.el.className = 'ui-click';
     this.el.hidden = true;
-    this.el.innerHTML = `<div class="bm-panel"><div class="bm-bar"><b class="bm-title"></b><span>Tap a place, a person or a portal to walk there</span><button class="bm-x" aria-label="Close">×</button></div>
+    this.el.innerHTML = `<div class="bm-panel"><div class="bm-bar"><b class="bm-title"></b><span class="bm-hint">Tap a place, a person or a portal to walk there</span><button class="bm-x" aria-label="Close">×</button></div>
       <div class="bm-main"><div class="bm-list"></div><div class="bm-body"><canvas width="512" height="512"></canvas><div class="bm-marks"></div></div></div></div>`;
     document.getElementById('hud').appendChild(this.el);
     this.canvas = this.el.querySelector('canvas');
@@ -43,6 +45,8 @@ export class BigMap {
     this.el.hidden = false;
     this.mapId = this.world.id;
     this.el.querySelector('.bm-title').textContent = ZONE_NAMES[this.mapId] || 'Map';
+    this.fog = !!this.explored?.fogged(this.mapId); // a maze: dark until walked
+    this.el.querySelector('.bm-hint').textContent = this.fog ? 'Dark halls are unexplored: walk them to light the map' : 'Tap a place, a person or a portal to walk there';
     this.build();
     this.draw();
   }
@@ -54,7 +58,9 @@ export class BigMap {
       if (s.map !== this.mapId || !(s.npc || s.label)) continue;
       out.push({ kind: s.npc ? 'person' : 'thing', name: s.npc ? NPCS[s.npc].name : s.label, x: s.x, z: s.z, spot: s });
     }
-    for (const p of this.world.portals) out.push({ kind: 'portal', name: `To ${ZONE_NAMES[p.to]}`, x: p.x, z: p.z, portal: p });
+    const seen = (p) => !this.fog || (p && this.explored.seen(this.mapId, p.x, p.z));
+    this.lit = this.fog ? this.explored.count(this.mapId) : 0;
+    for (const p of this.world.portals) if (seen(p)) out.push({ kind: 'portal', name: `To ${ZONE_NAMES[p.to]}`, x: p.x, z: p.z, portal: p }); // (a maze's stairs: once found)
     // one entry for each kind of monster, at the home nearest the middle of where that kind lives
     const kinds = new Map();
     for (const m of this.mobs.list) {
@@ -62,8 +68,16 @@ export class BigMap {
       if (!kinds.has(m.type)) kinds.set(m.type, []);
       kinds.get(m.type).push(m.home);
     }
+    // in a maze a kind is listed once the hero has beaten one, or one stands where they have been; its marker
+    // only on ground they know
+    if (this.fog) for (const [type, homes] of [...kinds]) {
+      const known = homes.filter(seen);
+      if (!known.length && !this.met?.(type) && !this.mobs.list.some((m) => m.type === type && m.alive && seen(m))) kinds.delete(type);
+      else kinds.set(type, known);
+    }
     const mobs = [];
     for (const [type, homes] of kinds) {
+      if (!homes.length) { mobs.push({ kind: 'mob', type, def: MOB_DEFS[type] }); continue; } // (known of, not yet found here)
       const cx = homes.reduce((a, p) => a + p.x, 0) / homes.length, cz = homes.reduce((a, p) => a + p.z, 0) / homes.length;
       const at = homes.reduce((b, p) => (Math.hypot(p.x - cx, p.z - cz) < Math.hypot(b.x - cx, b.z - cz) ? p : b));
       mobs.push({ kind: 'mob', type, def: MOB_DEFS[type], x: at.x, z: at.z });
@@ -87,7 +101,7 @@ export class BigMap {
     this.items.forEach((e, i) => {
       e.n = i + 1;
       const cls = `bm-mark ${e.kind}${e.boss ? ' boss' : ''}`;
-      if (e.x !== undefined) marks += `<button class="${cls}" data-i="${i}" style="left:${pct(e.x)};top:${pct(e.z)}">${e.n}</button>`;
+      if (e.x !== undefined) marks += `<button class="${cls}" data-i="${i}" style="left:${pct(e.x)};top:${pct(e.z)}"${e.roam && !this.sees(e.roam) ? ' hidden' : ''}>${e.n}</button>`;
     });
     for (const [title, kinds] of groups) {
       const rows = this.items.filter((e) => kinds.includes(e.kind));
@@ -103,6 +117,9 @@ export class BigMap {
     this.status();
   }
 
+  // is this spot on ground the hero knows? (always, outside a maze)
+  sees(p) { return !this.fog || this.explored.seen(this.mapId, p.x, p.z); }
+
   // the map's bosses that are out now, in this.mobs.bosses order (null: not spawned)
   roamers() {
     return (this.mobs.bosses || []).map((t) => this.mobs.list.find((m) => m.type === t && m.alive) || null);
@@ -114,7 +131,7 @@ export class BigMap {
     for (const e of this.items) {
       if (!e.roam) continue;
       const mk = this.marks.querySelector(`[data-i="${e.n - 1}"]`);
-      if (mk) { mk.style.left = pct(e.roam.x); mk.style.top = pct(e.roam.z); }
+      if (mk) { mk.style.left = pct(e.roam.x); mk.style.top = pct(e.roam.z); mk.hidden = !this.sees(e.roam); }
     }
   }
 
@@ -133,6 +150,7 @@ export class BigMap {
   tapGround(e) {
     const r = this.canvas.getBoundingClientRect();
     const x = ((e.clientX - r.left) / r.width) * SIZE, z = ((e.clientY - r.top) / r.height) * SIZE;
+    if (!this.sees({ x, z })) return; // (a maze's dark: the map can't walk the hero where they have never been)
     const spot = this.nearestReachable(x, z);
     if (!spot) return;
     this.go({ x: spot.x, z: spot.z, reach: 0.4 });
@@ -170,9 +188,9 @@ export class BigMap {
     if (this.world.id !== this.mapId) { this.show(); return; } // stepped through a portal: show the new land
     const g = this.g, k = this.canvas.width / SIZE;
     g.imageSmoothingEnabled = false;
-    g.drawImage(this.world.minimap, 0, 0, this.canvas.width, this.canvas.height);
+    g.drawImage(this.fog ? this.explored.image(this.world) : this.world.minimap, 0, 0, this.canvas.width, this.canvas.height);
     g.fillStyle = '#e8563a';
-    for (const m of this.mobs.list) if (m.alive) g.fillRect(m.x * k - 3, m.z * k - 3, 6, 6);
+    for (const m of this.mobs.list) if (m.alive && this.sees(m)) g.fillRect(m.x * k - 3, m.z * k - 3, 6, 6);
     const goal = this.goal?.();
     if (goal) {
       g.strokeStyle = '#3b2a1e'; g.lineWidth = 7;
@@ -194,7 +212,7 @@ export class BigMap {
       // a roaming boss: its marker comes and goes as it falls and returns (the list is built again
       // then); in between only the marker moves, so the list is left alone and a tap on it never lost
       const out = this.roamers();
-      if (out.some((b, i) => b !== this.out[i])) this.build();
+      if (out.some((b, i) => b !== this.out[i]) || (this.fog && this.explored.count(this.mapId) !== this.lit)) this.build(); // (or more of a maze came to light)
       else { this.follow(); this.status(); }
     }
   }

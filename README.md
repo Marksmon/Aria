@@ -54,7 +54,7 @@ Classic MMORPG style: no on-screen controller. Landscape.
 | Tap an item on the ground: pick it up | Click |
 | Tap a person, the chest (camp or Steinborg storage) or the tent: talk / open / rest | Click |
 | Step onto a glowing portal: go to the next map | |
-| Tap the minimap: the big map. People, portals and monsters are numbered, and named in a list on the left (mini-bosses and MVPs say if they are out). Tap a person, a portal or open ground, on the map or in the list, and the hero walks there; monsters are only for reading | Click |
+| Tap the minimap: the big map. People, portals and monsters are numbered, and named in a list on the left (mini-bosses and MVPs say if they are out). Tap a person, a portal or open ground, on the map or in the list, and the hero walks there; monsters are only for reading. In a dungeon's maze the map is dark until walked: its halls light up round the hero and stay lit, its stairs and monsters are listed once seen, and open ground is walked to only where the hero has been (the great halls, the fields and the towns show whole) | Click |
 | Hotbar (bottom): eight slots (two rows of four on a phone held upright, the attack button as tall as both); tap one to use a skill or item (a skill shows its SP cost, veiled blue while you lack the SP; after any skill, skills wait half a second); the button at its end flips between 3 pages | 1–8 · Tab: next page |
 | Drag active skills (Skills window) and usable items (Items window) onto the hotbar; drag a slot off to clear it | Drag |
 | The 🏆 button: **Goals**. *This Week*: three hunts picked for your level (beat monsters near your level or of one kind, hand in quests, refine, clear a raid, and for a second job mini-bosses and, from Base 75, an MVP), paid the moment each is done (perz by your level, and from Base 30 a Hard or Armor Ore); new ones every Monday. *Achievements*: 18 milestones (first and second job, Base 50/75/99, a mini-boss, an MVP and every MVP, a raid and a Hell clear, every land walked, album milestones, a +10 refine, both secret ways, the story's end), each a title you can wear after your name | Click |
@@ -274,7 +274,9 @@ the ATK): cut them down first. See `docs/balance.md`.
 
 **MVP.** The Fire Giant (Lv 60, 765,000 HP, Fire), optional and not part of the story, roams Ember Hill and stomps the
 ground around it every few seconds. MVPs are the hardest fights in Aria: several minutes each, a big bag of White and
-Blue Potions, and a plan. Each is made for a second job of its tier in the best gear short of MVP gear (a Lv 4 weapon
+Blue Potions, and a plan. While a mini-boss or an MVP fights you its big health bar shows at the top of the screen, with a
+mark where it turns (its guards at 80, 50 and 25%, its rage below half, Davy Jones's phases), and a boss that stands
+between you and the camera fades so you can see yourself and the marks on the ground. Each is made for a second job of its tier in the best gear short of MVP gear (a Lv 4 weapon
 at +7, armor at +4, monster and mini-boss cards): **Base 75** the Kobold King and the Goblin King, **Base 85** the
 Fire Giant, the Ancient Treant and the Sand Wyrm, **Base 95** the Eternal Sphinx, Nidhogg and Poseidon, **Base 99** Davy Jones (Lv 110). Below its tier, or in
 plain gear, a hero falls to one. Their stomps, red circles and
@@ -1124,10 +1126,10 @@ from Kari (Dalla has the cake and the pie). Their timers show in the buff bar.
 | Dates | 120–170 HP | Dalla (Rytingborg) |
 | Water Skin | 30–45 SP | sela; Dalla (Rytingborg) |
 | Return Feather | back to your save point | Hild (Steinborg); sela; Kari (Galdrheim); Eydis (Veidheim); Dalla (Rytingborg); Ragna brews it |
-| Fire Oil | the weapon's blows Fire for 5 minutes (not a bow) | Kari (Galdrheim); Dalla (Rytingborg) |
-| Frost Oil | the weapon's blows Water for 5 minutes (not a bow) | Kari (Galdrheim); Dalla (Rytingborg) |
-| Storm Oil | the weapon's blows Wind for 5 minutes (not a bow) | Kari (Galdrheim); Dalla (Rytingborg) |
-| Stone Oil | the weapon's blows Earth for 5 minutes (not a bow) | Kari (Galdrheim); Dalla (Rytingborg) |
+| Fire Oil | the weapon's blows Fire for 5 minutes (not a bow) | sela; Kari (Galdrheim); Dalla (Rytingborg) |
+| Frost Oil | the weapon's blows Water for 5 minutes (not a bow) | sela; Kari (Galdrheim); Dalla (Rytingborg) |
+| Storm Oil | the weapon's blows Wind for 5 minutes (not a bow) | sela; Kari (Galdrheim); Dalla (Rytingborg) |
+| Stone Oil | the weapon's blows Earth for 5 minutes (not a bow) | sela; Kari (Galdrheim); Dalla (Rytingborg) |
 | Boar Roast | POW +3 for 10 minutes | Hild (Steinborg) |
 | Hearty Stew | END +3 for 10 minutes | Hild (Steinborg) |
 | Honey Cake | QKN +3 for 10 minutes | Eydis (Veidheim); Dalla (Rytingborg) |
@@ -1543,8 +1545,10 @@ glasses and masks sit on the eyes, in every direction and every frame. See
 armor, shields, capes and boots. In Galdrheim, **Kari** sells the same goods as Hild (and Speed
 Potions), and **Orm the Staffwright** sells staves and robes. In Veidheim, **Asa** sells bows and arrows and
 **Eydis** potions (White too), Honey and feathers. In Rytingborg, **Dalla** sells potions, Dates and Water
-Skins, **Steinar** daggers, swords and desert gear, and **Yrsa** daggers. Any shop buys anything for half its
-price.
+Skins, **Steinar** daggers, swords and desert gear, and **Yrsa** daggers. In Hafnvik, **Sela** sells potions and the
+four battle oils (a Neutral blade does nothing to the Sunken Galleon's Ghosts). Any shop buys anything for half its
+price. Potions and the like are bought by the 1, 10 or 50; a row shows one line of what a thing is, and a tap on it
+the rest.
 Quests pay a little perz too (a thank-you: what monsters drop, sold in the shops, is where your perz comes from).
 Your perz shows in the Items window.
 
@@ -1605,13 +1609,13 @@ rings the portal to take, or the person to talk to. A purple **!** marks who the
 | 9: The Eye in the Sand | the rune-stone's second mark, a sun over sand · Thora the Caravan Master: caravans lost on the Pyramid road, and a robed figure drawing in the sand · defeat 20 Sand Scorpions in Scorpion Sands · **find three backward runes** cut into the Cactus Dunes, Scorpion Sands and the Great Desert (they glint gold: walk over each) · Old Gunnhild: a stone face sleeps under the sand, and it keeps something · Vigdis: eight jotnar were sung into the stone, and someone is loosening every prison (Hrafn is with her: the Wolf's Eye flared) |
 | 10: The Gnawed Roots | Old Ingrid: the Old Forest's roots rot backwards, like writing · **the Forest's Heart**: hold it for 60 seconds against the maddened Treants · find three rotted runestones in the Old Forest, their roots gnawed · Bjarki: something under the north is awake · Vigdis: the world's roots drink from three wells, and one is Galdrheim's · before dawn, Brynja: the rune-well's crystal has sunk |
 | 11: The Hand That Cuts Backwards | **the Rune-Spring**: hold it in Fen Shore for 60 seconds while Vigdis raises the crystal · look at the three Watchers in Black Wood: one recarved backwards, a chisel at its foot · **Torvald the Runecarver, unmasked**: he wants the jotnar free, and vanishes in fire (he is gone from Galdrheim after this) · Saeunn will sing with Vigdis · carry her rune-lantern, the ring's first flame, to the Elder |
-| 12: The Last Fire-Ring | Ember Hill burns inside Torvald's backward ring · defeat 25 of the Giant's heralds to put out its four fires · **The Last Fire-Ring**: hold the rune circle for 120 seconds while the song is sung, the half-woken Giant's **Meteor Rain** falling round you as red circles (step out: each costs 12% of your HP) · Torvald's chisel in the ash · the ring burns gold. The keepsake: **Torvald's Chisel** (an accessory: HIT +3, KNL +2, FNS +2) |
+| 12: The Last Fire-Ring | Ember Hill burns inside Torvald's backward ring · break its four fires, each fed by heralds as strong as you are · **The Last Fire-Ring**: hold the rune circle for 120 seconds while the song is sung, the half-woken Giant's **Meteor Rain** falling round you as red circles (step out: each costs 12% of your HP) · Torvald's chisel in the ash · the ring burns gold. The keepsake: **Torvald's Chisel** (an accessory: HIT +3, KNL +2, FNS +2) |
 | 13: The Smoking Sea | a letter from Hafnvik: the sea is smoking · go east to the Tide Cliffs · clear the coast road of 15 Cliff Bandits · Ylfa the Priestess: the settlers came by sea, and lit a ring round it |
 | 14: The Dimming Lights | **find three backward runes** in the coast's rocks, melted, not cut · silence 15 Moor Witches on Beacon Moor · **the Moor Beacon**: hold it 75 seconds while Ylfa relights it |
 | 15: The Storm Isles | Captain Asgeir sails you out · defeat 20 Living Armors, the settlers' drowned watch · **find the sea-ring's three stones** · **hold the sea-ring** 90 seconds while Ylfa sings, fire bursting up round you · a red vein runs west, towards Ember Hill |
 | 16: The Settlers' Log | grow to Base 85 · sail to the Sunken Galleon · **find the three pages of the settlers' log** in its holds · Brynja reads it: the settlers always meant the Giant to be ended, in the Crater of Binding |
 | 17: The Four Bindings | Vigdis, Saeunn, Ylfa and Old Gunnhild each keep a binding rune: stone, sea, sand and rune |
-| 18: The Starved Fire | defeat 30 of the Giant's heralds on Ember Hill · defeat 20 Fire Salamanders carrying the sea-fire back to him · the Elder's word |
+| 18: The Starved Fire | put out the Giant's four feeding-fires on Ember Hill, beating the heralds that tend each · defeat 20 Fire Salamanders carrying the sea-fire back to him · the Elder's word |
 | 19: The Crater of Binding | **the Ring of Binding**: hold its middle 120 seconds under the Giant's fire while the four bindings are set, and the Crater opens · the Elder's last counsel, and every potion Eldrun has |
 | 20: The Fire Giant | **the last fight**: go down into the Crater of Binding, walled in, and **defeat the Fire Giant** · the fire-ring rests, and the story ends |
 

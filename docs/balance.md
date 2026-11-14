@@ -468,3 +468,251 @@ This is a model (with a fixed random seed per fight, so its check is steady and 
 | Kobold Warlord (Hell) | 90, good | 100% 382s 147p | 100% 398s 166p | 100% 218s 71p | 100% 216s 72p | 100% 134s 44p | 100% 144s 49p | **100% 217s 72p** |
 | Goblin Warlord (Hell) | 95, good | 100% 418s 204p | 100% 337s 161p | 100% 160s 48p | 100% 263s 102p | 100% 147s 55p | 100% 209s 84p | **100% 236s 93p** |
 | Pharaoh (Hell) | 99, good | 100% 315s 122p | 0% 900s 426p | 100% 141s 35p | 100% 207s 67p | 100% 95s 32p | 100% 562s 241p | **100% 261s 95p** |
+
+## All ten second jobs, and how far apart they lie (November 2026 review, measured; nothing retuned yet)
+
+The second-job and boss simulators held six of the ten second jobs. The Phantom, the Magic Knight, the Moon Ranger and
+the Beastmaster are in them now (`build-tools/second-sim.mjs`: the Phantom's two daggers and illusions, the Magic
+Knight's blade in the boss's weakest element, the Moon Ranger's ATK + MATK arrows by day and by night, the
+Beastmaster's Double Shots and its pack, the beasts' numbers as `main.js` `beastStats` makes them). The tiers'
+check still judges each fight by the middle of the first six, so nothing moved; the four are reported beside them.
+
+`node build-tools/second-sim.mjs` (a neutral Lv 55 boss of 300,000 HP, Base 80, Job 30, one tier of weapons at +7):
+
+```
+blademaster   153 s    1965 a second
+shadowblade   134 s    2234 a second
+windrunner    104 s    2885 a second
+hunter        116 s    2595 a second
+wizard        180 s    1669 a second
+voodoo        165 s    1822 a second
+phantom       131 s    2284 a second
+magicknight   288 s    1041 a second
+moonranger    115 s    2603 a second
+moonrangerNight   82 s    3644 a second
+beastmaster   147 s    2037 a second
+
+Shadowblade / BladeMaster 1.14 · Hunter / Windrunner 0.90 · Voodoo / Wizard 1.09
+Phantom / BladeMaster 1.16 (the rule: 1.2-1.4) · Moon Ranger / Windrunner by day 0.90 (1.05), by night 1.26 (1.2) · Magic Knight / BladeMaster 0.53 (between the BladeMaster and the Wizard) · Beastmaster / Windrunner 0.71 (about the other bow jobs)
+```
+
+Against what `docs/job-rules.md` says of them: the Phantom is a little under its 1.2-1.4x the BladeMaster; the Moon
+Ranger is under the Windrunner by day (0.9x, the rule says 1.05x) and over it by night (1.26x, the rule 1.2x); the
+Beastmaster is about the BladeMaster, 0.7x the Windrunner; and **the Magic Knight deals about half the BladeMaster's
+damage on a neutral boss** (the rule: between the BladeMaster and the Wizard). These are rotation models, and the
+Magic Knight's Stone Aegis is not counted, but that gap is too wide to be the model's.
+
+`node build-tools/mvp-sim.mjs` now prints every fight for all ten, and the spread of each:
+
+| Fight | Base, gear | blademaster | shadowblade | windrunner | hunter | wizard | voodoo | phantom | magicknight | moonranger | beastmaster | middle |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Kobold King | 75, good | 100% 292s 87p | 100% 243s 74p | 100% 348s 101p | 100% 294s 83p | 100% 291s 90p | 100% 262s 75p | 100% 251s 87p | 100% 327s 106p | 100% 335s 98p | 100% 307s 63p | **100% 291s 85p** |
+| Goblin King | 75, good | 100% 210s 73p | 100% 174s 63p | 100% 278s 88p | 100% 330s 111p | 0% 900s 383p | 100% 527s 199p | 100% 171s 68p | 100% 350s 149p | 100% 488s 179p | 100% 362s 95p | **100% 304s 100p** |
+| Fire Giant | 85, good | 100% 337s 86p | 100% 283s 76p | 100% 149s 30p | 100% 231s 54p | 0% 900s 166p | 100% 447s 125p | 100% 282s 85p | 100% 453s 124p | 100% 203s 49p | 100% 301s 42p | **100% 310s 81p** |
+| Ancient Treant | 85, good | 100% 460s 129p | 100% 396s 117p | 100% 162s 31p | 100% 217s 51p | 100% 350s 96p | 100% 277s 72p | 100% 385s 128p | 100% 484s 141p | 100% 196s 47p | 100% 161s 13p | **100% 313s 84p** |
+| Sand Wyrm | 85, good | 100% 291s 77p | 100% 241s 64p | 100% 256s 66p | 100% 293s 80p | 100% 429s 131p | 100% 342s 95p | 100% 243s 70p | 100% 364s 104p | 100% 279s 76p | 100% 525s 112p | **100% 292s 79p** |
+| Eternal Sphinx | 95, good | 100% 445s 150p | 100% 435s 170p | 100% 217s 42p | 100% 267s 73p | 100% 316s 87p | 100% 283s 78p | 100% 424s 158p | 100% 528s 185p | 100% 241s 60p | 100% 418s 78p | **100% 299s 83p** |
+| Nidhogg | 95, good | 100% 322s 123p | 0% 900s 289p | 100% 92s 26p | 100% 126s 38p | 100% 165s 63p | 0% 900s 234p | 100% 292s 138p | 0% 900s 367p | 100% 106s 30p | 100% 163s 27p | **100% 243s 93p** |
+| Poseidon | 95, good | 100% 259s 96p | 100% 226s 89p | 100% 141s 39p | 100% 181s 60p | 100% 343s 135p | 100% 209s 79p | 100% 230s 101p | 100% 360s 157p | 100% 166s 49p | 100% 173s 25p | **100% 218s 84p** |
+| Davy Jones | 99, good | 100% 439s 138p | 100% 415s 158p | 100% 199s 42p | 100% 297s 83p | 100% 226s 69p | 100% 219s 66p | 100% 458s 183p | 100% 834s 326p | 100% 219s 54p | 0% 900s 183p | **100% 261s 76p** |
+| Giant Sprout | 75, shop | 100% 222s 114p | 100% 191s 101p | 100% 138s 45p | 100% 180s 62p | 100% 247s 97p | 100% 219s 83p | 100% 173s 95p | 100% 227s 119p | 100% 158s 56p | 100% 150s 39p | **100% 205s 90p** |
+| King Crab | 75, shop | 100% 218s 97p | 100% 189s 89p | 100% 146s 40p | 100% 168s 50p | 100% 246s 82p | 100% 204s 63p | 100% 181s 89p | 100% 228s 104p | 100% 159s 48p | 100% 165s 33p | **100% 197s 73p** |
+| Giant Mushroom | 75, shop | 100% 189s 85p | 100% 597s 308p | 100% 127s 36p | 100% 144s 47p | 100% 259s 89p | 0% 900s 327p | 100% 159s 79p | 100% 344s 171p | 100% 160s 51p | 100% 144s 30p | **100% 224s 87p** |
+| Giant Beetle | 75, shop | 100% 227s 136p | 100% 191s 115p | 100% 153s 60p | 100% 161s 63p | 100% 442s 197p | 100% 188s 79p | 100% 191s 124p | 100% 231s 141p | 100% 163s 65p | 100% 171s 55p | **100% 190s 97p** |
+| Elder Willow | 75, shop | 100% 220s 104p | 100% 193s 95p | 100% 142s 44p | 100% 178s 56p | 100% 303s 108p | 100% 246s 85p | 100% 176s 88p | 100% 245s 119p | 100% 170s 55p | 100% 153s 34p | **100% 207s 90p** |
+| Alpha Wolf | 75, shop | 100% 198s 142p | 100% 200s 146p | 100% 130s 59p | 100% 151s 71p | 100% 213s 103p | 100% 189s 90p | 100% 183s 142p | 100% 217s 159p | 100% 144s 66p | 100% 147s 51p | **100% 194s 97p** |
+| Great Bear | 75, shop | 100% 238s 160p | 100% 207s 143p | 100% 169s 73p | 100% 152s 65p | 100% 188s 89p | 100% 189s 87p | 100% 219s 154p | 100% 382s 275p | 100% 176s 81p | 100% 193s 72p | **100% 188s 88p** |
+| Cactus Lord | 75, shop | 100% 220s 102p | 100% 194s 94p | 100% 156s 49p | 100% 149s 50p | 100% 263s 101p | 100% 203s 73p | 100% 194s 101p | 100% 259s 128p | 100% 179s 61p | 100% 175s 43p | **100% 198s 84p** |
+| Rainbow Runner | 75, shop | 100% 325s 207p | 100% 314s 207p | 100% 169s 65p | 100% 167s 66p | 100% 185s 78p | 100% 215s 90p | 100% 312s 211p | 100% 320s 205p | 100% 182s 74p | 100% 195s 59p | **100% 200s 84p** |
+| Kraken | 75, shop | 100% 315s 166p | 100% 307s 168p | 100% 167s 50p | 100% 142s 41p | 100% 307s 117p | 100% 193s 64p | 100% 338s 198p | 100% 371s 193p | 100% 198s 63p | 100% 201s 46p | **100% 250s 91p** |
+| Headless Knight | 75, shop | 100% 224s 109p | 100% 833s 453p | 100% 139s 47p | 100% 123s 36p | 100% 190s 69p | 100% 656s 252p | 100% 245s 136p | 100% 426s 235p | 100% 161s 54p | 100% 162s 38p | **100% 207s 89p** |
+| Ammit | 75, shop | 100% 211s 118p | 100% 730s 443p | 100% 129s 41p | 100% 114s 38p | 100% 184s 68p | 100% 627s 237p | 100% 219s 139p | 100% 377s 218p | 100% 152s 52p | 100% 154s 36p | **100% 198s 93p** |
+| Ratatoskr | 75, shop | 100% 356s 256p | 100% 391s 288p | 100% 124s 55p | 100% 127s 59p | 100% 197s 102p | 100% 188s 96p | 100% 373s 291p | 100% 363s 266p | 100% 160s 81p | 100% 162s 60p | **100% 193s 99p** |
+| Fire Giant (the story's) | 90, shop | 100% 291s 70p | 100% 246s 60p | 100% 170s 31p | 100% 213s 45p | 100% 486s 136p | 100% 231s 55p | 100% 261s 77p | 100% 311s 77p | 100% 170s 35p | 100% 224s 18p | **100% 239s 58p** |
+| BleepBloop (Hell) | 85, good | 100% 866s 383p | 100% 796s 356p | 100% 158s 44p | 100% 247s 85p | 100% 183s 63p | 100% 249s 88p | 100% 721s 355p | 0% 900s 357p | 100% 155s 49p | 100% 350s 84p | **100% 248s 87p** |
+| Kobold Warlord (Hell) | 90, good | 100% 382s 139p | 100% 356s 132p | 100% 218s 65p | 100% 228s 72p | 100% 137s 44p | 100% 144s 45p | 100% 376s 154p | 100% 297s 104p | 100% 162s 48p | 100% 241s 45p | **100% 223s 69p** |
+| Goblin Warlord (Hell) | 95, good | 100% 418s 183p | 100% 352s 155p | 100% 160s 39p | 100% 247s 84p | 100% 147s 49p | 100% 209s 75p | 100% 295s 133p | 100% 439s 217p | 100% 146s 42p | 100% 245s 44p | **100% 228s 80p** |
+| Pharaoh (Hell) | 99, good | 100% 316s 111p | 0% 900s 393p | 100% 141s 33p | 100% 225s 69p | 100% 94s 24p | 100% 561s 216p | 100% 261s 107p | 0% 900s 425p | 100% 108s 21p | 100% 212s 27p | **100% 271s 90p** |
+
+| Fight | middle of ten | loses it | hardest that wins | over 100 potions |
+|---|---|---|---|---|
+| Kobold King | 100% 293s 87p | - | windrunner: 1.2x the time, 1.2x the potions | windrunner, magicknight |
+| Goblin King | 100% 340s 103p | wizard | voodoo: 1.6x the time, 1.9x the potions | hunter, wizard, voodoo, magicknight, moonranger |
+| Fire Giant | 100% 292s 81p | wizard | magicknight: 1.6x the time, 1.5x the potions | wizard, voodoo, magicknight |
+| Ancient Treant | 100% 313s 84p | - | magicknight: 1.5x the time, 1.7x the potions | blademaster, shadowblade, phantom, magicknight |
+| Sand Wyrm | 100% 292s 79p | - | beastmaster: 1.8x the time, 1.4x the potions | wizard, magicknight, beastmaster |
+| Eternal Sphinx | 100% 367s 83p | - | magicknight: 1.4x the time, 2.2x the potions | blademaster, shadowblade, phantom, magicknight |
+| Nidhogg | 100% 229s 93p | shadowblade, voodoo, magicknight | phantom: 1.3x the time, 1.5x the potions | blademaster, shadowblade, voodoo, phantom, magicknight |
+| Poseidon | 100% 218s 84p | - | magicknight: 1.7x the time, 1.9x the potions | wizard, phantom, magicknight |
+| Davy Jones | 100% 356s 111p | beastmaster | magicknight: 2.3x the time, 3.0x the potions | blademaster, shadowblade, phantom, magicknight, beastmaster |
+| Giant Sprout | 100% 186s 89p | - | magicknight: 1.2x the time, 1.3x the potions | blademaster, shadowblade, magicknight |
+| King Crab | 100% 185s 73p | - | magicknight: 1.2x the time, 1.4x the potions | magicknight |
+| Giant Mushroom | 100% 175s 82p | voodoo | shadowblade: 3.4x the time, 3.8x the potions | shadowblade, voodoo, magicknight |
+| Giant Beetle | 100% 190s 97p | - | wizard: 2.3x the time, 2.0x the potions | blademaster, shadowblade, wizard, phantom, magicknight |
+| Elder Willow | 100% 186s 87p | - | wizard: 1.6x the time, 1.2x the potions | blademaster, wizard, magicknight |
+| Alpha Wolf | 100% 186s 97p | - | magicknight: 1.2x the time, 1.6x the potions | blademaster, shadowblade, wizard, phantom, magicknight |
+| Great Bear | 100% 191s 88p | - | magicknight: 2.0x the time, 3.1x the potions | blademaster, shadowblade, phantom, magicknight |
+| Cactus Lord | 100% 194s 84p | - | magicknight: 1.3x the time, 1.5x the potions | blademaster, wizard, phantom, magicknight |
+| Rainbow Runner | 100% 205s 84p | - | blademaster: 1.6x the time, 2.5x the potions | blademaster, shadowblade, phantom, magicknight |
+| Kraken | 100% 254s 91p | - | magicknight: 1.5x the time, 2.1x the potions | blademaster, shadowblade, wizard, phantom, magicknight |
+| Headless Knight | 100% 207s 89p | - | shadowblade: 4.0x the time, 5.1x the potions | blademaster, shadowblade, voodoo, phantom, magicknight |
+| Ammit | 100% 198s 93p | - | shadowblade: 3.7x the time, 4.8x the potions | blademaster, shadowblade, voodoo, phantom, magicknight |
+| Ratatoskr | 100% 193s 99p | - | shadowblade: 2.0x the time, 2.9x the potions | blademaster, shadowblade, wizard, phantom, magicknight |
+| Fire Giant (the story's) | 100% 239s 58p | - | wizard: 2.0x the time, 2.4x the potions | wizard |
+| BleepBloop (Hell) | 100% 299s 87p | magicknight | blademaster: 2.9x the time, 4.4x the potions | blademaster, shadowblade, phantom, magicknight |
+| Kobold Warlord (Hell) | 100% 235s 69p | - | phantom: 1.6x the time, 2.2x the potions | blademaster, shadowblade, phantom, magicknight |
+| Goblin Warlord (Hell) | 100% 246s 80p | - | magicknight: 1.8x the time, 2.7x the potions | blademaster, shadowblade, phantom, magicknight |
+| Pharaoh (Hell) | 100% 243s 88p | shadowblade, magicknight | voodoo: 2.3x the time, 2.5x the potions | blademaster, shadowblade, voodoo, phantom, magicknight |
+
+10 matchups lost outright; 21 of 27 fights have a winning job past 1.6x the middle. The melee jobs pay most: the BladeMaster drinks over 100 White Potions in 19 of the 27 fights, the Magic
+Knight in 26. The Beastmaster is the cheapest on potions nearly everywhere (its beasts take the blows), and cannot
+win Davy Jones at all: its beasts' blows are Neutral, and a Ghost takes nothing from them.
+
+### In gear a hero can have before any MVP has fallen
+
+The tiers assume "the best gear short of MVP gear: a Lv 4 weapon at +7". That weapon is the Giant Sword, forged from
+the Fire Giant's own horn; 34 of the 42 Lv 4 weapons come from MVPs (dropped, or made from what they drop), and +5 to
++7 on a Lv 4 weapon holds 9.6% of the time (60% x 40% x 40%), the weapon lost on a failure. `--reach` runs the MVP and
+Hell fights in a Lv 3 weapon from the dungeons at its safe +5 instead (the Warden's Greatsword, the Dark Elven Bow,
+the Dryad Staff; the same armor at +4):
+
+| Fight | Base, gear | blademaster | shadowblade | windrunner | hunter | wizard | voodoo | phantom | magicknight | moonranger | beastmaster | middle |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Kobold King | 75, reach | 100% 314s 94p | 100% 266s 85p | 100% 389s 113p | 100% 302s 88p | 100% 329s 105p | 100% 297s 88p | 100% 266s 96p | 100% 345s 111p | 100% 355s 108p | 100% 318s 64p | **100% 308s 91p** |
+| Goblin King | 75, reach | 100% 229s 84p | 100% 175s 63p | 100% 348s 115p | 100% 330s 112p | 0% 900s 372p | 100% 703s 283p | 100% 189s 78p | 100% 370s 160p | 100% 617s 243p | 100% 369s 95p | **100% 339s 114p** |
+| Fire Giant | 85, reach | 100% 360s 91p | 100% 312s 83p | 100% 164s 35p | 100% 239s 58p | 0% 900s 159p | 100% 505s 143p | 100% 297s 92p | 100% 481s 133p | 100% 222s 52p | 100% 314s 47p | **100% 336s 87p** |
+| Ancient Treant | 85, reach | 100% 495s 141p | 100% 406s 115p | 100% 186s 38p | 100% 228s 54p | 100% 399s 112p | 100% 317s 80p | 100% 396s 128p | 100% 505s 147p | 100% 207s 49p | 100% 163s 13p | **100% 358s 96p** |
+| Sand Wyrm | 85, reach | 100% 326s 90p | 100% 242s 62p | 100% 293s 79p | 100% 306s 81p | 100% 513s 162p | 100% 392s 115p | 100% 244s 71p | 100% 390s 115p | 100% 326s 93p | 100% 526s 113p | **100% 316s 86p** |
+| Eternal Sphinx | 95, reach | 100% 488s 167p | 100% 497s 193p | 100% 264s 62p | 100% 277s 72p | 100% 353s 103p | 100% 343s 113p | 100% 457s 181p | 100% 547s 191p | 100% 260s 63p | 100% 451s 87p | **100% 348s 108p** |
+| Nidhogg | 95, reach | 100% 351s 133p | 0% 900s 285p | 100% 107s 29p | 100% 126s 39p | 100% 191s 76p | 0% 900s 219p | 100% 323s 148p | 0% 900s 355p | 100% 118s 38p | 100% 172s 30p | **100% 271s 105p** |
+| Poseidon | 95, reach | 100% 279s 113p | 100% 258s 104p | 100% 164s 48p | 100% 183s 62p | 100% 390s 156p | 100% 240s 90p | 100% 246s 110p | 100% 380s 167p | 100% 187s 66p | 100% 183s 26p | **100% 249s 97p** |
+| Davy Jones | 99, reach | 100% 450s 147p | 100% 449s 167p | 100% 228s 55p | 100% 307s 86p | 100% 270s 81p | 100% 248s 76p | 100% 492s 196p | 100% 880s 357p | 100% 242s 66p | 0% 900s 180p | **100% 288s 84p** |
+| BleepBloop (Hell) | 85, reach | 0% 900s 403p | 0% 900s 406p | 100% 175s 51p | 100% 276s 93p | 100% 227s 81p | 100% 330s 124p | 100% 783s 387p | 0% 900s 345p | 100% 175s 55p | 100% 370s 91p | **100% 303s 109p** |
+| Kobold Warlord (Hell) | 90, reach | 100% 403s 148p | 100% 418s 160p | 100% 244s 77p | 100% 244s 77p | 100% 160s 51p | 100% 161s 51p | 100% 396s 166p | 100% 304s 108p | 100% 172s 53p | 100% 248s 45p | **100% 244s 77p** |
+| Goblin Warlord (Hell) | 95, reach | 100% 493s 233p | 100% 367s 161p | 100% 189s 52p | 100% 283s 101p | 100% 193s 73p | 100% 280s 121p | 100% 335s 155p | 100% 474s 241p | 100% 175s 55p | 100% 264s 52p | **100% 281s 111p** |
+| Pharaoh (Hell) | 99, reach | 100% 366s 143p | 0% 900s 366p | 100% 165s 42p | 100% 228s 70p | 100% 114s 34p | 100% 720s 283p | 100% 297s 126p | 0% 900s 428p | 100% 123s 30p | 100% 227s 26p | **100% 297s 107p** |
+
+The middle fight is 6-23% longer and takes 6-31 more potions: six of the thirteen middles pass the 100-potion bar,
+and the BladeMaster and the Shadowblade no longer win Hell's BleepBloop.
+
+## The economy at each level (`node build-tools/econ-sim.mjs`, November 2026 review)
+
+A same-level reference hero (the fights of `build-tools/sim.mjs`; from Base 55 a second job, its fights a third as
+long) against every monster that lives on a map: what a kill sells for at the shops (the steady drops; a card or a
+rare piece is a windfall, beside it), what the fight costs, and the perz an hour two ways: **drinking** every HP lost
+straight back (the potion of that level: Red to Base 19, Orange to 49, White from 50), or **resting** it off for free
+(HP comes back by itself, and sitting gives 5% of Max HP every 3 s).
+
+| Monster | Lv | Blader: fight | HP lost | A kill pays | (windfall) | Potions to mend it | Perz an hour, drinking | Perz an hour, resting | Best job, resting |
+|---|---|---|---|---|---|---|---|---|---|
+| Bloop | 1 | 1 s | 0 (0%) | 18 | 10 | 0 perz of Red | 12,903 | 12,903 | archer 16,380 |
+| Sprout | 3 | 2 s | 0 (0%) | 20 | 10 | 0 perz of Red | 11,453 | 11,453 | archer 17,595 |
+| Blue Bloop | 4 | 3 s | 4 (6%) | 26 | 8 | 3 perz of Red | 11,392 | 10,575 | archer 22,950 |
+| Crab | 6 | 6 s | 16 (19%) | 46 | 9 | 13 perz of Red | 11,352 | 10,004 | archer 26,013 |
+| Yellow Bloop | 7 | 5 s | 10 (10%) | 24 | 0 | 7 perz of Red | 6,358 | 6,707 | archer 13,742 |
+| Willow | 8 | 6 s | 11 (10%) | 35 | 6 | 8 perz of Red | 9,479 | 9,297 | archer 17,183 |
+| Red Bloop | 9 | 9 s | 13 (11%) | 29 | 0 | 8 perz of Red | 5,905 | 6,770 | archer 11,654 |
+| Wisp | 11 | 13 s | 118 (79%) | 37 | 12 | 101 perz of Red | -13,915 | 2,782 | archer 6,996 |
+| Giant Ant | 12 | 13 s | 70 (42%) | 33 | 2 | 58 perz of Red | -5,339 | 3,646 | archer 11,199 |
+| Mushroom | 14 | 22 s | 149 (74%) | 53 | 9 | 125 perz of Red | -9,971 | 3,385 | archer 9,629 |
+| Red Sprout | 18 | 5 s | 84 (30%) | 32 | 9 | 73 perz of Red | -16,066 | 5,198 | assassin 9,786 |
+| Mudskipper | 22 | 3 s | 74 (20%) | 43 | 10 | 104 perz of Orange | -30,693 | 9,321 | assassin 12,595 |
+| Treant | 24 | 5 s | 99 (23%) | 43 | 7 | 136 perz of Orange | -36,454 | 7,845 | blader 7,845 |
+| Blue Crab | 26 | 3 s | 106 (22%) | 67 | 10 | 148 perz of Orange | -41,061 | 14,129 | archer 39,186 |
+| Kobold | 28 | 4 s | 133 (24%) | 85 | 47 | 186 perz of Orange | -44,638 | 15,585 | archer 21,760 |
+| Beetle | 30 | 5 s | 205 (33%) | 73 | 39 | 287 perz of Orange | -83,970 | 10,727 | archer 12,823 |
+| Kobold Archer | 30 | 3 s | 66 (11%) | 99 | 60 | 90 perz of Orange | 4,800 | 30,054 | archer 58,580 |
+| Kobold Assassin | 33 | 4 s | 253 (34%) | 138 | 50 | 357 perz of Orange | -97,459 | 20,152 | archer 81,635 |
+| Dark Mushroom | 34 | 5 s | 247 (31%) | 103 | 31 | 347 perz of Orange | -96,201 | 15,158 | archer 25,940 |
+| Dark Wisp | 38 | 5 s | 318 (32%) | 89 | 71 | 447 perz of Orange | -142,339 | 13,037 | archer 24,706 |
+| Goblin | 38 | 5 s | 255 (25%) | 145 | 72 | 356 perz of Orange | -83,925 | 24,397 | archer 33,382 |
+| Goblin Archer | 41 | 4 s | 150 (13%) | 135 | 74 | 206 perz of Orange | -32,245 | 34,188 | assassin 41,433 |
+| Fire Beetle | 42 | 7 s | 379 (30%) | 145 | 49 | 529 perz of Orange | -125,281 | 19,942 | archer 23,253 |
+| Goblin Assassin | 44 | 6 s | 451 (33%) | 188 | 104 | 632 perz of Orange | -160,020 | 25,582 | archer 55,458 |
+| Fire Wisp | 45 | 7 s | 490 (34%) | 111 | 64 | 685 perz of Orange | -188,314 | 14,211 | archer 21,766 |
+| Snake | 46 | 6 s | 443 (30%) | 138 | 35 | 621 perz of Orange | -174,602 | 19,969 | archer 37,259 |
+| Root Squirrel | 46 | 8 s | 526 (35%) | 112 | 41 | 735 perz of Orange | -187,544 | 13,675 | archer 21,749 |
+| Wolf | 48 | 8 s | 653 (40%) | 200 | 34 | 916 perz of Orange | -215,697 | 22,306 | archer 39,379 |
+| Bramble | 51 | 7 s | 466 (26%) | 142 | 42 | 1,204 perz of White | -350,173 | 21,788 | assassin 28,217 |
+| Bear | 53 | 9 s | 645 (33%) | 212 | 46 | 1,671 perz of White | -410,366 | 26,172 | assassin 31,759 |
+| Cactus | 55 | 3 s | 150 (7%) | 184 | 37 | 385 perz of White | -109,905 | 65,278 | assassin 77,159 |
+| Root Serpent | 55 | 3 s | 285 (14%) | 159 | 49 | 741 perz of White | -289,808 | 40,650 | sorcerer 58,307 |
+| Dune Worm | 58 | 3 s | 280 (12%) | 211 | 39 | 729 perz of White | -269,981 | 58,987 | archer 66,426 |
+| Moss Golem | 58 | 4 s | 216 (9%) | 351 | 52 | 552 perz of White | -95,720 | 104,653 | assassin 118,123 |
+| Dark Elf | 60 | 3 s | 265 (11%) | 236 | 63 | 683 perz of White | -223,158 | 68,201 | archer 99,017 |
+| Sand Scorpion | 61 | 3 s | 289 (11%) | 226 | 42 | 747 perz of White | -260,329 | 63,571 | sorcerer 83,061 |
+| Soldier Ant | 62 | 3 s | 293 (11%) | 77 | 39 | 758 perz of White | -340,570 | 21,859 | sorcerer 28,646 |
+| Great Stag | 63 | 4 s | 454 (16%) | 289 | 54 | 1,181 perz of White | -394,640 | 63,272 | archer 77,944 |
+| Sand Runner | 64 | 4 s | 541 (19%) | 236 | 39 | 1,408 perz of White | -498,387 | 47,552 | archer 69,124 |
+| Quill Porcupine | 65 | 4 s | 359 (12%) | 189 | 26 | 925 perz of White | -325,489 | 47,702 | archer 71,695 |
+| Tusk Boar | 66 | 4 s | 424 (14%) | 202 | 26 | 1,099 perz of White | -414,270 | 49,061 | assassin 56,783 |
+| Scarab | 66 | 4 s | 364 (12%) | 112 | 41 | 939 perz of White | -381,608 | 29,336 | sorcerer 34,538 |
+| Dryad | 66 | 3 s | 220 (7%) | 314 | 52 | 565 perz of White | -138,455 | 111,633 | archer 123,668 |
+| Rot Beetle | 68 | 3 s | 265 (8%) | 401 | 57 | 682 perz of White | -147,362 | 132,007 | assassin 149,034 |
+| Cliff Bandit | 69 | 4 s | 332 (10%) | 239 | 27 | 850 perz of White | -282,818 | 67,720 | assassin 76,527 |
+| Blade Mantis | 71 | 4 s | 591 (17%) | 244 | 27 | 1,540 perz of White | -576,677 | 53,005 | archer 78,460 |
+| Cobra | 71 | 4 s | 546 (15%) | 142 | 48 | 1,419 perz of White | -568,253 | 32,182 | sorcerer 54,632 |
+| Root Warden | 72 | 3 s | 343 (9%) | 426 | 65 | 882 perz of White | -220,205 | 126,210 | sorcerer 163,590 |
+| Chest Mimic | 73 | 4 s | 473 (13%) | 259 | 27 | 1,217 perz of White | -411,358 | 63,624 | assassin 79,480 |
+| Glass Jelly | 74 | 3 s | 257 (7%) | 264 | 27 | 656 perz of White | -207,312 | 93,920 | assassin 105,207 |
+| Merrow | 75 | 3 s | 297 (7%) | 277 | 28 | 757 perz of White | -243,168 | 91,951 | archer 107,305 |
+| Mummy | 75 | 3 s | 370 (9%) | 259 | 46 | 951 perz of White | -335,646 | 76,993 | assassin 94,625 |
+| Thorn Drake | 75 | 4 s | 420 (11%) | 506 | 58 | 1,081 perz of White | -267,805 | 139,588 | assassin 154,446 |
+| Gale Moth | 77 | 5 s | 673 (16%) | 289 | 28 | 1,745 perz of White | -606,742 | 62,059 | archer 88,774 |
+| Lamia | 78 | 3 s | 312 (7%) | 211 | 51 | 796 perz of White | -296,741 | 70,890 | archer 83,963 |
+| Living Armor | 79 | 4 s | 451 (10%) | 314 | 28 | 1,157 perz of White | -378,480 | 86,081 | assassin 101,395 |
+| Pharaoh's Servant | 80 | 3 s | 262 (6%) | 236 | 52 | 667 perz of White | -229,064 | 88,089 | assassin 95,328 |
+| Moss Troll | 81 | 5 s | 468 (10%) | 352 | 28 | 1,190 perz of White | -350,608 | 93,171 | assassin 103,157 |
+| Owlbear | 83 | 6 s | 829 (17%) | 377 | 29 | 2,144 perz of White | -669,410 | 75,279 | archer 108,016 |
+| Sphinx Cub | 83 | 6 s | 1,058 (21%) | 392 | 49 | 2,753 perz of White | -866,423 | 68,046 | sorcerer 112,009 |
+| Moor Witch | 84 | 4 s | 431 (8%) | 402 | 29 | 1,101 perz of White | -328,125 | 121,029 | assassin 136,113 |
+| Conch | 85 | 4 s | 435 (8%) | 467 | 28 | 1,107 perz of White | -289,866 | 138,324 | assassin 158,953 |
+| Puffer Fish | 86 | 3 s | 421 (8%) | 479 | 29 | 1,076 perz of White | -292,681 | 152,295 | assassin 189,060 |
+| Fire Salamander | 86 | 3 s | 520 (10%) | 439 | 29 | 1,348 perz of White | -464,621 | 131,382 | assassin 145,654 |
+| Sand Elemental | 86 | 3 s | 438 (8%) | 417 | 57 | 1,122 perz of White | -345,678 | 130,489 | assassin 145,773 |
+| Zombie | 88 | 4 s | 442 (8%) | 506 | 29 | 1,124 perz of White | -280,645 | 152,881 | assassin 186,102 |
+| Sarcophagus | 88 | 4 s | 514 (9%) | 506 | 78 | 1,312 perz of White | -352,713 | 141,378 | assassin 169,868 |
+| Pirate Skeleton | 89 | 4 s | 664 (12%) | 517 | 30 | 1,711 perz of White | -522,613 | 131,765 | assassin 159,515 |
+| Blowgun Pirate | 90 | 4 s | 505 (8%) | 517 | 30 | 1,287 perz of White | -349,898 | 152,655 | assassin 179,595 |
+| Octopus | 92 | 4 s | 573 (9%) | 542 | 31 | 1,458 perz of White | -400,743 | 153,614 | assassin 186,182 |
+| Jackal Guardian | 92 | 5 s | 715 (11%) | 289 | 64 | 1,828 perz of White | -627,321 | 72,073 | assassin 83,469 |
+| Ghost | 93 | 2 s | 379 (6%) | 567 | 31 | 968 perz of White | -225,451 | 219,706 | archer 278,313 |
+| Skeleton Assassin | 95 | 8 s | 1,600 (22%) | 592 | 32 | 4,128 perz of White | -1,074,609 | 91,544 | archer 165,159 |
+| Falcon Sentinel | 97 | 6 s | 887 (12%) | 314 | 66 | 2,245 perz of White | -692,648 | 71,277 | archer 94,339 |
+| Hydra | 98 | 5 s | 692 (9%) | 656 | 32 | 1,747 perz of White | -445,230 | 178,487 | assassin 214,512 |
+
+67 of 75 monsters cost a Blader more in potions than they pay (drinking back every HP lost): Wisp, Giant Ant, Mushroom, Red Sprout, Mudskipper, Treant, Blue Crab, Kobold, Beetle, Kobold Assassin, Dark Mushroom, Dark Wisp, Goblin, Goblin Archer, Fire Beetle, Goblin Assassin, Fire Wisp, Snake, Root Squirrel, Wolf, Bramble, Bear, Cactus, Root Serpent, Dune Worm, Moss Golem, Dark Elf, Sand Scorpion, Soldier Ant, Great Stag, Sand Runner, Quill Porcupine, Tusk Boar, Scarab, Dryad, Rot Beetle, Cliff Bandit, Blade Mantis, Cobra, Root Warden, Chest Mimic, Glass Jelly, Merrow, Mummy, Thorn Drake, Gale Moth, Lamia, Living Armor, Pharaoh's Servant, Moss Troll, Owlbear, Sphinx Cub, Moor Witch, Conch, Puffer Fish, Fire Salamander, Sand Elemental, Zombie, Sarcophagus, Pirate Skeleton, Blowgun Pirate, Octopus, Jackal Guardian, Ghost, Skeleton Assassin, Falcon Sentinel, Hydra
+Paying under 60% of the monsters near its level: Treant (43), Soldier Ant (77), Scarab (112), Cobra (142), Jackal Guardian (289), Falcon Sentinel (314)
+
+What it says: resting, a hero earns about 3,000-15,000 perz an hour to Base 45, 50,000-150,000 from Base 55. Drinking
+to keep going loses perz from Lv 11 on: a potion heals a flat amount (a White Potion 175-235 HP for 550 perz) while
+a kill at Base 80 sells for about 300 perz and costs 300-600 HP. Potions are for bosses and emergencies, and one MVP
+attempt (about 85 White Potions, 47,000 perz) is twenty minutes to an hour of field income at its tier. The monsters
+that pay far less than those beside them are the Treant, the Soldier Ant and four of the Sphinx's Halls' monsters.
+
+## The story's stands and fires at the hero's level (November 2026 review)
+
+The late stands called their map's own monsters as heralds: Ember Hill's Lv 30 Beetles and Lv 11 Wisps against a Base
+72 hero in Chapter 12, Lv 42-45 ones against Base 88 in Chapter 19, the Old Forest's Lv 24 Treants at Base 60. They
+died to one blow and only the Meteor Rain could hurt. A step's `heraldLv` now grows each herald to the stand's level
+(`mobs.js` `heraldDef`: HP by level^1.66 and ATK by level^1.2, as the dungeons' monsters grow; then a lesser one, half
+the HP, and a swarm one, its ATK at 0.35 of a guard's, for they come up to six or seven at once), never above the
+hero's own level: Chapter 10's stand at 60, Chapter 11's at 66, Chapter 12's at 70, Chapter 19's at 86. The two
+hunts on Ember Hill (Chapters 12 and 18: 25 and 30 of those same Beetles and Wisps) are four fires each now, every
+fire fed by four or five heralds of the step's level (`kind: 'fires'`, `stands.js` `tickStoryFires`).
+
+Played in the built game with `build-tools/stand-bot.cjs` (a BladeMaster in shop gear, an Iron Sword and Chain Mail,
+who fights the heralds, steps out of the danger marks it sees and drinks a White Potion below half HP):
+
+| Stand | Hero | Held | White Potions | Of them for the heralds' blows | For the falling fire |
+|---|---|---|---|---|---|
+| Chapter 10, The Forest's Heart (60 s) | Base 62 | yes | 0 | (1,700 HP, healed by itself) | - |
+| Chapter 11, The Rune-Spring (60 s) | Base 68 | yes | 2 | 2 | - |
+| Chapter 12, The Last Fire-Ring (120 s) | Base 72 | yes | 72 | about 15 | about 57 (20 circles of 12% of Max HP) |
+| Chapter 19, The Ring of Binding (120 s) | Base 88 | yes | 145 | about 50 | about 95 (19 circles of 14%) |
+
+(The first two rows were played with the swarm factor at 0.5; the last two at 0.35.) The heralds are a real fight
+now and still the smaller part of a climax: the Meteor Rain is what costs, and the bot is clumsy with it (it is hit by
+about four circles in ten; a player who keeps moving takes fewer). The bot also showed that the Fire Giant, wandering
+into the circle, breaks the song when a sweeping skill touches him.
+

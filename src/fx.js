@@ -255,8 +255,12 @@ export class FX {
     const s = this.sprite(tex, { depthTest: false, renderOrder: 6 });
     const h = 0.36 * (look[1] / 30);
     s.scale.set(h * c.width / c.height, h, 1);
+    // several at once on one spot (a boss's blow, a status word, a potion): each new one starts a step higher, so
+    // they read as a column and not a smudge
+    const crowd = Math.min(4, this.live.filter((o) => o.kind === 'number' && o.t < 0.35 && Math.abs(o.x0 - x) < 0.7 && Math.abs(o.z0 - z) < 0.7).length);
+    y += crowd * 0.3;
     s.position.set(x + (Math.random() - 0.5) * 0.3, y, z);
-    this.live.push({ s, t: 0, life: { level: 1.6, job: 1.6, skill: 1.1, mvp: 4 }[kind] || 0.95, kind: 'number', tex, y0: y, pop: kind === 'crit', follow });
+    this.live.push({ s, t: 0, life: { level: 1.6, job: 1.6, skill: 1.1, mvp: 4 }[kind] || 0.95, kind: 'number', tex, y0: y, x0: x, z0: z, pop: kind === 'crit', follow });
   }
 
   // tapped tile: a square that fades on the ground, like Ragnarok's cell cursor

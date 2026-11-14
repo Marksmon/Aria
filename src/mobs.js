@@ -101,7 +101,7 @@ export const MOB_DEFS = {
   // 46-56): snakes, wolves and bears attack on sight; snakes and wolves dart in and bite twice now and
   // then (the packs are quick), bears are slow, heavy and hard.
   willow: { name: 'Willow', ai: 'puffer', art: 'willow', el: 'earth', lv: 8, hp: 200, atk: [9, 12], def: 2, vit: 7, agi: 6, dex: 13, mdef: 10, exp: [26, 18], tjob: 36, adelay: 1700, passive: true, walk: 200, aggro: 4.5, chase: 7, reach: 1.0, puff: 'Willow seeds fill the air! You feel sluggish', w: 0.85, r: 0.4, drops: [['willow_twig', 1, 1, 0.55], ['leaf', 1, 2, 0.6], ['herb', 1, 1, 0.25], ['potion', 1, 1, 0.08], ['willow_staff', 1, 1, 0.002], ['willow_n_card', 1, 1, 0.001]] },
-  treant: { name: 'Treant', ai: 'tank', art: 'treant', el: 'earth', lv: 24, hp: 1500, atk: [62, 78], def: 16, vit: 26, agi: 14, dex: 40, mdef: 10, exp: [160, 112], adelay: 1800, passive: true, walk: 250, aggro: 4.5, chase: 8, reach: 1.1, w: 1.7, r: 0.65, heavy: true, drops: [['old_bark', 1, 1, 0.5], ['leaf', 1, 2, 0.5], ['potion2', 1, 1, 0.05], ['treant_shield', 1, 1, 0.002], ['bark_card', 1, 1, 0.001]] },
+  treant: { name: 'Treant', ai: 'tank', art: 'treant', el: 'earth', lv: 24, hp: 1500, atk: [62, 78], def: 16, vit: 26, agi: 14, dex: 40, mdef: 10, exp: [160, 112], adelay: 1800, passive: true, walk: 250, aggro: 4.5, chase: 8, reach: 1.1, w: 1.7, r: 0.65, heavy: true, drops: [['old_bark', 1, 2, 0.7], ['leaf', 1, 2, 0.5], ['potion2', 1, 1, 0.05], ['treant_shield', 1, 1, 0.002], ['bark_card', 1, 1, 0.001]] },
   snake: { name: 'Snake', ai: 'assassin', art: 'snake', el: 'earth', lv: 46, hp: 2600, atk: [164, 205], def: 10, vit: 30, agi: 44, dex: 72, exp: [930, 650], adelay: 1400, walk: 200, aggro: 5, chase: 8, reach: 0.8, double: 0.2, w: 0.95, r: 0.36, drops: [['snake_skin', 1, 1, 0.5], ['herb', 1, 1, 0.2], ['potion2', 1, 1, 0.08], ['snake_boots', 1, 1, 0.0025], ['snake_card', 1, 1, 0.001]] },
   wolf: { name: 'Wolf', ai: 'assassin', art: 'wolf', el: 'earth', lv: 48, hp: 2800, atk: [168, 210], def: 10, vit: 32, agi: 52, dex: 76, exp: [1050, 735], adelay: 1200, walk: 150, aggro: 6, chase: 10, reach: 0.85, double: 0.2, w: 0.8, r: 0.36, drops: [['wolf_pelt', 1, 1, 0.5], ['wolf_fang', 1, 1, 0.12], ['potion3', 1, 1, 0.03], ['wolf_cape', 1, 1, 0.002], ['wolf_card', 1, 1, 0.001]] },
   bear: { name: 'Bear', ai: 'tank', art: 'bear', el: 'neutral', lv: 53, hp: 4300, atk: [185, 232], def: 24, vit: 52, agi: 34, dex: 70, exp: [1420, 995], adelay: 1500, walk: 155, aggro: 5, chase: 9, reach: 1.0, w: 1.35, r: 0.55, heavy: true, drops: [['bear_claw', 1, 1, 0.5], ['honey', 1, 1, 0.15], ['potion3', 1, 1, 0.05], ['bear_hide', 1, 1, 0.0015], ['bear_n_card', 1, 1, 0.001], ['bear_paws', 1, 1, 0.0015]] },
@@ -133,7 +133,7 @@ export const MOB_DEFS = {
   duneWorm: { name: 'Dune Worm', ai: 'assassin', art: 'duneWorm', el: 'earth', lv: 58, hp: 4600, atk: [205, 255], def: 18, vit: 46, agi: 46, dex: 82, exp: [1700, 1190], adelay: 1300, walk: 200, aggro: 5.5, chase: 9, reach: 0.9, double: 0.15, w: 1.2, r: 0.45, drops: [['worm_hide', 1, 1, 0.5], ['potion3', 1, 1, 0.05], ['wormhide_boots', 1, 1, 0.002], ['duneworm_card', 1, 1, 0.001]] },
   scorpion: { name: 'Sand Scorpion', ai: 'tank', art: 'scorpion', el: 'earth', lv: 61, hp: 4800, atk: [215, 270], def: 26, vit: 52, agi: 40, dex: 84, exp: [1850, 1300], adelay: 1400, walk: 200, aggro: 5.5, chase: 9, reach: 0.9, poison: 0.15, w: 1.1, r: 0.45, heavy: true, drops: [['scorpion_tail', 1, 1, 0.5], ['potion3', 1, 1, 0.05], ['stinger', 1, 1, 0.0025], ['scorpion_card', 1, 1, 0.001]] },
   runner: { name: 'Sand Runner', ai: 'assassin', art: 'runner', el: 'wind', lv: 64, hp: 5200, atk: [230, 290], def: 16, vit: 48, agi: 62, dex: 90, exp: [2100, 1470], adelay: 1200, passive: true, walk: 120, aggro: 6, chase: 10, reach: 0.95, double: 0.2, w: 1.15, r: 0.45, drops: [['runner_feather', 1, 1, 0.5], ['potion3', 1, 1, 0.05], ['runner_boots', 1, 1, 0.002], ['runner_card', 1, 1, 0.001]] },
-  soldierAnt: { name: 'Soldier Ant', ai: 'tank', art: 'soldierAnt', el: 'earth', lv: 62, hp: 5000, atk: [220, 275], def: 30, vit: 56, agi: 34, dex: 80, exp: [1950, 1365], adelay: 1400, walk: 200, aggro: 5.5, chase: 9, reach: 0.9, w: 1.15, r: 0.45, heavy: true, drops: [['ant_jaw', 1, 2, 0.6], ['potion3', 1, 1, 0.05], ['chitin_shield', 1, 1, 0.002], ['soldierant_card', 1, 1, 0.001]] },
+  soldierAnt: { name: 'Soldier Ant', ai: 'tank', art: 'soldierAnt', el: 'earth', lv: 62, hp: 5000, atk: [220, 275], def: 30, vit: 56, agi: 34, dex: 80, exp: [1950, 1365], adelay: 1400, walk: 200, aggro: 5.5, chase: 9, reach: 0.9, w: 1.15, r: 0.45, heavy: true, drops: [['ant_jaw', 2, 4, 1], ['potion3', 1, 1, 0.05], ['chitin_shield', 1, 1, 0.002], ['soldierant_card', 1, 1, 0.001]] },
   // the desert's mini-bosses: the Cactus Lord of Cactus Dunes (a storm of needles, a thorny rush) and
   // the Rainbow Runner of Scorpion Sands (a dash and a flying kick)
   cactusLord: { name: 'Cactus Lord', ai: 'boss', art: 'cactusLord', aura: '#b8f060', el: 'earth', boss: true, lv: 60, hp: 295000, atk: [105, 135], def: 24, vit: 55, agi: 34, dex: 145, mdef: 20, exp: [52000, 36400], adelay: 1900, fierce: true, walk: 300, moves: [{ kind: 'meteors', name: 'Needle Storm', mult: 1.3, r: 1.4, color: '#9ad050', cd: 16 }, { kind: 'charge', name: 'Thorn Rush', mult: 1.6 }], aggro: 5.5, chase: 12, reach: 1.5, w: 2.0, r: 0.8, heavy: true, summon: ['cactus', 'cactus'], summonText: 'The Cactus Lord rattles its spines, and Cacti hop out of the sand!', respawn: 540, drops: [['cactus_heart', 1, 1, 0.3], ['cactus_needle', 3, 5, 1], ['potion3', 1, 2, 0.5], ['thorn_coat', 1, 1, 0.03], ['cactus_spine', 1, 1, 0.02], ['cactuslord_card', 1, 1, 0.01]] },
@@ -351,7 +351,7 @@ MOB_DEFS.kingShadow = { ...MOB_DEFS.goblinKing, decoy: true, mvp: false, ai: 'ta
 // (about Base 90 in the gear a story hero has: build-tools/mvp-sim.mjs STORY). Not the MVP: no respawn timer, no
 // drops (the story pays), no album page; it fights any hero (storyBoss), and is there whenever the story is
 MOB_DEFS.jarlBound = { ...MOB_DEFS.jarl, mvp: false, boss: true, fierce: true, storyBoss: true, noRespawn: true, lv: 90, hp: 520000, atk: [56, 74], def: 26, dex: 190, mdef: 15,
-  exp: [0, 0], drops: [], mvpDrops: null, respawn: undefined, aggro: 30, chase: 99, wake: null, takes: { ranged: 1.2, magic: 0.85, beast: 0.9 }, takesText: 'the bindings dull his fire: spells reach him (−15%), and he is a huge target for arrows (+20%)', takes: { ranged: 1.2, magic: 0.85, beast: 0.9 }, takesText: 'the bindings dull his fire: spells reach him (−15%), and he is a huge target for arrows (+20%)',
+  exp: [0, 0], drops: [], mvpDrops: null, respawn: undefined, aggro: 30, chase: 99, wake: null, takes: { ranged: 1.2, beast: 0.9 }, takesText: 'the bindings dull his fire: spells reach him in full, and he is a huge target for arrows (+20%)', // (spells in full, November 2026: the one fight no hero can skip is no job's wall)
   moves: [{ kind: 'meteors', name: 'Meteor Rain', mult: 1.8, r: 1.5 }, { kind: 'throw', name: 'Fireball', mult: 2.0, r: 2.0 }, { kind: 'leap', name: 'Leap', mult: 1.8, r: 2.2 }, { kind: 'surge', name: 'Fire Wave', mult: 2.0 }, { kind: 'frenzy' }],
   summonText: 'The Fire Giant roars, and his last heralds crawl up out of the Crater\'s walls!' };
 // Poseidon's Oceanic Prison: a cage of water round the hero it caught (MOVES.prison, bossmoves.js), there until broken
@@ -524,7 +524,7 @@ const STATUS_COL = Object.fromEntries(Object.entries({ bark: '#c8a05a', bark2: '
 const SUMMON_AT = 0.6, SUMMON_CD = 120;
 // fierce: an MVP, or a boss made as hard as one (the Hell raid's boss: FIERCE)
 export const fierce = (d) => !!(d.mvp || d.fierce);
-const callMarks = (d) => (fierce(d) ? MVP_CALLS : [SUMMON_AT]);
+export const callMarks = (d) => (fierce(d) ? MVP_CALLS : [SUMMON_AT]);
 const summonCd = (d) => d.summonCd ?? (fierce(d) ? MVP_SUMMON_CD : SUMMON_CD);
 // a boss's guards are lesser servants of their kind: half the HP, 60% of the ATK (tuned with
 // build-tools/sim.mjs, so the fight is the boss and not two full-strength monsters at once)
@@ -539,6 +539,25 @@ export const pityChance = (base, misses = 0) => Math.min(base * PITY.cap, base *
 const guardDefs = {};
 const lesser = (d) => ({ ...d, hp: Math.round(d.hp * GUARD.hp), atk: d.atk.map((a) => Math.round(a * GUARD.atk)) });
 export const guardDef = (type) => (guardDefs[type] ||= lesser(MOB_DEFS[type]));
+// A story stand's herald at the stand's own level (stands.js, a step's heraldLv; November 2026): the late stands
+// called Ember Hill's Lv 30 Beetles and Lv 11 Wisps against a Base 72 hero, so only the Meteor Rain could hurt.
+// The kind's own monster, grown to that level along the curve Aria's monsters follow (docs/balance.md: HP about
+// level^1.66, ATK ^1.2; its hide and reflexes those of a field monster of that level, as raidDef has them), then
+// a lesser one like every herald. It pays half that level's EXP (it has half the HP). Never weaker than its kind.
+// Heralds come six at a time, so each hits about a third as hard as a guard would (SWARM, as a raid's waves are a swarm
+// of weaker ones): played in the built game, a Base 72 BladeMaster in shop gear holds Chapter 12's stand on a bag of
+// White Potions, most of them for the Meteor Rain (docs/balance.md)
+const heraldDefs = {}, SWARM = 0.35;
+export function heraldDef(type, lv) {
+  const d = MOB_DEFS[type];
+  if (!lv || lv <= d.lv) return guardDef(type);
+  return (heraldDefs[`${type}@${lv}`] ||= (() => {
+    const k = lv / d.lv, exp = 0.0122 * lv ** 3 * GUARD.hp;
+    return lesser({ ...d, lv, passive: false, drops: [], hp: Math.round(d.hp * k ** 1.66), atk: d.atk.map((a) => Math.round(a * k ** 1.2 * SWARM)),
+      def: Math.max(d.def, Math.round(0.4 * lv)), vit: Math.max(d.vit, Math.round(0.8 * lv)), agi: Math.max(d.agi, Math.round(0.6 * lv)), dex: Math.max(d.dex, Math.round(1.5 * lv)),
+      exp: [Math.round(exp), Math.round(exp * 0.7)] });
+  })());
+}
 // A raid's monster (raid.js), rebuilt at the raid's level from the stats of a typical field monster
 // of that level (fitted to MOB_DEFS: HP about 48 a level, ATK 3.2-4 a level...), its kind's
 // strength on top (STRENGTH), then the difficulty's scale (s: { hp, atk }; a wave comes all at once,

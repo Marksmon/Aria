@@ -89,7 +89,7 @@ export class UI {
     if (this.miniTimer <= 0) {
       this.miniTimer = 0.1;
       const g = this.mg;
-      g.drawImage(this.world.minimap, 0, 0);
+      g.drawImage(this.mapImage?.() || this.world.minimap, 0, 0); // (a maze: only what the hero has seen, explored.js)
       const px = player.x * 2, pz = player.z * 2;
       // camera view cone
       g.save();

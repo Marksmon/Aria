@@ -1,5 +1,5 @@
 // Raids on the map (moved out of main.js; raid.js holds the raids' data): setting out, the waves and the boss
-// against the clock, the raid's bar, the boss's health bar, the history (raidLog), the cooldowns (raidAt) and the
+// against the clock, the raid's bar, the history (raidLog), the cooldowns (raidAt) and the
 // pay. main.js calls installRaids once, where these lines were, and reads the run under way as raids.raid.
 import { ITEMS, maybeSlotted } from './items.js';
 import { MAPS, ZONE_NAMES } from './world.js';
@@ -31,7 +31,7 @@ export function installRaids(ctx) {
   function logRaid(e) { raidLog.unshift(e); raidLog.length = Math.min(raidLog.length, RAID_LOG); }
   // a run the game was closed in the middle of: a failure, nothing paid (save.raidRun)
   if (save?.raidRun && RAIDS[save.raidRun.id] && !raidLog.some((e) => e.at === save.raidRun.at)) logRaid({ ...save.raidRun, secs: null, won: false, why: 'The game was closed mid-run', perz: 0, exp: [0, 0], items: [] });
-  const raidBar = document.getElementById('raidbar'), bossBar = document.getElementById('bossbar');
+  const raidBar = document.getElementById('raidbar'); // (the boss's big health bar is bossbar.js's: it shows the raid's boss like any other)
   raidBar.querySelector('.rb-leave').addEventListener('click', () => { if (raid) endRaid(false, RAIDS[raid.id].words.leave, false, 'Left the raid'); });
   const raidOf = (map) => Object.entries(RAIDS).find(([, R]) => R.map === map)?.[1] || null;
   const storyRaid = (id) => ctx.storyLive() && story.step?.kind === 'raid' && story.step.raid === id;
@@ -138,16 +138,6 @@ export function installRaids(ctx) {
     time.classList.toggle('low', s < 60);
     raidBar.querySelector('.rb-stage').textContent = raid.boss ? 'Boss' : raid.wave < 0 ? 'Landing' : `Wave ${raid.wave + 1}/${R.waves.length}`;
     raidBar.querySelector('.rb-exp').textContent = `EXP held ${Math.round(raid.exp[0]).toLocaleString()}`;
-    // the boss's big health bar
-    const b = raid.boss;
-    bossBar.hidden = !(b && b.alive);
-    if (bossBar.hidden) return;
-    const f = Math.max(0, b.hp / b.def.hp);
-    bossBar.querySelector('.bb-name').textContent = `${b.def.name} · Lv ${b.def.lv}`;
-    bossBar.querySelector('.bb-bar i').style.width = `${(f * 100).toFixed(1)}%`;
-    bossBar.classList.toggle('low', f < 0.3);
-    if (f < raid.shown - 0.001) { bossBar.classList.remove('hit'); void bossBar.offsetWidth; bossBar.classList.add('hit'); } // a blow lands: the bar flashes
-    raid.shown = f;
   }
   function winRaid(R, D) {
     audio.play('levelup');
@@ -182,7 +172,7 @@ export function installRaids(ctx) {
     const paid = win ? raidReward(run.id, run.diff) : { perz: 0, items: [] };
     logRaid({ id: run.id, diff: run.diff, at: run.start, secs: Math.round(R.secs - Math.max(0, run.left)), won: win, why: win ? null : short, perz: paid.perz, exp: [b, j], items: paid.items });
     if (win && D.tutorial && storyRaid(run.id)) story.flag(story.step.id);
-    raidBar.hidden = bossBar.hidden = true;
+    raidBar.hidden = true;
     if (why) ctx.menus.message(why);
     if (b || j) {
       ctx.menus.message(`Raid EXP: +${b.toLocaleString()} Base, +${j.toLocaleString()} Job${win ? ' (x1.5 for the clear)' : ''}`);

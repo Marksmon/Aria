@@ -336,7 +336,20 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   app (`com.marksmon.aria`) signed with a key kept only in the repository's secrets (`.github/workflows/release.yml`,
   `docs/release.md`). No other keystore is ever committed (`npm test` checks it).
 - `build-tools/field-bot.cjs` plays a young hero in the early fields of the built game (kills, faints, potions, loot):
-  run it after changing early monsters, fields or the economy.
+  run it after changing early monsters, fields or the economy. `build-tools/stand-bot.cjs` plays one of the story's
+  stands the same way (a BladeMaster in shop gear: was it held, on how many potions).
+- The November 2026 review's measures (`docs/balance.md`): `second-sim` and `mvp-sim` hold all ten second jobs (the
+  tiers' check still judges by the first six; `mvp-sim` prints how far the ten lie apart, and `--reach` the fights
+  in gear a hero can have before any MVP has fallen); `build-tools/econ-sim.mjs` is the economy at each level (what
+  a kill pays, what the fight costs, perz an hour drinking or resting; `npm test` fails a monster that pays under
+  60% of those near its level).
+- HUD (the review's R1): a mini-boss's or MVP's big health bar shows while it fights the hero, with a mark where it
+  turns (`bossbar.js`; a raid's boss too); a monster taller than the hero that stands between them and the camera
+  fades (`fadeBigMobs`); a dungeon maze's map is dark until walked, saved with the hero (`explored.js`: the minimap
+  and the big map, the great halls and every other map whole); shops sell by the 1, 10 or 50.
+- A story stand's heralds come at the stand's level from Chapter 10 on (a step's `heraldLv`, `mobs.js` `heraldDef`:
+  the kind grown to that level, a lesser swarm one; never above the hero's own level). A new late stand gets one
+  (a test checks it).
 - Start-up stays light (phones stalled on a blank sky when it wasn't): a map is built the first time it
   is entered (`buildWorld`; its people stand there then, `Villagers.build`), a monster's sprite set is
   made the first time one is met (`mobs` in `createSprites`), and a sheet's frames get their canvas and
@@ -346,7 +359,7 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   called where its lines used to be (names made later in `main.js`, or reassigned, are read through `ctx` getters):
   `bossmoves.js` (boss moves on screen, the MVP's rewards), `stands.js` (the story's survive and search steps),
   `questworld.js` (search, defence and rare-hunt quests), `raids.js` (a raid run, its bars, history and pay),
-  `lessons.js` (the guided lessons, the goal arrow); data
+  `lessons.js` (the guided lessons, the goal arrow), `bossbar.js` (the boss's big health bar); data
   tables in `spawns.js` (every map's monsters) and `scenes.js` (the opening's shots). Move more the same way.
 - `npx vite build` must pass. Test in the browser with Playwright (the game exposes
   `window.__aria`).

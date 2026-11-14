@@ -724,7 +724,7 @@ export const PRICES = {
   messenger_shroud: 44000, rune_bracelet: 40000, ratatoskr_tail: 50000, nidhogg_ring: 40000, dragonleaf_mantle: 50000, dragonbone_blade: 90000, worldtree_staff: 90000, dragonwing_bow: 96000, nidhogg_fang: 96000, worldtree_crown: 80000, nidhogg_wings: 150000,
   rootsquirrel_card: 6000, bramble_card: 8000, rootserpent_card: 9000, mossgolem_card: 10000, darkelf_card: 10000, greatstag_card: 12000, dryad_card: 12000, rotbeetle_card: 14000, rootwarden_card: 14000, thorndrake_card: 15000, ratatoskr_card: 30000, nidhogg_card: 80000,
   // the Sphinx's Halls
-  scarab_shell: 300, cobra_fang: 450, old_bandage: 500, lamia_scale: 700, lapis_shard: 800, jackal_pelt: 1000, falcon_plume: 1100, lion_mane: 1400, living_sand: 1500, gold_leaf: 1800, ammit_heart: 9000, gold_bar: 20000,
+  scarab_shell: 600, cobra_fang: 700, old_bandage: 500, lamia_scale: 1000, lapis_shard: 1100, jackal_pelt: 1900, falcon_plume: 2100, lion_mane: 1400, living_sand: 1500, gold_leaf: 1800, ammit_heart: 9000, gold_bar: 20000,
   scarab_buckler: 12000, cobra_kris: 16000, grave_wrap: 14000, serpent_staff: 26000, priest_robe: 18000, jackal_spear: 30000, horus_bow: 32000, lion_boots: 22000, storm_ring: 24000, coffin_shield: 30000,
   devourer_mail: 44000, ammit_claw: 56000, sphinx_ring: 40000, sphinx_mantle: 50000, riddle_blade: 90000, sphinx_staff: 90000, sphinx_bow: 96000, enigma_fang: 96000, allseeing_eye: 150000,
   hallscarab_card: 6000, cobra_card: 8000, hallmummy_card: 9000, lamia_card: 10000, servant_card: 10000, jackal_card: 12000, falcon_card: 12000, sphinxcub_card: 14000, sandelemental_card: 14000, sarcophagus_card: 15000, ammit_card: 30000, sphinx_card: 80000,
@@ -745,11 +745,11 @@ export const PRICES = {
   quarry_shield: 30000, stonehide_mantle: 26000, earthshaker_boots: 26000, oreheart_ring: 22000, pickaxe_charm: 16000, miners_plate: 30000,
   bubble_robe: 18000, seaglass_charm: 16000, hopper_boots: 16000, lamp_charm: 18000, lucky_nugget: 20000, shaman_robe: 28000, fang_charm: 20000,
   raider_cloak: 28000, windstep_boots: 28000, spiked_buckler: 30000, totem_charm: 18000, wardrum_pendant: 22000, horde_leather: 30000,
-  gel: 15, skipper_fin: 20, dew: 20, seed: 16, leaf: 16, shell: 50, spore: 60, stone: 60, glow: 50, ember_heart: 4000,
+  gel: 15, skipper_fin: 40, dew: 20, seed: 16, leaf: 16, shell: 50, spore: 60, stone: 60, glow: 50, ember_heart: 4000,
   kobold_fur: 260, goblin_tooth: 380, iron_ore: 50, steel_ore: 200, hard_ore: 4000, armor_ore: 4000,
   quarry_cleaver: 60000, runestone_staff: 50000, king_mantle: 30000, goblin_cleaver: 62000, hexbone_staff: 50000, trickster_boots: 30000, ancient_bow: 66000, elder_staff: 60000, barkskin_mail: 36000,
   kobold_ring: 20000, goblin_charm: 24000, kobold_card: 40000, goblin_card: 40000, jarl_card: 60000, sprout_card: 16000, crab_card: 18000, mushroom_card: 20000, beetle_card: 22000,
-  thorn: 70, salt: 90, pearl: 600, gloom: 150, shade: 180, cinder: 240, ember_dust: 220, shiny_gel: 1200,
+  thorn: 110, salt: 90, pearl: 600, gloom: 150, shade: 240, cinder: 240, ember_dust: 220, shiny_gel: 1200,
   potion: 50, potion2: 180, potion3: 550, tonic: 300, berry: 20, crableg: 60, herb: 30, quick: 600, wander: 120, homeward: 300,
   fire_oil: 800, frost_oil: 800, storm_oil: 800, stone_oil: 800,
   boar_roast: 1200, hearty_stew: 1200, honey_cake: 1200, smoked_fish: 1200, sage_tea: 1200, clover_pie: 1200,
@@ -767,7 +767,7 @@ export const PRICES = {
   sprout_charm: 700, spore_charm: 1000, shell_charm: 1000, glow_charm: 1200, torvald_chisel: 20000,
   heartwood: 3000, king_pearl: 4000, gloom_heart: 5000, cinder_core: 6000, jarl_horn: 8000,
   thorn_mantle: 12000, tidebreaker: 20000, gloom_staff: 22000, cinder_greaves: 16000, jarl_mantle: 30000,
-  snake_skin: 420, wolf_pelt: 460, wolf_fang: 900, willow_twig: 80, bear_claw: 560, old_bark: 120, honey: 300,
+  snake_skin: 420, wolf_pelt: 460, wolf_fang: 900, willow_twig: 80, bear_claw: 560, old_bark: 120, honey: 480,
   willow_heart: 3000, ancient_heartwood: 10000, ancient_seed: 5000, willow_card: 16000, treant_card: 60000,
   snake_boots: 12000, wolf_cape: 14000, willow_staff: 6000, bear_hide: 18000, treant_shield: 7000, willow_charm: 9000, oak_ring: 26000, grove_blade: 50000,
   alpha_pelt: 5000, bear_heart: 6000, alpha_card: 20000, bear_card: 22000, alpha_cloak: 20000, bear_charm: 22000,
@@ -782,7 +782,7 @@ export const sellPrice = (id) => Math.floor((PRICES[baseOf(id)] || 0) / 2); // u
 // what each Steinborg shop sells
 export const SHOPS = {
   hild: ['potion', 'potion2', 'tonic', 'herb', 'berry', 'wander', 'homeward', 'boar_roast', 'hearty_stew'],
-  sela: ['potion2', 'potion3', 'tonic', 'herb', 'water_skin', 'wander', 'homeward'], // Hafnvik's trader
+  sela: ['potion2', 'potion3', 'tonic', 'herb', 'water_skin', 'wander', 'homeward', 'fire_oil', 'frost_oil', 'storm_oil', 'stone_oil'], // Hafnvik's trader (battle oils: a Neutral blade does nothing to the Galleon's Ghosts)
   brand: ['iron_sword', 'chain_mail', 'round_shield', 'travel_cloak', 'leather_boots', 'knife', 'hunting_bow', 'birch_staff'],
   holger: ['iron_ore', 'steel_ore'], // the refiner's ores (Hard and Armor Ore only drop)
   gunnar: ['twig_sword', 'stone_blade', 'iron_sword', 'clothes', 'chain_mail', 'round_shield', 'wool_cape', 'travel_cloak', 'leather_boots', 'bandana', 'eyepatch'],

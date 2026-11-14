@@ -407,7 +407,7 @@ export const STORY = [
     say: [['ingrid', 'The Old Forest is sick, dear. The roots are rotting, and the rot does not spread like rot. It runs up the trunks backwards, in lines. Like writing.'],
       ['ingrid', 'And the Treants have gone mad with it. They tear at anything that comes near the forest\'s heart. Stand there, and they will come for you. Someone must, if we are to see what the rot has written.']],
     reward: { xp: 60000 } },
-  { id: 'rotheart', ch: 'Chapter 10: The Gnawed Roots', title: 'The Forest\'s Heart', kind: 'survive', map: 'oldwood', at: { x: 36, z: 22 }, secs: 60, color: '#9ad050',
+  { id: 'rotheart', ch: 'Chapter 10: The Gnawed Roots', title: 'The Forest\'s Heart', kind: 'survive', heraldLv: 60, map: 'oldwood', at: { x: 36, z: 22 }, secs: 60, color: '#9ad050',
     heralds: { early: ['treant', 'treant'], late: ['treant', 'treant', 'willow'], after: 30 }, every: 12, most: 5,
     startText: 'The rot in the roots glows a sick green as you step in among them, and every Treant in the Old Forest turns towards you, creaking. Hold the forest\'s heart!',
     breakText: 'You left the forest\'s heart, and the maddened Treants scatter. Go back and stand among the rotten roots again.',
@@ -437,7 +437,7 @@ export const STORY = [
     reward: { xp: 280000, perz: 25000 } },
 
   // ---------- Chapter 11: the hand that cuts backwards (about Base 66-72) ----------
-  { id: 'runespring', ch: 'Chapter 11: The Hand That Cuts Backwards', title: 'The Rune-Spring', kind: 'survive', map: 'fen', at: { x: 32, z: 14 }, secs: 60, color: '#b48aff',
+  { id: 'runespring', ch: 'Chapter 11: The Hand That Cuts Backwards', title: 'The Rune-Spring', kind: 'survive', heraldLv: 66, map: 'fen', at: { x: 32, z: 14 }, secs: 60, color: '#b48aff',
     heralds: { early: ['shadeWisp', 'shadeWisp'], late: ['shadeWisp', 'shadeWisp', 'wisp'], after: 25 }, every: 10, most: 5,
     startText: 'Vigdis\'s song rises from the spring, and the water goes black. Dark Wisps pour out of it! Hold the spring until the crystal is raised!',
     breakText: 'You left the spring, and Vigdis\'s song falters. Go back to the stones by the road and hold it again.',
@@ -476,12 +476,16 @@ export const STORY = [
     say: [[null, 'Ember Hill is burning. A ring of four great fires blazes round the Giant\'s sleeping place, their runes cut backwards, and the ground between them splits and glows.', { shake: 0.4 }],
       [null, 'The Giant\'s heralds dance round the fires, feeding them. Break the ring: beat its keepers until the four fires gutter out.']],
     reward: { xp: 150000 } },
-  { id: 'ringfires', ch: 'Chapter 12: The Last Fire-Ring', title: 'Four Fires', kind: 'kill', mobs: ['beetle', 'wisp'], n: 25, map: 'ridge', goal: 'Defeat 25 of the Giant\'s heralds on Ember Hill (Beetles and Wisps) to break the four fires',
-    hint: 'Beetles and Wisps all over Ember Hill. Keep away from the Fire Giant if he roams near: this is not his fight.',
+  // (November 2026: the four fires themselves, each fed by heralds of the hero's own level; it was 25 of the hill's
+  // Lv 30 Beetles and Lv 11 Wisps, for a hero of Base 72. kind 'fires': stands.js tickStoryFires)
+  { id: 'ringfires', ch: 'Chapter 12: The Last Fire-Ring', title: 'Four Fires', kind: 'fires', map: 'ridge', fires: [[20, 18], [45, 19], [19, 43], [46, 44]], guards: ['cinderBeetle', 'emberWisp', 'cinderBeetle', 'emberWisp'], heraldLv: 70,
+    thing: 'Fire of the ring', verb: 'A fire of the backward ring gutters out',
+    goal: 'Break the four fires of the backward ring on Ember Hill: defeat the heralds that feed each one',
+    hint: 'Four fires burn round Ember Hill, each fed by Fire Beetles and Fire Wisps grown fat on it: the minimap rings the nearest. Keep away from the Fire Giant if he roams near: this is not his fight.',
     say: [[null, 'One by one the four fires gutter and die. But the ground does not close. In the middle of the ring, the hill heaves upward, and something vast and red begins to rise.', { shake: 0.6, sound: 'night' }],
       [null, 'Vigdis\'s voice, from very far away: "Get into the rune circle on the hill road! We are singing. Hold it, whatever falls!"']],
     reward: { xp: 300000, perz: 30000, items: { potion3: 20 } } },
-  { id: 'lastring', ch: 'Chapter 12: The Last Fire-Ring', title: 'The Last Fire-Ring', kind: 'survive', map: 'ridge', at: { x: 32, z: 24 }, secs: 120, color: '#ff9a4a',
+  { id: 'lastring', ch: 'Chapter 12: The Last Fire-Ring', title: 'The Last Fire-Ring', kind: 'survive', heraldLv: 70, map: 'ridge', at: { x: 32, z: 24 }, secs: 120, color: '#ff9a4a',
     heralds: { early: ['beetle', 'beetle', 'wisp'], late: ['beetle', 'beetle', 'wisp', 'wisp'], after: 60 }, every: 12, most: 6,
     meteors: { every: 8, n: 3, r: 1.5, wind: 1.3, hp: 0.12 },
     startText: 'The song rises out of the circle, and the Fire Giant half-wakes, vast as the hill itself. He cannot reach you through the song, but his fire can: Meteor Rain! Step out of the red circles, and hold the ring!',
@@ -650,8 +654,10 @@ export const STORY = [
     reward: { xp: 500000, perz: 30000 } },
 
   // ---------- Chapter 18: the starved fire (about Base 87-88) ----------
-  { id: 'starvefire', ch: 'Chapter 18: The Starved Fire', title: 'Starve the Fire', kind: 'kill', mobs: ['beetle', 'wisp'], n: 30, map: 'ridge', goal: 'Starve the Giant\'s fire: defeat 30 of his heralds on Ember Hill (Beetles and Wisps)',
-    hint: 'Beetles and Wisps all over Ember Hill. The Fire Giant may roam the hill too: this is not his fight yet.',
+  { id: 'starvefire', ch: 'Chapter 18: The Starved Fire', title: 'Starve the Fire', kind: 'fires', map: 'ridge', fires: [[21, 44], [44, 43], [45, 18], [20, 19]], guards: ['cinderBeetle', 'cinderBeetle', 'emberWisp', 'emberWisp', 'cinderBeetle'], heraldLv: 86,
+    thing: 'Feeding-fire', verb: 'A feeding-fire is starved',
+    goal: 'Starve the Giant\'s fire: put out his four feeding-fires on Ember Hill by defeating the heralds that tend each one',
+    hint: 'Four feeding-fires glow round Ember Hill, each tended by his heralds: the minimap rings the nearest. The Fire Giant may roam the hill too: this is not his fight yet.',
     say: [[null, 'One by one the heralds fall, and the glow under Ember Hill sinks to a dull red. The hill is cooling. For the first time, you can hear it: far below, something vast breathing in its sleep.'],
       [null, 'But a thin red vein still glows under the land, running east, all the way to the coast: on Beacon Moor the Fire Salamanders are gathering the sea-fire and carrying it back to him like coals.']],
     reward: { xp: 800000, perz: 30000 } },
@@ -667,7 +673,7 @@ export const STORY = [
     reward: { xp: 500000, perz: 30000 } },
 
   // ---------- Chapter 19: the Crater of Binding (about Base 88-90) ----------
-  { id: 'bindingring', ch: 'Chapter 19: The Crater of Binding', title: 'The Ring of Binding', kind: 'survive', map: 'ridge', at: { x: 32, z: 30 }, secs: 120, color: '#ffd23a',
+  { id: 'bindingring', ch: 'Chapter 19: The Crater of Binding', title: 'The Ring of Binding', kind: 'survive', heraldLv: 86, map: 'ridge', at: { x: 32, z: 30 }, secs: 120, color: '#ffd23a',
     heralds: { early: ['cinderBeetle', 'emberWisp'], late: ['cinderBeetle', 'cinderBeetle', 'emberWisp', 'emberWisp'], after: 60 }, every: 10, most: 7,
     meteors: { every: 7, n: 3, r: 1.6, wind: 1.2, hp: 0.14 },
     startText: 'Four voices rise round you, and four bindings blaze up gold. The Giant feels them, even in his sleep: the hill heaves, his last heralds pour up out of it, and his fire falls! Hold the middle while the ring is set!',
@@ -783,6 +789,10 @@ export class Story {
     return { spot: s.spots[i], n: f.length + 1, of: s.spots.length };
   }
 
+  // a fires step (the Giant's fires on Ember Hill): fire i is out; which still burn
+  fireOut(i) { const s = this.step, f = this.found(s); if (s?.kind === 'fires' && !f.includes(i)) this.flags[`found_${s.id}`] = [...f, i]; return this.found(s).length; }
+  burning(s = this.step) { const f = this.found(s); return (s?.fires || []).map(([x, z], i) => ({ i, x, z })).filter((o) => !f.includes(o.i)); }
+
   // the tracker's line on where to go: "Head north to Moss Field"
   directions(here, prog) {
     const s = this.step, where = this.map(), hint = typeof s?.hint === 'function' ? s.hint(prog, this.flags) : s?.hint || '';
@@ -796,6 +806,7 @@ export class Story {
     const s = this.step;
     if (s?.kind === 'survive') return this.count ? ` (${Math.min(this.count, s.secs)}/${s.secs} s)` : '';
     if (s?.kind === 'search') return ` (${this.found(s).length}/${s.spots.length})`;
+    if (s?.kind === 'fires') return ` (${this.found(s).length}/${s.fires.length})`;
     return s?.kind === 'kill' ? ` (${Math.min(this.count, s.n)}/${s.n})` : '';
   }
 
@@ -816,6 +827,7 @@ export class Story {
       case 'survive': return !!this.flags[s.id];
       case 'raid': return !!this.flags[s.id];
       case 'search': return this.found(s).length >= s.spots.length;
+      case 'fires': return this.found(s).length >= s.fires.length;
       case 'stat': return Object.values(state.prog.stats).reduce((a, b) => a + b, 0) > 6;
       case 'equip': return Object.values(state.inv?.gear || {}).some((k) => k && String(k).startsWith(s.item));
       case 'accept': return Object.keys(state.quests?.active || {}).length > 0 || (state.quests?.done.length || 0) > 0;

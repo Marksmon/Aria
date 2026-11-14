@@ -26,6 +26,8 @@ import { installStands } from './stands.js';
 import { installQuestWorld } from './questworld.js';
 import { installRaids } from './raids.js';
 import { installBossMoves } from './bossmoves.js';
+import { installBossBar } from './bossbar.js';
+import { Explored } from './explored.js';
 import { playCutscene } from './cutscene.js';
 import { Villagers } from './villagers.js';
 import { Tiles } from './tiles.js';
@@ -81,7 +83,7 @@ const allies = new Allies(scene, world, lib, mobs.shadowGeo, mobs.shadowMat); //
 
 // which build this is, on the title screen (matches the APK's version, 1.0.<build>)
 const verEl = document.querySelector('#title .ver');
-if (verEl) verEl.textContent = `v1.0.${__BUILD__} · Explore, fight, craft, survive the night`;
+if (verEl) verEl.textContent = `v1.0.${__BUILD__} · Jobs, cards, bosses and secrets, offline`;
 
 const save = loadSave();
 let lookBefore = null; // the look kept, while one is being tried on
@@ -568,6 +570,9 @@ inv.onChange(applyStats);
 
 const input = new Input();
 const ui = new UI(world);
+// what the hero has seen of each dungeon maze: the minimap and the big map leave the rest dark (explored.js)
+const explored = new Explored(save?.explored);
+ui.mapImage = () => explored.image(world);
 ui.mobs = mobs;
 ui.prog = prog;
 ui.jobName = () => JOBS[prog.job].name;
@@ -603,6 +608,7 @@ function enterMap(id, from, at) {
     delve.pending = 0;
     if (world.built.has(id)) world.unbuild(id);
     prepareFloor(id, delve.floor);
+    explored.reset(id); // (a new floor: nothing of it seen yet)
     delete mobs.fieldAt[id];
     at = at || DELVE_START;
   } else if (isDelve(from) && !at) { const h = delverSpot(); id = h.map; at = h; } // (the stairs up: home beside the one who sent them)
@@ -980,6 +986,9 @@ function refreshQuests() {
   } else if (map === world.id && s.kind === 'search') { // the nearest thing still to be found here
     const sp = story.toFind().filter((p) => p.map === world.id).sort((a, b) => Math.hypot(a.x - player.x, a.z - player.z) - Math.hypot(b.x - player.x, b.z - player.z))[0];
     if (sp) ui.goal = { x: sp.x, z: sp.z, label: s.thing };
+  } else if (map === world.id && s.kind === 'fires') { // the nearest fire still burning
+    const f = story.burning().sort((a, b) => Math.hypot(a.x - player.x, a.z - player.z) - Math.hypot(b.x - player.x, b.z - player.z))[0];
+    if (f) ui.goal = { x: f.x, z: f.z, label: s.thing };
   } else if (map === world.id && s.at) ui.goal = { x: s.at.x, z: s.at.z, label: s.kind === 'survive' ? 'Here' : '' };
   else if (map && map !== world.id) { const p = route(world.id, map); if (p) ui.goal = { x: p.x, z: p.z, label: ZONE_NAMES[p.to] }; }
 }
@@ -1126,11 +1135,13 @@ function tickWading(dt) {
 }
 
 // ---------- the story's stands: src/stands.js (survive steps, story searches, a step's own monster) ----------
-const stands = installStands({ audio, cam, fx, mobs, overHead, persist, player, refreshQuests, story, world, get menus() { return menus; }, get skillClock() { return skillClock; }, get storyLive() { return storyLive; }, get warping() { return warping; } });
-const { tickVigil, tickStorySearch, tickStorySpawn } = stands;
+const stands = installStands({ audio, cam, fx, mobs, overHead, persist, player, prog, refreshQuests, story, world, get menus() { return menus; }, get skillClock() { return skillClock; }, get storyLive() { return storyLive; }, get warping() { return warping; } });
+const { tickVigil, tickStorySearch, tickStorySpawn, tickStoryFires } = stands;
 
 const raids = installRaids({ audio, cam, fx, gainExp, goalEvent, inv, lib, mobs, persist, player, prog, refreshQuests, save, story, warp, world, get menus() { return menus; }, get warping() { return warping; }, get storyLive() { return storyLive; }, get questWorld() { return questWorld; } });
 const { raidsDone, raidLog, raidOf, boatSpot, mobPortrait, raidInfo, raidGo, tickRaid } = raids;
+// the boss's big health bar: a raid's boss, and any mini-boss or MVP that fights the hero (bossbar.js)
+const bossBar = installBossBar({ mobs, player, raidBoss: () => raids.raid?.boss, zoom: () => settings.get('uiScale') || 1 });
 // ---------- quests out in the world: src/questworld.js (searches, defences, rare hunts, the Sphinx's door) ----------
 const questWorld = installQuestWorld({ audio, cam, fx, inv, mobs, player, questComplete, quests, refreshQuests, world, villagers, secretScene: (id) => queueScene(SECRET_SHOTS[id]), handIn: (id) => menus.hooks.handIn(id), get menus() { return menus; }, get dayNight() { return dayNight; } });
 const { tickQuestWorld } = questWorld;
@@ -1489,7 +1500,7 @@ const SPOTS = [
 
 // ---------- the big map: tap the minimap ----------
 const bigmap = new BigMap({
-  world, player, mobs, spots: SPOTS,
+  world, player, mobs, spots: SPOTS, explored, met: (type) => album.met(type),
   goal: () => ui.goal,
   go(target) { stopNav(); player.command(target); },
 });
@@ -2838,7 +2849,7 @@ let saveWarned = false;
 function persist() {
   if (!started || resetting || cine) return; // (never mid-cutscene: the hero is not where the camera is)
   const isle = raidOf(world.id), deep = isDelve(world.id), back = isle ? raids.raid?.back : deep ? delverSpot() : null, at = back || (isle ? boatSpot(isle) : player); // a run is never saved: back on the shore (or where they set out from); the Deep Halls, back by the one who sent them down
-  const ok = writeSave({ goals: goals.toJSON(), album: album.toJSON(), mvpPity: mobs.pity, story: story.toJSON(), look: player.look, visited: [...visited], keepers: [...keepers], savePoint, raidAt: raids.raidAt, raidsDone: [...raidsDone], raidLog, delve: { best: delve.best }, raidRun: raids.raid ? { id: raids.raid.id, diff: raids.raid.diff, at: raids.raid.start } : null, map: back ? back.map : isle ? isle.from : world.id, mvpAt: mobs.mvpAt, bossHp: mobs.bossSnapshot(), bossAt: mobs.bossAt, fieldAt: mobs.fieldSnapshot(), x: at.x, z: at.z, yaw: cam.yaw, dist: cam.dist, hp: player.hp, sp: player.sp, inv: inv.toJSON(), prog: prog.toJSON(), quests: quests.toJSON(), hotbar: hotbar.toJSON(), time: dayNight.t });
+  const ok = writeSave({ goals: goals.toJSON(), album: album.toJSON(), mvpPity: mobs.pity, story: story.toJSON(), look: player.look, visited: [...visited], keepers: [...keepers], savePoint, raidAt: raids.raidAt, raidsDone: [...raidsDone], raidLog, delve: { best: delve.best }, explored: explored.toJSON(), raidRun: raids.raid ? { id: raids.raid.id, diff: raids.raid.diff, at: raids.raid.start } : null, map: back ? back.map : isle ? isle.from : world.id, mvpAt: mobs.mvpAt, bossHp: mobs.bossSnapshot(), bossAt: mobs.bossAt, fieldAt: mobs.fieldSnapshot(), x: at.x, z: at.z, yaw: cam.yaw, dist: cam.dist, hp: player.hp, sp: player.sp, inv: inv.toJSON(), prog: prog.toJSON(), quests: quests.toJSON(), hotbar: hotbar.toJSON(), time: dayNight.t });
   writeStorage(inv.chest.toJSON());
   // the phone refused the save (storage full or blocked): say so once, so the player can back up
   if (!ok && !saveWarned) { saveWarned = true; menus.message('Could not save! Back up your save from the title screen (Account) soon.'); }
@@ -3116,8 +3127,10 @@ function frame() {
   if (live) fx.update(dt);
   if (live) { naturalRegen(dt); tickSkills(dt); checkPortals(); tickNav(); tickQuestWorld(dt); }
   if (live) tickWading(dt);
-  if (live) { tickVigil(dt); tickStorySpawn(); tickStorySearch(dt); }
+  if (live) { tickVigil(dt); tickStorySpawn(); tickStorySearch(dt); tickStoryFires(dt); }
   if (live) tickRaid(dt);
+  if (live) explored.visit(world.id, player.x, player.z);
+  bossBar.tick(dt);
   if (live) tickPets(dt);
   if (live) tickScenes();
   dressPeople();
@@ -3126,6 +3139,7 @@ function frame() {
   hotbar.update();
   const seen = cine?.focus() || player; // (a cutscene: what hides its focus fades, not what hides the hero)
   world.updateOcclusion(seen.x, seen.z, b, !cine && player.goal?.mob?.alive ? player.goal.mob : null);
+  fadeBigMobs(b, dt);
 
   if (cine) { // a cutscene's shot, or the hero's making: the camera frames its own point
     const f = cine.focus(), up = cine.up || 0; // (side: to the screen's right, so the focus sits left; up: toward the camera, so it sits high)
@@ -3217,6 +3231,23 @@ function musicMood(dt) {
   return MAPS[id]?.indoor ? 'dungeon' : WONDERS.has(id) ? 'wonder' : TOWNS.has(id) ? 'town' : SANDS.has(id) ? 'desert' : 'field';
 }
 
+// a monster taller than the hero that stands between them and the camera (a boss most of all) fades, as a tree
+// does, so the hero and the danger marks on the ground under it can still be seen
+const BIG_MOB = 2.4, MOB_FADED = 0.4;
+function fadeBigMobs(cam, dt) {
+  for (const m of mobs.list) {
+    const mat = m.mat, s = m.sprite;
+    if (!mat || !s || (s.scale.y < BIG_MOB && mat.opacity >= 1)) continue;
+    const dx = m.x - player.x, dz = m.z - player.z, along = dx * cam.fx + dz * cam.fz, side = dx * cam.rx + dz * cam.rz;
+    const hides = !cine && m.alive && s.scale.y >= BIG_MOB && along < -0.15 && along > -s.scale.y * 0.9 && Math.abs(side) < s.scale.x * 0.45 + 0.3;
+    const want = hides ? MOB_FADED : 1;
+    if (mat.opacity === want) continue;
+    mat.opacity += Math.sign(want - mat.opacity) * Math.min(Math.abs(want - mat.opacity), dt * 4);
+    mat.transparent = mat.opacity < 1;
+    mat.alphaTest = mat.transparent ? 0.12 : 0.5; // (the sprite's own cut-out is at 0.5: faded, its pixels would all fall under it)
+  }
+}
+
 // monster names, like Ragnarok: over the one the mouse is on, and over the one you are fighting
 const labelEls = { hover: document.querySelector('#moblabels .hover'), target: document.querySelector('#moblabels .target') };
 function mobLabels() {
@@ -3224,7 +3255,7 @@ function mobLabels() {
   const over = input.hover ? pick(input.hover.x, input.hover.y)?.mob : null;
   for (const [k, m] of [['target', target], ['hover', over !== target ? over : null]]) {
     const el = labelEls[k];
-    if (!m || !m.alive || !m.sprite.visible) { el.style.display = 'none'; continue; }
+    if (!m || !m.alive || !m.sprite.visible || m === bossBar.boss) { el.style.display = 'none'; continue; } // (a boss whose big bar is up is named there)
     const s = m.sprite, top = s.position.y + s.scale.y * (1 - s.center.y) * 0.92;
     projV.set(m.x, top, m.z).project(camera);
     if (projV.z > 1) { el.style.display = 'none'; continue; }
@@ -3451,4 +3482,4 @@ if (go || toSelect) { title.classList.remove('wait'); bootGone(); } else {
   addEventListener('keydown', tap);
 }
 
-window.__aria = { scene, renderer, lib, MAPS, settings, album, goals, warp, enterMap, useSkill, useItem, story, SPOTS, player, world, cam, camera, mobs, allies, fx, inv, prog, quests, villagers, menus, hotbar, dayNight, audio, stats: world.stats, raid: () => raids.raid, raidAt: () => raids.raidAt, raidGo, raidLog: () => raidLog, storyDone, queueScene, chapterShots, cineShot, cineOff: () => { cine = null; }, cine: () => cine, traps, delve, questWorld, keepers, visited, savePoint: () => savePoint, keepers, gainExp };
+window.__aria = { scene, renderer, lib, MAPS, settings, album, goals, warp, enterMap, useSkill, useItem, story, SPOTS, player, world, cam, camera, mobs, allies, fx, inv, prog, quests, villagers, menus, hotbar, dayNight, audio, stats: world.stats, raid: () => raids.raid, raidAt: () => raids.raidAt, raidGo, raidLog: () => raidLog, storyDone, queueScene, chapterShots, cineShot, cineOff: () => { cine = null; }, cine: () => cine, traps, delve, questWorld, keepers, visited, savePoint: () => savePoint, keepers, gainExp, explored, bossBar };

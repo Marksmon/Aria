@@ -26,13 +26,21 @@ import { mobAttack, derive } from '../src/rules.js';
 // a fixed seed, so a check gives the same answer every time (the game's own rolls use Math.random too)
 let seed = 20261105;
 Math.random = () => { seed |= 0; seed = (seed + 0x6d2b79f5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
-const JOBS = ['blademaster', 'shadowblade', 'windrunner', 'hunter', 'wizard', 'voodoo'];
-const RANGED = new Set(['windrunner', 'hunter', 'wizard', 'voodoo']);
+// the six the tiers were set by (the check's middle is theirs), and the four added in November 2026 (reported beside
+// them, and in the spread below, until the tiers are set again over all ten: the Moon Ranger by day)
+const TIER_JOBS = ['blademaster', 'shadowblade', 'windrunner', 'hunter', 'wizard', 'voodoo'];
+const JOBS = [...TIER_JOBS, 'phantom', 'magicknight', 'moonranger', 'beastmaster'];
+const RANGED = new Set(['windrunner', 'hunter', 'wizard', 'voodoo', 'moonranger', 'beastmaster']);
 // gear: the weapons the rotations swing, and what the hero wears (DEF, Max HP %)
 export const GEAR = {
   // the best short of MVP gear: a Lv 4 crafted weapon at +7 (the Giant Sword, the Heartwood Bow with Iron
   // Arrows, the Great Staff), armor pieces at their safe +4, monster and mini-boss cards
   good: { sword: { atk: 120 + 49, wlv: 4 }, bow: { atk: 120 + 49 + 10, wlv: 4, bow: true }, staff: { atk: 60, wlv: 4, matk: 55 }, def: 45, mhpRate: 20 },
+  // what a hero can have before any MVP has fallen (--reach, November 2026): `good` above is the Giant Sword at +7,
+  // and that sword is made from the Fire Giant's own horn, +7 a one-in-ten gamble that breaks it. Of the 42 Lv 4
+  // weapons 34 come from MVPs. Without one: a Lv 3 weapon from the dungeons at its safe +5 (the Warden's Greatsword,
+  // the Dark Elven Bow with Iron Arrows, the Dryad Staff), the same armor at +4 and cards
+  reach: { sword: { atk: 118 + 25, wlv: 3 }, bow: { atk: 100 + 25 + 10, wlv: 3, bow: true }, staff: { atk: 45, wlv: 3, matk: 38 }, def: 45, mhpRate: 20 },
   // what the shops sell: Gunnar's Iron Sword, Asa's Composite Bow and Iron Arrows, Orm's Rune Staff, no refining
   shop: { sword: { atk: 58, wlv: 2 }, bow: { atk: 55 + 10, wlv: 2, bow: true }, staff: { atk: 30, wlv: 2, matk: 25 }, def: 10, mhpRate: 0 },
 };
@@ -191,23 +199,49 @@ export function judge(f, runs = 30) {
     const med = (k) => rs.map((r) => r[k]).sort((a, b) => a - b)[runs >> 1];
     return [job, { wins: rs.filter((r) => r.win).length / runs, t: med('t'), potions: med('potions'), left: med('left') }];
   }));
-  // the middle matchup: the median of the six jobs, measure by measure (wins, time, potions)
-  const median = (k) => { const v = Object.values(per).map((r) => r[k]).sort((x, y) => x - y); return (v[2] + v[3]) / 2; };
-  const mid = { wins: median('wins'), t: median('t'), potions: median('potions'), left: median('left') };
-  return { per, mid };
+  // the middle matchup: the median of the six jobs the tiers were set by, measure by measure (wins, time, potions);
+  // all: the same over every job simulated
+  const med = (list, k) => { const v = list.map((j) => per[j][k]).sort((x, y) => x - y), n = v.length; return n % 2 ? v[n >> 1] : (v[n / 2 - 1] + v[n / 2]) / 2; };
+  const middle = (list) => ({ wins: med(list, 'wins'), t: med(list, 't'), potions: med(list, 'potions'), left: med(list, 'left') });
+  return { per, mid: middle(TIER_JOBS), all: middle(JOBS) };
+}
+// how far a fight's jobs lie apart (November 2026, reported: `--check` does not fail on it yet): the jobs that lose it
+// (under 80% of their fights), and the hardest matchup that still wins, as a multiple of the middle of all ten
+export function spread({ per, all }) {
+  const lost = JOBS.filter((j) => per[j].wins < 0.8), won = JOBS.filter((j) => per[j].wins >= 0.8);
+  const worst = won.sort((a, b) => per[b].potions / (all.potions || 1) + per[b].t / all.t - per[a].potions / (all.potions || 1) - per[a].t / all.t)[0];
+  return { lost, worst, time: worst ? per[worst].t / all.t : 0, potions: worst ? per[worst].potions / (all.potions || 1) : 0, over: JOBS.filter((j) => per[j].potions > BAR.potions) };
 }
 const ok = (m) => m.wins >= 0.8 && m.t >= BAR.minT && m.t <= BAR.maxT && m.potions <= BAR.potions;
 
 if (import.meta.url === `file://${process.argv[1]}`) {
-  const off = [];
+  const off = [], rows = [];
   const fmt = (r) => `${Math.round(r.wins * 100)}% ${Math.round(r.t)}s ${Math.round(r.potions)}p`;
-  console.log(`| Fight | Base, gear | ${JOBS.join(' | ')} | middle |`);
-  console.log(`|---|---|${JOBS.map(() => '---').join('|')}|---|`);
-  for (const f of fights()) {
-    const { per, mid } = judge(f);
-    if (!ok(mid)) off.push(`${f.name}: ${fmt(mid)}`);
-    console.log(`| ${f.name} | ${f.base}, ${f.gear} | ${JOBS.map((j) => fmt(per[j])).join(' | ')} | **${fmt(mid)}** |`);
+  const table = (list, title) => {
+    if (title) console.log(`\n${title}\n`);
+    console.log(`| Fight | Base, gear | ${JOBS.join(' | ')} | middle |`);
+    console.log(`|---|---|${JOBS.map(() => '---').join('|')}|---|`);
+    const out = [];
+    for (const f of list) {
+      const j = judge(f);
+      out.push({ f, j });
+      console.log(`| ${f.name} | ${f.base}, ${f.gear} | ${JOBS.map((k) => fmt(j.per[k])).join(' | ')} | **${fmt(j.mid)}** |`);
+    }
+    return out;
+  };
+  for (const { f, j } of table(fights())) { rows.push({ f, j }); if (!ok(j.mid)) off.push(`${f.name}: ${fmt(j.mid)}`); }
+  // the spread of each fight over the ten jobs
+  console.log('\n| Fight | middle of ten | loses it | hardest that wins | over 100 potions |');
+  console.log('|---|---|---|---|---|');
+  let dead = 0, far = 0;
+  for (const { f, j } of rows) {
+    const sp = spread(j);
+    dead += sp.lost.length; if (sp.time > 1.6 || sp.potions > 1.6) far++;
+    console.log(`| ${f.name} | ${fmt(j.all)} | ${sp.lost.join(', ') || '-'} | ${sp.worst ? `${sp.worst}: ${sp.time.toFixed(1)}x the time, ${sp.potions.toFixed(1)}x the potions` : '-'} | ${sp.over.join(', ') || '-'} |`);
   }
+  console.log(`\n${dead} matchups lost outright; ${far} of ${rows.length} fights have a winning job past 1.6x the middle.`);
+  // --reach: the same MVP and Hell fights in the gear a hero can have before any MVP has fallen (GEAR.reach)
+  if (process.argv.includes('--reach')) table(fights().filter((f) => f.gear === 'good').map((f) => ({ ...f, gear: 'reach' })), 'In gear a hero can have before any MVP has fallen (a Lv 3 weapon at its safe +5):');
   if (process.argv.includes('--check')) {
     if (off.length) { console.log(`OUT OF TIER:\n  ${off.join('\n  ')}`); process.exit(1); }
     console.log('every boss in its tier');

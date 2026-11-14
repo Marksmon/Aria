@@ -234,3 +234,53 @@ test("the main story runs to Chapter 20 and ends with the Fire Giant, fought in 
   assert.ok(MAPS[fight.map].arena?.land, 'the Crater of Binding is a walled arena');
   assert.ok(MAPS.ridge.portals.some((p) => p.to === fight.map && p.need === `story:${fight.id}`), 'its way down opens with the story');
 });
+
+test("Hafnvik's trader sells every battle oil: a Neutral blade does nothing to the Galleon's Ghosts", () => {
+  const oils = Object.entries(ITEMS).filter(([, it]) => it.use?.oil).map(([id]) => id);
+  const port = Object.values(NPCS).filter((n) => n.map === 'port' && n.shop).flatMap((n) => SHOPS[n.shop]);
+  for (const id of oils) assert.ok(port.includes(id), `${id} is not sold in Hafnvik`);
+});
+
+test("the story fights at the hero's level: a stand's heralds from Chapter 9 on, every hunt and every fire's guards, none more than 12 levels under the chapter", async () => {
+  const { heraldDef, guardDef } = await import('../src/mobs.js');
+  // (the level a hero has by each chapter: docs/story-outline.md and the story's own level step)
+  const AT = { 3: 18, 4: 28, 5: 32, 6: 38, 7: 40, 8: 45, 9: 55, 10: 60, 11: 66, 12: 72, 13: 75, 14: 76, 15: 78, 16: 85, 17: 86, 18: 87, 19: 88, 20: 90 };
+  // (and what the story sends the hero to hunt, or sets to guard a fire, is of the chapter's level too)
+  for (const s of STORY) {
+    const ch = +(/Chapter (\d+)/.exec(s.ch)?.[1] || 0);
+    if (!AT[ch]) continue;
+    if (s.kind === 'kill') for (const type of s.mobs || [s.mob]) assert.ok(MOB_DEFS[type].lv >= AT[ch] - 12, `story ${s.id} (Chapter ${ch}, about Base ${AT[ch]}) hunts the ${MOB_DEFS[type].name}, Lv ${MOB_DEFS[type].lv}`);
+    if (s.kind === 'fires') assert.ok(s.heraldLv >= AT[ch] - 12 && s.heraldLv <= AT[ch], `story ${s.id}: its fires' heralds come at Lv ${s.heraldLv}`);
+  }
+  for (const s of STORY) {
+    if (s.kind !== 'survive') continue;
+    const ch = +(/Chapter (\d+)/.exec(s.ch)?.[1] || 0), kinds = [...new Set([...(s.heralds?.early || ['beetle', 'wisp']), ...(s.heralds?.late || [])])];
+    for (const type of kinds) {
+      assert.ok(mobOk(type), `story ${s.id}: no monster ${type}`);
+      const d = s.heraldLv ? heraldDef(type, s.heraldLv) : guardDef(type);
+      if (ch >= 9) assert.ok(d.lv >= AT[ch] - 12, `story ${s.id} (Chapter ${ch}, about Base ${AT[ch]}): its ${d.name} comes at Lv ${d.lv}`);
+    }
+  }
+  // a herald grown to a level is its kind, stronger, and still a lesser one (half the HP of a monster of that level)
+  const grown = heraldDef('beetle', 70), own = guardDef('beetle');
+  assert.equal(grown.lv, 70);
+  assert.ok(grown.hp > own.hp * 3 && grown.atk[0] >= own.atk[0] * 0.9 && grown.def > own.def && grown.name === own.name, 'far tougher, and no softer a blow (they come six at a time)');
+  assert.ok(grown.hp < MOB_DEFS.rootWarden.hp && grown.atk[1] < MOB_DEFS.rootWarden.atk[1], 'lesser than a Lv 72 field monster');
+  assert.equal(heraldDef('owlbear', 60), guardDef('owlbear'), 'never weaker than its kind');
+});
+
+test('the story\'s last boss holds no spell back: the one fight no hero can skip is no job\'s wall', () => {
+  const t = MOB_DEFS.jarlBound.takes || {};
+  for (const kind of ['melee', 'ranged', 'magic']) assert.ok((t[kind] ?? 1) >= 1, `${kind} lands at ${(t[kind] ?? 1) * 100}%`);
+});
+
+test("a story step's fires stand on its map, each fed by real monsters of the step's level (never a boss)", () => {
+  const steps = STORY.filter((s) => s.kind === 'fires');
+  assert.ok(steps.length >= 2);
+  for (const s of steps) {
+    assert.ok(MAPS[s.map], `story ${s.id}: no map ${s.map}`);
+    assert.ok(s.fires.length >= 3 && s.guards.length >= 3 && s.heraldLv > 0 && s.goal && s.thing, `story ${s.id}`);
+    for (const [x, z] of s.fires) assert.ok(x > 4 && z > 4 && x < 60 && z < 60, `story ${s.id}: a fire at ${x}, ${z}`);
+    for (const g of s.guards) assert.ok(mobOk(g) && !MOB_DEFS[g].boss && !MOB_DEFS[g].mvp, `story ${s.id}: ${g}`);
+  }
+});

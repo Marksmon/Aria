@@ -1,13 +1,14 @@
 // The story's stands (moved out of main.js): survive steps (waves round a spot; Meteor Rain on the last), story
 // searches (spots on any map, found by walking over them) and a story step's own monster. main.js calls
 // installStands once, where these lines were, and reads the stand under way as stands.vigil.
-import { guardDef } from './mobs.js';
+import { guardDef, heraldDef } from './mobs.js';
 
 export function installStands(ctx) {
-  const { audio, cam, fx, mobs, overHead, persist, player, refreshQuests, story, world } = ctx;
+  const { audio, cam, fx, mobs, overHead, persist, player, prog, refreshQuests, story, world } = ctx;
   // ---------- survive steps: hold a spot against waves (the Ember's Light in Moss Field, the vigil on Ember
   // Hill while Vigdis sings). A step may set its own heralds ({ early, late, after }), wave gap (every),
-  // how many may stand before the next wave comes (most), colour, and words (startText, breakText) ----------
+  // how many may stand before the next wave comes (most), colour, and words (startText, breakText), and the level its
+  // heralds come at (heraldLv: the stand's own, never above the hero's; without it they are their kind's) ----------
   let vigil = null, giantWarnT = -99; // vigil: { t, next, list }
   const VIGIL_WAVE = 15; // seconds between waves of heralds (lesser ones, like a boss's guards)
   const giantOf = () => mobs.list.find((m) => m.alive && m.def.mvp && m.type === 'jarl');
@@ -58,7 +59,7 @@ export function installStands(ctx) {
         let x = s.at.x + Math.cos(a) * 8, z = s.at.z + Math.sin(a) * 8;
         if (!world.walkable(x, z)) { x = s.at.x + Math.cos(a) * 4; z = s.at.z + Math.sin(a) * 4; }
         const m = mobs.add(type, x, z);
-        m.def = guardDef(type);
+        m.def = s.heraldLv ? heraldDef(type, Math.min(s.heraldLv, prog.baseLv)) : guardDef(type);
         m.hp = m.def.hp;
         m.temp = true;
         m.provoke();
@@ -121,5 +122,48 @@ export function installStands(ctx) {
     m.temp = true; // (gone when the hero leaves; back when they return, until it is beaten)
     m.story = true; // (not a quest's rare hunt: refreshQuests leaves it be)
   }
-  return { tickVigil, tickStorySearch, tickStorySpawn, get vigil() { return vigil; } };
+
+  // ---------- a story step's fires (story.js kind 'fires': the backward ring's four fires, the Giant's feeding-fires):
+  // each burns at its spot on the step's map, fed by heralds of the step's level (heraldLv) that come when the hero
+  // draws near; the fire goes out when its heralds are beaten. A fire left half-fought is whole again on the way back ----------
+  let fires = null; // { id, list: [{ i, x, z, mobs }] }
+  const NEAR_FIRE = 15;
+  function dropFires() {
+    for (const f of fires?.list || []) for (const m of f.mobs || []) if (m.alive && mobs.list.includes(m)) mobs.remove(m);
+    fires = null;
+  }
+  function tickStoryFires(dt) {
+    const s = story.step;
+    if (!ctx.storyLive() || s?.kind !== 'fires' || world.id !== s.map || ctx.warping) { if (fires) dropFires(); return; }
+    if (fires?.id !== s.id) { dropFires(); fires = { id: s.id, list: [] }; }
+    const burning = story.burning(s);
+    fires.list = burning.map((b) => fires.list.find((f) => f.i === b.i) || { ...b, mobs: null });
+    for (const f of fires.list) {
+      const y = world.heightAt(f.x, f.z), d = Math.hypot(f.x - player.x, f.z - player.z);
+      if (d < 30 && Math.random() < dt * 14) fx.sparkle(f.x + (Math.random() - 0.5) * 0.9, y + 0.3 + Math.random() * 1.5, f.z + (Math.random() - 0.5) * 0.9, Math.random() < 0.5 ? '#ff6a2a' : '#ffc04a', 3); // the fire itself
+      if (!f.mobs && d < NEAR_FIRE && player.state !== 'down') { // its heralds wake as the hero comes
+        f.mobs = s.guards.map((type, k) => {
+          const a = (k / s.guards.length) * Math.PI * 2;
+          let x = f.x + Math.cos(a) * 2.2, z = f.z + Math.sin(a) * 2.2;
+          if (!world.walkable(x, z)) { x = f.x; z = f.z; }
+          const m = mobs.add(type, x, z);
+          m.def = heraldDef(type, Math.min(s.heraldLv || 0, prog.baseLv));
+          m.hp = m.def.hp;
+          m.temp = true; m.story = true;
+          return m;
+        });
+      }
+      if (f.mobs && f.mobs.every((m) => !m.alive)) { // every herald down: the fire dies
+        const n = story.fireOut(f.i);
+        f.mobs = null;
+        fx.puff(f.x, y + 0.3, f.z, 2.2);
+        cam.shake = 0.3;
+        audio.play('night');
+        ctx.menus.message(`${s.verb || 'A fire goes out'}: ${n}/${s.fires.length}`);
+        refreshQuests();
+        persist();
+      }
+    }
+  }
+  return { tickVigil, tickStorySearch, tickStorySpawn, tickStoryFires, get vigil() { return vigil; } };
 }

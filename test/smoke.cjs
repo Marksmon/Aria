@@ -126,6 +126,43 @@ async function waitFor(url, ms = 30000) {
     // the walk through every map is about loading them: the hero takes no blows (an MVP may stand by a portal)
     await page.evaluate(() => { window.__aria.player.takeDamage = () => 0; });
 
+    step('the job line, for every job name');
+    // (a long second-job name with the + badge showing: the Job Level must not be cut off)
+    const cut = await page.evaluate(() => {
+      const el = document.querySelector('#info .who'), lv = el.querySelector('.lv'), jn = el.querySelector('.jobname'), em = el.querySelector('em');
+      const was = [jn.textContent, lv.textContent, em.hidden, el.classList.contains('long')], bad = [];
+      for (const n of ['Trainee', 'Sorcerer', 'Assassin', 'BladeMaster', 'Magic Knight', 'Windrunner', 'Moon Ranger', 'Beastmaster', 'Shadowblade']) {
+        jn.textContent = n; el.classList.toggle('long', n.length > 8); lv.textContent = 'Lv 99 · Job 50'; em.hidden = false;
+        if (lv.scrollWidth > lv.clientWidth) bad.push(`${n} (${lv.scrollWidth} px in ${lv.clientWidth})`);
+      }
+      jn.textContent = was[0]; lv.textContent = was[1]; em.hidden = was[2]; el.classList.toggle('long', was[3]);
+      return bad;
+    });
+    if (cut.length) fail.push(`the hero panel cuts off the Job Level: ${cut.join(', ')}`);
+
+    step('a maze is dark until walked');
+    await page.evaluate(() => window.__aria.warp('halls1', null));
+    await page.waitForTimeout(2500);
+    const maze = await page.evaluate(() => { const a = window.__aria, e = a.explored; return { here: e.seen('halls1', a.player.x, a.player.z), far: e.seen('halls1', 5, 5) || e.seen('halls1', 58, 58) }; });
+    if (!maze.here || maze.far) fail.push(`the maze's map: lit where the hero stands ${maze.here}, lit far away ${maze.far}`);
+    await page.tap('#minimap');
+    await page.waitForTimeout(500);
+    const stairs = await page.evaluate(() => document.querySelectorAll('#bigmap .bm-row.portal').length);
+    if (stairs) fail.push(`the big map lists ${stairs} of a maze's stairs before they are found`);
+    await page.tap('#bigmap .bm-x');
+
+    step('an MVP has its big health bar');
+    await page.evaluate(() => window.__aria.warp('storm', null));
+    await page.waitForTimeout(3000);
+    await page.evaluate(() => { const a = window.__aria, m = a.mobs.list.find((m) => m.type === 'poseidon' && m.alive); if (m) { a.player.setPos(m.x + 2.5, m.z); a.player.command({ mob: m }); } });
+    await page.waitForTimeout(1500);
+    const bb = await page.evaluate(() => {
+      const el = document.getElementById('bossbar'), r = el.getBoundingClientRect(), info = document.getElementById('info').getBoundingClientRect(), mm = document.getElementById('minimap').getBoundingClientRect();
+      return { hidden: el.hidden, name: el.querySelector('.bb-name').textContent, marks: el.querySelectorAll('.bb-bar s').length, clear: r.left >= info.right && r.right <= mm.left && r.width >= 150 };
+    });
+    if (bb.hidden || !/Poseidon/.test(bb.name) || bb.marks < 3) fail.push(`the boss bar in an MVP fight: ${JSON.stringify(bb)}`);
+    else if (!bb.clear) fail.push('the boss bar runs under the hero panel or the minimap');
+
     step('every map');
     const moods = [];
     const ids = await page.evaluate(() => Object.entries(window.__aria.MAPS).filter(([, m]) => !m.arena).map(([id]) => id)); // (a raid's arena only in a run)

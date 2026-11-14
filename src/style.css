@@ -259,7 +259,7 @@ html, body {
   position: absolute;
   top: calc(156px + env(safe-area-inset-top));
   right: calc(12px + env(safe-area-inset-right));
-  width: 142px; /* no wider than the minimap and the gear beside it */
+  width: 168px; /* (a little wider than the minimap: a goal of a dozen words in three lines, not five) */
   display: flex;
   flex-direction: column;
   gap: 3px;
@@ -280,6 +280,7 @@ html, body {
 #quests .qlist div { padding: 3px 7px; border-radius: 7px; background: rgba(30, 22, 16, .55); flex: none; }
 #quests b { display: block; font-size: 14px; color: #ffe6a8; }
 #quests span { opacity: .9; }
+#quests .story span { font-size: 12px; }
 #quests .done b { color: #b6ec8e; }
 #quests .story { background: rgba(46, 30, 70, .7) !important; box-shadow: inset 0 0 0 1px rgba(184, 160, 255, .45); }
 #quests .story small { display: block; font-size: 11px; color: #c8b8ff; text-transform: uppercase; letter-spacing: .04em; }
@@ -406,6 +407,10 @@ body.named #toasts { top: calc(175px + var(--pets-push, 0px) + env(safe-area-ins
 #pets .pet em { font-style: normal; text-align: right; color: #e8eef8; font-variant-numeric: tabular-nums; }
 #pets .pet.low em { color: #ff8a7a; }
 #info .who { display: flex; align-items: baseline; gap: 6px; white-space: nowrap; min-width: 0; }
+/* a named hero's fold button sits on the name's line above: the job's line has the panel's whole width, so the
+   Job Level of a long-named second job is not cut off ("BladeMaster Lv 80 · J…") */
+body.named #info .who { padding-right: 0; gap: 4px; }
+#info .who.long .jobname { letter-spacing: -.02em; }
 #info .jobname { font-size: 14px; color: #fff; }
 #info .lv { font-weight: 600; color: #cfd8ea; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 /* second-job names are long: a smaller title keeps the whole line, and the three bars, in the box */
@@ -607,6 +612,12 @@ button.eq:active { background: var(--w-sel); }
 .ritem > div { flex: 1; min-width: 0; }
 .ritem b { display: block; color: var(--w-text); }
 .ritem small { display: block; color: var(--w-dim); font-size: 12px; }
+/* a shop's rows: one line of what a thing is until tapped (menus.js shopMore), and Buy, x10, x50 side by side */
+.ritem.shop > div[data-act] { cursor: pointer; }
+.ritem.shop small { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ritem.shop.more small { white-space: normal; }
+.ritem.shop .buyrow { flex-direction: row; align-items: center; gap: 3px; }
+.ritem.shop .buyrow .rbtn { padding-left: 7px; padding-right: 7px; min-width: 0; }
 .ritem[data-drag] { cursor: grab; touch-action: none; }
 .ritem.level, .ritem.missing { color: var(--w-dim); }
 .ritem.level { opacity: .6; }
@@ -784,6 +795,7 @@ button.eq:active { background: var(--w-sel); }
 #minimap { cursor: pointer; pointer-events: auto; }
 #bigmap { position: absolute; inset: 0; z-index: 30; display: grid; place-items: center; background: rgba(8, 10, 16, .45); pointer-events: auto; }
 #bigmap[hidden] { display: none; }
+#bigmap .bm-mark[hidden] { display: none; } /* (a boss roaming a maze's dark: explored.js) */
 #bigmap .bm-panel { background: var(--w-bg); border: 1px solid var(--w-line); border-radius: 8px; box-shadow: 0 6px 20px rgba(0, 0, 0, .55); padding: 4px; max-width: calc(100vw - 16px); }
 #bigmap .bm-bar { display: flex; align-items: center; gap: 8px; padding: 2px 4px 5px; color: var(--w-text); font: 12px Tahoma, Verdana, system-ui, sans-serif; }
 #bigmap .bm-bar b { font-size: 14px; color: var(--w-gold); }
@@ -846,18 +858,18 @@ button.eq:active { background: var(--w-sel); }
 #bossbar {
   position: absolute;
   top: calc(46px + env(safe-area-inset-top));
-  left: 50%;
-  transform: translateX(-50%);
-  width: min(62vw, 520px);
+  left: 220px; /* (bossbar.js places it between the hero's panel and the buttons by the minimap) */
+  width: min(calc(100vw - 440px), 520px);
   text-align: center;
+  pointer-events: none;
   color: #fff4dc;
   text-shadow: 0 0 3px #2e2118, 0 0 3px #2e2118;
 }
-#bossbar .bb-name { font-size: 15px; font-weight: bold; letter-spacing: .06em; margin-bottom: 3px; }
+#bossbar .bb-name { font-size: 15px; font-weight: bold; letter-spacing: .06em; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 #bossbar .bb-bar { position: relative; height: 16px; border: 2px solid #2e2118; border-radius: 6px; background: #3a2a22; overflow: hidden; box-shadow: 0 2px 6px rgba(0, 0, 0, .5); }
 #bossbar .bb-bar i { position: absolute; inset: 0 auto 0 0; background: linear-gradient(#ffb45a, #e86a2a); transition: width .15s; }
 #bossbar.low .bb-bar i { background: linear-gradient(#ff7a6a, #c82a2a); }
-#bossbar .bb-bar s { position: absolute; top: 0; bottom: 0; left: 60%; width: 2px; background: rgba(255, 244, 220, .7); } /* where it calls its guards */
+#bossbar .bb-bar s { position: absolute; top: 0; bottom: 0; left: 60%; width: 2px; margin-left: -1px; background: rgba(255, 244, 220, .7); } /* where it calls its guards, rages or changes phase (bossbar.js) */
 #bossbar.hit .bb-bar { animation: bbhit .18s; }
 @keyframes bbhit { 0% { filter: brightness(2); } 100% { filter: none; } }
 .btnrow.raids .rbtn { text-align: left; }

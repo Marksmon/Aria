@@ -9,7 +9,9 @@
     "test": "node --test \"test/*.test.mjs\"",
     "smoke": "node test/smoke.cjs",
     "sim": "node build-tools/sim.mjs",
-    "sim:second": "node build-tools/second-sim.mjs --check"
+    "sim:second": "node build-tools/second-sim.mjs --check",
+    "sim:econ": "node build-tools/econ-sim.mjs",
+    "sim:mvp": "node build-tools/mvp-sim.mjs --reach"
   },
   "keywords": [],
   "author": "",
