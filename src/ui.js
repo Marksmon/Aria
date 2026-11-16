@@ -37,6 +37,17 @@ export class UI {
     this.faintEl.classList.toggle('show', show);
   }
 
+  // the job line keeps its levels whole on any phone's font (November 2026: on some fonts "BladeMaster Lv 80 · J..."): the
+  // levels shrink a point at a time, then the job's name, and at the last the levels go short ("80 · J40")
+  fitWho() {
+    const who = this.infoEl.querySelector('.who'), lv = who.querySelector('.lv'), jn = who.querySelector('.jobname');
+    lv.style.fontSize = jn.style.fontSize = '';
+    const full = lv.textContent.replace(/^(\d+) · J(\d+)$/, 'Lv $1 · Job $2'), over = () => lv.scrollWidth > lv.clientWidth + 0.5;
+    lv.textContent = full;
+    for (let f = parseFloat(getComputedStyle(lv).fontSize); over() && f > 10.5; f -= 0.5) lv.style.fontSize = `${f - 0.5}px`;
+    for (let f = parseFloat(getComputedStyle(jn).fontSize); over() && f > 11; f -= 0.5) jn.style.fontSize = `${f - 0.5}px`;
+    if (over()) lv.textContent = full.replace(/^Lv (\d+) · Job (\d+)$/, '$1 · J$2');
+  }
   // Ragnarok's basic info window: job, levels, HP / SP bars and EXP to the next levels
   drawInfo(p, prog, jobName, heroName = '') {
     const pct = (a, b, maxed) => (maxed ? 100 : Math.min(100, (a / b) * 100));
@@ -53,6 +64,8 @@ export class UI {
     el.querySelector('.who').classList.toggle('long', jobName.length > 8);
     el.querySelector('.lv').textContent = `Lv ${prog.baseLv} · Job ${prog.jobLv}`;
     el.querySelector('.who em').hidden = prog.statPoints <= 0 && prog.skillPoints <= 0;
+    const whoKey = [prog.baseLv, prog.jobLv, jobName, prog.statPoints > 0 || prog.skillPoints > 0, heroName].join('/');
+    if (whoKey !== this.lastWho) { this.lastWho = whoKey; this.fitWho(); } // (only when the line changes: fitting measures the page)
     const bar = (cls, v, max, label) => {
       el.querySelector(`.${cls} i`).style.width = `${(v / max) * 100}%`;
       el.querySelector(`.${cls} span`).textContent = `${label} ${v} / ${max}`;

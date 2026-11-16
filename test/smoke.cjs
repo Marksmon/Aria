@@ -133,9 +133,11 @@ async function waitFor(url, ms = 30000) {
       const was = [jn.textContent, lv.textContent, em.hidden, el.classList.contains('long')], bad = [];
       for (const n of ['Trainee', 'Sorcerer', 'Assassin', 'BladeMaster', 'Magic Knight', 'Windrunner', 'Moon Ranger', 'Beastmaster', 'Shadowblade']) {
         jn.textContent = n; el.classList.toggle('long', n.length > 8); lv.textContent = 'Lv 99 · Job 50'; em.hidden = false;
-        if (lv.scrollWidth > lv.clientWidth) bad.push(`${n} (${lv.scrollWidth} px in ${lv.clientWidth})`);
+        window.__aria.ui.fitWho(); // (the game fits the line to the phone's font)
+        if (lv.scrollWidth > lv.clientWidth + 0.5) bad.push(`${n} (${lv.scrollWidth} px in ${lv.clientWidth})`);
       }
       jn.textContent = was[0]; lv.textContent = was[1]; em.hidden = was[2]; el.classList.toggle('long', was[3]);
+      window.__aria.ui.fitWho();
       return bad;
     });
     if (cut.length) fail.push(`the hero panel cuts off the Job Level: ${cut.join(', ')}`);
