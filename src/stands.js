@@ -12,9 +12,13 @@ export function installStands(ctx) {
   let vigil = null, giantWarnT = -99; // vigil: { t, next, list }
   const VIGIL_WAVE = 15; // seconds between waves of heralds (lesser ones, like a boss's guards)
   const giantOf = () => mobs.list.find((m) => m.alive && m.def.mvp && m.type === 'jarl');
+  // every other boss on the map (a mini-boss, an MVP) is held by the song too while it lasts, as the Giant is (November
+  // 2026: the Rainbow Runner or Poseidon would join a stand's waves); a blow wakes one, as ever
+  const bossesHere = () => mobs.list.filter((m) => m.alive && (m.def.boss || m.def.mvp) && !m.def.storyBoss && !m.temp && m.type !== 'jarl');
   function endVigil(why) {
     const g = giantOf();
     if (g) g.lulled = false;
+    for (const m of vigil?.held || []) if (m.alive) m.lulled = false;
     for (const m of vigil.list) if (mobs.list.includes(m)) { fx.puff(m.x, world.heightAt(m.x, m.z) + 0.3, m.z, m.def.w); mobs.remove(m); }
     vigil = null;
     story.count = 0;
@@ -26,7 +30,7 @@ export function installStands(ctx) {
     if (!ctx.storyLive() || s?.kind !== 'survive') { if (vigil) endVigil(); return; }
     const y = world.heightAt(s.at.x, s.at.z);
     if (!vigil) {
-      if (world.id !== s.map) return;
+      if (world.id !== s.map || story.flags[s.id]) return; // (held already: the story moves on, the circle doesn't start again)
       if (Math.random() < dt * 3) fx.sparkle(s.at.x, y + 0.4, s.at.z, s.color || '#b48aff', 4); // where to stand
       if (Math.hypot(s.at.x - player.x, s.at.z - player.z) > 3 || player.state !== 'normal') return;
       // the Fire Giant roams the hill: the song would only wake him if he stood close, and once it
@@ -37,7 +41,9 @@ export function installStands(ctx) {
         return;
       }
       if (g) { g.lulled = true; g.state = 'wander'; }
-      vigil = { t: 0, next: 2, list: [], giant: g };
+      const held = bossesHere();
+      for (const m of held) { m.lulled = true; m.state = 'wander'; }
+      vigil = { t: 0, next: 2, list: [], giant: g, held };
       ctx.menus.message(s.startText || 'The runes in the circle light up, and Vigdis\'s song rises out of them. The hill trembles: the heralds are coming!');
       cam.shake = 0.35;
       audio.play('night');

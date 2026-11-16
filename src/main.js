@@ -8,7 +8,7 @@ import { Player } from './player.js';
 import { Input } from './input.js';
 import { UI } from './ui.js';
 import { FX } from './fx.js';
-import { MobManager, MOB_DEFS, MOVES, MVP_MOVE, RIDDLE, RIDDLES, fierce, guardDef, raidDef, pityChance } from './mobs.js';
+import { MobManager, MOB_DEFS, MOVES, MVP_MOVE, RIDDLE, RIDDLES, fierce, guardDef, raidDef, pityChance, tierOf } from './mobs.js';
 import { Allies, ROAR } from './allies.js';
 import { RAIDS, rollReward } from './raid.js';
 import { loadSave, writeSave, loadStorage, writeStorage, clearSave, saveCode, loadCode, SLOTS, activeSlot, setActiveSlot, restoreMirror, backedUpAt } from './save.js';
@@ -91,6 +91,7 @@ mobs.mvpAt = typeof save?.mvpAt === 'number' ? { jarl: save.mvpAt } : save?.mvpA
 mobs.pity = save?.mvpPity && typeof save.mvpPity === 'object' ? save.mvpPity : {}; // each MVP's kills since its card / ultra rare fell (PITY)
 mobs.bossHp = save?.bossHp || {};
 mobs.heroTier = () => JOBS[prog.job]?.tier || 0; // (mini-bosses come only for second jobs: mobs.js picksFight)
+mobs.heroLv = () => prog.baseLv; // (an MVP leaves a hero far under its tier alone: picksFight)
 mobs.bossAt = save?.bossAt || {};
 mobs.fieldAt = save?.fieldAt || {};
 const prog = new Progress();
@@ -3263,7 +3264,8 @@ function mobLabels() {
     projV.set(m.x, top, m.z).project(camera);
     if (projV.z > 1) { el.style.display = 'none'; continue; }
     el.style.display = 'block';
-    const name = m.def.name + (m.def.mvp ? ' ✦ MVP' : m.def.boss ? ' ✦' : '');
+    const tier = tierOf(m.type); // (the Base Level a boss is made for: its level alone misleads, an MVP's above all)
+    const name = m.def.name + (m.def.mvp ? ' ✦ MVP' : m.def.boss ? ' ✦' : '') + (tier && prog.baseLv < tier ? ` · for Base ${tier}+` : '');
     if (k === 'target' && settings.get('targetBar')) { // the one you fight: a thin health bar under its name (Settings)
       if (!el.firstChild || el.firstChild.nodeType !== 1) { el.textContent = ''; el.innerHTML = '<b></b><i class="tbar"><s></s></i>'; }
       const f = clamp(m.hp / (m.def.hp || 1), 0, 1);

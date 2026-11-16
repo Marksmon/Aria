@@ -284,3 +284,18 @@ test("a story step's fires stand on its map, each fed by real monsters of the st
     for (const g of s.guards) assert.ok(mobOk(g) && !MOB_DEFS[g].boss && !MOB_DEFS[g].mvp, `story ${s.id}: ${g}`);
   }
 });
+
+test("every MVP has a tier, which the game shows and which keeps it off heroes far under it (the owner's call)", async () => {
+  const { TIERS, tierOf, MVP_SPARE } = await import('../src/mobs.js');
+  for (const [type, d] of Object.entries(MOB_DEFS)) {
+    if (d.mvp) assert.ok(TIERS[type] >= 75 && TIERS[type] <= 99, `${type}: no tier`);
+    if (d.boss && !d.storyBoss && !d.raidLv && !d.decoy) assert.equal(tierOf(type), TIERS[type] ?? 75, type);
+  }
+  assert.equal(MVP_SPARE, 20);
+});
+
+test('the story never asks for more than three talks in a row (the pacing rule)', () => {
+  let run = 0, worst = 0, at = '';
+  for (const s of STORY) { run = s.kind === 'talk' ? run + 1 : 0; if (run > worst) { worst = run; at = s.id; } }
+  assert.ok(worst <= 3, `${worst} talks in a row, ending at ${at}`);
+});

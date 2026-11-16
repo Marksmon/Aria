@@ -2,7 +2,7 @@
 // fights the hero in the open. An MVP is a fight of minutes with a plan (its guards at 80/50/25%, its rage below
 // half, Davy Jones's phases), and its HP was only a thin bar over a sprite taller than the screen: the bar says
 // how the fight stands, with a mark at each of those turns. main.js calls installBossBar once and ticks it.
-import { callMarks, fierce, MVP_RAGE } from './mobs.js';
+import { callMarks, fierce, MVP_RAGE, tierOf } from './mobs.js';
 
 const NEAR = 18, HOLD = 3; // paces a boss's fight is shown from; seconds the bar stays once it stops
 
@@ -40,7 +40,8 @@ export function installBossBar(ctx) {
   function show(m) {
     boss = m;
     shown = 1;
-    nameEl.textContent = `${m.def.name}${m.def.mvp ? ' ✦ MVP' : ''} · Lv ${m.def.lv}`;
+    const tier = m.def.raidLv ? null : tierOf(m.type);
+    nameEl.textContent = `${m.def.name}${m.def.mvp ? ' ✦ MVP' : ''} · Lv ${m.def.lv}${tier ? ` · for Base ${tier}+` : ''}`;
     for (const s of bar.querySelectorAll('s')) s.remove();
     for (const v of bossMarks(m.def)) { const s = document.createElement('s'); s.style.left = `${v * 100}%`; bar.appendChild(s); }
     place();

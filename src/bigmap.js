@@ -8,7 +8,7 @@
 // (explored.js): its stairs and monsters are listed once seen, and open ground is walked to only where known.
 import { ZONE_NAMES } from './world.js';
 import { NPCS } from './quests.js';
-import { MOB_DEFS } from './mobs.js';
+import { MOB_DEFS, tierOf } from './mobs.js';
 
 const SIZE = 64; // a field is 64 x 64 paces; the minimap image draws 2 pixels a pace
 
@@ -108,7 +108,8 @@ export class BigMap {
       if (!rows.length) continue;
       list += `<div class="bm-group">${title}</div>`;
       for (const e of rows) {
-        const extra = e.kind === 'mob' ? ` <small>${e.mvp ? 'MVP · ' : ''}Lv ${e.def.lv}</small>${e.boss ? `<em class="bm-st" data-type="${e.type}"></em>` : ''}` : '';
+        const tier = e.kind === 'mob' && e.boss ? tierOf(e.type) : null; // (a boss: the Base Level it is made for)
+        const extra = e.kind === 'mob' ? ` <small>${e.mvp ? 'MVP · ' : ''}Lv ${e.def.lv}${tier ? ` · for Base ${tier}+` : ''}</small>${e.boss ? `<em class="bm-st" data-type="${e.type}"></em>` : ''}` : '';
         list += `<button class="bm-row ${e.kind}${e.boss ? ' boss' : ''}" data-i="${e.n - 1}"><i>${e.n}</i><span>${e.name}${extra}</span></button>`;
       }
     }

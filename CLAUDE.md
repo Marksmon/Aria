@@ -348,7 +348,7 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   run it after changing early monsters, fields or the economy. `build-tools/stand-bot.cjs` plays one of the story's
   stands the same way (a BladeMaster in shop gear: was it held, on how many potions).
 - The November 2026 review's measures (`docs/balance.md`): `second-sim` and `mvp-sim` hold all ten second jobs (the
-  tiers' check still judges by the first six; `mvp-sim` prints how far the ten lie apart, and `--reach` the fights
+  tiers' check judges by the middle of all ten; `mvp-sim` prints how far the ten lie apart, and `--reach` the fights
   in gear a hero can have before any MVP has fallen); `build-tools/econ-sim.mjs` is the economy at each level (what
   a kill pays, what the fight costs, perz an hour drinking or resting; `npm test` fails a monster that pays under
   60% of those near its level).
@@ -356,6 +356,10 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   turns (`bossbar.js`; a raid's boss too); a monster taller than the hero that stands between them and the camera
   fades (`fadeBigMobs`); a dungeon maze's map is dark until walked, saved with the hero (`explored.js`: the minimap
   and the big map, the great halls and every other map whole); shops sell by the 1, 10 or 50.
+- MVPs leave a hero more than `MVP_SPARE` (20) levels under their tier alone unless struck or taunted (the owner's call,
+  November 2026, `picksFight`); `TIERS` lives in `mobs.js` (the sim imports it), and a boss's name tag, big-map row and
+  boss bar say the Base Level it is made for ("for Base 75+"). While a story stand lasts, every boss on its map is held
+  by the song (`lulled`), as the Fire Giant was.
 - A story stand's heralds come at the stand's level from Chapter 10 on (a step's `heraldLv`, `mobs.js` `heraldDef`:
   the kind grown to that level, a lesser swarm one; never above the hero's own level). A new late stand gets one
   (a test checks it).

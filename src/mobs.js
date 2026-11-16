@@ -524,6 +524,19 @@ const STATUS_COL = Object.fromEntries(Object.entries({ bark: '#c8a05a', bark2: '
 const SUMMON_AT = 0.6, SUMMON_CD = 120;
 // fierce: an MVP, or a boss made as hard as one (the Hell raid's boss: FIERCE)
 export const fierce = (d) => !!(d.mvp || d.fierce);
+// each MVP's tier (the owner's call, November 2026): the Base Level a second job in the best gear short of MVP gear
+// beats it at (build-tools/mvp-sim.mjs tunes to it). The name tag and the big map say it ("for Base 75+"), and an MVP
+// leaves a hero more than MVP_SPARE levels under it alone unless struck or taunted (the owner's call: the story walks
+// young heroes past them)
+export const TIERS = {
+  koboldKing: 75, goblinKing: 75,
+  jarl: 85, ancientTreant: 85, sandWyrm: 85,
+  eternalSphinx: 95, nidhogg: 95, poseidon: 95,
+  davyJones: 99, // (Lv 110: the hardest of them, the owner's call)
+};
+export const MVP_SPARE = 20;
+// the Base Level a boss is made for: an MVP its tier, a mini-boss a Lv 75 second job (the owner's call)
+export const tierOf = (type) => TIERS[type] ?? (MOB_DEFS[type]?.boss && !MOB_DEFS[type]?.storyBoss && !MOB_DEFS[type]?.raidLv ? 75 : null);
 export const callMarks = (d) => (fierce(d) ? MVP_CALLS : [SUMMON_AT]);
 const summonCd = (d) => d.summonCd ?? (fierce(d) ? MVP_SUMMON_CD : SUMMON_CD);
 // a boss's guards are lesser servants of their kind: half the HP, 60% of the ATK (tuned with
@@ -1114,12 +1127,14 @@ class Mob {
   }
 
   // a mini-boss comes for a hero of its own: one who has taken a second job (the owner's call); a
-  // Trainee or first job it leaves be, unless they strike it first (hit) or taunt it. MVPs and raid
-  // bosses come for anyone
+  // Trainee or first job it leaves be, unless they strike it first (hit) or taunt it. An MVP leaves a hero more than
+  // MVP_SPARE levels under its tier be the same way (the owner's call, November 2026). Raid bosses come for anyone
   picksFight(p) {
     const d = this.def;
-    if (!d.boss || d.mvp || d.relentless || d.storyBoss || this.provokeT > 0 || this.angry > 0) return true; // (the story's own boss fights anyone)
-    return p !== this.mgr.hero || (this.mgr.heroTier?.() || 0) >= 2; // (a companion beast: only a Beastmaster has them)
+    if ((!d.boss && !d.mvp) || d.relentless || d.storyBoss || this.provokeT > 0 || this.angry > 0) return true; // (the story's own boss fights anyone)
+    if (p !== this.mgr.hero) return true; // (a companion beast: only a Beastmaster has them)
+    if (d.mvp) return (this.mgr.heroLv?.() ?? 99) >= (TIERS[this.type] ?? 0) - MVP_SPARE; // an MVP: a hero not far under its tier
+    return (this.mgr.heroTier?.() || 0) >= 2;
   }
 
   // the monster's numbers as the battle rules see them
@@ -1357,7 +1372,7 @@ class Mob {
       if (homeD < 2 || !moving) { this.state = 'wander'; this.tired = 2; }
     } else switch (d.ai) {
       case 'boss': {
-        if (d.wyrm) { moving = this.wyrmTick(dt, p, dist, speed, available && hostile, aggro, contact); break; }
+        if (d.wyrm) { moving = this.wyrmTick(dt, p, dist, speed, available && hostile && (this.state === 'chase' || this.picksFight(p)), aggro, contact); break; }
         if (this.state === 'wander' && available && hostile && this.tired <= 0 && dist < aggro && this.picksFight(p)) {
           this.state = 'chase';
           this.chaseT = d.chase;

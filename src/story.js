@@ -31,7 +31,7 @@
 import { NPCS } from './quests.js';
 import { MAPS, ZONE_NAMES } from './world.js';
 import { JOBS } from './progress.js';
-import { skillLv } from './skills.js';
+import { skillLv, SKILLS } from './skills.js';
 
 // the three callings the Seeress's runes can name (the 'seeress' step asks; callingOf reads the answers)
 export const CALLINGS = {
@@ -332,8 +332,14 @@ export const STORY = [
   { id: 'secondpath', ch: 'Chapter 7: The Second Path', title: 'Beyond the First Path', kind: 'job2', goal: 'Take a second job: BladeMaster (Captain Ulfr), Wizard (Archmage Vigdis), Magic Knight (Sir Eirik, Steinborg), Windrunner (Huntmaster Sigrid, Veidheim), Moon Ranger (Hrafn the Stargazer, Galdrheim), Beastmaster (Bjarki, Veidheim), Phantom (Master Kol, Rytingborg), Shadowblade (Rurik, Steinborg), Hunter (Greta the Trapper, Veidheim) or Voodoo (Mother Hulda, Galdrheim)',
     hint: 'A second-job trial opens at Job Level 40. Which trials you may take depends on where your skill points went.',
     say: [[null, 'Your power has taken a new shape. The aura around you is faint, but every monster in Aria can feel it.'],
-      ['vigdis', 'Now you are ready. Go to Ash Heath: the Fire Beetles there gorge on the goblins\' red coal. Break their feast.']],
+      [null, 'LESSON: YOUR SECOND JOB. Every second job has a way of fighting no other job shares, and points of its own. Open the Skills window: your new tree is its last tab.']],
     reward: { xp: 15000, perz: 10000 } },
+  // (November 2026: the chapter was one step; now the new job's own way is learnt before the story goes on)
+  { id: 'newpath', ch: 'Chapter 7: The Second Path', title: 'A Way of Your Own', kind: 'job2skill', goal: 'Learn a skill of your second job: open the Skills window, its tree is the last tab',
+    hint: 'Each second job has one mechanic no other has: the BladeMaster\'s Momentum, the Wizard\'s Resonance, the Hunter\'s traps, the Voodoo\'s Blight... Its skills say how it works.',
+    say: [[null, 'The new skill settles in your hands as if it had always been there. This is a way of fighting that no other path in Aria shares.'],
+      ['vigdis', 'Now you are ready. Go to Ash Heath: the Fire Beetles there gorge on the goblins\' red coal. Break their feast.']],
+    reward: { xp: 10000 } },
 
   // ---------- Chapter 8: the Waking Fire ----------
   { id: 'coalfeast', ch: 'Chapter 8: The Waking Fire', title: 'The Coal Feast', kind: 'kill', mob: 'cinderBeetle', n: 20, map: 'heath', goal: 'Defeat 20 Fire Beetles in Ash Heath (east of Ember Hill)',
@@ -359,20 +365,17 @@ export const STORY = [
     say: [['bram', 'Two fire-rings: one to keep him dreaming, and one to wake him. Ours burns bright, and theirs is cold. Let it stay that way.'],
       ['bram', 'The kobolds of Coal Pit can lay down their picks, and the salt carts will roll again. Hakon will be glad of his horse.'],
       ['bram', 'But a hand that cuts runes backwards is still out there. Rest while you can, hero of Eldrun.'],
-      [null, 'The Waking Fire: the end of the second saga. The Kobold King in Coal Pit and the Goblin King in Serpent Wood still hold their courts, for anyone strong enough to face them.']],
+      [null, 'The Waking Fire: the end of the second saga. The Kobold King in Coal Pit and the Goblin King in Serpent Wood still hold their courts, for anyone strong enough to face them.'],
+      // (Chapter 9's first step, a talk that only relayed Vigdis's reading, folded in here as her letter: November 2026)
+      [null, 'Days later, a letter from Archmage Vigdis: "The stone has spoken, a little. Under the backward runes is a second mark, cut small: a sun over sand. Whoever taught the goblins did not stop at Serpent Wood. There is another ring, far to the south, past Rytingborg. Thora the Caravan Master knows every road in those sands: ask her what her drivers have seen."']],
     reward: { xp: 60000, perz: 50000, items: { hard_ore: 5, armor_ore: 5 } } },
 
   // ---------- Chapter 9: the eye in the sand (about Base 55-60) ----------
   // the third saga (docs/story-outline.md): the backward rune-stone's second mark leads south. The rune-cutter is
   // Torvald (the owner's pick), unmasked in Chapter 11. No step needs a boss, and the Sphinx's and the World
   // Tree's secret series stay secret: the story walks round them
-  { id: 'sunmark', ch: 'Chapter 9: The Eye in the Sand', title: 'A Sun Over Sand', kind: 'talk', npc: 'vigdis', goal: 'Archmage Vigdis has read the backward rune-stone (Galdrheim)',
-    hint: 'The third saga: about Base Level 55 and up.',
-    say: [['vigdis', 'The stone has spoken, a little. Under the backward runes is a second mark, cut small: a sun over sand.'],
-      ['vigdis', 'Whoever taught the goblins did not stop at Serpent Wood. There is another ring, far to the south, in the desert past Rytingborg.'],
-      ['vigdis', 'Thora the Caravan Master knows every road in those sands. Ask her what her drivers have seen.']],
-    reward: { xp: 40000 } },
   { id: 'caravans', ch: 'Chapter 9: The Eye in the Sand', title: 'The Missing Caravans', kind: 'talk', npc: 'thora', goal: 'Ask Thora the Caravan Master in Rytingborg what her drivers have seen',
+    hint: 'The third saga: about Base Level 55 and up. Vigdis read a sun over sand on the backward rune-stone.',
     say: [['thora', 'Seen? Three caravans gone in a month, on the Pyramid road. Wagons, mules, drivers. The scorpions came up out of the sand like they were called.'],
       ['thora', 'And the one driver who walked home swears there was a man on the dunes before the scorpions came. Robed, with a staff, drawing in the sand with it.'],
       ['thora', 'Clear the scorpions off the road round the Pyramid, and I will believe the road can be ridden again.']],
@@ -629,23 +632,33 @@ export const STORY = [
   // ---------- the fifth saga, the Fire Giant (Chapters 17-20, about Base 85-90): the Giant ended for good, in the Crater of
   // Binding (the owner's call: the final quest, the Fire Giant fought in a contained area) ----------
   // ---------- Chapter 17: the four bindings (about Base 85-87) ----------
+  // (November 2026: the chapter was five talks in a row; now each binding is won its own way)
   { id: 'fourkeeping', ch: 'Chapter 17: The Four Bindings', title: 'Four Keepings', kind: 'talk', npc: 'vigdis', goal: 'Ask Archmage Vigdis about the four binding runes (Galdrheim)',
     say: [['vigdis', 'Four binding runes in four keepings. I know one of them. It is cut into the rune-well\'s crystal, under every other rune, too small to see. I will lift it out.'],
-      ['vigdis', 'The others, I can guess. Saeunn\'s tower is older than Steinborg. Ylfa\'s goddess has stood on that quay since the first ship landed. And the fourth...'],
-      ['vigdis', 'The settlers came over the desert as well as the sea. Old Gunnhild in Rytingborg will know. Go to the Seeress first.']],
+      ['vigdis', 'Saeunn read the stone binding in her runes last night: it stands on Beacon Moor, cut in three across the oldest standing stones in Aria. Find all three.'],
+      ['vigdis', 'Ylfa\'s goddess on the quay held the sea binding in her spear, but the Merrows of the Coral Shallows took the spear-head when the sea smoked. Take it back from them.'],
+      ['vigdis', 'And Old Gunnhild says the sand binding is cut on her grandmother\'s caravan stone in Scorpion Sands. Hold the stone while its rubbing is taken: the desert will not like it.']],
     reward: { xp: 400000 } },
-  { id: 'stonebind', ch: 'Chapter 17: The Four Bindings', title: 'The Stone Binding', kind: 'talk', npc: 'saeunn', goal: 'Ask Saeunn the Seeress for the first binding (Steinborg)',
-    say: [['saeunn', 'The binding rune of stone. It is set in the floor of this tower, under the rug. I have walked over it every day for thirty years.'],
-      ['saeunn', 'I cast my runes on you last night. They fell in a ring, round a fire, and every one of them face up. I have never seen them fall so.'],
-      ['saeunn', 'Here: I have pressed it into clay for you. Carry it carefully.']],
+  { id: 'stonebind', ch: 'Chapter 17: The Four Bindings', title: 'The Stone Binding', kind: 'search', thing: 'Binding stone', verb: 'Stone binding traced',
+    spots: [{ map: 'beacon', x: 16, z: 16 }, { map: 'beacon', x: 48, z: 18 }, { map: 'beacon', x: 20, z: 48 }],
+    goal: 'Trace the stone binding on the three oldest standing stones of Beacon Moor',
+    hint: 'They glint among the moor\'s heather. Walk over each.',
+    say: [[null, 'The third rune joins the other two under your fingers, and for a moment the whole moor hums, low and deep, like a held note.'],
+      [null, 'Saeunn\'s words, from the morning: "The runes fell in a ring, round a fire, and every one of them face up. I have never seen them fall so."']],
     reward: { xp: 400000 } },
-  { id: 'seabind', ch: 'Chapter 17: The Four Bindings', title: 'The Sea Binding', kind: 'talk', npc: 'ylfa', goal: 'Ask Ylfa the Priestess for the binding of the sea (Hafnvik)',
-    say: [['ylfa', 'The goddess on the quay holds a spear. Its head is not bronze: it is a binding rune, cast in the first flame and set there by the settlers themselves.'],
-      ['ylfa', 'The sailors will think the world is ending when I climb her. Let them. Here.']],
+  { id: 'seabind', ch: 'Chapter 17: The Four Bindings', title: 'The Sea Binding', kind: 'kill', mob: 'merrow', n: 15, map: 'coral', goal: 'Take the goddess\'s spear-head back from the Merrows of the Coral Shallows: defeat 15 of them',
+    hint: 'Merrows wade the lagoon south of Hafnvik. The spear-head is passed from one to the next: keep at them.',
+    say: [[null, 'The last Merrow drops it in the shallows: a spear-head of no metal you know, warm, and cut with a binding rune that glows when the sea touches it.'],
+      ['ylfa', 'The sailors will think the world is ending when I climb her to look at the socket. Let them. Keep it: the goddess lends it to you.']],
     reward: { xp: 400000 } },
-  { id: 'sandbind', ch: 'Chapter 17: The Four Bindings', title: 'The Sand Binding', kind: 'talk', npc: 'gunnhild', goal: 'Ask Old Gunnhild in Rytingborg for the binding of the sands',
-    say: [['gunnhild', 'A binding rune? Dear, I have been sitting on it. Quite literally: it is cut into the bottom of this chair. My grandmother\'s grandmother\'s, from the first caravan.'],
-      ['gunnhild', 'Take a rubbing. And come back alive, mind. I want to hear how it ends.']],
+  { id: 'sandbind', ch: 'Chapter 17: The Four Bindings', title: 'The Sand Binding', kind: 'survive', heraldLv: 86, map: 'scorpion', at: { x: 24, z: 40 }, secs: 45, color: '#ffd27a',
+    heralds: { early: ['scorpion', 'runner'], late: ['scorpion', 'soldierAnt', 'runner'], after: 20 }, every: 10, most: 5,
+    startText: 'You lay the paper on Gunnhild\'s grandmother\'s caravan stone and begin the rubbing. The sand stirs all round: everything in the dunes has felt the rune wake!',
+    breakText: 'You left the caravan stone, and the rubbing smudged. Go back to it and begin again.',
+    goal: 'Hold Gunnhild\'s caravan stone in Scorpion Sands while the sand binding\'s rubbing is taken',
+    hint: 'The desert\'s beasts come for 45 seconds. Stay by the stone.',
+    say: [[null, 'The rubbing comes away clean: a binding rune, older than Rytingborg, its lines still sharp after a thousand years of sand.'],
+      ['gunnhild', 'A clean rubbing? Good. My grandmother\'s grandmother would have been pleased. Now go, and come back alive, mind. I want to hear how it ends.']],
     reward: { xp: 400000 } },
   { id: 'runebind', ch: 'Chapter 17: The Four Bindings', title: 'The Rune Binding', kind: 'talk', npc: 'vigdis', goal: 'Bring the three bindings to Archmage Vigdis (Galdrheim)',
     say: [['vigdis', 'Stone, sea, sand... and here, rune: lifted out of the well\'s crystal at dawn. Four bindings.'],
@@ -723,7 +736,7 @@ const OLD_ORDER = ['wake', 'stats', 'slimes', 'training', 'hotbar', 'report', 'n
 // finn, hunterkeeper, trade, trainee: Chapter 1 made shorter (Finn's lines went to 'eastward', the trade lesson to
 // 'sigridword'); a hero who was on one of the last three goes on to choosing a path
 // saltroad, wakingfire, wolfseye, sunkwell: talks folded into the step before them (the pacing pass, November 2026)
-const RENAMED = { saltroad: 'carter', wakingfire: 'coaltrain', wolfseye: 'rotroots', sunkwell: 'runespring', finn: 'marshroad', hunterkeeper: 'paths', trade: 'paths', trainee: 'paths', ready: 'runesong', lastfire: 'runesong', jarl: 'rekindled', ledger: 'carter', matron: 'redsprouts', furnace: 'coalfeast' };
+const RENAMED = { sunmark: 'caravans', saltroad: 'carter', wakingfire: 'coaltrain', wolfseye: 'rotroots', sunkwell: 'runespring', finn: 'marshroad', hunterkeeper: 'paths', trade: 'paths', trainee: 'paths', ready: 'runesong', lastfire: 'runesong', jarl: 'rekindled', ledger: 'carter', matron: 'redsprouts', furnace: 'coalfeast' };
 
 // directions: which way to walk from one map to reach another, through which portal
 export function route(from, to) {
@@ -837,6 +850,7 @@ export class Story {
       case 'sell': return !!this.flags.sold;
       case 'job': return state.prog.job !== 'novice';
       case 'job2': return JOBS[state.prog.job]?.tier === 2;
+      case 'job2skill': return JOBS[state.prog.job]?.tier === 2 && Object.entries(state.prog.skills).some(([id, n]) => n > 0 && SKILLS[id]?.job === state.prog.job);
       case 'keeper': return s.own ? !!state.keepers?.has(s.npc) : (state.keepers?.size || 0) >= 2; // (own: that Keeper's ledger)
       case 'level': return state.prog.baseLv >= s.lv;
       default: return false;

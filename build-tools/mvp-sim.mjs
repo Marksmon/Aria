@@ -19,7 +19,7 @@
 //   node build-tools/mvp-sim.mjs            every fight, the six jobs and the median
 //   node build-tools/mvp-sim.mjs --check    exit 1 if a fight leaves its tier (npm test runs it)
 import { setup, killTime, HEROES } from './second-sim.mjs';
-import { MOB_DEFS, MOVES, MVP_RAGE, MVP_MOVE, WYRM, RIDDLE, BARK, TREMOR, fierce, guardDef, raidDef } from '../src/mobs.js';
+import { MOB_DEFS, MOVES, MVP_RAGE, MVP_MOVE, WYRM, RIDDLE, BARK, TREMOR, TIERS, fierce, guardDef, raidDef } from '../src/mobs.js';
 import { RAIDS } from '../src/raid.js';
 import { mobAttack, derive, potionHeal } from '../src/rules.js';
 
@@ -164,14 +164,9 @@ export function fight(job, def, base, gear) {
   return { win: false, t, potions, left: mob / def.hp };
 }
 
-// the owner's tiers: each MVP's Base Level, in the best non-MVP gear; the mini-bosses at Base 75 in shop gear;
-// each raid's Hell boss at its Hell level in the best non-MVP gear
-export const TIERS = {
-  koboldKing: 75, goblinKing: 75,
-  jarl: 85, ancientTreant: 85, sandWyrm: 85,
-  eternalSphinx: 95, nidhogg: 95, poseidon: 95,
-  davyJones: 99, // (Lv 110: the hardest of them, the owner's call)
-};
+// the owner's tiers: each MVP's Base Level (TIERS, in mobs.js since November 2026: the game shows it), in the best
+// non-MVP gear; the mini-bosses at Base 75 in shop gear; each raid's Hell boss at its Hell level in the best non-MVP gear
+export { TIERS };
 export const MINI_LV = 75;
 // the main story's own boss (the Fire Giant in the Crater of Binding, Chapter 20): for a second job at the story's end,
 // in the gear a story hero has (shop gear), not the best
