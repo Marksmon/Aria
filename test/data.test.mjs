@@ -322,3 +322,22 @@ test("fields teach what bosses ask (November 2026): most fields have a monster w
     assert.ok(top <= Math.ceil(n / 2), `Lv ${b}: ${JSON.stringify(els)}`);
   }
 });
+
+test("the Deep Halls pay more EXP floor by floor, so Base 95-99 is climbed there (the owner's call)", async () => {
+  const { floorSpawns, DEPTH } = await import('../src/delve.js');
+  const { BASE_EXP } = await import('../src/ro-tables.js');
+  const { RATES } = await import('../src/progress.js');
+  const perKill = (k) => { const L = DEPTH.lv(k), sp = floorSpawns(k); return sp.reduce((a, [t]) => a + MOB_DEFS[t].exp[0] * DEPTH.mult(k) * (1 + DEPTH.gap * Math.max(0, L - MOB_DEFS[t].lv)) * DEPTH.exp(k) * RATES.base, 0) / sp.length; };
+  assert.ok(DEPTH.exp(10) > DEPTH.exp(5) && DEPTH.exp(1) === 1);
+  assert.ok(BASE_EXP[97] / perKill(10) <= 500, `Base 98 on floor 10: ${Math.round(BASE_EXP[97] / perKill(10))} kills`);
+});
+
+test("Hafnvik has its own people and quests, and the late game has quests to do (the review's R6)", () => {
+  const port = Object.values(NPCS).filter((n) => n.map === 'port');
+  const qs = port.flatMap((n) => n.quests || []);
+  assert.ok(port.length >= 8 && qs.length >= 20, `${port.length} people in Hafnvik, ${qs.length} quests`);
+  assert.ok(Object.values(QUESTS).filter((q) => q.lv >= 70).length >= 25, 'quests from Base 70');
+  for (const id of qs) assert.ok(QUESTS[id], id);
+  const kinds = new Set(qs.map((id) => QUESTS[id].kind));
+  assert.ok(kinds.size >= 6, `Hafnvik's quests in ${kinds.size} kinds`);
+});

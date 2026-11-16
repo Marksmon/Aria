@@ -189,7 +189,7 @@ sphere, a market under blue awnings, and a harbour of ships between two lighthou
 night. North of it lies Beacon Moor, south the Coral Shallows, a lagoon waded knee-deep. **Captain Asgeir** on the
 long pier sails to the Storm Isles, and, for heroes of Base 90, to **Loki's Gate**, a black rock where Loki the
 Mischiefbringer keeps the door of the Deep Halls, an endless dungeon: each floor a new maze, harder than the last,
-a checkpoint and a cache every fifth floor. The coast's monsters (painted in code, `src/coast.js`) are kinds found nowhere else in Aria, and mostly
+a checkpoint and a cache every fifth floor. Each floor pays more EXP than the last (+20% a floor), so the deep floors are where Base 95 to 99 is climbed. The coast's monsters (painted in code, `src/coast.js`) are kinds found nowhere else in Aria, and mostly
 Neutral, a few of an element for variety, so no one weapon element is best here: on the Tide Cliffs Quill Porcupines,
 Tusk Boars and Cliff Bandits with crossbows; in the Coral Shallows Blade Mantises, Chest Mimics that hop after you
 with their lids snapping, Glass Jellies and the Merrows, fish-folk with harpoons (Water); on the Storm Isles empty
@@ -1724,6 +1724,13 @@ with a striped fill that pulses faster as it comes, so it reads without its red.
 | Saga the Healer · Orvar the Caravaneer · Little Toki | Rytingborg | healing · carts to any land you have walked · lore |
 | Old Gunnhild | Rytingborg | **The Sphinx's Riddle** (60–64), a secret series: it shows once you have walked the Red Sands, the Cactus Dunes, Scorpion Sands and the Great Desert, and its last step opens the way to Sphinx Sands |
 | Sindri the Tomb Guide | Scorpion Sands, at the Pyramid | leads you into **Pharaoh's Tomb**, the raid, and makes its rare finds from Tomb Cores |
+| Rolf the Harbourmaster | Hafnvik, by the pier | The Harbour: The Cliff Road (66): 20 Cliff Bandits · The Waystone on the Cliffs (68): hold the Tide Cliffs' waystone against 3 waves · The Lost Pilot (70): find the pilot's four belongings on the Tide Cliffs |
+| Gerd the Fishwife | Hafnvik, the market | The Fish Market: Nets in the Lagoon (70): find four torn nets in the Coral Shallows · Jelly Season (72): 20 Glass Jellies · Merrow Stew (74): bring 12 Merrow Scales, then cook it with her |
+| Sela the Trader | Hafnvik, the market | shop (potions, battle oils) · Sela's Stall: Mimic Teeth (73): 15 Mimic Teeth · A Crate for Thora (75): carry salt fish to Thora in Rytingborg · Troll Hide (80): 12 Troll Hides |
+| Oda the Lightkeeper | Hafnvik, toward the north lighthouse | The Lights: Moth Dust (76): 15 Moth Dust · Every Coast (78): walk the Tide Cliffs, the Coral Shallows, Beacon Moor and the Storm Isles · Witch-Lights (83): 15 Moor Witches · The Keeper's Vigil (85): hold the old beacon against 3 waves |
+| Captain Asgeir | Hafnvik, the pier | sails to the Storm Isles, the Sunken Galleon (85) and Loki's Gate (90) · The Wave-Runner: Storm Damage (77): find the old jetty's four rings on the Storm Isles · The Drowned Watch (80): 25 Living Armors · Bones in the Hold (89): 20 Pirate Skeletons · The Third Deck (93): 20 Ghosts |
+| Brand the Smith | Hafnvik | shop, forges gear · The Sea Forge: Rusted Plate (79): 15 Rusted Plates · Salamander Fire (86): bring 8 Salamander Scales, then temper a blade with him |
+| Ylfa the Priestess | Hafnvik, the temple | heals · The Temple: Sea-Glass Lamps (74): bring 10 Jelly Glass, then light the lamps with her · A Candle for the Seeress (78): carry it to Saeunn in Steinborg · The Drowned (88): 20 Zombies · The Hydra's Scales (97): 8 Hydra Scales |
 
 People without a PixelLab sprite of their own are dressed from a bald hero body (Trainee, Blader,
 Sorcerer or Magic Knight) in their own colours, with the shared head, a hairstyle, a dye and

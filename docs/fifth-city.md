@@ -16,7 +16,7 @@ every build, the Poseidon Card (Tidal Wave, `perk.tide`) and the ultra rare Crow
 Living Armors, his head under his arm; Spectral Charge, Hurled Head, Cleaving Leap; card: Last Stand). The **Sunken Galleon** is built (the
 owner's calls and pictures): a broken galleon alone in the sea (Asgeir, Base 85), three flooded floors and the
 captain's hold (Base 85-99), the Kraken (mini-boss) and Davy Jones (MVP, Lv 110, Ghost, tier 99, three phases: the Cursed Captain, the Drowned
-Fleet, the Abyssal King), and the Ghost element. **Next:** the story chapter before the ending, the city's quests and series. What the owner has decided:
+Fleet, the Abyssal King), and the Ghost element. **Built since:** the story's Chapters 13-20, and the city's quests (November 2026: 23, Base 66-97, from seven people, three of them new: Rolf the Harbourmaster, Gerd the Fishwife, Oda the Lightkeeper). What the owner has decided:
 
 ## The city
 

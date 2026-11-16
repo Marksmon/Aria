@@ -861,3 +861,15 @@ about 300 perz); resting stays free, and earns 50,000-150,000 perz an hour from 
   the Root Serpent were tried as Water first, but the Sorcerer (whose early spells are weak on Water) fell to 73-79%
   against them, so they are Shadow and Wind; the three Fire kinds give Water weapons a target.
 
+## R6: the late game (November 2026 review, the owner's calls)
+
+- **Hafnvik's quests**: 23 of them, Base 66-97 (quests from Base 70 went from 7 to 28), in kill, fetch, search,
+  defend, quiz, deliver and visit; kill and fetch are 65% of all 145 quests. Rewards follow the curve of the other
+  late quests (420,000 EXP at Base 66 to 2,400,000 at 97, before the x2 quest rate).
+- **The Base 85 gate** (Chapter 16): the story alone brings a hero to about Base 76 there; with Hafnvik's quests under
+  85 to about 84, and the fights on the way do the rest. The gate stays at 85.
+- **The Deep Halls** pay 20% more EXP a floor (`DEPTH.exp`): a Base 98 level took about 1,367 kills of the best monster
+  in the game; from floor 10 it takes about 400, from floor 20 about 230.
+- **Weekly hunts** already choose monsters within 8 levels of the hero from every field and dungeon, the coast and the
+  Galleon included.
+

@@ -45,7 +45,10 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   (`MOVES.prison`: a `tidePrison` decoy cage round the hero, rooted and drowning, Poseidon shielded till it breaks,
   crashing down after 8 s) and Raging Maelstrom (`MOVES.maelstrom`: a pull to a striking heart). His ultra rare is the
   Crown of the Tides (Head, `build-tools/draw-tidecrown.py`). Its mini-boss is the **Headless Knight** (the owner's call,
-  Lv 80, Shadow, on the Storm Isles, lord of the Living Armors: `coast.js` `headless`). Next: the story chapter and quests.
+  Lv 80, Shadow, on the Storm Isles, lord of the Living Armors: `coast.js` `headless`). Its quests (November 2026, the
+  review's R6): 23, Base 66–97, from Ylfa, Sela, Brand, Captain Asgeir and three people of its own (Rolf the
+  Harbourmaster, Gerd the Fishwife, Oda the Lightkeeper), in seven kinds. The Deep Halls' EXP rises 20% a floor
+  (`DEPTH.exp` in `delve.js`, the owner's call): Base 95–99 is climbed there (about 400 kills a level at 98 from floor 10).
 
 - **Jobs, skill points and second jobs:** read `docs/job-rules.md` before touching jobs, skills
   or job quests. In short:

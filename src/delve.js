@@ -23,6 +23,9 @@ export const DEPTH = {
   lv: (k) => Math.min(99, 83 + 2 * k),        // the monsters' level on floor k (85 on the first: a Base 90 hero's)
   mult: (k) => (k > 8 ? 1 + 0.12 * (k - 8) : 1), // past floor 8 (level 99), HP, ATK and EXP grow floor by floor
   gap: 0.03,                                   // and a monster below the floor's level grows 3% a level to meet it
+  // and its EXP rises floor by floor, on top (the owner's call, November 2026: Base 95-99 held 60% of all the EXP to 99,
+  // a Base 98 hero needed about 1,400 kills of the best monster for one level; the deep floors are where it is finished)
+  exp: (k) => 1 + 0.2 * (k - 1),
   every: 5,                                    // checkpoints
   cache: (k) => ({ perz: 3000 * k, items: { hard_ore: 1 + Math.floor(k / 10), armor_ore: 1 + Math.floor(k / 10) } }),
 };
@@ -61,11 +64,11 @@ export function prepareFloor(id, k) {
   SPAWNS[id] = floorSpawns(k);
 }
 // a monster of floor k, made stronger past the deepest level (its own copy of its numbers)
-export function deepen(m, k) { // (raised to the floor's level if below it, DEPTH.gap, and past the deepest, DEPTH.mult)
-  const f = DEPTH.mult(k) * (1 + DEPTH.gap * Math.max(0, DEPTH.lv(k) - m.def.lv));
-  if (f === 1 || m.deepened === k) return;
+export function deepen(m, k) { // (raised to the floor's level if below it, DEPTH.gap, and past the deepest, DEPTH.mult; its EXP DEPTH.exp more)
+  const f = DEPTH.mult(k) * (1 + DEPTH.gap * Math.max(0, DEPTH.lv(k) - m.def.lv)), x = f * DEPTH.exp(k);
+  if ((f === 1 && x === 1) || m.deepened === k) return;
   const d = m.def;
-  m.def = { ...d, hp: Math.round(d.hp * f), atk: d.atk.map((a) => Math.round(a * f)), exp: d.exp.map((e) => Math.round(e * f)) };
+  m.def = { ...d, hp: Math.round(d.hp * f), atk: d.atk.map((a) => Math.round(a * f)), exp: d.exp.map((e) => Math.round(e * x)) };
   m.hp = m.def.hp;
   m.deepened = k;
 }
