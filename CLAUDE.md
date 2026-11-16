@@ -360,6 +360,14 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   November 2026, `picksFight`); `TIERS` lives in `mobs.js` (the sim imports it), and a boss's name tag, big-map row and
   boss bar say the Base Level it is made for ("for Base 75+"). While a story stand lasts, every boss on its map is held
   by the song (`lulled`), as the Fire Giant was.
+- Fields (the review's R5, the owner's calls, November 2026): one monster kind on most fields has a **wind-up**
+  (`tell` on its def, `TELL` in `mobs.js`: it stops, the ground under the hero is marked, then it lands there for 1.5x,
+  FLEE can't turn it; guards, heralds and raid monsters have none). A few fields have a **Pack Leader** (`CHIEFS`,
+  `chiefDef`): the first of its kind on the map, the same look a quarter bigger (no recolour: the owner's rule), its
+  name tag says so, 3x HP and EXP, 1.3x ATK, and it calls its pack when it fights. No level band of field monsters is
+  more than half one element (the Wolf and Bramble are Wind, the Snake Shadow, the Root Serpent Wind, the Sand Scorpion
+  and Soldier Ant Fire; a test checks the spread). With no monster near, the attack button picks up the drops round
+  the hero.
 - A story stand's heralds come at the stand's level from Chapter 10 on (a step's `heraldLv`, `mobs.js` `heraldDef`:
   the kind grown to that level, a lesser swarm one; never above the hero's own level). A new late stand gets one
   (a test checks it).

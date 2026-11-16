@@ -847,3 +847,17 @@ a Lv 3 weapon at +5).
 The economy with END healing (`node build-tools/econ-sim.mjs`): 63 of the 75 field and dungeon monsters (68 before)
 still cost a Blader more in potions than they pay when every HP lost is drunk straight back (a Base 80 kill sells for
 about 300 perz); resting stays free, and earns 50,000-150,000 perz an hour from Base 55.
+
+## R5: fields that teach (November 2026 review, the owner's calls)
+
+- **Wind-ups** (`TELL`): 17 field monster kinds wind up a blow of 1.4-1.5x on a marked spot (step out). `build-tools/sim.mjs`
+  models them (half stepped out of). The Blue Crab and the Dark Mushroom were to get one too, but with it a same-level
+  Sorcerer fell under its 85% floor against them (66% and 52%): they are the Sorcerer's weak spots already, so they
+  have none.
+- **Pack leaders** (`CHIEFS`): Barley Field and Wolf Hills (Wolves), Stone Field (Kobolds), Burnt Wood (Goblins), the
+  Great Desert (Soldier Ants), the Tide Cliffs (Tusk Boars), Beacon Moor (Owlbears). Played in the built game: the
+  Wolf's leader (8,400 HP to a Wolf's 2,800) called the Wolves within 10 paces as it came.
+- **Elements at Base 45-64**: Earth was 10 of 15 kinds; now Earth 4, Wind 5, Fire 3, Shadow 2, Neutral 1. The Snake and
+  the Root Serpent were tried as Water first, but the Sorcerer (whose early spells are weak on Water) fell to 73-79%
+  against them, so they are Shadow and Wind; the three Fire kinds give Water weapons a target.
+

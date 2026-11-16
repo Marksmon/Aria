@@ -272,9 +272,17 @@ this kind (and the Elder Willow and the Ancient Treant) has an **aura**: a glow 
 its colour. Their guards are lesser servants of their kind (half the HP, 60% of
 the ATK): cut them down first. See `docs/balance.md`.
 
+**Wind-ups and pack leaders.** On every field one kind of monster has a wind-up of its own (the Crab's Pinch, the
+Beetle's Horn Charge, the Wolf Hills Bear's Maul, the Tusk Boar's Gore, the Owlbear's Rend...): it stops, the ground
+where you stand is marked, and a moment later it lands there for half again a blow. Step out of the mark, the way you
+will against a boss. On some fields a **Pack Leader** leads its kind (Wolves, Kobolds, Goblins, Soldier Ants, Tusk
+Boars, Owlbears): a quarter bigger, its name tag says so, three times the HP and worth three times the EXP, and when it
+fights it calls its pack to you. With no monster near, the attack button picks up every drop round you at once.
+
 **MVP.** The Fire Giant (Lv 60, 765,000 HP, Fire), optional and not part of the story, roams Ember Hill and stomps the
 ground around it every few seconds. MVPs are the hardest fights in Aria: several minutes each, a big bag of White and
-Blue Potions, and a plan. While a mini-boss or an MVP fights you its big health bar shows at the top of the screen, with a
+Blue Potions, and a plan. A boss's name tag, big-map row and health bar say the Base Level it is made for ("for
+Base 75+"), and an MVP leaves a hero more than 20 levels under that alone unless struck. While a mini-boss or an MVP fights you its big health bar shows at the top of the screen, with a
 mark where it turns (its guards at 80, 50 and 25%, its rage below half, Davy Jones's phases), and a boss that stands
 between you and the camera fades so you can see yourself and the marks on the ground. Each is made for a second job of its tier in the best gear short of MVP gear (a Lv 4 weapon
 at +7, armor at +4, monster and mini-boss cards): **Base 75** the Kobold King and the Goblin King, **Base 85** the

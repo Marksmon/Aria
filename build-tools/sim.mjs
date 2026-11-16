@@ -12,7 +12,7 @@
 // share of every monster's swings miss it (ARCHER_KITE; KITE against bosses). Things the sim leaves
 // out: walking, kiting, flinching, regen during the fight.
 import { derive, playerAttack, mobAttack, magicAttack, elementMod, potionHeal } from '../src/rules.js';
-import { MOB_DEFS, guardDef, MOVES } from '../src/mobs.js';
+import { MOB_DEFS, guardDef, MOVES, tellOf } from '../src/mobs.js';
 import { Progress } from '../src/progress.js';
 import { SKILLS, spCost, castTime, wardCut } from '../src/skills.js';
 
@@ -93,6 +93,8 @@ function fight(h, def, opts = {}) {
   // the Sorcerer's Rune Ward: cast as the fight opens and again when it runs out (SKILLS.ward, wardCut)
   let wardUntil = -1; const wardLv = h.kind === 'sorcerer' ? h.prog.skills.ward || 0 : 0;
   const taken = (x) => Math.round(x * (t < wardUntil ? 1 - wardCut(wardLv) : 1));
+  // a field monster's wind-up (mobs.js TELL): it stands for its wind, then lands; half are stepped out of
+  const T = !def.boss && !def.mvp ? tellOf(def) : null; let tellAt = T ? (T.first[0] + T.first[1]) / 2 : Infinity;
   const guards = []; let called = false, goneT = -1e9, hits = 0, cloudAt = 0, cloud = 0, cloudUntil = 0, pois = 0, poisUntil = 0;
   const strike = (d) => {
     if (h.kind === 'assassin') { // a Venom Cloud whenever it is ready (it bites on its own while the hero fights on), Venom Strike between (its poison: a fifth of the blow each second for 6 s), Double Attack on normal attacks
@@ -173,6 +175,7 @@ function fight(h, def, opts = {}) {
       stompAt = t + 7;
     }
     for (const g of guards) while (g.hp > 0 && g.next <= t) { if (!(h.kind === 'archer' && Math.random() < ARCHER_KITE)) hp -= taken(mobAttack(g.def, ps).dmg); g.next += g.def.adelay / 1000; }
+    if (tellAt <= t) { tellAt = t + (T.cd[0] + T.cd[1]) / 2 + T.wind; mobNext = Math.max(mobNext, t + T.wind); if (Math.random() > STOMP_DODGE) hp -= taken(mobAttack(def, ps, T.mult, { sure: true }).dmg); }
     for (const m of moves) while (m.at <= t) { if (Math.random() > STOMP_DODGE) hp -= taken(mobAttack(def, ps, m.mult || 1.5).dmg); m.at += MOVES[m.kind].cd; } // the red circle: half are stepped out of
     if (hp <= 0) return { win: false, t, potions, hpLeft: 0, mobLeft: mob / def.hp };
   }

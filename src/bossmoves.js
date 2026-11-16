@@ -138,6 +138,31 @@ export function installBossMoves(ctx) {
       if (d <= W.core && (W.tick -= dt) <= 0) { W.tick = M.tick; bossBlow(W.m, W.mv.mult, W.x, W.z, W.core); }
     }
   }
+  // a field monster's wind-up (mobs.js TELL): a mark where it will land; step out of it. Its blow: not an MVP's (FLEE
+  // can't turn it, but DEF counts in full). The first one a hero meets says what it is, once a session
+  let toldTell = false;
+  mobs.on('tell', (m, spot, T) => {
+    fx.warn(spot.x, spot.z, T.r, T.wind);
+    fx.number(m.x, overHead(m, m.sprite.scale.y * 0.9), m.z, `${T.name || 'Wind-up'}!`, 'skill');
+    if (!toldTell) { toldTell = true; ctx.menus.message(`The ${m.def.name} winds up its ${T.name || 'blow'}: the marked ground is where it lands. Step out of it!`); }
+  });
+  mobs.on('tellHit', (m, spot, T) => {
+    if (!m.alive || !spot || mobs.mapId !== world.id) return;
+    const gy = world.heightAt(spot.x, spot.z);
+    fx.puff(spot.x, gy + 0.2, spot.z, T.r);
+    audio.play('hit');
+    if (Math.hypot(player.x - spot.x, player.z - spot.z) > T.r + 0.3 || !player.canBeHit() || player.state === 'down') return;
+    const res = mobAttack(m.def, player.ps, T.mult * m.fury, { sure: true });
+    if (res.miss) { fx.number(player.x, overHead(player, 1.3), player.z, 'Miss', 'miss'); return; }
+    cam.shake = 0.2;
+    player.takeDamage(res.dmg, m.x, m.z);
+  });
+  // a pack leader calls its pack (mobs.js CHIEFS)
+  mobs.on('rally', (m) => {
+    fx.number(m.x, overHead(m, m.sprite.scale.y * 0.9), m.z, 'Rally!', 'skill');
+    audio.play('night');
+    ctx.menus.message(`The ${m.def.name} calls its pack to it!`);
+  });
   // Tremor (mobs.js TREMOR): the ground cracks under a hero who stands still by an MVP; step aside
   mobs.on('tremor', (m, spot, T) => {
     const map = world.id;

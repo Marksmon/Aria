@@ -1531,7 +1531,7 @@ const atkBtn = document.createElement('button');
 atkBtn.id = 'atkbtn';
 atkBtn.dataset.btn = 'attack';
 atkBtn.setAttribute('aria-label', 'Attack');
-atkBtn.title = 'Attack the target, or the nearest monster';
+atkBtn.title = 'Attack the target, or the nearest monster; with none near, pick up the drops round you';
 document.getElementById('hud').appendChild(atkBtn);
 // it shows the weapon in hand (a fist with none)
 const atkFace = () => { const w = inv.gear.weapon; atkBtn.innerHTML = w ? `<img src="${iconURL(w)}" alt="">` : '<span>✊</span>'; };
@@ -1569,6 +1569,12 @@ function nearestInSight() {
 }
 function attackNow() {
   if (player.state === 'down') return;
+  // nothing to fight close by, and drops at your feet: the button picks them all up at once (November 2026: a tap each)
+  const loot = fx.pickups.filter((p) => Math.hypot(p.tx - player.x, p.tz - player.z) < 3);
+  if (loot.length && !player.goal?.mob?.alive && !mobs.list.some((m) => m.alive && m.state === 'chase' && Math.hypot(m.x - player.x, m.z - player.z) < 4)) {
+    for (const p of loot) if (fx.pickups.includes(p) && collect(p)) fx.take(p);
+    return;
+  }
   const t = (player.goal?.mob?.alive && mobs.list.includes(player.goal.mob) && player.goal.mob) || selected() || nearestInSight();
   if (!t) { menus.message('No monster nearby'); return; }
   stopNav();

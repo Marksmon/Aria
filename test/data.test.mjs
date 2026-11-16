@@ -299,3 +299,26 @@ test('the story never asks for more than three talks in a row (the pacing rule)'
   for (const s of STORY) { run = s.kind === 'talk' ? run + 1 : 0; if (run > worst) { worst = run; at = s.id; } }
   assert.ok(worst <= 3, `${worst} talks in a row, ending at ${at}`);
 });
+
+test("fields teach what bosses ask (November 2026): most fields have a monster with a wind-up; packs have leaders; no level band is more than half one element", async () => {
+  const { CHIEFS, chiefDef, tellOf } = await import('../src/mobs.js');
+  const { SPAWNS } = await import('../src/spawns.js');
+  const fields = Object.entries(SPAWNS).filter(([id, l]) => l.length && !MAPS[id]?.maze && !MAPS[id]?.arena);
+  const told = fields.filter(([, l]) => l.some(([t]) => tellOf(MOB_DEFS[t]) && !MOB_DEFS[t].boss));
+  assert.ok(told.length >= fields.length * 0.6, `${told.length} of ${fields.length} fields have a monster with a wind-up`);
+  for (const [map, type] of Object.entries(CHIEFS)) {
+    assert.ok(SPAWNS[map]?.some(([t]) => t === type), `${map}: no ${type} to lead`);
+    const c = chiefDef(type), d = MOB_DEFS[type];
+    assert.ok(c.name.startsWith(d.name) && c.art === d.art && c.hp > d.hp && c.w > d.w, `${type}: a leader is its kind, bigger, with no look of its own (the owner's rule)`);
+  }
+  const bands = {};
+  for (const [t, d] of Object.entries(MOB_DEFS)) {
+    if (d.boss || d.mvp || d.decoy || d.noRespawn || d.raid || !Object.values(SPAWNS).some((l) => l.some((s) => s[0] === t))) continue;
+    const b = d.lv < 20 ? '1-19' : d.lv < 45 ? '20-44' : d.lv < 65 ? '45-64' : d.lv < 85 ? '65-84' : '85-99';
+    ((bands[b] ||= {})[d.el || 'neutral'] = (bands[b][d.el || 'neutral'] || 0) + 1);
+  }
+  for (const [b, els] of Object.entries(bands)) {
+    const n = Object.values(els).reduce((a, x) => a + x, 0), top = Math.max(...Object.values(els));
+    assert.ok(top <= Math.ceil(n / 2), `Lv ${b}: ${JSON.stringify(els)}`);
+  }
+});

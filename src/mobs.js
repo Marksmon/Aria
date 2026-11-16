@@ -25,9 +25,9 @@ export const MOB_DEFS = {
   // running; it never comes back once beaten
   gelThief: { name: 'Gel Thief', ai: 'skittish', art: 'slimeYellow', tint: '#ffcf4a', el: 'fire', lv: 3, hp: 130, atk: [6, 9], def: 0, vit: 3, agi: 6, dex: 10, exp: [14, 10], tjob: 60, adelay: 1500, passive: true, walk: 300, flee: 3.15, fear: 4.5, angry: 8, tire: 6, reach: 0.8, w: 1.05, r: 0.4, glow: true, noRespawn: true, drops: [['gel', 2, 3, 1], ['potion', 2, 2, 1]] },
   sprout: { name: 'Sprout', ai: 'skittish', art: 'sprout', el: 'earth', lv: 3, hp: 70, atk: [9, 12], def: 0, vit: 3, agi: 3, dex: 8, exp: [4, 3], tjob: 12, adelay: 1456, passive: true, walk: 300, flee: 2.9, fear: 3.5, angry: 6, reach: 0.8, w: 0.95, r: 0.35, drops: [['seed', 1, 1, 1], ['leaf', 1, 1, 0.6], ['berry', 1, 1, 0.2], ['herb', 1, 1, 0.25], ['seedling_band', 1, 1, 0.004], ['flower_wreath', 1, 1, 0.005], ['seed_card', 1, 1, 0.001]] },
-  crab: { name: 'Crab', ai: 'crab', art: 'crab', el: 'water', lv: 6, hp: 170, atk: [10, 13], def: 3, vit: 6, agi: 5, dex: 10, exp: [20, 14], tjob: 30, adelay: 1300, passive: true, walk: 200, aggro: 5, reach: 0.85, w: 1.1, r: 0.42, drops: [['shell', 1, 2, 1], ['crableg', 1, 1, 0.25], ['mud_buckler', 1, 1, 0.003], ['shellcrab_card', 1, 1, 0.001]] },
+  crab: { name: 'Crab', tell: { name: 'Pinch', r: 1.1, mult: 1.4 }, ai: 'crab', art: 'crab', el: 'water', lv: 6, hp: 170, atk: [10, 13], def: 3, vit: 6, agi: 5, dex: 10, exp: [20, 14], tjob: 30, adelay: 1300, passive: true, walk: 200, aggro: 5, reach: 0.85, w: 1.1, r: 0.42, drops: [['shell', 1, 2, 1], ['crableg', 1, 1, 0.25], ['mud_buckler', 1, 1, 0.003], ['shellcrab_card', 1, 1, 0.001]] },
   mushling: { name: 'Mushroom', ai: 'puffer', art: 'mushling', el: 'earth', lv: 14, hp: 520, atk: [19, 26], def: 2, vit: 18, agi: 14, dex: 30, exp: [45, 32], adelay: 1768, passive: true, walk: 200, aggro: 4, chase: 6, reach: 0.8, w: 0.95, r: 0.36, drops: [['spore', 1, 2, 1], ['herb', 1, 1, 0.2], ['potion', 1, 1, 0.08], ['spore_cloak', 1, 1, 0.0025], ['mushling_card', 1, 1, 0.001]] },
-  beetle: { name: 'Beetle', ai: 'tank', art: 'beetle', el: 'earth', lv: 30, hp: 1500, atk: [88, 110], def: 22, vit: 30, agi: 20, dex: 46, exp: [330, 230], adelay: 1500, passive: true, walk: 200, aggro: 4, chase: 8, reach: 0.9, w: 1.15, r: 0.45, heavy: true, drops: [['stone', 1, 2, 1], ['potion2', 1, 1, 0.06], ['pebble_ring', 1, 1, 0.003], ['horn_blade', 1, 1, 0.0015], ['beetle_n_card', 1, 1, 0.001]] },
+  beetle: { name: 'Beetle', tell: { name: 'Horn Charge', r: 1.4 }, ai: 'tank', art: 'beetle', el: 'earth', lv: 30, hp: 1500, atk: [88, 110], def: 22, vit: 30, agi: 20, dex: 46, exp: [330, 230], adelay: 1500, passive: true, walk: 200, aggro: 4, chase: 8, reach: 0.9, w: 1.15, r: 0.45, heavy: true, drops: [['stone', 1, 2, 1], ['potion2', 1, 1, 0.06], ['pebble_ring', 1, 1, 0.003], ['horn_blade', 1, 1, 0.0015], ['beetle_n_card', 1, 1, 0.001]] },
   wisp: { name: 'Wisp', ai: 'wisp', art: 'wisp', el: 'wind', lv: 11, hp: 290, atk: [20, 25], def: 4, vit: 8, agi: 20, dex: 22, exp: [26, 19], adelay: 1292, passive: true, walk: 150, aggro: 6, reach: 0.75, w: 0.7, r: 0.3, fly: true, glow: true, drops: [['glow', 1, 1, 1], ['wander', 1, 1, 0.15], ['wisp_lantern', 1, 1, 0.004], ['wisp_card', 1, 1, 0.001]] },
   // Sigrun's rare hunt: a great golden Wisp over Fen Shore's pond, out only at night while the quest is on
   lanternWisp: { name: 'Lantern Wisp', ai: 'wisp', art: 'lanternWisp', el: 'wind', lv: 16, hp: 800, atk: [20, 27], def: 6, vit: 12, agi: 22, dex: 30, exp: [320, 220], adelay: 1250, passive: false, walk: 150, aggro: 7, chase: 10, reach: 0.85, w: 1.15, r: 0.42, fly: true, glow: true, noRespawn: true, drops: [['wisp_lantern', 1, 1, 1], ['glow', 3, 5, 1], ['wander', 1, 2, 0.5], ['lanternwisp_card', 1, 1, 0.001]] },
@@ -44,12 +44,12 @@ export const MOB_DEFS = {
     moves: [{ kind: 'leap', name: 'Belly Flop', mult: 1.6, r: 2.0 }, { kind: 'charge', name: "Veteran's Charge", mult: 1.5 }], stomp: 1.5,
     aggro: 99, chase: 99, reach: 2.0, w: 4.0, r: 1.4, heavy: true, summon: ['redSlime', 'redSlime', 'redSlime'], summonText: 'BleepBloop bellows an old war cry, and Red Bloops come bouncing!', drops: [['bleep_card', 1, 1, 0.01]] },
   // ---------- the new lands: kin of the valley's monsters, each with a look of its own (variants.js) ----------
-  russet: { name: 'Red Sprout', ai: 'tank', art: 'russet', el: 'earth', lv: 18, hp: 520, atk: [35, 46], def: 5, vit: 18, agi: 18, dex: 34, exp: [80, 56], adelay: 1500, passive: true, walk: 200, aggro: 4.5, chase: 6, reach: 0.8, w: 1.0, r: 0.36, drops: [['thorn', 1, 1, 0.55], ['seed', 1, 1, 0.6], ['leaf', 1, 1, 0.4], ['berry', 1, 1, 0.2], ['bramble_ring', 1, 1, 0.003], ['redsprout_card', 1, 1, 0.001]] },
+  russet: { name: 'Red Sprout', tell: { name: 'Thorn Burst', r: 1.6, mult: 1.4 }, ai: 'tank', art: 'russet', el: 'earth', lv: 18, hp: 520, atk: [35, 46], def: 5, vit: 18, agi: 18, dex: 34, exp: [80, 56], adelay: 1500, passive: true, walk: 200, aggro: 4.5, chase: 6, reach: 0.8, w: 1.0, r: 0.36, drops: [['thorn', 1, 1, 0.55], ['seed', 1, 1, 0.6], ['leaf', 1, 1, 0.4], ['berry', 1, 1, 0.2], ['bramble_ring', 1, 1, 0.003], ['redsprout_card', 1, 1, 0.001]] },
   brine: { name: 'Mudskipper', ai: 'hopper', art: 'brine', el: 'water', lv: 22, hp: 880, atk: [50, 65], def: 4, vit: 22, agi: 20, dex: 40, exp: [125, 88], adelay: 1500, passive: true, walk: 400, aggro: 5, chase: 5, reach: 0.8, w: 1.1, r: 0.4, drops: [['salt', 1, 1, 0.55], ['skipper_fin', 1, 1, 0.8], ['tonic', 1, 1, 0.05], ['seabloop_card', 1, 1, 0.001], ['sea_cloak', 1, 1, 0.0025]] },
   tidecrab: { name: 'Blue Crab', ai: 'crab', art: 'tidecrab', el: 'water', lv: 26, hp: 920, atk: [70, 88], def: 14, vit: 26, agi: 22, dex: 44, exp: [180, 126], adelay: 1300, passive: true, walk: 250, aggro: 5.5, reach: 0.9, w: 1.25, r: 0.48, drops: [['shell', 1, 2, 1], ['crableg', 1, 1, 0.3], ['pearl', 1, 1, 0.06], ['coral_shield', 1, 1, 0.0025], ['bluecrab_card', 1, 1, 0.001]] },
   gloomcap: { name: 'Dark Mushroom', ai: 'puffer', art: 'gloomcap', el: 'shadow', lv: 34, hp: 1800, atk: [104, 130], def: 12, vit: 36, agi: 30, dex: 56, exp: [450, 315], adelay: 1700, passive: true, walk: 200, aggro: 4.5, chase: 7, reach: 0.85, w: 1.15, r: 0.42, mdef: 10, drops: [['gloom', 1, 1, 0.5], ['spore', 1, 2, 0.8], ['potion2', 1, 1, 0.08], ['gloom_hood', 1, 1, 0.0025], ['gloomcap_card', 1, 1, 0.001]] },
   shadeWisp: { name: 'Dark Wisp', ai: 'wisp', art: 'shadeWisp', el: 'shadow', glow: true, lv: 38, hp: 1700, atk: [120, 150], def: 10, vit: 25, agi: 47, dex: 66, exp: [560, 390], adelay: 1250, walk: 150, aggro: 6, reach: 0.75, w: 0.85, r: 0.32, fly: true, mdef: 20, drops: [['shade', 1, 1, 0.45], ['glow', 1, 1, 0.8], ['wander', 1, 1, 0.1], ['wisp_lantern', 1, 1, 0.005], ['shade_staff', 1, 1, 0.002], ['dark_wisp', 1, 1, 0.0025], ['shadewisp_card', 1, 1, 0.001]] },
-  cinderBeetle: { name: 'Fire Beetle', ai: 'tank', art: 'cinderBeetle', el: 'fire', lv: 42, hp: 2500, atk: [140, 176], def: 28, vit: 42, agi: 31, dex: 64, exp: [760, 530], adelay: 1500, walk: 200, aggro: 4.5, chase: 9, reach: 1.0, w: 1.35, r: 0.52, heavy: true, drops: [['cinder', 1, 1, 0.5], ['stone', 1, 2, 1], ['potion2', 1, 1, 0.1], ['potion3', 1, 1, 0.03], ['cinder_mail', 1, 1, 0.002], ['horn_blade', 1, 1, 0.002], ['firebeetle_card', 1, 1, 0.001]] },
+  cinderBeetle: { name: 'Fire Beetle', tell: { name: 'Ember Charge', r: 1.4 }, ai: 'tank', art: 'cinderBeetle', el: 'fire', lv: 42, hp: 2500, atk: [140, 176], def: 28, vit: 42, agi: 31, dex: 64, exp: [760, 530], adelay: 1500, walk: 200, aggro: 4.5, chase: 9, reach: 1.0, w: 1.35, r: 0.52, heavy: true, drops: [['cinder', 1, 1, 0.5], ['stone', 1, 2, 1], ['potion2', 1, 1, 0.1], ['potion3', 1, 1, 0.03], ['cinder_mail', 1, 1, 0.002], ['horn_blade', 1, 1, 0.002], ['firebeetle_card', 1, 1, 0.001]] },
   emberWisp: { name: 'Fire Wisp', ai: 'wisp', art: 'emberWisp', el: 'fire', glow: true, lv: 45, hp: 2200, atk: [152, 190], def: 12, vit: 30, agi: 53, dex: 74, exp: [880, 615], adelay: 1200, walk: 150, aggro: 6, reach: 0.75, w: 0.85, r: 0.32, fly: true, drops: [['ember_dust', 1, 1, 0.5], ['glow', 1, 1, 0.6], ['cinder', 1, 1, 0.15], ['ember_charm', 1, 1, 0.003], ['ember_wings', 1, 1, 0.0025], ['emberwisp_card', 1, 1, 0.001]] },
   // mini-bosses: one on each new field, big and slow, they stomp like the Fire Giant, call two of
   // their own kind as guards (summon: see SUMMON_CD) and come back after `respawn` seconds. The
@@ -75,10 +75,10 @@ export const MOB_DEFS = {
   // Painted in code (painted.js). Unlike the valley's monsters they attack on sight.
   // archer: keeps `range` away and shoots. assassin: quick, darts in (a dash) and strikes twice
   // `double` of the time. Hard Ore and Armor Ore (for Holger's refining) drop from them.
-  koboldWarrior: { name: 'Kobold', ai: 'tank', art: 'koboldWarrior', el: 'earth', lv: 28, hp: 1350, atk: [80, 100], def: 15, vit: 28, agi: 22, dex: 44, exp: [290, 200], adelay: 1400, walk: 200, aggro: 5, chase: 8, reach: 0.8, w: 0.7, r: 0.32, drops: [['kobold_fur', 1, 1, 0.55], ['iron_ore', 1, 1, 0.25], ['potion2', 1, 1, 0.05], ['armor_ore', 1, 1, 0.012], ['hard_ore', 1, 1, 0.006], ['koboldw_card', 1, 1, 0.001], ['kobold_shield', 1, 1, 0.0025]] },
+  koboldWarrior: { name: 'Kobold', tell: { name: 'Pick Swing', r: 1.3 }, ai: 'tank', art: 'koboldWarrior', el: 'earth', lv: 28, hp: 1350, atk: [80, 100], def: 15, vit: 28, agi: 22, dex: 44, exp: [290, 200], adelay: 1400, walk: 200, aggro: 5, chase: 8, reach: 0.8, w: 0.7, r: 0.32, drops: [['kobold_fur', 1, 1, 0.55], ['iron_ore', 1, 1, 0.25], ['potion2', 1, 1, 0.05], ['armor_ore', 1, 1, 0.012], ['hard_ore', 1, 1, 0.006], ['koboldw_card', 1, 1, 0.001], ['kobold_shield', 1, 1, 0.0025]] },
   koboldArcher: { name: 'Kobold Archer', ai: 'archer', art: 'koboldArcher', el: 'earth', lv: 30, hp: 1100, atk: [76, 96], def: 8, vit: 20, agi: 30, dex: 62, exp: [320, 225], adelay: 1800, walk: 200, aggro: 6.5, chase: 8, range: 5, reach: 0.8, w: 0.7, r: 0.32, drops: [['kobold_fur', 1, 1, 0.5], ['steel_ore', 1, 1, 0.08], ['wander', 1, 1, 0.08], ['hard_ore', 1, 1, 0.01], ['kobold_bow', 1, 1, 0.0025], ['koboldarcher_card', 1, 1, 0.001], ['kobold_sandals', 1, 1, 0.0025]] },
   koboldAssassin: { name: 'Kobold Assassin', ai: 'assassin', art: 'koboldAssassin', el: 'earth', lv: 33, hp: 1150, atk: [100, 128], def: 6, vit: 18, agi: 50, dex: 62, exp: [400, 280], adelay: 1100, walk: 150, aggro: 5.5, chase: 9, reach: 0.75, double: 0.25, w: 0.7, r: 0.3, drops: [['kobold_fur', 1, 2, 0.5], ['steel_ore', 1, 1, 0.1], ['quick', 1, 1, 0.03], ['hard_ore', 1, 1, 0.015], ['armor_ore', 1, 1, 0.01], ['koboldassassin_card', 1, 1, 0.001]] },
-  goblinWarrior: { name: 'Goblin', ai: 'tank', art: 'goblinWarrior', el: 'wind', lv: 38, hp: 2000, atk: [118, 148], def: 18, vit: 38, agi: 30, dex: 56, exp: [580, 405], adelay: 1400, walk: 150, aggro: 5.5, chase: 9, reach: 0.8, w: 0.7, r: 0.32, drops: [['goblin_tooth', 1, 1, 0.55], ['steel_ore', 1, 1, 0.12], ['potion2', 1, 1, 0.08], ['armor_ore', 1, 1, 0.02], ['hard_ore', 1, 1, 0.01], ['goblin_n_card', 1, 1, 0.001], ['goblin_shield', 1, 1, 0.002]] },
+  goblinWarrior: { name: 'Goblin', tell: { name: 'Axe Chop', r: 1.3 }, ai: 'tank', art: 'goblinWarrior', el: 'wind', lv: 38, hp: 2000, atk: [118, 148], def: 18, vit: 38, agi: 30, dex: 56, exp: [580, 405], adelay: 1400, walk: 150, aggro: 5.5, chase: 9, reach: 0.8, w: 0.7, r: 0.32, drops: [['goblin_tooth', 1, 1, 0.55], ['steel_ore', 1, 1, 0.12], ['potion2', 1, 1, 0.08], ['armor_ore', 1, 1, 0.02], ['hard_ore', 1, 1, 0.01], ['goblin_n_card', 1, 1, 0.001], ['goblin_shield', 1, 1, 0.002]] },
   goblinArcher: { name: 'Goblin Archer', ai: 'archer', art: 'goblinArcher', el: 'wind', lv: 41, hp: 1700, atk: [120, 150], def: 10, vit: 28, agi: 40, dex: 82, exp: [700, 490], adelay: 1800, walk: 200, aggro: 7, chase: 9, range: 5.5, reach: 0.8, w: 0.7, r: 0.32, drops: [['goblin_tooth', 1, 1, 0.5], ['potion3', 1, 1, 0.04], ['wander', 1, 1, 0.1], ['hard_ore', 1, 1, 0.02], ['goblin_bow', 1, 1, 0.002], ['gobarcher_card', 1, 1, 0.001]] },
   goblinAssassin: { name: 'Goblin Assassin', ai: 'assassin', art: 'goblinAssassin', el: 'wind', lv: 44, hp: 1800, atk: [140, 178], def: 8, vit: 26, agi: 60, dex: 82, exp: [850, 595], adelay: 1100, walk: 100, aggro: 6, chase: 10, reach: 0.75, double: 0.25, w: 0.7, r: 0.3, drops: [['goblin_tooth', 1, 2, 0.5], ['quick', 1, 1, 0.04], ['potion3', 1, 1, 0.04], ['hard_ore', 1, 1, 0.025], ['armor_ore', 1, 1, 0.02], ['goblinassassin_card', 1, 1, 0.001], ['goblin_shroud', 1, 1, 0.002]] },
   // the kings: MVPs like the Fire Giant, a step below it. They stomp, and call four guards
@@ -101,10 +101,10 @@ export const MOB_DEFS = {
   // 46-56): snakes, wolves and bears attack on sight; snakes and wolves dart in and bite twice now and
   // then (the packs are quick), bears are slow, heavy and hard.
   willow: { name: 'Willow', ai: 'puffer', art: 'willow', el: 'earth', lv: 8, hp: 200, atk: [9, 12], def: 2, vit: 7, agi: 6, dex: 13, mdef: 10, exp: [26, 18], tjob: 36, adelay: 1700, passive: true, walk: 200, aggro: 4.5, chase: 7, reach: 1.0, puff: 'Willow seeds fill the air! You feel sluggish', w: 0.85, r: 0.4, drops: [['willow_twig', 1, 1, 0.55], ['leaf', 1, 2, 0.6], ['herb', 1, 1, 0.25], ['potion', 1, 1, 0.08], ['willow_staff', 1, 1, 0.002], ['willow_n_card', 1, 1, 0.001]] },
-  treant: { name: 'Treant', ai: 'tank', art: 'treant', el: 'earth', lv: 24, hp: 1500, atk: [62, 78], def: 16, vit: 26, agi: 14, dex: 40, mdef: 10, exp: [160, 112], adelay: 1800, passive: true, walk: 250, aggro: 4.5, chase: 8, reach: 1.1, w: 1.7, r: 0.65, heavy: true, drops: [['old_bark', 1, 2, 0.7], ['leaf', 1, 2, 0.5], ['potion2', 1, 1, 0.05], ['treant_shield', 1, 1, 0.002], ['bark_card', 1, 1, 0.001]] },
-  snake: { name: 'Snake', ai: 'assassin', art: 'snake', el: 'earth', lv: 46, hp: 2600, atk: [164, 205], def: 10, vit: 30, agi: 44, dex: 72, exp: [930, 650], adelay: 1400, walk: 200, aggro: 5, chase: 8, reach: 0.8, double: 0.2, w: 0.95, r: 0.36, drops: [['snake_skin', 1, 1, 0.5], ['herb', 1, 1, 0.2], ['potion2', 1, 1, 0.08], ['snake_boots', 1, 1, 0.0025], ['snake_card', 1, 1, 0.001]] },
-  wolf: { name: 'Wolf', ai: 'assassin', art: 'wolf', el: 'earth', lv: 48, hp: 2800, atk: [168, 210], def: 10, vit: 32, agi: 52, dex: 76, exp: [1050, 735], adelay: 1200, walk: 150, aggro: 6, chase: 10, reach: 0.85, double: 0.2, w: 0.8, r: 0.36, drops: [['wolf_pelt', 1, 1, 0.5], ['wolf_fang', 1, 1, 0.12], ['potion3', 1, 1, 0.03], ['wolf_cape', 1, 1, 0.002], ['wolf_card', 1, 1, 0.001]] },
-  bear: { name: 'Bear', ai: 'tank', art: 'bear', el: 'neutral', lv: 53, hp: 4300, atk: [185, 232], def: 24, vit: 52, agi: 34, dex: 70, exp: [1420, 995], adelay: 1500, walk: 155, aggro: 5, chase: 9, reach: 1.0, w: 1.35, r: 0.55, heavy: true, drops: [['bear_claw', 1, 1, 0.5], ['honey', 1, 1, 0.15], ['potion3', 1, 1, 0.05], ['bear_hide', 1, 1, 0.0015], ['bear_n_card', 1, 1, 0.001], ['bear_paws', 1, 1, 0.0015]] },
+  treant: { name: 'Treant', tell: { name: 'Root Slam', r: 1.8 }, ai: 'tank', art: 'treant', el: 'earth', lv: 24, hp: 1500, atk: [62, 78], def: 16, vit: 26, agi: 14, dex: 40, mdef: 10, exp: [160, 112], adelay: 1800, passive: true, walk: 250, aggro: 4.5, chase: 8, reach: 1.1, w: 1.7, r: 0.65, heavy: true, drops: [['old_bark', 1, 2, 0.7], ['leaf', 1, 2, 0.5], ['potion2', 1, 1, 0.05], ['treant_shield', 1, 1, 0.002], ['bark_card', 1, 1, 0.001]] },
+  snake: { name: 'Snake', tell: { name: 'Lunge', r: 1.2 }, ai: 'assassin', art: 'snake', el: 'shadow', lv: 46, hp: 2600, atk: [164, 205], def: 10, vit: 30, agi: 44, dex: 72, exp: [930, 650], adelay: 1400, walk: 200, aggro: 5, chase: 8, reach: 0.8, double: 0.2, w: 0.95, r: 0.36, drops: [['snake_skin', 1, 1, 0.5], ['herb', 1, 1, 0.2], ['potion2', 1, 1, 0.08], ['snake_boots', 1, 1, 0.0025], ['snake_card', 1, 1, 0.001]] },
+  wolf: { name: 'Wolf', ai: 'assassin', art: 'wolf', el: 'wind', lv: 48, hp: 2800, atk: [168, 210], def: 10, vit: 32, agi: 52, dex: 76, exp: [1050, 735], adelay: 1200, walk: 150, aggro: 6, chase: 10, reach: 0.85, double: 0.2, w: 0.8, r: 0.36, drops: [['wolf_pelt', 1, 1, 0.5], ['wolf_fang', 1, 1, 0.12], ['potion3', 1, 1, 0.03], ['wolf_cape', 1, 1, 0.002], ['wolf_card', 1, 1, 0.001]] },
+  bear: { name: 'Bear', tell: { name: 'Maul', r: 1.5 }, ai: 'tank', art: 'bear', el: 'neutral', lv: 53, hp: 4300, atk: [185, 232], def: 24, vit: 52, agi: 34, dex: 70, exp: [1420, 995], adelay: 1500, walk: 155, aggro: 5, chase: 9, reach: 1.0, w: 1.35, r: 0.55, heavy: true, drops: [['bear_claw', 1, 1, 0.5], ['honey', 1, 1, 0.15], ['potion3', 1, 1, 0.05], ['bear_hide', 1, 1, 0.0015], ['bear_n_card', 1, 1, 0.001], ['bear_paws', 1, 1, 0.0015]] },
   // Willow Marsh's mini-boss: the oldest willow by the water, with its willows round it (a step
   // after the Giant Sprout of Birch Grove)
   elderWillow: { name: 'Elder Willow', ai: 'boss', art: 'elderWillow', aura: '#d8f070', el: 'earth', boss: true, lv: 55, hp: 400000, atk: [117, 153], def: 8, vit: 22, agi: 16, dex: 120, mdef: 15, exp: [28000, 19600], adelay: 1900, fierce: true, takes: { magic: 1.15 }, takesText: 'its old wood is dry: spells catch in it (+15%)', walk: 250, moves: [{ kind: 'throw', name: 'Seed Cloud', mult: 1.5, r: 1.8 }], aggro: 5.5, chase: 12, reach: 1.5, w: 1.5, r: 0.75, heavy: true, summon: ['willow', 'willow'], summonText: 'The Elder Willow creaks, and Willows shuffle out of the reeds!', respawn: 300, drops: [['willow_heart', 1, 1, 0.3], ['willow_twig', 3, 5, 1], ['potion2', 1, 2, 0.5], ['willow_staff', 1, 1, 0.03], ['willow_charm', 1, 1, 0.04], ['willow_card', 1, 1, 0.01]] },
@@ -128,12 +128,12 @@ export const MOB_DEFS = {
   // worms that dart out of the sand, sand scorpions whose sting may poison you (poison: the chance),
   // runner birds that kick twice, quick and passive, and in the Great Desert the soldier ants, and the
   // Sand Wyrm under it all.
-  giantAnt: { name: 'Giant Ant', ai: 'tank', art: 'giantAnt', el: 'earth', lv: 12, hp: 340, atk: [16, 21], def: 6, vit: 12, agi: 10, dex: 22, exp: [34, 24], tjob: 44, adelay: 1500, passive: true, walk: 200, aggro: 4.5, chase: 6, reach: 0.8, w: 1.0, r: 0.4, drops: [['ant_jaw', 1, 1, 0.55], ['red_gel', 1, 1, 0.1], ['potion', 1, 1, 0.08], ['ant_knife', 1, 1, 0.003], ['giantant_card', 1, 1, 0.001]] },
+  giantAnt: { name: 'Giant Ant', tell: { name: 'Mandible Snap', r: 1.1, mult: 1.4 }, ai: 'tank', art: 'giantAnt', el: 'earth', lv: 12, hp: 340, atk: [16, 21], def: 6, vit: 12, agi: 10, dex: 22, exp: [34, 24], tjob: 44, adelay: 1500, passive: true, walk: 200, aggro: 4.5, chase: 6, reach: 0.8, w: 1.0, r: 0.4, drops: [['ant_jaw', 1, 1, 0.55], ['red_gel', 1, 1, 0.1], ['potion', 1, 1, 0.08], ['ant_knife', 1, 1, 0.003], ['giantant_card', 1, 1, 0.001]] },
   cactus: { name: 'Cactus', ai: 'archer', art: 'cactus', el: 'earth', lv: 55, hp: 4200, atk: [180, 225], def: 20, vit: 50, agi: 30, dex: 80, mdef: 15, exp: [1500, 1050], adelay: 1800, passive: true, walk: 400, aggro: 5, chase: 8, range: 4.5, reach: 0.8, w: 0.9, r: 0.4, shot: '#9ad050', drops: [['cactus_needle', 1, 1, 0.5], ['potion3', 1, 1, 0.04], ['needle_ring', 1, 1, 0.003], ['cactus_card', 1, 1, 0.001]] },
-  duneWorm: { name: 'Dune Worm', ai: 'assassin', art: 'duneWorm', el: 'earth', lv: 58, hp: 4600, atk: [205, 255], def: 18, vit: 46, agi: 46, dex: 82, exp: [1700, 1190], adelay: 1300, walk: 200, aggro: 5.5, chase: 9, reach: 0.9, double: 0.15, w: 1.2, r: 0.45, drops: [['worm_hide', 1, 1, 0.5], ['potion3', 1, 1, 0.05], ['wormhide_boots', 1, 1, 0.002], ['duneworm_card', 1, 1, 0.001]] },
-  scorpion: { name: 'Sand Scorpion', ai: 'tank', art: 'scorpion', el: 'earth', lv: 61, hp: 4800, atk: [215, 270], def: 26, vit: 52, agi: 40, dex: 84, exp: [1850, 1300], adelay: 1400, walk: 200, aggro: 5.5, chase: 9, reach: 0.9, poison: 0.15, w: 1.1, r: 0.45, heavy: true, drops: [['scorpion_tail', 1, 1, 0.5], ['potion3', 1, 1, 0.05], ['stinger', 1, 1, 0.0025], ['scorpion_card', 1, 1, 0.001]] },
+  duneWorm: { name: 'Dune Worm', tell: { name: 'Burrow Strike', r: 1.5 }, ai: 'assassin', art: 'duneWorm', el: 'earth', lv: 58, hp: 4600, atk: [205, 255], def: 18, vit: 46, agi: 46, dex: 82, exp: [1700, 1190], adelay: 1300, walk: 200, aggro: 5.5, chase: 9, reach: 0.9, double: 0.15, w: 1.2, r: 0.45, drops: [['worm_hide', 1, 1, 0.5], ['potion3', 1, 1, 0.05], ['wormhide_boots', 1, 1, 0.002], ['duneworm_card', 1, 1, 0.001]] },
+  scorpion: { name: 'Sand Scorpion', tell: { name: 'Tail Strike', r: 1.2 }, ai: 'tank', art: 'scorpion', el: 'fire', lv: 61, hp: 4800, atk: [215, 270], def: 26, vit: 52, agi: 40, dex: 84, exp: [1850, 1300], adelay: 1400, walk: 200, aggro: 5.5, chase: 9, reach: 0.9, poison: 0.15, w: 1.1, r: 0.45, heavy: true, drops: [['scorpion_tail', 1, 1, 0.5], ['potion3', 1, 1, 0.05], ['stinger', 1, 1, 0.0025], ['scorpion_card', 1, 1, 0.001]] },
   runner: { name: 'Sand Runner', ai: 'assassin', art: 'runner', el: 'wind', lv: 64, hp: 5200, atk: [230, 290], def: 16, vit: 48, agi: 62, dex: 90, exp: [2100, 1470], adelay: 1200, passive: true, walk: 120, aggro: 6, chase: 10, reach: 0.95, double: 0.2, w: 1.15, r: 0.45, drops: [['runner_feather', 1, 1, 0.5], ['potion3', 1, 1, 0.05], ['runner_boots', 1, 1, 0.002], ['runner_card', 1, 1, 0.001]] },
-  soldierAnt: { name: 'Soldier Ant', ai: 'tank', art: 'soldierAnt', el: 'earth', lv: 62, hp: 5000, atk: [220, 275], def: 30, vit: 56, agi: 34, dex: 80, exp: [1950, 1365], adelay: 1400, walk: 200, aggro: 5.5, chase: 9, reach: 0.9, w: 1.15, r: 0.45, heavy: true, drops: [['ant_jaw', 2, 4, 1], ['potion3', 1, 1, 0.05], ['chitin_shield', 1, 1, 0.002], ['soldierant_card', 1, 1, 0.001]] },
+  soldierAnt: { name: 'Soldier Ant', tell: { name: 'Acid Spit', r: 1.3 }, ai: 'tank', art: 'soldierAnt', el: 'fire', lv: 62, hp: 5000, atk: [220, 275], def: 30, vit: 56, agi: 34, dex: 80, exp: [1950, 1365], adelay: 1400, walk: 200, aggro: 5.5, chase: 9, reach: 0.9, w: 1.15, r: 0.45, heavy: true, drops: [['ant_jaw', 2, 4, 1], ['potion3', 1, 1, 0.05], ['chitin_shield', 1, 1, 0.002], ['soldierant_card', 1, 1, 0.001]] },
   // the desert's mini-bosses: the Cactus Lord of Cactus Dunes (a storm of needles, a thorny rush) and
   // the Rainbow Runner of Scorpion Sands (a dash and a flying kick)
   cactusLord: { name: 'Cactus Lord', ai: 'boss', art: 'cactusLord', aura: '#b8f060', el: 'earth', boss: true, lv: 60, hp: 295000, atk: [105, 135], def: 24, vit: 55, agi: 34, dex: 145, mdef: 20, exp: [52000, 36400], adelay: 1900, fierce: true, walk: 300, moves: [{ kind: 'meteors', name: 'Needle Storm', mult: 1.3, r: 1.4, color: '#9ad050', cd: 16 }, { kind: 'charge', name: 'Thorn Rush', mult: 1.6 }], aggro: 5.5, chase: 12, reach: 1.5, w: 2.0, r: 0.8, heavy: true, summon: ['cactus', 'cactus'], summonText: 'The Cactus Lord rattles its spines, and Cacti hop out of the sand!', respawn: 540, drops: [['cactus_heart', 1, 1, 0.3], ['cactus_needle', 3, 5, 1], ['potion3', 1, 2, 0.5], ['thorn_coat', 1, 1, 0.03], ['cactus_spine', 1, 1, 0.02], ['cactuslord_card', 1, 1, 0.01]] },
@@ -164,9 +164,9 @@ export const MOB_DEFS = {
   // for variety (the owner's call: no one weapon element rules the late game). Every one a kind new to Aria, the Neutral ones
   // land creatures and things with no sea about them (the owner's calls), painted in code (coast.js) ----------
   quillPorcupine: { name: 'Quill Porcupine', ai: 'archer', art: 'quillPorcupine', el: 'neutral', lv: 65, hp: 5300, atk: [236, 296], def: 14, vit: 44, agi: 64, dex: 104, exp: [2300, 1610], mdef: 10, adelay: 1700, walk: 260, aggro: 5.5, chase: 8, range: 4.5, reach: 0.85, shot: '#e8dcc0', w: 1.1, r: 0.42, drops: [['porcupine_quill', 1, 1, 0.5], ['potion3', 1, 1, 0.06], ['quillporcupine_card', 1, 1, 0.001]] },
-  tuskBoar: { name: 'Tusk Boar', ai: 'assassin', art: 'tuskBoar', el: 'neutral', lv: 66, hp: 6200, atk: [240, 300], def: 36, vit: 58, agi: 26, dex: 92, exp: [2400, 1680], adelay: 1300, walk: 130, aggro: 6, chase: 10, reach: 1.0, double: 0.12, w: 1.3, r: 0.5, drops: [['boar_tusk', 1, 1, 0.5], ['potion3', 1, 1, 0.06], ['tuskboar_card', 1, 1, 0.001]] },
+  tuskBoar: { name: 'Tusk Boar', tell: { name: 'Gore', r: 1.4 }, ai: 'assassin', art: 'tuskBoar', el: 'neutral', lv: 66, hp: 6200, atk: [240, 300], def: 36, vit: 58, agi: 26, dex: 92, exp: [2400, 1680], adelay: 1300, walk: 130, aggro: 6, chase: 10, reach: 1.0, double: 0.12, w: 1.3, r: 0.5, drops: [['boar_tusk', 1, 1, 0.5], ['potion3', 1, 1, 0.06], ['tuskboar_card', 1, 1, 0.001]] },
   cliffBandit: { name: 'Cliff Bandit', ai: 'archer', art: 'cliffBandit', el: 'neutral', lv: 69, hp: 6900, atk: [250, 312], def: 32, vit: 64, agi: 22, dex: 96, exp: [2700, 1890], mdef: 10, adelay: 1700, walk: 200, aggro: 6, chase: 9, range: 4.5, reach: 0.9, shot: '#d8c8a0', w: 0.95, r: 0.38, drops: [['bandit_scarf', 1, 1, 0.5], ['potion3', 1, 1, 0.06], ['cliffbandit_card', 1, 1, 0.001]] },
-  bladeMantis: { name: 'Blade Mantis', ai: 'assassin', art: 'bladeMantis', el: 'neutral', lv: 71, hp: 6200, atk: [262, 330], def: 16, vit: 46, agi: 62, dex: 112, exp: [2850, 2000], adelay: 1150, walk: 140, aggro: 6, chase: 10, reach: 1.0, double: 0.2, w: 1.0, r: 0.4, drops: [['mantis_blade', 1, 1, 0.5], ['potion3', 1, 1, 0.06], ['blademantis_card', 1, 1, 0.001]] },
+  bladeMantis: { name: 'Blade Mantis', tell: { name: 'Scythe', r: 1.5 }, ai: 'assassin', art: 'bladeMantis', el: 'neutral', lv: 71, hp: 6200, atk: [262, 330], def: 16, vit: 46, agi: 62, dex: 112, exp: [2850, 2000], adelay: 1150, walk: 140, aggro: 6, chase: 10, reach: 1.0, double: 0.2, w: 1.0, r: 0.4, drops: [['mantis_blade', 1, 1, 0.5], ['potion3', 1, 1, 0.06], ['blademantis_card', 1, 1, 0.001]] },
   chestMimic: { name: 'Chest Mimic', ai: 'tank', art: 'chestMimic', el: 'neutral', lv: 73, hp: 7300, atk: [266, 334], def: 40, vit: 62, agi: 26, dex: 100, exp: [3050, 2135], adelay: 1500, walk: 260, aggro: 5, chase: 8, reach: 0.95, heavy: true, w: 1.15, r: 0.46, drops: [['mimic_tooth', 1, 1, 0.5], ['potion3', 1, 1, 0.06], ['chestmimic_card', 1, 1, 0.001]] },
   glassJelly: { name: 'Glass Jelly', ai: 'puffer', art: 'glassJelly', el: 'neutral', lv: 74, hp: 6600, atk: [268, 336], def: 12, vit: 50, agi: 40, dex: 110, exp: [3150, 2205], mdef: 30, adelay: 1600, passive: true, walk: 260, aggro: 5, chase: 8, reach: 0.95, fly: true, puff: 'A glass-jelly sting! Your limbs go numb and slow', w: 1.0, r: 0.4, drops: [['jelly_glass', 1, 1, 0.5], ['potion3', 1, 1, 0.06], ['glassjelly_card', 1, 1, 0.001]] },
   merrow: { name: 'Merrow', ai: 'archer', art: 'merrow', el: 'water', lv: 75, hp: 6800, atk: [272, 340], def: 15, vit: 48, agi: 50, dex: 128, exp: [3250, 2275], mdef: 14, adelay: 1700, walk: 200, aggro: 6, chase: 9, range: 4.5, reach: 0.9, shot: '#c8e8f0', w: 0.95, r: 0.38, drops: [['merrow_scale', 1, 1, 0.5], ['potion3', 1, 1, 0.06], ['merrow_card', 1, 1, 0.001]] },
@@ -219,9 +219,9 @@ export const MOB_DEFS = {
     moves: [{ kind: 'charge', name: 'Spectral Charge', mult: 1.7 }, { kind: 'throw', name: 'Hurled Head', mult: 1.6, r: 1.6 }, { kind: 'leap', name: 'Cleaving Leap', mult: 1.8, r: 1.9 }, { kind: 'frenzy' }],
     aggro: 6, chase: 12, reach: 1.7, w: 2.1, r: 0.8, heavy: true, summon: ['livingArmor', 'livingArmor'], summonText: 'The Headless Knight raises his sword, and the Living Armors march to his side!', respawn: 540,
     drops: [['knight_crest', 1, 1, 0.3], ['rusted_plate', 3, 5, 1], ['potion3', 1, 2, 0.5], ['oathless_plate', 1, 1, 0.03], ['headsman_blade', 1, 1, 0.02], ['headlessknight_card', 1, 1, 0.01]] },
-  livingArmor: { name: 'Living Armor', ai: 'tank', art: 'livingArmor', el: 'neutral', lv: 79, hp: 8000, atk: [288, 362], def: 22, vit: 58, agi: 54, dex: 116, exp: [3650, 2555], adelay: 1700, walk: 280, aggro: 5, chase: 8, reach: 1.1, heavy: true, w: 1.1, r: 0.45, drops: [['rusted_plate', 1, 1, 0.5], ['potion3', 1, 1, 0.06], ['livingarmor_card', 1, 1, 0.001]] },
+  livingArmor: { name: 'Living Armor', tell: { name: 'Cleave', r: 1.6 }, ai: 'tank', art: 'livingArmor', el: 'neutral', lv: 79, hp: 8000, atk: [288, 362], def: 22, vit: 58, agi: 54, dex: 116, exp: [3650, 2555], adelay: 1700, walk: 280, aggro: 5, chase: 8, reach: 1.1, heavy: true, w: 1.1, r: 0.45, drops: [['rusted_plate', 1, 1, 0.5], ['potion3', 1, 1, 0.06], ['livingarmor_card', 1, 1, 0.001]] },
   mossTroll: { name: 'Moss Troll', ai: 'tank', art: 'mossTroll', el: 'neutral', lv: 81, hp: 9500, atk: [300, 376], def: 34, vit: 72, agi: 22, dex: 110, exp: [3900, 2730], adelay: 1800, walk: 300, aggro: 5, chase: 8, reach: 1.15, heavy: true, w: 1.45, r: 0.55, drops: [['troll_hide', 1, 1, 0.5], ['potion3', 1, 1, 0.06], ['mosstroll_card', 1, 1, 0.001]] },
-  owlbear: { name: 'Owlbear', ai: 'assassin', art: 'owlbear', el: 'neutral', lv: 83, hp: 8300, atk: [314, 396], def: 22, vit: 60, agi: 70, dex: 124, exp: [4150, 2905], adelay: 1350, walk: 160, aggro: 6, chase: 10, reach: 1.15, double: 0.12, w: 1.4, r: 0.52, drops: [['owl_feather', 1, 1, 0.5], ['potion3', 1, 1, 0.06], ['owlbear_card', 1, 1, 0.001]] },
+  owlbear: { name: 'Owlbear', tell: { name: 'Rend', r: 1.4 }, ai: 'assassin', art: 'owlbear', el: 'neutral', lv: 83, hp: 8300, atk: [314, 396], def: 22, vit: 60, agi: 70, dex: 124, exp: [4150, 2905], adelay: 1350, walk: 160, aggro: 6, chase: 10, reach: 1.15, double: 0.12, w: 1.4, r: 0.52, drops: [['owl_feather', 1, 1, 0.5], ['potion3', 1, 1, 0.06], ['owlbear_card', 1, 1, 0.001]] },
   moorWitch: { name: 'Moor Witch', ai: 'archer', art: 'moorWitch', el: 'shadow', lv: 84, hp: 9300, atk: [318, 400], def: 30, vit: 68, agi: 32, dex: 118, exp: [4300, 3010], mdef: 30, adelay: 1700, walk: 220, aggro: 6.5, chase: 9, range: 5, reach: 0.9, shot: '#b890ff', w: 0.95, r: 0.38, drops: [['witch_charm', 1, 1, 0.5], ['potion3', 1, 1, 0.06], ['moorwitch_card', 1, 1, 0.001]] },
   fireSalamander: { name: 'Fire Salamander', ai: 'assassin', art: 'fireSalamander', el: 'fire', lv: 86, hp: 8400, atk: [325, 406], def: 16, vit: 54, agi: 46, dex: 134, exp: [4600, 3220], adelay: 1150, walk: 120, aggro: 6.5, chase: 10, reach: 1.0, double: 0.15, w: 1.4, r: 0.48, drops: [['salamander_scale', 1, 1, 0.5], ['potion3', 1, 1, 0.06], ['firesalamander_card', 1, 1, 0.001]] },
   hallScarab: { name: 'Scarab', ai: 'tank', art: 'scarab', el: 'earth', lv: 66, hp: 6050, atk: [240, 302], def: 38, vit: 58, agi: 30, dex: 94, exp: [5666, 3964], adelay: 1500, walk: 200, aggro: 5, chase: 8, reach: 0.8, w: 1.0, r: 0.38, heavy: true, drops: [['scarab_shell', 1, 1, 0.55], ['potion2', 1, 1, 0.08], ['scarab_buckler', 1, 1, 0.003], ['hallscarab_card', 1, 1, 0.001]] },
@@ -264,8 +264,8 @@ export const MOB_DEFS = {
   // poisonous; and Ratatoskr, the messenger squirrel, the floor's mini-boss. Floor 4, the great hall (69-75): the Root
   // Wardens and the Thorn Drakes (hall: they keep to it) guard Nidhogg, who gnaws the World Tree's roots
   rootSquirrel: { name: 'Root Squirrel', ai: 'assassin', art: 'rootSquirrel', el: 'earth', lv: 46, hp: 2750, atk: [135, 170], def: 17, vit: 38, agi: 49, dex: 75, exp: [963, 674], adelay: 1150, walk: 130, aggro: 5.5, chase: 9, reach: 0.8, double: 0.15, w: 0.6, r: 0.32, drops: [['squirrel_tail', 1, 1, 0.55], ['potion2', 1, 1, 0.08], ['acorn_charm', 1, 1, 0.003], ['rootsquirrel_card', 1, 1, 0.001]] },
-  bramble: { name: 'Bramble', ai: 'archer', art: 'bramble', el: 'earth', lv: 51, hp: 3750, atk: [177, 222], def: 20, vit: 42, agi: 26, dex: 87, mdef: 13, exp: [1287, 902], adelay: 1700, walk: 300, aggro: 5.5, chase: 8, range: 4.5, reach: 0.9, w: 1.0, r: 0.42, shot: '#e2d4a8', drops: [['bramble_thorn', 1, 1, 0.5], ['potion2', 1, 1, 0.08], ['bramble_buckler', 1, 1, 0.003], ['bramble_card', 1, 1, 0.001]] },
-  rootSerpent: { name: 'Root Serpent', ai: 'assassin', art: 'rootSerpent', el: 'earth', lv: 55, hp: 4200, atk: [188, 235], def: 15, vit: 43, agi: 50, dex: 83, exp: [1622, 1137], adelay: 1300, walk: 180, aggro: 5.5, chase: 9, reach: 0.9, poison: 0.2, w: 1.1, r: 0.4, drops: [['root_scale', 1, 1, 0.5], ['potion3', 1, 1, 0.04], ['serpent_boots', 1, 1, 0.003], ['rootserpent_card', 1, 1, 0.001]] },
+  bramble: { name: 'Bramble', ai: 'archer', art: 'bramble', el: 'wind', lv: 51, hp: 3750, atk: [177, 222], def: 20, vit: 42, agi: 26, dex: 87, mdef: 13, exp: [1287, 902], adelay: 1700, walk: 300, aggro: 5.5, chase: 8, range: 4.5, reach: 0.9, w: 1.0, r: 0.42, shot: '#e2d4a8', drops: [['bramble_thorn', 1, 1, 0.5], ['potion2', 1, 1, 0.08], ['bramble_buckler', 1, 1, 0.003], ['bramble_card', 1, 1, 0.001]] },
+  rootSerpent: { name: 'Root Serpent', ai: 'assassin', art: 'rootSerpent', el: 'wind', lv: 55, hp: 4200, atk: [188, 235], def: 15, vit: 43, agi: 50, dex: 83, exp: [1622, 1137], adelay: 1300, walk: 180, aggro: 5.5, chase: 9, reach: 0.9, poison: 0.2, w: 1.1, r: 0.4, drops: [['root_scale', 1, 1, 0.5], ['potion3', 1, 1, 0.04], ['serpent_boots', 1, 1, 0.003], ['rootserpent_card', 1, 1, 0.001]] },
   mossGolem: { name: 'Moss Golem', ai: 'tank', art: 'mossGolem', el: 'earth', lv: 58, hp: 5700, atk: [197, 247], def: 31, vit: 58, agi: 14, dex: 67, mdef: 11, exp: [1899, 1330], adelay: 1900, walk: 300, aggro: 5, chase: 8, reach: 1.0, w: 1.3, r: 0.5, heavy: true, drops: [['moss_clump', 1, 2, 0.6], ['potion3', 1, 1, 0.05], ['moss_mail', 1, 1, 0.003], ['mossgolem_card', 1, 1, 0.001]] },
   darkElf: { name: 'Dark Elf', ai: 'archer', art: 'darkElf', el: 'shadow', lv: 60, hp: 4250, atk: [208, 260], def: 12, vit: 35, agi: 57, dex: 114, mdef: 26, exp: [2103, 1472], adelay: 1500, walk: 150, aggro: 6.5, chase: 10, range: 5, reach: 0.9, w: 0.85, r: 0.34, shot: '#b88aff', drops: [['elven_thread', 1, 1, 0.5], ['potion3', 1, 1, 0.05], ['elven_bow', 1, 1, 0.0025], ['darkelf_card', 1, 1, 0.001]] },
   greatStag: { name: 'Great Stag', ai: 'assassin', art: 'greatStag', el: 'wind', lv: 63, hp: 5450, atk: [226, 285], def: 18, vit: 51, agi: 58, dex: 95, exp: [4885, 3415], adelay: 1300, walk: 130, aggro: 6, chase: 10, reach: 1.1, double: 0.15, w: 1.5, r: 0.55, drops: [['stag_antler', 1, 1, 0.5], ['potion3', 1, 1, 0.06], ['stag_cape', 1, 1, 0.0025], ['greatstag_card', 1, 1, 0.001]] },
@@ -524,6 +524,21 @@ const STATUS_COL = Object.fromEntries(Object.entries({ bark: '#c8a05a', bark2: '
 const SUMMON_AT = 0.6, SUMMON_CD = 120;
 // fierce: an MVP, or a boss made as hard as one (the Hell raid's boss: FIERCE)
 export const fierce = (d) => !!(d.mvp || d.fierce);
+// A field monster's wind-up (def.tell, November 2026: fields taught nothing the bosses ask for): every so often, in a
+// fight, it stops, a danger mark shows where the hero stands, and after `wind` s it lands there for `mult` x a blow
+// (FLEE can't turn it: step out). One kind on each field has one; guards, heralds and raid monsters don't (lesser, raidDef)
+export const TELL = { wind: 1.1, mult: 1.5, r: 1.3, cd: [7, 11], first: [3, 6] };
+export const tellOf = (d) => (d.tell ? { ...TELL, ...d.tell } : null);
+// Pack leaders (the owner's call, November 2026): on a few fields one monster of a pack's kind leads it. The same
+// look (no recolour: the owner's rule), a quarter bigger, its name tag says so; tougher, harder-hitting, worth more,
+// and when it fights it calls the pack round it to the hero
+export const CHIEFS = { farm: 'wolf', wolfhill: 'wolf', stones: 'koboldWarrior', burnt: 'goblinWarrior', desert: 'soldierAnt', tidecliff: 'tuskBoar', beacon: 'owlbear' };
+export const CHIEF = { hp: 3, atk: 1.3, exp: 3, size: 1.25, call: 10 };
+const chiefDefs = {};
+export const chiefDef = (type) => (chiefDefs[type] ||= (() => {
+  const d = MOB_DEFS[type];
+  return { ...d, name: `${d.name} · Pack Leader`, chief: true, passive: false, hp: Math.round(d.hp * CHIEF.hp), atk: d.atk.map((a) => Math.round(a * CHIEF.atk)), exp: d.exp.map((e) => Math.round(e * CHIEF.exp)), w: d.w * CHIEF.size, r: d.r * CHIEF.size };
+})());
 // each MVP's tier (the owner's call, November 2026): the Base Level a second job in the best gear short of MVP gear
 // beats it at (build-tools/mvp-sim.mjs tunes to it). The name tag and the big map say it ("for Base 75+"), and an MVP
 // leaves a hero more than MVP_SPARE levels under it alone unless struck or taunted (the owner's call: the story walks
@@ -550,7 +565,7 @@ export const MVP_ULTRAS = ['allseeing_eye', 'nidhogg_wings', 'poseidon_crown', '
 export const isChase = (item) => /_card$/.test(item) || MVP_ULTRAS.includes(item);
 export const pityChance = (base, misses = 0) => Math.min(base * PITY.cap, base * (1 + PITY.step * misses));
 const guardDefs = {};
-const lesser = (d) => ({ ...d, hp: Math.round(d.hp * GUARD.hp), atk: d.atk.map((a) => Math.round(a * GUARD.atk)) });
+const lesser = (d) => ({ ...d, tell: null, hp: Math.round(d.hp * GUARD.hp), atk: d.atk.map((a) => Math.round(a * GUARD.atk)) }); // (a guard or herald: no wind-up of its own)
 export const guardDef = (type) => (guardDefs[type] ||= lesser(MOB_DEFS[type]));
 // A story stand's herald at the stand's own level (stands.js, a step's heraldLv; November 2026): the late stands
 // called Ember Hill's Lv 30 Beetles and Lv 11 Wisps against a Base 72 hero, so only the Meteor Rain could hurt.
@@ -638,7 +653,7 @@ export function raidDef(type, lv, s = { hp: 1, atk: 1 }, guard = null) {
   return (raidDefs[`${type}@${lv}:${s.hp},${s.atk},${s.exp},${!!s.fierce}`] ||= (() => {
     const d = MOB_DEFS[type], k = d.boss ? 1 : STRENGTH[type] ?? 1, exp = 0.0122 * lv ** 3;
     return {
-      ...d, ...(s.fierce ? FIERCE[type] : {}), lv, raidLv: lv, raidGuard: guard, passive: false, relentless: true, aggro: 99, chase: 99, split: null, drops: [],
+      ...d, ...(s.fierce ? FIERCE[type] : {}), tell: null, lv, raidLv: lv, raidGuard: guard, passive: false, relentless: true, aggro: 99, chase: 99, split: null, drops: [],
       hp: Math.round(48 * lv * k * (d.boss ? 7 : 1) * s.hp * ((s.fierce && FIERCE[type].hpScale) || 1)),
       atk: [3.2, 4].map((a) => Math.round(a * lv * k * (d.boss ? 0.6 : 1) * s.atk * ((s.fierce && FIERCE[type].atkScale) || 1))), // (atkScale: the owner's tiers)
       def: Math.round(0.4 * lv * k), vit: Math.round(lv * k), agi: Math.round(0.8 * lv), dex: Math.round(1.5 * lv),
@@ -743,6 +758,7 @@ class Mob {
     this.walked = 0; // distance walked, drives the walk cycle
     this.provokeT = 0; // taunted: it comes for you
     this.stunT = 0;
+    this.tellT = 0; this.tellCd = null; this.rallied = false; // (a wind-up, its wait, a pack leader's call: TELL, CHIEFS)
     this.calls = 0;          // times it has called its guards (bosses)
     this.marks = 0;          // the HP marks it has passed that call guards (callMarks)
     this.enraged = false;    // an MVP below half its HP (MVP_RAGE)
@@ -1367,7 +1383,10 @@ class Mob {
     // a boss too far from where the fight began: back it goes
     if (!d.relentless && !d.wyrm && d.ai === 'boss' && homeD > (d.mvp ? 40 : 30) && this.state !== 'return' && this.state === 'chase') this.state = 'return'; // (other monsters are tied to no spot: FOLLOW)
     if (this.stunT > 0) this.stunT -= dt; // stunned: stands there
-    else if (this.state === 'return') {
+    else if (this.tellT > 0) { // winding up its blow (TELL): it stands, facing the mark, then lands it
+      this.tellT -= dt;
+      if (this.tellT <= 0) { this.atkAnim = ATTACK_ANIM; this.mgr.emit('tellHit', this, this.tellAt, tellOf(d)); }
+    } else if (this.state === 'return') {
       moving = this.moveToward(this.home.x, this.home.z, speed, dt) > 0;
       if (homeD < 2 || !moving) { this.state = 'wander'; this.tired = 2; }
     } else switch (d.ai) {
@@ -1543,6 +1562,25 @@ class Mob {
     }
 
     // done following you: it wanders on from here, not back to where it was (FOLLOW)
+    // a field monster's wind-up (TELL), and a pack leader's call (CHIEFS)
+    const fighting = available && hostile && (this.engaged || this.state === 'chase') && p === this.mgr.hero;
+    const T = d.tell && !d.boss && !d.mvp ? tellOf(d) : null;
+    if (T && fighting && !(this.tellT > 0) && this.stunT <= 0 && dist < Math.max(d.reach + 1.5, 2.6)) {
+      this.tellCd = (this.tellCd ?? T.first[0] + Math.random() * (T.first[1] - T.first[0])) - dt;
+      if (this.tellCd <= 0) {
+        this.tellCd = T.cd[0] + Math.random() * (T.cd[1] - T.cd[0]);
+        this.tellT = T.wind;
+        this.tellAt = { x: p.x, z: p.z };
+        if (dist > 0.01) this.heading = { x: dx / dist, z: dz / dist };
+        this.mgr.emit('tell', this, this.tellAt, T);
+      }
+    }
+    if (d.chief && fighting && !this.rallied) {
+      this.rallied = true;
+      for (const o of this.mgr.list) if (o !== this && o.alive && o.type === this.type && Math.hypot(o.x - this.x, o.z - this.z) < CHIEF.call) o.provoke();
+      this.mgr.emit('rally', this);
+    }
+    if (this.rallied && this.state !== 'chase' && !this.engaged) this.rallied = false;
     const engaged = this.engaged || this.state === 'chase' || (d.ai === 'skittish' && this.angry > 0);
     if (this.wasEngaged && !engaged && d.ai !== 'boss' && !this.leader && !d.relentless) { this.home = { x: this.x, z: this.z }; this.target = null; }
     this.wasEngaged = engaged;
@@ -1678,6 +1716,7 @@ export class MobManager {
     if (kept && kept.sig === sig) { // (its bosses come as ever: update)
       this.bosses = spawns.map(([type]) => type).filter((type) => MOB_DEFS[type].mvp || MOB_DEFS[type].boss);
       this.restoreField(kept);
+      this.crown();
       return;
     }
     const rng = mulberry32(seed);
@@ -1696,6 +1735,20 @@ export class MobManager {
       }
     }
     this.fieldAt[this.mapId] = { sig, at: Date.now(), mobs: [] }; // (filled in when you leave: fieldSnapshot)
+    this.crown();
+  }
+
+  // the map's pack leader (CHIEFS): the first field monster of its kind leads the pack
+  crown() {
+    const type = CHIEFS[this.mapId], m = type && this.list.find((o) => o.type === type && o.field);
+    if (!m) return;
+    const keep = Math.min(1, m.hp / m.def.hp);
+    m.def = chiefDef(type);
+    m.chief = true;
+    m.hp = Math.max(1, Math.round(m.def.hp * keep));
+    const upp = m.def.w / m.art.body[0];
+    m.sprite.scale.set(m.art.fw * upp, m.art.fh * upp, 1);
+    m.shadow.scale.setScalar(m.def.w * 0.9);
   }
 
   // the map lived on while you were away (AWAY): a monster wandered about, a few paces at a time
