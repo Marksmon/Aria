@@ -25,7 +25,7 @@ function skillTrees(p) {
 }
 // where each skill of a tree sits: rows by prerequisite depth (in this tree), a skill under its
 // need where there is room, otherwise in the next free column. { at: { id: { x, y } }, w, h }
-const NODE = 40, COL = 56, ROW = 62, PAD = 10;
+const NODE = 40, COL = 66, ROW = 76, PAD = 14; // (room under each node for its name: November 2026, icons alone left new players guessing)
 const layouts = {};
 function treeLayout(job) {
   if (layouts[job]) return layouts[job];
@@ -42,7 +42,7 @@ function treeLayout(job) {
   }
   const at = {};
   for (const id of ids) at[id] = { x: PAD + col[id] * COL, y: PAD + depth[id] * ROW };
-  const w = PAD * 2 + Math.max(...ids.map((id) => col[id])) * COL + NODE, h = PAD * 2 + Math.max(...ids.map((id) => depth[id])) * ROW + NODE + 8;
+  const w = PAD * 2 + Math.max(...ids.map((id) => col[id])) * COL + NODE, h = PAD * 2 + Math.max(...ids.map((id) => depth[id])) * ROW + NODE + 24;
   return (layouts[job] = { at, w, h });
 }
 
@@ -349,6 +349,7 @@ export class Menus {
         <div class="cr-field"><span>Body</span><div class="cr-seg">${seg('m', 'Male')}${seg('f', 'Female')}</div></div>
         <div class="cr-field"><span>Hairstyle</span><div class="cr-hair">${hair}</div></div>
         <div class="cr-field"><span>Hair colour <i>${esc(DYES[d.dye].name)}</i></span><div class="swatches">${dyes}</div></div>
+        ${this.hooks.canSkipPrologue?.() ? `<button class="cr-opt cr-skip${d.skip ? ' on' : ''}" data-act="lookskip" aria-pressed="${!!d.skip}">${d.skip ? '✓ ' : ''}Skip the Prologue <small>(another hero of yours has played it: its rewards are given)</small></button>` : ''}
         <small class="cr-note">${this.lookBlocked() ? 'Give your hero a name to begin.' : 'You can change your look later at the Stylist in Steinborg.'}</small>
         <div class="cr-actions"><button class="rbtn soft" data-act="lookrandom" title="A random look">🎲 Random</button>
           <button class="rbtn cr-go" data-act="lookok" ${this.lookBlocked() ? 'disabled' : ''}>Begin your journey ▸</button></div>
@@ -650,7 +651,7 @@ export class Menus {
       const sk = SKILLS[id], lv = skillLv(p, id), block = learnBlock(p, id), at = lay.at[id], active = sk.kind === 'active';
       const badge = sk.max > 1 ? `${lv}/${sk.max}` : lv ? '✓' : sk.free || sk.granted ? '🔒' : '0/1';
       const cls = ['sknode', lv ? '' : 'off', id === this.skSel ? 'sel' : '', !block ? 'can' : '', active ? 'act' : 'pas'].filter(Boolean).join(' ');
-      return `<button class="${cls}" style="left:${at.x}px;top:${at.y}px" data-act="sksel" data-id="${id}"${active && lv ? ` data-drag="skill:${id}"` : ''} title="${esc(sk.name)}">${icon(sk.icon)}<b>${badge}</b></button>`;
+      return `<button class="${cls}" style="left:${at.x}px;top:${at.y}px" data-act="sksel" data-id="${id}"${active && lv ? ` data-drag="skill:${id}"` : ''} title="${esc(sk.name)}">${icon(sk.icon)}<b>${badge}</b><i class="skname">${esc(sk.name)}</i></button>`;
     }).join('');
     const train = trainTrees(p).includes(tree) ? '' : `<div class="sknote">Switch to ${esc(JOBS[tree].name)} at a Keeper to train this tree.</div>`;
     return `<div class="rtabs sktabs">${tabs}</div>${menu}${train}
@@ -1126,6 +1127,7 @@ export class Menus {
       d.body = pick(['m', 'f']); d.hair = pick(hairstyles(d.body)); d.dye = pick(Object.keys(DYES));
       this.hooks.look?.(d); this.hooks.ui?.(); this.render(id);
     }
+    if (act === 'lookskip') { this.lookDraft.skip = !this.lookDraft.skip; this.render(id); }
     if (act === 'lookdye') { this.lookDraft.dye = t.dataset.id; this.hooks.look?.(this.lookDraft); this.hooks.ui?.(); this.render(id); }
     if (act === 'lookok') {
       if (this.lookBlocked()) return;

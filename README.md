@@ -20,7 +20,8 @@ this phone or another).
 ## Heroes and storage
 
 The title screen has three character slots. Tap a hero and **Continue** (or **Play**), or tap an
-empty slot to make a new one; **Delete** removes the picked hero (it asks twice). In the game, the **⚙**
+empty slot to make a new one (once one of your heroes has finished the Prologue, a new hero may **skip the Prologue**:
+its rewards are given, and the hero starts on Chapter 1's road north); **Delete** removes the picked hero (it asks twice). In the game, the **⚙**
 button (beside the minimap) opens Settings: Sound on or off, **Target health bar** (a thin bar under the
 name of the monster you fight, on or off), **Graphics** (Sharp, or Fast for a smoother game on an older
 phone), **Interface size** (Small, Normal, Large or Larger: the panel, buttons, hotbar, minimap and quest list;

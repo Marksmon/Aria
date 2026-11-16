@@ -307,7 +307,8 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   (new every Monday, paid the moment done) and achievements, each a title worn after the name (`ACHIEVEMENTS`).
   The game feeds it kills, raid clears, refines and quest hand-ins (`goalEvent`) and checks the rest every 3 s.
 - **Character slots and storage** (`src/save.js`): three heroes, picked on the title screen (slot 1
-  keeps the old save key). The Keepers' storage is one chest shared by every hero (from a first job on), saved apart from
+  keeps the old save key). A new hero may skip the Prologue once another hero in the save has finished it
+  (November 2026, `skipPrologue` in `main.js`: its rewards are paid, the Cloak worn, the hero starts on 'north'). The Keepers' storage is one chest shared by every hero (from a first job on), saved apart from
   them; a save code backs up every hero and the storage together.
 - **Character art:** bodies are bald to the standard in `docs/character-standard.md`; the game
   paints the shared head, hair and headgear. Each hairstyle is for one body only (the owner's call,

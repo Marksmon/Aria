@@ -1469,6 +1469,8 @@ const menus = new Menus(inv, prog, player, {
   look(l) { player.setLook(l); player.setArt(jobArt()); }, // a new body when trying the other one on
   currentLook: () => ({ ...player.look }),
   lookDone(l, mode) {
+    const skip = mode === 'new' && !!l.skip;
+    l = { ...l }; delete l.skip;
     if (mode === 'stylist') {
       if (inv.perz < 1000) { player.setLook(lookBefore); player.setArt(jobArt()); menus.message('Not enough perz'); return; }
       inv.perz -= 1000;
@@ -1480,9 +1482,29 @@ const menus = new Menus(inv, prog, player, {
     lookBefore = { ...player.look };
     audio.play('craft');
     persist();
-    if (mode === 'new') { cine = null; cam.dist = 12; cam.yaw = 0; villagers.show(world.id); startStory(); }
+    if (mode === 'new') { cine = null; cam.dist = 12; cam.yaw = 0; villagers.show(world.id); if (skip) skipPrologue(); else startStory(); }
   },
+  canSkipPrologue: () => otherHeroPlayedPrologue(),
 });
+// a second hero may skip the Prologue (the review, November 2026: its lessons are for a first hero): offered when
+// another hero in this save has finished it; its rewards are paid, and the hero starts on Chapter 1's road north
+const PROLOGUE_END = STORY.findIndex((s) => s.ch !== 'Prologue');
+function otherHeroPlayedPrologue() {
+  for (let i = 0; i < SLOTS; i++) {
+    if (i === activeSlot()) continue;
+    const d = loadSave(i)?.story, at = d ? (d.id === 'done' ? STORY.length : STORY.findIndex((s) => s.id === d.id)) : -1;
+    if (at >= PROLOGUE_END) return true;
+  }
+  return false;
+}
+function skipPrologue() {
+  story.flag('intro');
+  while (story.step?.ch === 'Prologue') { const s = story.advance(); if (s.reward) giveReward(s.reward); }
+  if (inv.bag.count('travel_cloak')) inv.equip('travel_cloak');
+  refreshQuests();
+  persist();
+  menus.message(`Prologue skipped. Story: ${story.step.title}. ${story.step.goal}`);
+}
 menus.quests = quests;
 const portraits = {};
 menus.portrait = (id) => (id === 'player' ? (portraits[`${prog.job}|${player.look.body}|${jobArt().dressed}`] ||= jobArt().anims.down.idle[0].image.toDataURL())
