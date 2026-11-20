@@ -109,7 +109,7 @@ const STEP_LIMIT = 260; // seconds of game time a step may take
           default: return { id: s.id, kind: s.kind, act: 'waiting', issue: `the bot does not know a ${s.kind} step` };
         }
       });
-      if (r.done) { out.push('the story is told'); break; }
+      if (r.done) { if (last) console.log(`${last.padEnd(14)} ${String(Math.round(since)).padStart(4)} s`); console.log('the story is told'); steps++; break; }
       if (r.id !== last) {
         if (last) { steps++; out.push(`${last.padEnd(14)} ${String(Math.round(since)).padStart(4)} s`); console.log(out.at(-1)); }
         last = r.id; since = 0;
