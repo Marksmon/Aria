@@ -157,7 +157,8 @@ async function waitFor(url, ms = 30000) {
     await page.evaluate(() => window.__aria.warp('storm', null));
     await page.waitForTimeout(3000);
     await page.evaluate(() => { const a = window.__aria, m = a.mobs.list.find((m) => m.type === 'poseidon' && m.alive); if (m) { a.player.setPos(m.x + 2.5, m.z); a.player.command({ mob: m }); } });
-    await page.waitForTimeout(1500);
+    await page.waitForFunction(() => !document.getElementById('bossbar').hidden, null, { timeout: 8000 }).catch(() => {}); // (a slow machine draws few frames a second)
+    await page.waitForTimeout(300);
     const bb = await page.evaluate(() => {
       const el = document.getElementById('bossbar'), r = el.getBoundingClientRect(), info = document.getElementById('info').getBoundingClientRect(), mm = document.getElementById('minimap').getBoundingClientRect();
       return { hidden: el.hidden, name: el.querySelector('.bb-name').textContent, marks: el.querySelectorAll('.bb-bar s').length, clear: r.left >= info.right && r.right <= mm.left && r.width >= 150 };
