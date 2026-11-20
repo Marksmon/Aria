@@ -18,7 +18,8 @@ const SCENARIOS = {
   blader18: { map: 'birch', base: 18, job: 'swordman', gear: ['ember_edge', 'shell_mail', 'round_shield', 'woven_cap', 'leather_boots'] },
   // the coast's first field (the review, November 2026): a BladeMaster at the Tide Cliffs' low end in Hafnvik's shop gear
   blademaster66: { map: 'tidecliff', base: 66, job: 'blademaster', from: ['swordman'], potion: 'potion3', enter: 'scorpion', build: ['pow', 'pow', 'qkn', 'end', 'fns', 'pow', 'qkn', 'fns'], // (the sims' melee build: FNS too, or it misses; in from Scorpion Sands, as a player comes)
-    gear: ['iron_sword', 'chain_mail', 'round_shield', 'travel_cloak', 'leather_boots'] },
+    gear: ['iron_sword|r6', 'chain_mail|r4', 'round_shield|r4', 'travel_cloak', 'leather_boots'], // (the sims' gear at this level: the sword at +6, two pieces at the safe +4)
+    skills: { basics: 9, discipline: 10, ironhide: 10, cleave: 10, blademastery: 10, comboedge: 10, momentum: 5 } },
 };
 const [, , WHICH = 'all', MIN = '10'] = process.argv;
 const PORT = String(4184 + Math.max(0, Object.keys(SCENARIOS).indexOf(WHICH)));
@@ -40,6 +41,7 @@ async function run(page, name, sc, PRICES) {
     // a plain build: POW, QKN and END, two to one to one
     const order = sc.build || ['pow', 'pow', 'qkn', 'end'];
     for (let i = 0, stuck = 0; stuck < order.length; i++) { if (p.raise(order[i % order.length])) stuck = 0; else stuck++; }
+    if (sc.skills) p.skills = { ...sc.skills };
     for (const k of sc.gear) { a.inv.add(k, 1); a.inv.equip(k); }
     a.inv.add(sc.potion || 'potion', 30);
     a.player.hp = a.player.maxHp;
