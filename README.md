@@ -190,7 +190,7 @@ sphere, a market under blue awnings, and a harbour of ships between two lighthou
 night. North of it lies Beacon Moor, south the Coral Shallows, a lagoon waded knee-deep. **Captain Asgeir** on the
 long pier sails to the Storm Isles, and, for heroes of Base 90, to **Loki's Gate**, a black rock where Loki the
 Mischiefbringer keeps the door of the Deep Halls, an endless dungeon: each floor a new maze, harder than the last,
-a checkpoint and a cache every fifth floor. Each floor pays more EXP than the last (+20% a floor), so the deep floors are where Base 95 to 99 is climbed. The coast's monsters (painted in code, `src/coast.js`) are kinds found nowhere else in Aria, and mostly
+a checkpoint and a cache every fifth floor. Each floor pays more EXP than the last (+20% a floor), so the deep floors are where Base 95 to 99 is climbed. The halls shift every Monday, every floor carved anew, and Floors 10, 20, 30 and 50 each give a title. The coast's monsters (painted in code, `src/coast.js`) are kinds found nowhere else in Aria, and mostly
 Neutral, a few of an element for variety, so no one weapon element is best here: on the Tide Cliffs Quill Porcupines,
 Tusk Boars and Cliff Bandits with crossbows; in the Coral Shallows Blade Mantises, Chest Mimics that hop after you
 with their lids snapping, Glass Jellies and the Merrows, fish-folk with harpoons (Water); on the Storm Isles empty
@@ -276,7 +276,9 @@ the ATK): cut them down first. See `docs/balance.md`.
 **Wind-ups and pack leaders.** On every field one kind of monster has a wind-up of its own (the Crab's Pinch, the
 Beetle's Horn Charge, the Wolf Hills Bear's Maul, the Tusk Boar's Gore, the Owlbear's Rend...): it stops, the ground
 where you stand is marked, and a moment later it lands there for half again a blow. Step out of the mark, the way you
-will against a boss. On some fields a **Pack Leader** leads its kind (Wolves, Kobolds, Goblins, Soldier Ants, Tusk
+will against a boss. A caster's is a spell cast from afar (the Moor Witch's Hex, the Dark Elf's Shadow Bolt): keeping
+your distance is no help, stepping out is. Some monsters mend or shield the others round them (the Dryad, the Glass
+Jelly, the Goblin Archer, the Pharaoh's Servant): beat them first. On some fields a **Pack Leader** leads its kind (Wolves, Kobolds, Goblins, Soldier Ants, Tusk
 Boars, Owlbears): a quarter bigger, its name tag says so, three times the HP and worth three times the EXP, and when it
 fights it calls its pack to you. With no monster near, the attack button picks up every drop round you at once.
 
