@@ -17,7 +17,8 @@ const SCENARIOS = {
   blader12: { map: 'fen', base: 12, job: 'swordman', gear: ['stone_blade', 'leaf_tunic', 'round_shield', 'woven_cap'] },
   blader18: { map: 'birch', base: 18, job: 'swordman', gear: ['ember_edge', 'shell_mail', 'round_shield', 'woven_cap', 'leather_boots'] },
   // the coast's first field (the review, November 2026): a BladeMaster at the Tide Cliffs' low end in Hafnvik's shop gear
-  blademaster66: { map: 'tidecliff', base: 66, job: 'blademaster', from: ['swordman'], potion: 'potion3', gear: ['iron_sword', 'chain_mail', 'round_shield', 'travel_cloak', 'leather_boots'] },
+  blademaster66: { map: 'tidecliff', base: 66, job: 'blademaster', from: ['swordman'], potion: 'potion3', enter: 'scorpion', build: ['pow', 'pow', 'qkn', 'end', 'fns', 'pow', 'qkn', 'fns'], // (the sims' melee build: FNS too, or it misses; in from Scorpion Sands, as a player comes)
+    gear: ['iron_sword', 'chain_mail', 'round_shield', 'travel_cloak', 'leather_boots'] },
 };
 const [, , WHICH = 'all', MIN = '10'] = process.argv;
 const PORT = String(4184 + Math.max(0, Object.keys(SCENARIOS).indexOf(WHICH)));
@@ -37,17 +38,17 @@ async function run(page, name, sc, PRICES) {
     while (p.baseLv < sc.base) a.gainExp(p.baseNeed, 0);
     if (sc.job !== 'novice') Object.assign(p, { job: sc.job, unlocked: [...(sc.from || []), sc.job], firstLv: sc.from ? 50 : 1, jobLv: sc.from ? 30 : 1 });
     // a plain build: POW, QKN and END, two to one to one
-    const order = ['pow', 'pow', 'qkn', 'end'];
-    for (let i = 0, stuck = 0; stuck < 4; i++) { if (p.raise(order[i % 4])) stuck = 0; else stuck++; }
+    const order = sc.build || ['pow', 'pow', 'qkn', 'end'];
+    for (let i = 0, stuck = 0; stuck < order.length; i++) { if (p.raise(order[i % order.length])) stuck = 0; else stuck++; }
     for (const k of sc.gear) { a.inv.add(k, 1); a.inv.equip(k); }
     a.inv.add(sc.potion || 'potion', 30);
     a.player.hp = a.player.maxHp;
   }, { sc });
-  await page.evaluate((map) => window.__aria.warp(map, null), sc.map);
+  await page.evaluate(({ map, enter }) => window.__aria.warp(map, enter || null), { map: sc.map, enter: sc.enter });
   await page.waitForTimeout(sc.from ? 6000 : 4000);
   // (a job set by hand, not by a trial: the body is not re-dressed, so a missing frame is skipped, as stand-bot.cjs)
   await page.evaluate(() => { const p = window.__aria.player, f = p.placeHead.bind(p); p.placeHead = (...a) => { try { return f(...a); } catch { /* a sheet still loading */ } }; });
-  await page.evaluate(({ map, PRICES, pot }) => {
+  await page.evaluate(({ map, PRICES, pot, enterFrom }) => {
     const a = window.__aria;
     const bot = window.bot = { t: 0, kills: 0, faints: 0, potions: 0, loot: 0, rests: 0, hpLowest: 1 };
     a.mobs.on('death', (m, drops) => {
@@ -63,7 +64,7 @@ async function run(page, name, sc, PRICES) {
       bot.t += 0.1;
       const p = a.player;
       if (p.state === 'down') { if (!down) { down = true; bot.faints++; } return; }
-      if (down) { down = false; setTimeout(() => a.warp(map, null), 3000); return; }
+      if (down) { down = false; setTimeout(() => a.warp(map, enterFrom), 3000); return; }
       if (a.world.id !== map) return;
       bot.hpLowest = Math.min(bot.hpLowest, p.hp / p.maxHp);
       const chasers = a.mobs.list.filter((m) => m.alive && (m.state === 'chase' || m.angry > 0) && Math.hypot(m.x - p.x, m.z - p.z) < 8);
@@ -75,7 +76,7 @@ async function run(page, name, sc, PRICES) {
       const m = chasers[0] || near[0];
       if (m) p.command({ mob: m });
     }, 100);
-  }, { map: sc.map, PRICES, pot: sc.potion || 'potion' });
+  }, { map: sc.map, PRICES, pot: sc.potion || 'potion', enterFrom: sc.enter || null });
   const secs = +MIN * 60;
   for (let i = 0; i < secs; i += 5) await page.clock.runFor(5000);
   const r = await page.evaluate(() => ({ ...window.bot, base: window.__aria.prog.baseLv, job: window.__aria.prog.jobLv }));
