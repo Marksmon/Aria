@@ -184,7 +184,7 @@ async function waitFor(url, ms = 30000) {
       // (the trial walked: its three steps handed in)
       for (const id of ['mknight_trial', 'mknight_trial2', 'mknight_trial3']) { delete q.active[id]; if (!q.done.includes(id)) q.done.push(id); }
       a.menus.close('talk'); a.menus.talkTo('eirik'); await wait(200);
-      const btn = talk.querySelector('[data-act="jobchange"]');
+      const btn = a.menus.wins.talk?.querySelector('[data-act="jobchange"]'); // (a new window: closing one removes it)
       out.button = !!btn;
       btn?.click(); await wait(300);
       out.job = p.job; out.jobLv = p.jobLv;
