@@ -16,7 +16,9 @@ const SCENARIOS = {
   trainee9: { map: 'fen', base: 9, job: 'novice', gear: ['stone_blade', 'leaf_tunic', 'woven_cap'] },
   blader12: { map: 'fen', base: 12, job: 'swordman', gear: ['stone_blade', 'leaf_tunic', 'round_shield', 'woven_cap'] },
   blader18: { map: 'birch', base: 18, job: 'swordman', gear: ['ember_edge', 'shell_mail', 'round_shield', 'woven_cap', 'leather_boots'] },
-  // the coast's first field (the review, November 2026): a BladeMaster at the Tide Cliffs' low end in Hafnvik's shop gear
+  // the coast's first field (the review, November 2026): a BladeMaster at the Tide Cliffs' low end. NOT YET A FAIR PLAYER:
+  // the bot swings plain blows with no skills and doesn't pull monsters one at a time, so on a crowded Lv 65-70 field
+  // it is mobbed and kills nothing (build-tools/sim.mjs wins these fights in 7-12 s). Don't read balance from it yet.
   blademaster66: { map: 'tidecliff', base: 66, job: 'blademaster', from: ['swordman'], potion: 'potion3', enter: 'scorpion', build: ['pow', 'pow', 'qkn', 'end', 'fns', 'pow', 'qkn', 'fns'], // (the sims' melee build: FNS too, or it misses; in from Scorpion Sands, as a player comes)
     gear: ['iron_sword|r6', 'chain_mail|r4', 'round_shield|r4', 'travel_cloak', 'leather_boots'], // (the sims' gear at this level: the sword at +6, two pieces at the safe +4)
     skills: { basics: 9, discipline: 10, ironhide: 10, cleave: 10, blademastery: 10, comboedge: 10, momentum: 5 } },
