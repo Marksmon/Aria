@@ -198,7 +198,8 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   10 s out of the fight). A hero who stands still 4 s by a fierce boss (MVP, Hell boss, mini-boss) gets **Tremor**, a
   red circle under their feet (`TREMOR` in `mobs.js`, modelled in `mvp-sim`): bosses never allow stand-and-trade.
   Support monsters (`support` on a def, `supportTick`) mend or shield the monsters near them, never a boss: the
-  Dryad heals, the Pharaoh's Servant shields. Every monster steers round obstacles; a blocked boss finds a way round with
+  Dryad and the Glass Jelly heal, the Pharaoh's Servant and the Goblin Archer shield (a guard, herald or raid monster
+  has none, as it has no wind-up). Every monster steers round obstacles; a blocked boss finds a way round with
   A* over the map (`src/path.js`), roaming or hunting.
   Each MVP has a matchup (`takes` in `mobs.js`, applied in `rules.js`): easiest for one job family
   and hardest for another (Fire Giant: bows / casters; Kobold King: casters / bows; Goblin King:
@@ -354,7 +355,12 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   `docs/release.md`). No other keystore is ever committed (`npm test` checks it).
 - `build-tools/field-bot.cjs` plays a young hero in the early fields of the built game (kills, faints, potions, loot):
   run it after changing early monsters, fields or the economy. `build-tools/stand-bot.cjs` plays one of the story's
-  stands the same way (a BladeMaster in shop gear: was it held, on how many potions).
+  stands the same way (a BladeMaster in shop gear: was it held, on how many potions, and who dealt the damage).
+  `build-tools/story-bot.cjs` walks the whole main story in the built game, each step through its own trigger (a
+  person missing, a map that won't load, a monster not living where a step sends the hero, a step that never ends).
+  `build-tools/boss-bot.cjs` fights an MVP as a BladeMaster or a Windrunner (`bow`), SP refilled or counted (`count`);
+  `build-tools/sp-sim.mjs` says how long a blade's and a bow's SP lasts (the sims leave SP out: the review's finding
+  in `docs/balance.md`, the owner's call). `docs/release.md` has the checklist before a build goes out.
 - The November 2026 review's measures (`docs/balance.md`): `second-sim` and `mvp-sim` hold all ten second jobs (the
   tiers' check judges by the middle of all ten; `mvp-sim` prints how far the ten lie apart, and `--reach` the fights
   in gear a hero can have before any MVP has fallen); `build-tools/econ-sim.mjs` is the economy at each level (what
@@ -370,7 +376,8 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   by the song (`lulled`), as the Fire Giant was.
 - Fields (the review's R5, the owner's calls, November 2026): one monster kind on most fields has a **wind-up**
   (`tell` on its def, `TELL` in `mobs.js`: it stops, the ground under the hero is marked, then it lands there for 1.5x,
-  FLEE can't turn it; guards, heralds and raid monsters have none). A few fields have a **Pack Leader** (`CHIEFS`,
+  FLEE can't turn it; guards, heralds and raid monsters have none). A caster's is a spell cast from afar (`range` on the
+  tell: the Moor Witch's Hex, the Dark Elf's Shadow Bolt): keeping away is no help, stepping out is. A few fields have a **Pack Leader** (`CHIEFS`,
   `chiefDef`): the first of its kind on the map, the same look a quarter bigger (no recolour: the owner's rule), its
   name tag says so, 3x HP and EXP, 1.3x ATK, and it calls its pack when it fights. No level band of field monsters is
   more than half one element (the Wolf and Bramble are Wind, the Snake Shadow, the Root Serpent Wind, the Sand Scorpion
@@ -378,7 +385,16 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   the hero.
 - A story stand's heralds come at the stand's level from Chapter 10 on (a step's `heraldLv`, `mobs.js` `heraldDef`:
   the kind grown to that level, a lesser swarm one; never above the hero's own level). A new late stand gets one
-  (a test checks it).
+  (a test checks it). While a stand lasts its song also holds the field's own monsters not already on the hero
+  (`stands.js` `fieldHere`; a blow wakes one). Some stands guard a **ward** as well as the hero (`ward: { name, blows,
+  lost }` on the step: every other herald goes for it, and it falls after `blows` of the hardest herald's blows: the
+  Rune-Spring's crystal, the Moor Beacon); a test keeps two or more.
+- Side characters speak of the story as it goes (`byChapter` in `quests.js`: Hakon, Dag, Thora, Gunnhild, Ingrid,
+  Ylfa, Asgeir, Brynja, Sela, Brand, Saeunn; the line of the latest chapter reached, `c.ch` 99 once the story is told).
+  The Deep Halls' floors are carved anew every Monday (`weekOf` salts `prepareFloor`'s seed and monsters; a floor holds
+  through its week), and Floors 10, 20, 30 and 50 each give a title (`ACHIEVEMENTS` `delve10`...). The hotbar turns to
+  the page with skills for a weapon just taken up (`hotbar.weaponPage`), and the Quests window's Main tab says what
+  next: a field near the hero's level and the best quest on offer (`questBook().next`).
 - Start-up stays light (phones stalled on a blank sky when it wasn't): a map is built the first time it
   is entered (`buildWorld`; its people stand there then, `Villagers.build`), a monster's sprite set is
   made the first time one is met (`mobs` in `createSprites`), and a sheet's frames get their canvas and

@@ -303,3 +303,4 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   }
 
 }
+export { hero, MELEE, BOW, SWORD, BOWG };

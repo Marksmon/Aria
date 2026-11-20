@@ -2,7 +2,7 @@
 // gear the story's own boss is tuned for, build-tools/mvp-sim.mjs STORY) stands in the circle of one step in the built
 // game, fights the heralds that come, steps out of the danger marks it sees (0.35 s after they show; pass 0 to stand
 // still), drinks a White Potion below half HP, and says whether the stand was held, on how many potions, and how
-// much of the damage was the heralds' blows (small) and the falling fire's (big). The Fire Giant is kept in a far
+// much of the damage was the heralds' blows (small) and the falling fire's (big), and who dealt it (by). The Fire Giant is kept in a far
 // corner (his wandering by breaks the song). It runs on Playwright's fake clock.
 //
 //   npx vite build && node build-tools/stand-bot.cjs [step] [base] [dodge 1|0] [port]
@@ -49,15 +49,17 @@ const [, , STEP = 'lastring', BASE = '72', DODGE = '1', PORT = '4194'] = process
     const a = window.__aria, p = a.player;
     // (the Fire Giant sent off: the song won't start with him near)
     const pin = () => { for (const m of a.mobs.list) if (m.def.mvp || m.def.boss) { m.x = 4; m.z = 60; m.home = { x: 4, z: 60 }; m.state = 'wander'; } }; pin(); window.pin = pin;
+    // (the ground round the circle cleared first, as a player would before they begin: what is left is the stand)
+    for (const m of [...a.mobs.list]) if (m.alive && !m.def.boss && !m.def.mvp && Math.hypot(m.x - at.x, m.z - at.z) < 15) a.mobs.remove(m);
     p.setPos(at.x, at.z);
     const bot = window.bot = { t: 0, potions: 0, kills: 0, done: null, low: 1, hits: 0, heralds: 0, seen: new Set() };
     const map0 = a.world.id, td = p.takeDamage.bind(p); bot.dmg = { big: 0, bigN: 0, small: 0, smallN: 0 };
-    p.takeDamage = (n, ...r) => { const got = td(n, ...r); const v = typeof n === 'number' ? n : 0; if (v >= p.maxHp * 0.08) { bot.dmg.big += v; bot.dmg.bigN++; } else { bot.dmg.small += v; bot.dmg.smallN++; } return got; };
+    bot.by = {}; p.takeDamage = (n, ...r) => { const got = td(n, ...r); const v = typeof n === 'number' ? n : 0; const [sx, sz] = r; const src = a.mobs.list.filter((m) => m.alive).sort((u, w) => Math.hypot(u.x - sx, u.z - sz) - Math.hypot(w.x - sx, w.z - sz))[0]; if (src && Math.hypot(src.x - sx, src.z - sz) < 0.5) { const k = `${src.def.name}${src.temp ? '' : ' (field)'}`; bot.by[k] = (bot.by[k] || 0) + v; } if (v >= p.maxHp * 0.08) { bot.dmg.big += v; bot.dmg.bigN++; } else { bot.dmg.small += v; bot.dmg.smallN++; } return got; };
     bot.map0 = map0;
     bot.said = []; const msg = a.menus.message.bind(a.menus); a.menus.message = (t, ...r) => { if (!/^Bought|Level|\+\d/.test(t)) bot.said.push(`${bot.t.toFixed(0)}s: ${String(t).slice(0, 90)}`); return msg(t, ...r); };
     const warn = a.fx.warn.bind(a.fx);
     // a danger mark near the hero: step out of it (a player's dodge), 0.35 s after it shows
-    a.fx.warn = (x, y, z, r, ...rest) => { if (dodge && Math.hypot(x - p.x, z - p.z) < r + 0.3) setTimeout(() => { const ang = Math.atan2(p.z - z, p.x - x) || 0, d = r + 0.9; let nx = x + Math.cos(ang) * d, nz = z + Math.sin(ang) * d; if (Math.hypot(nx - at.x, nz - at.z) > 9) { nx = at.x; nz = at.z; } p.setPos(nx, nz); }, 350); return warn(x, y, z, r, ...rest); };
+    a.fx.warn = (x, z, r, ...rest) => { if (dodge && Math.hypot(x - p.x, z - p.z) < r + 0.3) setTimeout(() => { const ang = Math.atan2(p.z - z, p.x - x) || 0, d = r + 0.9; let nx = x + Math.cos(ang) * d, nz = z + Math.sin(ang) * d; if (Math.hypot(nx - at.x, nz - at.z) > 9) { nx = at.x; nz = at.z; } p.setPos(nx, nz); }, 350); return warn(x, z, r, ...rest); };
     const order = ['bladedance', 'finalblade', 'pierce', 'twinfang', 'cleave'];
     let potT = 0, started = false, hp0 = p.hp;
     setInterval(() => {
@@ -73,8 +75,8 @@ const [, , STEP = 'lastring', BASE = '72', DODGE = '1', PORT = '4194'] = process
       bot.low = Math.min(bot.low, p.hp / p.maxHp);
       if (p.hp < p.maxHp * 0.5 && bot.t >= potT) { a.useItem('potion3'); bot.potions++; potT = bot.t + 0.25; }
       if (p.sp < 60) p.sp = p.maxSp;
-      const ms = a.mobs.list.filter((m) => m.alive && m.temp).sort((u, v) => Math.hypot(u.x - p.x, u.z - p.z) - Math.hypot(v.x - p.x, v.z - p.z));
-      for (const m of ms) if (!bot.seen.has(m)) { bot.seen.add(m); bot.heralds++; bot.sample = `${m.def.name} Lv ${m.def.lv} hp ${m.def.hp} atk ${m.def.atk.join('-')}`; }
+      const ms = a.mobs.list.filter((m) => m.alive && (m.temp || (m.state === 'chase' && !m.lulled && !m.def.boss && !m.def.mvp))).sort((u, v) => Math.hypot(u.x - p.x, u.z - p.z) - Math.hypot(v.x - p.x, v.z - p.z));
+      for (const m of ms) if (m.temp && !bot.seen.has(m)) { bot.seen.add(m); bot.heralds++; bot.sample = `${m.def.name} Lv ${m.def.lv} hp ${m.def.hp} atk ${m.def.atk.join('-')}`; }
       const m = ms[0];
       if (m && Math.hypot(m.x - at.x, m.z - at.z) < 7) { if (p.goal?.mob !== m) p.command({ mob: m }); if (Math.hypot(m.x - p.x, m.z - p.z) < 2.5) for (const id of order) a.useSkill(id); }
       else if (Math.hypot(p.x - at.x, p.z - at.z) > 2) p.command({ x: at.x, z: at.z });

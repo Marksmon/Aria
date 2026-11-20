@@ -62,6 +62,10 @@ export const ACHIEVEMENTS = [
   { id: 'archivist', title: 'the Archivist', text: 'Finish every album set', check: (c) => c.sets >= c.setsTotal },
   { id: 'anvil', title: 'Master of the Anvil', text: 'Refine a piece to +10', check: (c) => c.bestRefine >= 10 },
   { id: 'secrets', title: 'Keeper of Secrets', text: "Open both secret ways: the Sphinx's and the World Tree's", check: (c) => c.secrets >= 2 },
+  { id: 'delve10', title: 'the Delver', text: 'Reach Floor 10 of the Deep Halls', check: (c) => c.delveBest >= 10 },
+  { id: 'delve20', title: 'the Deep Delver', text: 'Reach Floor 20 of the Deep Halls', check: (c) => c.delveBest >= 20 },
+  { id: 'delve30', title: 'Abyss-Walker', text: 'Reach Floor 30 of the Deep Halls', check: (c) => c.delveBest >= 30 },
+  { id: 'delve50', title: 'Lord of the Deep', text: 'Reach Floor 50 of the Deep Halls', check: (c) => c.delveBest >= 50 },
   { id: 'hero', title: 'Hero of Eldrun', text: 'Finish the main story', check: (c) => c.storyDone },
 ];
 

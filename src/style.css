@@ -612,6 +612,7 @@ button.eq:active { background: var(--w-sel); }
 .ritem > div { flex: 1; min-width: 0; }
 .ritem b { display: block; color: var(--w-text); }
 .ritem small { display: block; color: var(--w-dim); font-size: 12px; }
+.ritem.qrow.next span { display: block; font-size: 12px; color: var(--w-text); }
 /* a shop's rows: one line of what a thing is until tapped (menus.js shopMore), and Buy, x10, x50 side by side */
 .ritem.shop > div[data-act] { cursor: pointer; }
 .ritem.shop small { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }

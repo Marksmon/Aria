@@ -50,6 +50,23 @@ export class Hotbar {
   get slots() { return this.pages[this.page]; }
   set slots(v) { this.pages[this.page] = v; }
 
+  // a weapon taken in hand (November 2026): if no skill on the page showing works with it and another page has some
+  // that do, the bar turns to the page with the most of them (a Magic Knight with a sword and a staff, a Beastmaster
+  // with a sword and a bow keep a page for each). kind: 'sword' | 'bow' | 'staff' | 'dagger' | 'none'
+  weaponPage(kind) {
+    const fits = (pg) => pg.filter((s) => s?.kind === 'skill' && SKILLS[s.id]?.weapon === kind).length;
+    const needs = (pg) => pg.filter((s) => s?.kind === 'skill' && SKILLS[s.id]?.weapon).length;
+    const here = this.pages[this.page];
+    if (fits(here) || !needs(here)) return false;
+    let best = -1, n = 0;
+    this.pages.forEach((pg, i) => { if (fits(pg) > n) { n = fits(pg); best = i; } });
+    if (best < 0) return false;
+    this.page = best;
+    this.render();
+    this.hooks.changed?.();
+    return true;
+  }
+
   turn() {
     this.page = (this.page + 1) % PAGES;
     this.render();

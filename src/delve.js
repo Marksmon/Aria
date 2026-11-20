@@ -45,9 +45,11 @@ function monsterPool() {
   pool = [...seen].filter((t) => { const d = MOB_DEFS[t]; return d && !d.boss && !d.mvp && !d.decoy && !d.story && !d.noRespawn && d.lv >= 60; }); // (a great hall's guards too)
   return pool;
 }
-// floor k's spawn list: three kinds near its level, seeded by the floor
-export function floorSpawns(k) {
-  const L = DEPTH.lv(k), rng = mulberry32(7919 * k + 13);
+const WEEK_SALT = 104729;
+// floor k's spawn list: three kinds near its level, seeded by the floor and the week (the floors are carved anew
+// every Monday, the review's call: a week's Deep Halls are not last week's, and a hero who climbs again finds new ways)
+export function floorSpawns(k, week = 0) {
+  const L = DEPTH.lv(k), rng = mulberry32(7919 * k + 13 + WEEK_SALT * week);
   // (from up to 20 levels below the floor's to a little above: raised to it as they come, so the deep floors still vary)
   let near = [];
   for (let w = 20; near.length < 3 && w < 60; w += 5) near = monsterPool().filter((t) => MOB_DEFS[t].lv >= L - w && MOB_DEFS[t].lv <= L + 6);
@@ -56,12 +58,12 @@ export function floorSpawns(k) {
   return picks.map((t, i) => [t, [10, 9, 8][i]]);
 }
 // carve floor k into map id (before it is built): its seed, its stone, its monsters
-export function prepareFloor(id, k) {
+export function prepareFloor(id, k, week = 0) {
   const M = MAPS[id].maze;
-  M.seed = 100003 + 7919 * k;
-  M.look = LOOKS[(k - 1) % LOOKS.length];
+  M.seed = 100003 + 7919 * k + WEEK_SALT * week;
+  M.look = LOOKS[(k + week - 1) % LOOKS.length];
   M.floor = typeof M.look === 'number' ? M.look : 1;
-  SPAWNS[id] = floorSpawns(k);
+  SPAWNS[id] = floorSpawns(k, week);
 }
 // a monster of floor k, made stronger past the deepest level (its own copy of its numbers)
 export function deepen(m, k) { // (raised to the floor's level if below it, DEPTH.gap, and past the deepest, DEPTH.mult; its EXP DEPTH.exp more)

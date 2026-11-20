@@ -5,7 +5,8 @@
 // crowding can be checked after a change (docs/game-audit-2026-11.md, QA-2 and QA-3).
 //
 //   npx vite build && node build-tools/field-bot.cjs [scenario] [minutes]
-//   scenarios: trainee5 (Moss Field), trainee9 (Fen Shore), blader12 (Fen Shore), blader18 (Birch Grove), all
+//   scenarios: trainee5 (Moss Field), trainee9 (Fen Shore), blader12 (Fen Shore), blader18 (Birch Grove),
+//   blademaster66 (the Tide Cliffs), all
 const { chromium } = require('playwright');
 const { spawn } = require('node:child_process');
 const path = require('node:path');
@@ -15,6 +16,8 @@ const SCENARIOS = {
   trainee9: { map: 'fen', base: 9, job: 'novice', gear: ['stone_blade', 'leaf_tunic', 'woven_cap'] },
   blader12: { map: 'fen', base: 12, job: 'swordman', gear: ['stone_blade', 'leaf_tunic', 'round_shield', 'woven_cap'] },
   blader18: { map: 'birch', base: 18, job: 'swordman', gear: ['ember_edge', 'shell_mail', 'round_shield', 'woven_cap', 'leather_boots'] },
+  // the coast's first field (the review, November 2026): a BladeMaster at the Tide Cliffs' low end in Hafnvik's shop gear
+  blademaster66: { map: 'tidecliff', base: 66, job: 'blademaster', from: ['swordman'], potion: 'potion3', gear: ['iron_sword', 'chain_mail', 'round_shield', 'travel_cloak', 'leather_boots'] },
 };
 const [, , WHICH = 'all', MIN = '10'] = process.argv;
 const PORT = String(4184 + Math.max(0, Object.keys(SCENARIOS).indexOf(WHICH)));
@@ -32,17 +35,19 @@ async function run(page, name, sc, PRICES) {
     document.querySelector('.g-skip')?.click();
     a.story.load({ id: 'done', last: 'goldring', flags: { intro: true } });
     while (p.baseLv < sc.base) a.gainExp(p.baseNeed, 0);
-    if (sc.job !== 'novice') Object.assign(p, { job: sc.job, unlocked: [sc.job], firstLv: 1, jobLv: 1 });
+    if (sc.job !== 'novice') Object.assign(p, { job: sc.job, unlocked: [...(sc.from || []), sc.job], firstLv: sc.from ? 50 : 1, jobLv: sc.from ? 30 : 1 });
     // a plain build: POW, QKN and END, two to one to one
     const order = ['pow', 'pow', 'qkn', 'end'];
     for (let i = 0, stuck = 0; stuck < 4; i++) { if (p.raise(order[i % 4])) stuck = 0; else stuck++; }
     for (const k of sc.gear) { a.inv.add(k, 1); a.inv.equip(k); }
-    a.inv.add('potion', 30);
+    a.inv.add(sc.potion || 'potion', 30);
     a.player.hp = a.player.maxHp;
   }, { sc });
   await page.evaluate((map) => window.__aria.warp(map, null), sc.map);
-  await page.waitForTimeout(4000);
-  await page.evaluate(({ map, PRICES }) => {
+  await page.waitForTimeout(sc.from ? 6000 : 4000);
+  // (a job set by hand, not by a trial: the body is not re-dressed, so a missing frame is skipped, as stand-bot.cjs)
+  await page.evaluate(() => { const p = window.__aria.player, f = p.placeHead.bind(p); p.placeHead = (...a) => { try { return f(...a); } catch { /* a sheet still loading */ } }; });
+  await page.evaluate(({ map, PRICES, pot }) => {
     const a = window.__aria;
     const bot = window.bot = { t: 0, kills: 0, faints: 0, potions: 0, loot: 0, rests: 0, hpLowest: 1 };
     a.mobs.on('death', (m, drops) => {
@@ -50,6 +55,9 @@ async function run(page, name, sc, PRICES) {
       bot.kills++;
       for (const [id, n] of drops || []) bot.loot += Math.floor((PRICES[id] || 0) / 2) * (n || 1);
     });
+    // a wind-up's mark under the hero: step out of it, 0.35 s after it shows (a careful player; mobs.js TELL)
+    const warn = a.fx.warn.bind(a.fx);
+    a.fx.warn = (x, z, r, ...rest) => { const p = a.player; if (Math.hypot(x - p.x, z - p.z) < r + 0.3) setTimeout(() => { const ang = Math.atan2(p.z - z, p.x - x) || 0; const nx = x + Math.cos(ang) * (r + 0.9), nz = z + Math.sin(ang) * (r + 0.9); if (a.world.walkable(nx, nz)) { p.setPos(nx, nz); bot.dodged = (bot.dodged || 0) + 1; } }, 350); return warn(x, z, r, ...rest); };
     let potT = 0, down = false;
     setInterval(() => {
       bot.t += 0.1;
@@ -59,7 +67,7 @@ async function run(page, name, sc, PRICES) {
       if (a.world.id !== map) return;
       bot.hpLowest = Math.min(bot.hpLowest, p.hp / p.maxHp);
       const chasers = a.mobs.list.filter((m) => m.alive && (m.state === 'chase' || m.angry > 0) && Math.hypot(m.x - p.x, m.z - p.z) < 8);
-      if (p.hp < p.maxHp * 0.35 && bot.t >= potT && a.inv.bag.count('potion')) { a.useItem('potion'); bot.potions++; potT = bot.t + 1; }
+      if (p.hp < p.maxHp * 0.35 && bot.t >= potT && a.inv.bag.count(pot)) { a.useItem(pot); bot.potions++; potT = bot.t + 1; }
       if (p.state === 'sit') { if (p.hp >= p.maxHp * 0.95 || chasers.length) a.useSkill('rest'); return; }
       if (!chasers.length && p.hp < p.maxHp * 0.55 && !p.target?.alive) { a.useSkill('rest'); if (p.state === 'sit') bot.rests++; return; }
       if (p.target?.alive) return;
@@ -67,12 +75,12 @@ async function run(page, name, sc, PRICES) {
       const m = chasers[0] || near[0];
       if (m) p.command({ mob: m });
     }, 100);
-  }, { map: sc.map, PRICES });
+  }, { map: sc.map, PRICES, pot: sc.potion || 'potion' });
   const secs = +MIN * 60;
   for (let i = 0; i < secs; i += 5) await page.clock.runFor(5000);
   const r = await page.evaluate(() => ({ ...window.bot, base: window.__aria.prog.baseLv, job: window.__aria.prog.jobLv }));
-  const cost = r.potions * (PRICES.potion || 50);
-  console.log(`${name.padEnd(9)} ${MIN} min: kills ${r.kills}, faints ${r.faints}, potions ${r.potions} (${cost} perz), loot ${r.loot} perz, net ${r.loot - cost}/${MIN} min, lowest HP ${(r.hpLowest * 100).toFixed(0)}%, rests ${r.rests}, now Base ${r.base} Job ${r.job}`);
+  const cost = r.potions * (PRICES[sc.potion || 'potion'] || 50);
+  console.log(`${name.padEnd(9)} ${MIN} min: kills ${r.kills}, faints ${r.faints}, potions ${r.potions} (${cost} perz), loot ${r.loot} perz, net ${r.loot - cost}/${MIN} min, lowest HP ${(r.hpLowest * 100).toFixed(0)}%, dodged ${r.dodged || 0}, rests ${r.rests}, now Base ${r.base} Job ${r.job}`);
   return r;
 }
 

@@ -29,6 +29,25 @@ Repository → Settings → Secrets and variables → Actions → New repository
 | `RELEASE_KEY_ALIAS` | `aria` (or the alias you chose) |
 | `RELEASE_KEY_PASSWORD` | the key's password |
 
+## Before any build goes out (everyday APK or store)
+
+A checklist, in order. The first three run on every push; the rest are by hand or by the bots.
+
+1. `npm test`: the job rules, the data, saves, the balance bands, the boss tiers (`mvp-sim --check`), the economy.
+2. `npx vite build`, then `npm run smoke`: the built game starts, a hero walks, fights, opens every window.
+3. After a change to bosses or jobs: `npm run sim:second` and `npm run sim:mvp` (the ten second jobs' spread, the
+   fights a hero can win before any MVP has fallen).
+4. After a change to early monsters, fields or prices: `node build-tools/field-bot.cjs` (a young hero in the early
+   fields: kills, faints, potions, loot) and `npm run sim:econ`.
+5. After a change to a story stand: `node build-tools/stand-bot.cjs <step>` (was it held, on how many potions).
+6. After a change to the story: `node build-tools/story-bot.cjs` walks every step of the main story in the built game.
+7. On a real phone: Settings → Performance (fps, the slowest frame, memory) on a town, a busy field and an MVP fight;
+   an old save loads (the save version did not break it); a save code made on the old build restores on the new one.
+8. Saves: a change to what is saved keeps old saves loading (`test/save.test.mjs`); a quest that changed kind is in
+   `V4_RESET`, a story step folded away is in `RENAMED`.
+9. The README's tables are written again (`node build-tools/readme-tables.mjs`) and the docs say what changed.
+10. The signature: every everyday APK is signed with `build-tools/debug.keystore` (the workflow fails it otherwise).
+
 ## Each release
 
 Actions → **Store release** → Run workflow. It runs the tests, builds the game, signs a bundle (`Aria-store.aab`,

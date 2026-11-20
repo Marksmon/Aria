@@ -9,13 +9,42 @@ export function installStands(ctx) {
   // Hill while Vigdis sings). A step may set its own heralds ({ early, late, after }), wave gap (every),
   // how many may stand before the next wave comes (most), colour, and words (startText, breakText), and the level its
   // heralds come at (heraldLv: the stand's own, never above the hero's; without it they are their kind's) ----------
-  let vigil = null, giantWarnT = -99; // vigil: { t, next, list }
+  // A stand may guard a ward instead (`ward: { name, blows }`, the review, November 2026: every stand was the same
+  // circle to stand in): every other herald goes for the ward, not the hero, and the ward takes `blows` of the hardest
+  // herald's blows before it falls and the stand is lost. Keep them off it: the hero fights for the thing, not for
+  // their own skin.
+  let vigil = null, giantWarnT = -99; // vigil: { t, next, list, ward }
+  const heraldOf = (s, type) => (s.heraldLv ? heraldDef(type, Math.min(s.heraldLv, prog.baseLv)) : guardDef(type));
+  function makeWard(s) {
+    const H = s.heralds || {}, top = Math.max(...[...(H.early || []), ...(H.late || [])].map((t) => { const d = heraldOf(s, t); return (d.atk[0] + d.atk[1]) / 2; }), 1);
+    const w = { name: s.ward.name, max: Math.round(top * s.ward.blows), told: 1 };
+    w.hp = w.max;
+    w.proxy = {
+      x: s.at.x, z: s.at.z, alive: true, state: 'normal', name: w.name,
+      ps: { dodge: 0, flee: 0, def: 30, end: 40, guard: 0 },
+      canBeHit: () => vigil?.ward === w,
+      takeDamage(dmg) {
+        if (vigil?.ward !== w) return;
+        w.hp -= dmg;
+        fx.number(s.at.x, world.heightAt(s.at.x, s.at.z) + 1.8, s.at.z, dmg, 'taken');
+        const f = w.hp / w.max;
+        for (const at of [0.5, 0.25]) if (f <= at && w.told > at) { w.told = at; ctx.menus.message(`${w.name[0].toUpperCase()}${w.name.slice(1)} is failing: ${Math.round(at * 100)}% left! Keep them off it!`); }
+        if (w.hp <= 0) { w.proxy.alive = false; endVigil(s.ward.lost || `The heralds break ${w.name}. Go back and begin again.`); }
+      },
+    };
+    return w;
+  }
   const VIGIL_WAVE = 15; // seconds between waves of heralds (lesser ones, like a boss's guards)
   const giantOf = () => mobs.list.find((m) => m.alive && m.def.mvp && m.type === 'jarl');
   // every other boss on the map (a mini-boss, an MVP) is held by the song too while it lasts, as the Giant is (November
   // 2026: the Rainbow Runner or Poseidon would join a stand's waves); a blow wakes one, as ever
   const bossesHere = () => mobs.list.filter((m) => m.alive && (m.def.boss || m.def.mvp) && !m.def.storyBoss && !m.temp && m.type !== 'jarl');
+  // and so is the field's own kind that is not already on the hero (the review, November 2026: on Beacon Moor and the
+  // Storm Isles the field's beasts, ten levels past a hero of the chapter, joined the heralds and no one held the
+  // stand); a monster that comes back while it lasts is held too, and a blow wakes one, as ever
+  const fieldHere = (held) => mobs.list.filter((m) => m.alive && !m.lulled && !m.temp && !held.includes(m) && !m.def.storyBoss && m.state !== 'chase' && !m.engaged);
   function endVigil(why) {
+    if (vigil?.ward) vigil.ward.proxy.alive = false;
     const g = giantOf();
     if (g) g.lulled = false;
     for (const m of vigil?.held || []) if (m.alive) m.lulled = false;
@@ -42,8 +71,9 @@ export function installStands(ctx) {
       }
       if (g) { g.lulled = true; g.state = 'wander'; }
       const held = bossesHere();
+      held.push(...fieldHere(held));
       for (const m of held) { m.lulled = true; m.state = 'wander'; }
-      vigil = { t: 0, next: 2, list: [], giant: g, held };
+      vigil = { t: 0, next: 2, list: [], giant: g, held, ward: s.ward ? makeWard(s) : null };
       ctx.menus.message(s.startText || 'The runes in the circle light up, and Vigdis\'s song rises out of them. The hill trembles: the heralds are coming!');
       cam.shake = 0.35;
       audio.play('night');
@@ -54,6 +84,11 @@ export function installStands(ctx) {
     if (vigil.giant?.alive && !vigil.giant.lulled) { endVigil('You struck the Fire Giant: he wakes, and the song breaks off. Let him wander off, then begin again.'); return; }
     vigil.t += dt;
     story.count = Math.floor(vigil.t);
+    if ((vigil.holdT = (vigil.holdT || 0) - dt) <= 0) { // (a field monster back from the dead is held too)
+      vigil.holdT = 1;
+      for (const m of fieldHere(vigil.held)) if (!vigil.list.includes(m)) { m.lulled = true; m.state = 'wander'; vigil.held.push(m); }
+    }
+    if (vigil.ward) for (const m of vigil.list) if (m.wardBound && m.alive && !m.foe) m.foe = vigil.ward.proxy; // (they keep at the ward)
     if (Math.random() < dt * 6) fx.sparkle(s.at.x + (Math.random() - 0.5) * 3, y + 0.3, s.at.z + (Math.random() - 0.5) * 3, s.color || '#b48aff', 3); // the song in the air
     const up = vigil.list.filter((m) => m.alive).length;
     if (vigil.t >= vigil.next && vigil.t < s.secs - 4 && up < (s.most || 4)) { // a wave of heralds from all round the hill (held back while four still stand)
@@ -65,10 +100,11 @@ export function installStands(ctx) {
         let x = s.at.x + Math.cos(a) * 8, z = s.at.z + Math.sin(a) * 8;
         if (!world.walkable(x, z)) { x = s.at.x + Math.cos(a) * 4; z = s.at.z + Math.sin(a) * 4; }
         const m = mobs.add(type, x, z);
-        m.def = s.heraldLv ? heraldDef(type, Math.min(s.heraldLv, prog.baseLv)) : guardDef(type);
+        m.def = heraldOf(s, type);
         m.hp = m.def.hp;
         m.temp = true;
         m.provoke();
+        if (vigil.ward && i % 2 === 0) { m.wardBound = true; m.foe = vigil.ward.proxy; } // every other one goes for the ward
         vigil.list.push(m);
       });
       fx.puff(s.at.x, y + 0.2, s.at.z, 2);

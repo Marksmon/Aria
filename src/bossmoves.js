@@ -144,7 +144,7 @@ export function installBossMoves(ctx) {
   mobs.on('tell', (m, spot, T) => {
     fx.warn(spot.x, spot.z, T.r, T.wind);
     fx.number(m.x, overHead(m, m.sprite.scale.y * 0.9), m.z, `${T.name || 'Wind-up'}!`, 'skill');
-    if (!toldTell) { toldTell = true; ctx.menus.message(`The ${m.def.name} winds up its ${T.name || 'blow'}: the marked ground is where it lands. Step out of it!`); }
+    if (!toldTell) { toldTell = true; ctx.menus.message(T.range ? `The ${m.def.name} casts its ${T.name}: the marked ground is where it falls, near or far. Step out of it!` : `The ${m.def.name} winds up its ${T.name || 'blow'}: the marked ground is where it lands. Step out of it!`); }
   });
   mobs.on('tellHit', (m, spot, T) => {
     if (!m.alive || !spot || mobs.mapId !== world.id) return;

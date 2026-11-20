@@ -341,3 +341,42 @@ test("Hafnvik has its own people and quests, and the late game has quests to do 
   const kinds = new Set(qs.map((id) => QUESTS[id].kind));
   assert.ok(kinds.size >= 6, `Hafnvik's quests in ${kinds.size} kinds`);
 });
+
+test('side characters speak of the story as it goes (the review: NPC threads)', () => {
+  const told = ['hakon', 'dag', 'thora', 'gunnhild', 'ingrid', 'ylfa', 'asgeir', 'brynja', 'sela', 'brand', 'saeunn'];
+  for (const id of told) {
+    const g = NPCS[id].greet;
+    assert.ok(g, `${id} has no greeting`);
+    const end = g({ ch: 99, tier: 2, job: 'BladeMaster', jobId: 'blademaster', baseLv: 90 });
+    assert.ok(typeof end === 'string' && end.length > 20, `${id} has no line once the story is told`);
+    assert.notEqual(end, g({ ch: 1, tier: 0, job: 'Trainee', jobId: 'novice', baseLv: 5 }), `${id} says the same at the start as at the end`);
+  }
+});
+
+test('the Deep Halls are carved anew each week and give titles by depth (the review)', async () => {
+  const { floorSpawns } = await import('../src/delve.js');
+  const { ACHIEVEMENTS } = await import('../src/goals.js');
+  assert.deepEqual(floorSpawns(12, 40), floorSpawns(12, 40), 'a floor holds through its week');
+  const weeks = new Set([40, 41, 42, 43, 44].map((w) => JSON.stringify(floorSpawns(12, w))));
+  assert.ok(weeks.size > 1, 'a floor changes from week to week');
+  for (const f of [10, 20, 30, 50]) {
+    const a = ACHIEVEMENTS.filter((x) => x.id.startsWith('delve')).find((x) => x.check({ delveBest: f }) && !x.check({ delveBest: f - 1 }));
+    assert.ok(a, `no title for Floor ${f}`);
+  }
+});
+
+test('casters cast their wind-up from afar, and support monsters stand in four regions (the review)', () => {
+  const casters = Object.values(MOB_DEFS).filter((d) => d.tell?.range);
+  assert.ok(casters.length >= 2, 'a caster casts its wind-up');
+  for (const d of casters) assert.ok(d.tell.range > (d.range || 0), `${d.name}'s spell reaches no further than its shot`);
+  const support = Object.entries(MOB_DEFS).filter(([, d]) => d.support && !d.boss && !d.mvp).map(([t]) => t);
+  assert.ok(support.length >= 4, `only ${support.length} support monsters`);
+});
+
+test('the story\'s stands are not all one circle: some guard a ward (the review)', () => {
+  const stands = STORY.filter((s) => s.kind === 'survive'), wards = stands.filter((s) => s.ward);
+  assert.ok(wards.length >= 2, 'at least two stands guard a ward');
+  for (const s of wards) assert.ok(s.ward.name && s.ward.blows >= 10 && s.ward.lost, `story ${s.id}: its ward`);
+  // from Chapter 10 on, a stand's heralds come at its level (never the field's own kinds ten levels past the hero)
+  for (const s of stands) if (+(/Chapter (\d+)/.exec(s.ch)?.[1] || 0) >= 10) assert.ok(s.heraldLv > 0, `story ${s.id} has no herald level`);
+});

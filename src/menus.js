@@ -226,7 +226,9 @@ export class Menus {
       const now = m ? `<div class="ritem qrow ready" data-act="qopen" data-id="story"><div><small>${esc(m.ch)}</small><b>★ ${esc(m.title)}</b><span>${esc(m.goal)}</span>${m.where ? `<em>➜ ${esc(m.where)}</em>` : ''}</div></div>`
         : `<div class="rnote">${book.storyDone ? 'The story is told, for now.' : 'The story begins soon.'}</div>`;
       const chs = book.chapters.map((c) => `<div class="ritem qrow ${c.done === c.n ? 'done' : ''}"><div><b>${esc(c.ch)}</b><span>${c.done === c.n ? 'Done' : c.done ? `${c.done}/${c.n} steps` : 'Ahead'}</span></div>${c.watch ? `<button class="rbtn qgo" data-act="watchch" data-id="${esc(c.ch)}">▶ Watch</button>` : ''}</div>`).join('');
-      return `${tabs}<div class="rsub">Now</div><div class="rlist">${now}</div><div class="rsub">Chapters</div><div class="rlist">${chs}</div>`;
+      const nx = book.next, tips = nx ? [nx.quest ? `<span>A quest for you: <b>${esc(nx.quest.title)}</b> (${esc(nx.quest.giver)}${nx.quest.land ? `, ${esc(nx.quest.land)}` : ''})</span>` : '', nx.field ? `<span>Monsters of your level: <b>${esc(nx.field)}</b></span>` : ''].filter(Boolean) : [];
+      const next = tips.length ? `<div class="rsub">What next</div><div class="rlist"><div class="ritem qrow next"><div>${tips.join('')}</div></div></div>` : '';
+      return `${tabs}<div class="rsub">Now</div><div class="rlist">${now}</div>${next}<div class="rsub">Chapters</div><div class="rlist">${chs}</div>`;
     }
     const ORDER = { ready: 0, active: 1, job: 2, offer: 3, locked: 4, done: 5 };
     const rows = book.rows.filter((r) => r.kind === tab).sort((a, b) => ORDER[a.state] - ORDER[b.state] || a.lv - b.lv);
@@ -994,7 +996,7 @@ export class Menus {
       this.wins.talk.querySelector('.rw-title').textContent = n.name;
       const go = (k, label) => `<button class="rbtn" data-act="delvego" data-id="${k}" ${d.open ? '' : 'disabled'}>${label}</button>`;
       return `<div class="talkwrap"><img class="portrait" src="${this.portrait(this.npc)}" alt="">
-        <div class="say"><p>${d.open ? 'Down there the halls go on without end. Each floor is carved anew, harder than the last; every fifth floor I can take you back to.' : `Not yet. Come back at Base Level ${d.lv}: the first floor alone would eat you.`}</p>
+        <div class="say"><p>${d.open ? 'Down there the halls go on without end. Each floor is harder than the last, and every Monday the halls shift and are carved anew; every fifth floor I can take you back to. Go deep enough and the halls will know your name: Floors 10, 20, 30 and 50 each give a title.' : `Not yet. Come back at Base Level ${d.lv}: the first floor alone would eat you.`}</p>
         <p>${d.best ? `Your deepest: Floor ${d.best}.` : 'You have not been down yet.'}</p>
         <div class="btnrow wrap">${go(1, 'Floor 1')}${d.cp > 1 ? go(d.cp, `Floor ${d.cp}`) : ''}<button class="rbtn soft" data-act="close">Bye</button></div></div></div>`;
     }

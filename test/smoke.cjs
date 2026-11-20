@@ -165,6 +165,35 @@ async function waitFor(url, ms = 30000) {
     if (bb.hidden || !/Poseidon/.test(bb.name) || bb.marks < 3) fail.push(`the boss bar in an MVP fight: ${JSON.stringify(bb)}`);
     else if (!bb.clear) fail.push('the boss bar runs under the hero panel or the minimap');
 
+    step('a second job changes path at Job 50, for its fee (JOB_CHANGE)');
+    await page.evaluate(() => window.__aria.warp('city', null));
+    await page.waitForTimeout(2500);
+    const jc = await page.evaluate(async () => {
+      const a = window.__aria, p = a.prog, q = a.quests, out = {};
+      const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+      while (p.baseLv < 85) a.gainExp(p.baseNeed, 0);
+      Object.assign(p, { job: 'blademaster', unlocked: ['swordman', 'mage', 'blademaster'], firstLv: 50, jobLv: 50 });
+      p.skills = { basics: 9, discipline: 10, cleave: 10, spark: 10, frost: 10, blademastery: 10, bladedance: 5 };
+      a.inv.perz = 600000;
+      a.menus.talkTo('eirik'); await wait(200);
+      const talk = a.menus.wins.talk;
+      out.offer = /costs you/.test(talk.innerText);
+      talk.querySelector('[data-act="accept"]')?.click(); await wait(200);
+      out.paid = 600000 - a.inv.perz;
+      out.active = Object.keys(q.active);
+      // (the trial walked: its three steps handed in)
+      for (const id of ['mknight_trial', 'mknight_trial2', 'mknight_trial3']) { delete q.active[id]; if (!q.done.includes(id)) q.done.push(id); }
+      a.menus.close('talk'); a.menus.talkTo('eirik'); await wait(200);
+      const btn = talk.querySelector('[data-act="jobchange"]');
+      out.button = !!btn;
+      btn?.click(); await wait(300);
+      out.job = p.job; out.jobLv = p.jobLv;
+      out.oldSkills = ['blademastery', 'bladedance'].filter((k) => p.skills[k]);
+      out.firstSkills = ['cleave', 'spark'].every((k) => p.skills[k] === 10);
+      return out;
+    });
+    if (!jc.offer || jc.paid !== 500000 || !jc.active.includes('mknight_trial') || !jc.button || jc.job !== 'magicknight' || jc.jobLv !== 1 || jc.oldSkills.length || !jc.firstSkills) fail.push(`the second-job change: ${JSON.stringify(jc)}`);
+
     step('every map');
     const moods = [];
     const ids = await page.evaluate(() => Object.entries(window.__aria.MAPS).filter(([, m]) => !m.arena).map(([id]) => id)); // (a raid's arena only in a run)

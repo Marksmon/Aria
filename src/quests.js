@@ -24,6 +24,10 @@ const ROLE = {
   ferry: { body: 'trainee', main: [200, 0.5, 1], accent: [180, 0.5, 1.1], hair: 'messy', dye: 'blue', top: 'woven_cap' },   // the carters and gate-wardens who send you on
   sentry: { body: 'blader', main: [100, 0.4, 0.75], accent: [30, 0.55, 0.9], hair: 'messy', dye: 'brown', top: 'woven_cap', bow: true }, // Veidheim's archers on watch
 };
+// a side character's line for how far the story has come: the line of the latest chapter reached ([[ch, line], ...]);
+// c.ch is the chapter under way, 99 once the story is told
+const byChapter = (c, lines) => { let out = null; for (const [ch, line] of lines) if (c.ch >= ch) out = line; return out; };
+
 export const NPCS = {
   bram: {
     name: 'Elder Halvard', x: 27.9, z: 31.9,
@@ -183,7 +187,8 @@ export const NPCS = {
     hello: 'The runes whisper of you. Few hear them.',
     later: (lv) => `The runes are quiet. Come to me again at Base Level ${lv}.`,
     bye: 'Walk softly. The runes are listening.',
-    greet: (c) => (c.tier === 2 ? 'The runes burn bright around you. Few in Aria cast so long a shadow.'
+    greet: (c) => byChapter(c, [[12, 'Torvald cut the runes backward, and I did not see it in him. The runes are honest; people are not.'], [99, 'The runes are quiet, all of them, for the first time since I was a girl. I hardly know what to do with my mornings.']])
+      || (c.tier === 2 ? 'The runes burn bright around you. Few in Aria cast so long a shadow.'
       : c.tier === 1 ? 'The runes changed when you chose your path. They speak of you more now.' : null),
     trialHint: 'Sorcery is taught in Galdrheim, north of Fen Shore. When your training is done (Trainee Job Level 10, Basic Training 9), go to Archmage Vigdis there. She was my teacher.',
     quests: [],
@@ -215,12 +220,14 @@ export const NPCS = {
   // ---------- out in the fields (the story) ----------
   hakon: {
     name: 'Hakon the Carter', map: 'coast', x: 12, z: 10, dress: { body: 'trainee', main: [8, 0.5, 1.05], accent: [35, 0.4, 1], hair: 'messy', dye: 'brown', top: 'woven_cap' },
+    greet: (c) => byChapter(c, [[6, 'The road\'s clear to the salt pans again. I bought a new horse. Named her after you, not that she minds.'], [9, 'Thora says the desert caravans go missing now. I stick to the salt road. Salt never ate anyone.'], [13, 'A sea-captain bought salt off me, said Hafnvik\'s smoke can be seen from the cliffs. Smoke from the sea! What next.'], [99, 'They sing about you in the inns, you know. Badly. I sing the cart part.']]),
     hello: 'Lost my cart, lost my horse, and I am not going back down that road alone.',
     later: () => '', bye: 'Mind the kobolds. They bite.',
     quests: ['saltpans'],
   },
   dag: {
     name: 'Dag the Miner', map: 'coalpit', x: 51, z: 28, dress: { body: 'trainee', main: [220, 0.08, 0.7], accent: [28, 0.6, 1], hair: 'messy', dye: 'red' },
+    greet: (c) => byChapter(c, [[6, 'The goblins left the pit. The kobolds are only kobolds again. I dug honest coal yesterday, the black kind.'], [12, 'Coal still glows red some nights. Then it doesn\'t. Is that you, out there, putting fires out?'], [99, 'The coal stays black now. Every lump. I keep one by my bed, for luck, and it is the dullest stone in Aria. Perfect.']]),
     hello: 'Keep your voice down. The whole pit has ears.',
     later: () => '', bye: 'When the kobolds are free of the goblins, I will dig here again. Honest coal, the black kind.',
     quests: [],
@@ -295,6 +302,7 @@ export const NPCS = {
   },
   brynja: {
     name: 'Brynja the Lorekeeper', map: 'magic', x: 15.4, z: 37.4, dress: { body: 'sorc', main: [130, 0.4, 1.05], accent: [36, 0.55, 1], hair: 'mane', dye: 'red', face: 'round_glasses' },
+    greet: (c) => byChapter(c, [[17, 'The settlers\' log sits in my case now, the only book I let no one touch. Not even me, some days.'], [99, 'I am writing it all down: the rings, the bindings, the Crater. The oldest library north of the mountains needed a newer book.']]),
     hello: 'Quiet, please. This is the oldest library north of the mountains.',
     later: (lv) => `I have a task for you, but not yet. Come back at Base Level ${lv}.`,
     bye: 'Return your books on time. All of them.',
@@ -515,22 +523,26 @@ export const NPCS = {
   asgeir: {
     name: 'Captain Asgeir', map: 'port', x: 55, z: 32, ship: [{ to: 'storm', fare: 4000 }, { to: 'wreck', fare: 6000, lv: 85 }, { to: 'lokigate', fare: 8000, lv: 90 }],
     dress: { body: 'blader', main: [215, 0.55, 0.45], accent: [45, 0.8, 1.05], hair: 'long', dye: 'black', top: 'bandana' },
+    greet: (c) => byChapter(c, [[16, 'The Isles are no fit place for a ship, but you held the ring on them. The Wave-Runner is yours for any crossing.'], [17, 'Read the log, did they? Brave folk, those settlers. Bad sailors. Lucky for them their children\'s children turned out better.'], [99, 'Quiet seas. Too quiet for an old captain. There is always the Gate, if you ever want the sea to fight back.']]),
     hello: 'The Wave-Runner sails with the tide. The Storm Isles, if you can stand the weather. And further out, for the bold, a rock where nobody sane lands.',
     later: (lv) => `The sea is no place for a beginner. Come back at Base Level ${lv} and I'll have work for you.`, bye: 'Mind the gulls. They steal.', quests: ['wave1', 'wave2', 'wave3', 'wave4'],
     lore: ['Hafnvik was built white so the ships could find it from the sea, even in fog. The lighthouses do the rest.', 'There is a rock past the Storm Isles with stairs cut into it, going down. A fellow in a horned helm waits there, grinning. I only take heroes of real standing to him.'],
   },
   sela: {
     name: 'Sela the Trader', map: 'port', x: 37.8, z: 28.6, shop: 'sela', dress: { body: 'trainee', main: [205, 0.55, 1.05], accent: [0, 0, 1.25], hair: 'long', dye: 'brown', top: 'straw_hat' },
+    greet: (c) => byChapter(c, [[15, 'The boats come in by the blue lights now. The fish taste better. I will not explain it; I only sell them.'], [99, 'Hafnvik has never traded better. Half my stall is things people want that touched the Crater. I sell them a lot of ash.']]),
     hello: 'Fresh from the boats! Potions, salt fish, and everything the sea washes up. I buy what your bag is too heavy with.',
     later: (lv) => `Nothing for you yet, love. Come back at Base Level ${lv}.`, bye: 'Come back when the boats are in.', quests: ['stall1', 'stall2', 'stall3'],
   },
   brand: {
     name: 'Brand the Smith', map: 'port', x: 42, z: 40, shop: 'brand', craft: 'gear', dress: ROLE.smith,
+    greet: (c) => byChapter(c, [[16, 'Galleon iron, if you find any. Three hundred years under the sea and it rings truer than mine. I hate it.'], [99, 'The forge burns gold now, like the ring on Ember Hill. Same fire? Better not ask a smith.']]),
     hello: 'Sea air rusts a lesser blade in a week. Mine it does not. Bring me shells, scales and hide, and I will show you.',
     later: (lv) => `Come back at Base Level ${lv}. I have work, but not for soft hands.`, bye: 'Oil your steel.', quests: ['seaforge1', 'seaforge2'],
   },
   ylfa: {
     name: 'Ylfa the Priestess', map: 'port', x: 21.8, z: 22.6, heal: true, dress: { body: 'sorc', main: [215, 0.35, 1.25], accent: [45, 0.75, 1.05], hair: 'long', dye: 'blonde', top: 'flower_wreath' },
+    greet: (c) => byChapter(c, [[15, 'The lights burn blue again. The sailors kiss the quay before they board now; a little much, but the goddess does not mind.'], [17, 'The sea-ring is quiet. The goddess on the quay looks east now, toward Ember Hill. So do I.'], [99, 'The sea has never been so calm. The fishermen complain there are no stories left to tell. Tell them yours.']]),
     hello: 'The goddess on the quay watches over every ship. In her temple, I watch over the sailors. Come, sit, be mended.',
     later: (lv) => `The goddess asks more of you later, at Base Level ${lv}. Rest until then.`, bye: 'Go with her blessing.', quests: ['temple1', 'temple2', 'temple3', 'temple4'],
     lore: ['The goddess has no name the sailors agree on. She raised her spear against the sea once, they say, and the sea backed down.'],
@@ -628,6 +640,7 @@ export const NPCS = {
   // walked every sand round the city (needZones); then the series begins (The Sphinx's Riddle 1-6)
   gunnhild: {
     name: 'Old Gunnhild', map: 'sand', x: 38.8, z: 39.0, dress: { body: 'sorc', main: [45, 0.25, 0.8], accent: [205, 0.55, 1.05], hair: 'mane', dye: 'silver', face: 'round_glasses' },
+    greet: (c) => byChapter(c, [[10, 'You took my story to the Archmage, and she believed an old woman. Sit; I have more, and fewer of them are lies.'], [18, 'The desert ring held, did it? I felt the sand go still under my well. Old bones know.'], [99, 'They will tell your story by this well one day, and I will tell it longest.']]),
     hello: 'Sit, sit. The water is cool and my stories are long. Have you heard the one about the stone that watches the desert?',
     later: () => 'The sands keep their secrets from those who have not walked them all. Come back when you have seen every one of them: the red sands, the cactus dunes, the scorpions\' sands and the great desert beyond.',
     bye: 'The eye is closed. But it is only sleeping.',
@@ -639,6 +652,7 @@ export const NPCS = {
   // Tree 1-6), and its last step opens the hidden way north of the Old Forest to Yggdrasil
   ingrid: {
     name: 'Old Ingrid the Seedkeeper', map: 'hunt', x: 31.2, z: 33.6, dress: { body: 'sorc', main: [100, 0.35, 0.75], accent: [40, 0.55, 1.0], hair: 'mane', dye: 'silver' },
+    greet: (c) => byChapter(c, [[11, 'The roots stopped rotting by the old stones. The seeds sleep easier. So do I.'], [99, 'The forest\'s heart beats slow and sure again. Sit with me; you have earned a rest under a tree that is not trying to eat you.']]),
     hello: 'Mind the seeds, dear, they are older than the village. Older than the forest, some of them. Sit, if your legs are tired.',
     later: () => 'The old wood only talks to those who have walked it all. Come back when you have seen every land round Veidheim: the willow marsh, the old forest, the barley fields and the wolf hills.',
     bye: 'Roots go deep. Deeper than you think.',
@@ -647,6 +661,7 @@ export const NPCS = {
   },
   thora: {
     name: 'Thora the Caravan Master', map: 'sand', x: 49.4, z: 42.6, dress: { body: 'blader', main: [30, 0.45, 0.8], accent: [45, 0.7, 1.05], hair: 'long', dye: 'blonde', top: 'woven_cap' },
+    greet: (c) => byChapter(c, [[10, 'The caravans run again, and nobody saw a sphinx\'s eye in the dunes this month. My drivers buy you a drink, if you ever sit still.'], [17, 'The sands shake at night. Not a storm. Something under them, turning over in its sleep.'], [99, 'Quiet sands. Boring sands. I have never loved boring so much.']]),
     hello: 'My caravans cross the desert every week, and every week something eats a wagon. Help me keep the roads clear and I pay well.',
     later: (lv) => `The deep desert would eat you alive. Come back at Base Level ${lv}.`,
     bye: 'Safe roads, friend.',

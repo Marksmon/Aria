@@ -46,7 +46,7 @@ import { Wings, wingPicture } from './wings.js';
 import { clamp, lerp } from './noise.js';
 import { settings, pixelRatio } from './settings.js';
 import { Album, albumRows, setProgress, setBonus, SETS } from './album.js';
-import { Goals, ACHIEVEMENTS, WEEKLY, weeklyReward, weekEnds } from './goals.js';
+import { Goals, ACHIEVEMENTS, WEEKLY, weeklyReward, weekEnds, weekOf } from './goals.js';
 
 const canvas = document.getElementById('game');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, powerPreference: 'high-performance' });
@@ -259,7 +259,7 @@ function goalState() {
     landsWalked: lands.filter((id) => visited.has(id)).length, landsTotal: lands.length,
     met: Object.keys(album.kills).length, sets: sets.filter((p) => p.done).length, setsTotal: SETS.length,
     bestRefine: Math.max(goals.bestRefine, ...worn, 0), secrets: ['sphinx6', 'tree6'].filter((q) => quests.done.includes(q)).length,
-    storyDone: !story.step,
+    storyDone: !story.step, delveBest: delve.best,
   };
 }
 let goalT = 0;
@@ -610,7 +610,7 @@ function enterMap(id, from, at) {
     delve.floor = isDelve(from) ? delve.floor + 1 : delve.pending || 1;
     delve.pending = 0;
     if (world.built.has(id)) world.unbuild(id);
-    prepareFloor(id, delve.floor);
+    prepareFloor(id, delve.floor, weekOf());
     explored.reset(id); // (a new floor: nothing of it seen yet)
     delete mobs.fieldAt[id];
     at = at || DELVE_START;
@@ -1322,7 +1322,15 @@ const menus = new Menus(inv, prog, player, {
       if (st.id && !st.secret && ['offer', 'locked', 'job'].includes(st.state)) row(st.id, st.state, npc); // (a secret series stays out of sight)
     }
     for (const id of quests.done) row(id, 'done');
-    return { main, chapters, rows, storyDone: story.done };
+    // what next (November 2026: the windows hold a lot, and a new player asks "now what?"): a field whose monsters are
+    // of the hero's level (the one with most of them within 3 levels, walked or not), and the quest on offer nearest it
+    const lv = prog.baseLv, near = (t) => Math.abs((MOB_DEFS[t]?.lv ?? 999) - lv);
+    const fields = Object.entries(SPAWNS).filter(([id, l]) => l.length && !MAPS[id]?.arena && !MAPS[id]?.delve && !MAPS[id]?.maze?.hall?.only)
+      .map(([id, l]) => ({ id, n: l.filter(([t, , night]) => !night && !MOB_DEFS[t]?.boss && !MOB_DEFS[t]?.mvp && near(t) <= 3).reduce((a, [, c]) => a + c, 0) }))
+      .filter((f) => f.n > 0 && (!MAPS[f.id]?.maze || visited.has(f.id)) && ZONE_NAMES[f.id]).sort((a, b) => b.n - a.n);
+    const quest = rows.filter((r) => r.state === 'offer' && r.lv <= lv).sort((a, b) => b.lv - a.lv)[0];
+    const next = { field: fields[0] ? ZONE_NAMES[fields[0].id] : null, quest: quest ? { title: quest.title, giver: quest.giver, land: quest.land } : null };
+    return { main, chapters, rows, storyDone: story.done, next };
   },
   raidList: () => Object.entries(RAIDS).map(([id, R]) => ({ id, R, guide: NPCS[R.npc].name, land: ZONE_NAMES[R.from], done: raidsDone.has(id), ...raidInfo(id) })),
   ferry(map) {
@@ -1574,6 +1582,9 @@ atkBtn.title = 'Attack the target, or the nearest monster; with none near, pick 
 document.getElementById('hud').appendChild(atkBtn);
 // it shows the weapon in hand (a fist with none)
 const atkFace = () => { const w = inv.gear.weapon; atkBtn.innerHTML = w ? `<img src="${iconURL(w)}" alt="">` : '<span>✊</span>'; };
+// a new weapon in hand: the hotbar turns to the page whose skills it can use (hotbar.weaponPage)
+let heldKind = null;
+inv.onChange(() => { const k = weaponKind(); if (k !== heldKind) { const was = heldKind; heldKind = k; if (was !== null) menus.hotbar?.weaponPage?.(k); } });
 inv.onChange(atkFace);
 atkFace();
 // it sits just left of the hotbar, whose width changes with its pages
@@ -3101,8 +3112,8 @@ function playScene(shots, then) {
     document.body.classList.remove('cinema');
     for (const v of [...visited]) if (!back.walked.has(v)) visited.delete(v);
     if (world.id !== back.map || Math.hypot(player.x - back.x, player.z - back.z) > 0.01) enterMap(back.map, null, back);
-    for (const o of sceneKeep.props) o.visible = true;
-    const was = sceneKeep.doll;
+    for (const o of sceneKeep?.props || []) o.visible = true; // (a scene's end, once: guarded all the same)
+    const was = sceneKeep?.doll;
     if (was && !mobs.list.includes(doll)) doll = mobs.list.filter((m) => m.alive && m.type === was.type).sort((a, b) => Math.hypot(a.x - was.x, a.z - was.z) - Math.hypot(b.x - was.x, b.z - was.z))[0] || null;
     sceneKeep = null;
     dayNight.t = back.t; dayNight.update(0, 0);
@@ -3532,4 +3543,4 @@ if (go || toSelect) { title.classList.remove('wait'); bootGone(); } else {
   addEventListener('keydown', tap);
 }
 
-window.__aria = { scene, renderer, lib, MAPS, settings, album, goals, warp, enterMap, useSkill, useItem, story, SPOTS, player, world, cam, camera, mobs, allies, fx, inv, prog, quests, villagers, menus, hotbar, dayNight, audio, stats: world.stats, raid: () => raids.raid, raidAt: () => raids.raidAt, raidGo, raidLog: () => raidLog, storyDone, queueScene, chapterShots, cineShot, cineOff: () => { cine = null; }, cine: () => cine, traps, delve, questWorld, keepers, visited, savePoint: () => savePoint, keepers, gainExp, explored, bossBar, ui };
+window.__aria = { scene, renderer, lib, MAPS, settings, album, goals, warp, enterMap, useSkill, useItem, story, SPOTS, player, world, cam, camera, mobs, allies, fx, inv, prog, quests, villagers, menus, hotbar, dayNight, audio, stats: world.stats, raid: () => raids.raid, raidAt: () => raids.raidAt, raidGo, raidLog: () => raidLog, storyDone, queueScene, chapterShots, cineShot, cineOff: () => { cine = null; }, cine: () => cine, traps, delve, questWorld, keepers, visited, savePoint: () => savePoint, keepers, gainExp, explored, bossBar, ui, SPAWNS };
