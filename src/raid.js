@@ -140,12 +140,15 @@ export const RAIDS = {
 };
 
 // what a clear pays: { perz, items: { id: n }, rare: id | null, ultra: id | null, card: id | null }
+// a Refining Charm (items.js) from a Hard or Hell clear, this often (the owner's call, November 2026)
+export const CHARM = { hard: 0.15, hell: 0.35 };
 export function rollReward(raid, diff) {
   const R = RAIDS[raid], d = R.difficulties[diff], items = {};
   for (const [id, n, chance] of R.reward.items) {
     if (Math.random() < chance) items[id] = (items[id] || 0) + n * d.mult;
   }
   if (R.reward.cores) { const [core, n] = R.reward.cores; items[core] = (items[core] || 0) + n * (d.cores || 1); }
+  if (Math.random() < (CHARM[diff] || 0)) items.refine_charm = (items.refine_charm || 0) + 1;
   const rare = Math.random() < d.rare ? R.rares[Math.floor(Math.random() * R.rares.length)] : null;
   const ultra = R.ultra && Math.random() < R.ultra[1] ? R.ultra[0] : null;
   const card = R.card && Math.random() < R.card[1] ? R.card[0] : null;

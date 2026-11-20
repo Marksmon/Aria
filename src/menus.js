@@ -6,7 +6,7 @@ import { POTION_END } from './rules.js';
 import { ITEMS, RECIPES, SLOTS, SHOPS, PRICES, sellPrice, equipLine, iconURL, canWear, jobLine, recipeKind, upgradeLine, refineInfo, canEnchant, canInsert, ENCHANT, MAX_REFINE, enchantStep, cardOn, cardLine, UNCARD_FEE, GOLD_FEE, parseKey, makeKey } from './items.js';
 import { BAG_SLOTS, CHEST_SLOTS } from './inventory.js';
 import { hasCardArt, showCardArt } from './cardart.js';
-import { STATS, STAT_KEYS, JOBS, TREES, QUEST_RATE, JOB_TRAITS } from './progress.js';
+import { STATS, STAT_KEYS, JOBS, TREES, QUEST_RATE, JOB_TRAITS, JOB_CHANGE } from './progress.js';
 import { statCost } from './ro-tables.js';
 import { HAIRSTYLES, DYES, hairstyles, lookPortrait } from './hair.js';
 import { NPCS, QUESTS, giverOf, rewardOf, SERIES } from './quests.js';
@@ -806,7 +806,9 @@ export class Menus {
           : `Press the ${ITEMS[card].name} into a free slot of ${cardOn(ITEMS[card].card).map((s) => SLOTS[s].toLowerCase()).join(' or ')} gear. It stays until Seyla in Galdrheim draws it out.`;
     const bars = mode !== 'insert' ? inv.have('gold_bar') : 0; // (Holger's and Seyla's fees take Gold Bars, if asked)
     const gold = bars ? `<div class="setrow goldpay"><span>Pay with Gold Bars<small>You have ${bars}: each pays ${GOLD_FEE.toLocaleString()} perz of a fee.</small></span><button class="rbtn${inv.goldPay ? '' : ' soft'}" data-act="goldpay" aria-pressed="${!!inv.goldPay}">${inv.goldPay ? 'On' : 'Off'}</button></div>` : '';
-    let h = `<div class="rnote">${esc(note)}</div>${gold}<div class="rlist">`;
+    const charms = mode === 'refine' || mode === 'enchant' ? inv.have('refine_charm') : 0, charmOn = inv.useCharm !== false; // (a Refining Charm: a failure past safe breaks nothing)
+    const charm = charms ? `<div class="setrow goldpay"><span>Use a Refining Charm<small>You have ${charms}: if a try that would break a piece fails, one cracks instead and the piece is unharmed.</small></span><button class="rbtn${charmOn ? '' : ' soft'}" data-act="usecharm" aria-pressed="${charmOn}">${charmOn ? 'On' : 'Off'}</button></div>` : '';
+    let h = `<div class="rnote">${esc(note)}</div>${gold}${charm}<div class="rlist">`;
     for (const p of list) {
       const it = ITEMS[p.key], on = this.smithSel?.where === p.where && this.smithSel?.key === p.key;
       h += `<div class="ritem smithrow${on ? ' sel' : ''}">${icon(p.key, 'sm')}<div><b>${esc(it.name)}</b><small>${esc(SLOTS[it.slot])} · ${p.where === 'bag' ? 'in your bag' : 'worn'}${upgradeLine(it) ? ' · ' + esc(upgradeLine(it)) : ''}</small></div>
@@ -825,10 +827,10 @@ export class Menus {
         what = `${esc(it.name)} → +${r.next} · <b class="${r.safe ? 'ok' : 'risk'}">${r.chance}% chance</b>${r.safe ? ' (safe)' : ''}`;
         costs = costRow(r.ore, 1) + perzRow(r.fee);
         risky = !r.safe; can = inv.have(r.ore) >= 1 && inv.canPay(r.fee); label = `Refine to +${r.next}`;
-        if (!r.safe) what += `<small>Safe up to +${r.safeTo}. If this fails, the ${esc(it.name)} breaks and is gone${it.cards?.length ? ' (its card comes back to you)' : ''}.</small>`;
+        if (!r.safe) what += `<small>Safe up to +${r.safeTo}. ${charms && charmOn ? 'If this fails, a Refining Charm cracks instead and the piece is unharmed.' : `If this fails, the ${esc(it.name)} breaks and is gone${it.cards?.length ? ' (its card comes back to you)' : ''}.`}</small>`;
       } else if (mode === 'enchant') {
         const c = inv.enchantCost(sel.key), step = enchantStep(sel.key);
-        what = `${esc(it.name)} → [${step.slots}] · <b class="risk">${step.chance}% chance</b><small>If it fails, the ${esc(it.name)} breaks and is gone${it.cards?.length ? ' (its card comes back to you)' : ''}.</small>`;
+        what = `${esc(it.name)} → [${step.slots}] · <b class="risk">${step.chance}% chance</b><small>${charms && charmOn ? 'If it fails, a Refining Charm cracks instead and the piece is unharmed.' : `If it fails, the ${esc(it.name)} breaks and is gone${it.cards?.length ? ' (its card comes back to you)' : ''}.`}</small>`;
         const bossTip = `${ENCHANT.boss.map((b) => ITEMS[b].name).join(', ')}, in any mix`;
         const bossName = [...new Set(c.boss)].map((b) => ITEMS[b].name).join(' + ') || `Boss material (${bossTip})`;
         const bossRow = `<span class="cost ${c.boss.length >= c.bossNeed ? 'ok' : ''}" title="${bossTip}">${c.boss.length ? icon(c.boss[0], 'xs') : ''}${esc(bossName)} ${c.boss.length}/${c.bossNeed}</span>`;
@@ -1035,14 +1037,17 @@ export class Menus {
       const second = JOBS[st.job].tier === 2, keep = p.tier === 1 && !second;
       const tr = JOB_TRAITS[st.job], traits = tr ? ` Strong: ${tr.strong}. Weak: ${tr.weak}.` : '';
       box = `<b>Job change: ${esc(JOBS[st.job].name)}</b><small>${esc(JOB_PITCH[st.job] + traits)} ${second
-        ? 'Job Level starts again at 1; your first-job skills and points stay with you.'
+        ? (p.tier === 2 && st.job !== p.job ? `Your ${esc(JOBS[p.job].name)} skills are unlearnt, and Job Level starts again at 1; your first-job skills and points stay with you.` : 'Job Level starts again at 1; your first-job skills and points stay with you.')
         : keep ? 'You keep your Job Level and skill points: every first job shares them. You can switch back here any time.' : 'Job Level starts again at 1.'}</small>`;
       btns = `<button class="rbtn soft" data-act="close">Not yet</button><button class="rbtn" data-act="jobchange" data-id="${st.job}">Become ${/^[AEIOU]/.test(JOBS[st.job].name) ? 'an' : 'a'} ${JOBS[st.job].name}</button>`;
     } else if (st.state === 'offer') {
       const first = st.id === n.quests[0] || st.id === n.trial?.[0] || st.id === n.trial2?.[0];
       text = (first ? (greet || n.hello) + ' ' : '') + st.q.intro;
-      box = `<b class="${st.q.job ? 'jobq' : ''}">${esc(st.q.title)}</b><small>${esc(this.quests.goal(st.q))}${st.q.repeat ? ' · a bounty: take it again whenever you like' : ''}</small>${this.questReward(st.id)}`;
-      btns = `<button class="rbtn soft" data-act="close">Not now</button><button class="rbtn" data-act="accept" data-id="${st.id}">Accept</button>`;
+      // (a second job taking another's trial: JOB_CHANGE, its fee and what it costs)
+      const change = p.tier === 2 && st.id === n.trial2?.[0] && n.job2 !== p.job;
+      if (change) text = `You already walk the path of the ${JOBS[p.job].name}. Leave it for the ${JOBS[n.job2].name}'s, and it costs you: ${JOB_CHANGE.fee.toLocaleString()} perz, and every ${JOBS[p.job].name} skill. ` + st.q.intro;
+      box = `<b class="${st.q.job ? 'jobq' : ''}">${esc(st.q.title)}</b><small>${esc(this.quests.goal(st.q))}${st.q.repeat ? ' · a bounty: take it again whenever you like' : ''}</small>${change ? `<small class="risk">A change of second job: ${JOB_CHANGE.fee.toLocaleString()} perz now; at the end your ${esc(JOBS[p.job].name)} skills are unlearnt and Job Level starts again at 1.</small>` : ''}${this.questReward(st.id)}`;
+      btns = `<button class="rbtn soft" data-act="close">Not now</button><button class="rbtn" data-act="accept" data-id="${st.id}" ${change && this.inv.perz < JOB_CHANGE.fee ? 'disabled' : ''}>${change ? `Accept · ${JOB_CHANGE.fee.toLocaleString()} perz` : 'Accept'}</button>`;
     } else if (st.state === 'active' && st.q.kind === 'quiz' && this.quests.hasItems(st.id, this.inv)) {
       // a trainer's questions, one at a time: tap an answer
       const at = this.quests.active[st.id], Q = st.q.questions[at], note = this.quizNote;
@@ -1150,6 +1155,7 @@ export class Menus {
     if (act === 'totitle') this.hooks.toTitle?.(); // back to the title screen, to play another hero
     if (act === 'sound') { this.hooks.toggleSound?.(); this.render(id); }
     if (act === 'goldpay') { this.inv.goldPay = !this.inv.goldPay; this.render(id); }
+    if (act === 'usecharm') { this.inv.useCharm = this.inv.useCharm === false; this.render(id); }
     if (act === 'goalstab') { this.goalsTab = t.dataset.id; this.render(id); }
     if (act === 'weartitle') { this.hooks.wearTitle?.(t.dataset.id || null); this.render(id); }
     if (act === 'albumtab') { this.albumTab = t.dataset.id; this.render(id); }
@@ -1195,6 +1201,7 @@ export class Menus {
       if (mode === 'insert') { this.message(`The card sinks into it: ${ITEMS[res.key].name}.`); this.close('smith'); this.selected = null; }
       else if (mode === 'uncard') { this.smithSel = null; this.message(`Seyla draws out the ${res.cards.map((c) => ITEMS[c].name).join(' and the ')}. It's in your bag.`); }
       else if (res.ok) this.message(mode === 'refine' ? `Success! ${ITEMS[res.key].name}` : `The song holds! ${ITEMS[res.key].name}`);
+      else if (res.charmed) this.message(`It fails, but the Refining Charm cracks instead: the ${name} is unharmed.`);
       else this.message(`The ${name} breaks apart…${res.cards?.length ? ` You pick the ${res.cards.map((c) => ITEMS[c].name).join(' and the ')} out of the pieces.` : ''}`);
       this.hooks.upgraded?.(mode, res);
       this.render();

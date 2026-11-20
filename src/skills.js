@@ -15,7 +15,7 @@
 // target: 'mob' for skills aimed at a monster; range = how close you must be (world units)
 // cast: seconds to cast (spells), before FNS shortens it; magic: the spell's element (damage from MATK)
 // free: { jobLv } learnt automatically; granted: learnt once its needs are met; else bought with points
-import { TREES, JOBS, SECOND_AT } from './progress.js';
+import { TREES, JOBS, SECOND_AT, JOB_CHANGE } from './progress.js';
 import { MAX_JOB } from './ro-tables.js';
 
 // status: a spell (or sword sweep) may freeze, paralyze or stun a monster (it stands helpless) or set
@@ -718,7 +718,9 @@ export const MK_POINTS = 20; // a second job of two paths (the Magic Knight) wan
 // of all the paths walked (a tie opens each tied one).
 export function secondJobOpen(prog, job2) {
   const from = JOBS[job2].from;
-  if (prog.tier !== 1 || prog.jobLv < SECOND_AT || !from.every((j) => prog.unlocked.includes(j))) return false;
+  // (a second job at JOB_CHANGE.at may change to another, by the same rules, judged on its first-job level)
+  const changing = prog.tier === 2 && job2 !== prog.job && prog.jobLv >= JOB_CHANGE.at, lv = changing ? prog.firstLv : prog.jobLv;
+  if ((prog.tier !== 1 && !changing) || lv < SECOND_AT || !from.every((j) => prog.unlocked.includes(j))) return false;
   if (from.length > 1) return from.every((j) => pointsIn(prog, j) >= MK_POINTS);
   const firsts = prog.unlocked.filter((j) => JOBS[j]?.tier === 1);
   return firsts.length === 1 || pointsIn(prog, from[0]) >= Math.max(...firsts.map((j) => pointsIn(prog, j)));

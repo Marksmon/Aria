@@ -27,7 +27,7 @@ export const DEPTH = {
   // a Base 98 hero needed about 1,400 kills of the best monster for one level; the deep floors are where it is finished)
   exp: (k) => 1 + 0.2 * (k - 1),
   every: 5,                                    // checkpoints
-  cache: (k) => ({ perz: 3000 * k, items: { hard_ore: 1 + Math.floor(k / 10), armor_ore: 1 + Math.floor(k / 10) } }),
+  cache: (k) => ({ perz: 3000 * k, items: { hard_ore: 1 + Math.floor(k / 10), armor_ore: 1 + Math.floor(k / 10), refine_charm: 1 } }), // (a Refining Charm at every checkpoint)
 };
 const LOOKS = [1, 2, 3, 4, 'tree1', 'tree2', 'tree3', 'tree4'];
 export const START = { x: 31.5, z: 53.2 }; // where a floor is entered: by the stairs up

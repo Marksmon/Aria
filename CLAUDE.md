@@ -83,7 +83,8 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
     swords and bows, and its own tree holds only beast skills: the Bear (END), the Wolves (FNS) and
     the Hawk (QKN) can all be out together, and the hero's stats feed theirs (`src/allies.js`, `beastStats` in `main.js`; the owner's call: END mostly the Bear's HP and DEF, FNS mostly the Wolves' HIT and ATK, QKN mostly the Hawk's attack speed and reach, FTN every beast's crit and lucky dodge, POW every beast's ATK, KNL their instincts: harder, sooner, longer stuns and slows (`sharp`), every other stat a little, `MINOR`). The Wolves are the Black Wolf and the White Wolf. Each beast has one instinct it uses by itself on its own cooldown (the owner's call, `INSTINCTS`: the Bear's Maul stuns, the Wolves' Hamstring leaps and slows, the Hawk's Dive never misses; bosses resist as ever); they are the beasts' moves, not the hero's skills, and the Bear keeps its Roar, a war cry (the owner's call: every 10 s while it fights it taunts the monsters round it and the pack hits 10% harder for 6 s, `ROAR`). The Hawk is out of reach of melee (the owner's call): only arrows and a boss's thrown or falling blows reach it. The beasts' health bars sit beside the hero's panel (`#pets`). BladeMaster/Wizard/Windrunner/Phantom open only for the first job with the most points (a tie
     opens each tied one). Only one second job can be taken; quitting a trial midway starts it over and
-    lets the hero pick again. Job trials pay only when the whole series is done.
+    lets the hero pick again; at Job 50 a second job may change to another its points open, for `JOB_CHANGE.fee`
+    (500,000 perz), its old skills unlearnt (the owner's call, November 2026). Job trials pay only when the whole series is done.
   - A second job's own skills are raised only while its opening rule still holds (MK: 20 Blader and
     20 Sorcerer points) and every Trainee and first-job point is spent (`secondJobBlock`). A second
     job's skill reset unlearns first- and second-job skills, so the first jobs are rebuilt first. A
@@ -205,6 +206,9 @@ Android APK with Capacitor). See README.md for the game and docs/ for the detail
   The Shadowblade's and the Voodoo's Shadow arts land `SHADOW_ART` (75%) on a Shadow monster, not a quarter (`rules.js`, `ps.art`),
   and a battle oil on a Beastmaster coats its beasts' claws (so it can hurt a Ghost). Mini-bosses and Hell bosses have
   matchups too (`takes`), set so every job can win them.
+- **Refining Charm** (the owner's call, November 2026: failures still break): from Hard and Hell raid clears (`CHARM` in
+  `raid.js`) and every Deep Halls checkpoint; with one in the bag and Use a Refining Charm on (`inv.useCharm`), a refine
+  or card-slot try that would break a piece cracks the charm instead (`charmSaves` in `inventory.js`).
 - **Potions heal more with END** (the owner's call, November 2026): +2% a point (`POTION_END`, `potionHeal` in
   `rules.js`), in the game and every simulator; the Items window says how much more for the hero.
 - **Card paintings** (the owner's call): a card can have an anime painting (2:3, the name and a BOSS badge painted in, after the Ragnarok card art), `src/art/cards/<card id>.jpg` (640 wide). A card with one gets a View art button in the Items window and an Art button where it sits in a piece; it opens full screen, the picture alone with no text under it, a tap closes it (`src/cardart.js`, loaded only when opened). The five first MVP cards have theirs; the Eternal Sphinx's, the mini-boss and raid cards come next.

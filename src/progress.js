@@ -60,6 +60,10 @@ export const JOB_TRAITS = {
   voodoo: { mech: 'Blight that stacks, curses and the doll', strong: 'Blight goes through MDEF and no boss resists it: the strongest over a long fight, and a Curse Circle makes everything take more', weak: 'slow to start with little burst, frail (its Substitute doll takes the blows, for a price in HP), and its Shadow lands only 75% on Shadow monsters' },
 };
 export const SECOND_AT = 40; // the first-job Job Level a second job's trial asks for
+// a change of second job (the owner's call, November 2026: ten second jobs, three hero slots): a hero at Job Level `at`
+// of its second job may take another second job's trial it qualifies for, for `fee` perz; its old second job's skills
+// go, and Job Level starts again at 1
+export const JOB_CHANGE = { at: 50, fee: 500000 };
 // the skill trees a job stands on: its own and those of the jobs before it
 export const TREES = {
   novice: ['novice'], swordman: ['swordman', 'novice'], mage: ['mage', 'novice'], archer: ['archer', 'novice'], assassin: ['assassin', 'novice'],
@@ -176,7 +180,8 @@ export class Progress {
   }
   // a second job: the first-job level is kept for its skill points, Job Level starts again at 1
   takeSecond(job) {
-    this.firstLv = this.jobLv;
+    if (this.tier === 2) this.unlocked = this.unlocked.filter((j) => j !== this.job); // (a change of second job: the old one is left; the first-job level stays)
+    else this.firstLv = this.jobLv;
     if (!this.unlocked.includes(job)) this.unlocked.push(job);
     this.job = job;
     this.jobLv = 1;

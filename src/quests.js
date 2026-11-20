@@ -1869,7 +1869,9 @@ export class Quests {
     }
     // a second job's trial: from Job Level 40, by the rules in skills.js (secondJobOpen). Only one
     // can be taken: once a step of one is accepted, the others close
-    const chosen = Object.values(NPCS).some((o) => o.trial2 && o !== n && o.trial2.some((k) => k in this.active || this.done.includes(k)));
+    // (a second job changing to another, JOB_CHANGE: the trials it did before don't close this one, a trial under way does)
+    const changing = prog.tier === 2 && n.job2 && n.job2 !== prog.job;
+    const chosen = Object.values(NPCS).some((o) => o.trial2 && o !== n && o.trial2.some((k) => k in this.active || (!changing && this.done.includes(k))));
     if (n.trial2 && !chosen && secondJobOpen(prog, n.job2)) {
       return { ...series(n.trial2, { id: n.trial2.at(-1), q: QUESTS[n.trial2.at(-1)], state: 'job' }), job: n.job2 };
     }

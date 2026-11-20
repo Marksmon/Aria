@@ -909,7 +909,9 @@ job's, in new colours and pieces), and glows with a small aura in its colour.
   become a BladeMaster or a Magic Knight; with 25 and 25, any of the three; with 35 and 15, only a
   BladeMaster. Only one second job can be taken: once you accept a step of one trial, the other
   trials close. Quit a trial midway (Quit quest in the Quest View) and it starts over, and you may
-  pick any trial you qualify for again.
+  pick any trial you qualify for again. At Job Level 50 of a second job you may change to another your first-job
+  points open: its trainer asks 500,000 perz as you take the first step, and when the trial is done your old second
+  job's skills are unlearnt and Job Level starts again at 1 (your first-job skills stay).
 - Job trials pay nothing for the steps on the way: the whole trial's reward comes with its last
   step.
 - A second job's own skills can be raised only once **every Trainee and first-job skill point is
@@ -1360,7 +1362,9 @@ capes, boots and head gear, worn or in the bag, one level at a time up to **+10*
 classic refining rates. Each level adds ATK to a weapon (+2 / +3 / +5 / +7 by weapon
 level) or 1 DEF to anything else. Up to the safe level a try always works; past it, a failed try
 **breaks the piece** (any card in it comes back to you). The window shows the chance and asks
-twice before a risky try.
+twice before a risky try. A **Refining Charm** (from Hard and Hell raid clears and every fifth floor of the Deep Halls)
+takes that blow instead: with one in your bag and Use a Refining Charm on (Holger's and Seyla's windows), a try that
+would break a piece cracks the charm and leaves the piece unharmed. It is spent only when it saves something.
 
 | | Safe to | Then, per level | Each try |
 |---|---|---|---|

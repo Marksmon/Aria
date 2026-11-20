@@ -2,7 +2,7 @@
 // the second jobs' skills and traits.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { Progress, JOBS, JOB_TRAITS, TREES, SECOND_AT } from '../src/progress.js';
+import { Progress, JOBS, JOB_TRAITS, TREES, SECOND_AT, JOB_CHANGE } from '../src/progress.js';
 import { SKILLS, secondJobOpen, learnBlock, pointsIn } from '../src/skills.js';
 
 const SECOND = Object.keys(JOBS).filter((j) => JOBS[j].tier === 2);
@@ -76,4 +76,21 @@ test('every second job keeps to 3-4 active skills, has a trait line, and stands 
 
 test('active skills need a known weapon or none', () => {
   for (const [id, s] of Object.entries(SKILLS)) if (s.weapon) assert.ok(['sword', 'staff', 'bow', 'dagger'].includes(s.weapon), id);
+});
+
+test("a second job at Job 50 may change to another it qualifies for, for a fee; its old job is left (the owner's call)", () => {
+  // a BladeMaster who walked the Blader (25) and the Sorcerer (25) at first-job Job 50
+  const p = hero(50, { swordman: 25, mage: 25 }, 'swordman');
+  p.takeSecond('blademaster');
+  p.jobLv = JOB_CHANGE.at - 1;
+  assert.deepEqual(open(p), [], 'under Job 50: no other trial opens');
+  p.jobLv = JOB_CHANGE.at;
+  assert.deepEqual(open(p), ['magicknight', 'wizard'], 'at Job 50: those its first-job points open, never its own');
+  p.skills.twinfang = 5;
+  p.takeSecond('magicknight');
+  assert.equal(p.job, 'magicknight');
+  assert.equal(p.jobLv, 1);
+  assert.equal(p.firstLv, 50, 'the first-job level stays');
+  assert.ok(!p.unlocked.includes('blademaster') && p.unlocked.includes('swordman') && p.unlocked.includes('mage'));
+  assert.ok(JOB_CHANGE.fee >= 100000, 'a large fee');
 });

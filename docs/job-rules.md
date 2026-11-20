@@ -199,6 +199,11 @@ bow range.
 - The current job does not matter; only the points do.
 - **Only one second job can be taken.** Once a step of one second-job trial is accepted, the other
   trials close.
+- **A change of second job** (the owner's call, November 2026: ten second jobs, three hero slots): at Job Level 50
+  (`JOB_CHANGE.at`) a second job may take the trial of another second job its first-job points open (`secondJobOpen`,
+  judged on the first-job level, `firstLv`), never its own. The trainer asks `JOB_CHANGE.fee` (500,000 perz) as the
+  first step is taken; at the job change the old second job's skills are unlearnt, it leaves `unlocked`, its trial can
+  be walked again one day, and Job Level starts again at 1 (the first-job level and skills stay).
 - **A second job's own skills** (`secondJobBlock` in `skills.js`) can only be raised while the
   job's opening rule still holds (the Magic Knight's 20 Blader and 20 Sorcerer points, the Moon
   Ranger's and the Beastmaster's pairs, the most points in the path for BladeMaster, Wizard and

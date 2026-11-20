@@ -15,7 +15,7 @@ import { loadSave, writeSave, loadStorage, writeStorage, clearSave, saveCode, lo
 // the APK's native copy of the saves: any the WebView lost come back, and the page starts again once to load them
 restoreMirror().then((n) => { try { if (n && !sessionStorage.getItem('aria.mirrored')) { sessionStorage.setItem('aria.mirrored', '1'); location.reload(); } } catch { /* ignore */ } });
 import { Inventory } from './inventory.js';
-import { Progress, JOBS, RATES, QUEST_RATE, STAT_KEYS } from './progress.js';
+import { Progress, JOBS, RATES, QUEST_RATE, STAT_KEYS, JOB_CHANGE } from './progress.js';
 import { Quests, QUESTS, NPCS, FARES, ALWAYS_FARES, NEXT, SERIES, giverOf } from './quests.js';
 import { Story, INTRO, STORY, CALLINGS, CALL_HOME, route } from './story.js';
 import { SPAWNS } from './spawns.js';
@@ -1342,6 +1342,15 @@ const menus = new Menus(inv, prog, player, {
     persist();
   },
   jobChange(job) {
+    // a change of second job (JOB_CHANGE): the old one's skills go (its beasts and illusions with them), and its trial
+    // can be walked again one day
+    if (JOBS[job].tier === 2 && prog.tier === 2 && job !== prog.job) {
+      const old = prog.job;
+      for (const id of Object.keys(prog.skills)) if (SKILLS[id]?.job === old) delete prog.skills[id];
+      allies.clear();
+      const trial = Object.values(NPCS).find((n) => n.job2 === old)?.trial2 || [];
+      quests.done = quests.done.filter((k) => !trial.includes(k));
+    }
     const known = knownSkills(), switching = JOBS[job].tier === 1 && prog.unlocked.includes(job), first = !prog.unlocked.includes(job);
     if (JOBS[job].tier === 1) prog.takeFirst(job); else prog.takeSecond(job);
     // a new Sorcerer is handed a staff
@@ -1399,6 +1408,14 @@ const menus = new Menus(inv, prog, player, {
   },
   raised() { applyStats(); audio.play('craft'); persist(); },
   accept(id) {
+    // a second job taking another's trial (JOB_CHANGE): the fee is paid as the first step is taken
+    const change = prog.tier === 2 && Object.values(NPCS).some((n) => n.trial2?.[0] === id && n.job2 !== prog.job);
+    if (change) {
+      if (inv.perz < JOB_CHANGE.fee) { menus.message(`A change of path costs ${JOB_CHANGE.fee.toLocaleString()} perz`); return; }
+      inv.perz -= JOB_CHANGE.fee;
+      inv.changed?.();
+      menus.message(`You pay ${JOB_CHANGE.fee.toLocaleString()} perz to walk a new path`);
+    }
     quests.accept(id);
     for (const done of quests.onZone(world.zoneAt(player.x, player.z))) questComplete(done);
     audio.play('ui');

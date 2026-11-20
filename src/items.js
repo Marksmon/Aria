@@ -435,6 +435,10 @@ const BASE_ITEMS = {
   living_sand:  { type: 'misc', name: 'Living Sand', desc: 'A pouch of sand that will not lie still: it swirls round the bottom of the bag on its own.', from: 'Sand Elementals (Sphinx Halls 3)' },
   gold_leaf:    { type: 'misc', name: 'Gold Leaf', desc: 'Gold beaten thin as a breath, peeled from a Sarcophagus\'s mask. Sindri says the old kings ate it.', from: 'Sarcophagi and Ammit (Sphinx Halls 3)' },
   ammit_heart:  { type: 'misc', rare: true, name: "Ammit's Heart", desc: 'The Devourer\'s own heart, heavy as a stone and still beating, slowly. They say it was weighed against a feather once, and lost.', from: 'Ammit (30%)' },
+  // the Refining Charm (the owner's call, November 2026): a failed refine past safe, or a failed card slot, would break the
+  // piece; with a charm in the bag (and Use a Refining Charm on at Holger's or Seyla's) the charm cracks instead and the
+  // piece is unharmed. From raids' Hard and Hell clears and the Deep Halls' caches
+  refine_charm: { type: 'misc', rare: true, name: 'Refining Charm', icon: 'refine_charm', desc: 'A ring of blue sea-glass bound with gold wire. Held in the hand at the anvil, it takes the blow that would have broken a piece: the charm cracks, the piece is unharmed. Used only when it saves something.' },
   gold_bar:     { type: 'misc', rare: true, name: 'Gold Bar', desc: 'A bar of pure gold stamped with the Sphinx\'s face, from the treasure under the sands. Holger and Seyla take one for 20,000 perz of their fees (Pay with Gold Bars), twice what a shop pays for it.', from: 'the Eternal Sphinx (always, and its MVP reward), Sarcophagi (0.2%)' },
   scarab_buckler: { type: 'equip', slot: 'shield', name: 'Scarab Buckler', def: 4, mhp: 40, stats: { end: 1 }, icon: 'shield_scarab', desc: 'A small round shield faced with a great Scarab\'s wing-case. Blows skid off its sheen.', from: 'Scarabs (0.3%)' },
   cobra_kris:   { type: 'equip', slot: 'weapon', kind: 'dagger', name: 'Cobra Kris', atk: 70, wlv: 3, perk: { venom: 3 }, icon: 'dagger_cobra', desc: 'A wavy dagger, its hilt a coiled cobra. Its fang is in the blade: 3% of your blows poison a monster.', from: 'Cobras (0.3%)' },
@@ -724,7 +728,7 @@ export const PRICES = {
   messenger_shroud: 44000, rune_bracelet: 40000, ratatoskr_tail: 50000, nidhogg_ring: 40000, dragonleaf_mantle: 50000, dragonbone_blade: 90000, worldtree_staff: 90000, dragonwing_bow: 96000, nidhogg_fang: 96000, worldtree_crown: 80000, nidhogg_wings: 150000,
   rootsquirrel_card: 6000, bramble_card: 8000, rootserpent_card: 9000, mossgolem_card: 10000, darkelf_card: 10000, greatstag_card: 12000, dryad_card: 12000, rotbeetle_card: 14000, rootwarden_card: 14000, thorndrake_card: 15000, ratatoskr_card: 30000, nidhogg_card: 80000,
   // the Sphinx's Halls
-  scarab_shell: 600, cobra_fang: 700, old_bandage: 500, lamia_scale: 1000, lapis_shard: 1100, jackal_pelt: 1900, falcon_plume: 2100, lion_mane: 1400, living_sand: 1500, gold_leaf: 1800, ammit_heart: 9000, gold_bar: 20000,
+  scarab_shell: 600, cobra_fang: 700, old_bandage: 500, lamia_scale: 1000, lapis_shard: 1100, jackal_pelt: 1900, falcon_plume: 2100, lion_mane: 1400, living_sand: 1500, gold_leaf: 1800, ammit_heart: 9000, gold_bar: 20000, refine_charm: 30000,
   scarab_buckler: 12000, cobra_kris: 16000, grave_wrap: 14000, serpent_staff: 26000, priest_robe: 18000, jackal_spear: 30000, horus_bow: 32000, lion_boots: 22000, storm_ring: 24000, coffin_shield: 30000,
   devourer_mail: 44000, ammit_claw: 56000, sphinx_ring: 40000, sphinx_mantle: 50000, riddle_blade: 90000, sphinx_staff: 90000, sphinx_bow: 96000, enigma_fang: 96000, allseeing_eye: 150000,
   hallscarab_card: 6000, cobra_card: 8000, hallmummy_card: 9000, lamia_card: 10000, servant_card: 10000, jackal_card: 12000, falcon_card: 12000, sphinxcub_card: 14000, sandelemental_card: 14000, sarcophagus_card: 15000, ammit_card: 30000, sphinx_card: 80000,
@@ -1976,6 +1980,7 @@ const PAINT = {
   charm_spore: (g) => charmIcon(g, '#a383d6', '#e3b341'),
   charm_shell: (g) => charmIcon(g, '#f2a8a0', '#cfd6de'),
   charm_glow: (g) => charmIcon(g, '#ffe37a', '#cfd6de'),
+  refine_charm: (g) => charmIcon(g, '#6fd0ff', '#ffd23a'),
   torvald_chisel: (g) => {
     g.save(); g.translate(32, 32); g.rotate(-Math.PI / 4);
     shape(g, () => g.roundRect(-5, 2, 10, 24, 4), '#8a5a32', 3);

@@ -31,3 +31,20 @@ test('no monster pays far less than the monsters near its level (build-tools/eco
   for (const r of rows) assert.ok(r.steady > 0, `${r.name} drops nothing a shop buys`);
   assert.deepEqual(outliers(rows).map((r) => `${r.name} (${Math.round(r.steady)} perz a kill)`), [], `paying under ${FAR * 100}% of their neighbours`);
 });
+
+test("a Refining Charm takes the blow of a try that would break a piece, and only then (the owner's call)", async () => {
+  const { Inventory } = await load('inventory');
+  const inv = new Inventory();
+  inv.perz = 1e7;
+  inv.add('iron_sword|r6', 1); inv.add('steel_ore', 10); inv.add('refine_charm', 2);
+  let r = inv.refine('bag', 'iron_sword|r6', 99); // (a Lv 2 weapon is safe to +6: +7 can fail)
+  assert.ok(r.charmed && !r.broke && inv.bag.count('iron_sword|r6') === 1 && inv.have('refine_charm') === 1, 'saved, one charm spent');
+  r = inv.refine('bag', 'iron_sword|r6', 0);
+  assert.ok(r.ok && inv.have('refine_charm') === 1, 'a success spends no charm');
+  inv.useCharm = false;
+  r = inv.refine('bag', r.key, 99);
+  assert.ok(r.broke && inv.have('refine_charm') === 1, 'turned off: the piece breaks, the charm is kept');
+  const { CHARM } = await import('../src/raid.js');
+  const { DEPTH } = await import('../src/delve.js');
+  assert.ok(CHARM.hard > 0 && CHARM.hell > CHARM.hard && DEPTH.cache(5).items.refine_charm >= 1, 'from Hard and Hell clears and the Deep Halls');
+});

@@ -211,6 +211,14 @@ export class Inventory {
     }
     return true;
   }
+  // a try that would break a piece: a Refining Charm in the bag, with Use a Refining Charm on (useCharm, on unless turned
+  // off), cracks instead. True when it did (the charm is spent)
+  charmSaves() {
+    if (this.useCharm === false || this.have('refine_charm') < 1) return false;
+    this.spend('refine_charm', 1);
+    this.changed();
+    return true;
+  }
   // one refine try: { ok, broke } or { error }
   refine(where, key, roll = Math.random() * 100) {
     const r = refineInfo(key);
@@ -220,6 +228,7 @@ export class Inventory {
     this.spend(r.ore, 1);
     this.payFee(r.fee);
     const u = parseKey(key), ok = roll < r.chance;
+    if (!ok && this.charmSaves()) return { ok: false, broke: false, charmed: true, key, cards: [] }; // (a Refining Charm took the blow)
     this.replace(where, key, ok ? makeKey(u.base, { ...u, refine: r.next }) : null);
     // a broken piece gives back the cards that were in it (to the bag, or storage if it is full)
     const saved = ok ? [] : u.cards;
@@ -244,6 +253,7 @@ export class Inventory {
     for (const id of c.boss) this.spend(id, 1);
     this.payFee(c.perz);
     const u = parseKey(key), ok = roll < step.chance, nk = ok ? makeKey(u.base, { ...u, slots: step.slots }) : null;
+    if (!ok && this.charmSaves()) return { ok: false, broke: false, charmed: true, key, cards: [] }; // (a Refining Charm took the blow)
     this.replace(where, key, nk);
     // a broken piece gives back its cards, as at Holger's
     const saved = ok ? [] : u.cards;
