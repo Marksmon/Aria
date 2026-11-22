@@ -74,8 +74,8 @@ async function run(page, name, sc, PRICES) {
       const chasers = a.mobs.list.filter((m) => m.alive && (m.state === 'chase' || m.angry > 0) && Math.hypot(m.x - p.x, m.z - p.z) < 8);
       if (p.hp < p.maxHp * 0.35 && bot.t >= potT && a.inv.bag.count(pot)) { a.useItem(pot); bot.potions++; potT = bot.t + 1; }
       if (p.state === 'sit') { if (p.hp >= p.maxHp * 0.95 || chasers.length) a.useSkill('rest'); return; }
-      if (!chasers.length && p.hp < p.maxHp * 0.55 && !p.target?.alive) { a.useSkill('rest'); if (p.state === 'sit') bot.rests++; return; }
-      if (p.target?.alive) return;
+      if (!chasers.length && p.hp < p.maxHp * 0.55 && !p.goal?.mob?.alive) { a.useSkill('rest'); if (p.state === 'sit') bot.rests++; return; }
+      if (p.goal?.mob?.alive) return; // (the fight in hand: a new order would wipe it)
       const near = a.mobs.list.filter((m) => m.alive && !m.def.boss && !m.def.decoy).sort((x, y) => Math.hypot(x.x - p.x, x.z - p.z) - Math.hypot(y.x - p.x, y.z - p.z));
       const m = chasers[0] || near[0];
       if (m) p.command({ mob: m });
