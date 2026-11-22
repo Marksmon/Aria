@@ -916,3 +916,37 @@ would drink about 25 Blue Potions a minute to keep going (a Windrunner, whose Do
 shot, about 61); with none it deals about a fifth of the damage the sims count. The tiers (3–6 minute MVP fights on
 60 White Potions) are measured on that damage. This is the owner's call (more regen, cheaper skills, an SP item, or
 SP counted in the sims and the bosses retuned to it); the casters (high KNL) are not in the table yet.
+
+## The bosses played in the real game (`node build-tools/boss-bot.cjs`, November 2026 review, measured; nothing retuned yet)
+
+The boss bot plays the built game: the sim's hero and gear (a BladeMaster with a Khopesh +7, a Windrunner with a
+Heartwood Bow +7 and Iron Arrows, armor +4), the field round the boss cleared, skills tapped one at a time as a player
+does (a skill rides the next swing, and one tapped before it lands takes its place), the bow's Tailwind, Focus and
+Hunter's Mark kept up as the sim has them, Leap Back when the boss is on the bow, a White Potion below half HP, and a
+step out of every danger mark 0.35 s after it shows. (Its first runs tapped every skill each tick and re-ordered the
+attack every tick, wiping the skill waiting on the swing: the bow then lost to the Kobold King. Those numbers are void.)
+
+| Fight | SP | The bot | The sim (`mvp-sim`) |
+|---|---|---|---|
+| BladeMaster v Kobold King (Base 75) | refilled | won, 368 s, 10 potions | 292 s, 50 potions |
+| Windrunner v Kobold King (Base 75) | refilled | won, 429 s, 20 potions | 348 s, 58 potions |
+| BladeMaster v Fire Giant (Base 85) | refilled | won, 419 s, 1 potion | 337 s, 47 potions |
+| Windrunner v Fire Giant (Base 85) | refilled | won, 217 s, 4 potions | 173 s, 20 potions |
+| BladeMaster v Kobold King (Base 75) | counted | SP dry at 38 s; at 15 min the King had 49% left (12 potions) | - |
+| Windrunner v Fire Giant (Base 85) | counted | SP dry at 25 s; fainted at 680 s, the Giant at 25% (427 potions) | - |
+
+- **Time:** the game takes about 1.25x the sim's time. Unhurt against the Fire Giant (`DUMMY=1`), the BladeMaster
+  deals about 1,730 a second and the Windrunner 3,010, some 70-75% of what the sim's fights imply: walking back into
+  reach, the swing a skill waits for, and the steps out of danger. The fights stay inside or just past the 3-6 minutes.
+- **Potions:** a bot that steps out of every mark drinks far fewer than the sim, which lets half the boss's moves land
+  (`DODGE` 0.5). A careful player's potions are not the tiers' limit; a careless one's are.
+- **SP decides it:** with SP counted, both heroes run dry in under 40 s and can't finish a tier boss in 15 minutes
+  (the blade did half the King; the bow fell to the Giant). This confirms `sp-sim` above in play: the tiers rest on
+  Blue Potions the sims don't count, and the owner's call on SP stands open.
+
+A field duel (`PICK=1 node build-tools/boss-bot.cjs tuskBoar tidecliff 66 field blade`, the field bot's gear: an Iron
+Sword +6, armor +4) takes a Base 66 BladeMaster about 30 s and 7 White Potions for a plain Tusk Boar and 31 s for a
+Quill Porcupine (an archer that keeps 4.5 paces off), against `sim.mjs`'s 7-12 s. The hero was out of reach about
+three quarters of the time; why (the bot's steps out of the Gore mark, knockback) is not yet found. The field bot
+(`field-bot.cjs`) still swings plain blows with no skills, so its Base 66 run (1 kill, 7 faints in 10 minutes) says
+nothing about balance yet.
