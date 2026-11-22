@@ -83,7 +83,7 @@ const PORT = process.env.PORT || '4181';
       const p = a.player;
       if (pend) {
         if ((p.goal?.skill || p.goal?.spell) === pend.sk && bot.t - pend.t < 1.5) return; // (still waiting on the swing)
-        if (p.sp < pend.sp) { again[pend.id] = pend.t + pend.cd; note('casts', pend.id); } else note('fails', pend.id);
+        if (p.sp < pend.sp) { again[pend.id] = pend.t + pend.cd; note('casts', pend.id); } else { again[pend.id] = bot.t + 3; note('fails', pend.id); } // (not paid: short of SP, or the swing never came; plain blows meanwhile, as a player out of SP)
         pend = null;
       }
       for (const [id, cd] of ORDER) {
