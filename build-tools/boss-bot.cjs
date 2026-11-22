@@ -1,13 +1,13 @@
 // A playtest bot: a BladeMaster or a Windrunner fights one boss in the real game (the built game in Chromium), to
 // check what build-tools/mvp-sim.mjs says about the boss tiers. The hero is the sim's own (its Base 75 stat build, the
 // job's skills) in good gear (a Khopesh +7, the one Neutral Lv 4 sword that is no MVP's, ATK 100 to the sim's 120;
-// armor at +4) or shop gear; the field round the boss is cleared (a duel, as the sim has it). Each tenth of a second
+// armor at +4), field gear (field-bot.cjs's: an Iron Sword +6, armor at +4; a blade only) or shop gear; the field round the boss is cleared (a duel, as the sim has it). Each tenth of a second
 // it keeps on the boss, uses its skills one at a time as a player taps them (a skill rides the next swing, and one
 // tapped before it lands takes its place: the bot waits till it is paid), drinks a White Potion below half HP, and
 // steps out of every danger mark under it (a boss move, a Tremor) 0.35 s after it shows. Blue Potions are not
 // counted (SP refilled, as in the sim) unless `count`. It runs on Playwright's fake clock.
 //
-//   npx vite build && node build-tools/boss-bot.cjs [boss type] [map] [base] [good|shop] [blade|bow] [refill|count]
+//   npx vite build && node build-tools/boss-bot.cjs [boss type] [map] [base] [good|field|shop] [blade|bow] [refill|count]
 //   node build-tools/boss-bot.cjs koboldKing coalpit 75 good      (the defaults: a BladeMaster, SP refilled)
 //   DUMMY=1 node build-tools/boss-bot.cjs jarl ridge 85 good bow   (60 s unhurt, the boss kept up: damage a second)
 // blade: Blade Dance, Final Blade, Piercing Edge, Twin Fang. bow: the sim's BOW build, a Heartwood Bow +7 and Iron
@@ -46,7 +46,7 @@ const PORT = process.env.PORT || '4181';
       : { basics: 9, discipline: 10, ironhide: 10, cleave: 10, heavy: 5, warcry: 3, rhythm: 1, laststand: 1, twinfang: 10, pierce: 10, blademastery: 10, comboedge: 10, momentum: 5, finalblade: 5, bladedance: 5 };
     const kit = bow
       ? (gear === 'good' ? ['heartwood_bow|r7', 'iron_arrow', 'thorn_coat|r4', 'wool_cape|r4', 'leather_boots|r4'] : ['hunting_bow', 'iron_arrow', 'leaf_tunic', 'wool_cape', 'leather_boots'])
-      : gear === 'good' ? ['khopesh|r7', 'chain_mail|r4', 'round_shield|r4', 'wool_cape|r4', 'leather_boots|r4'] : ['iron_sword', 'chain_mail', 'round_shield', 'wool_cape', 'leather_boots'];
+      : gear === 'good' ? ['khopesh|r7', 'chain_mail|r4', 'round_shield|r4', 'wool_cape|r4', 'leather_boots|r4'] : gear === 'field' ? ['iron_sword|r6', 'chain_mail|r4', 'round_shield|r4', 'travel_cloak', 'leather_boots'] : ['iron_sword', 'chain_mail', 'round_shield', 'wool_cape', 'leather_boots'];
     const worn = kit.map((k) => { a.inv.add(k, 1); return a.inv.equip(k); });
     a.inv.add('potion3', 400);
     a.player.hp = a.player.maxHp;
@@ -58,8 +58,8 @@ const PORT = process.env.PORT || '4181';
   // (the job was set by hand, not by a trial: the body is not re-dressed, so a missing frame is skipped)
   await page.evaluate(() => { const p = window.__aria.player, f = p.placeHead.bind(p); p.placeHead = (...a) => { try { return f(...a); } catch { /* a sheet still loading */ } }; });
   await page.clock.install();
-  await page.evaluate(({ type, bow, count, dummy }) => {
-    const a = window.__aria, boss = a.mobs.list.find((m) => m.type === type && m.alive);
+  await page.evaluate(({ type, bow, count, dummy, pick }) => {
+    const a = window.__aria, boss = a.mobs.list.filter((m) => m.type === type && m.alive)[pick] || null; // (PICK=n: the nth of its kind; the first is a field's Pack Leader)
     const bot = window.bot = { t: 0, potions: 0, tremors: 0, done: null, start: boss?.hp, name: boss?.def.name };
     if (!boss) { bot.done = 'no boss'; return; }
     for (const m of a.mobs.list) if (m !== boss && !m.def.boss && Math.hypot(m.x - boss.x, m.z - boss.z) < 14) a.mobs.remove(m); // (the field cleared round it: a duel, as the sim has it)
@@ -119,7 +119,7 @@ const PORT = process.env.PORT || '4181';
       if (p.goal?.mob !== boss) p.command({ mob: boss }); // (a new order wipes a skill waiting on the swing)
       if (d < (bow ? 6 : 3)) cast();
     }, 100);
-  }, { type: BOSS, bow: JOB === 'bow', count: SP === 'count', dummy: !!process.env.DUMMY });
+  }, { type: BOSS, bow: JOB === 'bow', count: SP === 'count', dummy: !!process.env.DUMMY, pick: +(process.env.PICK || 0) });
   const t0 = Date.now();
   for (let i = 0; i < 960; i++) {
     await page.clock.runFor(1000);
