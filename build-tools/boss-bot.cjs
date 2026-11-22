@@ -10,7 +10,7 @@
 //   npx vite build && node build-tools/boss-bot.cjs [boss type] [map] [base] [good|shop] [blade|bow] [refill|count]
 //   node build-tools/boss-bot.cjs koboldKing coalpit 75 good      (the defaults: a BladeMaster, SP refilled)
 // bow: a Windrunner (the sim's BOW build, a Heartwood Bow +7 and Iron Arrows; Volley, Cyclone and Double Shot,
-// kept off: Leap Back, or a few steps away, whenever the boss comes within 3 paces). count: SP is counted as in play (no Blue Potions: a skill only with the SP for it), to set
+// kept off with Leap Back whenever it is ready and the boss is on it, else standing to shoot; a Thorn Coat +4, as Chain Mail is the Blader's). count: SP is counted as in play (no Blue Potions: a skill only with the SP for it), to set
 // beside build-tools/sp-sim.mjs.
 const { chromium } = require('playwright');
 const { spawn } = require('node:child_process');
@@ -42,7 +42,7 @@ const PORT = process.env.PORT || '4181';
       ? { basics: 9, keeneye: 10, longsight: 10, doubleshot: 10, arrowrain: 5, focus: 5, huntmark: 5, leapback: 1, steadyaim: 1, windborne: 10, galerhythm: 5, skirmisher: 5, volley: 10, cyclone: 10 }
       : { basics: 9, discipline: 10, ironhide: 10, cleave: 10, heavy: 5, warcry: 3, rhythm: 1, laststand: 1, twinfang: 10, pierce: 10, blademastery: 10, comboedge: 10, momentum: 5, finalblade: 5, bladedance: 5 };
     const kit = bow
-      ? (gear === 'good' ? ['heartwood_bow|r7', 'iron_arrow', 'chain_mail|r4', 'wool_cape|r4', 'leather_boots|r4'] : ['hunting_bow', 'iron_arrow', 'chain_mail', 'wool_cape', 'leather_boots'])
+      ? (gear === 'good' ? ['heartwood_bow|r7', 'iron_arrow', 'thorn_coat|r4', 'wool_cape|r4', 'leather_boots|r4'] : ['hunting_bow', 'iron_arrow', 'leaf_tunic', 'wool_cape', 'leather_boots'])
       : gear === 'good' ? ['khopesh|r7', 'chain_mail|r4', 'round_shield|r4', 'wool_cape|r4', 'leather_boots|r4'] : ['iron_sword', 'chain_mail', 'round_shield', 'wool_cape', 'leather_boots'];
     const worn = kit.map((k) => { a.inv.add(k, 1); return a.inv.equip(k); });
     a.inv.add('potion3', 400);
@@ -82,14 +82,9 @@ const PORT = process.env.PORT || '4181';
       if (!count && p.sp < 60) p.sp = p.maxSp; // (Blue Potions: not counted, as the sim)
       if (count && bot.spDry == null && p.sp < 15) bot.spDry = +bot.t.toFixed(0);
       const d = Math.hypot(p.x - boss.x, p.z - boss.z);
-      // a bow keeps its distance: Leap Back, else a few steps away, whenever the boss closes in (the sims' KITE)
-      if (bow && d < 3 && bot.t >= kiteT) {
-        kiteT = bot.t + 0.8; bot.kites++;
-        a.useSkill('leapback');
-        const ang = Math.atan2(p.z - boss.z, p.x - boss.x);
-        for (const turn of [0, 0.8, -0.8, 1.6, -1.6]) { const nx = p.x + Math.cos(ang + turn) * 4, nz = p.z + Math.sin(ang + turn) * 4; if (a.world.walkable(nx, nz)) { p.command({ x: nx, z: nz }); break; } }
-      }
-      if (bot.t < kiteT) return;
+      // a bow keeps its distance as a player does: Leap Back whenever it is ready and the boss is on it, and
+      // otherwise stands and shoots (walking off a boss as quick as the hero only loses the shots)
+      if (bow && d < 2.5 && bot.t >= kiteT) { kiteT = bot.t + 6; bot.kites++; a.useSkill('leapback'); }
       if (!p.target || p.target !== boss) p.command({ mob: boss });
       if (d < (bow ? 6 : 3)) for (const id of order) a.useSkill(id);
     }, 100);
