@@ -1,15 +1,16 @@
 // A playtest bot: a BladeMaster fights one boss in the real game (the built game in Chromium), to check what
 // build-tools/mvp-sim.mjs says about the boss tiers. The hero is the sim's own (its Base 75 MELEE stat build, the
-// BladeMaster's skills), in the sim's good gear (a Giant Sword +7, armor at +4) or shop gear; the field round the
+// BladeMaster's skills), in good gear (a Khopesh +7, the one Neutral Lv 4 sword that is no MVP's: ATK 100 to the sim's 120; armor at +4) or
+// shop gear; the field round the
 // boss is cleared (a duel, as the sim has it). Each tenth of a second it keeps on the boss, uses Blade Dance,
 // Final Blade, Piercing Edge and Twin Fang when they are ready, drinks a White Potion below half HP, and steps
-// aside from each Tremor (Blue Potions are not counted, as in the sim). It runs on Playwright's fake clock, so a
+// out of every danger mark under it (a boss move, a Tremor), 0.35 s after it shows (Blue Potions are not counted, as in the sim). It runs on Playwright's fake clock, so a
 // fight takes about as long as it would in play (swiftshader draws slowly), or less.
 //
 //   npx vite build && node build-tools/boss-bot.cjs [boss type] [map] [base] [good|shop] [blade|bow] [refill|count]
 //   node build-tools/boss-bot.cjs koboldKing coalpit 75 good      (the defaults: a BladeMaster, SP refilled)
 // bow: a Windrunner (the sim's BOW build, a Heartwood Bow +7 and Iron Arrows; Volley, Cyclone and Double Shot,
-// kept at 4 paces). count: SP is counted as in play (no Blue Potions: a skill only with the SP for it), to set
+// kept off: Leap Back, or a few steps away, whenever the boss comes within 3 paces). count: SP is counted as in play (no Blue Potions: a skill only with the SP for it), to set
 // beside build-tools/sp-sim.mjs.
 const { chromium } = require('playwright');
 const { spawn } = require('node:child_process');
@@ -42,7 +43,7 @@ const PORT = process.env.PORT || '4181';
       : { basics: 9, discipline: 10, ironhide: 10, cleave: 10, heavy: 5, warcry: 3, rhythm: 1, laststand: 1, twinfang: 10, pierce: 10, blademastery: 10, comboedge: 10, momentum: 5, finalblade: 5, bladedance: 5 };
     const kit = bow
       ? (gear === 'good' ? ['heartwood_bow|r7', 'iron_arrow', 'chain_mail|r4', 'wool_cape|r4', 'leather_boots|r4'] : ['hunting_bow', 'iron_arrow', 'chain_mail', 'wool_cape', 'leather_boots'])
-      : gear === 'good' ? ['hornblade|r7', 'chain_mail|r4', 'round_shield|r4', 'wool_cape|r4', 'leather_boots|r4'] : ['iron_sword', 'chain_mail', 'round_shield', 'wool_cape', 'leather_boots'];
+      : gear === 'good' ? ['khopesh|r7', 'chain_mail|r4', 'round_shield|r4', 'wool_cape|r4', 'leather_boots|r4'] : ['iron_sword', 'chain_mail', 'round_shield', 'wool_cape', 'leather_boots'];
     const worn = kit.map((k) => { a.inv.add(k, 1); return a.inv.equip(k); });
     a.inv.add('potion3', 400);
     a.player.hp = a.player.maxHp;
@@ -60,6 +61,12 @@ const PORT = process.env.PORT || '4181';
     if (!boss) { bot.done = 'no boss'; return; }
     for (const m of a.mobs.list) if (m !== boss && !m.def.boss && Math.hypot(m.x - boss.x, m.z - boss.z) < 14) a.mobs.remove(m); // (the field cleared round it: a duel, as the sim has it)
     a.player.setPos(boss.x + (bow ? 4 : 2.5), boss.z);
+    // a danger mark under the hero (a boss move, a Tremor, falling fire): step out of it 0.35 s after it shows, as a
+    // player who watches the ground does (fx.warn takes x, z, r)
+    const warn = a.fx.warn.bind(a.fx);
+    a.fx.warn = (x, z, r, ...rest) => { const p = a.player; if (Math.hypot(x - p.x, z - p.z) < r + 0.3) setTimeout(() => { if (Math.hypot(x - p.x, z - p.z) >= r + 0.3) return; const ang = Math.atan2(p.z - z, p.x - x) || 0; for (const turn of [0, 0.7, -0.7, 1.4, -1.4, 3.1]) { const nx = x + Math.cos(ang + turn) * (r + 0.9), nz = z + Math.sin(ang + turn) * (r + 0.9); if (a.world.walkable(nx, nz)) { p.setPos(nx, nz); bot.dodged++; break; } } }, 350); return warn(x, z, r, ...rest); };
+    bot.dodged = 0; bot.kites = 0;
+    let kiteT = 0;
     a.mobs.on('tremor', () => { bot.tremors++; setTimeout(() => { const p = a.player, ang = Math.random() * 6.28; p.setPos(p.x + Math.cos(ang) * 2.2, p.z + Math.sin(ang) * 2.2); p.command({ mob: boss }); }, 300); });
     const order = bow ? ['volley', 'cyclone', 'doubleshot'] : ['bladedance', 'finalblade', 'pierce', 'twinfang'];
     bot.spDry = null;
@@ -74,8 +81,17 @@ const PORT = process.env.PORT || '4181';
       if (p.hp < p.maxHp * 0.5 && bot.t >= potT) { a.useItem('potion3'); bot.potions++; potT = bot.t + 0.25; }
       if (!count && p.sp < 60) p.sp = p.maxSp; // (Blue Potions: not counted, as the sim)
       if (count && bot.spDry == null && p.sp < 15) bot.spDry = +bot.t.toFixed(0);
+      const d = Math.hypot(p.x - boss.x, p.z - boss.z);
+      // a bow keeps its distance: Leap Back, else a few steps away, whenever the boss closes in (the sims' KITE)
+      if (bow && d < 3 && bot.t >= kiteT) {
+        kiteT = bot.t + 0.8; bot.kites++;
+        a.useSkill('leapback');
+        const ang = Math.atan2(p.z - boss.z, p.x - boss.x);
+        for (const turn of [0, 0.8, -0.8, 1.6, -1.6]) { const nx = p.x + Math.cos(ang + turn) * 4, nz = p.z + Math.sin(ang + turn) * 4; if (a.world.walkable(nx, nz)) { p.command({ x: nx, z: nz }); break; } }
+      }
+      if (bot.t < kiteT) return;
       if (!p.target || p.target !== boss) p.command({ mob: boss });
-      if (Math.hypot(p.x - boss.x, p.z - boss.z) < (bow ? 6 : 3)) for (const id of order) a.useSkill(id);
+      if (d < (bow ? 6 : 3)) for (const id of order) a.useSkill(id);
     }, 100);
   }, { type: BOSS, bow: JOB === 'bow', count: SP === 'count' });
   const t0 = Date.now();
